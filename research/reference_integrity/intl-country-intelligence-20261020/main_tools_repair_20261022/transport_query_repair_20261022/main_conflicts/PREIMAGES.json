@@ -1,0 +1,133 @@
+{
+  "schema": "intl.main_conflict_preimages.v1",
+  "recorded_at": "2026-10-22T07:29:03.562554+00:00",
+  "head": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+  "main": "64ef5131a5f50fb65f0ad25a049a457e18258495",
+  "merge_base": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+  "paths": [
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "versions": {
+        "base": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/0_base.json",
+          "bytes": 86435,
+          "sha256": "c679b7fae5fa312857eb2a8769b988182b1777845632fed801706c82b9e60c8f",
+          "git_blob": "c050c2aa6b4b36d009bd459320bf0164106eda69"
+        },
+        "branch": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/0_branch.json",
+          "bytes": 106075,
+          "sha256": "df761dafe1fb82246b4f2f4df19c5fea93d1f2bced8c74dc41b2a75e1332e2c2",
+          "git_blob": "2eb0bdd4029ec635b034f6a87dbd1236ee8becde"
+        },
+        "main": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/0_main.json",
+          "bytes": 86435,
+          "sha256": "168df0b76726c4313777c4fc6a68bc0f1e4658df257e97723a51120bc61a5962",
+          "git_blob": "51423a5460dca19531fbbe77fe9aae6e037af037"
+        }
+      },
+      "branch_diff": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/0_branch.diff",
+        "bytes": 22943
+      },
+      "main_diff": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/0_main.diff",
+        "bytes": 1140
+      }
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "versions": {
+        "base": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/1_base.json",
+          "bytes": 497059,
+          "sha256": "1301819e5858fefd046abecbe842eb59e9d72717e685854961a3f36811b8b5b8",
+          "git_blob": "04b02b402459d94d8c2042bd1728581c8a8b3c91"
+        },
+        "branch": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/1_branch.json",
+          "bytes": 497151,
+          "sha256": "9f288649a0be6e7edf4150219816340e7acbc940865b26aea209c78a2d0cc9d1",
+          "git_blob": "aae81020b9484a04fc96efb155dfc0c2cb22ab43"
+        },
+        "main": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/1_main.json",
+          "bytes": 497059,
+          "sha256": "bbc6f54d26f36acdbb8daa84ba67095e54c292b5b81b03d6a52851e098e9b7ce",
+          "git_blob": "66e1c88fe87c745632f4a4107326917f2c82806e"
+        }
+      },
+      "branch_diff": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/1_branch.diff",
+        "bytes": 2360
+      },
+      "main_diff": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/1_main.diff",
+        "bytes": 1046
+      }
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "versions": {
+        "base": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/2_base.json",
+          "bytes": 489480,
+          "sha256": "67c2507347d089b35316bf41e16b0eb488f7cd9f6e35da40b8c2bf417af4c8b9",
+          "git_blob": "e585ea0ca088bf92286d53e2c7edc7b73ec12e5d"
+        },
+        "branch": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/2_branch.json",
+          "bytes": 489572,
+          "sha256": "5b41af5add8565f1719b0ab3982189f88b184314da102df32e71448664ced948",
+          "git_blob": "d3fb431cae19c5ccbe946a3e76b13beda5dacbd0"
+        },
+        "main": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/2_main.json",
+          "bytes": 489480,
+          "sha256": "b8349824849fa8aeda2ed35e483df1a0e6e55a08ad86784b8da6ff540f512e51",
+          "git_blob": "2b359cd7c18aba0d1c376dfef8b5569180599ac5"
+        }
+      },
+      "branch_diff": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/2_branch.diff",
+        "bytes": 2329
+      },
+      "main_diff": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/2_main.diff",
+        "bytes": 1018
+      }
+    },
+    {
+      "path": "site/research_screener.html",
+      "versions": {
+        "base": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_base.html",
+          "bytes": 73864,
+          "sha256": "eeec7f20ab4875d505ceb1c99af0a09f5d5f5627684dc184e049f0fb4743bb72",
+          "git_blob": "d5ec23ed9831acaa7dfb15533418e8c9d9875b83"
+        },
+        "branch": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_branch.html",
+          "bytes": 73864,
+          "sha256": "15e829a94eb4a41c710a586bd637993f7b7f25250c76ff5bd704e905cbb781c3",
+          "git_blob": "1acd46996df04fe43d4333aec982ed2b9cb2da1d"
+        },
+        "main": {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_main.html",
+          "bytes": 73864,
+          "sha256": "baa73d6f0caa84a9eaa7c2ad387ab166f905804c330844b2958fdc80c534cba6",
+          "git_blob": "ad3b81480920861e8acf6da2ea6c0f4b626a7ce6"
+        }
+      },
+      "branch_diff": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_branch.diff",
+        "bytes": 781
+      },
+      "main_diff": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_main.diff",
+        "bytes": 781
+      }
+    }
+  ]
+}

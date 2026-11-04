@@ -1,0 +1,106 @@
+{
+  "source_sha": "0be244ba05355f4260b28da89dac4587f5a772e4",
+  "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "checks": [
+    {
+      "name": "template_site_sync",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-20T15:30:19.901427+00:00",
+      "finished_at": "2026-10-20T15:30:21.045683+00:00",
+      "exit_code": 1,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_template_site_sync.log",
+      "log_sha256": "8e8c7f81bcb59a486df70354f8b9ee828428599c23208a5d02d54621780cc32b"
+    },
+    {
+      "name": "design_system",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/intl-country-cockpit-final-design.diff"
+      ],
+      "started_at": "2026-10-20T15:30:21.046069+00:00",
+      "finished_at": "2026-10-20T15:30:25.045643+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_design_system.log",
+      "log_sha256": "99ccd1429f3949343d1e876c87a0b27a16c21446530b8919442c65284af0856d"
+    },
+    {
+      "name": "runtime_styles",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "started_at": "2026-10-20T15:30:25.046033+00:00",
+      "finished_at": "2026-10-20T15:30:26.081697+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_runtime_styles.log",
+      "log_sha256": "51b62ee124c81005018c3134f07bc9ce9b1a4dd3d36f6c520b02e801808c6bf9"
+    },
+    {
+      "name": "visual_evidence",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_ui_visual_evidence.py"
+      ],
+      "started_at": "2026-10-20T15:30:26.082070+00:00",
+      "finished_at": "2026-10-20T15:30:26.145242+00:00",
+      "exit_code": 1,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_visual_evidence.log",
+      "log_sha256": "6393d5ecacd924dc41684f21e64b554ea0135eb2604aea4d6406bf08628106e1"
+    },
+    {
+      "name": "ci_manifest",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--validate-only"
+      ],
+      "started_at": "2026-10-20T15:30:26.145580+00:00",
+      "finished_at": "2026-10-20T15:30:27.569197+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_ci_manifest.log",
+      "log_sha256": "34c07d0c6cebbef439a2d7af27987fad9097a4070edb604476a338c3f2524f32"
+    },
+    {
+      "name": "intl_render_contracts",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_intl_eod_publisher_integration.py",
+        "tests/test_intl_chart_publisher.py",
+        "tests/test_intl_workspace_overview_render.py",
+        "tests/test_intl_workspace_library_render.py",
+        "tests/test_intl_workspace_integration.py",
+        "tests/test_intl_workspace_inspector_render.py",
+        "tests/test_intl_inspector_mount.py",
+        "tests/test_intl_workspace_compare_render.py",
+        "tests/test_intl_compare_integration.py",
+        "tests/test_intl_workspace_generation_mount.py",
+        "tests/test_intl_workspace_macro_render.py",
+        "tests/test_intl_macro_publication_build.py",
+        "tests/test_intl_risk_publication_build.py",
+        "tests/test_intl_workspace_risk_render.py",
+        "tests/test_intl_workspace_risk_ui_independent.py",
+        "tests/test_intl_history_publication_build.py",
+        "tests/test_intl_history_publication_independent.py",
+        "tests/test_intl_workspace_history_render.py",
+        "tests/test_intl_workspace_history_ui_independent.py",
+        "-q"
+      ],
+      "started_at": "2026-10-20T15:30:27.570055+00:00",
+      "finished_at": "2026-10-20T15:31:05.294881+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_intl_render_contracts.log",
+      "log_sha256": "eaccebee9364f761fc1a61baedba7ffb3c6ce62ad5325ee2708790fa0eb7b95d"
+    }
+  ]
+}

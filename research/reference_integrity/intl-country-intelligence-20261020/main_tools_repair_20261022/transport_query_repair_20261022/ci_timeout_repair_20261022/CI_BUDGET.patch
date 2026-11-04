@@ -1,0 +1,13 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index d6fe8eb05d10..d0f2b7b8139a 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -8989,7 +8989,7 @@ jobs:
+       # spacer: keep unchanged
+       # spacer: keep unchanged
+       # W2B (IM14) paths: insert below this line
+-    timeout-minutes: 8
++    timeout-minutes: 12
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4

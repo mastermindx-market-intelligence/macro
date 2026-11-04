@@ -1,0 +1,128 @@
+{
+  "schema": "intl.repair_repository_guards.v1",
+  "started_at": "2026-10-22T06:38:53.877546+00:00",
+  "source_commit": "612b8e4814c8ea9343dc35f01808fcfd84c7ee6f",
+  "observed_main": "af0ba2d50a32c7a422508b442f35010dcdf154a2",
+  "merge_base": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+  "driver_sha256": "af94abffa13c38aa2ed135a975be0b1ee519f8601ee82272652706b6b8b59c6e",
+  "diff": {
+    "path": "/tmp/intl-tools-guards-612b8e4814c8-ot2mxuen/full-pr.diff",
+    "bytes": 484240226,
+    "sha256": "bd9821823f121c2ad15d8d5fdc56aa9c365a79831274c7b0fa6a11898c837929"
+  },
+  "changed_path_count": 2325,
+  "checks": [
+    {
+      "name": "frozen_reference_evaluation",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_reference_integrity.py",
+        "--evaluate",
+        "intl-country-intelligence-20261020"
+      ],
+      "started_at": "2026-10-22T06:38:54.135884+00:00",
+      "completed_at": "2026-10-22T06:38:54.901448+00:00",
+      "duration_seconds": 0.77,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/guards_composed/frozen_reference_evaluation.log",
+      "log_sha256": "ed2e60d55cac054303fbdaa81f73f2ca3695c7b67c1e003b94444c901c25480f",
+      "error": null
+    },
+    {
+      "name": "reference_integrity_registry",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_reference_integrity.py"
+      ],
+      "started_at": "2026-10-22T06:38:54.136006+00:00",
+      "completed_at": "2026-10-22T06:38:55.705328+00:00",
+      "duration_seconds": 1.57,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/guards_composed/reference_integrity_registry.log",
+      "log_sha256": "918a7795bf9a334a6c3a4d5bd03f753f169739d65b18ce87aefcc79ea7bd5992",
+      "error": null
+    },
+    {
+      "name": "runtime_style_injection",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "started_at": "2026-10-22T06:38:54.901871+00:00",
+      "completed_at": "2026-10-22T06:38:55.552050+00:00",
+      "duration_seconds": 0.65,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/guards_composed/runtime_style_injection.log",
+      "log_sha256": "0aa92315dcaf77a019bdb22d6fdd6efccf0e0260cd411b0533d2f84f0e0aa331",
+      "error": null
+    },
+    {
+      "name": "receipt_closure",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/guards_composed/changed_paths.txt"
+      ],
+      "started_at": "2026-10-22T06:38:55.552469+00:00",
+      "completed_at": "2026-10-22T06:38:55.638672+00:00",
+      "duration_seconds": 0.09,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/guards_composed/receipt_closure.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": null
+    },
+    {
+      "name": "visual_evidence",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/intl-tools-guards-612b8e4814c8-ot2mxuen/full-pr.diff"
+      ],
+      "started_at": "2026-10-22T06:38:55.639058+00:00",
+      "completed_at": "2026-10-22T06:39:01.002637+00:00",
+      "duration_seconds": 5.36,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/guards_composed/visual_evidence.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": null
+    },
+    {
+      "name": "design_system",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/intl-tools-guards-612b8e4814c8-ot2mxuen/full-pr.diff"
+      ],
+      "started_at": "2026-10-22T06:38:55.705786+00:00",
+      "completed_at": "2026-10-22T06:39:03.965501+00:00",
+      "duration_seconds": 8.26,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/guards_composed/design_system.log",
+      "log_sha256": "2ebc31876be9497677a3913b4f73c1f6ea697ef5c904404f14f60d51d0244c40",
+      "error": null
+    },
+    {
+      "name": "agentos",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/agentos.py",
+        "validate"
+      ],
+      "started_at": "2026-10-22T06:39:01.003060+00:00",
+      "completed_at": "2026-10-22T06:39:02.194263+00:00",
+      "duration_seconds": 1.19,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/guards_composed/agentos.log",
+      "log_sha256": "9efa919c34015ddc92fda0d43f08b1f5a04114608d5c2c12ee56180be75db2ab",
+      "error": null
+    }
+  ],
+  "completed_at": "2026-10-22T06:39:03.965978+00:00",
+  "head_unchanged": true,
+  "pass": true
+}

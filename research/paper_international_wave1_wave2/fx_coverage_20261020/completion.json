@@ -1,0 +1,21 @@
+{
+  "schema": "mastermind.intl_currency_completion.v1",
+  "recorded_at": "2026-10-20T05:09:29.872235+00:00",
+  "checkpoint": {
+    "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_COVERAGE_20261020.json",
+    "bytes": 49342,
+    "sha256": "bd1a5b8021609eafaad4d683836163d4fce174f78df4809bc6b8c3e4295a8f95"
+  },
+  "bound_files_reverified": 164,
+  "all_bound_bytes_unchanged": true,
+  "pr_metadata": {
+    "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/pr_metadata_update.json",
+    "bytes": 1608,
+    "sha256": "199e9bf44b46180bd3c5627de1084014c234fd334bffc72645c800fa9a5bb9d4"
+  },
+  "draft": true,
+  "remote_head": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+  "local_head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "state": "IMPLEMENTATION_AND_LOCAL_VERIFICATION_COMPLETE__PUBLICATION_FENCED",
+  "passed": true
+}

@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-10-20T04:51:56.491171+00:00",
+  "finished_at": "2026-10-20T04:52:03.774077+00:00",
+  "command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/fx_coverage_20261020/finalize_currency_evidence.py"
+  ],
+  "returncode": 0,
+  "log": "finalization.log",
+  "reason": "Final direct-label caption rules at both desktop and mobile breakpoints."
+}

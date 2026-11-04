@@ -1,0 +1,74 @@
+...................................................                      [100%]
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-ecb74440-166b-41e4-a5bc-6e6d2b0e1e12/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-ecb74440-166b-41e4-a5bc-6e6d2b0e1e12/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-b656cb32-c729-465c-b194-e87470d469b2/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-b656cb32-c729-465c-b194-e87470d469b2/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-d5d52ee3-256d-49ac-8012-d3568e837b2e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-d5d52ee3-256d-49ac-8012-d3568e837b2e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-bf4ae602-e212-4481-8c3f-cc6093b6912b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-bf4ae602-e212-4481-8c3f-cc6093b6912b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-bf4ae602-e212-4481-8c3f-cc6093b6912b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-bf4ae602-e212-4481-8c3f-cc6093b6912b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-505e1481-3fc1-48d7-99fc-5360e6527bf7/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-462ed734-6dca-46bb-a52c-834fec1ed975/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-462ed734-6dca-46bb-a52c-834fec1ed975/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-462ed734-6dca-46bb-a52c-834fec1ed975/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-462ed734-6dca-46bb-a52c-834fec1ed975/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+51 passed, 14 warnings in 4.32s

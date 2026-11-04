@@ -1,0 +1,24 @@
+{
+  "local_head": "96cf630b9dffec366568216e8d5ef1125e212cbf",
+  "incoming_main": "2d33475adef502ab6b00b8003356c1b0ad1673c0",
+  "merge_base": "6a4c0079d1aec13b08cb554f6f7424b775165d09",
+  "ours_paths": 2748,
+  "incoming_paths": 30600,
+  "overlap": [
+    ".github/ci/legacy-jobs.yml",
+    "scripts/build_intl.py",
+    "site/intl_workspace.js",
+    "templates/intl.html.j2",
+    "templates/intl_workspace.js",
+    "tests/test_site_access_boundary.py"
+  ],
+  "merge_tree_rc": 1,
+  "merge_tree_preview": "efea1cbdae23ffb4df567a483b22a12c2abcf22b\n.github/ci/legacy-jobs.yml\nsite/intl_workspace.js\ntemplates/intl_workspace.js\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging scripts/build_intl.py\nAuto-merging site/intl_workspace.js\nCONFLICT (content): Merge conflict in site/intl_workspace.js\nAuto-merging templates/intl.html.j2\nAuto-merging templates/intl_workspace.js\nCONFLICT (content): Merge conflict in templates/intl_workspace.js\nAuto-merging tests/test_site_access_boundary.py\n",
+  "p0b_changed": [
+    {
+      "path": "site/theme.css",
+      "capture_sha256": "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+      "incoming_sha256": "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e"
+    }
+  ]
+}

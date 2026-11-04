@@ -1,0 +1,159 @@
+{
+  "schema": "intl.r2.retained_binding_review.v1",
+  "read_only": true,
+  "source_owner_root": "Original C2 retained Fabric owner (exact files inspected in place)",
+  "run_id": "intl-20261022-workspace-transport-query-r2",
+  "checks": {
+    "request_packet_sha": true,
+    "request_packet_bytes": true,
+    "launch_request_sha": true,
+    "launch_packet_sha": true,
+    "return_request_sha": true,
+    "return_launch_sha": true,
+    "return_log_sha": true,
+    "support_log_digest": true,
+    "run_id": true,
+    "root_id": true,
+    "parent_run_id": true
+  },
+  "all_bindings_match": true,
+  "files": {
+    "request.json": {
+      "bytes": 477,
+      "sha256": "acd7a084be172d24202fe42af99a1e3c9e03159fcf2fac58c26e28ce57198d9d"
+    },
+    "request-launch.json": {
+      "bytes": 882,
+      "sha256": "b74ad8957cdcbe21a6ab8659dd4f7c2b4a68f15a593d56aa0dacc10a1192def4"
+    },
+    "request-return.json": {
+      "bytes": 520,
+      "sha256": "7f08b1ef2dab805991e575315db390c8aeac41e0191034651a2be5ad7095a03a"
+    },
+    "support.json": {
+      "bytes": 3301,
+      "sha256": "ac7abe666efcf3fdbd32dd25d35bd4827c0299943bd5d0b7398449929b775e14"
+    },
+    "process.jsonl": {
+      "bytes": 847,
+      "sha256": "4af557b318bae50e4e5f704379b515189ebae13cab4d5680372bc800907d4b8d"
+    },
+    "provider.json": {
+      "bytes": 896,
+      "sha256": "50eebb4fdd3240c2fd2f8ff40f60aef1bff904d4cfcc1e062f1f7168201fe8b3"
+    },
+    "request.packet": {
+      "bytes": 12784,
+      "sha256": "e2771eb407f16bc34a19a30cb72442ca93692d8e5b4e8d48488a608b2f30e81f"
+    },
+    "log": {
+      "bytes": 2432,
+      "sha256": "9b92fc6bb518345bb63b2c546654e1a87eb469bd6b390e4616ba7b8c41154c91"
+    }
+  },
+  "support_digest": "7956069e27a7a1ca4845159eaf5577528bef33ccec7a4cecc6c5a5ca2bdcef91",
+  "critical_support": {
+    "slot.py": "84a56ad2086d0fe131aba3a2af981a8bf8839ce834ef3ee1f02ca68dbe182435",
+    "sub.sh": "73a60636ce5adaf3f839eac6b9ae5c8217aa4b6d6751c538be108011f9253d9a",
+    "remote_sub_exec.py": "5f01655f9066d4cb5c9daf7260867efa839ef5526a83578d7ca11e3c0e681fef"
+  },
+  "native_controller": "a2802650d69489433c6c166fbc387f19a9dd6a9bd7d9f60c8cb735f90547ae5e",
+  "remote_stdout": {
+    "bytes": 191,
+    "sha256": "a801eede8f27859cff90d47564adcc41b02a0d5ba5873a7e68e96561da4bb3b3",
+    "text": "slot.py: pool=minimax admission_denied reason=canonical_source_unreadable\nslot.py: pool=minimax canonical_source_subreason=object_root_config_or_promisor\nPROVIDER_TERMINAL kind=unknown rc=78\n"
+  },
+  "process_receipts": [
+    {
+      "cleanup": {
+        "census_proven": true,
+        "error_code": null,
+        "identity_verified": true,
+        "reason": "normal_completion",
+        "residual_count": 0,
+        "sigkill_sent": false,
+        "sigterm_sent": false,
+        "status": "not_needed",
+        "stderr_capture_complete": true,
+        "stderr_capture_error": null,
+        "stdin_delivery_complete": true,
+        "stdin_delivery_error": null,
+        "stdout_capture_complete": true,
+        "stdout_capture_error": null
+      },
+      "ended_at": "2026-10-22T08:05:02.608Z",
+      "label": "intl-20261022-workspace-transport-query-r2",
+      "nice_applied": true,
+      "nice_requested": 10,
+      "pgid": 95623,
+      "pid": 95623,
+      "returncode": 78,
+      "runtime_failure_code": null,
+      "schema": "mastermind.local_owned_process_receipt.v1",
+      "started_at": "2026-10-22T08:05:02.278Z",
+      "stderr_bytes": 191,
+      "stderr_truncated": false,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_truncated": false,
+      "timed_out": false
+    }
+  ],
+  "route": {
+    "ESCALATE_TO": "glm-flash",
+    "HOST": "mb",
+    "KEY": "-",
+    "MODE": "minimax",
+    "MODEL": "MiniMax-M3",
+    "POOL": "minimax",
+    "REASON": "minimax_first"
+  },
+  "controller_returncode": 78,
+  "note": "Observed historical evidence and scoped principal adjudication; not a Fabric lifecycle transition or new execution grant.",
+  "historical_code": [
+    {
+      "file": "remote_sub.sh",
+      "commit": "230e9a301ed774e79410829f1b5c049226fa59f1",
+      "sha256": "a2802650d69489433c6c166fbc387f19a9dd6a9bd7d9f60c8cb735f90547ae5e",
+      "binding": "request-launch.native_sources"
+    },
+    {
+      "file": "remote_sub_exec.py",
+      "commit": "c9cbee5569ba50e30e28715d930809061a169517",
+      "sha256": "5f01655f9066d4cb5c9daf7260867efa839ef5526a83578d7ca11e3c0e681fef",
+      "binding": "support.files"
+    },
+    {
+      "file": "sub.sh",
+      "commit": "c9cbee5569ba50e30e28715d930809061a169517",
+      "sha256": "73a60636ce5adaf3f839eac6b9ae5c8217aa4b6d6751c538be108011f9253d9a",
+      "binding": "support.files"
+    },
+    {
+      "file": "slot.py",
+      "commit": "c9cbee5569ba50e30e28715d930809061a169517",
+      "sha256": "84a56ad2086d0fe131aba3a2af981a8bf8839ce834ef3ee1f02ca68dbe182435",
+      "binding": "support.files"
+    }
+  ],
+  "adjudication": {
+    "provider_task_started": false,
+    "basis": "Matched historical slot refusal returns78 at1322-1338 before payload launch at1360/1223; sub.sh723-751 keeps provider invocation inside uncalled payload; bound executor790-795/901-912 and controller1417/1638 invoke these exact support bytes.",
+    "controller_and_remote_executor_started": true,
+    "preparation_lease_and_refusal_ledger_effects": "Preserved; no global zero-effect claim",
+    "fabric_status_mutated": false,
+    "fabric_retry_authorized": false,
+    "fabric_accepted": false,
+    "replacement_worker_dispatched": false,
+    "mb_retirement_unchanged": true,
+    "separate_C0_retrieval_hold": "Unchanged; packet is read-only packaging, no source writes. Not used for this repair.",
+    "reviewer": "/root/intl_query_recovery_advice",
+    "integrator": "Original C2 workspace, operation intl-country-cockpit-20261018",
+    "source_preflight": "Local=remote df1aa0c587bd1fef7a6b20fb69ca2e22afd423fd, clean",
+    "direct_work_reason": [
+      "PRINCIPAL_JUDGMENT",
+      "UNIQUE_APPROVED_ACCESS"
+    ],
+    "direct_work_scope": "Complete and review existing unaccepted R1 proposal, integrate/test through original source custodian; no provider replay or acceptance"
+  }
+}

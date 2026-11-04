@@ -1,0 +1,34 @@
+{
+  "source_commit": "c2b0562234abbec883ea91b934ac3d09fa3bae8b",
+  "checks": [
+    {
+      "name": "shared_shell",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "tests/js/shared_shell_owner_adapters.test.cjs",
+        "tests/js/shared_shell_bridge.test.cjs"
+      ],
+      "started_at": "2026-10-22T00:54:42.736436+00:00",
+      "completed_at": "2026-10-22T00:54:44.057909+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/shared_shell.log",
+      "sha256": "4ec6f6a8a9437fd786238a08f1f0a12a0f06a1a2aebb8a106f01788820990c73"
+    },
+    {
+      "name": "template_sync",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-22T00:54:42.737055+00:00",
+      "completed_at": "2026-10-22T00:54:45.807974+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/template_sync.log",
+      "sha256": "6449780c512785c0926e7ad0509729aafa8053afc719f4f3f314e62321d8c4da"
+    }
+  ],
+  "access_boundary_inputs_changed": [],
+  "access_boundary_reuse": "Prior 48 passing tests remain bound: checked Caddy and both access suite files unchanged.",
+  "failed": 0
+}

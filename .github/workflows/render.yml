@@ -234,6 +234,7 @@ on:
       - "scripts/inject_shared_shell.py"
       - "lib/pages.py"
       - "lib/shared_shell.py"
+      - "lib/intl_workspace_fragments.py"
 
 permissions:
   contents: write   # commit the rendered site/ to main; the VPS (Caddy) serves from main

@@ -1,0 +1,1326 @@
+{
+  "schema": "intl.rig_review_repair_browser.v1",
+  "recorded_at": "2026-10-20T14:21:58.800110+00:00",
+  "source_commit": "f17c92562bb51cbf7572024b0f721ba8034bf04b",
+  "source_overlays": [
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "bytes": 26414,
+      "sha256": "e9951871b68312cb379898b53001cd1a9671c5e7ea207afbd11228df83fefa02"
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "bytes": 30738,
+      "sha256": "0135a6bec3f8d15a3b71fc1e01f2bd6eae53235a1b0e07641d7ddcf534debe92"
+    }
+  ],
+  "html_sha256": "00c41272a0918aeccdd8b1aaea5c6b914745cc0609647188e5fb9d3c2c7375af",
+  "build_receipt": "research/reference_integrity/intl-country-intelligence-20261020/repair_ui_build_receipt.json",
+  "canonical_capture_exit": false,
+  "checks": [
+    {
+      "id": "visible-section-navigation-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 32,
+            "right": 101.515625,
+            "width": 69.515625,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 129.515625,
+            "right": 189.171875,
+            "width": 59.65625,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 217.171875,
+            "right": 294.140625,
+            "width": 76.96875,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 1313.6875,
+            "right": 1408,
+            "width": 94.3125,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-desktop-en-light",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-desktop-en-light",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-en-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 32,
+            "right": 101.515625,
+            "width": 69.515625,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 129.515625,
+            "right": 189.171875,
+            "width": 59.65625,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 217.171875,
+            "right": 294.140625,
+            "width": 76.96875,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 1313.6875,
+            "right": 1408,
+            "width": 94.3125,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-desktop-en-dark",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-desktop-en-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-desktop-en-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-desktop-en-dark",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-en-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 32,
+            "right": 82,
+            "width": 50,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 110,
+            "right": 172.5,
+            "width": 62.5,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 200.5,
+            "right": 250.5,
+            "width": 50,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 1325.703125,
+            "right": 1408,
+            "width": 82.296875,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-desktop-zh-light",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-desktop-zh-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-desktop-zh-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-desktop-zh-light",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-zh-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 32,
+            "right": 82,
+            "width": 50,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 110,
+            "right": 172.5,
+            "width": 62.5,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 200.5,
+            "right": 250.5,
+            "width": 50,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 1325.703125,
+            "right": 1408,
+            "width": 82.296875,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-desktop-zh-dark",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-desktop-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-desktop-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-desktop-zh-dark",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-zh-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 14,
+            "right": 187,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 203,
+            "right": 376,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 14,
+            "right": 187,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 203,
+            "right": 376,
+            "width": 173,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-mobile-en-light",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-mobile-en-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-mobile-en-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-mobile-en-light",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-en-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 14,
+            "right": 187,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 203,
+            "right": 376,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 14,
+            "right": 187,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 203,
+            "right": 376,
+            "width": 173,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-mobile-en-dark",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-mobile-en-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-mobile-en-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-mobile-en-dark",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-en-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 14,
+            "right": 187,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 203,
+            "right": 376,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 14,
+            "right": 187,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 203,
+            "right": 376,
+            "width": 173,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-mobile-zh-light",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-mobile-zh-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-mobile-zh-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-mobile-zh-light",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-zh-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 14,
+            "right": 187,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 203,
+            "right": 376,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 14,
+            "right": 187,
+            "width": 173,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 203,
+            "right": 376,
+            "width": 173,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-mobile-zh-dark",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-mobile-zh-dark",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-zh-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 14,
+            "right": 152,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 168,
+            "right": 306,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 14,
+            "right": 152,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 168,
+            "right": 306,
+            "width": 138,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-narrow-en-light",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-narrow-en-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-narrow-en-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-narrow-en-light",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-en-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 14,
+            "right": 152,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 168,
+            "right": 306,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 14,
+            "right": 152,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 168,
+            "right": 306,
+            "width": 138,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-narrow-en-dark",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-narrow-en-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-narrow-en-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-narrow-en-dark",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-en-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 14,
+            "right": 152,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 168,
+            "right": 306,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 14,
+            "right": 152,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 168,
+            "right": 306,
+            "width": 138,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-narrow-zh-light",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-narrow-zh-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-narrow-zh-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-narrow-zh-light",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-zh-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 14,
+            "right": 152,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 168,
+            "right": 306,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 14,
+            "right": 152,
+            "width": 138,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 168,
+            "right": 306,
+            "width": 138,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-narrow-zh-dark",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-narrow-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-narrow-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-narrow-zh-dark",
+      "passed": false,
+      "actual": {
+        "closed": true,
+        "focus": ""
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-zh-dark",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-desktop-en-light.png",
+      "sha256": "1f3d1b9632d82ba323da487caeb220cca740f672ff8c4fd64dc6f7ff6215c329",
+      "bytes": 134965,
+      "captured_at": "2026-10-20T14:21:18.247730+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-desktop-en-light.png",
+      "sha256": "c09d6e62a59648acad997e359634b1532c2e67e6ba69956f585822da74c1d8df",
+      "bytes": 154096,
+      "captured_at": "2026-10-20T14:21:18.403995+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-desktop-en-dark.png",
+      "sha256": "09202e33a0a9bdef3fd7b8051c105dc4d6a673c66cdeb8625036c5b1d780f620",
+      "bytes": 128497,
+      "captured_at": "2026-10-20T14:21:21.758623+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-desktop-en-dark.png",
+      "sha256": "016f489da05abb4a1b7734df32ef94033079478c15fcb0ec781c85b09d9674e8",
+      "bytes": 138772,
+      "captured_at": "2026-10-20T14:21:21.951033+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-desktop-zh-light.png",
+      "sha256": "e61fde09d5d8b6949e1f76f86f87c90dfb78871a3fd1fde938c94f9e9a6548a0",
+      "bytes": 138087,
+      "captured_at": "2026-10-20T14:21:25.567711+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-desktop-zh-light.png",
+      "sha256": "92b067b91edb17e1f20a50e731ae76b88445100e91ba8589dd63075d9b8567d5",
+      "bytes": 152395,
+      "captured_at": "2026-10-20T14:21:25.743714+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-desktop-zh-dark.png",
+      "sha256": "8f5df3d7e0eea54a189ef101142a2cc19997ac58ae0fe0a10cfda078c895d6c2",
+      "bytes": 130962,
+      "captured_at": "2026-10-20T14:21:29.094915+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-desktop-zh-dark.png",
+      "sha256": "15d723c851d2e4dfbf413c0d63e51808dbf15431b2258e68083a92041aa3c497",
+      "bytes": 136642,
+      "captured_at": "2026-10-20T14:21:29.240980+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-mobile-en-light.png",
+      "sha256": "706a894e7c264569c2adf36f2ffb78f74506a9c38b4874f2740aa12d3e6b2804",
+      "bytes": 85044,
+      "captured_at": "2026-10-20T14:21:32.417644+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-mobile-en-light.png",
+      "sha256": "ab9dca2401ff250b5485041a2597859085a1b458fd0602dc2f5c18cbbcb8e371",
+      "bytes": 30860,
+      "captured_at": "2026-10-20T14:21:32.530723+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-mobile-en-dark.png",
+      "sha256": "e523b51e5c378008257f3d997ee50042199ae8e9e993c0141488c7646624847b",
+      "bytes": 81745,
+      "captured_at": "2026-10-20T14:21:35.960466+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-mobile-en-dark.png",
+      "sha256": "090ba05b154bc72b2444721443658e34dcb6a5f9b72180cb8a6401f90c47b411",
+      "bytes": 31716,
+      "captured_at": "2026-10-20T14:21:36.121478+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-mobile-zh-light.png",
+      "sha256": "c22be27dab1a5dff4a31a571918f465d9cd75c772336ccd310106f7301a6af24",
+      "bytes": 88407,
+      "captured_at": "2026-10-20T14:21:39.331577+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-mobile-zh-light.png",
+      "sha256": "7db6d3ac0847473ab2bbf3bea6d558e0d1b22dba72092423dc3a351bd8bbdfeb",
+      "bytes": 29319,
+      "captured_at": "2026-10-20T14:21:39.476431+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-mobile-zh-dark.png",
+      "sha256": "751a8e62272bbbcdc99660dec7810b2151f9a3469642b9f1545286263dbb8ab0",
+      "bytes": 84541,
+      "captured_at": "2026-10-20T14:21:42.761478+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-mobile-zh-dark.png",
+      "sha256": "a5f5b8caa13056fc74d32293132e66c12d2928b62ff1942061d2ab305bd03834",
+      "bytes": 30256,
+      "captured_at": "2026-10-20T14:21:42.885809+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-narrow-en-light.png",
+      "sha256": "e9734fe8af0ca96e7f6a2b44b51f7d97028557c4c43a0277a9904b7320a9bfff",
+      "bytes": 72670,
+      "captured_at": "2026-10-20T14:21:46.012574+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-narrow-en-light.png",
+      "sha256": "3ef91d337620d10ebf9c91a6412a67196448fd7cc9e7fffaa282c53b9d4d5f21",
+      "bytes": 29492,
+      "captured_at": "2026-10-20T14:21:46.146335+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-narrow-en-dark.png",
+      "sha256": "512362257cbc3ee2d18d888cf255f7c767be4b21a89ee0cf853b7e658a862876",
+      "bytes": 69924,
+      "captured_at": "2026-10-20T14:21:49.401886+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-narrow-en-dark.png",
+      "sha256": "86be6b645a9e44df30f975eee1842a6d0a787f7cf0fe47dbbd51c3da286ce079",
+      "bytes": 30145,
+      "captured_at": "2026-10-20T14:21:49.545772+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-narrow-zh-light.png",
+      "sha256": "20759c6c0af919131d1d045c99c2188088685b7e7410f05fb1114a18b15bd255",
+      "bytes": 76324,
+      "captured_at": "2026-10-20T14:21:52.992181+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-narrow-zh-light.png",
+      "sha256": "875e351f6e590565301d6c04b5b2d8d92900fd0169e71cfe769bcae8ffac5691",
+      "bytes": 28137,
+      "captured_at": "2026-10-20T14:21:53.141564+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/reading-narrow-zh-dark.png",
+      "sha256": "5ff42349235c7b064235300760eb810611124f346f760540886d7f0657c6c9f3",
+      "bytes": 72929,
+      "captured_at": "2026-10-20T14:21:56.456219+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_ui_repair/assistant-open-narrow-zh-dark.png",
+      "sha256": "c48a5bb90b2d41482f913ee16cd0830e473065dad1b8018393536e2b4bb7997e",
+      "bytes": 29083,
+      "captured_at": "2026-10-20T14:21:56.611641+00:00"
+    }
+  ],
+  "passed": 72,
+  "failed": 12,
+  "limits": [
+    "Actual anonymous isolated browser with copied production inputs; external calls aborted.",
+    "Assistant opening and closing tested; no prompt, account mutation or authenticated answer requested."
+  ]
+}

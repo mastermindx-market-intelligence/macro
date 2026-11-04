@@ -1,0 +1,21 @@
+{
+  "schema": "intl.unexpected_workspace_change_preservation.v1",
+  "observed_at": "2026-10-22T20:27:21.297270+00:00",
+  "head": "bdeb609bf11a170c39713461eace85b47d2ca18c",
+  "path": "tests/test_biocatalyst_deploy.py",
+  "mtime": "2026-10-22T20:20:42.062003+00:00",
+  "working_sha256": "a0c13c05f1b717110356f21d455e709f85f4a04d212ccc1d328d7bee473706cd",
+  "head_sha256": "349e76533bb56332ac8331bd87304ba42e266a1de86490b2abfeed6c7a8312a4",
+  "patch_sha256": "8036abed1ebdeda336aa0ba0995c91da40ec7f95b3463274eb103fdb94b6b6ea",
+  "main_sha256": "9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf",
+  "provenance": "unknown; root's documented operations did not author this test change",
+  "working_copy": "UNOWNED_BIOCATALYST_TEST_WORKING_COPY.txt",
+  "patch": "UNOWNED_BIOCATALYST_TEST_PATCH.patch",
+  "restored": true,
+  "restored_at": "2026-10-22T20:27:42.373654+00:00",
+  "restored_to_source": "bdeb609bf11a170c39713461eace85b47d2ca18c",
+  "decision": "Preserve full unknown working copy and exact patch as durable evidence, then restore original tracked bytes so the typed all-changes evidence commit remains scoped. Existing incoming main already contains all three added Caddy test paths; only two explanatory comments differ. No upstream repair is reverted.",
+  "working_semantics_match_incoming_main_after_comment_removal": true,
+  "main_source": "a281a3801e87510aecbe15aa03efc9c5854b81ef",
+  "head_unchanged": true
+}

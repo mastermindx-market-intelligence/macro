@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_intl_forecast_vintages.py",
+    "tests/test_intl_outlook_interpretation.py",
+    "tests/test_intl_country_cockpit.py",
+    "tests/test_intl_policy_evidence.py",
+    "tests/test_intl_build.py",
+    "tests/test_public_chrome.py::test_shared_public_nav_matches_landing_core_information_architecture",
+    "tests/test_public_chrome.py::test_shared_public_footer_matches_landing_information_architecture"
+  ],
+  "started_at": "2026-10-20T01:47:05.778325+00:00",
+  "finished_at": "2026-10-20T01:47:14.761360+00:00",
+  "exit_code": 1,
+  "log": "final_country_and_public_tests.log"
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "intl.p0b_composition_rebind.v1",
+  "at": "2026-10-22T00:56:01.362342+00:00",
+  "source_commit": "c2b0562234abbec883ea91b934ac3d09fa3bae8b",
+  "execution_receipt": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/p0b_execution.json",
+  "execution_receipt_sha256": "e9712cc053478a865d28c4bbc1efadad3576f3d02304b925e73dc45e9f308333",
+  "manifest_sha256": "df761dafe1fb82246b4f2f4df19c5fea93d1f2bced8c74dc41b2a75e1332e2c2",
+  "preserved_incoming_history": 12,
+  "preserved_local_history": 14,
+  "composed_history": 16,
+  "both_parent_current_extensions_preserved": true,
+  "actual_browser_cases": 128,
+  "actual_screenshots": 16,
+  "claims": {
+    "source_contract": "browser_fixture",
+    "browser_fixture": "reproducible",
+    "canonical_build": "unavailable",
+    "production": "none"
+  },
+  "pass": true
+}

@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-10-20T15:40:04.914948+00:00",
+  "parent": "0be244ba05355f4260b28da89dac4587f5a772e4",
+  "finding": "VTC-004",
+  "before": {
+    "templates/intl_country_cockpit.html.j2": "89e39b790652d7209d0f70023a24d1e8114d9b50fb13208c4a10f143d95bf80d",
+    "templates/intl_country_cockpit.css": "1c22937178ac408ef277fa98a55edf5414fc5957d2bf60d40948c5d9e35b4505",
+    "templates/intl_country_cockpit.js": "c19785d65c49dea8ce045571b34f53593607a937161622e3ec062d86b60de873"
+  },
+  "after": {
+    "templates/intl_country_cockpit.html.j2": "cada0b3035ddd4926e4210c0215a680c909be88c01adeca27bf51dc047fd9413",
+    "templates/intl_country_cockpit.css": "9bd33e841ddbe5f9cc8a797143acb39d45261e686e339bdde115c78665798865",
+    "templates/intl_country_cockpit.js": "6c0ddc63f253d50cb28aa06ac7250e800a538b889c85badb82e383c4d3bc36b5"
+  },
+  "behavior": "Existing launcher remains in its original shared root. Only measured position places it in a reserved toolbar slot; an opaque toolbar stays at the top after scrolling. Shared lazy loading, translation, panel and focus logic are unchanged.",
+  "shared_source_changed": false
+}

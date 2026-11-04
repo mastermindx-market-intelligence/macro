@@ -1,0 +1,98 @@
+{
+  "schema": "intl.current_main_refresh_execution.v1",
+  "source_commit": "c2b0562234abbec883ea91b934ac3d09fa3bae8b",
+  "started_at": "2026-10-22T00:53:22.794946+00:00",
+  "state": "PASS",
+  "pipelines": [
+    {
+      "name": "p0b",
+      "steps": [
+        {
+          "name": "p0b_run",
+          "command": [
+            "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+            "-u",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/run_p0b_composition.py"
+          ],
+          "started_at": "2026-10-22T00:53:22.799064+00:00",
+          "completed_at": "2026-10-22T00:56:01.246704+00:00",
+          "exit_code": 0,
+          "log": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/p0b_run.log",
+          "sha256": "de313344d9699be096c234b22a1eb31045f8edbc043ecb29ad689a0adc393dd7"
+        },
+        {
+          "name": "p0b_bind",
+          "command": [
+            "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+            "-u",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/bind_p0b_composition.py"
+          ],
+          "started_at": "2026-10-22T00:56:01.246967+00:00",
+          "completed_at": "2026-10-22T00:56:01.368953+00:00",
+          "exit_code": 0,
+          "log": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/p0b_bind.log",
+          "sha256": "325eddedeb5a323126cbd24a39b040f6ef2863880aa524cf247a9c266e818621"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "international",
+      "steps": [
+        {
+          "name": "intl_build",
+          "command": [
+            "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+            "-u",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/build_main250_runtime_20261022.py",
+            "--source-sha",
+            "c2b0562234abbec883ea91b934ac3d09fa3bae8b",
+            "--label",
+            "main25020261022"
+          ],
+          "started_at": "2026-10-22T00:53:22.799210+00:00",
+          "completed_at": "2026-10-22T00:54:07.466271+00:00",
+          "exit_code": 0,
+          "log": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/intl_build.log",
+          "sha256": "fe168a1d595a2803761b8d74fed503b2d90d246fc3043584fb2ecf9bc07a9ad9"
+        },
+        {
+          "name": "country_equivalence",
+          "command": [
+            "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+            "-u",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/compare_build.py"
+          ],
+          "started_at": "2026-10-22T00:54:07.466575+00:00",
+          "completed_at": "2026-10-22T00:54:08.124915+00:00",
+          "exit_code": 0,
+          "log": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/country_equivalence.log",
+          "sha256": "4a43b5f723af5d089b4eb0cc868c86db94ddc692708b18d155dbb5cdfe1aca82"
+        },
+        {
+          "name": "intl_runtime_capture",
+          "command": [
+            "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+            "-u",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/capture_main250_runtime_20261022.py",
+            "--label",
+            "main25020261022"
+          ],
+          "started_at": "2026-10-22T00:54:08.125165+00:00",
+          "completed_at": "2026-10-22T00:56:32.239361+00:00",
+          "exit_code": 0,
+          "log": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/intl_runtime_capture.log",
+          "sha256": "fd12c88766b94ed309fc38ca4e0068b91b4af631ef064be1888b36d32ca47710"
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "effects": {
+    "production_mutation": false,
+    "source_reacquisition": false,
+    "publish": false,
+    "fenced_shell_repair": false
+  },
+  "completed_at": "2026-10-22T00:56:32.240483+00:00"
+}

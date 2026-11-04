@@ -1,0 +1,32 @@
+{
+  "cc": "IN",
+  "requested_url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788172583113_d65a77cf-240e-4491-82ee-59f78618fa41_Press_Note_on_GDP_Estimates_for_Q1_2026-27.pdf",
+  "request_method": "GET",
+  "request_headers": {
+    "Accept-Encoding": "identity",
+    "User-Agent": "InternationalMarketsSourceResearch/1.0"
+  },
+  "started_at": "2026-10-20T21:04:42.792371+00:00",
+  "status": "acquired_unqualified",
+  "source_artifact": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/mospi_q1_fy2026_27_20260831.pdf",
+  "source_sha256": "152d9020853769fe4fe4433bec038a558aae1312bbb13ec072058e8dd5b0bc49",
+  "source_bytes": 821560,
+  "production_admitted": false,
+  "http_status": 200,
+  "final_url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788172583113_d65a77cf-240e-4491-82ee-59f78618fa41_Press_Note_on_GDP_Estimates_for_Q1_2026-27.pdf",
+  "response_headers": {
+    "Content-Type": "application/pdf",
+    "Content-Length": "821560",
+    "Date": "Tue, 20 Oct 2026 21:04:51 GMT",
+    "ETag": "W/\"c8938-1a057644119\"",
+    "Last-Modified": "Mon, 31 Aug 2026 10:36:23 GMT",
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+    "Server": "envoy"
+  },
+  "retrieved_at": "2026-10-20T21:04:50.418704+00:00",
+  "response_body_sha256": "152d9020853769fe4fe4433bec038a558aae1312bbb13ec072058e8dd5b0bc49",
+  "response_body_bytes": 821560,
+  "redirect_chain": [],
+  "completed_at": "2026-10-20T21:04:50.423754+00:00",
+  "elapsed_seconds": 7.631
+}

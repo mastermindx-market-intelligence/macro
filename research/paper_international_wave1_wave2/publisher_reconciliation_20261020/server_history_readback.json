@@ -1,0 +1,43 @@
+{
+  "branch_activity_page1": {
+    "http_status": "HTTP/2.0 200 OK",
+    "date": "Tue, 20 Oct 2026 07:15:40 GMT",
+    "request_id": "C156:31BF03:10D469:192397:6AD7151C",
+    "link": null,
+    "body_sha256": "8b48d12420bcbdf51ddd34cf213be1decdf134d757ac5401fed4d11f26c27bc8",
+    "events": [
+      {
+        "id": 46952872284,
+        "node_id": "PSH_kwLOS4LjIs8AAAAK7pv5XA",
+        "before": "9eb408279e7ea8de99a667e296c4b0ddebfd799b",
+        "after": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+        "ref": "refs/heads/sol/web-intl-country-cockpit-20261018",
+        "timestamp": "2026-10-19T01:32:48Z",
+        "activity_type": "push"
+      },
+      {
+        "id": 46894447974,
+        "node_id": "PSH_kwLOS4LjIs8AAAAK6yB9Zg",
+        "before": "0000000000000000000000000000000000000000",
+        "after": "9eb408279e7ea8de99a667e296c4b0ddebfd799b",
+        "ref": "refs/heads/sol/web-intl-country-cockpit-20261018",
+        "timestamp": "2026-10-18T10:38:06Z",
+        "activity_type": "branch_creation"
+      }
+    ],
+    "count": 2,
+    "has_next": false
+  },
+  "expected_commit": {
+    "http_status": "HTTP/2.0 422 Unprocessable Entity",
+    "date": "Tue, 20 Oct 2026 07:15:40 GMT",
+    "request_id": "C164:2F1A65:10E797:191B78:6AD7151C",
+    "link": null,
+    "body_sha256": "07ba1cd9a7f47a53b04e08621469acd4c153afd6297dd599fc93a13a920322ba",
+    "body": {
+      "message": "No commit found for SHA: 11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+      "documentation_url": "https://docs.github.com/rest/commits/commits#get-a-commit",
+      "status": "422"
+    }
+  }
+}

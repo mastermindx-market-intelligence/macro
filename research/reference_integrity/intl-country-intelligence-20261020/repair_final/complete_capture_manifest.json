@@ -1,0 +1,367 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-20T15:08:27Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://intl.test/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/account.js?v=20261015-mm-return-language",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/favicon.svg",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "https://cloud.umami.is/script.js",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "http://intl.test/fonts/Inter-800.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/account.js?v=20261015-mm-return-language"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/favicon.svg"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-800.woff2"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3333,
+            "elements_wider_than_viewport": 11,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 5154,
+            "elements_wider_than_viewport": 111,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 3333,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 11,
+        "heading_counts": {
+          "h1": 3,
+          "h2": 20,
+          "h3": 64,
+          "h4": 77,
+          "h5": 21,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop"
+        },
+        "panel_count": 43,
+        "payload_bytes_total": 305506,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 27,
+        "screenshot_completion": 1.0,
+        "section_count": 2,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 797
+      },
+      "page_id": "intl.html",
+      "registry_route": "/intl.html",
+      "route": "/intl.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 599257,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_repair/32999fb076742a13.png",
+          "force_state": null,
+          "height": 3333,
+          "locale": "en",
+          "sha256": "32999fb076742a131514a44a0a88bd0ef06f33eda7565a1f5d6d9cb64071cd93",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 569709,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_repair/5c7c163f64ab8842.png",
+          "force_state": null,
+          "height": 3333,
+          "locale": "en",
+          "sha256": "5c7c163f64ab88420a6af9342abf974426a115ae337a0dfdba0c504791b02c03",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 597360,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_repair/fc279906db60be31.png",
+          "force_state": null,
+          "height": 3291,
+          "locale": "zh",
+          "sha256": "fc279906db60be3161b2fde13376a8787ec128356f5ffc222ea596ae983ab993",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 567732,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_repair/9a314b519301a789.png",
+          "force_state": null,
+          "height": 3291,
+          "locale": "zh",
+          "sha256": "9a314b519301a78917c3a89b02363ab16b5ff3477dea6c913c442d562a99fd1e",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 464545,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_repair/b7d7c15df68d9ed9.png",
+          "force_state": null,
+          "height": 5154,
+          "locale": "en",
+          "sha256": "b7d7c15df68d9ed9ea1d03d7a99d90565758b824f79685f2de5e4b005a70aaae",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 448161,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_repair/542869c4f3a4ba05.png",
+          "force_state": null,
+          "height": 5154,
+          "locale": "en",
+          "sha256": "542869c4f3a4ba0563ae0c3ae52e6a6a5375fc7c952ed17925faad1d298d80dd",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 459236,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_repair/5ac3b60a3ef90b73.png",
+          "force_state": null,
+          "height": 4776,
+          "locale": "zh",
+          "sha256": "5ac3b60a3ef90b7322a60309e067216b4a2630f7a31a95ffc499f558b7bfc40b",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 441967,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_repair/b7fca3e7e92a0c67.png",
+          "force_state": null,
+          "height": 4776,
+          "locale": "zh",
+          "sha256": "b7fca3e7e92a0c6789e59387c8cefbc782f3f55ceae2977993e406a58ca2d545",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/intl.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "http://intl.test",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

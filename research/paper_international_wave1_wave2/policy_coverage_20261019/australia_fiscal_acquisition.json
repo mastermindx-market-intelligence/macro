@@ -1,0 +1,7 @@
+{
+  "source_url": "https://www.imf.org/-/media/files/publications/cr/2026/english/1ausea2026001-source-pdf.pdf",
+  "retrieved_at": "2026-10-19T10:44:40.828474+00:00",
+  "status": "acquisition_failed",
+  "error_type": "HTTPError",
+  "error": "HTTP Error 403: Forbidden"
+}

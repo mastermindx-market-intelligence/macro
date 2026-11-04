@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-10-22T19:24:19.027970+00:00",
+  "source_commit": "68782e3983a76e25782563020d891ad31683fbc0",
+  "html_sha256": "8bc4d2546e10ae44304abf2d9f89237183be695f23edeef8310aa1345ceecf79",
+  "owner_inspected": true,
+  "observations": [
+    "Desktop English/light: Japan opens beneath the country navigation; country thesis, source/date, historical/projected path and conditions panel remain readable in the visible viewport.",
+    "Narrow Chinese/dark: country heading and translated thesis wrap within the card; source/date, projected growth and line chart remain visible without horizontal clipping in the captured viewport."
+  ],
+  "scope": "Two actual new standalone country screenshots inspected by root; not full visual matrix, pixel comparison or served-production acceptance.",
+  "images": [
+    {
+      "path": "standalone_toolbar_images/anchor-imc-country-JP-desktop-en-light.png",
+      "sha256": "1cd97a47e19185ddb576d8772fc1d7c371b08cf3492276843675f8af373b7206",
+      "bytes": 170682,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "standalone_toolbar_images/anchor-imc-country-JP-narrow-zh-dark.png",
+      "sha256": "c1fdf8b0d9031a54f10eca587e304d93aa473d66f02c3d3dec7e3948e53e5460",
+      "bytes": 73869,
+      "width": 320,
+      "height": 720
+    }
+  ]
+}

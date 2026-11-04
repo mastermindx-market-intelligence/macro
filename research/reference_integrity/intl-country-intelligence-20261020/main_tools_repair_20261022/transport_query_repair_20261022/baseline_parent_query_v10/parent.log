@@ -1,0 +1,28 @@
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://127.0.0.1:3100
+- Network:       http://127.0.0.1:3100
+✓ Ready in 442ms
+
+ GET /intl.html 200 in 604ms (next.js: 303ms, proxy.ts: 100ms, application-code: 201ms)
+ GET /api/shared-shell/status 200 in 47ms (next.js: 39ms, application-code: 8ms)
+ GET /intl.html 200 in 46ms (next.js: 8ms, proxy.ts: 2ms, application-code: 36ms)
+ GET /api/shared-shell/status 200 in 5ms (next.js: 1533µs, application-code: 3ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1470µs, application-code: 3ms)
+[analyticsEvents] SUPABASE_SERVICE_ROLE_KEY absent — events held in memory only (dev mode)
+ POST /api/collect 204 in 41ms (next.js: 29ms, application-code: 12ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1468µs, application-code: 2ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1672µs, application-code: 2ms)
+ POST /api/collect 204 in 6ms (next.js: 2ms, application-code: 4ms)
+ GET /intl.html 200 in 48ms (next.js: 5ms, proxy.ts: 3ms, application-code: 40ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 2ms, application-code: 1892µs)
+ POST /api/collect 204 in 6ms (next.js: 1333µs, application-code: 4ms)
+ GET /intl.html?view=history&market=%54W&pins=&horizon=3m&basis=local&return_basis=price&group= 200 in 60ms (next.js: 10ms, proxy.ts: 2ms, application-code: 47ms)
+ GET /api/shared-shell/status 200 in 3ms (next.js: 1205µs, application-code: 2ms)
+ POST /api/collect 204 in 6ms (next.js: 1021µs, application-code: 5ms)
+ GET /intl.html?view=history&market=%54W&pins=&horizon=3m&basis=local&return_basis=price&group=&unexpected=1 200 in 43ms (next.js: 5ms, proxy.ts: 3ms, application-code: 35ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1331µs, application-code: 3ms)
+ POST /api/collect 204 in 9ms (next.js: 1164µs, application-code: 8ms)
+ GET /intl.html?view=history&market=%54W&pins=&horizon=3m&basis=local&return_basis=price&group=&& 200 in 40ms (next.js: 5ms, proxy.ts: 4ms, application-code: 31ms)
+ GET /api/shared-shell/status 200 in 3ms (next.js: 1041µs, application-code: 1757µs)
+ POST /api/collect 204 in 8ms (next.js: 1376µs, application-code: 6ms)
+[?25h

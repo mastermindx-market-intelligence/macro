@@ -1,0 +1,2 @@
+::error title=reference-integrity::missing-registry-file: data/product_experience/page_registry.json — the compiled page registry is missing — its silent disappearance must not silently disarm the L9 coupling rule (RIG §8 L9)
+reference-integrity: 1 finding(s) across 11 artifact set(s)

@@ -1,0 +1,782 @@
+{
+  "recorded_at": "2026-10-22T05:10:21.144213+00:00",
+  "expected_head": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "review": {
+    "recorded_at": "2026-10-22T05:10:17.566321+00:00",
+    "reviewer": "/root/intl_shell_acceptance_review",
+    "verdict": "PASS for exact corrected source; runtime acceptance conditional",
+    "authored_return": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/PRINCIPAL_CORRECTED_SOURCE_REVIEW.md",
+    "authored_return_sha256": "a56c4d3aba20d46b7eb6f95350da75c0e45778fd794b825c0909147b3fadc0f9",
+    "authored_return_bytes": 3347,
+    "delta_sha256": "e169ee1993cd500ea3034d99041cb86839e4023448082e96dada43f08db546d5",
+    "own_execution_claim": false,
+    "original_r3_verdict": "REQUEST_CHANGES / NOT_ACCEPTED",
+    "runtime_boundaries": [
+      "actual-parent saved scroll away from hash heading",
+      "known predecessor parent focus failure remains failed",
+      "later target/bubble cancellation unproved"
+    ]
+  },
+  "allowed_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+    "research/reference_integrity/intl-country-intelligence-20261020/OWNER_CHECKPOINT.md",
+    "site/shared_shell_bridge.js",
+    "templates/intl_country_cockpit.js",
+    "templates/shared_shell_bridge.js",
+    "tests/intl_country_cockpit_navigation.test.cjs",
+    "tests/js/shared_shell_bridge.test.cjs"
+  ],
+  "allowed_evidence_prefix": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/",
+  "unexpected": [],
+  "changes": [
+    {
+      "status": " M",
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "b9c7feb06f5f76ea9fbab5707a770e8b46adaaa6797ef28051a060ad2f7e40fa",
+      "bytes": 2031315
+    },
+    {
+      "status": " M",
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "sha256": "eca8e99537efb4d53fe857d07946d9783ff22c740878d68d507be996fbc5faa7",
+      "bytes": 39961
+    },
+    {
+      "status": " M",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/OWNER_CHECKPOINT.md",
+      "sha256": "c223b4d6772948f39e1fa20fa96752dea066e93e533b5efb74134e34bf997430",
+      "bytes": 17610
+    },
+    {
+      "status": " M",
+      "path": "site/shared_shell_bridge.js",
+      "sha256": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+      "bytes": 54454
+    },
+    {
+      "status": " M",
+      "path": "templates/intl_country_cockpit.js",
+      "sha256": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042",
+      "bytes": 13841
+    },
+    {
+      "status": " M",
+      "path": "templates/shared_shell_bridge.js",
+      "sha256": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+      "bytes": 54454
+    },
+    {
+      "status": " M",
+      "path": "tests/js/shared_shell_bridge.test.cjs",
+      "sha256": "c6641ae09c5fdf4e131be0c4b2104410d916c70ccc6c75618d53b287c8de7aa3",
+      "bytes": 98051
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/CHECKPOINT.md",
+      "sha256": "fefdf6569e3e0caa2f6275631edc5472679f9ccdd695d4ddf7147a0d99704df4",
+      "bytes": 7019
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/CI_ENROLLMENT.json",
+      "sha256": "ad4e123d888069f518becf7cf110268c8a97047fc11365e531946da7c81741a8",
+      "bytes": 631
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/CI_PREDECESSOR_RETRY.json",
+      "sha256": "3ad8776d5c506a78154c03ced64ec0e07278ea1e95cf531272f18110b23f1537",
+      "bytes": 708
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/CI_PREDECESSOR_TIMEOUT.json",
+      "sha256": "75c234f2e2b00ce0ee0703496b953478699ef8f3d9bb710b60daf8320a2ead66",
+      "bytes": 1137
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/MAIN_CONFLICT_PREFLIGHT.json",
+      "sha256": "ebc4d1d73b8a1fa59162d1401615c92afaf81f0585df65eaabfdbdff9f3c3358",
+      "bytes": 288
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/MAIN_PRECOMMIT_READBACK.json",
+      "sha256": "35f7809b1f132c389c3dbd2e571c0ba7816b527ef664a2bf1aaabadce4c8be7e",
+      "bytes": 418167
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/OWNER_SUPERSESSION.md",
+      "sha256": "2e5bcd56991c24f70b8db5e97802e6cf2d1d21c9fd321a14c7f611c7da26370b",
+      "bytes": 2941
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/PARENT_FOCUS_BASELINE.md",
+      "sha256": "7ae5395d1a4a8f001e4999b09ff3f77396364d4108e3fd1364f49cf02543fb82",
+      "bytes": 2015
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/PARENT_FOCUS_FOLLOWUP.md",
+      "sha256": "aa86a4e764dfa3d190b02bad830ba7683938b291258ad21874ed6b5ef848626a",
+      "bytes": 3070
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/PRINCIPAL_CORRECTED_SOURCE_REVIEW.json",
+      "sha256": "b3ab2930b0e49c71a30af20c8dde70a8413031254e1139789f06606dd7408d7b",
+      "bytes": 843
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/PRINCIPAL_CORRECTED_SOURCE_REVIEW.md",
+      "sha256": "a56c4d3aba20d46b7eb6f95350da75c0e45778fd794b825c0909147b3fadc0f9",
+      "bytes": 3347
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/R3_INTEGRATION.json",
+      "sha256": "aded222fe2e75f18e2c0e247868829e7521798bb466eee342c1791044ec7249b",
+      "bytes": 1017
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.cjs",
+      "sha256": "c517b77e349f0722fffe90d0662766341dbb7d6baca2eb6e90b4538046657c62",
+      "bytes": 16338
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.log",
+      "sha256": "a3b31351d3db0e7fdfb73b7597b1c3c119938be6dd1176bc17c583678ee7486f",
+      "bytes": 2525
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES_DERIVATION.json",
+      "sha256": "66650bfae9de1d0f4f1925902a4dcb632f4a11502ce3becafc8bfe9b71d978c7",
+      "bytes": 848
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES_RESULT.json",
+      "sha256": "d28a0661e5fdfece8c3ff56a6e2b6ed9a76037443f94028bee6e37a512338a3a",
+      "bytes": 812
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_REVIEW_CORRECTION.diff",
+      "sha256": "e169ee1993cd500ea3034d99041cb86839e4023448082e96dada43f08db546d5",
+      "bytes": 21756
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_REVIEW_CORRECTION.json",
+      "sha256": "4af4d2e26fc8f6a255a2052d835c1f91092a2472a636e3ef7e6aea5ab7e335f8",
+      "bytes": 2058
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_REVIEW_CORRECTION_PLAN.md",
+      "sha256": "e8e7f8cdaef32b5bcee921774bfd02bd0fa96837674a4c9157da107c1a152aba",
+      "bytes": 2980
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/SCOPE_REVISION_R3.md",
+      "sha256": "57d9a02c34681d9f9a4b3e667f3f4a50dffc07e0498aaf287f0e64d39d2cd260",
+      "bytes": 4305
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/STANDALONE_PROOF_DERIVATION.json",
+      "sha256": "883e464381ba4929af10c79b2444bcffd56ee07bd4b521b2f6747d2db23ce2e6",
+      "bytes": 1312
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_COMMISSION.json",
+      "sha256": "3a99a018977df10b1880d84ea33a99a8b966f58c93e0bbeaef44038b8de384a5",
+      "bytes": 2631
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_COMMISSION_R3.json",
+      "sha256": "696987d828871ea4013818d9c6ee126f51bc1df2e566b6839eb2ea7c92da9931",
+      "bytes": 2374
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_PACKET.md",
+      "sha256": "f5c2e42f6ef544410dc9feaff515a888a989e813f4294a9ed256d10e354a597b",
+      "bytes": 12563
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_PACKET_R3.md",
+      "sha256": "6cb78b1140dcf7c49faa5f0a817159a06863f23a268e6fac550b223e6967d758",
+      "bytes": 13293
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_PATCH_R3.diff",
+      "sha256": "c836819a48b4c6057ce0e2bbeae27686dfe713e4a25db8dc798e25cdf50f8636",
+      "bytes": 73843
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_RETURN_R2.md",
+      "sha256": "2d524f4c15390d514d65e705d2a7724639e181eb8781f200e0b9cfe175575686",
+      "bytes": 35482
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_RETURN_R2_RECEIPT.json",
+      "sha256": "a420db09ffa4038f426aac26684a2055d06c62541ca4eb91af256cb2b03d0fcb",
+      "bytes": 743
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_RETURN_R3.md",
+      "sha256": "7f4edfe64ee1e9bec2f768801709b32d10e165267f79f430b165a88df8d9dbb5",
+      "bytes": 82315
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/WORKER_RETURN_R3_RECEIPT.json",
+      "sha256": "520cdca01e27cc28318c3af968e386c01e97840e9b9b1b549481e0ca8fb808d7",
+      "bytes": 2338
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/1440-en-dark-tools.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/child.log",
+      "sha256": "f0045bb3f4f54320cbac444eceb171b86ac99d0480d8e4692c8db6c676dcc3fe",
+      "bytes": 8529
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/driver.log",
+      "sha256": "ba6941f92b6a746bfae4298a95957898a92c09a08ceaf409b63a38fe14dfc062",
+      "bytes": 1918
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/driver_execution.json",
+      "sha256": "c082b39869573f7dbed27ed26d161dc63ff57b3110c20e293ec9334b439e590b",
+      "bytes": 998
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/observation.json",
+      "sha256": "6cb9baa758c3f2aa85c5383a832311714bcfef7c58e063eb10b98f810f2a8d62",
+      "bytes": 14270
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/parent.log",
+      "sha256": "6b42ef96cba13484986f20e1052042e1c2d483ef13e7beaf98efb97230591280",
+      "bytes": 1813
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/qualification_http.json",
+      "sha256": "4796e8e644a80aed635e07d0921c9a2b37ddc74282cfbc7d3e2a37f96fb84573",
+      "bytes": 756
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/runtime.json",
+      "sha256": "200ab2dc8ea1a7216c98d1b509dbee4e4c50f05b666c4a0993aba532dcefe090",
+      "bytes": 2007
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/shutdown.json",
+      "sha256": "0278f98e333317e722874b21cb239605fc7a1d41f407e5d3ed0430880b87446c",
+      "bytes": 244
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent/verify_actual_parent_v1.cjs",
+      "sha256": "1ebddda4779f49edf180ade24fd41060db35987d30acee93ac7fe219a5211991",
+      "bytes": 15039
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/1440-en-dark-nested.png",
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7",
+      "bytes": 192266
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/1440-en-dark-query-nested.png",
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7",
+      "bytes": 192266
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/1440-en-dark-query-tools.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/1440-en-dark-tools.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/child.log",
+      "sha256": "f49345a3645aa5f6a015d7249441e0fddfd40e2353d75cf99d2a1c65df3233a6",
+      "bytes": 7100
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/driver.log",
+      "sha256": "01b98eed8bad77760e3cd2724f0b43070d66c6d1a5107910f14f65b2cfa950f5",
+      "bytes": 890
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/driver_execution.json",
+      "sha256": "c0de44e1ade0bfdafb63e449f7f2108e42c928f13a4e7dc585402d9ef0124f03",
+      "bytes": 1442
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/observation.json",
+      "sha256": "276531a9b5d45027bb8f9b385ba20baf64a836594353dd517b36375cef2e1817",
+      "bytes": 90102
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/parent.log",
+      "sha256": "012a2588b5a53769835d28de64408fd916ab9da3089e9eb6795494010c7ceb6c",
+      "bytes": 1677
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/runtime.json",
+      "sha256": "c2cbbe6741cb06de17037ab9e31309c424873104736b462227427227380f6069",
+      "bytes": 2006
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/shutdown.json",
+      "sha256": "7ec1d65e17f129d70889678cab12cb84a46d9e6c527bd8028d4aa25cba5004a8",
+      "bytes": 244
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract/verify_actual_parent_v5.cjs",
+      "sha256": "f2174cb82176a0dac8d64285317f842e821de41154ea2a8693501c8ec25cc426",
+      "bytes": 24972
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/1440-en-dark-nested.png",
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7",
+      "bytes": 192266
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/1440-en-dark-query-nested.png",
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7",
+      "bytes": 192266
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/1440-en-dark-query-tools.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/1440-en-dark-tools.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/child.log",
+      "sha256": "09d8cb84443ab663aeed1145382ea783564d31276a95204c255e81c68f4172b5",
+      "bytes": 7156
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/driver.log",
+      "sha256": "8a2df0613357f69838293e658b290c1403769b25e5829c354a83fc9e7018843e",
+      "bytes": 1143
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/driver_execution.json",
+      "sha256": "60aa33eaaae5d46fc542cd94e472d5fc0276008c6deae61549ded5e9c1dd3c8f",
+      "bytes": 1448
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/observation.json",
+      "sha256": "1b7058501d8a454250abbe497f1b2d281416560551136113451fe8a4d62d97b6",
+      "bytes": 121942
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/parent.log",
+      "sha256": "b342278ec42847abb40b2cc67e8de6202e3dfdd1606e0ee23777699cd98446e8",
+      "bytes": 1731
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/runtime.json",
+      "sha256": "629390f999543b64a9cdf4fa65a4efdf34ff47769f8ba0446b101d6e5615632e",
+      "bytes": 2006
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/shutdown.json",
+      "sha256": "47c26c799fd5dcec8f5ea24ba00e9b0d7a982e17f08929fdb364e27c75272ce4",
+      "bytes": 244
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_contract_v6/verify_actual_parent_v6.cjs",
+      "sha256": "a2887a29058896a48e92525aa84042c5b2ddaf8dc1b0786ad6d9200d272a690b",
+      "bytes": 28415
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/1440-en-dark-nested.png",
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7",
+      "bytes": 192266
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/1440-en-dark-tools.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/child.log",
+      "sha256": "5e862ba9e3d39737184bdfe4aa61758c62d0d47dce6124ed9b6e978f490b330f",
+      "bytes": 3394
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/driver.log",
+      "sha256": "5e8b7f6345ae7d7a5c512ace858e24341220f4695279b51c9dc589f0ed04489f",
+      "bytes": 781
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/driver_execution.json",
+      "sha256": "573b69674d7e332e3ca443eced77469f02c523d233e89997f2604c7d86ef5558",
+      "bytes": 1610
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/observation.json",
+      "sha256": "64d37afa6651705e5ff71a4870fe60611ab214ff4a87eeb5ebcf26a24d6f45e6",
+      "bytes": 187189
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/parent.log",
+      "sha256": "92131ff0c12e17100720b23be01573d019379303eb7441d1fdda520ad40021c3",
+      "bytes": 945
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/runtime.json",
+      "sha256": "ea1dc0698f295809ceff15212d2aab818360546f3d6eeb6fef5b11c8a2710b7e",
+      "bytes": 2007
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/shutdown.json",
+      "sha256": "74fb58888444cc3e140b631928f3d3d77de21852ac01336fab343b8e470fbbdf",
+      "bytes": 244
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/supervisor.log",
+      "sha256": "403469e88ebb169cef426a75dced1cc05c29d9f081732ef19ef2467993eefbcb",
+      "bytes": 505
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/verify_actual_parent_v7.cjs",
+      "sha256": "6eb5f118cdd7a64ba00465030b2ef12e04268c01e0af71793570e6f7b320e6c6",
+      "bytes": 32696
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run2/1440-en-dark-nested.png",
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7",
+      "bytes": 192266
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run2/1440-en-dark-tools.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run2/driver.log",
+      "sha256": "7d32b435d8beae5c017813a6fca9f09c3bc31714464198df531ce149eed583d7",
+      "bytes": 1341
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run2/driver_execution.json",
+      "sha256": "110ff25ad6b4c3f4227baae5887a37c9235a6a960f57fd45fda80a8123b17377",
+      "bytes": 1043
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run2/observation.json",
+      "sha256": "6a3e730c936bcc5bb58380d84b3740dfe2275e9887564362e94c1d51a8de458d",
+      "bytes": 28981
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run2/verify_actual_parent_v2.cjs",
+      "sha256": "5478e445e7ce9c1100da5c2b384cb33c277c0c03ebf544e9e62d43b716b69166",
+      "bytes": 16375
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run3/1440-en-dark-nested.png",
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7",
+      "bytes": 192266
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run3/1440-en-dark-tools.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run3/driver.log",
+      "sha256": "76b765e7eb897efd4b02c8b21283e43fcf21e8a1498016c7fa5a9c7fbe5bb06b",
+      "bytes": 531
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run3/driver_execution.json",
+      "sha256": "debf123501866acf961da03d2bf4907ece6c52542756a94b854f102d59b99c10",
+      "bytes": 1043
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run3/observation.json",
+      "sha256": "2277fb8ca50ba9fdcd5ba703f54733214baf3f3ad6b03106c2c3ed800e6e3495",
+      "bytes": 33027
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run3/verify_actual_parent_v3.cjs",
+      "sha256": "d6b71f75b7b159c1adead4df6e4b91c46810d3979b8c5a54ba22b97f457574f6",
+      "bytes": 16354
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/build_tools_runtime.py",
+      "sha256": "5c2e0de5ee77bd691a6d01b3c148f4d395d6216c5da175cd2819e71d37aaf79d",
+      "bytes": 5653
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/compare_country_build.py",
+      "sha256": "aa9ea5ffc737a52b043eb702ec40d7666c320dc8a3ba9e4359986444cbd5aedd",
+      "bytes": 3171
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/corrected_navigation.log",
+      "sha256": "d149930912a53776d770b5d3f885a7575882d140eebdf30c713cfa92c96ee32d",
+      "bytes": 4216
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs",
+      "sha256": "2c206249328cbfebf9b0143b51bc075d8b2508622ee547565ffe24772deea7e5",
+      "bytes": 42695
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.log",
+      "sha256": "544c19e389b4c6cbfa3297b5f94641aed520143442bcbd47356272bff45d5a49",
+      "bytes": 5208
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/receipt.json",
+      "sha256": "c09156d8f64f432f03be61946b764faaaf91f1738fabcb38777951f4b35237cd",
+      "bytes": 2829
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/rejected_r3_intl_country_cockpit.js",
+      "sha256": "0369cf148ef3a3994967945ca1893563d1975a1c8d3a24a08ded3ecd830c0838",
+      "bytes": 13505
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/unchanged_root_probes.log",
+      "sha256": "7974099348361fb335dde1537f0568879b8bced0da4286bd9ba4aceb425879ea",
+      "bytes": 554
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_composed/ci_manifest.log",
+      "sha256": "0c772d6ae3551f46ac106d5cb44e54199d83b33b867d16a9c263559fbe2d0d0a",
+      "bytes": 3747
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_composed/international_browser.log",
+      "sha256": "20eb334e421dc6e8641cf815ec6b9895637c7c44602ecffe309101174d8d5751",
+      "bytes": 43665
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_composed/receipt.json",
+      "sha256": "8a314663084674eda960cbfd990e7686082f1054a42043261d6950e49a7bfa10",
+      "bytes": 5248
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_composed/shared_bridge_and_adapters.log",
+      "sha256": "439cffb20dff421d11ade9df381950c87b0fb95897e25d1267912057787ab525",
+      "bytes": 43817
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_composed/template_site_sync.log",
+      "sha256": "6449780c512785c0926e7ad0509729aafa8053afc719f4f3f314e62321d8c4da",
+      "bytes": 44
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_integrated/ci_manifest.log",
+      "sha256": "0c772d6ae3551f46ac106d5cb44e54199d83b33b867d16a9c263559fbe2d0d0a",
+      "bytes": 3747
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_integrated/international_browser.log",
+      "sha256": "d46501d806de4df92f78d0f117bef72c4688459986079bdd03bca70aa50e6210",
+      "bytes": 18750
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_integrated/receipt.json",
+      "sha256": "5e12e875ae7bb13c54e37e0af96f16d3fae6f80cfdfa7b9aeeaa5d4e20ed6bb9",
+      "bytes": 4889
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_integrated/run_tools_regressions.py",
+      "sha256": "aded15cb773d8bb2152d41f31b753e314f0284aee43a1950c007dc539fdfc4b4",
+      "bytes": 4225
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_integrated/shared_bridge_and_adapters.log",
+      "sha256": "abe40d9410f4bc0544f0578c8ce4d732c6df007435ec4250166d78c419aa5562",
+      "bytes": 18513
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_integrated/template_site_sync.log",
+      "sha256": "6449780c512785c0926e7ad0509729aafa8053afc719f4f3f314e62321d8c4da",
+      "bytes": 44
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/run_actual_parent_proof.py",
+      "sha256": "f07a91d20c55ea0d198094ce9f572ccca87372767c709529e791d46dfbca6a6c",
+      "bytes": 3421
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/run_repository_guards.py",
+      "sha256": "af94abffa13c38aa2ed135a975be0b1ee519f8601ee82272652706b6b8b59c6e",
+      "bytes": 3678
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/run_tools_regressions.py",
+      "sha256": "b7a27948460e44f740cad4a77ac8753b21f4827b25e499fc61f4e56471b2dd65",
+      "bytes": 4288
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/serve_actual_parent.py",
+      "sha256": "55d509c10b1f75c2783f0fa291cfec2360d8ab7711a1334e6c9fb8fd3123de5c",
+      "bytes": 4455
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_actual_parent.cjs",
+      "sha256": "c281eab40c4715ff86583c43377c63c7ff425cd86d2bacab44df7c2e30c60cf8",
+      "bytes": 33726
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_standalone_country_history.py",
+      "sha256": "0620bd06f42f193c834d5022e2f8a9fb44a11e1cde0e648fa93a62fe3cf5303d",
+      "bytes": 6143
+    },
+    {
+      "status": "??",
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_standalone_toolbar_landings.py",
+      "sha256": "489021987f18862c190a2323d7518bc6f02affc865c916cb1518d8ddf9299144",
+      "bytes": 6028
+    },
+    {
+      "status": "??",
+      "path": "tests/intl_country_cockpit_navigation.test.cjs",
+      "sha256": "e5ce4d082e182986931a3d68a6ca6d49ca4e36227df9d4e21cdbdc2064b37f20",
+      "bytes": 42626
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/agentos.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "output": "::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/symbol_directory/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/openfigi/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/revisions/expectation_observations.parquet' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/revisions/expectation_attempts.parquet' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-CAPITAL-STRUCTURE-INTELLIGENCE-V2.md: [phantom-owns-path] owns_paths entry 'data/capital_structure/' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_F0_ARCHITECTURE_AND_FABLE01_COMMISSION_2026-08-22.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_F0_CURRENT_STATE_AMENDMENT_2026-08-22.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_A0_TOKEN_ISOLATION_FALSIFIER_2026-08-23.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/commission_19_fable_masterplan/2026-10-11/FABLE_START_HERE.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/commission_19_fable_masterplan/2026-10-11/EFFECTS_AND_CONTINUITY.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/commission_19_fable_masterplan/2026-10-11/RESEARCH_MANIFEST.json' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/COMMISSION_19_DATA_INTELLIGENCE_CONTINUATION_HANDOFF_2026_10_11.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/C19_WP21_P0_DECISION_2026_10_17.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/C19_WP33_FRONTIER_2026_10_17.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/C19_WP33_CLOSURE_2026_10_19.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/C19_WP18_FIELD_MAPPING_2026_10_19.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'mastermind:research/C19_G12_TRACE_EVIDENCE_2026_10_19.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'mastermind:research/commission_19_fable_masterplan/**' has no existing base 'research/commission_19_fable_masterplan' in repo 'mastermind'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-CONSUMER-CYCLICAL-V1.md: [phantom-owns-path] owns_paths entry 'data/sector_intelligence/fixtures/consumer_cyclical_intelligence_read_model.v1.valid.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md: [phantom-owns-path] owns_paths entry 'engine/earnings_narrative/private_economic_stage.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md: [phantom-owns-path] owns_paths entry 'templates/earnings_wire/earnings-economic.js' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md: [phantom-owns-path] owns_paths entry 'templates/earnings_wire/_economic_dossier.html.j2' does not exist in repo 'macro'\n::warning title=agentos-cause-without-blocked::agentos/workstreams/WS-CRYPTO-INTELLIGENCE.md: [cause-without-blocked] blocked_by is set but status is 'active'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-CRYPTO-INTELLIGENCE.md: [phantom-artifact] artifacts entry 'verify_shots/p0a_btc_decision/' does not exist in repo 'macro'\n::warning title=agentos-active-but-complete::agentos/workstreams/WS-CYCLE-PATTERN-ISSUER-MECHANISM.md: [active-but-complete] status is 'active' but every wave is done/dropped\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-DATA-OS-COMPLETION.md: [phantom-owns-path] owns_paths entry 'tests/test_dataos_coverage.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-DATA-OS-COMPLETION.md: [phantom-owns-path] owns_paths entry 'tests/test_dataos_quality_inspector.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0G_CONSOLIDATED_V1_CONTRACT_2026-08-30.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0_ARCHITECTURE_2026-08-30.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0A_CONCURRENT_DEMAND_AMENDMENT_2026-08-30.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0B_PORTFOLIO_CANARY_AND_INPUT_GAPS_2026-08-30.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0C_PARTIAL_ORDER_AND_EXPLANATION_LAW_2026-08-30.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0D_COST_OF_DELAY_LAW_2026-08-30.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0E_POINT_IN_TIME_LEARNING_AND_PROMOTION_LAW_2026-08-30.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md: [phantom-artifact] artifacts entry 'mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0F_AUTHORITY_TARGET_SERVICEABILITY_LAW_2026-08-30.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-AUTONOMY-V1-CLOSURE.md: [phantom-artifact] artifacts entry 'research/MASTERMIND_EXECUTIVE_AUTONOMY_V1_CLOSURE_2026-08-25.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-EXECUTIVE-AUTONOMY-V1-CLOSURE.md: [phantom-artifact] artifacts entry 'research/EXECUTIVE_AUTONOMY_V1_CLOSURE_CONTINUATION_HANDOFF_2026-10-03.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-EXECUTIVE-AUTONOMY-V1-CLOSURE.md: [phantom-owns-path] owns_paths entry 'research/EXECUTIVE_AUTONOMY_V1_CLOSURE_CONTINUATION_HANDOFF_2026-10-03.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md: [phantom-artifact] artifacts entry 'research/financial_intelligence_fabric/e2e_20261011/' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md: [phantom-artifact] artifacts entry 'research/financial_intelligence_fabric/e2e_20261011/MASTERPLAN.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md: [phantom-artifact] artifacts entry 'research/financial_intelligence_fabric/e2e_20261011/FABLE_HANDOFF.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md: [phantom-artifact] artifacts entry 'research/financial_intelligence_fabric/e2e_20261011/TASK_GRAPH.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md: [phantom-artifact] artifacts entry 'research/financial_intelligence_fabric/e2e_20261011/ACCEPTANCE_MATRIX.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-FLOW-OBSERVATORY-V2.md: [phantom-owns-path] owns_paths entry 'data/flow_observatory/' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-GLOBAL-LIQUIDITY-TRANSMISSION.md: [phantom-artifact] artifacts entry 'data/global_liquidity_transmission/state_history.parquet' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-GLOBAL-LIQUIDITY-TRANSMISSION.md: [phantom-artifact] artifacts entry 'data/global_liquidity_transmission/factor_comparison_btc_4w.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GLOBAL-LIQUIDITY-TRANSMISSION.md: [phantom-owns-path] owns_paths entry 'data/global_liquidity_transmission/**' has no existing base 'data/global_liquidity_transmission' in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'engine/sector_intelligence/finance_private.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'app/finance_intelligence.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/test_finance_owner_preservation.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/test_finance_private_publication.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/js/finance_intelligence.test.mjs' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'engine/company_intelligence/industrials_profiles.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'engine/market_ontology/industrials_theme_research.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'contracts/company_intelligence/financial_dossier.v1.schema.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-SEMICONDUCTORS.md: [phantom-owns-path] owns_paths entry 'engine/market_ontology/theme_research_registry.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-SEMICONDUCTORS.md: [phantom-owns-path] owns_paths entry 'tests/test_theme_research_registry.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GMI-THEME-GRAPH.md: [phantom-owns-path] owns_paths entry 'data/theme_graph/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'site/live/risk_envelope.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'templates/risk_envelope/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/test_risk_envelope' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/handoffs/GREY-DEER-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'research/LEADERSHIP_ROTATION_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/handoffs/LEADERSHIP-ROTATION-INTELLIGENCE-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-LIVE-ENTRY-RADAR.md: [phantom-owns-path] owns_paths entry 'scripts/entry_radar_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-LIVE-ENTRY-RADAR.md: [phantom-owns-path] owns_paths entry 'research/LIVE_ENTRY_RADAR_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-LIVE-ENTRY-RADAR.md: [phantom-owns-path] owns_paths entry 'templates/entry_radar.html.j2' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-LIVE-ENTRY-RADAR.md: [phantom-owns-path] owns_paths entry 'site/entry_radar.html' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-LIVE-ENTRY-RADAR.md: [phantom-owns-path] owns_paths entry 'data/entry_radar/' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md: [phantom-artifact] artifacts entry 'research/mastermind_ai_flagship/ANALYTICAL_REASONING_CONTRACT_2026-09-19.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md: [phantom-artifact] artifacts entry 'research/mastermind_ai_flagship/FAST_HARNESS_LATENCY_AND_TOOL_VISIBILITY_2026-09-19.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md: [phantom-artifact] artifacts entry 'research/mastermind_ai_flagship/PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md: [phantom-artifact] artifacts entry 'research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md: [phantom-artifact] artifacts entry 'research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md: [phantom-owns-path] owns_paths entry 'research/mastermind_ai_flagship/' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md: [phantom-artifact] artifacts entry 'data/flow_signals/gate.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md: [phantom-artifact] artifacts entry 'data/options_signal_campaign/checkpoint.json' does not exist in repo 'macro'\n::warning title=agentos-active-but-complete::agentos/workstreams/WS-OPTIONS-CONTEXT-AUDIT-PREREG-V2.md: [active-but-complete] status is 'active' but every wave is done/dropped\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md: [phantom-artifact] artifacts entry 'mastermind:integrations/session_bridge/AGENTOS_SESSION_START.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md: [phantom-owns-path] owns_paths entry 'mastermind:integrations/session_bridge/fabric_stop_preflight.py' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md: [phantom-owns-path] owns_paths entry 'mastermind:integrations/session_bridge/agentos_session_start.py' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md: [phantom-owns-path] owns_paths entry 'mastermind:integrations/session_bridge/AGENTOS_SESSION_START.md' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md: [phantom-owns-path] owns_paths entry 'mastermind:tests/test_fabric_stop_preflight.py' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md: [phantom-owns-path] owns_paths entry 'mastermind:tests/test_agentos_session_start.py' does not exist in repo 'mastermind'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-PROPHET-REGIME-TIMEFRAME-RESEARCH.md: [phantom-owns-path] owns_paths entry 'agentos/handoffs/PROPHET-REGIME-INDICATOR-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md: [phantom-owns-path] owns_paths entry 'data/us_prophet_rank/episode_inputs/turn_watch/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md: [phantom-owns-path] owns_paths entry 'data/us_prophet_rank/episodes/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-RATES-INFLATION-COMMAND.md: [phantom-owns-path] owns_paths entry 'data/release_forecast/**' has no existing base 'data/release_forecast' in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-RATES-INFLATION-COMMAND.md: [phantom-owns-path] owns_paths entry 'data/rates_command/**' has no existing base 'data/rates_command' in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-RATES-INFLATION-COMMAND.md: [phantom-owns-path] owns_paths entry 'data/options_surface/**' has no existing base 'data/options_surface' in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-RATES-INFLATION-COMMAND.md: [phantom-owns-path] owns_paths entry 'data/transmission/**' has no existing base 'data/transmission' in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-STOCK-IDENTITY.md: [phantom-artifact] artifacts entry 'data/stock_identity/amendments/w1a1_gold_wrong_issuer.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-STOCK-IDENTITY.md: [phantom-owns-path] owns_paths entry 'scripts/stock_identity_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-STOCK-IDENTITY.md: [phantom-owns-path] owns_paths entry 'data/stock_identity/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-STOCK-IDENTITY.md: [phantom-owns-path] owns_paths entry 'research/STOCK_IDENTITY_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'research/TECHNICAL_OPPORTUNITY_INTELLIGENCE_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'research/technical_opportunity/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'scripts/research/validate_toi_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'scripts/research/run_toi_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/test_toi_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/decisions/DEC-TECHNICAL-OPPORTUNITY-INTELLIGENCE-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/discoveries/DSC-TOI-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/handoffs/TECHNICAL-OPPORTUNITY-INTELLIGENCE-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'scripts/research/temporal_scale/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'scripts/research/run_temporal_scale_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/test_temporal_scale_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/decisions/DEC-TEMPORAL-GRAIN-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/discoveries/DSC-TEMPORAL-GRAIN-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/handoffs/TEMPORAL-GRAIN-INTELLIGENCE-' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-TOP-ANATOMY.md: [phantom-artifact] artifacts entry 'data/research/top_anatomy_oot_receipt_2026-09-02.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-TOP-ANATOMY.md: [phantom-artifact] artifacts entry 'data/top_maturation/latest.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TOP-ANATOMY.md: [phantom-owns-path] owns_paths entry 'scripts/research_top_anatomy_' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TOP-ANATOMY.md: [phantom-owns-path] owns_paths entry 'reports/top-anatomy-' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TOP-ANATOMY.md: [phantom-owns-path] owns_paths entry 'data/top_anatomy/' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TOP-ANATOMY.md: [phantom-owns-path] owns_paths entry 'data/top_maturation/' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-artifact] artifacts entry 'research/TREND_PERSISTENCE_READOUT.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-artifact] artifacts entry 'research/data/trend_persistence_b2_result.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-artifact] artifacts entry 'research/TREND_PERSISTENCE_PREREG_C1.md' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-artifact] artifacts entry 'research/trend_persistence_group.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-artifact] artifacts entry 'research/data/trend_persistence_c1_attempt.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-artifact::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-artifact] artifacts entry 'research/data/trend_persistence_c1_result.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-owns-path] owns_paths entry 'brain/trend_persistence.py' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-owns-path] owns_paths entry 'data/breadth/sp1500_pit_sectors.parquet' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-owns-path] owns_paths entry 'data/breadth/_sp1500_pit_sectors_coverage.json' does not exist in repo 'macro'\n::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-TREND-PERSISTENCE.md: [phantom-owns-path] owns_paths entry 'data/breadth/_sp1500_pit_sic_cache.json' does not exist in repo 'macro'\n::warning title=agentos-review-overdue::agentos/decisions/DEC-AGENTOS-HOME-IS-MACRO.md: [review-overdue] review_by 2026-10-12 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-AGENTOS-NO-TASK-STORE.md: [review-overdue] review_by 2026-09-12 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-AGENTOS-START-NEXT-VS-AGENDA.md: [review-overdue] review_by 2026-09-12 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-BIOCATALYST-P1-FIRST-VERTICAL-MILESTONE-RADAR.md: [review-overdue] review_by 2026-08-27 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CHAIRMAN-OVERRIDE-CLAUDE-META-CEO-REGIME-2026-09-06.md: [review-overdue] review_by 2026-09-13 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CHINA-DEEP-DASHBOARD-IS-CANONICAL-ARCHETYPE-D-IS-INCUBATION.md: [review-overdue] review_by 2026-10-19 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CHINA-NATIVE-COLLECTORS-IS-CODE-GATED.md: [review-overdue] review_by 2026-09-21 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-CLOSED-BUNDLE-ATOMIC-PERSISTENCE.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-EVIDENCE-IDENTITY-OCCURRENCE-BYTES.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-FIRST-KNOWN-AT-IS-CANONICAL-RETENTION-CLOCK.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-GIT-REMAINS-GENERATION-SELECTOR.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-IDENTITY-DUAL-READ.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-LIVE-TAIL-SEPARATE-FROM-BACKLOG.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-SIX-QUESTION-ONTOLOGY.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-W2A-CLASS-RESERVES-AND-HORIZON-FRESHNESS.md: [review-overdue] review_by 2026-08-28 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-W2B-500-LIVE-ENVELOPE.md: [review-overdue] review_by 2026-08-30 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-W2C-EXACT-DEPENDENCY-INCREMENTAL-DOCUMENT-TERMS.md: [review-overdue] review_by 2026-09-01 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-W2D-DUAL-DISCOVERY-CLOCK.md: [review-overdue] review_by 2026-09-01 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-CS-V2-WHOLE-GENERATION-APPEND-ONLY-FENCE.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-D0R-RED-TEAM-ADJUDICATION-2026-08-17.md: [review-overdue] review_by 2026-08-18 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-E3-EVENT-INTELLIGENCE-COMPILER-NOT-SCORER.md: [review-overdue] review_by 2026-08-23 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-F07-VALUATION-SOURCE-IS-SEC-COMPANYFACTS-V1.md: [review-overdue] review_by 2026-10-06 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-FINANCE-EVIDENCE-GRAMMAR-MIRRORS-SHARED-ASSERTION-NEVER-FORKS.md: [review-overdue] review_by 2026-10-08 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE.md: [review-overdue] review_by 2026-10-08 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED.md: [review-overdue] review_by 2026-10-08 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06.md: [review-overdue] review_by 2026-10-20 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md: [review-overdue] review_by 2026-09-13 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-PROPHET-US-PERMANENCE-NET.md: [review-overdue] review_by 2026-09-10 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-PROPHET-V4-THEIA-SOURCE-RIGHTS.md: [review-overdue] review_by 2026-10-01 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-SI-METHOD-LAW-CHANNELS.md: [review-overdue] review_by 2026-09-15 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0B-V1-SOURCE-WINDOW-UNACHIEVABLE.md: [review-overdue] review_by 2026-08-27 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0C-V2-HYBRID-PRICE-ACTIVITY-SCOPE.md: [review-overdue] review_by 2026-08-21 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0C-V2-REST-SINGLE-TICKER-DAILY.md: [review-overdue] review_by 2026-08-21 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0D0-0400Z-SOURCE-SEAL-GO.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-WORKSPACE-SUPERVISION-EXTENDS-EXISTING-AUTONOMY.md: [review-overdue] review_by 2026-09-20 has passed\nagentos: 1928 records (104 workstreams, 516 decisions, 554 discoveries, 754 handoffs) \u2014 0 error(s), 162 warning(s)\n"
+    }
+  ],
+  "receipt_itself_is_additional_owned_evidence": true,
+  "pass": true
+}

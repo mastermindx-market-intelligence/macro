@@ -1,0 +1,40 @@
+........................................................................ [ 49%]
+.......................................F................................ [ 99%]
+.                                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_country_template_has_complete_native_content _______________
+
+    def test_country_template_has_complete_native_content():
+        source=load_country_inputs(ROOT/"data",ROOT)
+        model=build_country_assessments({"records":[record()]},today=TODAY,
+                                      official=source["official"],forecasts=source["forecasts"],
+                                      commentary=source["commentary"], forecast_archive=source["forecast_archive"])
+        env=Environment(loader=FileSystemLoader(ROOT/"templates"))
+        env.globals.update(t=i18n.t,td=i18n.td,tr=i18n.tr)
+        html=env.get_template("intl_country_cockpit.html.j2").render(intl_analysis=model)
+        assert 'id="imc-country-KR"' in html
+        assert "Export strength meets higher rates" in html
+        assert "Country thesis based on" in html
+        assert "3.3" in html and "2.8" in html
+        assert "Inflation path" in html and "Current account" in html
+>       assert "+0.7" in html and "2026-07" in html
+E       assert ('+0.7' in '\n\n\n\n\n<section class="imc" data-im-country-analysis aria-labelledby="imc-title">\n  <header class="imc-masthead">...ass="l-en">Australia</span><span class="l-zh">澳大利亚</span></span></div></article>\n    </div>\n  </section>\n</section>')
+
+tests/test_intl_country_cockpit.py:245: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-af86e9c9-02ad-4c94-86ca-73478a933e5b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-af86e9c9-02ad-4c94-86ca-73478a933e5b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-af86e9c9-02ad-4c94-86ca-73478a933e5b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-af86e9c9-02ad-4c94-86ca-73478a933e5b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_country_cockpit.py::test_country_template_has_complete_native_content
+1 failed, 144 passed, 2 warnings in 3.77s

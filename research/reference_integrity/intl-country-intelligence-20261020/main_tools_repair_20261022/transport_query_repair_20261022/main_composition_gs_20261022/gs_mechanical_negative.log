@@ -1,0 +1,62 @@
+TAP version 13
+# Subtest: GS query composition: transport and unchanged business selection cause no history or navigation writes
+not ok 1 - GS query composition: transport and unchanged business selection cause no history or navigation writes
+  ---
+  duration_ms: 3506.376459
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2289:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + '?view=overview&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group='
+    - ''
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: ''
+  actual: '?view=overview&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group='
+  operator: 'strictEqual'
+  stack: |-
+    withQueryFrames.gs (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2299:14)
+    async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1962:9)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2293:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: GS query composition: rejected business queries are not sanitized by market alignment
+not ok 2 - GS query composition: rejected business queries are not sanitized by market alignment
+  ---
+  duration_ms: 3426.103125
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2356:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    notmarket=JP
+    + actual - expected
+    
+    + '?view=overview&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group='
+    - '?notmarket=JP'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '?notmarket=JP'
+  actual: '?view=overview&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group='
+  operator: 'strictEqual'
+  stack: |-
+    withQueryFrames.gs (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2364:14)
+    async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1962:9)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2360:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7256.588416

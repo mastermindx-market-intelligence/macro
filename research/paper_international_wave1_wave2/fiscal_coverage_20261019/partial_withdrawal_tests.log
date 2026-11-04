@@ -1,0 +1,168 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_ test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn0-Fiscal position-\u8d22\u653f\u72b6\u51b5] _
+
+withdrawn = ('current_account', 'fiscal_balance'), heading = 'Fiscal position'
+heading_zh = '财政状况'
+
+    @pytest.mark.parametrize("withdrawn, heading, heading_zh", [
+        (("current_account", "fiscal_balance"), "Fiscal position", "财政状况"),
+        (("current_account", "government_debt"), "Fiscal position", "财政状况"),
+        (("fiscal_balance",), "External & fiscal position", "外部与财政状况"),
+        (("government_debt",), "External & fiscal position", "外部与财政状况"),
+        (("fiscal_balance", "government_debt"), "External position", "外部状况"),
+    ])
+    def test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures(
+            withdrawn, heading, heading_zh):
+        import re
+        from lib.intl_forecast_vintages import merge_publications, select_publications
+    
+        source = load_country_inputs(ROOT / "data", ROOT)
+        as_of = date(2026, 10, 19)
+        selected = select_publications(source["forecast_archive"], "KR", today=as_of)
+        withdrawals = [{**series, "withdrawn_at": "2026-10-19T23:45:00+00:00",
+                        "withdrawal_source_url": "https://www.imf.org/en/withdrawal"}
+                       for series in selected if series["series_id"] in withdrawn]
+>       assert len(withdrawals) == len(withdrawn)
+E       AssertionError: assert 0 == 2
+E        +  where 0 = len([])
+E        +  and   2 = len(('current_account', 'fiscal_balance'))
+
+tests/test_intl_country_cockpit.py:393: AssertionError
+_ test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn1-Fiscal position-\u8d22\u653f\u72b6\u51b5] _
+
+withdrawn = ('current_account', 'government_debt'), heading = 'Fiscal position'
+heading_zh = '财政状况'
+
+    @pytest.mark.parametrize("withdrawn, heading, heading_zh", [
+        (("current_account", "fiscal_balance"), "Fiscal position", "财政状况"),
+        (("current_account", "government_debt"), "Fiscal position", "财政状况"),
+        (("fiscal_balance",), "External & fiscal position", "外部与财政状况"),
+        (("government_debt",), "External & fiscal position", "外部与财政状况"),
+        (("fiscal_balance", "government_debt"), "External position", "外部状况"),
+    ])
+    def test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures(
+            withdrawn, heading, heading_zh):
+        import re
+        from lib.intl_forecast_vintages import merge_publications, select_publications
+    
+        source = load_country_inputs(ROOT / "data", ROOT)
+        as_of = date(2026, 10, 19)
+        selected = select_publications(source["forecast_archive"], "KR", today=as_of)
+        withdrawals = [{**series, "withdrawn_at": "2026-10-19T23:45:00+00:00",
+                        "withdrawal_source_url": "https://www.imf.org/en/withdrawal"}
+                       for series in selected if series["series_id"] in withdrawn]
+>       assert len(withdrawals) == len(withdrawn)
+E       AssertionError: assert 0 == 2
+E        +  where 0 = len([])
+E        +  and   2 = len(('current_account', 'government_debt'))
+
+tests/test_intl_country_cockpit.py:393: AssertionError
+_ test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn2-External & fiscal position-\u5916\u90e8\u4e0e\u8d22\u653f\u72b6\u51b5] _
+
+withdrawn = ('fiscal_balance',), heading = 'External & fiscal position'
+heading_zh = '外部与财政状况'
+
+    @pytest.mark.parametrize("withdrawn, heading, heading_zh", [
+        (("current_account", "fiscal_balance"), "Fiscal position", "财政状况"),
+        (("current_account", "government_debt"), "Fiscal position", "财政状况"),
+        (("fiscal_balance",), "External & fiscal position", "外部与财政状况"),
+        (("government_debt",), "External & fiscal position", "外部与财政状况"),
+        (("fiscal_balance", "government_debt"), "External position", "外部状况"),
+    ])
+    def test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures(
+            withdrawn, heading, heading_zh):
+        import re
+        from lib.intl_forecast_vintages import merge_publications, select_publications
+    
+        source = load_country_inputs(ROOT / "data", ROOT)
+        as_of = date(2026, 10, 19)
+        selected = select_publications(source["forecast_archive"], "KR", today=as_of)
+        withdrawals = [{**series, "withdrawn_at": "2026-10-19T23:45:00+00:00",
+                        "withdrawal_source_url": "https://www.imf.org/en/withdrawal"}
+                       for series in selected if series["series_id"] in withdrawn]
+>       assert len(withdrawals) == len(withdrawn)
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +  and   1 = len(('fiscal_balance',))
+
+tests/test_intl_country_cockpit.py:393: AssertionError
+_ test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn3-External & fiscal position-\u5916\u90e8\u4e0e\u8d22\u653f\u72b6\u51b5] _
+
+withdrawn = ('government_debt',), heading = 'External & fiscal position'
+heading_zh = '外部与财政状况'
+
+    @pytest.mark.parametrize("withdrawn, heading, heading_zh", [
+        (("current_account", "fiscal_balance"), "Fiscal position", "财政状况"),
+        (("current_account", "government_debt"), "Fiscal position", "财政状况"),
+        (("fiscal_balance",), "External & fiscal position", "外部与财政状况"),
+        (("government_debt",), "External & fiscal position", "外部与财政状况"),
+        (("fiscal_balance", "government_debt"), "External position", "外部状况"),
+    ])
+    def test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures(
+            withdrawn, heading, heading_zh):
+        import re
+        from lib.intl_forecast_vintages import merge_publications, select_publications
+    
+        source = load_country_inputs(ROOT / "data", ROOT)
+        as_of = date(2026, 10, 19)
+        selected = select_publications(source["forecast_archive"], "KR", today=as_of)
+        withdrawals = [{**series, "withdrawn_at": "2026-10-19T23:45:00+00:00",
+                        "withdrawal_source_url": "https://www.imf.org/en/withdrawal"}
+                       for series in selected if series["series_id"] in withdrawn]
+>       assert len(withdrawals) == len(withdrawn)
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +  and   1 = len(('government_debt',))
+
+tests/test_intl_country_cockpit.py:393: AssertionError
+_ test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn4-External position-\u5916\u90e8\u72b6\u51b5] _
+
+withdrawn = ('fiscal_balance', 'government_debt'), heading = 'External position'
+heading_zh = '外部状况'
+
+    @pytest.mark.parametrize("withdrawn, heading, heading_zh", [
+        (("current_account", "fiscal_balance"), "Fiscal position", "财政状况"),
+        (("current_account", "government_debt"), "Fiscal position", "财政状况"),
+        (("fiscal_balance",), "External & fiscal position", "外部与财政状况"),
+        (("government_debt",), "External & fiscal position", "外部与财政状况"),
+        (("fiscal_balance", "government_debt"), "External position", "外部状况"),
+    ])
+    def test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures(
+            withdrawn, heading, heading_zh):
+        import re
+        from lib.intl_forecast_vintages import merge_publications, select_publications
+    
+        source = load_country_inputs(ROOT / "data", ROOT)
+        as_of = date(2026, 10, 19)
+        selected = select_publications(source["forecast_archive"], "KR", today=as_of)
+        withdrawals = [{**series, "withdrawn_at": "2026-10-19T23:45:00+00:00",
+                        "withdrawal_source_url": "https://www.imf.org/en/withdrawal"}
+                       for series in selected if series["series_id"] in withdrawn]
+>       assert len(withdrawals) == len(withdrawn)
+E       AssertionError: assert 0 == 2
+E        +  where 0 = len([])
+E        +  and   2 = len(('fiscal_balance', 'government_debt'))
+
+tests/test_intl_country_cockpit.py:393: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-cbc874d7-7937-4432-9a04-79e310e3b08d/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-cbc874d7-7937-4432-9a04-79e310e3b08d/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-cbc874d7-7937-4432-9a04-79e310e3b08d/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-cbc874d7-7937-4432-9a04-79e310e3b08d/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_country_cockpit.py::test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn0-Fiscal position-\u8d22\u653f\u72b6\u51b5]
+FAILED tests/test_intl_country_cockpit.py::test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn1-Fiscal position-\u8d22\u653f\u72b6\u51b5]
+FAILED tests/test_intl_country_cockpit.py::test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn2-External & fiscal position-\u5916\u90e8\u4e0e\u8d22\u653f\u72b6\u51b5]
+FAILED tests/test_intl_country_cockpit.py::test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn3-External & fiscal position-\u5916\u90e8\u4e0e\u8d22\u653f\u72b6\u51b5]
+FAILED tests/test_intl_country_cockpit.py::test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures[withdrawn4-External position-\u5916\u90e8\u72b6\u51b5]
+5 failed, 47 deselected, 2 warnings in 2.46s

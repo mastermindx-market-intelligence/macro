@@ -1,0 +1,13 @@
+{
+  "schema": "intl.build_input_path_validation.v1",
+  "recorded_at": "2026-10-22T09:09:55.268125+00:00",
+  "build_receipt": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/repair_main6a420261022_build_receipt.json",
+  "original_receipt_sha256": "fb98344c6a12e0a257f52f8dd05767823d96de890b7e1b845cd0708f4a54b2df",
+  "display_field_as_recorded": "../../../production_input_snapshot.json",
+  "actual_input_snapshot": "research/reference_integrity/intl-country-intelligence-20261020/production_input_snapshot.json",
+  "correct_relative_to_receipt": "../../../production_input_snapshot.json",
+  "verified_sha256": "081592644c4f2d425fdde59d7b8e153e4aa214aa00d115ba64b13bd31c145b08",
+  "reason": "The relocated driver records the correct relative snapshot path; explicit absolute input, receipt-relative resolution and all retained input hashes agree.",
+  "execution_change": false,
+  "retained_input_count": 510
+}

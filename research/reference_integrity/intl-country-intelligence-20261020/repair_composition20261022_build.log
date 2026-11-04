@@ -1,0 +1,21 @@
+INFO intl regime: 7 economies, dominant=Stagflation, recession-watch=2, dd-watch=3
+INFO wrote japan.html (JP, score=47)
+INFO wrote south_korea.html (KR, score=36)
+INFO wrote euro_area.html (EZ, score=44)
+INFO wrote united_kingdom.html (GB, score=53)
+INFO wrote india.html (IN, score=33)
+WARNING world_risk: CNY=X missing — CN momentum leg falls back to local terms
+INFO [timing] contagion_links compute: 0.37s
+WARNING smile_decomp skipped: forex latest.json asof='2026-10-17' stale/missing
+INFO [timing] build_intl intl_risk block: 1.56s
+INFO wrote data/intl_risk/latest.json (em_stress=calm, contagion=quiet, vuln_fragile=0)
+INFO wrote data/flow_regime/latest.json (regime=mixed, disc=systemic)
+INFO flow_regime.accrue_history: replaced same-day row for 2026-10-16
+INFO flow_regime.accrue_history: appended 1 new rows (up to 2026-10-19)
+INFO flow_regime.accrue_history: history.parquet now has 8487 rows
+INFO ITR turn engine: 10 states, 10 events, bench_note=None
+WARNING intl library: no universe panel — skipped
+WARNING International EOD evidence withheld; no current qualified returns
+INFO wrote intl.html + intl_stocks.html (7 economies, 0 standouts)
+[timing] DY spillover snapshot: 0.11s (14 series, 52 history points)
+[timing] build_intl intl_risk block: 1.56s

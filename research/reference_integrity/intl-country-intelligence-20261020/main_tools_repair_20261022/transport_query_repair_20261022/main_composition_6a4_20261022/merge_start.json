@@ -1,0 +1,21 @@
+{
+  "schema": "intl.main6a4_normal_merge_start.v1",
+  "at": "2026-10-22T08:51:42.420732+00:00",
+  "parents": [
+    "20d22192613f1f5eb062d85e9aca1b2bb3e48036",
+    "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+  ],
+  "merge_base": "90df0e302637ade26b894aee46141b6a1813a630",
+  "exit_code": 1,
+  "conflicts": [
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+    "site/research_screener.html",
+    "site/theme.css",
+    "templates/theme.css"
+  ],
+  "head_unchanged": true,
+  "merge_head": "6a4c0079d1aec13b08cb554f6f7424b775165d09",
+  "published": false
+}

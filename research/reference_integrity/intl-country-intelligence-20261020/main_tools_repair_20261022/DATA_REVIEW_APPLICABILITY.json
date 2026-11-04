@@ -1,0 +1,208 @@
+{
+  "schema": "intl.data_review_applicability.v1",
+  "recorded_at": "2026-10-22T07:22:37.662633+00:00",
+  "reviewer": "/root/intl_release_gate_review",
+  "reviewed_subject": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+  "current_head": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+  "verbatim_review_sha256": "e83062681609221ac39706a44bbe868fafe1759065faad86579a77c2697ae522",
+  "rows": [
+    {
+      "path": "collectors/intl_prices.py",
+      "review_sha256": "51269d0c848fba48bc4bc502ec694add836a30ff20efdff076801e0f2182f9ce",
+      "exact_subject_sha256": "51269d0c848fba48bc4bc502ec694add836a30ff20efdff076801e0f2182f9ce",
+      "subject_matches": true,
+      "worktree_sha256": "51269d0c848fba48bc4bc502ec694add836a30ff20efdff076801e0f2182f9ce",
+      "worktree_matches": true
+    },
+    {
+      "path": "lib/intl_currency_observation.py",
+      "review_sha256": "0d8f17822dd84e96e65a1c314d63c19c1b5fb0a7fb5c6cbcd155e2c96555e2b4",
+      "exact_subject_sha256": "0d8f17822dd84e96e65a1c314d63c19c1b5fb0a7fb5c6cbcd155e2c96555e2b4",
+      "subject_matches": true,
+      "worktree_sha256": "0d8f17822dd84e96e65a1c314d63c19c1b5fb0a7fb5c6cbcd155e2c96555e2b4",
+      "worktree_matches": true
+    },
+    {
+      "path": "engine/intl_inputs.py",
+      "review_sha256": "705a4fe7c0b0d4e816dfe28f060b446dd0adb5dc0ac84de677cb0b608959ab5b",
+      "exact_subject_sha256": "705a4fe7c0b0d4e816dfe28f060b446dd0adb5dc0ac84de677cb0b608959ab5b",
+      "subject_matches": true,
+      "worktree_sha256": "705a4fe7c0b0d4e816dfe28f060b446dd0adb5dc0ac84de677cb0b608959ab5b",
+      "worktree_matches": true
+    },
+    {
+      "path": "engine/intl_run.py",
+      "review_sha256": "611d106bfbd4159bad79b4f573af89c15e6a3281e55d37dba8512c415ea1f89f",
+      "exact_subject_sha256": "611d106bfbd4159bad79b4f573af89c15e6a3281e55d37dba8512c415ea1f89f",
+      "subject_matches": true,
+      "worktree_sha256": "611d106bfbd4159bad79b4f573af89c15e6a3281e55d37dba8512c415ea1f89f",
+      "worktree_matches": true
+    },
+    {
+      "path": "collectors/base.py",
+      "review_sha256": "2e17b5a2bd0b15d8c99d2bf73113e41429628230337b64e16d03e3a052b49965",
+      "exact_subject_sha256": "2e17b5a2bd0b15d8c99d2bf73113e41429628230337b64e16d03e3a052b49965",
+      "subject_matches": true,
+      "worktree_sha256": "2e17b5a2bd0b15d8c99d2bf73113e41429628230337b64e16d03e3a052b49965",
+      "worktree_matches": true
+    },
+    {
+      "path": "lib/store.py",
+      "review_sha256": "7424b19d2a418d6611c6346b20764a89d6ffe34ad9e6f3a115ec78e6a45b826b",
+      "exact_subject_sha256": "7424b19d2a418d6611c6346b20764a89d6ffe34ad9e6f3a115ec78e6a45b826b",
+      "subject_matches": true,
+      "worktree_sha256": "7424b19d2a418d6611c6346b20764a89d6ffe34ad9e6f3a115ec78e6a45b826b",
+      "worktree_matches": true
+    },
+    {
+      "path": "collectors/intl_country_sources.py",
+      "review_sha256": "9e51a27575659140fed98b7d5cc88d11e1812e8994b7b24c0dab13f1ae82b5c7",
+      "exact_subject_sha256": "9e51a27575659140fed98b7d5cc88d11e1812e8994b7b24c0dab13f1ae82b5c7",
+      "subject_matches": true,
+      "worktree_sha256": "9e51a27575659140fed98b7d5cc88d11e1812e8994b7b24c0dab13f1ae82b5c7",
+      "worktree_matches": true
+    },
+    {
+      "path": "lib/intl_country_inputs.py",
+      "review_sha256": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+      "exact_subject_sha256": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+      "subject_matches": true,
+      "worktree_sha256": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+      "worktree_matches": true
+    },
+    {
+      "path": "lib/intl_forecast_vintages.py",
+      "review_sha256": "78a32fd42b52f1353ca275c5f53536031685ebda42a40e119ce07e8bd4e24d91",
+      "exact_subject_sha256": "78a32fd42b52f1353ca275c5f53536031685ebda42a40e119ce07e8bd4e24d91",
+      "subject_matches": true,
+      "worktree_sha256": "78a32fd42b52f1353ca275c5f53536031685ebda42a40e119ce07e8bd4e24d91",
+      "worktree_matches": true
+    },
+    {
+      "path": "collectors/intl_weo.py",
+      "review_sha256": "18ee3594029a1d17a827de7d491a1bd29b683f840e86def00f239a1745799775",
+      "exact_subject_sha256": "18ee3594029a1d17a827de7d491a1bd29b683f840e86def00f239a1745799775",
+      "subject_matches": true,
+      "worktree_sha256": "18ee3594029a1d17a827de7d491a1bd29b683f840e86def00f239a1745799775",
+      "worktree_matches": true
+    },
+    {
+      "path": "lib/intl_country_outlook.py",
+      "review_sha256": "bb5de24540aeeb8d9229499ad50ab125b5a6b385bc9cd79d1ef6dfe2ada4b914",
+      "exact_subject_sha256": "bb5de24540aeeb8d9229499ad50ab125b5a6b385bc9cd79d1ef6dfe2ada4b914",
+      "subject_matches": true,
+      "worktree_sha256": "bb5de24540aeeb8d9229499ad50ab125b5a6b385bc9cd79d1ef6dfe2ada4b914",
+      "worktree_matches": true
+    },
+    {
+      "path": "collectors/intl_policy_sources.py",
+      "review_sha256": "08e48a54bdfedf006aaad7ded702582368d32cd297bf5e51d3dac11e206c9c84",
+      "exact_subject_sha256": "08e48a54bdfedf006aaad7ded702582368d32cd297bf5e51d3dac11e206c9c84",
+      "subject_matches": true,
+      "worktree_sha256": "08e48a54bdfedf006aaad7ded702582368d32cd297bf5e51d3dac11e206c9c84",
+      "worktree_matches": true
+    },
+    {
+      "path": "collectors/intl_macro.py",
+      "review_sha256": "e2765426a3fd4c235dc546782b0984942e8223b02a6486d1cdf29f377d95abad",
+      "exact_subject_sha256": "e2765426a3fd4c235dc546782b0984942e8223b02a6486d1cdf29f377d95abad",
+      "subject_matches": true,
+      "worktree_sha256": "e2765426a3fd4c235dc546782b0984942e8223b02a6486d1cdf29f377d95abad",
+      "worktree_matches": true
+    },
+    {
+      "path": "lib/intl_policy_evidence.py",
+      "review_sha256": "94d1ea5ae4aa10d2b38a9b446dcf1173cfc7ea5b5afd026a72fbfd5fdb3f1e32",
+      "exact_subject_sha256": "94d1ea5ae4aa10d2b38a9b446dcf1173cfc7ea5b5afd026a72fbfd5fdb3f1e32",
+      "subject_matches": true,
+      "worktree_sha256": "94d1ea5ae4aa10d2b38a9b446dcf1173cfc7ea5b5afd026a72fbfd5fdb3f1e32",
+      "worktree_matches": true
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "review_sha256": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+      "exact_subject_sha256": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+      "subject_matches": true,
+      "worktree_sha256": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+      "worktree_matches": true
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "review_sha256": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+      "exact_subject_sha256": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+      "subject_matches": true,
+      "worktree_sha256": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+      "worktree_matches": true
+    },
+    {
+      "path": "tests/test_intl_build.py",
+      "review_sha256": "52d2d882f862307f76920ff04504ca4c0d34c29fe304dc7e99c7dacac0b563d6",
+      "exact_subject_sha256": "52d2d882f862307f76920ff04504ca4c0d34c29fe304dc7e99c7dacac0b563d6",
+      "subject_matches": true,
+      "worktree_sha256": "52d2d882f862307f76920ff04504ca4c0d34c29fe304dc7e99c7dacac0b563d6",
+      "worktree_matches": true
+    },
+    {
+      "path": "tests/test_intl_currency_observation.py",
+      "review_sha256": "18ca169153f7768a764d834e24de752cb2fa4bd1367f67527f27aa77aa954297",
+      "exact_subject_sha256": "18ca169153f7768a764d834e24de752cb2fa4bd1367f67527f27aa77aa954297",
+      "subject_matches": true,
+      "worktree_sha256": "18ca169153f7768a764d834e24de752cb2fa4bd1367f67527f27aa77aa954297",
+      "worktree_matches": true
+    },
+    {
+      "path": "tests/test_intl_forecast_vintages.py",
+      "review_sha256": "6a8a222c54992d542ed8a7b891d87b1b2b1c0b70685ee2a19251dc33cdcec74c",
+      "exact_subject_sha256": "6a8a222c54992d542ed8a7b891d87b1b2b1c0b70685ee2a19251dc33cdcec74c",
+      "subject_matches": true,
+      "worktree_sha256": "6a8a222c54992d542ed8a7b891d87b1b2b1c0b70685ee2a19251dc33cdcec74c",
+      "worktree_matches": true
+    },
+    {
+      "path": "tests/test_intl_policy_evidence.py",
+      "review_sha256": "d985dfcbd5149cb2a259a3c9f7926ba3d4635df4f45de6afeaeced0ca0bda5c8",
+      "exact_subject_sha256": "d985dfcbd5149cb2a259a3c9f7926ba3d4635df4f45de6afeaeced0ca0bda5c8",
+      "subject_matches": true,
+      "worktree_sha256": "d985dfcbd5149cb2a259a3c9f7926ba3d4635df4f45de6afeaeced0ca0bda5c8",
+      "worktree_matches": true
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "review_sha256": "b9c7feb06f5f76ea9fbab5707a770e8b46adaaa6797ef28051a060ad2f7e40fa",
+      "exact_subject_sha256": "b9c7feb06f5f76ea9fbab5707a770e8b46adaaa6797ef28051a060ad2f7e40fa",
+      "subject_matches": true,
+      "worktree_sha256": "bbf79a8450960b01094011df9fba6509eb0a790d88d638e19201c25ec6e35d79",
+      "worktree_matches": false
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "review_sha256": "dbf8ea2ce1ba906884da95021fed4debcb92247019a5feede4df4a8129ce45ad",
+      "exact_subject_sha256": "dbf8ea2ce1ba906884da95021fed4debcb92247019a5feede4df4a8129ce45ad",
+      "subject_matches": true,
+      "worktree_sha256": "dbf8ea2ce1ba906884da95021fed4debcb92247019a5feede4df4a8129ce45ad",
+      "worktree_matches": true
+    },
+    {
+      "path": "config/site_access.yml",
+      "review_sha256": "e4385c7a281d23530936ec7b77c1db7db46a60d305b5ddd112ab82bbb0116be2",
+      "exact_subject_sha256": "e4385c7a281d23530936ec7b77c1db7db46a60d305b5ddd112ab82bbb0116be2",
+      "subject_matches": true,
+      "worktree_sha256": "e4385c7a281d23530936ec7b77c1db7db46a60d305b5ddd112ab82bbb0116be2",
+      "worktree_matches": true
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "review_sha256": "dab5253ef57fa8797d08fc310db8acf0f95200d940d625795d64bf943a70f22b",
+      "exact_subject_sha256": "dab5253ef57fa8797d08fc310db8acf0f95200d940d625795d64bf943a70f22b",
+      "subject_matches": true,
+      "worktree_sha256": "dab5253ef57fa8797d08fc310db8acf0f95200d940d625795d64bf943a70f22b",
+      "worktree_matches": true
+    }
+  ],
+  "integration_delta": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "integration_delta_evidence": "transport_query_repair_20261022/ci_build_enrollment/edit_receipt.json",
+  "source_findings_applicable": true,
+  "additional_integration_verification": "pending scoped enrollment gate and new-head hosted CI; unchanged data-source verdict is not production acceptance"
+}

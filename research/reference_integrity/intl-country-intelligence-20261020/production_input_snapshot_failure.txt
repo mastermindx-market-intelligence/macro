@@ -1,0 +1,4 @@
+  File "<string>", line 28
+    payload=(json.dumps(manifest,indent=2)+'
+                                           ^
+SyntaxError: unterminated string literal (detected at line 28)

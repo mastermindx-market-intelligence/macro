@@ -1,0 +1,2 @@
+::notice title=reference-integrity::sparse checkout: data/ is not present, skipping the compiled page registry (enforced in CI, where the root exists)
+::notice title=reference-integrity::reference-integrity clean — 11 artifact set(s), 4 approved

@@ -1,0 +1,400 @@
+{
+  "schema": "intl.actual_parent_acceptance.v2",
+  "phase": "baseline",
+  "matrix": "smoke",
+  "started_at": "2026-10-22T03:20:30.155Z",
+  "parent_source": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "subject": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "artifact": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/proposed_main25020261022_repair",
+  "expected": {
+    "/intl.html": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+    "/shared_shell_bridge.js": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+  },
+  "driver_sha256": "1ebddda4779f49edf180ade24fd41060db35987d30acee93ac7fe219a5211991",
+  "network_stubs": false,
+  "preference_setup": "Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent",
+  "contexts": [
+    {
+      "scope": "1440-en-dark",
+      "width": 1440,
+      "lang": "en",
+      "theme": "dark",
+      "query": "",
+      "snapshots": [
+        {
+          "label": "entry",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-JP",
+            "history": 2,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=14fd620e-f2a4-4058-929b-b953828c0e79#imc-country-JP",
+            "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-JP"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              }
+            ]
+          }
+        },
+        {
+          "label": "country",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+            "history": 3,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=14fd620e-f2a4-4058-929b-b953828c0e79#imc-country-TW",
+            "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "focusCountry": "imc-country-TW",
+            "acks": 1,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1"
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_first",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=14fd620e-f2a4-4058-929b-b953828c0e79#intl-analysis-tools",
+            "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_manually_closed",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=14fd620e-f2a4-4058-929b-b953828c0e79#intl-analysis-tools",
+            "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_repeated",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=14fd620e-f2a4-4058-929b-b953828c0e79#intl-analysis-tools",
+            "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "14fd620e-f2a4-4058-929b-b953828c0e79",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "scope": "1440-en-dark",
+      "id": "parent_and_child_context",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nondefault_country_entry",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "country_selection_and_focus",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "country_history_and_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "actual_projected_tools_href",
+      "passed": true,
+      "actualHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_first_opens",
+      "passed": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_first_history_and_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_arrival_visible",
+      "passed": true,
+      "visible": true,
+      "child_rect": {
+        "top": 739.078125,
+        "bottom": 803.078125,
+        "left": 24,
+        "right": 1192,
+        "rendered": true,
+        "width": 1168,
+        "height": 64
+      },
+      "frame": {
+        "x": 224,
+        "y": 64,
+        "width": 1216,
+        "height": 836
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_reopens_without_ack",
+      "passed": false,
+      "acks_before": 2,
+      "acks_after": 2
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_no_history_or_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "journey_completed",
+      "passed": false,
+      "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a[href$=\"#intl-leadership-rotation\"]').first()\u001b[22m\n\u001b[2m    - locator resolved to <a class=\"intl-library__tool-link\" href=\"http://127.0.0.1:3100/intl.html#intl-leadership-rotation\">…</a>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    15 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at run (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_actual_parent.cjs:123:69)\n    at async /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_actual_parent.cjs:163:70"
+    },
+    {
+      "scope": "binding",
+      "id": "actual_child_asset_hashes",
+      "passed": true,
+      "responses": 3
+    },
+    {
+      "scope": "runtime",
+      "id": "no_page_or_console_errors",
+      "passed": true
+    }
+  ],
+  "responses": [
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/shared_shell.css?v=b1918cca",
+      "status": 200,
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "bytes": 467,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=14fd620e-f2a4-4058-929b-b953828c0e79",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/shared_shell_bridge.js?v=048314d5",
+      "status": 200,
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "bytes": 51246,
+      "matches": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "1440-en-dark-tools.png",
+      "bytes": 193302,
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d"
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "external_requests_blocked": [],
+  "browser": "155.0.8059.85",
+  "passed": 10,
+  "failed": 3,
+  "status": "reproduced_failure",
+  "finished_at": "2026-10-22T03:20:42.922Z"
+}

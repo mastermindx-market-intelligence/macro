@@ -1,0 +1,15 @@
+diff --git a/site/research_screener.html b/site/research_screener.html
+index d5ec23ed9831..ad3b81480920 100644
+--- a/site/research_screener.html
++++ b/site/research_screener.html
+@@ -56,9 +56,9 @@
+ <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
+ <link rel="icon" href="favicon.svg" type="image/svg+xml">
+ <link rel="icon" href="favicon.ico" sizes="any">
+ <link rel="apple-touch-icon" href="apple-touch-icon.png">
+-<link rel="stylesheet" href="theme.css?v=2e861147">
++<link rel="stylesheet" href="theme.css?v=a922b22c">
+ <link rel="stylesheet" href="research_screener.css?v=63c091b6">
+ <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
+ <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+ </head>

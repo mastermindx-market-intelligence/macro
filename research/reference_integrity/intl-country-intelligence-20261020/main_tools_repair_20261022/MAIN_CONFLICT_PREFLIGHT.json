@@ -1,0 +1,9 @@
+{
+  "schema": "intl.main_conflict_preflight.v1",
+  "source_head": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "main": "b8e7bbb70c9965f56e326c2c830014816969986a",
+  "returncode": 0,
+  "stdout": "9ce2dd680386067988b5d2f50fe9580f94056674\n",
+  "stderr": "",
+  "worktree_unchanged": true
+}

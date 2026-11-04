@@ -1,0 +1,2484 @@
+{
+  "schema": "mastermind.intl_source_publication_readiness.v1",
+  "recorded_at": "2026-10-20T07:37:53.076673+00:00",
+  "operation_id": "intl-country-cockpit-20261018",
+  "branch": "sol/web-intl-country-cockpit-20261018",
+  "expected_local_head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "original_action_reconciliation": "OWNER_RECONCILIATION_20261020.json",
+  "diff_check_exit_code": 0,
+  "application_source_changed_this_continuation": false,
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "status": " M",
+      "bytes": 1747545,
+      "sha256": "cf48a86a4dd7a8bbfce028bdd3641062e8166fc01efa6b6fa5289bc262074309"
+    },
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "status": " M",
+      "bytes": 34035,
+      "sha256": "e0aa4c4450ea95a528f9495bcc36fa7fb2ee30b9153cbbbb5b1f74493a8acb8e"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "status": " M",
+      "bytes": 74539,
+      "sha256": "eb0abf17c03d1ef5ab2c6378ac67d6dfb71b58b5353810af64a08c4629780190"
+    },
+    {
+      "path": "collectors/intl_country_sources.py",
+      "status": " M",
+      "bytes": 19455,
+      "sha256": "65837c20a24060068fe795a9dd42757c1d05dd76e326729faa1554fd643d7b4a"
+    },
+    {
+      "path": "collectors/intl_policy_sources.py",
+      "status": " M",
+      "bytes": 22285,
+      "sha256": "08e48a54bdfedf006aaad7ded702582368d32cd297bf5e51d3dac11e206c9c84"
+    },
+    {
+      "path": "collectors/intl_weo.py",
+      "status": " M",
+      "bytes": 19461,
+      "sha256": "18ee3594029a1d17a827de7d491a1bd29b683f840e86def00f239a1745799775"
+    },
+    {
+      "path": "config/intl_country_baseline.json",
+      "status": " M",
+      "bytes": 274521,
+      "sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27"
+    },
+    {
+      "path": "config/intl_country_commentary.json",
+      "status": " M",
+      "bytes": 11546,
+      "sha256": "e1e9c6639e76d92a31a440ded152efd199e860b66737265acb1b725cc19f58d9"
+    },
+    {
+      "path": "config/intl_country_releases.json",
+      "status": " M",
+      "bytes": 2199,
+      "sha256": "c058a84efd3e776b53fd01345b764afdb0baa4c23ec4bb24e8f6443ac4f87bd5"
+    },
+    {
+      "path": "config/site_access.yml",
+      "status": " M",
+      "bytes": 44189,
+      "sha256": "127dd1de71c979910601a8df89132244e95c0d1991c194408281072ace6384c9"
+    },
+    {
+      "path": "engine/intl_run.py",
+      "status": " M",
+      "bytes": 9829,
+      "sha256": "2cf905292d14de983e232f89ca939fbbc70e1f093944b6acfc46335f8119e079"
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "status": " M",
+      "bytes": 27893,
+      "sha256": "05d75f867a5be25d278c34a0e818e1025c716fb34fa4cfe0faf1ef0bc0a5256f"
+    },
+    {
+      "path": "lib/intl_country_inputs.py",
+      "status": " M",
+      "bytes": 1353,
+      "sha256": "5e94af0773273114c6225440516527e3e23f1a7881ec8f4faa8aa9b1616e60e8"
+    },
+    {
+      "path": "lib/intl_country_outlook.py",
+      "status": " M",
+      "bytes": 20304,
+      "sha256": "8f1afe03ef49523f2707fe7be9e5f49ba1664a36841a038cff810b58c9aea772"
+    },
+    {
+      "path": "lib/intl_forecast_vintages.py",
+      "status": " M",
+      "bytes": 22778,
+      "sha256": "c7119cb5dea4debca20093ae69ce148fcbf8530f7d82ca7fe9f5918459c84cbc"
+    },
+    {
+      "path": "lib/intl_policy_evidence.py",
+      "status": " M",
+      "bytes": 20255,
+      "sha256": "b16a1a367c8b1480cb4d1d716ab0db6223500139a12e08c33972af74219a4a3a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "status": " M",
+      "bytes": 9184,
+      "sha256": "768ad617e869669b2ace68193e217bd6f88266a683b9c724c58b09670fc10ea0"
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "status": " M",
+      "bytes": 59884,
+      "sha256": "1f71f6f93515655b4adc596b61af0052b6465ad9fc923bdbb15595dc9f42bdf1"
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "status": " M",
+      "bytes": 26446,
+      "sha256": "9377dd2c31b10e306ff0ddd680724befa05611f5db847c7e891142b588ec32fe"
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "status": " M",
+      "bytes": 30398,
+      "sha256": "98283868649de0b02ba958bf069575089506eb4712b5611c20305df6034093de"
+    },
+    {
+      "path": "tests/test_intl_country_cockpit.py",
+      "status": " M",
+      "bytes": 21934,
+      "sha256": "64a76604ea3d7f7cf45733a3d7f304eecdd630cda7cffef36e96366b76a14f07"
+    },
+    {
+      "path": "tests/test_intl_forecast_vintages.py",
+      "status": " M",
+      "bytes": 22815,
+      "sha256": "c2f52e4a47bf35e6fbd1014ea4ebfd57c6ff2ecd4756989f4c658ff56c53d30c"
+    },
+    {
+      "path": "tests/test_intl_policy_evidence.py",
+      "status": " M",
+      "bytes": 24923,
+      "sha256": "6b3207822a2f94229042c17fa3e8551daa551356855e6db1ec713f491b51ab39"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "status": " M",
+      "bytes": 41599,
+      "sha256": "220d3790b2a0135b7ea1b8c75a1d0a68192d9e3082a72168c39b8850da5372cf"
+    },
+    {
+      "path": "lib/intl_currency_observation.py",
+      "status": "??",
+      "bytes": 11646,
+      "sha256": "915a3b10ec60a760e50b2d2283c677e5d8aa67627cd876eff3e8bbc2dcad628b"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/03ed7c6949aacec7.png",
+      "status": "??",
+      "bytes": 458803,
+      "sha256": "03ed7c6949aacec7d5feb71fb70422a362fe7974961b1d68bef5eff7c58674e7"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/0ec3b6793ab997d4.png",
+      "status": "??",
+      "bytes": 422840,
+      "sha256": "0ec3b6793ab997d474601ba4db7ebb9d8ac259e78c4ed307488e1086f91e232e"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/101c99cea9b70ada.png",
+      "status": "??",
+      "bytes": 439278,
+      "sha256": "101c99cea9b70ada893dbb749e7a9cac8f1ce6a906a2523fd48a2f09155fa291"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/170ff6b10b0b67a8.png",
+      "status": "??",
+      "bytes": 439537,
+      "sha256": "170ff6b10b0b67a81fb6070c482b6bb237b7bb8a76a2cf8c4d84d36dbb9bf37a"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/1e969269243a3940.png",
+      "status": "??",
+      "bytes": 422528,
+      "sha256": "1e969269243a39403155948e93f0b863fba5b6a70da83c753ffb599789f5a042"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/22321acaf04cbb4d.png",
+      "status": "??",
+      "bytes": 422614,
+      "sha256": "22321acaf04cbb4d027b1d341ee4b43516c17f7e212950fe820631d3622ec840"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/227606541c33908b.png",
+      "status": "??",
+      "bytes": 451326,
+      "sha256": "227606541c33908b723b593a2f50e2273e2bbdd81eccb72f8e1ac32145f235f6"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/2545142959ce35e1.png",
+      "status": "??",
+      "bytes": 567032,
+      "sha256": "2545142959ce35e1d06ed54a9a58ddd6cddcee2e97dbe25776991ba10eeeac6c"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/26b64937a376aefd.png",
+      "status": "??",
+      "bytes": 436052,
+      "sha256": "26b64937a376aefd507fb5837958cce84bf5f75d4a892434934077b836e1154b"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/2f345c09dcea7fb1.png",
+      "status": "??",
+      "bytes": 434904,
+      "sha256": "2f345c09dcea7fb1e25068fa7b51d30857b032bbd24820445279183ddb49c9e0"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/32bd226619c0df2a.png",
+      "status": "??",
+      "bytes": 441332,
+      "sha256": "32bd226619c0df2aa44c12a499ddcd9a35c6de6b1f5083ab69b65726054c2402"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/3491701c78f6c166.png",
+      "status": "??",
+      "bytes": 451728,
+      "sha256": "3491701c78f6c1664d4bd78ce2ba9b6686f58e429a386913eebdca54c3a50d2b"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/354e1ac5f3ecbee9.png",
+      "status": "??",
+      "bytes": 452890,
+      "sha256": "354e1ac5f3ecbee901c5f0ed133857c7b1b04a549ec9b2bbe03697cd8277833a"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/3790b33123dde381.png",
+      "status": "??",
+      "bytes": 434816,
+      "sha256": "3790b33123dde381ee32a60870d5ddc23f9c04397d6ac329cf3f09db220d0bb3"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/3d1406f6ab8d5e75.png",
+      "status": "??",
+      "bytes": 565910,
+      "sha256": "3d1406f6ab8d5e75d84d424be5ec9efcfaa6eacf4f491e96d90d0b20469e7642"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/4073f9c832376cad.png",
+      "status": "??",
+      "bytes": 593709,
+      "sha256": "4073f9c832376cadbc4b1ea88cce8ad12bd139a9bc09bd7c4c60868753e37dc7"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/42d170e7886671e4.png",
+      "status": "??",
+      "bytes": 441018,
+      "sha256": "42d170e7886671e46d32cbd40a1f5328b6c2fecb29968a52006231353b60af05"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/46402eb08f4ae6ba.png",
+      "status": "??",
+      "bytes": 435563,
+      "sha256": "46402eb08f4ae6badb010fb2bbd3f67763e243e8bfcbfe4fe2f6312ba884a78b"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/48ef052340346d4b.png",
+      "status": "??",
+      "bytes": 453338,
+      "sha256": "48ef052340346d4b6cc892531e103e6615fe8c7cc95792bb41ff3764eb5307c5"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/5e76fe1bc6b37b42.png",
+      "status": "??",
+      "bytes": 593719,
+      "sha256": "5e76fe1bc6b37b4293f75fb99c1b15483a1cd0446968374de6139b8b40126416"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/6635ca6256d37c45.png",
+      "status": "??",
+      "bytes": 593331,
+      "sha256": "6635ca6256d37c455a9b59bcc5dc8c890e56a77b2813a6b58296549acf61850d"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/6b7c667a77a7dfab.png",
+      "status": "??",
+      "bytes": 593761,
+      "sha256": "6b7c667a77a7dfab871412ce39f3cae70bc96796f5ca0aefea72cfd659d9294d"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/77c1349debd98331.png",
+      "status": "??",
+      "bytes": 565917,
+      "sha256": "77c1349debd98331784634c3a5c2998bf0d1925694e2a9d0c3506b0abfa9fb3a"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/85fde0e24f9a849f.png",
+      "status": "??",
+      "bytes": 567017,
+      "sha256": "85fde0e24f9a849ff813a01eedf7362ae0a175f57ca69cd78e1ee677078e349a"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/EVIDENCE.yml",
+      "status": "??",
+      "bytes": 214,
+      "sha256": "9b10bc030ad5281196dcb88b223b530be1a296193b0f7798931b169799909c09"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/a342049fc7e3f450.png",
+      "status": "??",
+      "bytes": 451430,
+      "sha256": "a342049fc7e3f4500f4f8f9641437dc6f547ec9d852bf0bab39a3057facd449f"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/a6b6b2f31e347a36.png",
+      "status": "??",
+      "bytes": 453377,
+      "sha256": "a6b6b2f31e347a36439f7f9ec5dc4409ddce5f6331f7307e8a7e3e22184dccb3"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/ac6e4fadd6708dd0.png",
+      "status": "??",
+      "bytes": 441477,
+      "sha256": "ac6e4fadd6708dd071ea82e418c7c88950d91875f600cf80329dfd1fecdfc4ba"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/b20d00341be44018.png",
+      "status": "??",
+      "bytes": 592585,
+      "sha256": "b20d00341be44018c9d208fa610c4c080a581abb3464073cd49b1c598904798d"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/c04b20bb43e3a2bb.png",
+      "status": "??",
+      "bytes": 439112,
+      "sha256": "c04b20bb43e3a2bbb13362f93d673c1b96554e6eb9df3159d475240a6f80c0e2"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/c42db69cbe346922.png",
+      "status": "??",
+      "bytes": 567516,
+      "sha256": "c42db69cbe34692258f8149d9823fc9c53be5309b476f78ee34941e716d6f927"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/d2786b7a0ade3af3.png",
+      "status": "??",
+      "bytes": 564717,
+      "sha256": "d2786b7a0ade3af3f435770757392f4699e669342625c92b87fe4ff0b45628fa"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/d99e2d63a7daec52.png",
+      "status": "??",
+      "bytes": 458366,
+      "sha256": "d99e2d63a7daec522ce70144b3f0373a11123dd242e6230e7338f277803bb1b5"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/ecb4428e7512c505.png",
+      "status": "??",
+      "bytes": 458715,
+      "sha256": "ecb4428e7512c505f6f3da90b1506b8a6d05d5983f58d2f99af0310346a34df1"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/f3fdb1233e178e69.png",
+      "status": "??",
+      "bytes": 435127,
+      "sha256": "f3fdb1233e178e691d0b8905fd6ec0f43aca1eeda27b60202036085946327a09"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/ffda59b5e154643d.png",
+      "status": "??",
+      "bytes": 435984,
+      "sha256": "ffda59b5e154643d11694a7d184befc1976b1e3a478a205290e4a3098af11e28"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/manifest.json",
+      "status": "??",
+      "bytes": 11876,
+      "sha256": "0d0bc0d17f09ea2e41b6291da77d75080484c92a9a595b0532864bc7e89c9597"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/smells.json",
+      "status": "??",
+      "bytes": 3633,
+      "sha256": "a1809d05f22ad91204db8d95a7594338b66cc949448df31fb219051dc605cf44"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/048645c6f14d3f6b.png",
+      "status": "??",
+      "bytes": 590249,
+      "sha256": "048645c6f14d3f6b6dafacf1ae58c74cdd794e8cc436f61d1bfdc69f5ac73715"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/055571d9be4ac19e.png",
+      "status": "??",
+      "bytes": 564146,
+      "sha256": "055571d9be4ac19e81c6661f5b34b63175e1df2eed7ff9f3d7caf46bf542624d"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/3dcb7de969126243.png",
+      "status": "??",
+      "bytes": 431821,
+      "sha256": "3dcb7de9691262430a9162901955e56540662c29bf3578cd9bbf09c072a685df"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/6e3b731d4d0d5877.png",
+      "status": "??",
+      "bytes": 432843,
+      "sha256": "6e3b731d4d0d5877d10023bd858889e29e3b9279aa3cb5bbe2cc25c0b3ccbd8a"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/8a3028fabae43021.png",
+      "status": "??",
+      "bytes": 438428,
+      "sha256": "8a3028fabae430213c1e03edc1629f0723348187d7e965a9efe780507a8fe904"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/8e6965530ec2c079.png",
+      "status": "??",
+      "bytes": 436196,
+      "sha256": "8e6965530ec2c0797fb27fcdc5261608859eaffe8ab8e3c322721e4f9bc87224"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/8fb768baf0b4e6f3.png",
+      "status": "??",
+      "bytes": 419481,
+      "sha256": "8fb768baf0b4e6f3384d6e6655529074f26ff4e39e34c1e0bf13f9b8cbbe22a1"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/97764589a9a6470f.png",
+      "status": "??",
+      "bytes": 448342,
+      "sha256": "97764589a9a6470f9a9647d201d722e1eb5c5f97ccb08f6aec7bf4bac0492556"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/c11a4f66801efe7f.png",
+      "status": "??",
+      "bytes": 589058,
+      "sha256": "c11a4f66801efe7f5fbc35810319398b8a5ad1ad69daf38726c8f64f378d8e19"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/da208123c030e4dd.png",
+      "status": "??",
+      "bytes": 561697,
+      "sha256": "da208123c030e4dd8efc6722a51260262afaea0cc3bb36be4a40a41f8988d438"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/deef8330899b9712.png",
+      "status": "??",
+      "bytes": 455814,
+      "sha256": "deef8330899b9712d91b22cc879f2a4c14868fdfce6d8ac5f7f33bd0654dd44b"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/ed1b22507c4b3e05.png",
+      "status": "??",
+      "bytes": 450273,
+      "sha256": "ed1b22507c4b3e05d9d45a0979eb89afe101c75ad51c7aa8436472ad3320efe6"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/manifest.json",
+      "status": "??",
+      "bytes": 11876,
+      "sha256": "1789f30fb4fc54b2b0fbef2b2df8dca1421cd932959d73da25729c8e0cddd199"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261019/smells.json",
+      "status": "??",
+      "bytes": 3633,
+      "sha256": "a88dcbdfd5b3d8749b51b50948fe743a5a0ab4d40f3254b531b56648609f5cde"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/14f3fb6cb2955dc5.png",
+      "status": "??",
+      "bytes": 455854,
+      "sha256": "14f3fb6cb2955dc5739b8e7e25f2c5af35eb04235a57317a6076d08627bc9c0d"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/29eeb910e7c5e101.png",
+      "status": "??",
+      "bytes": 590175,
+      "sha256": "29eeb910e7c5e101622b98bf88c0c8cf7972a82d9ed0c62e1d042819c8e00d2e"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/38283fb7ae98b30b.png",
+      "status": "??",
+      "bytes": 589033,
+      "sha256": "38283fb7ae98b30bc6516808ecbb419a65537a43ea27a37cc58be5e49ed02188"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/513b7f6b255ec54f.png",
+      "status": "??",
+      "bytes": 448380,
+      "sha256": "513b7f6b255ec54fb5b3ce8c9392337158b7289fb16a170c002d576b5364380b"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/5674755a39231c86.png",
+      "status": "??",
+      "bytes": 419532,
+      "sha256": "5674755a39231c869d69a010206b8ac1e8aaf31b48a0ec60c4f0784f07368662"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/7c1b35f179b04869.png",
+      "status": "??",
+      "bytes": 432876,
+      "sha256": "7c1b35f179b0486945a1ffa7375787b26852c839f78f0e6396f8a6ff123d1e13"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/8e4709407ebff72d.png",
+      "status": "??",
+      "bytes": 561694,
+      "sha256": "8e4709407ebff72dd05e1dffbac61e61d078bcf6d7afa6db21bd21bf0b83b283"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/EVIDENCE.yml",
+      "status": "??",
+      "bytes": 212,
+      "sha256": "d40a6b096d3de434454f166c2860bdd8cf283465c2760c43b141e90910b188f3"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/b4bb52d215857270.png",
+      "status": "??",
+      "bytes": 431874,
+      "sha256": "b4bb52d215857270eb5d8982a189e324b9067cdfc7dd532cb1fabdf6442e5d31"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/c01e2e5043d1efe4.png",
+      "status": "??",
+      "bytes": 450306,
+      "sha256": "c01e2e5043d1efe417895c28680eb327fc2470ccda65d85b446dd7ad62332c3b"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/dad5e401dc04fbd4.png",
+      "status": "??",
+      "bytes": 436215,
+      "sha256": "dad5e401dc04fbd414be243095250d7b180c8300120447030b8a75f117981738"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/e61f6736bf33575b.png",
+      "status": "??",
+      "bytes": 438487,
+      "sha256": "e61f6736bf33575bbac253b0c637674c4e48db256069f4dd5e3eccaf8baf1c38"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/e7c899162c3daccc.png",
+      "status": "??",
+      "bytes": 564169,
+      "sha256": "e7c899162c3daccc90559f476b91ad50fe25e15ca6aa59283ea2d4fb78dd0a6f"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/manifest.json",
+      "status": "??",
+      "bytes": 11876,
+      "sha256": "7f500e8848514596bc3a432c1101e27c11a9586dd0ff3833ef510a88aa11e9f2"
+    },
+    {
+      "path": "mockups/evidence/intl-fiscal-coverage-20261020/smells.json",
+      "status": "??",
+      "bytes": 3633,
+      "sha256": "967efa424503d6fce82278f3018bf231a0d25013caf9e1ffa7a9859c4cbf90bb"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/18d7a191bd7ef520.png",
+      "status": "??",
+      "bytes": 571236,
+      "sha256": "18d7a191bd7ef52042d4a44c87057f7522e8de48dc0fd06513ee45f58f017d3f"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/2464c365a622de00.png",
+      "status": "??",
+      "bytes": 431208,
+      "sha256": "2464c365a622de00153b17e72c19246597191b8e6bed6c670fde683b3ff10ef6"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/29106b4ed8233bef.png",
+      "status": "??",
+      "bytes": 438282,
+      "sha256": "29106b4ed8233befd5d043132637e3c6fc73a21ccce49791bac860aee4b39740"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/3202ce63aaaf8bd0.png",
+      "status": "??",
+      "bytes": 546258,
+      "sha256": "3202ce63aaaf8bd05dea9647f59ed2b65fb946a256288f6a0ed68dc0a30fcbeb"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/43082efaad88ddb3.png",
+      "status": "??",
+      "bytes": 572723,
+      "sha256": "43082efaad88ddb3587e8ede29af6b96779a5bd1e3dd1255d0dfb07f98a150af"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/5e5c01790944cd1d.png",
+      "status": "??",
+      "bytes": 414645,
+      "sha256": "5e5c01790944cd1d165da7d4239152e92aa509462260cb56cf188f3e4f28e960"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/60eb72e48b5e0026.png",
+      "status": "??",
+      "bytes": 420948,
+      "sha256": "60eb72e48b5e002672d21089e1745fd42dd721710e40cd59be4dd31a2e70ebb6"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/777a5e1e910dd4bd.png",
+      "status": "??",
+      "bytes": 419199,
+      "sha256": "777a5e1e910dd4bd75a4f9a7b6eef67cd97b6d4f4cc8dec974cb3e74530b915d"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/944f8172c04fa405.png",
+      "status": "??",
+      "bytes": 543496,
+      "sha256": "944f8172c04fa405f03fab88ac829ec22e546d5f71f14fe5198d487488dc21d3"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/97b7181ac18d70af.png",
+      "status": "??",
+      "bytes": 403346,
+      "sha256": "97b7181ac18d70af72b0b08d5bd479b33f6033b5689f2ab49962b679d1144b22"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/EVIDENCE.yml",
+      "status": "??",
+      "bytes": 212,
+      "sha256": "7db7343d5f7b157fea6be6038e1e8eba9b0de8cf0180649cc24f243873bbbba9"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/baaaeb3309f0945f.png",
+      "status": "??",
+      "bytes": 432482,
+      "sha256": "baaaeb3309f0945f3af5b431e213d038101839aa70d0bc587aa912348d3b1601"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/d35c9714ecfa78aa.png",
+      "status": "??",
+      "bytes": 415535,
+      "sha256": "d35c9714ecfa78aaae1d169247f3649c001a3e9515bee561c9ed8476244bb7a7"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/manifest.json",
+      "status": "??",
+      "bytes": 11876,
+      "sha256": "a5b29697943072c43fab283fbd129c1f3c75d34a42fef7f05c8d0281debf129f"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/smells.json",
+      "status": "??",
+      "bytes": 3633,
+      "sha256": "fe7bb5b3b112bc3a133b4695a220dfbbea8bb0b4a6390e1b40fdacc1349af21e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/PUBLIC_ASSET_REPAIR_R12_20261019.json",
+      "status": "??",
+      "bytes": 7574,
+      "sha256": "6aa51b0a92f14637e147c3091f4b768f1e4ad418dfe4e8a62b564edf38301afb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/PUBLIC_ASSET_REPAIR_R12_20261019.md",
+      "status": "??",
+      "bytes": 6233,
+      "sha256": "09dcca7a171b490e8ef92938717c3f53eddb71ddc5c624b6911f7fbea734e5b7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/FISCAL_COVERAGE_20261020.json",
+      "status": "??",
+      "bytes": 34283,
+      "sha256": "9dbb0e2f6bc05d052a5fa1173a38fd79f765a4e79951832c86c0a40d1d5b0064"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/FISCAL_COVERAGE_20261020.md",
+      "status": "??",
+      "bytes": 13001,
+      "sha256": "d2198d0561c616b0d122e156963c2a5063c0571b723b1badaedf75c2b7e18176"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/admission.json",
+      "status": "??",
+      "bytes": 11224,
+      "sha256": "d0f156b23a0b5ea3e81ea499b5d2c2c9c52b00605f99343426598eaa931cf866"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/admission_prepared.json",
+      "status": "??",
+      "bytes": 11224,
+      "sha256": "d0f156b23a0b5ea3e81ea499b5d2c2c9c52b00605f99343426598eaa931cf866"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/admit_fiscal_coverage.py",
+      "status": "??",
+      "bytes": 5911,
+      "sha256": "4d28a78aece35b6cb28f8bf73c78cfdea9c90a38bf1f2e094a2609fbdeae7e60"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/baseline_before.json.gz",
+      "status": "??",
+      "bytes": 16124,
+      "sha256": "1bd09168926a1735f900430c9a9b09f01f5d6a20638443881761df3533c17119"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/browser_run.json",
+      "status": "??",
+      "bytes": 214,
+      "sha256": "9fc87932f97e0a4591c2f35c1c0d754c86630268139c29f314b6a2cc2e7eb776"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/browser_run.log",
+      "status": "??",
+      "bytes": 254,
+      "sha256": "1deee2e69255864cb89d76a443bd3b532d80cb84a3f979368d68e5ee8862a044"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/browser_verification.json",
+      "status": "??",
+      "bytes": 167577,
+      "sha256": "155f09094d6222ba62f45fbe2894fe84e08e9237962510173d7fc066a1b51554"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/canonical_capture.log",
+      "status": "??",
+      "bytes": 347,
+      "sha256": "598dc56f61ae20c5eb8e651568c058dd9db3c92412bd8620def518320b4f8483"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/fiscal_shots/au-desktop-light-zh.png",
+      "status": "??",
+      "bytes": 31681,
+      "sha256": "5c2f0254b86665c230bef18dd94f1e06b8adb0e92555e6306041a832ce32b5ff"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/fiscal_shots/in-mobile-dark-zh.png",
+      "status": "??",
+      "bytes": 32385,
+      "sha256": "b4562fbc8306359bcc861fa9c078d8f94823dbbeb4061da1126453d2a49630fc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/fiscal_shots/in-narrow-light-en.png",
+      "status": "??",
+      "bytes": 33178,
+      "sha256": "e7fd0a64c1f9306b933856188e5704307d9df38b47914a9bcdd8f49f74bbfd44"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/fiscal_shots/kr-desktop-dark-en.png",
+      "status": "??",
+      "bytes": 28419,
+      "sha256": "d06f972ec0b73b8ef7d413f46851ba53c2bf4e96df6989862ed14f18eb3f1115"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/fiscal_shots/kr-desktop-light-en.png",
+      "status": "??",
+      "bytes": 28507,
+      "sha256": "48e1cdf922f9e4e469d0ee986e7908703f643e162eef13fa69fb4aa52917514f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/fiscal_shots/tw-mobile-light-en.png",
+      "status": "??",
+      "bytes": 28240,
+      "sha256": "25febf772d4c721d6c448dc1b3610ac96a9c7469a539db9842bee2dd65c7ed01"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/preview/intl_country_preview.html.gz",
+      "status": "??",
+      "bytes": 35772,
+      "sha256": "3ee04ccd8057bb0a79ccce93fd72e856038c74df12a556004cf12f3ae7bdd1b8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/preview/intl_integrated_preview.html.gz",
+      "status": "??",
+      "bytes": 77249,
+      "sha256": "dec5430205e9cdfa084a659637fa5cc1622274e5bad82fee3980287b6d111b35"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/preview/intl_stocks_integrated_preview.html.gz",
+      "status": "??",
+      "bytes": 22977,
+      "sha256": "992771af8e78ebdbdd65da7f3cfa0ef282cf7f1120a91f278a20ded2e4fa0a28"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/preview/manifest.json",
+      "status": "??",
+      "bytes": 9721,
+      "sha256": "7035cd521a91663b358874cacbf63830240b3eeb73a4c879b1d11070c0064123"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/retention.json",
+      "status": "??",
+      "bytes": 3158,
+      "sha256": "9c4bbd09ae6a7ad1437a260a15fee0746c92edebf5509b41b85c57a2a22a449a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_run.json",
+      "status": "??",
+      "bytes": 214,
+      "sha256": "9fc87932f97e0a4591c2f35c1c0d754c86630268139c29f314b6a2cc2e7eb776"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_run.log",
+      "status": "??",
+      "bytes": 254,
+      "sha256": "1deee2e69255864cb89d76a443bd3b532d80cb84a3f979368d68e5ee8862a044"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_run_final.json",
+      "status": "??",
+      "bytes": 220,
+      "sha256": "a8e8a92e97afaaa8732d774e3243c8ba5c7616cbee35bd75179967cda3c45dfc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_run_final.log",
+      "status": "??",
+      "bytes": 254,
+      "sha256": "4151c77047a59c42741fc215ad06e39a5389561e6c825fe41bb2dd93b9a6f6fc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_verification.json",
+      "status": "??",
+      "bytes": 170265,
+      "sha256": "14d1cd5c3ed99f536afd0eba42a7891bc27986e8552f9a54ea2a02f054b486c8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/canonical_capture.log",
+      "status": "??",
+      "bytes": 347,
+      "sha256": "12c571ee71c6edf9f83a50e171cce5550b8146432f911650386e023b7d8b9203"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/country_tests_v1.json",
+      "status": "??",
+      "bytes": 2312,
+      "sha256": "e2043f47051717c09194131c3411043b3c5f2bba91963ab16f9f8c709c995d97"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/country_tests_v1.log",
+      "status": "??",
+      "bytes": 1929,
+      "sha256": "49f8891038bf84004c5c81aeba550bf89ed5a43233c1385720a5fe1fb9182583"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/database_documentation_acquisition.json",
+      "status": "??",
+      "bytes": 428,
+      "sha256": "f6b35d4b33c8dbe170cf883879c25337b429459572044b623cbea414917d4c16"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/documentation_acquisition.json",
+      "status": "??",
+      "bytes": 420,
+      "sha256": "5202a5e567a5e0c3dfc2399c4ee9bf3a41e017526119e71abd30708b65e4bea9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/final_country_and_public_tests.json",
+      "status": "??",
+      "bytes": 704,
+      "sha256": "86420f4a82c0f9c35ae74f71908d1ee447967c9f92e275f8bc9ebfa1dc6fbc24"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/final_country_and_public_tests.log",
+      "status": "??",
+      "bytes": 6126,
+      "sha256": "15215c2a4f4bbdacfdb2fc0890901ceb011abc1fe0a244a17d82c06c709797f6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/final_country_and_public_tests_v2.json",
+      "status": "??",
+      "bytes": 822,
+      "sha256": "ec5cecbda9e6d43a07a6e408b2cf34faab06dd434e1301975784fac762f60817"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/final_country_and_public_tests_v2.log",
+      "status": "??",
+      "bytes": 1929,
+      "sha256": "9f5cacbf8141e03a3ca71e4e3f16b6aec47e5875ea6cc9af357c634244c0f93c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/finalize_fiscal_evidence.py",
+      "status": "??",
+      "bytes": 8073,
+      "sha256": "4561e8b1627f21e9378ea1cd911ad7b231cdc0afa188441583bc8293039551a9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/au-desktop-light-zh.png",
+      "status": "??",
+      "bytes": 31681,
+      "sha256": "5c2f0254b86665c230bef18dd94f1e06b8adb0e92555e6306041a832ce32b5ff"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/in-mobile-dark-zh.png",
+      "status": "??",
+      "bytes": 32385,
+      "sha256": "b4562fbc8306359bcc861fa9c078d8f94823dbbeb4061da1126453d2a49630fc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/in-narrow-light-en.png",
+      "status": "??",
+      "bytes": 33178,
+      "sha256": "e7fd0a64c1f9306b933856188e5704307d9df38b47914a9bcdd8f49f74bbfd44"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/kr-desktop-dark-en.png",
+      "status": "??",
+      "bytes": 28419,
+      "sha256": "d06f972ec0b73b8ef7d413f46851ba53c2bf4e96df6989862ed14f18eb3f1115"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/kr-desktop-light-en.png",
+      "status": "??",
+      "bytes": 28507,
+      "sha256": "48e1cdf922f9e4e469d0ee986e7908703f643e162eef13fa69fb4aa52917514f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/tw-mobile-light-en.png",
+      "status": "??",
+      "bytes": 28240,
+      "sha256": "25febf772d4c721d6c448dc1b3610ac96a9c7469a539db9842bee2dd65c7ed01"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_source_snapshot.json",
+      "status": "??",
+      "bytes": 2771,
+      "sha256": "e8e605a258cbb825c3ee9f12257bd58e2ef39b1e39588dcf6e1f847db35f8508"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_source_snapshot.tar.gz",
+      "status": "??",
+      "bytes": 510397,
+      "sha256": "c44d73d2fbfc858a08eae3e017adcd3e766078f0ffb87ca9b59411b897a255ab"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_tests_initial.json",
+      "status": "??",
+      "bytes": 1992,
+      "sha256": "715768f67de95ec98d20fffb7018bd7e3bbe2405a57a7f4119958c6a81a29eb9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_tests_initial.log",
+      "status": "??",
+      "bytes": 1768,
+      "sha256": "43640216d721b19eb489816fdb919433ca5a678155bb25d962ada8d9481c74f3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/design.log",
+      "status": "??",
+      "bytes": 279,
+      "sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/final_ui_delta.diff.gz",
+      "status": "??",
+      "bytes": 3997,
+      "sha256": "4ceb4492e7e6e4a11dcdb96cc845efe5953f0864112d2de36e07cd492c60bbec"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/integrity.json",
+      "status": "??",
+      "bytes": 19591,
+      "sha256": "cd99e299f8e5ff111ec3808dfdc5e147e021164ee5f4d1b85d6a6ef3015f64bf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/integrity_attempt1.json",
+      "status": "??",
+      "bytes": 12988,
+      "sha256": "20b0271b3b02d14be8f82a32d90e8c5f7fa6ded0525c58db6dbfdf5053e76945"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/integrity_checker_attempt1.py.gz",
+      "status": "??",
+      "bytes": 2784,
+      "sha256": "e1c62aecb46c9bb62b121ad6e0e3e7545376c8af645210b4da41467141456c84"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/tracked_whitespace.log",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/verification.json",
+      "status": "??",
+      "bytes": 4090,
+      "sha256": "4013671d580370689b29d35ce721ccdb45e3aa99a26ddc32c900eed37bde6e11"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/visual.log",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/help_acquisition.json",
+      "status": "??",
+      "bytes": 278,
+      "sha256": "7cd0587ef2b8682936753477d8a25f464d58236eb3e6d6a9bb953245c6483b21"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/indicators_acquisition.json",
+      "status": "??",
+      "bytes": 280,
+      "sha256": "54088b3feff5aa785cdb1f1901d65c1a934a1ced7ad42b60fd780f93a7cc7265"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_DMX-0.jsx",
+      "status": "??",
+      "bytes": 91960,
+      "sha256": "a87e1b14115544ffb15bab984858fafcebdce2a4d2fb384a55143dd60c3b79e7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_DMX-0_1.jpg",
+      "status": "??",
+      "bytes": 211216,
+      "sha256": "c59ccf91fe5bad7db52eea15bee8f78b34fe7a416ac1d9e5fbb3228e25c51ec8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_DW7-0.jsx",
+      "status": "??",
+      "bytes": 92246,
+      "sha256": "86556713173ec187250fbacdfae6561ee6a78ed7290eca95b901e79b47093585"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_DW7-0_1.jpg",
+      "status": "??",
+      "bytes": 225004,
+      "sha256": "d49bb1769a14f47cb1ddeb50e5650b0b4d7a9a7b1e150a0846a5231a983a1cb4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_E4D-0.jsx",
+      "status": "??",
+      "bytes": 90052,
+      "sha256": "a207c128da185690759a1015ce4369e157a1416109ae620e20a473795fd0ff6a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_E4D-0_1.jpg",
+      "status": "??",
+      "bytes": 84698,
+      "sha256": "5332b4ff12c723739cfc3c739387a3b8245ab0787d19490d49cbfece8e698d7d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_EC2-0.jsx",
+      "status": "??",
+      "bytes": 90321,
+      "sha256": "ed5bf2dae48f6a6023077465a04f9ec88ce0fc4c8abbe7e4b972530f6da2d20b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_EC2-0_1.jpg",
+      "status": "??",
+      "bytes": 90510,
+      "sha256": "4d08fa782e3b7ac55040dad7233d69581966e0d57e4ef449162c84140fdd3f26"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_ER4-0.jsx",
+      "status": "??",
+      "bytes": 13694,
+      "sha256": "3f0a967f9eba64da5700ada2fab6a80fabf25cb986c2767cb0659d48ac348416"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_ER4-0_1.jpg",
+      "status": "??",
+      "bytes": 106963,
+      "sha256": "60e1fc53052a081cfed01996dad7d7f6eddc8470c48ee4df954b1156e6d8a949"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_ER5-0.jsx",
+      "status": "??",
+      "bytes": 17612,
+      "sha256": "0e839c2e2a52ca84d843b545847d18ffacec745f054150e6007fd2a034c8e2cb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_ER5-0_1.jpg",
+      "status": "??",
+      "bytes": 140760,
+      "sha256": "f954889d56b5877d598edcb9f667f2bd34c8b109c9eaed7655ae7edf9d0c0f98"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_capture_materialization.json",
+      "status": "??",
+      "bytes": 3428,
+      "sha256": "4efe054445b6cc575fbc3fe5d948d7213e9c08bb3ccbdb3e5e21dbca095a84c3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_01.json",
+      "status": "??",
+      "bytes": 5231,
+      "sha256": "531ba08a524bff1579e824acd54eabe7387a0bd79ce95931cb0e5ba3c3340a4c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_02.json",
+      "status": "??",
+      "bytes": 6827,
+      "sha256": "e868f09cbde580967b464dccf724180be997641b10a9c306d42dfd131a73eb33"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_03.json",
+      "status": "??",
+      "bytes": 4173,
+      "sha256": "bacfa007c7767737d016a0aff58bf7cc83c9d984bfcd5f88135119021f2e468f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_04.json",
+      "status": "??",
+      "bytes": 1470,
+      "sha256": "196711b97450b22fbb38b4d9eff513509b7cd409ec0b68767142ec96f211de19"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_05_recovered.json",
+      "status": "??",
+      "bytes": 4450,
+      "sha256": "63071fb20f346a45a9041648ad67492aedd79976044b8b3a59223032f6b6d9a9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_06.json",
+      "status": "??",
+      "bytes": 34791,
+      "sha256": "96e77a9f28fabfca82c96cd1792666b3c330b8f9db3b73fa51d2b8143186325b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_07_finish.json",
+      "status": "??",
+      "bytes": 1147,
+      "sha256": "f6eb1a914f5b3f52bffbc767a18fc4102d526adb17d4f85a76b6ca4569029303"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_final_native_bundle.json.gz",
+      "status": "??",
+      "bytes": 785444,
+      "sha256": "193ea32bc7e36c4383220287adce678e5da1e4c0c2ac91d67896adbebb78bbf3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_final_readback_verification.json",
+      "status": "??",
+      "bytes": 12608,
+      "sha256": "4e4f9599310b9d926b2a598a657d192a605076f33c9a171e23bfe1277045a483"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_fiscal_coverage_receipt.json",
+      "status": "??",
+      "bytes": 7864,
+      "sha256": "d2ddabaad3798809af2daccf0fc3beffa92422060d3741024dd9e6aa5a496231"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/partial_withdrawal_tests.json",
+      "status": "??",
+      "bytes": 167,
+      "sha256": "1c933171118cef81cdf8468092ec9ea9a7fbbd906c762a65e2aadf657699713c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/partial_withdrawal_tests.log",
+      "status": "??",
+      "bytes": 11287,
+      "sha256": "6d06d5fa5465defe7939db0fad76b498814f32f36a20ca560a132c4ce09e4a39"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/pr_body_before.md.gz",
+      "status": "??",
+      "bytes": 6705,
+      "sha256": "8fcfd00c063e0c64999f9afc03a40d834be3c08bc4a9efbc462cbd67757ab42f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/pr_body_prepared.md",
+      "status": "??",
+      "bytes": 6786,
+      "sha256": "4a3b02c312a359559f87a60310d071a0f3c187940256ac00bbd2501b6db69822"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/pr_metadata_update.json",
+      "status": "??",
+      "bytes": 766,
+      "sha256": "8c2259f4952d39a60676dde938bd156f7af26427a5fafe27304af208b513598f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/assessment.json",
+      "status": "??",
+      "bytes": 1163418,
+      "sha256": "bc61fa0f955d2a6e86562580cf56c5534f5b8440b824ad87ab048466f7982caf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/country_inputs.json",
+      "status": "??",
+      "bytes": 275988,
+      "sha256": "489df342e11dd6e91695ebfa15934a8aadb7b08d4569585e23b3c916d692ac2f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_country_preview.html",
+      "status": "??",
+      "bytes": 241017,
+      "sha256": "3e62af20ca56918a3c18366da1218effe5a85f919e128288306ea0c06a6f5f9a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_country_preview.html.gz",
+      "status": "??",
+      "bytes": 35780,
+      "sha256": "9a2a8d4fc9f8ab17c112bd5919c74885084d01c2058296fb3817bed6123909d3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_integrated_preview.html.gz",
+      "status": "??",
+      "bytes": 77255,
+      "sha256": "c4cd83b224ae55ea44971bba890a6e0ce808cd976e34a31c81656bbc133cf508"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_stocks_integrated_preview.html.gz",
+      "status": "??",
+      "bytes": 22977,
+      "sha256": "045cfe4342233a3605c8d8bb9437caee0816a21c80b6d42fb173eae97e3d9c03"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/manifest.json",
+      "status": "??",
+      "bytes": 10767,
+      "sha256": "ea5c63751db5c2170b95a9dc184a02af894661542018ec526faa020409be9c0b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/manifest.render-original.json",
+      "status": "??",
+      "bytes": 9721,
+      "sha256": "bc9321e4bc2a0edf814acf36a54912e69c63fc13a9f95207799c5e905dbf7316"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/market_replay.json",
+      "status": "??",
+      "bytes": 2903,
+      "sha256": "c4993a42d353c0dd105619b650af4e3bfcfbfd01ed20e92d9c0a58d2eb2ac567"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/raw_api/GGXCNL_NGDP.json.gz",
+      "status": "??",
+      "bytes": 23487,
+      "sha256": "672a06a2784c2b09510d13d2525081f9988b0376d5eaf4c683404b4820d3e399"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/raw_api/GGXWDG_NGDP.json.gz",
+      "status": "??",
+      "bytes": 27186,
+      "sha256": "1eff49b65fb33e6211cc49c848ed1c8c78ff98ddf1153e02a936f0b6a40ec28b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/render.json",
+      "status": "??",
+      "bytes": 1785,
+      "sha256": "2eca393029077a32182adee790422b0ebfb71260ed4715ff548a5291c0c4080d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/render.log",
+      "status": "??",
+      "bytes": 8221,
+      "sha256": "9f8abd234b99fefda03490341f8bc0c5b67d0bf2cd8d4328ff865df7f6a5dc39"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/render_final.json",
+      "status": "??",
+      "bytes": 574,
+      "sha256": "d86af8a5a3dc5cb54d1f9406f0fc0934e7a9280485e470a0a41e2f53410d28a3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/render_final.log",
+      "status": "??",
+      "bytes": 8221,
+      "sha256": "3995d31b200e1c33ea707299df585582212120b4f0523839105109a4cab74a0b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/source_acquisition.json",
+      "status": "??",
+      "bytes": 952,
+      "sha256": "97d6f9c0ac2929dd1944e0e4c0661278c245012d11651a3051416cbb75bf3ec3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/source_mobile_before.png",
+      "status": "??",
+      "bytes": 116684,
+      "sha256": "ad2d384ccff731c7e4e8727abd420e0e9b8a91e1b33d88b9b0b1180902885aed"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/source_mobile_diagnosis.json",
+      "status": "??",
+      "bytes": 5435,
+      "sha256": "26537c86bdb8a29a3864c70fb9415d84c7d7e0e66d3d876ad043e20536ab2262"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/template_readback.json",
+      "status": "??",
+      "bytes": 551,
+      "sha256": "a6d5faf677146133bf9e3abcdb44e3747d704e3e07dc6d5dd818535437444e5a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/verify_fiscal_coverage_browser.py",
+      "status": "??",
+      "bytes": 11309,
+      "sha256": "d548eaa29599b9417a79063a24d265c98481e93f379e416970d8d7640876c046"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/verify_fiscal_evidence_integrity.py",
+      "status": "??",
+      "bytes": 8940,
+      "sha256": "dc8d61bc48fa42c9dd09c504dc5b5d2345a66c78e59897e50b3faee02e602dda"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/AU_normalized_observations.json",
+      "status": "??",
+      "bytes": 16225,
+      "sha256": "05841d6830e689666af2e7c546d4da5143285939e91a7d324b19814649916a1f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/AU_yahoo_chart.json.gz",
+      "status": "??",
+      "bytes": 5457,
+      "sha256": "f89787c3201e97b9f5aa1b0f33d4585125f7aecaab2328ed430aaa9a3dc50035"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_COVERAGE_20261020.json",
+      "status": "??",
+      "bytes": 49342,
+      "sha256": "bd1a5b8021609eafaad4d683836163d4fce174f78df4809bc6b8c3e4295a8f95"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_COVERAGE_20261020.md",
+      "status": "??",
+      "bytes": 12067,
+      "sha256": "b03c25ca4f06ae266784ef43c7e3f85d31085ad59fcf342cb061ea3d9ff70c00"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_SOURCE_REVIEW_20261020.md",
+      "status": "??",
+      "bytes": 5281,
+      "sha256": "89bfff203a1c738e2f43dcbdeea3dd9145f0a7c9db4efae6ca464715a781988b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/EZ_normalized_observations.json",
+      "status": "??",
+      "bytes": 16199,
+      "sha256": "a2407e8a4a07f40e6a0fb1327a5a8efd24a4a9058664c8ee63c8f8b5ac7931b7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/EZ_yahoo_chart.json.gz",
+      "status": "??",
+      "bytes": 5349,
+      "sha256": "5aad2d6901fe2d7eee352c9aa51fd47b47b91159a94c6b14bbed240a92ed517a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/GB_normalized_observations.json",
+      "status": "??",
+      "bytes": 16204,
+      "sha256": "2cc3619e789dd5c747178bd3991e6c8d74ff6ecfcf76bce72e670164f7ed3940"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/GB_yahoo_chart.json.gz",
+      "status": "??",
+      "bytes": 5283,
+      "sha256": "ac4b561e22a2496e2d022a7930382141394061f37fc6bd5ced45115e7d6e3616"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/IN_normalized_observations.json",
+      "status": "??",
+      "bytes": 16075,
+      "sha256": "47d1f5ce1869b7b70d16fbca9763f735acec53398f32ebacfab4066f62730d36"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/IN_yahoo_chart.json.gz",
+      "status": "??",
+      "bytes": 4145,
+      "sha256": "58c57a618249884be808cccd3e439e14304eb41d027bb7c5710dd4ec75a15055"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/JP_normalized_observations.json",
+      "status": "??",
+      "bytes": 16187,
+      "sha256": "5773e56d1dc9a807ac7d47a8bd6a8cd4cf65935563302959ad145f31ff4b4a6c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/JP_yahoo_chart.json.gz",
+      "status": "??",
+      "bytes": 3905,
+      "sha256": "f93713a28ccc2a1a3cf02ec1344ec0e85c1fc2ffe0a62ae53867d151e4944e8a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/KR_normalized_observations.json",
+      "status": "??",
+      "bytes": 16029,
+      "sha256": "983bd7f0562b1e5242a703122f5c03acb9d58dc3917afe03ac28cdad0040b534"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/KR_yahoo_chart.json.gz",
+      "status": "??",
+      "bytes": 3329,
+      "sha256": "53bac0eea6de3de2e155f0dc30e9f7ba6e51fafc654118aa6bd87fba1688e38a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/PR_CLAIM_REVIEW_20261020.md",
+      "status": "??",
+      "bytes": 1564,
+      "sha256": "02107e69f6cf1efaeb2f2738861b2ea86b9f770fa4fd008a2758d9eccb46e971"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/TW_normalized_observations.json",
+      "status": "??",
+      "bytes": 16181,
+      "sha256": "8eb8c14ac83631ae96fab59105d1366de53113dab7c3a4390ba151ef3aeaee9a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/TW_yahoo_chart.json.gz",
+      "status": "??",
+      "bytes": 4486,
+      "sha256": "5ec0800b4d5c433cc4e9fae67a2a5139ece6ba72869f14ae023b6f046d6276ae"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/additional_incumbent_provider_probe.json",
+      "status": "??",
+      "bytes": 5269,
+      "sha256": "0844fdf051abfd70380c95e678083613586b2255dca867330b34f40c45915f11"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_before_mobile_typography_fix.tar.gz",
+      "status": "??",
+      "bytes": 11855050,
+      "sha256": "8aee6247af0e53579c119a5a910438a1d4b681d9196ef0ad1e6192d9b4013ddb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_before_typography_fix.tar.gz",
+      "status": "??",
+      "bytes": 6076766,
+      "sha256": "a09cbe19039fadc007e59c76c6853b721c611c7684c9e6837e79aa8dfdb3a2d7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_run.json",
+      "status": "??",
+      "bytes": 498,
+      "sha256": "db353a5732fe084c9d65dfee3f618d1596a9b0bc6b21e0dbbe0f35ca39713e4e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_run.log",
+      "status": "??",
+      "bytes": 276,
+      "sha256": "7e3a657ac7c22354ca9bc9473fd56adb615a23b97b3e6f4ab982f495fde769d1"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_verification.json",
+      "status": "??",
+      "bytes": 53833,
+      "sha256": "c328198869c256cb95c9e98a67579b20c916e9989a955d482b773b5bb8a5fc62"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/build_currency_checkpoint.py",
+      "status": "??",
+      "bytes": 11101,
+      "sha256": "2866162e0a9c56ec2a8c7e344267c94b83ca89c3b8fc3447c2abfaf2994a324b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/canonical_capture.log",
+      "status": "??",
+      "bytes": 351,
+      "sha256": "cf2fb6d2891760c508a0eda11fb25060f456f3d10f532c90f00ce1122c5c34c9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/ci_dependency_coverage.json",
+      "status": "??",
+      "bytes": 3028,
+      "sha256": "91ce32e11fb44f15b9baef307e4994bcd5d8d20275990920e15781b452bf5caf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/ci_dependency_coverage.log",
+      "status": "??",
+      "bytes": 338,
+      "sha256": "ff7b929738b8c4db0941ed512992755e69aa57ff7c073f38a6722f53f6696040"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/completion.json",
+      "status": "??",
+      "bytes": 875,
+      "sha256": "18ac84c54629345df59ff250a5ad1271410707ab72181ef73672e8ef09187706"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/country_and_public_tests.json",
+      "status": "??",
+      "bytes": 797,
+      "sha256": "5348ae295b56c2968ca50974ba194fb46a762f7142e153150034c7e2258e677c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/country_and_public_tests.log",
+      "status": "??",
+      "bytes": 2089,
+      "sha256": "1bd0b4283b199a812a6bc576299ec44954a0d93aecf42d454c41f0732acb0346"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_before_boundary_fix.tar.gz",
+      "status": "??",
+      "bytes": 19471,
+      "sha256": "824925bb2191be885e4a8b9691f936ff4bf6f7754f66940e0b844854ab59006f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/au-desktop-light-zh.png",
+      "status": "??",
+      "bytes": 23708,
+      "sha256": "00c24190f425b53109cb522ebd545b6930f016ea360e9d50b4c4bc182dfe1db1"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/in-narrow-light-en.png",
+      "status": "??",
+      "bytes": 21845,
+      "sha256": "8b82d9c604b2ae1136fa77192ba06de48f8213bf7407077a479e7c44158fc28d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/jp-mobile-dark-zh.png",
+      "status": "??",
+      "bytes": 14997,
+      "sha256": "4a2ea2136c2d10d27dc6aac6380ae10558ebc3be260a99351007133b72fed4f5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/kr-desktop-dark-en.png",
+      "status": "??",
+      "bytes": 23403,
+      "sha256": "75321e4d6aadc4b51f264edcc6f3246437e64eb1f040daeddc18cb5d58c0bef6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/kr-desktop-light-en.png",
+      "status": "??",
+      "bytes": 23879,
+      "sha256": "3ab8abd2f48a521c55269e987d29a23d38ab65a0bce9ba5682f623179a46d129"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/tw-mobile-light-en.png",
+      "status": "??",
+      "bytes": 15320,
+      "sha256": "2f9ccb982b09e4e32f112c4f3c16a135dbf3692ccb26878569b909e168263d8d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/finalization.json",
+      "status": "??",
+      "bytes": 502,
+      "sha256": "0d8f9babde711d9bf65c0542f11f8829eb6852f75dc7acf6303b71d81544e33c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/finalization.log",
+      "status": "??",
+      "bytes": 956,
+      "sha256": "f95197ebd25e988ce332e6e32ecf92de4f01e49ba3ef8d72822b767251c4fdda"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/finalize_currency_evidence.py",
+      "status": "??",
+      "bytes": 6775,
+      "sha256": "e1af893625fd2cd8f187877859eab5b4affb0d3beff029f85f7d651ec71c78c6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/design.log",
+      "status": "??",
+      "bytes": 279,
+      "sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_catalogue_and_whitespace.json",
+      "status": "??",
+      "bytes": 1165,
+      "sha256": "c85c9585d5410210b8c65c04aff00e3eb87ea307359335ae4ba254fd46e3e62c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_ci_fragments.log",
+      "status": "??",
+      "bytes": 124,
+      "sha256": "5c24bb0309ff837e2139785557fa45685b38af863f1f5511c91f5975d9098424"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_tracked_whitespace.log",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_ui_delta.diff",
+      "status": "??",
+      "bytes": 21482,
+      "sha256": "e325250c62463c1be12f23b8d9c6938e81c6ce2ef1e98fc7874b881547f12f0f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_ui_delta.diff.gz",
+      "status": "??",
+      "bytes": 5952,
+      "sha256": "1a7d14b52553f06b7633016727173c4632b6b3843c0a936fc8bfe4c0d99d5dec"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/tracked_whitespace.log",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/verification.json",
+      "status": "??",
+      "bytes": 2860,
+      "sha256": "e15c01c06a83953db948318ee7f4c8285e944d8d5bb0c6235f492dfe25bafb03"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/visual.log",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/incumbent_provider_probe.json",
+      "status": "??",
+      "bytes": 2108,
+      "sha256": "454ba3a05d235d2e83159ae865a76331c3c6f48e0a534628595cbee3aa89e4c2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/inspect_incumbent_provider.py",
+      "status": "??",
+      "bytes": 2723,
+      "sha256": "336b091c08b67be90d31fd552fe69c821d372a6dea0f2858da2b2e68ec9d51a8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/inspect_remaining_incumbent_provider.py",
+      "status": "??",
+      "bytes": 3022,
+      "sha256": "caa6a4f1c69cd24992333dd3b3d08dbb1853dafb0e19876737b4903e75559242"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/integrity.json",
+      "status": "??",
+      "bytes": 2033,
+      "sha256": "f9d5ee79da1d6cae8c374f84a55db22db4417259a014ee0f3d073c1d83ae298e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/materialize_paper_currency.py",
+      "status": "??",
+      "bytes": 5609,
+      "sha256": "bb59d84334013e8375cd4a20c65d58b581f4d140ae03d86573137430531c1d02"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DMX-0.jpg",
+      "status": "??",
+      "bytes": 211659,
+      "sha256": "05ef1c3828e91ba28b8b74d3932b31a5fe44fe3ae8e0da3b1001abf553c18879"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DMX-0.jsx",
+      "status": "??",
+      "bytes": 92251,
+      "sha256": "6eb75c08b9661f301601638e043b79355a67df54c6440dd0d68ef5f488c727c0"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DMX-0_before.jsx",
+      "status": "??",
+      "bytes": 91959,
+      "sha256": "0d1ca86a55432d41aa584f1b6a631568968d4803cc134c5c7f80a86b0a691ffc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DW7-0.jpg",
+      "status": "??",
+      "bytes": 224070,
+      "sha256": "9615e31a1664c4ce7ca692a2f2332afafd3f41159b846e6363ef29bc29e9e6c0"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DW7-0.jsx",
+      "status": "??",
+      "bytes": 92542,
+      "sha256": "71ef830582947caa6edc01e5241c9b5b4668b4834651463f718a47f8fbfc91dd"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DW7-0_before.jsx",
+      "status": "??",
+      "bytes": 92245,
+      "sha256": "8af4058c2509dd134d2821b62634c12db4b273bc915769c4f8030eac2e1b543c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_E4D-0.jpg",
+      "status": "??",
+      "bytes": 83169,
+      "sha256": "6b003686c23e7986b6791d58d6929c2f0cf95f50b4780d6c6e1add5537f79933"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_E4D-0.jsx",
+      "status": "??",
+      "bytes": 90343,
+      "sha256": "730cad3ea641532f13e8add155674a21d3ed72ea209ccb019fd79784bb856d5e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_E4D-0_before.jsx",
+      "status": "??",
+      "bytes": 90051,
+      "sha256": "d10c4451638d958e56d70f8ae796abe2193619061b15148e894d92c4f9c6f5a2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_EC2-0.jpg",
+      "status": "??",
+      "bytes": 88920,
+      "sha256": "e08fa331f9493cad42c8a84024a7ebee935e894d92ee0ec532b0f4aadf5cfd8c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_EC2-0.jsx",
+      "status": "??",
+      "bytes": 90617,
+      "sha256": "90499ef84ebb692769fab7e1990a78bb4eb244a4e1723fe3ba52f4c13a35d66c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_EC2-0_before.jsx",
+      "status": "??",
+      "bytes": 90320,
+      "sha256": "d24d53bf0f9c790fecb8a670fe43b5f18ca5e813087cb92e0ce562c4a77a0fdf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_capture_materialization.json",
+      "status": "??",
+      "bytes": 4799,
+      "sha256": "1a29f2885b0971fd4c6d9f3ecb51edf4e83f998963f79c4be1a81015326cf3c3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_DSN-0.jpg",
+      "status": "??",
+      "bytes": 10399,
+      "sha256": "90159d8e3448cf67924e1dc2816c48e6232832c0f2c215253d4c9aafca754e0d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_E04-0.jpg",
+      "status": "??",
+      "bytes": 11076,
+      "sha256": "01e0338481decfa864cfd4afd83d45aa205b3cd8ae3eaf263e46ca0aadbcc71f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_E8X-0.jpg",
+      "status": "??",
+      "bytes": 10013,
+      "sha256": "a30dbd0d3eac77af6312dab92fe019b70346cc9fa85bf3466740b5ddf74c5bde"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_EFZ-0.jpg",
+      "status": "??",
+      "bytes": 10677,
+      "sha256": "41b0e6d3c0fb6abb4e89397ae0b05cd45a68bd53cd337858efd524a119784056"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_coverage_receipt.json",
+      "status": "??",
+      "bytes": 8552,
+      "sha256": "79997eaa36f432ed03baa28fae53fc75ba46ca932c72da2732858183c55d50dc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_01_duplicate_dates.json",
+      "status": "??",
+      "bytes": 48528,
+      "sha256": "8bdbd53479683b8da4ef0c3251f2c68904a69af549e54bc9495fc4e120d3e2ae"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_02_text.json",
+      "status": "??",
+      "bytes": 51052,
+      "sha256": "c2b34d9b0c18872d804345fe01307fe1012f66f2e0a0bbbeda4826cc629a6f0e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_03_styles.json",
+      "status": "??",
+      "bytes": 47893,
+      "sha256": "647659b0f4b1b9ee124a895c1beb6d549d712a01c6399038fcd0e82d45d6abc5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_04_order.json",
+      "status": "??",
+      "bytes": 48353,
+      "sha256": "2f445be9cdf6d9c1e6cd98dba5e69bf4e046890376d9e6f769b2a07d45d298f6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_05_names.json",
+      "status": "??",
+      "bytes": 47680,
+      "sha256": "01a5d777c4e55da082fdc14e4c589c5f87ef9a4768628a937129e90859b180cb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_06_finish.json",
+      "status": "??",
+      "bytes": 46909,
+      "sha256": "0ecb909fc50c62d2f0d448b573174f6642eed3e88a355a805c520c92edeee17b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_final_readback_verification.json",
+      "status": "??",
+      "bytes": 5409,
+      "sha256": "bf2e4ef550314e09702b2ebd610fd3496b91269c7d6dc7fa2e8af737b9df52f8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_native_capture_bundle.json.gz",
+      "status": "??",
+      "bytes": 624020,
+      "sha256": "caf6d64e8a93c2665271b7d481aa2c0b825db35d3ed8b9a63eb69603a59f9e2d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/pr_body_before.md",
+      "status": "??",
+      "bytes": 6786,
+      "sha256": "4a3b02c312a359559f87a60310d071a0f3c187940256ac00bbd2501b6db69822"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/pr_body_before.md.gz",
+      "status": "??",
+      "bytes": 3359,
+      "sha256": "8c7334b951ef67358404b67431a2237358119895772f9b2514c163a9281b211a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/pr_body_prepared.md",
+      "status": "??",
+      "bytes": 8009,
+      "sha256": "7914aa914e531d391e617b6ec431e0a07f36645c6418abfb3afc0c69a5ec7d9f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/pr_metadata_update.json",
+      "status": "??",
+      "bytes": 1608,
+      "sha256": "199e9bf44b46180bd3c5627de1084014c234fd334bffc72645c800fa9a5bb9d4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/pr_metadata_update_response.json",
+      "status": "??",
+      "bytes": 19548,
+      "sha256": "2db264c18ae06f4d2f69713447df5fcc618fa56ae0fbe772c32bde2c38d61507"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/assessment.json",
+      "status": "??",
+      "bytes": 1174780,
+      "sha256": "5125bfcf4e7c6204e6593a41e6554947c5ee4ef46e25208e03d9a935357c8bc4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/country_inputs.json",
+      "status": "??",
+      "bytes": 275988,
+      "sha256": "68b1f2806de3d39dc811419126617ac100d6c386fb1fdc158cd108ff59fdb8d5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/currency_replay.json",
+      "status": "??",
+      "bytes": 8389,
+      "sha256": "a369f3b0ebf832e88d08b7eddeb08166366bd4c5ffcc4de16060757a2e2c4a69"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_country_preview.html",
+      "status": "??",
+      "bytes": 250341,
+      "sha256": "d1e7bc139601e8ed8cb84d9368c0d284d98316061499ba850dbb3d42f86c5c70"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_country_preview.html.gz",
+      "status": "??",
+      "bytes": 36504,
+      "sha256": "33368aa6d0ccc186fa372bbf43e879a6f91233708200e2504b679169c8c886a0"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_integrated_preview.html",
+      "status": "??",
+      "bytes": 1673634,
+      "sha256": "8354968aecd636c43aad2c8945393b2fabee6f313181f90618825d90b6737b5a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_integrated_preview.html.gz",
+      "status": "??",
+      "bytes": 78026,
+      "sha256": "8c2e9402510517d1523e81bbd3f37f82518e73a69780e438f0d162b5211b0257"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_stocks_integrated_preview.html",
+      "status": "??",
+      "bytes": 97987,
+      "sha256": "94ff3532e86169db559f85ae74e21eb029524844bc8272d445f8db4d771672e8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_stocks_integrated_preview.html.gz",
+      "status": "??",
+      "bytes": 22978,
+      "sha256": "1a32da7212bff3b3087d492e075cca96dd186ef49b6842cc5acd7ac367472864"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/manifest.json",
+      "status": "??",
+      "bytes": 15329,
+      "sha256": "4f249b696bf2c1c04bb19998f7dbd1090b0d94ea43d576bac60665b57852f10e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/manifest.render-original.json",
+      "status": "??",
+      "bytes": 14310,
+      "sha256": "47491290ea21b632189198c54090dd621ec8e53f8c3b40abf5cef0fd61a9d748"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/market_replay.json",
+      "status": "??",
+      "bytes": 2903,
+      "sha256": "c4993a42d353c0dd105619b650af4e3bfcfbfd01ed20e92d9c0a58d2eb2ac567"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/qualify_retained_fx.py",
+      "status": "??",
+      "bytes": 7195,
+      "sha256": "398d7859c1dd0d5f12292e934430cd96376825971055317bbb3e283e0c490a39"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/render.json",
+      "status": "??",
+      "bytes": 838,
+      "sha256": "4dc2801140c8d1791d38fb2cd331e7c89c65d626c0a10e3e043cea7bb9e1084a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/render.log",
+      "status": "??",
+      "bytes": 12104,
+      "sha256": "2e2e39ccea78cf50fa4c5933af965cca0061abdaf9d28781d90e210efcc203db"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/source_qualification.json",
+      "status": "??",
+      "bytes": 8843,
+      "sha256": "d1dc2284abe7e3dd282e2b62a1b0fd0816e4c394e0dd817e629743e35f4b9174"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_attempt1.json",
+      "status": "??",
+      "bytes": 319,
+      "sha256": "ec49a3b2d4dd10fa17520dddcda8786b30449c4a73705cd1e51aabba646644ff"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_attempt1.log",
+      "status": "??",
+      "bytes": 9645,
+      "sha256": "cfc39a952b738b6c6979b6f8505f5ea867f485394eceba0fa2e2f940ebc0bc63"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_boundary_fixed.json",
+      "status": "??",
+      "bytes": 376,
+      "sha256": "df9e50195147a4dbf1538441eeccb37bed01a6968923a90ab5ce7df29a06062a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_boundary_fixed.log",
+      "status": "??",
+      "bytes": 1848,
+      "sha256": "8c1142a25cf8401302120518fbb38d70b8caef85ed23117cb286c9814e4cf62a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_capture_boundary_before.json",
+      "status": "??",
+      "bytes": 407,
+      "sha256": "be63b86205464ce68a499fd443d548ee61e70bc576181ae1dc5461357e4baf94"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_capture_boundary_before.log",
+      "status": "??",
+      "bytes": 5169,
+      "sha256": "7bb6d8bcea209e8ea697af7e49d76a652a9e04ddf10afe566c86e8e7762e9300"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/verify_currency_browser.py",
+      "status": "??",
+      "bytes": 13426,
+      "sha256": "501e02749bad7cb2586a6efab1dc92360322ef57ef4de004f09992bdec76888e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/verify_currency_ci_dependencies.py",
+      "status": "??",
+      "bytes": 3809,
+      "sha256": "51bcc798d62c61612758446e9a6ee3af243c432cfa623015e30763800a490524"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/POLICY_COVERAGE_20261019.json",
+      "status": "??",
+      "bytes": 33218,
+      "sha256": "c1ba945eaa8f2168539fc3e7b363ce1fdfc04623fbb737958b65989e3640faab"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/POLICY_COVERAGE_20261019.md",
+      "status": "??",
+      "bytes": 16661,
+      "sha256": "d59fa824d62d6ec29c1704be48a0e1d19e7924877e67c350fbf17c151967dfee"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_acquisition.json",
+      "status": "??",
+      "bytes": 271,
+      "sha256": "dbc416bf98707a0f520179b828405d71c409fae3eb00d9229a27bf3ab66add33"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_candidate.json",
+      "status": "??",
+      "bytes": 6147,
+      "sha256": "e85fc9b4e1604b34062aadd67c871236ad5e1f9896f706a7abfb4df8fca9a5bb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_candidate.md",
+      "status": "??",
+      "bytes": 4537,
+      "sha256": "eaa2ebb4894dd358d71a54e515ee97f21221b767bed65c29c41963ad0de3e660"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/browser_verification.json",
+      "status": "??",
+      "bytes": 76744,
+      "sha256": "f1e00175667e3655c07c5cd51d313f0b2bac7dceb667241296b769366f7116a9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/canonical_capture.log",
+      "status": "??",
+      "bytes": 347,
+      "sha256": "06534b90d67f9909a99e9937c2ca2802c283ae1981800c0d8f317c380233b615"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/design.log",
+      "status": "??",
+      "bytes": 279,
+      "sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/final_ui_delta.diff.gz",
+      "status": "??",
+      "bytes": 1640,
+      "sha256": "510414e7832ea851135673451bedf88d2a99d69b10fb947e2b818b82049474f2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/integrity.json",
+      "status": "??",
+      "bytes": 1658,
+      "sha256": "9e73cc4cd4f943be84a9418a73922221172e0c960fe52998c4b294b334803c42"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/new_evidence_whitespace.json",
+      "status": "??",
+      "bytes": 6077,
+      "sha256": "8f3172e967133b132872d92842c7ebd48859da2917e235de9a9f7977561cb2cf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/new_evidence_whitespace_initial.json.gz",
+      "status": "??",
+      "bytes": 3073,
+      "sha256": "d82197f52aa1e365ce029acd9790a33567787be5e5faedfb6db316d43ffc5332"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/tracked_whitespace.log",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/verification.json",
+      "status": "??",
+      "bytes": 3065,
+      "sha256": "2a09bbfa86efb51e40bc8e312632de78ed88cd1181700fd89d4bda8d388e7723"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/visual.log",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/github_metadata_update.json",
+      "status": "??",
+      "bytes": 16949,
+      "sha256": "71e67ba50bce4576989a27401871b662c7055239b1fe239ebf1b6943dfe5a00c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/DMX-0.jpg",
+      "status": "??",
+      "bytes": 225866,
+      "sha256": "ef4b51b714502fc60a9869885eb98152d075c15dcba06b21475d55d4892805b3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/DRZ-0.jsx",
+      "status": "??",
+      "bytes": 2780,
+      "sha256": "814acd72d77e733f33dd8880c6f886758769ef2d185f3a941508ba6ed12efa34"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/E0M-0.jsx",
+      "status": "??",
+      "bytes": 2789,
+      "sha256": "987dd7ae147d112bfffeac877dc3cdd84e2d0d36ef2f244371ef45d98147aa3b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/E9F-0.jpg",
+      "status": "??",
+      "bytes": 21158,
+      "sha256": "c9cf07dedbf28115bf43a75db40c3f4e030e6d39206ae81c20257386b7259db8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/E9F-0.jsx",
+      "status": "??",
+      "bytes": 2797,
+      "sha256": "142753fac5cba34e958814a6127c7e876bdcbae1553956c29356a9354fabca5e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/EC2-0.jpg",
+      "status": "??",
+      "bytes": 91368,
+      "sha256": "5667171d45ad8500e74dad42f8ce39a5a70e1a0aa0e4ebd50c4b39ed6cc93c22"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/EGH-0.jsx",
+      "status": "??",
+      "bytes": 2806,
+      "sha256": "f990506cd3dde5dbb2bb78fffa5eacd4e195d53136ccbb8a93115754d41e9712"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/country_copy_readback.json",
+      "status": "??",
+      "bytes": 1807,
+      "sha256": "0f34c0cbb53d6dc991496c7ecdd626be5fd43a0651fc49656d4f509f44b33b5a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/effects.json",
+      "status": "??",
+      "bytes": 479787,
+      "sha256": "edb07d566f8aa0f6939a8c229db64bdb5a456586efda8d5b84cad29b4ffd16dc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper_policy_coverage_receipt.json",
+      "status": "??",
+      "bytes": 4740,
+      "sha256": "c9aad285a3ee80e54b0b125274f0251122f68d3b1a7862f0b1620227e69f6a24"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/au-mobile-dark-en.png",
+      "status": "??",
+      "bytes": 26028,
+      "sha256": "dc0dda178e331b7b7e5ad15aa2358d38bd66e26aed1d789faf2147e563260aa7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/ez-desktop-light-zh.png",
+      "status": "??",
+      "bytes": 29984,
+      "sha256": "7dd8c6188721bd6b390de6f071f6d93022bc4dd9884b2b64403eb4c452d4df08"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/in-narrow-light-en.png",
+      "status": "??",
+      "bytes": 27290,
+      "sha256": "3638c266e63f4b56137a57a7fbd6e93f2382205ced09e761d1758bcf9a469843"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-desktop-dark-en.png",
+      "status": "??",
+      "bytes": 29891,
+      "sha256": "8d55f56e62310e104b5f18428198390009e9b77a9a257b0a13f5429beef4af31"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-desktop-light-en.png",
+      "status": "??",
+      "bytes": 29906,
+      "sha256": "6259bfaf504ff5a430a4a625ec428d68d2cf5f03a77a33217ac965e4689c8e24"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-mobile-dark-zh.png",
+      "status": "??",
+      "bytes": 28394,
+      "sha256": "00eca88aeb7d77b1dc462eccb86fa969faaf40a49d1b772921c2584bf5ffb3c7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/assessment.json",
+      "status": "??",
+      "bytes": 960718,
+      "sha256": "65b1d6eca1fbceec77aa86c001bcb299cb6057d02db95261bc5a135322ad8a3a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/country_inputs.json",
+      "status": "??",
+      "bytes": 160263,
+      "sha256": "e324afb87de8d98fb8995a4868fb8f6e9c7803c80f636a04660768ecf2bb203b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/intl_country_preview.html",
+      "status": "??",
+      "bytes": 229891,
+      "sha256": "88befdc1844728e0c9ab2c022ebcbbbe9bd9a9833acbbbf1b88518659a284cf6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/intl_integrated_preview.html.gz",
+      "status": "??",
+      "bytes": 76408,
+      "sha256": "21546c0e8f5235bbc2a3ff1325901db040606fd50d4afef362c5ec5815b9a154"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/intl_stocks_integrated_preview.html.gz",
+      "status": "??",
+      "bytes": 22977,
+      "sha256": "d242b5697c120d8fc2aa4769a15d801e06afc3ea46972dc17807b0dbaedaa409"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/manifest.json",
+      "status": "??",
+      "bytes": 10797,
+      "sha256": "2d4e9de232de29319bc7e974f22443ca4c60c5dcb1a4c5a10f1a4f64a312df8b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/market_replay.json",
+      "status": "??",
+      "bytes": 2903,
+      "sha256": "c4993a42d353c0dd105619b650af4e3bfcfbfd01ed20e92d9c0a58d2eb2ac567"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/public_html_tests.json",
+      "status": "??",
+      "bytes": 580,
+      "sha256": "6a9d7a20e5322a2ae4a385503015fe532cdcc3435556085911a251969196c166"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/public_html_tests.log",
+      "status": "??",
+      "bytes": 1768,
+      "sha256": "46532ff6da49f1fdc3e20b2a29cb30981021f63349b7acd28c31289c0f78f915"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/release_observation.json",
+      "status": "??",
+      "bytes": 6728,
+      "sha256": "0b8f2237e9f2cb3c36696ba944fcca58570bdf9e6abc364468b6acd72d6ca640"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/render.log",
+      "status": "??",
+      "bytes": 7958,
+      "sha256": "26ba05e891673e84845fb2ff95a36fb6ae935d7ee8b6c561bcbeef8a347fff6c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/render.log.raw.gz",
+      "status": "??",
+      "bytes": 2891,
+      "sha256": "b92eec3bc6603ae04575ef8bd0ab8c835ed078e773ea2d95096a473becc4b602"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/render_v3.log",
+      "status": "??",
+      "bytes": 8073,
+      "sha256": "8d92c00fc115d59df0aa3f1f2c104c8ca4b3573d69416d0e9e6a9a264a9eca55"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/acquisition.json",
+      "status": "??",
+      "bytes": 6790,
+      "sha256": "cb2e95271c45987edfb7981353be313c57bcf1d53c19d5eb1ab513102a449f22"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/admission_attempt.json",
+      "status": "??",
+      "bytes": 1236,
+      "sha256": "365ebab4b518852ee883d9d1daa42fe9d39149b04633ec0aa2ad9d99f9ea552d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/baseline_before.json",
+      "status": "??",
+      "bytes": 415,
+      "sha256": "5fc72402581c6e3e60295dc45ca6cd6ca663c5dcc6dcce0a747974f25b5c8dec"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/body_contracts.json",
+      "status": "??",
+      "bytes": 1171,
+      "sha256": "e9b771c8989390923fbc72589a3c1285f98595d34114f68f1996ff9dc94d2d9b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/qualified_policy.json",
+      "status": "??",
+      "bytes": 9080,
+      "sha256": "8b9c32be008f2d90ae6da977e525191a90972fe846f18087f8b6468885d99c0d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/log_custody.json",
+      "status": "??",
+      "bytes": 1376,
+      "sha256": "fab2c1379aa9bffb5fe3d1ad434de8f256826bd9c513a75a6dd09119440a766d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests.log",
+      "status": "??",
+      "bytes": 2877,
+      "sha256": "d0cecf260b61fadf4e2e235579efe0e669e9cf477b4c03a1a3e75e9e0cfaa3e4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v2.log",
+      "status": "??",
+      "bytes": 2010,
+      "sha256": "59d5147e11df99e95f2a30403d3d4f2db7c96fb99a0bb7f9c2f438b0da9b637a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v3.json",
+      "status": "??",
+      "bytes": 587,
+      "sha256": "b61325dc8663f96957519668174c9e98b62cc5e68be9c3c297ce99beba77015c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v3.log",
+      "status": "??",
+      "bytes": 2009,
+      "sha256": "7e820cf9bb37624a891fe264622b3bee79aa546d5995a7535fef3304764a2565"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/review_regressions_before_fix.log",
+      "status": "??",
+      "bytes": 10137,
+      "sha256": "986bd5ffb914de7df9d9b34da12f754020b5a338a9cccc3a131d8132d7ab5559"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/review_regressions_before_fix.log.raw.gz",
+      "status": "??",
+      "bytes": 2338,
+      "sha256": "2a4667038066ef93741191bd7fa3a336d21eb3098a4c607b75c4430605588d43"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/verify_policy_coverage_browser.py",
+      "status": "??",
+      "bytes": 9428,
+      "sha256": "3b74663729050b9e72599644587b52c39bb3bed261a6317c832ebb38f24cc0d1"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/public_asset_repair/boundary_after.log",
+      "status": "??",
+      "bytes": 110,
+      "sha256": "37947b0813bde1a5f2987a66cba7e9dfb45227b3c6b8c9337a6188dc2210b0c3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/public_asset_repair/boundary_before.log",
+      "status": "??",
+      "bytes": 2764,
+      "sha256": "6a428340ace413b6e97c6653fef82c13a239d1bd5220041cf5de0e4a83b8b063"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/public_asset_repair/boundary_before.log.gz",
+      "status": "??",
+      "bytes": 828,
+      "sha256": "b7b41e2c181c1e0cfdcd77e38b96bb006fa42ae7540fe21d081a49e719b867bf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/public_asset_repair/caddy_adaptation.json",
+      "status": "??",
+      "bytes": 2618,
+      "sha256": "6aa17da069145cde2d99fc3b48bb49d15c9abf49e5f6cda25bb42755500268c4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.json",
+      "status": "??",
+      "bytes": 8323,
+      "sha256": "3ca0c45c88a5ed03572d540a7d2d7e8f41d6f00385a280115fc73510150a0989"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.md",
+      "status": "??",
+      "bytes": 2744,
+      "sha256": "40c5373563c7ead723a236edddf2b57d618e16f64c4b80300f128c449bb479f7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/PRINCIPAL_JUDGMENT_20261020.md",
+      "status": "??",
+      "bytes": 1212,
+      "sha256": "f88d5da177123ba1cd880a7389064d0fe00acd18b40eea9dd89a370417f74450"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/acquisition.json",
+      "status": "??",
+      "bytes": 1998,
+      "sha256": "41f7caeb7a29c8862de860a8ce6346306a93d363c4d05e20727710977cfc6098"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/branch_activity_page1.http",
+      "status": "??",
+      "bytes": 3996,
+      "sha256": "76da4b8a0df4684f14bc67466313d357bd0f42e30aefbdbb6389e573a7695c88"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/branch_activity_page1.stderr",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/currency_prepublication_source_snapshot.json",
+      "status": "??",
+      "bytes": 3915,
+      "sha256": "e77c6c6cac684b522de7419eb66faa3b45c37450aae90350262175ae1daadd43"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/currency_prepublication_source_snapshot.tar.gz",
+      "status": "??",
+      "bytes": 585609,
+      "sha256": "c79abb702329f775d827e1856591c424506448b67881efbe253bd93a2bf701b4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/current_release_dependency_sources.json",
+      "status": "??",
+      "bytes": 24950,
+      "sha256": "b96a5c550229f9953f74d3415854d6e9887f6c99f7aa6e0b1c2c171aa9ad7ba0"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/expected_commit.http",
+      "status": "??",
+      "bytes": 1436,
+      "sha256": "807582dcb52bbb7d9ae1d39d516c22d0b67c7d0bde8957a8725b325aaab22a04"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/expected_commit.stderr",
+      "status": "??",
+      "bytes": 81,
+      "sha256": "fa97abad78e8a0fa472b68d8dfef4c0f76376953ef8144665e94c7e510ff49b9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/gdp_label_investigation.json",
+      "status": "??",
+      "bytes": 1111,
+      "sha256": "71ebeb91aef2e4008097a2918933f908249b94ba185610c7aaab325d27877ed1"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/installed_execution_excerpts.json",
+      "status": "??",
+      "bytes": 12989,
+      "sha256": "f45d6b522db51b8085dc4dd1d0338ef3aeb4ef0e23944ae1e00879fed09c856a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/installed_execution_modules.tar.gz",
+      "status": "??",
+      "bytes": 42887,
+      "sha256": "2f1d5b23b25980c4d7c92df5f56b51a40f24208b77773951bf70d1e54f5c2401"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/original_execution_observation.json",
+      "status": "??",
+      "bytes": 3762,
+      "sha256": "3ebee73af690425467f5a83ecb03a0c68e4ba292315c145b5cb2b09c6e83f95c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/server_history_readback.json",
+      "status": "??",
+      "bytes": 1578,
+      "sha256": "034dca9b7c226f037ab0e61fa91dbcd450fce291b819e4a8f3384c977599398f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_branch_activity.http",
+      "status": "??",
+      "bytes": 3998,
+      "sha256": "747ca3afd6bee413a8dd6469b0fca269b85f481c741f7d1b63bc4a9331751cb7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_branch_activity.stderr",
+      "status": "??",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_expected_commit.http",
+      "status": "??",
+      "bytes": 1437,
+      "sha256": "c1db7cdb6a03df925d52c6e7afb351e49517a52c5e1c94ed95850220827aee57"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_expected_commit.stderr",
+      "status": "??",
+      "bytes": 81,
+      "sha256": "fa97abad78e8a0fa472b68d8dfef4c0f76376953ef8144665e94c7e510ff49b9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_native_status_response.json",
+      "status": "??",
+      "bytes": 1175,
+      "sha256": "81f366970f4f834de469e6e38532b9e5d19c2257f3e82d65c5cd06aaad1f78ea"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_server_readback.json",
+      "status": "??",
+      "bytes": 5100,
+      "sha256": "9b6fa84bf4c5e9e977a5a9cd2c9ce1363c17e972450c18ab82aa7e98529e2762"
+    },
+    {
+      "path": "tests/fixtures/intl_currency_observations_20261020.json",
+      "status": "??",
+      "bytes": 74794,
+      "sha256": "5165bbf43f2ae38a677d1f3183918abec8f8ca1bb5da42c6f0459c2696bcc01a"
+    },
+    {
+      "path": "tests/fixtures/intl_weo_october_2026_fiscal_api.json",
+      "status": "??",
+      "bytes": 3119,
+      "sha256": "f457a604b7f97280c30dfb128753dc01f470dd1bb2c45d1fbe661b8e49a99e34"
+    },
+    {
+      "path": "tests/test_intl_currency_observation.py",
+      "status": "??",
+      "bytes": 15744,
+      "sha256": "384640aa4a6dc6cda4a97a7f0c044512f42ed36a2e92178d7b000515936458dc"
+    }
+  ],
+  "file_count": 411,
+  "bytes_total": 70649467,
+  "largest_file_bytes": 11855050,
+  "unknown_scope_files": [],
+  "publication_performed": false,
+  "source_qualification": "Existing policy/fiscal/currency/public-asset immutable evidence, plus exact prepublication currency source snapshot. Actual current-composition CI and release gates remain required."
+}

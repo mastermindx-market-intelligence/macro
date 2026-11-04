@@ -1,0 +1,34 @@
+TAP version 13
+# Subtest: GS query composition: transport and unchanged business selection cause no history or navigation writes
+ok 1 - GS query composition: transport and unchanged business selection cause no history or navigation writes
+  ---
+  duration_ms: 7734.061167
+  type: 'test'
+  ...
+# Subtest: GS query composition: one market-only correction preserves raw business bytes before INIT
+ok 2 - GS query composition: one market-only correction preserves raw business bytes before INIT
+  ---
+  duration_ms: 3893.767375
+  type: 'test'
+  ...
+# Subtest: GS query composition: rejected business queries are not sanitized by market alignment
+ok 3 - GS query composition: rejected business queries are not sanitized by market alignment
+  ---
+  duration_ms: 6820.215375
+  type: 'test'
+  ...
+# Subtest: GS query composition: native Back and Forward preserve one intended clamp before and after INIT
+ok 4 - GS query composition: native Back and Forward preserve one intended clamp before and after INIT
+  ---
+  duration_ms: 4037.000125
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 25023.372458

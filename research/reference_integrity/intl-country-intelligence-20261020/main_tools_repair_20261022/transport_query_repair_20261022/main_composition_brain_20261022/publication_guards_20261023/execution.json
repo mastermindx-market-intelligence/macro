@@ -1,0 +1,111 @@
+{
+  "schema": "intl.publication_guards.v1",
+  "source_commit": "f1fafde0bbf95550ed964de3a60920a2619778e4",
+  "compared_base": "a2451ccfbcfb4d32bcc4230dc8a774c4fd1d6cd3",
+  "started_at": "2026-10-23T06:18:46.077420+00:00",
+  "diff_file": "/tmp/intl-resume-main-20261022T1252/brain_composition_full_candidate_20261023.diff",
+  "diff_sha256": "8739407aee6c55dd4181b73b1ba8a6ef9f779d561fae87b79fc5a94b2485bc28",
+  "diff_bytes": 555948424,
+  "changed_paths": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/publication_guards_20261023/changed_paths.txt",
+  "changed_paths_sha256": "d2a1b73d816607244dfec541c996391846efdebcef3aa46bb10259739d5e3a36",
+  "path_count_at_guard_input": 2958,
+  "receipt_closure_already_executed": "../p0b_gate_execution.json",
+  "executions": [
+    {
+      "name": "reference_integrity",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_reference_integrity.py"
+      ],
+      "started_at": "2026-10-23T06:18:46.377078+00:00",
+      "completed_at": "2026-10-23T06:18:48.001551+00:00",
+      "duration_seconds": 1.62,
+      "exit_code": 0,
+      "error": null,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/publication_guards_20261023/reference_integrity.log",
+      "log_sha256": "918a7795bf9a334a6c3a4d5bd03f753f169739d65b18ce87aefcc79ea7bd5992"
+    },
+    {
+      "name": "frozen_reference_evaluation",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_reference_integrity.py",
+        "--evaluate",
+        "intl-country-intelligence-20261020"
+      ],
+      "started_at": "2026-10-23T06:18:48.001967+00:00",
+      "completed_at": "2026-10-23T06:18:48.779292+00:00",
+      "duration_seconds": 0.78,
+      "exit_code": 0,
+      "error": null,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/publication_guards_20261023/frozen_reference_evaluation.log",
+      "log_sha256": "ed2e60d55cac054303fbdaa81f73f2ca3695c7b67c1e003b94444c901c25480f"
+    },
+    {
+      "name": "runtime_style_injection",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "started_at": "2026-10-23T06:18:48.779708+00:00",
+      "completed_at": "2026-10-23T06:18:49.610701+00:00",
+      "duration_seconds": 0.83,
+      "exit_code": 0,
+      "error": null,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/publication_guards_20261023/runtime_style_injection.log",
+      "log_sha256": "a12c0f3b97d115b4d896d9b44ad564819dd62ab115ad3aebc8499eb9a4b7808f"
+    },
+    {
+      "name": "visual_evidence",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/intl-resume-main-20261022T1252/brain_composition_full_candidate_20261023.diff"
+      ],
+      "started_at": "2026-10-23T06:18:49.611415+00:00",
+      "completed_at": "2026-10-23T06:18:56.250837+00:00",
+      "duration_seconds": 6.64,
+      "exit_code": 0,
+      "error": null,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/publication_guards_20261023/visual_evidence.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "design_system",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/intl-resume-main-20261022T1252/brain_composition_full_candidate_20261023.diff"
+      ],
+      "started_at": "2026-10-23T06:18:56.251195+00:00",
+      "completed_at": "2026-10-23T06:19:05.376912+00:00",
+      "duration_seconds": 9.13,
+      "exit_code": 0,
+      "error": null,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/publication_guards_20261023/design_system.log",
+      "log_sha256": "dc910ecf7f31f6bd2f389cd67e554e4abda7b690681ccd550858d45ffd7467da"
+    },
+    {
+      "name": "agentos",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/agentos.py",
+        "validate"
+      ],
+      "started_at": "2026-10-23T06:19:05.377272+00:00",
+      "completed_at": "2026-10-23T06:19:06.789515+00:00",
+      "duration_seconds": 1.41,
+      "exit_code": 0,
+      "error": null,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/publication_guards_20261023/agentos.log",
+      "log_sha256": "a953d02fd2f1fa285d07da0f5d856b67692a0a727e09a64df0df128ecb386cdb"
+    }
+  ],
+  "head_after": "f1fafde0bbf95550ed964de3a60920a2619778e4",
+  "completed_at": "2026-10-23T06:19:06.813863+00:00",
+  "pass": true
+}

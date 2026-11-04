@@ -1,0 +1,15 @@
+{
+  "head": "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+  "main": "90df0e302637ade26b894aee46141b6a1813a630",
+  "since_reviewed_8182": [
+    "agentos/handoffs/NEWS-INTELLIGENCE-ESTATE-2026-10-22-WAVE1-COMMISSIONED.md",
+    "agentos/workstreams/WS-NEWS-INTELLIGENCE-ESTATE-CONVERGENCE.md",
+    "site/market_memory.html",
+    "site/market_memory_retained.js",
+    "templates/market_memory_retained.js",
+    "tests/js/market_memory_retained_state.test.cjs"
+  ],
+  "merge_tree_exit": 1,
+  "merge_tree_output": "8569d972cccf3908232b1c394fffb8fbbb8dd38b\n100644 c050c2aa6b4b36d009bd459320bf0164106eda69 1\tmockups/evidence/prophet-p0b-zero-fouc/manifest.json\n100644 2eb0bdd4029ec635b034f6a87dbd1236ee8becde 2\tmockups/evidence/prophet-p0b-zero-fouc/manifest.json\n100644 51423a5460dca19531fbbe77fe9aae6e037af037 3\tmockups/evidence/prophet-p0b-zero-fouc/manifest.json\n100644 04b02b402459d94d8c2042bd1728581c8a8b3c91 1\tmockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\n100644 aae81020b9484a04fc96efb155dfc0c2cb22ab43 2\tmockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\n100644 66e1c88fe87c745632f4a4107326917f2c82806e 3\tmockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\n100644 e585ea0ca088bf92286d53e2c7edc7b73ec12e5d 1\tmockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\n100644 d3fb431cae19c5ccbe946a3e76b13beda5dacbd0 2\tmockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\n100644 2b359cd7c18aba0d1c376dfef8b5569180599ac5 3\tmockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\n100644 d5ec23ed9831acaa7dfb15533418e8c9d9875b83 1\tsite/research_screener.html\n100644 1acd46996df04fe43d4333aec982ed2b9cb2da1d 2\tsite/research_screener.html\n100644 ad3b81480920861e8acf6da2ea6c0f4b626a7ce6 3\tsite/research_screener.html\n\nAuto-merging .github/ci/legacy-jobs.yml\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/manifest.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/manifest.json\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\nAuto-merging site/research_screener.html\nCONFLICT (content): Merge conflict in site/research_screener.html\nAuto-merging site/theme.css\nAuto-merging templates/theme.css\nAuto-merging tests/test_site_access_boundary.py\n",
+  "stderr": ""
+}

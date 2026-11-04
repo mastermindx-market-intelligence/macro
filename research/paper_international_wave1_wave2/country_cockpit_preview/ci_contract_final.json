@@ -1,0 +1,10 @@
+{
+  "started_at": "2026-10-19T05:30:46.006344+00:00",
+  "finished_at": "2026-10-19T05:37:19.261048+00:00",
+  "manifest_sha256": "d76e31b791503d27ff1d7d70f98007a6274092e2b8506aef5cee7261036e943d",
+  "test_intl_build_sha256": "09636fc99c862233dc37704ba862e9ca3e97ac1a41c8dedbc854fb6199ad544c",
+  "import_closure_findings": {},
+  "country_suites_unwired": [],
+  "other_unwired_suites": [],
+  "qualification": "Canonical current-snapshot primitives; hosted PR-versus-base contract-delta remains separate. Ancestor-init census is report-only and is not used as a gate."
+}

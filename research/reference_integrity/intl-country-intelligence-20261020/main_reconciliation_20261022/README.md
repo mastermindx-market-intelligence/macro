@@ -1,0 +1,11 @@
+# Current-main reconciliation — 22 October 2026 UTC
+
+This phase continues original PR9596 after successful publication of 7e99587336105a939c830a00b799d7787624d09b. GitHub PR metadata and its test-merge ref still described older base snapshots; the actual main ref had advanced to 25051144947f027c698cd1ce10e3c8824ee6ade9, causing three shared P0B receipt conflicts and suppressing pull-request CI.
+
+Normal merge c2b0562234abbec883ea91b934ac3d09fa3bae8b preserves parents 7e99587336105a939c830a00b799d7787624d09b and 25051144947f027c698cd1ce10e3c8824ee6ade9. Its 348 CI jobs retain the same eight International path/step additions; other jobs match main. Caddy and access-test inputs are unchanged, so the prior 48 passing access checks remain applicable. The shared-shell suites pass 95 fresh tests and 139 template/site pairs match.
+
+Actual canonical P0B rendering and Chrome verification passed 128 owner-matrix cases with 16 screenshots. Both parent receipt sets are archived and the current manifest preserves 16 historical extensions. Current-source International rendering passed with 43 assets and all seven country disclosures byte-identical to the frozen approved artifact. HTML SHA-256 is 0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8. Fresh standalone browser verification passed 46 direct checks and 109 counterexamples, including the updated assistant/theme runtime. Commands, input hashes, screenshots and original results are retained.
+
+The source snapshot is c2b0562234abbec883ea91b934ac3d09fa3bae8b. The build uses the same 510 retained inputs; it does not acquire new observations or mutate production. The frozen proposal and approval remain at 883a1e48efdf9c334c08665262efa0961b1997a0. Enabled Shared Shell acceptance and its fenced projected-tools-link repair remain open, as documented in the previous composition phase. Exact-head hosted CI, real FX backfill and served/release adoption remain required. No Ready transition, protected-main merge, deployment or production restart is claimed.
+
+All seven final local guards pass, including115 P0B receipt-contract tests. The three newly captured owner spot-check images are byte-identical to the previously inspected images. Sparse compiled data page-registry checking remains a hosted-CI obligation.

@@ -1,0 +1,28 @@
+role: product_regression
+reviewer_identity: /root/intl_rig_product_quarantined
+pass: 1
+verdict: PASS_WITH_CONDITIONS
+findings:
+  - id: PRC-001
+    severity: major
+    capability: country.source-trace
+    finding: >-
+      The new country presentation promotes five countries’ inherited GDP figures into “LATEST REPORTED OBSERVATIONS” without supplying an identifiable public source, while its equity trend and drawdown claims have no source row in the country observation ledger, leaving material current-state claims untraceable from their evidence disclosure despite the stronger research presentation: proposed/intl.html:1307,1493,2047,2233,2419 labels the GDP source only “Existing international macro series,” lib/intl_country_assessment.py:_metric explicitly assigns no source_url to that fallback, and templates/intl_country_cockpit.html.j2:180-196 gives equity calculation windows but no underlying price-source link or observations.
+  - id: PRC-002
+    severity: major
+    capability: workspace.view-selection
+    finding: >-
+      The retained research tools become materially less discoverable on English mobile screens because their new “Data & tools” entrance is clipped to its opening letters at 390px and lies beyond the visible navigation at 320px, requiring discovery of horizontal scrolling or traversal past the country content to the bottom disclosure, whereas the incumbent viewport exposed the research-view names directly: before/viewport-mobile-en-light.png, after_full/viewport-mobile-en-light.png, after_full/viewport-narrow-en-light.png, and templates/intl_country_cockpit.css:204-205 establish this navigation cost, with the incumbent’s failed JavaScript separately limiting any claim about its actual control operation.
+strengths:
+  - >-
+    Across all eight inspected before/after language, theme and viewport pairs, the proposal makes the principal country research task substantially clearer: the world brief exposes its publication and information-cutoff dates, and the initial country view combines a national thesis, attributed economic path and conditions that could change the outlook instead of leading with the incumbent’s unstyled, unavailable-return overview.
+  - >-
+    The incumbent research body is preserved: comparison of the complete production/source/templates/intl.html.j2 and templates/intl.html.j2 found the existing body retained beneath the added disclosure, the workspace shell is identical, and all twelve supplied supporting-tool screenshots show the six views in desktop English/light and mobile Chinese/dark; the existing unavailable returns, macro inputs, historical vintages and unlinked catalogue destinations are not evidence of capability deletion.
+  - >-
+    The economic-path presentation supports interpretation without collapsing evidence types: the inspected full-after captures distinguish solid published history from dashed projections, display both forecast years and annual-average inflation, and retain publication dates, information cutoffs and source-table links; the rendered India section preserves fiscal-year labels and fiscal coverage qualifications, while Taiwan retains separate CBC and DGBAS published views.
+  - >-
+    National policy sections identify the actual instrument, action, decision date, effective date and primary decision link, while dated observations remain visibly dated; Australia’s older inflation observation is explicitly marked, and the complete-input render withholds all seven unqualified currency observations instead of treating copied production stores as newly acquired evidence.
+  - >-
+    Country mechanisms and conditional paths provide useful differentiated interpretation without assigning probabilities or price targets, existing country-research destinations remain available, and the Euro Area section explicitly identifies STOXX Europe 600 as a broader European equity proxy.
+  - >-
+    The preservation judgment is bounded by actual inspection: all sixteen canonical direct before/after viewports, twelve supporting-tool images, two full-after images and two narrow images were viewed, but the 91,860px incumbent full-page image timed out and was not visually inspected; authenticated tiers and external source destinations remain unreviewed, and country history/focus corroboration comes from the separately identified earlier integrated-fixture receipts rather than an independent browser exercise of the complete-input artifact.

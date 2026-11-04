@@ -1,0 +1,55 @@
+{
+  "schema": "mastermind.intl_currency_evidence_integrity.v1",
+  "recorded_at": "2026-10-20T05:06:15.889871+00:00",
+  "passed": true,
+  "frozen_head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "qualified_response_archives": 7,
+  "paper_original_effects": 6,
+  "paper_text_checks": 20,
+  "paper_style_checks": 12,
+  "paper_order_checks": 4,
+  "browser_country_checks": 84,
+  "browser_ageing_checks": 8,
+  "browser_font_checks": 84,
+  "canonical_captures": 12,
+  "lossless_html_archives": 3,
+  "legacy_fx_inputs_and_collector_unchanged": true,
+  "parent_files": [
+    {
+      "path": "config/intl_country_baseline.json",
+      "bytes": 274521,
+      "sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "bytes": 74539,
+      "sha256": "eb0abf17c03d1ef5ab2c6378ac67d6dfb71b58b5353810af64a08c4629780190"
+    },
+    {
+      "path": "config/site_access.yml",
+      "bytes": 44189,
+      "sha256": "127dd1de71c979910601a8df89132244e95c0d1991c194408281072ace6384c9"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "bytes": 41599,
+      "sha256": "220d3790b2a0135b7ea1b8c75a1d0a68192d9e3082a72168c39b8850da5372cf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/FISCAL_COVERAGE_20261020.json",
+      "bytes": 34283,
+      "sha256": "9dbb0e2f6bc05d052a5fa1173a38fd79f765a4e79951832c86c0a40d1d5b0064"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_source_snapshot.tar.gz",
+      "bytes": 510397,
+      "sha256": "c44d73d2fbfc858a08eae3e017adcd3e766078f0ffb87ca9b59411b897a255ab"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_fiscal_coverage_receipt.json",
+      "bytes": 7864,
+      "sha256": "d2ddabaad3798809af2daccf0fc3beffa92422060d3741024dd9e6aa5a496231"
+    }
+  ],
+  "scope": "Current working-tree source and retained evidence bytes; no publication or production verdict."
+}

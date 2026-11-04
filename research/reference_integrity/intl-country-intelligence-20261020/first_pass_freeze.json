@@ -1,0 +1,23 @@
+{
+  "schema": "mastermind.intl_rig_first_pass_freeze.v1",
+  "frozen_at": "2026-10-20T14:03:31.850411+00:00",
+  "artifact_sha": "46f02fa355abbfaa4387203c0e3190db6747bed9",
+  "rationale_revealed": false,
+  "reviews": [
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/first_pass_product.yml",
+      "sha256": "2c6267cc7d7ac3caad55689f94271935ccc3dbf1247359b15edd12a1dbe9c747",
+      "bytes": 4474,
+      "role": "product_regression",
+      "reviewer_identity": "/root/intl_rig_product_quarantined"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/first_pass_visual.yml",
+      "sha256": "f4fb166ffcd8097a379c3710ab53f2f57b608d6e70d73fbad11c6fc60ec9bcce",
+      "bytes": 2955,
+      "role": "visual_taste",
+      "reviewer_identity": "/root/intl_rig_visual_quarantined"
+    }
+  ],
+  "scope": "Verbatim raw first-pass returns preserved before rationale reveal; later amendments must not rewrite these files."
+}

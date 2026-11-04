@@ -1,0 +1,20 @@
+{
+  "schema": "intl.reference_complete_repair_build.v1",
+  "source_commit": "093003c2a7a072423cc2aec2d329be5271e7010a",
+  "source_overlays": [],
+  "input_snapshot": "production_input_snapshot.json",
+  "input_snapshot_sha256": "081592644c4f2d425fdde59d7b8e153e4aa214aa00d115ba64b13bd31c145b08",
+  "kind": "ordinary builder with copied existing production stores",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "scripts.build_intl"
+  ],
+  "started_at": "2026-10-20T20:30:51.712960+00:00",
+  "finished_at": "2026-10-20T20:30:55.314819+00:00",
+  "duration_seconds": 3.6,
+  "exit_code": 1,
+  "source_reacquisition": false,
+  "production_mutation": false,
+  "files": []
+}

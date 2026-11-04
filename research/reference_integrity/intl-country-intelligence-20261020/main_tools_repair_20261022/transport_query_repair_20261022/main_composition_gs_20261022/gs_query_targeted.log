@@ -1,0 +1,92 @@
+TAP version 13
+# Subtest: GS query composition: transport and unchanged business selection cause no history or navigation writes
+not ok 1 - GS query composition: transport and unchanged business selection cause no history or navigation writes
+  ---
+  duration_ms: 4496.778875
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2289:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    %6darket=%4aP&view=overview&group=&pins=JP%2cKR
+    
+    null !== 'JP'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'JP'
+  actual: ~
+  operator: 'strictEqual'
+  stack: |-
+    withQueryFrames.gs (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2298:14)
+    async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1962:9)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2293:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: GS query composition: one market-only correction preserves raw business bytes before INIT
+not ok 2 - GS query composition: one market-only correction preserves raw business bytes before INIT
+  ---
+  duration_ms: 4160.422667
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2317:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    group=&pins=JP%2cKR&%6darket=%54W&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price
+    + actual - expected
+    
+    + '?group=&pins=JP%2cKR&%6darket=%54W&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price'
+    - '?group=&pins=JP%2cKR&%6darket=&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '?group=&pins=JP%2cKR&%6darket=&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price'
+  actual: '?group=&pins=JP%2cKR&%6darket=%54W&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price'
+  operator: 'strictEqual'
+  stack: |-
+    withQueryFrames.gs (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2331:14)
+    async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1962:9)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2326:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: GS query composition: rejected business queries are not sanitized by market alignment
+not ok 3 - GS query composition: rejected business queries are not sanitized by market alignment
+  ---
+  duration_ms: 4087.95525
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2356:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    view=unknown&market=JP
+    + actual - expected
+    
+    + 'Unsupported value'
+    - 'Invalid URL state restored'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Invalid URL state restored'
+  actual: 'Unsupported value'
+  operator: 'strictEqual'
+  stack: |-
+    withQueryFrames.gs (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2365:14)
+    async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1962:9)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2360:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: GS query composition: native Back and Forward preserve one intended clamp before and after INIT
+ok 4 - GS query composition: native Back and Forward preserve one intended clamp before and after INIT
+  ---
+  duration_ms: 4085.324875
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 1
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17139.378042

@@ -1,0 +1,24 @@
+diff --git a/mockups/evidence/prophet-p0b-zero-fouc/manifest.json b/mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+index c050c2aa6b4b..51423a5460dc 100644
+--- a/mockups/evidence/prophet-p0b-zero-fouc/manifest.json
++++ b/mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+@@ -529,17 +529,17 @@
+   "repair_extension": {
+     "browser_receipts": {
+       "hk": {
+         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+-        "sha256": "67c2507347d089b35316bf41e16b0eb488f7cd9f6e35da40b8c2bf417af4c8b9",
++        "sha256": "b8349824849fa8aeda2ed35e483df1a0e6e55a08ad86784b8da6ff540f512e51",
+         "pass": true,
+         "primary_cases": 48,
+         "degraded_control_cases": 16,
+         "screenshots": 8
+       },
+       "ca": {
+         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+-        "sha256": "1301819e5858fefd046abecbe842eb59e9d72717e685854961a3f36811b8b5b8",
++        "sha256": "bbc6f54d26f36acdbb8daa84ba67095e54c292b5b81b03d6a52851e098e9b7ce",
+         "pass": true,
+         "primary_cases": 48,
+         "degraded_control_cases": 16,
+         "screenshots": 8

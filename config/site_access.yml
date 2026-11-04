@@ -667,6 +667,9 @@ public:
     # @public_versioned immutable-1y rule can never serve stale bytes.
     - /assets/js/
     - /assets/landing/
+    # Only rendered International presentation, partitioned from public intl.html.
+    # No raw source stores, provenance, account data or API responses belong here.
+    - /assets/intl-workspace/
     - /factordata/tech_events/
     # Free SEO estate (active product ruling / PR #3387).
     - /stocks/

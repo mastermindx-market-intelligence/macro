@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-10-22T06:23:49.564951+00:00",
+  "reason": "v8 assumed inactive mobile Library tools were directly visible; actual CSS requires the existing set_library_group control",
+  "source_commit": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2",
+  "production_source_changed": false,
+  "v8_sha256": "c281eab40c4715ff86583c43377c63c7ff425cd86d2bacab44df7c2e30c60cf8",
+  "v9_sha256": "3e44887001838518275b5da52a007b4c26a4495832d614c85db8504f3075f403",
+  "delta_sha256": "a19c8883c5ac1492d42f51df2f454a152749013e117783c65da9865f73e30a92",
+  "preserved_failed_run": "candidate_parent_full_v8",
+  "changes": [
+    "Click the real leaders group button only when its real Library link is hidden; bind the resulting accepted query/history",
+    "Scope first and repeat to the same leaders Library anchor",
+    "Require exact build source commit identity",
+    "Strengthen saved-away heading separation to below the entire viewport plus64px",
+    "Name settled-focus observation without claiming unobserved transient behavior"
+  ],
+  "syntax_exit": 0,
+  "syntax_output": ""
+}

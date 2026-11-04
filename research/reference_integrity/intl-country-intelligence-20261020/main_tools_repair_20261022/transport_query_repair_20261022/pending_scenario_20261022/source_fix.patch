@@ -1,0 +1,44 @@
+diff --git a/site/intl_workspace.js b/site/intl_workspace.js
+index e0f99095d70e..577b71560f18 100644
+--- a/site/intl_workspace.js
++++ b/site/intl_workspace.js
+@@ -1774,11 +1774,15 @@
+     var hadInspector = !!controller.inspector;
+     if (hadInspector) visuallyCloseInspector(controller, { release: true });
+     var parsed = controller.reducer.parseQuery(external.query);
+-    parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed), external.query);
++    parsed = clampGsMarket(controller, parsed);
+     var committed = commitResearch(controller, parsed, 'popstate');
+-    if (controller.pendingScenario) {
++    // A valid refused Scenario traversal owns its one serialized restoration.
++    // Invalid queries stay untouched; GS alignment follows final acceptance.
++    if (parsed.ok && controller.pendingScenario) {
+       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
+       catch (_) { committed.issues=[{code:'UI_UPDATE_FAILED',field:'url'}]; }
++    } else if (parsed.ok && committed.ok) {
++      alignGsMarketUrl(controller, committed, external.query);
+     }
+     controller.issues = committed.issues;
+     if (hadInspector) {
+diff --git a/templates/intl_workspace.js b/templates/intl_workspace.js
+index e0f99095d70e..577b71560f18 100644
+--- a/templates/intl_workspace.js
++++ b/templates/intl_workspace.js
+@@ -1774,11 +1774,15 @@
+     var hadInspector = !!controller.inspector;
+     if (hadInspector) visuallyCloseInspector(controller, { release: true });
+     var parsed = controller.reducer.parseQuery(external.query);
+-    parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed), external.query);
++    parsed = clampGsMarket(controller, parsed);
+     var committed = commitResearch(controller, parsed, 'popstate');
+-    if (controller.pendingScenario) {
++    // A valid refused Scenario traversal owns its one serialized restoration.
++    // Invalid queries stay untouched; GS alignment follows final acceptance.
++    if (parsed.ok && controller.pendingScenario) {
+       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
+       catch (_) { committed.issues=[{code:'UI_UPDATE_FAILED',field:'url'}]; }
++    } else if (parsed.ok && committed.ok) {
++      alignGsMarketUrl(controller, committed, external.query);
+     }
+     controller.issues = committed.issues;
+     if (hadInspector) {

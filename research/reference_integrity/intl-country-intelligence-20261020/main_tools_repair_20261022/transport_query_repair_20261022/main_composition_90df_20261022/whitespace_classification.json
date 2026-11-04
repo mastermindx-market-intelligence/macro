@@ -1,0 +1,1297 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "parent": "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+      "exit_code": 2,
+      "warnings": 1554,
+      "paths": [
+        {
+          "path": "mockups/evidence/prophet-r7-wave-a/plan-cards/source/component.html",
+          "count": 36,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "mockups/evidence/prophet-r7-wave-a/receipts/source/component.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/advanced.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/aibrief.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/alerts.html",
+          "count": 18,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/allocation.html",
+          "count": 16,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/allocation_canada.html",
+          "count": 5,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/alt_data.html",
+          "count": 4,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/am_edition.html",
+          "count": 5,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/baskets_canada.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/canada.html",
+          "count": 11,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/canada_stocks.html",
+          "count": 11,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/china_stocks.html",
+          "count": 169,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/commodities.html",
+          "count": 10,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/congress_trades.html",
+          "count": 152,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/darkpool.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/demand.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/factors.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/foresight.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/forex.html",
+          "count": 6,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/intelligence_hub.html",
+          "count": 8,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/intl.html",
+          "count": 657,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/intl_stocks.html",
+          "count": 16,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/leader_radar.html",
+          "count": 34,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/macro.html",
+          "count": 34,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/macro_signals.html",
+          "count": 23,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/news.html",
+          "count": 9,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/quant_lab.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/aienergy.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/aisecurity.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/automationdprinting.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/automationlogistics.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/bigdataaiplatforms.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/bigdataanalyticsbi.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/bigdataproviders.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/biometricsidentity.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/clouddevops.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/cloudsecurity.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/commenergybiofuels.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/consumerluxury.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/cybersecuritycloud.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/cybersecurityidentityiam.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/cybersecurityzerotrust.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/defensecyberdefense.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/defensemanufacturing.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/energycleanbiofuels.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/energycleanwind.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/environmentalagriculture.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/environmentalclimate.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/environmentalwater.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/evsbatteries.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/evssuppliers.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/hardwarepcsdevices.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/iotedgedevices.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/iothardware.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/iotsecurity.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/nanotechproducts.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/realestatehousing.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/realestateretail.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/semisnextgen.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/softwarehsaas.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/wearablesmedical.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/rotation/wearablessport.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/sanctions_map.html",
+          "count": 10,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/smart_money.html",
+          "count": 153,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/special_situations.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/ABNB.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/ADEA.html",
+          "count": 5,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/ADP.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/AIT.html",
+          "count": 4,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/AKAM.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/ALK.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/ASO.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/AWK.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/BEN.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/BHE.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/BNY.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/BURL.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/CALX.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/CLSK.html",
+          "count": 4,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/CME.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/CNXN.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/CVNA.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/DDOG.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/DXC.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/EXPE.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/GE.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/GPC.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/HLT.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/HUBB.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/HUT.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/IRM.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/JNJ.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/KKR.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/KO.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/LHX.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/LUNR.html",
+          "count": 6,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/LUV.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/META.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/MRCY.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/NOW.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/PLUS.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/PNW.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/PSX.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/RAMP.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/ROG.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/SAIC.html",
+          "count": 6,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/TGT.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/TJX.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/TLN.html",
+          "count": 3,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/UA.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/UCTT.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/UEC.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/WLY.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/stocks/XPO.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        },
+        {
+          "path": "site/us_stocks.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "90df0e302637ade26b894aee46141b6a1813a630"
+          ]
+        }
+      ],
+      "log_sha256": "12a341b3d9b0e5cc72e8a77192b8dea48252af46c985682d34e6ce005ce11032",
+      "uncompressed_sha256": "b70e300c6bb197622af12ae82cf0d4bc78de5148dd83f3110a1a1462d7be2cb0"
+    },
+    {
+      "parent": "90df0e302637ade26b894aee46141b6a1813a630",
+      "exit_code": 2,
+      "warnings": 125710,
+      "paths": [
+        {
+          "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_stocks_integrated_preview.html",
+          "count": 15,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/final_country_and_public_tests.log",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/partial_withdrawal_tests.log",
+          "count": 5,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_stocks_integrated_preview.html",
+          "count": 15,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_attempt1.log",
+          "count": 6,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_capture_boundary_before.log",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/branch_activity_page1.http",
+          "count": 27,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/expected_commit.http",
+          "count": 26,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/preview/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/preview/intl_stocks_integrated_preview.html",
+          "count": 15,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_branch_activity.http",
+          "count": 27,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_expected_commit.http",
+          "count": 26,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/before_final_ui/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/bis_after.log",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/bis_qualification_helpers.txt",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/bis_reconciliation_fragment.py",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/bis_reconstruction_after.log",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/build_before.log",
+          "count": 3,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/degraded_states/dated_kr.html",
+          "count": 63,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/degraded_states/monthly_review_gb.html",
+          "count": 64,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/degraded_states/partial_jp.html",
+          "count": 64,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/degraded_states/unavailable_kr.html",
+          "count": 64,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/forecast_before.log",
+          "count": 9,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/fresh_ci_step_2.log",
+          "count": 3,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/history_legend_after.html",
+          "count": 338,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/history_legend_before.html",
+          "count": 338,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/deterministic_clock_test_with_declared_deps.log",
+          "count": 9,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/receipt_and_first_frame_tests.log",
+          "count": 2,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/navigation_after.html",
+          "count": 331,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/navigation_before.html",
+          "count": 331,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/navigation_final.html",
+          "count": 338,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/partial_after.html",
+          "count": 63,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/partial_before.html",
+          "count": 63,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/partial_final.html",
+          "count": 64,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/preview/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/preview/intl_stocks_integrated_preview.html",
+          "count": 15,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/retained_reconciliation_fragment.py",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/retained_restore_fragment.py",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_ci_base_historical.log",
+          "count": 20,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/coverage_followup/INTEGRATION_HANDOFF.md",
+          "count": 3,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/coverage_followup/SOURCE_FIXTURE_HANDOFF.md",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/inherited_main_whitespace_check.log",
+          "count": 273,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/PR_BODY_PRIOR_20261022.md",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.log",
+          "count": 4,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_REVIEW_CORRECTION.diff",
+          "count": 10,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.log",
+          "count": 6,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/proposed_shelltools20261022_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_integrated/international_browser.log",
+          "count": 2,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_base.html",
+          "count": 22,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_branch.html",
+          "count": 22,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_main.html",
+          "count": 22,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/production/intl.html",
+          "count": 11855,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed/intl.html",
+          "count": 12187,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_composition20261022_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_dock2_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_dock3_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_dock4_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_final_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_main25020261022_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_ui_repair/intl.html",
+          "count": 12187,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/repair_pass_product.yml",
+          "count": 1,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/source_principal/REVIEW.md",
+          "count": 4,
+          "byte_identical_parents": [
+            "a2997f8e9583f09f08acc0c5617c2c75baa87da8"
+          ]
+        }
+      ],
+      "log_sha256": "dc72edd59df51402a4d5faa6b8c6674f8196857f8e522327b759fed148ba927e",
+      "uncompressed_sha256": "715e28211690790b7c5fd84a405cded6c53ef9c346c9393e279ffb3868c6c630"
+    }
+  ]
+}

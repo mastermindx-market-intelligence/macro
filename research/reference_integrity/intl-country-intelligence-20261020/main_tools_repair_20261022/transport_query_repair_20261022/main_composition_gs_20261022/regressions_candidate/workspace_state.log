@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: 1. configuration validates, rejects malformed shapes, and snapshots inputs
+ok 1 - 1. configuration validates, rejects malformed shapes, and snapshots inputs
+  ---
+  duration_ms: 1.633625
+  type: 'test'
+  ...
+# Subtest: 2. supports every view and keeps selection independent from pin drafts
+ok 2 - 2. supports every view and keeps selection independent from pin drafts
+  ---
+  duration_ms: 2.29375
+  type: 'test'
+  ...
+# Subtest: 3. enforces ordered four-pin limit and treats duplicate/unpin values as no-ops
+ok 3 - 3. enforces ordered four-pin limit and treats duplicate/unpin values as no-ops
+  ---
+  duration_ms: 1.864958
+  type: 'test'
+  ...
+# Subtest: 4. rejects unsupported horizon, basis, and return basis without substitution
+ok 4 - 4. rejects unsupported horizon, basis, and return basis without substitution
+  ---
+  duration_ms: 0.387375
+  type: 'test'
+  ...
+# Subtest: 5. baseline captures the exact tuple and clears on every tuple change
+ok 5 - 5. baseline captures the exact tuple and clears on every tuple change
+  ---
+  duration_ms: 0.834541
+  type: 'test'
+  ...
+# Subtest: 6. resize is a defensive no-op and repeated actions do not mutate inputs
+ok 6 - 6. resize is a defensive no-op and repeated actions do not mutate inputs
+  ---
+  duration_ms: 0.275208
+  type: 'test'
+  ...
+# Subtest: 7. return stack stores context, refuses a ninth push, and restores nested context
+ok 7 - 7. return stack stores context, refuses a ninth push, and restores nested context
+  ---
+  duration_ms: 0.553875
+  type: 'test'
+  ...
+# Subtest: 8. source replacement clears bound context and reports honest unknown source
+ok 8 - 8. source replacement clears bound context and reports honest unknown source
+  ---
+  duration_ms: 0.200875
+  type: 'test'
+  ...
+# Subtest: 9. canonical URL serialization round-trips and uses initial ephemeral defaults
+ok 9 - 9. canonical URL serialization round-trips and uses initial ephemeral defaults
+  ---
+  duration_ms: 0.365709
+  type: 'test'
+  ...
+# Subtest: 10. URL parser rejects malformed, oversized, duplicate, and hostile fields
+ok 10 - 10. URL parser rejects malformed, oversized, duplicate, and hostile fields
+  ---
+  duration_ms: 0.362417
+  type: 'test'
+  ...
+# Subtest: 11. external state/action validation is closed and deterministic
+ok 11 - 11. external state/action validation is closed and deterministic
+  ---
+  duration_ms: 0.208334
+  type: 'test'
+  ...
+# Subtest: 12. exports browser UMD and CommonJS consistently without host I/O
+ok 12 - 12. exports browser UMD and CommonJS consistently without host I/O
+  ---
+  duration_ms: 1.827959
+  type: 'test'
+  ...
+# Subtest: 13. omitted URL fields use initial defaults while explicitly empty required fields refuse
+ok 13 - 13. omitted URL fields use initial defaults while explicitly empty required fields refuse
+  ---
+  duration_ms: 0.186667
+  type: 'test'
+  ...
+# Subtest: 14. config rejects duplicate IDs and market delimiters with public TypeError
+ok 14 - 14. config rejects duplicate IDs and market delimiters with public TypeError
+  ---
+  duration_ms: 0.37125
+  type: 'test'
+  ...
+# Subtest: 15. supplementary Unicode and opaque nonmarket delimiters roundtrip without double decoding
+ok 15 - 15. supplementary Unicode and opaque nonmarket delimiters roundtrip without double decoding
+  ---
+  duration_ms: 0.1785
+  type: 'test'
+  ...
+# Subtest: 16. a valid long context refuses oversize sharing without truncation
+ok 16 - 16. a valid long context refuses oversize sharing without truncation
+  ---
+  duration_ms: 0.771917
+  type: 'test'
+  ...
+# Subtest: 17. array accessors, holes and symbols refuse without invoking accessors
+ok 17 - 17. array accessors, holes and symbols refuse without invoking accessors
+  ---
+  duration_ms: 0.462042
+  type: 'test'
+  ...
+# Subtest: 18. malformed external ID types return closed errors and pin actions require an ID
+ok 18 - 18. malformed external ID types return closed errors and pin actions require an ID
+  ---
+  duration_ms: 0.138083
+  type: 'test'
+  ...
+# Subtest: 19. exposed initial snapshots cannot poison subsequent parsed defaults
+ok 19 - 19. exposed initial snapshots cannot poison subsequent parsed defaults
+  ---
+  duration_ms: 0.094291
+  type: 'test'
+  ...
+# Subtest: 20. factories remain independent and forged prior-source return contexts refuse
+ok 20 - 20. factories remain independent and forged prior-source return contexts refuse
+  ---
+  duration_ms: 0.135542
+  type: 'test'
+  ...
+# Subtest: query source contract: business parser never exempts shell-looking keys or malformed bytes
+ok 21 - query source contract: business parser never exempts shell-looking keys or malformed bytes
+  ---
+  duration_ms: 0.183375
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 99.500417

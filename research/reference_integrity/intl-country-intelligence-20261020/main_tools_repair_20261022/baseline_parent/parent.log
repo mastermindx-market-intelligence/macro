@@ -1,0 +1,27 @@
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://127.0.0.1:3100
+- Network:       http://127.0.0.1:3100
+✓ Ready in 414ms
+
+ GET /api/shared-shell/status 200 in 122ms (next.js: 108ms, application-code: 15ms)
+ GET /intl.html 200 in 847ms (next.js: 504ms, proxy.ts: 120ms, application-code: 223ms)
+ GET /api/shared-shell/status 200 in 6ms (next.js: 2ms, application-code: 3ms)
+[analyticsEvents] SUPABASE_SERVICE_ROLE_KEY absent — events held in memory only (dev mode)
+ POST /api/collect 204 in 71ms (next.js: 54ms, application-code: 17ms)
+ POST /api/collect 204 in 6ms (next.js: 1476µs, application-code: 4ms)
+ GET /intl.html 200 in 73ms (next.js: 19ms, proxy.ts: 6ms, application-code: 48ms)
+ GET /api/shared-shell/status 200 in 6ms (next.js: 2ms, application-code: 3ms)
+ GET /api/shared-shell/status 200 in 3ms (next.js: 1133µs, application-code: 2ms)
+ GET /api/shared-shell/status 200 in 11ms (next.js: 5ms, application-code: 6ms)
+ POST /api/collect 204 in 8ms (next.js: 3ms, application-code: 6ms)
+ GET /api/shared-shell/status 200 in 3ms (next.js: 1157µs, application-code: 1861µs)
+ POST /api/collect 204 in 7ms (next.js: 2ms, application-code: 5ms)
+ GET /intl.html 200 in 80ms (next.js: 14ms, proxy.ts: 6ms, application-code: 60ms)
+ GET /api/shared-shell/status 200 in 6ms (next.js: 2ms, application-code: 3ms)
+ GET /api/shared-shell/status 200 in 3ms (next.js: 1143µs, application-code: 2ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1096µs, application-code: 3ms)
+ POST /api/collect 204 in 5ms (next.js: 1638µs, application-code: 3ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1278µs, application-code: 2ms)
+ GET /api/shared-shell/status 200 in 3ms (next.js: 1312µs, application-code: 1680µs)
+ POST /api/collect 204 in 6ms (next.js: 1407µs, application-code: 4ms)
+[?25h

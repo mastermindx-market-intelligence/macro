@@ -1,0 +1,5196 @@
+{
+  "schema": "intl.actual_parent_acceptance.v7",
+  "phase": "baseline",
+  "matrix": "smoke",
+  "started_at": "2026-10-22T04:14:03.565Z",
+  "parent_source": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "subject": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "artifact": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/proposed_main25020261022_repair",
+  "expected": {
+    "/intl.html": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+    "/shared_shell_bridge.js": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+  },
+  "driver_sha256": "6eb5f118cdd7a64ba00465030b2ef12e04268c01e0af71793570e6f7b320e6c6",
+  "network_stubs": false,
+  "preference_setup": "Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent",
+  "contexts": [
+    {
+      "scope": "1440-en-dark",
+      "width": 1440,
+      "lang": "en",
+      "theme": "dark",
+      "query": "",
+      "snapshots": [
+        {
+          "label": "entry",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-JP",
+            "history": 2,
+            "entry": "82a40980-e810-4bb2-94c8-349ccb9a8c00",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b#imc-country-JP",
+            "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-JP"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "scroll": {
+              "x": 0,
+              "y": 430
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-JP"
+            ],
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447657,
+                "restore": null
+              }
+            ]
+          }
+        },
+        {
+          "label": "country",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+            "history": 3,
+            "entry": "caaf2cfc-f977-4133-9de3-880dace8670d",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b#imc-country-TW",
+            "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "scroll": {
+              "x": 0,
+              "y": 530
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-TW"
+            ],
+            "focusCountry": "imc-country-TW",
+            "acks": 1,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447657,
+                "restore": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448308
+              }
+            ]
+          }
+        },
+        {
+          "label": "modifier_before",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+            "history": 3,
+            "entry": "caaf2cfc-f977-4133-9de3-880dace8670d",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b#imc-country-TW",
+            "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "scroll": {
+              "x": 0,
+              "y": 530
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-TW"
+            ],
+            "focusCountry": "imc-country-TW",
+            "acks": 1,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447657,
+                "restore": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448308
+              }
+            ]
+          }
+        },
+        {
+          "label": "modifier_after",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+            "history": 3,
+            "entry": "caaf2cfc-f977-4133-9de3-880dace8670d",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b#imc-country-TW",
+            "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "scroll": {
+              "x": 0,
+              "y": 530
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-TW"
+            ],
+            "focusCountry": "",
+            "acks": 1,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447657,
+                "restore": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448308
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_first",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "entry": "4d92d6e2-38b0-4faa-b571-2f8e5b6219f4",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b#intl-analysis-tools",
+            "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "scroll": {
+              "x": 0,
+              "y": 2403
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-TW"
+            ],
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447657,
+                "restore": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448308
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448993
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_manually_closed",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "entry": "4d92d6e2-38b0-4faa-b571-2f8e5b6219f4",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b#intl-analysis-tools",
+            "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "scroll": {
+              "x": 0,
+              "y": 2403
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-TW"
+            ],
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447657,
+                "restore": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448308
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448993
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_repeated",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "entry": "4d92d6e2-38b0-4faa-b571-2f8e5b6219f4",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b#intl-analysis-tools",
+            "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "scroll": {
+              "x": 0,
+              "y": 2403
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-TW"
+            ],
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447657,
+                "restore": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448308
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448993
+              }
+            ]
+          }
+        },
+        {
+          "label": "goBack_country",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+            "history": 4,
+            "entry": "caaf2cfc-f977-4133-9de3-880dace8670d",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=f3ed27f2-b869-49d2-b785-d4f9efb3ab56#imc-country-TW",
+            "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "scroll": {
+              "x": 0,
+              "y": 530
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-TW"
+            ],
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450512,
+                "restore": null
+              }
+            ]
+          }
+        },
+        {
+          "label": "goForward_tools",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "entry": "4d92d6e2-38b0-4faa-b571-2f8e5b6219f4",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59#intl-analysis-tools",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "scroll": {
+              "x": 0,
+              "y": 2403
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "library_selected",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+            "history": 5,
+            "entry": "2c3afeca-b9dc-46f6-9b33-6a8515be2df9",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BUTTON",
+            "scroll": {
+              "x": 0,
+              "y": 3064
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 1,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_after_view_closed",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+            "history": 5,
+            "entry": "2c3afeca-b9dc-46f6-9b33-6a8515be2df9",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "scroll": {
+              "x": 0,
+              "y": 2501
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 1,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_after_view",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+            "history": 6,
+            "entry": "6a582e81-792a-4a5c-8738-fb2fd1eafbe1",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59#intl-analysis-tools",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "scroll": {
+              "x": 0,
+              "y": 2501
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451994
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_after_view_repeated",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+            "history": 6,
+            "entry": "6a582e81-792a-4a5c-8738-fb2fd1eafbe1",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59#intl-analysis-tools",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "scroll": {
+              "x": 0,
+              "y": 2501
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451994
+              }
+            ]
+          }
+        },
+        {
+          "label": "before_nested_after_view_tools",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+            "history": 6,
+            "entry": "6a582e81-792a-4a5c-8738-fb2fd1eafbe1",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59#intl-analysis-tools",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "scroll": {
+              "x": 0,
+              "y": 2501
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451994
+              }
+            ]
+          }
+        },
+        {
+          "label": "nested_first",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 7,
+            "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642452720,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452720
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59#intl-leadership-rotation",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": true,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-leadership-rotation",
+            "activeTag": "A",
+            "scroll": {
+              "x": 0,
+              "y": 3670
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 3,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451994
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452722
+              }
+            ]
+          }
+        },
+        {
+          "label": "nested_manually_closed",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 7,
+            "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642452720,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452720
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456826,
+                "view": {
+                  "x": 0,
+                  "y": 4871
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59#intl-leadership-rotation",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "scroll": {
+              "x": 0,
+              "y": 4498
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 3,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451994
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452722
+              }
+            ]
+          }
+        },
+        {
+          "label": "nested_repeated",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 7,
+            "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642452720,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452720
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456826,
+                "view": {
+                  "x": 0,
+                  "y": 4871
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456942,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59#intl-leadership-rotation",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-leadership-rotation",
+            "activeTag": "A",
+            "scroll": {
+              "x": 0,
+              "y": 3670
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 3,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451994
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452722
+              }
+            ]
+          }
+        },
+        {
+          "label": "restoration_seed",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 7,
+            "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642452720,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452720
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456826,
+                "view": {
+                  "x": 0,
+                  "y": 4871
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456942,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642460937,
+                "view": {
+                  "x": 0,
+                  "y": 10661
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642461115,
+                "view": {
+                  "x": 0,
+                  "y": 3299,
+                  "focusId": "im-catalogue-library-search"
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59#intl-leadership-rotation",
+            "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": true,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "im-catalogue-library-search",
+            "activeHref": "",
+            "activeTag": "INPUT",
+            "scroll": {
+              "x": 0,
+              "y": 3299
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 3,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451407,
+                "restore": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451762
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451994
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452722
+              }
+            ]
+          }
+        },
+        {
+          "label": "goBack_library",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+            "history": 7,
+            "entry": "6a582e81-792a-4a5c-8738-fb2fd1eafbe1",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642452720,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452720
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456826,
+                "view": {
+                  "x": 0,
+                  "y": 4871
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456942,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642460937,
+                "view": {
+                  "x": 0,
+                  "y": 10661
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642461115,
+                "view": {
+                  "x": 0,
+                  "y": 3299,
+                  "focusId": "im-catalogue-library-search"
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "4025798c-ebda-448f-9674-1f5738490313",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642461824
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=4025798c-ebda-448f-9674-1f5738490313#intl-analysis-tools",
+            "generation": "4025798c-ebda-448f-9674-1f5738490313",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "scroll": {
+              "x": 0,
+              "y": 3169
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "4025798c-ebda-448f-9674-1f5738490313",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642461788,
+                "restore": null
+              }
+            ]
+          }
+        },
+        {
+          "label": "goForward_nested",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 7,
+            "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642452720,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452720
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456826,
+                "view": {
+                  "x": 0,
+                  "y": 4871
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456942,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642460937,
+                "view": {
+                  "x": 0,
+                  "y": 10661
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642461115,
+                "view": {
+                  "x": 0,
+                  "y": 3299,
+                  "focusId": "im-catalogue-library-search"
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "4025798c-ebda-448f-9674-1f5738490313",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642461824
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": null,
+                "at": 1792642462762
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=239f3766-fee3-430e-8c56-8082842f3053#intl-leadership-rotation",
+            "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": true,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "scroll": {
+              "x": 0,
+              "y": 3299
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": null,
+                "at": 1792642462710,
+                "restore": {
+                  "x": 0,
+                  "y": 3299,
+                  "focusId": "im-catalogue-library-search"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "restoration_after_corrections",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 7,
+            "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642452720,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452720
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456826,
+                "view": {
+                  "x": 0,
+                  "y": 4871
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456942,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642460937,
+                "view": {
+                  "x": 0,
+                  "y": 10661
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642461115,
+                "view": {
+                  "x": 0,
+                  "y": 3299,
+                  "focusId": "im-catalogue-library-search"
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "4025798c-ebda-448f-9674-1f5738490313",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642461824
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": null,
+                "at": 1792642462762
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+                "href": null,
+                "requestId": null,
+                "at": 1792642462860,
+                "view": {
+                  "x": 0,
+                  "y": 3299
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=239f3766-fee3-430e-8c56-8082842f3053#intl-leadership-rotation",
+            "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": true,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "scroll": {
+              "x": 0,
+              "y": 3299
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": null,
+                "at": 1792642462710,
+                "restore": {
+                  "x": 0,
+                  "y": 3299,
+                  "focusId": "im-catalogue-library-search"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "label": "restoration_stable",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 7,
+            "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+            "events": [
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+                "requestId": null,
+                "at": 1792642447688
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642447788,
+                "view": {
+                  "x": 0,
+                  "y": 430
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448306,
+                "view": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": "req-1",
+                "at": 1792642448306
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448401,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642448992,
+                "view": {
+                  "x": 0,
+                  "y": 530
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642448992
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+                "href": null,
+                "requestId": null,
+                "at": 1792642449095,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+                "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+                "requestId": null,
+                "at": 1792642450541
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642451442
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451561,
+                "view": {
+                  "x": 0,
+                  "y": 2403
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451760,
+                "view": {
+                  "x": 0,
+                  "y": 3064
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1",
+                "at": 1792642451760
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642451993,
+                "view": {
+                  "x": 0,
+                  "y": 2501
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": "req-2",
+                "at": 1792642451993
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642452720,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "NAVIGATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-3",
+                "at": 1792642452720
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456826,
+                "view": {
+                  "x": 0,
+                  "y": 4871
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642456942,
+                "view": {
+                  "x": 0,
+                  "y": 3670
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642460937,
+                "view": {
+                  "x": 0,
+                  "y": 10661
+                }
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+                "href": null,
+                "requestId": null,
+                "at": 1792642461115,
+                "view": {
+                  "x": 0,
+                  "y": 3299,
+                  "focusId": "im-catalogue-library-search"
+                }
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "4025798c-ebda-448f-9674-1f5738490313",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+                "requestId": null,
+                "at": 1792642461824
+              },
+              {
+                "type": "READY",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+                "href": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": null,
+                "at": 1792642462762
+              },
+              {
+                "type": "VIEW_STATE",
+                "origin": "http://127.0.0.1:3102",
+                "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+                "href": null,
+                "requestId": null,
+                "at": 1792642462860,
+                "view": {
+                  "x": 0,
+                  "y": 3299
+                }
+              }
+            ],
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=239f3766-fee3-430e-8c56-8082842f3053#intl-leadership-rotation",
+            "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": true,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "scroll": {
+              "x": 0,
+              "y": 3299
+            },
+            "fragmentApi": "undefined",
+            "rail": [
+              "#imc-country-KR"
+            ],
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "239f3766-fee3-430e-8c56-8082842f3053",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": null,
+                "at": 1792642462710,
+                "restore": {
+                  "x": 0,
+                  "y": 3299,
+                  "focusId": "im-catalogue-library-search"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "scope": "binding",
+      "id": "runtime_and_source_custody",
+      "passed": true,
+      "runtime_path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/runtime.json",
+      "runtime_sha256": "ea1dc0698f295809ceff15212d2aab818360546f3d6eeb6fef5b11c8a2710b7e",
+      "build_receipt": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/repair_main25020261022_build_receipt.json",
+      "build_receipt_sha256": "dd37825e6f8bcfbb24225bb8124dcc6d43152165a5b064ea9e8f1e65c8d06446",
+      "built_source": "c2b0562234abbec883ea91b934ac3d09fa3bae8b",
+      "subject_controller_sha256": "d9827c38995d766f0cf7a4c1112353d1dabb42835ba5fd88ade1ef95dd83d45a",
+      "built_controller_sha256": "d9827c38995d766f0cf7a4c1112353d1dabb42835ba5fd88ade1ef95dd83d45a",
+      "subject_bridge_sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "built_bridge_sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "paired_bridge_sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "delivery": "country controller inlined in hash-bound intl.html; external bridge bytes equal the exact source and paired site asset"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "entry_raw_business_query",
+      "passed": true,
+      "expected": "",
+      "parent": "",
+      "child": ""
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "parent_and_child_context",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nondefault_country_entry",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "country_raw_business_query",
+      "passed": true,
+      "expected": "",
+      "parent": "",
+      "child": ""
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "country_selection_and_focus",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "country_history_and_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "actual_projected_tools_href",
+      "passed": true,
+      "actualHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "projected_tools_query",
+      "passed": true,
+      "actual": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+      "expected_query": ""
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "modified_tools_leaves_current_document_unchanged",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_first_raw_business_query",
+      "passed": true,
+      "expected": "",
+      "parent": "",
+      "child": ""
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_first_opens",
+      "passed": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_keeps_anchor_focus",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_first_history_and_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_arrival_visible",
+      "passed": true,
+      "visible": true,
+      "child": {
+        "rect": {
+          "top": 739.078125,
+          "bottom": 803.078125,
+          "left": 24,
+          "right": 1192
+        },
+        "clip": {
+          "left": 24,
+          "right": 1192,
+          "top": 739.078125,
+          "bottom": 803.078125
+        },
+        "point": {
+          "x": 608,
+          "y": 771.078125
+        },
+        "rendered": true,
+        "child_hit": true,
+        "hit_tag": "SUMMARY",
+        "hit_id": null
+      },
+      "frame": {
+        "x": 224,
+        "y": 64,
+        "width": 1216,
+        "height": 836
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "parent_point": {
+        "x": 832,
+        "y": 835.078125
+      },
+      "parent_hit": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_closed_precondition",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_raw_business_query",
+      "passed": true,
+      "expected": "",
+      "parent": "",
+      "child": ""
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_reopens_without_ack",
+      "passed": false,
+      "acks_before": 2,
+      "acks_after": 2
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_no_history_or_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_arrival_visible",
+      "passed": true,
+      "visible": true,
+      "child": {
+        "rect": {
+          "top": 739.078125,
+          "bottom": 803.078125,
+          "left": 24,
+          "right": 1192
+        },
+        "clip": {
+          "left": 24,
+          "right": 1192,
+          "top": 739.078125,
+          "bottom": 803.078125
+        },
+        "point": {
+          "x": 608,
+          "y": 771.078125
+        },
+        "rendered": true,
+        "child_hit": true,
+        "hit_tag": "SUMMARY",
+        "hit_id": null
+      },
+      "frame": {
+        "x": 224,
+        "y": 64,
+        "width": 1216,
+        "height": 836
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "parent_point": {
+        "x": 832,
+        "y": 835.078125
+      },
+      "parent_hit": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goBack_country_raw_business_query",
+      "passed": true,
+      "expected": "",
+      "parent": "",
+      "child": ""
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goBack_country_opens_fresh_generation",
+      "passed": true,
+      "parent_url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+      "expected_url": "http://127.0.0.1:3100/intl.html#imc-country-TW"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goForward_tools_raw_business_query",
+      "passed": true,
+      "expected": "",
+      "parent": "",
+      "child": ""
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goForward_tools_opens_fresh_generation",
+      "passed": true,
+      "parent_url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+      "expected_url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "library_selected_through_real_control",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_after_view_closed_precondition",
+      "passed": true,
+      "projected_href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+      "business_query": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_after_query_change_opens",
+      "passed": false,
+      "projected_href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+      "accepted_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_after_query_change_history",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_after_query_change_raw_business_query",
+      "passed": true,
+      "expected": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "parent": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "child": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_after_view_repeat_closed_precondition",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_after_query_repeat_opens_without_navigation",
+      "passed": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_after_query_repeat_raw_business_query",
+      "passed": true,
+      "expected": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "parent": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "child": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_first_raw_business_query",
+      "passed": true,
+      "expected": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "parent": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "child": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_first_opens_all_ancestors",
+      "passed": true,
+      "ancestors": [
+        {
+          "id": "",
+          "open": true
+        },
+        {
+          "id": "intl-legacy-research",
+          "open": true
+        },
+        {
+          "id": "intl-analysis-tools",
+          "open": true
+        }
+      ],
+      "allOpen": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_keeps_anchor_focus",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_first_history_and_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_arrival_visible",
+      "passed": false,
+      "visible": false,
+      "child": {
+        "rect": {
+          "top": 8766.796875,
+          "bottom": 8786.9375,
+          "left": 49,
+          "right": 318
+        },
+        "clip": {
+          "left": 49,
+          "right": 318,
+          "top": 8766.796875,
+          "bottom": 836
+        },
+        "point": {
+          "x": 183.5,
+          "y": 4801.3984375
+        },
+        "rendered": false,
+        "child_hit": false,
+        "hit_tag": null,
+        "hit_id": null
+      },
+      "frame": {
+        "x": 224,
+        "y": 64,
+        "width": 1216,
+        "height": 836
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "parent_point": {
+        "x": 407.5,
+        "y": 4865.3984375
+      },
+      "parent_hit": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_repeat_closed_precondition",
+      "passed": true,
+      "ancestors": [
+        {
+          "id": "",
+          "open": false
+        },
+        {
+          "id": "intl-legacy-research",
+          "open": false
+        },
+        {
+          "id": "intl-analysis-tools",
+          "open": true
+        }
+      ],
+      "allOpen": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_repeat_raw_business_query",
+      "passed": true,
+      "expected": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "parent": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "child": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_repeat_reopens_without_ack",
+      "passed": false,
+      "ancestors": [
+        {
+          "id": "",
+          "open": false
+        },
+        {
+          "id": "intl-legacy-research",
+          "open": false
+        },
+        {
+          "id": "intl-analysis-tools",
+          "open": true
+        }
+      ],
+      "allOpen": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_repeat_no_history_or_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_repeat_arrival_visible",
+      "passed": false,
+      "visible": false,
+      "child": {
+        "rect": {
+          "top": 8765.796875,
+          "bottom": 8785.9375,
+          "left": 49,
+          "right": 318
+        },
+        "clip": {
+          "left": 49,
+          "right": 318,
+          "top": 8765.796875,
+          "bottom": 836
+        },
+        "point": {
+          "x": 183.5,
+          "y": 4800.8984375
+        },
+        "rendered": false,
+        "child_hit": false,
+        "hit_tag": null,
+        "hit_id": null
+      },
+      "frame": {
+        "x": 224,
+        "y": 64,
+        "width": 1216,
+        "height": 836
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "parent_point": {
+        "x": 407.5,
+        "y": 4864.8984375
+      },
+      "parent_hit": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "restoration_saved_view_is_discriminating",
+      "passed": true,
+      "seed": {
+        "parent_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+        "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+        "history": 7,
+        "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+        "view": {
+          "x": 0,
+          "y": 3299,
+          "focusId": "im-catalogue-library-search"
+        },
+        "heading": {
+          "y": 12436.796875,
+          "viewport": 836
+        },
+        "observed_at": 1792642461115
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goBack_library_raw_business_query",
+      "passed": true,
+      "expected": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "parent": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "child": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goBack_library_restores_url_and_generation",
+      "passed": true,
+      "parent_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools",
+      "expected_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-analysis-tools"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goForward_nested_raw_business_query",
+      "passed": true,
+      "expected": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "parent": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "child": "?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goForward_nested_restores_url_and_generation",
+      "passed": true,
+      "parent_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+      "expected_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "restoration_entry_and_init_match_saved_view",
+      "passed": true,
+      "seed": {
+        "parent_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+        "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3",
+        "history": 7,
+        "generation": "412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+        "view": {
+          "x": 0,
+          "y": 3299,
+          "focusId": "im-catalogue-library-search"
+        },
+        "heading": {
+          "y": 12436.796875,
+          "viewport": 836
+        },
+        "observed_at": 1792642461115
+      },
+      "init_restore": {
+        "x": 0,
+        "y": 3299,
+        "focusId": "im-catalogue-library-search"
+      },
+      "entry": "a371d4e4-30ac-48b2-9833-c5f5a3fa24c3"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "restoration_scroll_and_focus_stay_stable",
+      "passed": false,
+      "expected": {
+        "x": 0,
+        "y": 3299,
+        "focusId": "im-catalogue-library-search"
+      },
+      "samples": [
+        {
+          "scroll": {
+            "x": 0,
+            "y": 3299
+          },
+          "focus": ""
+        },
+        {
+          "scroll": {
+            "x": 0,
+            "y": 3299
+          },
+          "focus": ""
+        }
+      ]
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "all_child_assets_bound",
+      "passed": true,
+      "missing": [],
+      "bad": []
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "actual_runtime_contract",
+      "passed": true,
+      "responses": 5
+    },
+    {
+      "scope": "binding",
+      "id": "actual_child_asset_hashes",
+      "passed": true,
+      "responses": 9
+    },
+    {
+      "scope": "runtime",
+      "id": "no_page_or_console_errors",
+      "passed": true
+    }
+  ],
+  "responses": [
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/shared_shell.css?v=b1918cca",
+      "status": 200,
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "bytes": 467,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/shared_shell_bridge.js?v=048314d5",
+      "status": 200,
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "bytes": 51246,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=f3ed27f2-b869-49d2-b785-d4f9efb3ab56",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=15fa9d4b-3576-4ab1-8a26-786ca2e51c7b",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=4025798c-ebda-448f-9674-1f5738490313",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=412bf6f9-9bfe-4bac-abf2-2db60981ad59",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=239f3766-fee3-430e-8c56-8082842f3053",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "1440-en-dark-tools.png",
+      "bytes": 193302,
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d"
+    },
+    {
+      "path": "1440-en-dark-nested.png",
+      "bytes": 192266,
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7"
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "external_requests_blocked": [],
+  "source_binding": {
+    "runtime_path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_restoration_v7/runtime.json",
+    "runtime_sha256": "ea1dc0698f295809ceff15212d2aab818360546f3d6eeb6fef5b11c8a2710b7e",
+    "build_receipt": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/repair_main25020261022_build_receipt.json",
+    "build_receipt_sha256": "dd37825e6f8bcfbb24225bb8124dcc6d43152165a5b064ea9e8f1e65c8d06446",
+    "built_source": "c2b0562234abbec883ea91b934ac3d09fa3bae8b",
+    "subject_controller_sha256": "d9827c38995d766f0cf7a4c1112353d1dabb42835ba5fd88ade1ef95dd83d45a",
+    "built_controller_sha256": "d9827c38995d766f0cf7a4c1112353d1dabb42835ba5fd88ade1ef95dd83d45a",
+    "subject_bridge_sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "built_bridge_sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "paired_bridge_sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "delivery": "country controller inlined in hash-bound intl.html; external bridge bytes equal the exact source and paired site asset"
+  },
+  "browser": "155.0.8059.85",
+  "passed": 45,
+  "failed": 8,
+  "status": "reproduced_failure",
+  "finished_at": "2026-10-22T04:14:24.395Z"
+}

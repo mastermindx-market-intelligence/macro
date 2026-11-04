@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/homebrew/bin/node",
+    "--test",
+    "--test-name-pattern=Scenario query ordering",
+    "tests/intl_workspace_controller.test.cjs"
+  ],
+  "head": "9bf7161b6c856a8df5eaa18a0b9ef8fbb1e206bb",
+  "started_at": "2026-10-22T19:54:08.375180+00:00",
+  "bindings": {
+    "tests/intl_workspace_controller.test.cjs": "d74ddd7d52a947435b72ac4896bd42bbf25331cbecbdf73e709512427e750e59",
+    "templates/intl_workspace.js": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d",
+    "site/intl_workspace.js": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d"
+  },
+  "exit_code": 1,
+  "finished_at": "2026-10-22T19:54:29.776840+00:00",
+  "log_sha256": "832b45a348aa141cb94b3c08be7b7700d546a4fc5355f0e22eacda06462f58cc"
+}

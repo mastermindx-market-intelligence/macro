@@ -1,0 +1,13 @@
+{
+  "schema": "intl.build_input_path_clarification.v1",
+  "recorded_at": "2026-10-22T08:19:49.192162+00:00",
+  "build_receipt": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/repair_main90df20261022_build_receipt.json",
+  "original_receipt_sha256": "e091465cf5e67f7222cd197e0cafadc582b97b3ee47089ddda159d04627d9912",
+  "display_field_as_recorded": "../../production_input_snapshot.json",
+  "actual_input_snapshot": "research/reference_integrity/intl-country-intelligence-20261020/production_input_snapshot.json",
+  "correct_relative_to_receipt": "../../../production_input_snapshot.json",
+  "verified_sha256": "081592644c4f2d425fdde59d7b8e153e4aa214aa00d115ba64b13bd31c145b08",
+  "reason": "Relocated driver used the correct explicit absolute snapshot path and verified every retained input. Its inherited display-only relative path was not adjusted. This clarification preserves the original execution receipt and driver unchanged.",
+  "execution_change": false,
+  "retained_input_count": 510
+}

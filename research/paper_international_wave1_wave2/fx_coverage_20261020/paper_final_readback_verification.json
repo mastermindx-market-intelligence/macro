@@ -1,0 +1,245 @@
+{
+  "schema": "mastermind.intl_currency_paper_readback.v1",
+  "materialized_at": "2026-10-20T04:36:26.816397+00:00",
+  "text_count": 20,
+  "text_passed": 20,
+  "style_count": 12,
+  "style_passed": 12,
+  "order_count": 4,
+  "order_passed": 4,
+  "text_checks": [
+    {
+      "node_id": "DSO-0",
+      "expected": "KRW vs USD \u00b7 3 months",
+      "actual": "KRW vs USD \u00b7 3 months",
+      "passed": true
+    },
+    {
+      "node_id": "E06-0",
+      "expected": "KRW vs USD \u00b7 3 months",
+      "actual": "KRW vs USD \u00b7 3 months",
+      "passed": true
+    },
+    {
+      "node_id": "E8Z-0",
+      "expected": "KRW vs USD \u00b7 3 months",
+      "actual": "KRW vs USD \u00b7 3 months",
+      "passed": true
+    },
+    {
+      "node_id": "EG1-0",
+      "expected": "KRW vs USD \u00b7 3 months",
+      "actual": "KRW vs USD \u00b7 3 months",
+      "passed": true
+    },
+    {
+      "node_id": "DSP-0",
+      "expected": "+10.91%",
+      "actual": "+10.91%",
+      "passed": true
+    },
+    {
+      "node_id": "E05-0",
+      "expected": "+10.91%",
+      "actual": "+10.91%",
+      "passed": true
+    },
+    {
+      "node_id": "E8Y-0",
+      "expected": "+10.91%",
+      "actual": "+10.91%",
+      "passed": true
+    },
+    {
+      "node_id": "EG0-0",
+      "expected": "+10.91%",
+      "actual": "+10.91%",
+      "passed": true
+    },
+    {
+      "node_id": "DQA-0",
+      "expected": "Equity observations\n15 Oct 2026",
+      "actual": "Equity observations\n15 Oct 2026",
+      "passed": true
+    },
+    {
+      "node_id": "E1K-0",
+      "expected": "Equity observations\n15 Oct 2026",
+      "actual": "Equity observations\n15 Oct 2026",
+      "passed": true
+    },
+    {
+      "node_id": "EAD-0",
+      "expected": "Equity observations\n15 Oct 2026",
+      "actual": "Equity observations\n15 Oct 2026",
+      "passed": true
+    },
+    {
+      "node_id": "EHF-0",
+      "expected": "Equity observations\n15 Oct 2026",
+      "actual": "Equity observations\n15 Oct 2026",
+      "passed": true
+    },
+    {
+      "node_id": "EYX-0",
+      "expected": "Through 2026-10-19",
+      "actual": "Through 2026-10-19",
+      "passed": true
+    },
+    {
+      "node_id": "EYY-0",
+      "expected": "Through 2026-10-19",
+      "actual": "Through 2026-10-19",
+      "passed": true
+    },
+    {
+      "node_id": "EYZ-0",
+      "expected": "Through 2026-10-19",
+      "actual": "Through 2026-10-19",
+      "passed": true
+    },
+    {
+      "node_id": "EZ0-0",
+      "expected": "Through 2026-10-19",
+      "actual": "Through 2026-10-19",
+      "passed": true
+    },
+    {
+      "node_id": "DOB-0",
+      "expected": "20 OCT 2026",
+      "actual": "20 OCT 2026",
+      "passed": true
+    },
+    {
+      "node_id": "E34-0",
+      "expected": "20 OCT 2026",
+      "actual": "20 OCT 2026",
+      "passed": true
+    },
+    {
+      "node_id": "EBX-0",
+      "expected": "20 OCT 2026",
+      "actual": "20 OCT 2026",
+      "passed": true
+    },
+    {
+      "node_id": "EIZ-0",
+      "expected": "20 OCT 2026",
+      "actual": "20 OCT 2026",
+      "passed": true
+    }
+  ],
+  "style_checks": [
+    {
+      "node_id": "DSP-0",
+      "property": "color",
+      "expected": "var(--mx-dark-up)",
+      "passed": true
+    },
+    {
+      "node_id": "E8Y-0",
+      "property": "color",
+      "expected": "var(--mx-dark-up)",
+      "passed": true
+    },
+    {
+      "node_id": "E05-0",
+      "property": "color",
+      "expected": "var(--mx-light-ink-up)",
+      "passed": true
+    },
+    {
+      "node_id": "EG0-0",
+      "property": "color",
+      "expected": "var(--mx-light-ink-up)",
+      "passed": true
+    },
+    {
+      "node_id": "EYX-0",
+      "property": "fontSize",
+      "expected_observed": "var(--fs-micro)",
+      "passed": true
+    },
+    {
+      "node_id": "EYX-0",
+      "property": "lineHeight",
+      "expected_observed": "12px",
+      "passed": true
+    },
+    {
+      "node_id": "EYY-0",
+      "property": "fontSize",
+      "expected_observed": "var(--fs-micro)",
+      "passed": true
+    },
+    {
+      "node_id": "EYY-0",
+      "property": "lineHeight",
+      "expected_observed": "12px",
+      "passed": true
+    },
+    {
+      "node_id": "EYZ-0",
+      "property": "fontSize",
+      "expected_observed": "var(--fs-micro)",
+      "passed": true
+    },
+    {
+      "node_id": "EYZ-0",
+      "property": "lineHeight",
+      "expected_observed": "12px",
+      "passed": true
+    },
+    {
+      "node_id": "EZ0-0",
+      "property": "fontSize",
+      "expected_observed": "var(--fs-micro)",
+      "passed": true
+    },
+    {
+      "node_id": "EZ0-0",
+      "property": "lineHeight",
+      "expected_observed": "12px",
+      "passed": true
+    }
+  ],
+  "order_checks": [
+    {
+      "board": "DMX-0",
+      "ids": [
+        "DSO-0",
+        "DSP-0",
+        "EYX-0"
+      ],
+      "passed": true
+    },
+    {
+      "board": "DW7-0",
+      "ids": [
+        "E06-0",
+        "E05-0",
+        "EYY-0"
+      ],
+      "passed": true
+    },
+    {
+      "board": "E4D-0",
+      "ids": [
+        "E8Z-0",
+        "E8Y-0",
+        "EYZ-0"
+      ],
+      "passed": true
+    },
+    {
+      "board": "EC2-0",
+      "ids": [
+        "EG1-0",
+        "EG0-0",
+        "EZ0-0"
+      ],
+      "passed": true
+    }
+  ],
+  "native_normalization": "Paper normalized the requested 14px footer line-height to 12px after the 10px token font change. The final single-line footer was visually accepted at its observed native metrics."
+}

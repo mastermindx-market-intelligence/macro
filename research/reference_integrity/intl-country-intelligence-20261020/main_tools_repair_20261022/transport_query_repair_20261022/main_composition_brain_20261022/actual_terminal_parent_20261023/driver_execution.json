@@ -1,0 +1,26 @@
+{
+  "command": [
+    "node",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/actual_terminal_parent_20261023/verify_actual_parent_v13.cjs",
+    "--artifact",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/proposed_braincomposition20261022_repair",
+    "--output",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/actual_terminal_parent_20261023",
+    "--phase",
+    "candidate",
+    "--matrix",
+    "full",
+    "--source-sha",
+    "f1fafde0bbf95550ed964de3a60920a2619778e4",
+    "--runtime",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/actual_terminal_parent_20261023/runtime.json",
+    "--build-receipt",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/repair_braincomposition20261022_build_receipt.json"
+  ],
+  "started_at": "2026-10-23T06:11:44.577548+00:00",
+  "driver_sha256": "aa4f29148e418d0ceffe94e87a5fee0dc44e8eb1a748409cd52be30b91e8e53e",
+  "coordinator_sha256": "692e8afce60f19b212120bc3ce1c8f2642dd4ce4c730fef25b42df49df13df46",
+  "owned_supervisor_pid": 53030,
+  "exit_code": 0,
+  "finished_at": "2026-10-23T06:14:21.533707+00:00"
+}

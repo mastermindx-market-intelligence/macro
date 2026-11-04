@@ -1,0 +1,15 @@
+{
+  "schema": "intl.navigation_ci_enrollment.v1",
+  "baseline_head": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "job": "international-workspace-browser",
+  "before_sha256": "a508c1293d111a57786c33ff483fffa1cb729a124807add23c887d0f1fd5867c",
+  "after_sha256": "b9c7feb06f5f76ea9fbab5707a770e8b46adaaa6797ef28051a060ad2f7e40fa",
+  "added_paths": [
+    "templates/shared_shell_bridge.js",
+    "site/shared_shell_bridge.js",
+    "tests/intl_country_cockpit_navigation.test.cjs"
+  ],
+  "added_command_test": "tests/intl_country_cockpit_navigation.test.cjs",
+  "other_jobs_changed": false,
+  "timing_or_pack_weights_changed": false
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "mastermind.fabric_mcp.v1",
+  "action": "fabric_result",
+  "run_id": "intl-20261022-shell-tools-repair-r2",
+  "effective_run_id": "intl-20261022-shell-tools-repair-r2",
+  "accept_run_id": "intl-20261022-shell-tools-repair-r2",
+  "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "adapter_response": "WORKER_RETURN_R2.md",
+  "response_sha256": "2d524f4c15390d514d65e705d2a7724639e181eb8781f200e0b9cfe175575686",
+  "response_bytes": 35482,
+  "accepted": false,
+  "digest_scope": "exact complete adapter CLI response; not a cryptographic artifact attestation",
+  "retry_allowed": false,
+  "parent_integration_verdict": "REQUEST_CHANGES",
+  "parent_verification": "Unintegrated; principal and deterministic review in progress."
+}

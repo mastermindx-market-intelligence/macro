@@ -1,0 +1,3 @@
+usage: audit_unrun_tests.py [-h] [--tier TIER] [--json JSON] [--selftest]
+                            [--write-baseline]
+audit_unrun_tests.py: error: argument --json: expected one argument

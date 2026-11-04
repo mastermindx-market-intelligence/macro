@@ -1,0 +1,138 @@
+{
+  "source_sha": "5b6b88fc16a1b11f2dc394ad17a3ecc996d0cefd",
+  "diff_sha256": "4c581bca611e6218dc6e59c4d1776b1ad481a311c55c5bc1590f4a0755b8b1e9",
+  "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "checks": [
+    {
+      "name": "template_site_sync",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-20T20:43:28.873611+00:00",
+      "finished_at": "2026-10-20T20:43:33.669492+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_guard_template_site_sync.log",
+      "log_sha256": "8978f102ef1207f759ad00b587d8a10ed40d27480ee9a7d3dc0cf1ea10fe9fd2"
+    },
+    {
+      "name": "design_system",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/intl-country-cockpit-afternoon-design.diff"
+      ],
+      "started_at": "2026-10-20T20:43:33.670925+00:00",
+      "finished_at": "2026-10-20T20:43:39.699244+00:00",
+      "exit_code": 1,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_guard_design_system.log",
+      "log_sha256": "a204b38245ad9aff1cb008c12f63ab0af4b6d2f126e7017df6fb5a2011a75c3c"
+    },
+    {
+      "name": "runtime_styles",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "started_at": "2026-10-20T20:43:39.701217+00:00",
+      "finished_at": "2026-10-20T20:43:41.546098+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_guard_runtime_styles.log",
+      "log_sha256": "161731c0bf2d84781ddeb031adafe4673f2acec41742df1f2f6354011cd4c10f"
+    },
+    {
+      "name": "visual_evidence",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/intl-country-cockpit-afternoon-design.diff"
+      ],
+      "started_at": "2026-10-20T20:43:41.546862+00:00",
+      "finished_at": "2026-10-20T20:43:45.201038+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_guard_visual_evidence.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ci_manifest",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--validate-only"
+      ],
+      "started_at": "2026-10-20T20:43:45.202475+00:00",
+      "finished_at": "2026-10-20T20:43:47.201354+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_guard_ci_manifest.log",
+      "log_sha256": "731a0c3d2089ffcb667914f31a5620ac04d597c2cf54e7241b90cc5f5de03b66"
+    },
+    {
+      "name": "intl_render_contracts",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_intl_eod_publisher_integration.py",
+        "tests/test_intl_chart_publisher.py",
+        "tests/test_intl_workspace_overview_render.py",
+        "tests/test_intl_workspace_library_render.py",
+        "tests/test_intl_workspace_integration.py",
+        "tests/test_intl_workspace_inspector_render.py",
+        "tests/test_intl_inspector_mount.py",
+        "tests/test_intl_workspace_compare_render.py",
+        "tests/test_intl_compare_integration.py",
+        "tests/test_intl_workspace_generation_mount.py",
+        "tests/test_intl_workspace_macro_render.py",
+        "tests/test_intl_macro_publication_build.py",
+        "tests/test_intl_risk_publication_build.py",
+        "tests/test_intl_workspace_risk_render.py",
+        "tests/test_intl_workspace_risk_ui_independent.py",
+        "tests/test_intl_history_publication_build.py",
+        "tests/test_intl_history_publication_independent.py",
+        "tests/test_intl_workspace_history_render.py",
+        "tests/test_intl_workspace_history_ui_independent.py",
+        "-q"
+      ],
+      "started_at": "2026-10-20T20:43:47.202926+00:00",
+      "finished_at": "2026-10-20T20:45:02.550914+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_guard_intl_render_contracts.log",
+      "log_sha256": "01854a543bf17022afa9020c9dd1757f3014208aa82a8199d3268ff4aad6dda3"
+    },
+    {
+      "name": "country_ui_contracts",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_intl_country_cockpit.py",
+        "tests/test_intl_build.py",
+        "-q"
+      ],
+      "started_at": "2026-10-20T20:45:02.552727+00:00",
+      "finished_at": "2026-10-20T20:45:31.238231+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_guard_country_ui_contracts.log",
+      "log_sha256": "c774ce400357dba49df108fb3e1cd97810986e80c19f8ce9e3ef47dbc2777fbe"
+    },
+    {
+      "name": "ci_curated_closure",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "-c",
+        "from pathlib import Path; import json; from scripts.run_ci_pack import curated_exclusive_closure_findings; findings=curated_exclusive_closure_findings(Path(\".github/ci/legacy-jobs.yml\")); print(json.dumps(findings)); raise SystemExit(bool(findings))"
+      ],
+      "started_at": "2026-10-20T20:45:31.239225+00:00",
+      "finished_at": "2026-10-20T20:48:51.619701+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_guard_ci_curated_closure.log",
+      "log_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    }
+  ]
+}

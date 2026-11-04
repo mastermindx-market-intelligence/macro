@@ -1,0 +1,1161 @@
+{
+  "schema": "mastermind.intl_currency_coverage_checkpoint.v1",
+  "recorded_at": "2026-10-20T05:06:15.982677+00:00",
+  "operation": "intl-country-cockpit-20261018",
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018",
+  "branch": "sol/web-intl-country-cockpit-20261018",
+  "frozen_local_head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "last_observed_remote_head": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+  "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+  "state": "IMPLEMENTED_AND_LOCALLY_VERIFIED__PUBLICATION_FENCED",
+  "source_qualification": {
+    "schema": "intl_currency_qualification.v1",
+    "qualified_at": "2026-10-20T04:13:01.093508+00:00",
+    "evaluation_day": "2026-10-20",
+    "kind": "RETAINED_PROVIDER_RESPONSES_NOT_CANONICAL_STORE_ADMISSION",
+    "quote_timezone": "Europe/London",
+    "same_day_policy": "exclude evaluation day and recorded UTC capture day",
+    "canonical_store_writes": false,
+    "countries": [
+      {
+        "cc": "JP",
+        "currency": "JPY",
+        "configured_ticker": "USDJPY=X",
+        "provider_symbol": "JPY=X",
+        "quote_convention": "local_per_USD",
+        "source_url": "https://finance.yahoo.com/quote/JPY%3DX/history/",
+        "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDJPY%3DX?range=6mo&interval=1d",
+        "retrieved_at": "2026-10-20T03:41:08.547672+00:00",
+        "raw_archive": "JP_yahoo_chart.json.gz",
+        "response_sha256": "c2379893379040fecd4d4bdb23501c4842308de46fa4399ee078507cacbc4c5c",
+        "timestamp_rows": 133,
+        "valid_quotes": 132,
+        "missing_quotes": 1,
+        "excluded_on_or_after_capture_day": 1,
+        "reference_gap_days": 2,
+        "expected": {
+          "start": {
+            "date": "2026-07-17",
+            "quote": 162.37600708007812
+          },
+          "end": {
+            "date": "2026-10-19",
+            "quote": 157.80599975585938
+          },
+          "reference_target": "2026-07-19",
+          "value_decimal": "2.895965509099126870271576971514152631700",
+          "display_percent": "+2.90%"
+        },
+        "evidence_sha256": "94163bfe4129efdde4f225e3291335c578211724fe743b6108b2f480b51396b4"
+      },
+      {
+        "cc": "KR",
+        "currency": "KRW",
+        "configured_ticker": "USDKRW=X",
+        "provider_symbol": "USDKRW=X",
+        "quote_convention": "local_per_USD",
+        "source_url": "https://finance.yahoo.com/quote/USDKRW%3DX/history/",
+        "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDKRW%3DX?range=6mo&interval=1d",
+        "retrieved_at": "2026-10-20T03:44:44.612104+00:00",
+        "raw_archive": "KR_yahoo_chart.json.gz",
+        "response_sha256": "df4ba5062f227e712be0ddd989ee566b742fcccd587ec9df772b7f4292afb88e",
+        "timestamp_rows": 133,
+        "valid_quotes": 132,
+        "missing_quotes": 1,
+        "excluded_on_or_after_capture_day": 1,
+        "reference_gap_days": 2,
+        "expected": {
+          "start": {
+            "date": "2026-07-17",
+            "quote": 1478.8499755859375
+          },
+          "end": {
+            "date": "2026-10-19",
+            "quote": 1333.4300537109375
+          },
+          "reference_target": "2026-07-19",
+          "value_decimal": "10.90570303783810604314988503183835816110",
+          "display_percent": "+10.91%"
+        },
+        "evidence_sha256": "519cd4e8532d4650fdef124c7e5420cd39d1dc9170f4a6eb172be5b2d0ec1fed"
+      },
+      {
+        "cc": "TW",
+        "currency": "TWD",
+        "configured_ticker": "USDTWD=X",
+        "provider_symbol": "USDTWD=X",
+        "quote_convention": "local_per_USD",
+        "source_url": "https://finance.yahoo.com/quote/USDTWD%3DX/history/",
+        "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDTWD%3DX?range=6mo&interval=1d",
+        "retrieved_at": "2026-10-20T03:44:44.629407+00:00",
+        "raw_archive": "TW_yahoo_chart.json.gz",
+        "response_sha256": "1426c1fc42939b9b4c3fb83268980a2c735afebad0241c1c99583586f73c73c9",
+        "timestamp_rows": 133,
+        "valid_quotes": 132,
+        "missing_quotes": 1,
+        "excluded_on_or_after_capture_day": 1,
+        "reference_gap_days": 2,
+        "expected": {
+          "start": {
+            "date": "2026-07-17",
+            "quote": 32.26430130004883
+          },
+          "end": {
+            "date": "2026-10-19",
+            "quote": 32.387001037597656
+          },
+          "reference_target": "2026-07-19",
+          "value_decimal": "-0.3788548912151064597236713990261570585800",
+          "display_percent": "-0.38%"
+        },
+        "evidence_sha256": "492c394bf5624e45814cfe4bf823128501ca8b0e7b88ce2fdec72355d11c861d"
+      },
+      {
+        "cc": "IN",
+        "currency": "INR",
+        "configured_ticker": "USDINR=X",
+        "provider_symbol": "USDINR=X",
+        "quote_convention": "local_per_USD",
+        "source_url": "https://finance.yahoo.com/quote/USDINR%3DX/history/",
+        "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDINR%3DX?range=6mo&interval=1d",
+        "retrieved_at": "2026-10-20T03:44:44.715058+00:00",
+        "raw_archive": "IN_yahoo_chart.json.gz",
+        "response_sha256": "64b65106dc798744142f5246a77d81808ec0f3bb8b99a0130402b6ccf2ce2427",
+        "timestamp_rows": 133,
+        "valid_quotes": 132,
+        "missing_quotes": 1,
+        "excluded_on_or_after_capture_day": 1,
+        "reference_gap_days": 2,
+        "expected": {
+          "start": {
+            "date": "2026-07-17",
+            "quote": 96.6521987915039
+          },
+          "end": {
+            "date": "2026-10-19",
+            "quote": 94.97769927978516
+          },
+          "reference_target": "2026-07-19",
+          "value_decimal": "1.763044929932448586606220929869069792300",
+          "display_percent": "+1.76%"
+        },
+        "evidence_sha256": "e3b6e943f641cb990379dde3bd5aae23bd60b30ce8425a93dbcc578952d042b6"
+      },
+      {
+        "cc": "AU",
+        "currency": "AUD",
+        "configured_ticker": "AUDUSD=X",
+        "provider_symbol": "AUDUSD=X",
+        "quote_convention": "USD_per_local",
+        "source_url": "https://finance.yahoo.com/quote/AUDUSD%3DX/history/",
+        "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/AUDUSD%3DX?range=6mo&interval=1d",
+        "retrieved_at": "2026-10-20T03:41:08.633741+00:00",
+        "raw_archive": "AU_yahoo_chart.json.gz",
+        "response_sha256": "48defaef25473a18e53fb2992e23e94d711b3c60b5e1e0e24d3f5c5012bf503b",
+        "timestamp_rows": 133,
+        "valid_quotes": 132,
+        "missing_quotes": 1,
+        "excluded_on_or_after_capture_day": 1,
+        "reference_gap_days": 2,
+        "expected": {
+          "start": {
+            "date": "2026-07-17",
+            "quote": 0.6999399662017822
+          },
+          "end": {
+            "date": "2026-10-19",
+            "quote": 0.6972100138664246
+          },
+          "reference_target": "2026-07-19",
+          "value_decimal": "-0.3900266404519892302177650172219954300200",
+          "display_percent": "-0.39%"
+        },
+        "evidence_sha256": "f2849e31d2119bf6d5b2c63612c2ec33da5341a7c3848a77151577ce54247394"
+      },
+      {
+        "cc": "GB",
+        "currency": "GBP",
+        "configured_ticker": "GBPUSD=X",
+        "provider_symbol": "GBPUSD=X",
+        "quote_convention": "USD_per_local",
+        "source_url": "https://finance.yahoo.com/quote/GBPUSD%3DX/history/",
+        "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/GBPUSD%3DX?range=6mo&interval=1d",
+        "retrieved_at": "2026-10-20T03:44:44.729857+00:00",
+        "raw_archive": "GB_yahoo_chart.json.gz",
+        "response_sha256": "1e0d19af4c75c36b8f0b3a7f2b1fadc804a079b7fe661b6e72fe7e46830a11f8",
+        "timestamp_rows": 133,
+        "valid_quotes": 132,
+        "missing_quotes": 1,
+        "excluded_on_or_after_capture_day": 1,
+        "reference_gap_days": 2,
+        "expected": {
+          "start": {
+            "date": "2026-07-17",
+            "quote": 1.3478904962539673
+          },
+          "end": {
+            "date": "2026-10-19",
+            "quote": 1.3335645198822021
+          },
+          "reference_target": "2026-07-19",
+          "value_decimal": "-1.062844230416320348089010670834772174440",
+          "display_percent": "-1.06%"
+        },
+        "evidence_sha256": "bdeecdd0c4aca391613bd62af183de0158300688614c93fcd30cd0faf1ab264b"
+      },
+      {
+        "cc": "EZ",
+        "currency": "EUR",
+        "configured_ticker": "EURUSD=X",
+        "provider_symbol": "EURUSD=X",
+        "quote_convention": "USD_per_local",
+        "source_url": "https://finance.yahoo.com/quote/EURUSD%3DX/history/",
+        "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?range=6mo&interval=1d",
+        "retrieved_at": "2026-10-20T03:44:44.825649+00:00",
+        "raw_archive": "EZ_yahoo_chart.json.gz",
+        "response_sha256": "374565686165022d239f35571097c60aa2e66537d92d59b0af3ea0620846b1d2",
+        "timestamp_rows": 133,
+        "valid_quotes": 132,
+        "missing_quotes": 1,
+        "excluded_on_or_after_capture_day": 1,
+        "reference_gap_days": 2,
+        "expected": {
+          "start": {
+            "date": "2026-07-17",
+            "quote": 1.1444659233093262
+          },
+          "end": {
+            "date": "2026-10-19",
+            "quote": 1.1225486993789673
+          },
+          "reference_target": "2026-07-19",
+          "value_decimal": "-1.915061294877463439239924637494849397620",
+          "display_percent": "-1.92%"
+        },
+        "evidence_sha256": "3826934dd67ad45e50b1f3a6fc7a1601274b6c96f66e3a88ada1e8422752683a"
+      }
+    ],
+    "fixture_sha256": "5165bbf43f2ae38a677d1f3183918abec8f8ca1bb5da42c6f0459c2696bcc01a",
+    "currency_replay_sha256": "a369f3b0ebf832e88d08b7eddeb08166366bd4c5ffcc4de16060757a2e2c4a69",
+    "passed": true
+  },
+  "verification": {
+    "selected_python_cases_passed": 298,
+    "currency_cases_within_selection": 80,
+    "browser_country_cases_passed": 84,
+    "explicit_ageing_controls_passed": 8,
+    "browser_font_checks_passed": 84,
+    "canonical_states_captured": 12,
+    "canonical_ci_dependency_findings": {},
+    "unwired_suites": [],
+    "integrity": {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/integrity.json",
+      "bytes": 2033,
+      "sha256": "f9d5ee79da1d6cae8c374f84a55db22db4417259a014ee0f3d073c1d83ae298e"
+    }
+  },
+  "paper": {
+    "receipt": {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_coverage_receipt.json",
+      "bytes": 8552,
+      "sha256": "79997eaa36f432ed03baa28fae53fc75ba46ca932c72da2732858183c55d50dc"
+    },
+    "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "page_id": "p-G-0",
+    "url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-G-0",
+    "original_applied_effects": 6,
+    "text_checks": 20,
+    "style_checks": 12,
+    "order_checks": 4
+  },
+  "html_sha256": {
+    "intl_country_preview.html": "d1e7bc139601e8ed8cb84d9368c0d284d98316061499ba850dbb3d42f86c5c70",
+    "intl_integrated_preview.html": "8354968aecd636c43aad2c8945393b2fabee6f313181f90618825d90b6737b5a",
+    "intl_stocks_integrated_preview.html": "94ff3532e86169db559f85ae74e21eb029524844bc8272d445f8db4d771672e8"
+  },
+  "fiscal_parent_files": [
+    {
+      "path": "config/intl_country_baseline.json",
+      "bytes": 274521,
+      "sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "bytes": 74539,
+      "sha256": "eb0abf17c03d1ef5ab2c6378ac67d6dfb71b58b5353810af64a08c4629780190"
+    },
+    {
+      "path": "config/site_access.yml",
+      "bytes": 44189,
+      "sha256": "127dd1de71c979910601a8df89132244e95c0d1991c194408281072ace6384c9"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "bytes": 41599,
+      "sha256": "220d3790b2a0135b7ea1b8c75a1d0a68192d9e3082a72168c39b8850da5372cf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/FISCAL_COVERAGE_20261020.json",
+      "bytes": 34283,
+      "sha256": "9dbb0e2f6bc05d052a5fa1173a38fd79f765a4e79951832c86c0a40d1d5b0064"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_source_snapshot.tar.gz",
+      "bytes": 510397,
+      "sha256": "c44d73d2fbfc858a08eae3e017adcd3e766078f0ffb87ca9b59411b897a255ab"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_fiscal_coverage_receipt.json",
+      "bytes": 7864,
+      "sha256": "d2ddabaad3798809af2daccf0fc3beffa92422060d3741024dd9e6aa5a496231"
+    }
+  ],
+  "publication_fence": {
+    "action_ref": "d07df7c6e45d35c54338808701350ece97c605401ad69a0fd28bb415d05a5a56",
+    "state": "EFFECT_UNKNOWN / PUSH_RESULT_UNCERTAIN",
+    "last_owner_check": "2026-10-20T01:52:43Z",
+    "required_resolution": "Canonical classification by the original C2 publisher owner before commit/push continuation.",
+    "not_authorized_by_this_receipt": [
+      "advancing_HEAD",
+      "push_replay",
+      "alternate_publisher",
+      "Ready",
+      "merge",
+      "deploy",
+      "restart"
+    ]
+  },
+  "limits": [
+    "Held working-tree increment is absent from the last observed remote PR head.",
+    "Retained quote qualification does not populate the canonical FX store or prove production observations.",
+    "Equity replay remains dated 15 October; currency snapshot ends 19 October; render time is separate.",
+    "Browser proof uses anonymous isolated integrated HTML; live_config, blocked analytics and authenticated/degraded-state gaps remain explicit.",
+    "Current-snapshot CI inference is not hosted combined-source PR-versus-base contract-delta.",
+    "Hosted CI, genuine Sector Central Full RIG approvals, Session Bridge/formal independent release review, normal render/updater and actual served acceptance remain required.",
+    "PR8754 retains its separate rights, browser, Saved and release obligations."
+  ],
+  "file_count": 164,
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "bytes": 1747545,
+      "sha256": "cf48a86a4dd7a8bbfce028bdd3641062e8166fc01efa6b6fa5289bc262074309"
+    },
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "bytes": 31348,
+      "sha256": "99750b6a5c46fe132aa3e1c7c1b8668ca4160dcecc730b808982311eadb99ee4"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "bytes": 74539,
+      "sha256": "eb0abf17c03d1ef5ab2c6378ac67d6dfb71b58b5353810af64a08c4629780190"
+    },
+    {
+      "path": "collectors/intl_prices.py",
+      "bytes": 7342,
+      "sha256": "602f7d5a09df3e6140e8fe99ee3d2d0408993e45a9e269b8bd9bf9283a73f279"
+    },
+    {
+      "path": "config/intl_country_baseline.json",
+      "bytes": 274521,
+      "sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27"
+    },
+    {
+      "path": "config/site_access.yml",
+      "bytes": 44189,
+      "sha256": "127dd1de71c979910601a8df89132244e95c0d1991c194408281072ace6384c9"
+    },
+    {
+      "path": "engine/intl_inputs.py",
+      "bytes": 50013,
+      "sha256": "bbb2a634bbe0ae06c8e8b21f5bf9882a8697bf4eb5a57252e7593759a1ba11ae"
+    },
+    {
+      "path": "engine/intl_run.py",
+      "bytes": 9829,
+      "sha256": "2cf905292d14de983e232f89ca939fbbc70e1f093944b6acfc46335f8119e079"
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "bytes": 27893,
+      "sha256": "05d75f867a5be25d278c34a0e818e1025c716fb34fa4cfe0faf1ef0bc0a5256f"
+    },
+    {
+      "path": "lib/intl_currency_observation.py",
+      "bytes": 11646,
+      "sha256": "915a3b10ec60a760e50b2d2283c677e5d8aa67627cd876eff3e8bbc2dcad628b"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/03ed7c6949aacec7.png",
+      "bytes": 458803,
+      "sha256": "03ed7c6949aacec7d5feb71fb70422a362fe7974961b1d68bef5eff7c58674e7"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/0ec3b6793ab997d4.png",
+      "bytes": 422840,
+      "sha256": "0ec3b6793ab997d474601ba4db7ebb9d8ac259e78c4ed307488e1086f91e232e"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/101c99cea9b70ada.png",
+      "bytes": 439278,
+      "sha256": "101c99cea9b70ada893dbb749e7a9cac8f1ce6a906a2523fd48a2f09155fa291"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/170ff6b10b0b67a8.png",
+      "bytes": 439537,
+      "sha256": "170ff6b10b0b67a81fb6070c482b6bb237b7bb8a76a2cf8c4d84d36dbb9bf37a"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/1e969269243a3940.png",
+      "bytes": 422528,
+      "sha256": "1e969269243a39403155948e93f0b863fba5b6a70da83c753ffb599789f5a042"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/22321acaf04cbb4d.png",
+      "bytes": 422614,
+      "sha256": "22321acaf04cbb4d027b1d341ee4b43516c17f7e212950fe820631d3622ec840"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/227606541c33908b.png",
+      "bytes": 451326,
+      "sha256": "227606541c33908b723b593a2f50e2273e2bbdd81eccb72f8e1ac32145f235f6"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/2545142959ce35e1.png",
+      "bytes": 567032,
+      "sha256": "2545142959ce35e1d06ed54a9a58ddd6cddcee2e97dbe25776991ba10eeeac6c"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/26b64937a376aefd.png",
+      "bytes": 436052,
+      "sha256": "26b64937a376aefd507fb5837958cce84bf5f75d4a892434934077b836e1154b"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/2f345c09dcea7fb1.png",
+      "bytes": 434904,
+      "sha256": "2f345c09dcea7fb1e25068fa7b51d30857b032bbd24820445279183ddb49c9e0"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/32bd226619c0df2a.png",
+      "bytes": 441332,
+      "sha256": "32bd226619c0df2aa44c12a499ddcd9a35c6de6b1f5083ab69b65726054c2402"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/3491701c78f6c166.png",
+      "bytes": 451728,
+      "sha256": "3491701c78f6c1664d4bd78ce2ba9b6686f58e429a386913eebdca54c3a50d2b"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/354e1ac5f3ecbee9.png",
+      "bytes": 452890,
+      "sha256": "354e1ac5f3ecbee901c5f0ed133857c7b1b04a549ec9b2bbe03697cd8277833a"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/3790b33123dde381.png",
+      "bytes": 434816,
+      "sha256": "3790b33123dde381ee32a60870d5ddc23f9c04397d6ac329cf3f09db220d0bb3"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/3d1406f6ab8d5e75.png",
+      "bytes": 565910,
+      "sha256": "3d1406f6ab8d5e75d84d424be5ec9efcfaa6eacf4f491e96d90d0b20469e7642"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/4073f9c832376cad.png",
+      "bytes": 593709,
+      "sha256": "4073f9c832376cadbc4b1ea88cce8ad12bd139a9bc09bd7c4c60868753e37dc7"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/42d170e7886671e4.png",
+      "bytes": 441018,
+      "sha256": "42d170e7886671e46d32cbd40a1f5328b6c2fecb29968a52006231353b60af05"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/46402eb08f4ae6ba.png",
+      "bytes": 435563,
+      "sha256": "46402eb08f4ae6badb010fb2bbd3f67763e243e8bfcbfe4fe2f6312ba884a78b"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/48ef052340346d4b.png",
+      "bytes": 453338,
+      "sha256": "48ef052340346d4b6cc892531e103e6615fe8c7cc95792bb41ff3764eb5307c5"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/5e76fe1bc6b37b42.png",
+      "bytes": 593719,
+      "sha256": "5e76fe1bc6b37b4293f75fb99c1b15483a1cd0446968374de6139b8b40126416"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/6635ca6256d37c45.png",
+      "bytes": 593331,
+      "sha256": "6635ca6256d37c455a9b59bcc5dc8c890e56a77b2813a6b58296549acf61850d"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/6b7c667a77a7dfab.png",
+      "bytes": 593761,
+      "sha256": "6b7c667a77a7dfab871412ce39f3cae70bc96796f5ca0aefea72cfd659d9294d"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/77c1349debd98331.png",
+      "bytes": 565917,
+      "sha256": "77c1349debd98331784634c3a5c2998bf0d1925694e2a9d0c3506b0abfa9fb3a"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/85fde0e24f9a849f.png",
+      "bytes": 567017,
+      "sha256": "85fde0e24f9a849ff813a01eedf7362ae0a175f57ca69cd78e1ee677078e349a"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/EVIDENCE.yml",
+      "bytes": 214,
+      "sha256": "9b10bc030ad5281196dcb88b223b530be1a296193b0f7798931b169799909c09"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/a342049fc7e3f450.png",
+      "bytes": 451430,
+      "sha256": "a342049fc7e3f4500f4f8f9641437dc6f547ec9d852bf0bab39a3057facd449f"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/a6b6b2f31e347a36.png",
+      "bytes": 453377,
+      "sha256": "a6b6b2f31e347a36439f7f9ec5dc4409ddce5f6331f7307e8a7e3e22184dccb3"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/ac6e4fadd6708dd0.png",
+      "bytes": 441477,
+      "sha256": "ac6e4fadd6708dd071ea82e418c7c88950d91875f600cf80329dfd1fecdfc4ba"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/b20d00341be44018.png",
+      "bytes": 592585,
+      "sha256": "b20d00341be44018c9d208fa610c4c080a581abb3464073cd49b1c598904798d"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/c04b20bb43e3a2bb.png",
+      "bytes": 439112,
+      "sha256": "c04b20bb43e3a2bbb13362f93d673c1b96554e6eb9df3159d475240a6f80c0e2"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/c42db69cbe346922.png",
+      "bytes": 567516,
+      "sha256": "c42db69cbe34692258f8149d9823fc9c53be5309b476f78ee34941e716d6f927"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/d2786b7a0ade3af3.png",
+      "bytes": 564717,
+      "sha256": "d2786b7a0ade3af3f435770757392f4699e669342625c92b87fe4ff0b45628fa"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/d99e2d63a7daec52.png",
+      "bytes": 458366,
+      "sha256": "d99e2d63a7daec522ce70144b3f0373a11123dd242e6230e7338f277803bb1b5"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/ecb4428e7512c505.png",
+      "bytes": 458715,
+      "sha256": "ecb4428e7512c505f6f3da90b1506b8a6d05d5983f58d2f99af0310346a34df1"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/f3fdb1233e178e69.png",
+      "bytes": 435127,
+      "sha256": "f3fdb1233e178e691d0b8905fd6ec0f43aca1eeda27b60202036085946327a09"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/ffda59b5e154643d.png",
+      "bytes": 435984,
+      "sha256": "ffda59b5e154643d11694a7d184befc1976b1e3a478a205290e4a3098af11e28"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/manifest.json",
+      "bytes": 11876,
+      "sha256": "0d0bc0d17f09ea2e41b6291da77d75080484c92a9a595b0532864bc7e89c9597"
+    },
+    {
+      "path": "mockups/evidence/intl-currency-coverage-20261020/smells.json",
+      "bytes": 3633,
+      "sha256": "a1809d05f22ad91204db8d95a7594338b66cc949448df31fb219051dc605cf44"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/capture_country_cockpit.py",
+      "bytes": 2315,
+      "sha256": "4ea4a527bb92b9279e0b3ea00696c8c3fb322a70c79a0f0698dac46d1b0d0dc5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/FISCAL_COVERAGE_20261020.json",
+      "bytes": 34283,
+      "sha256": "9dbb0e2f6bc05d052a5fa1173a38fd79f765a4e79951832c86c0a40d1d5b0064"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_source_snapshot.json",
+      "bytes": 2771,
+      "sha256": "e8e605a258cbb825c3ee9f12257bd58e2ef39b1e39588dcf6e1f847db35f8508"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_source_snapshot.tar.gz",
+      "bytes": 510397,
+      "sha256": "c44d73d2fbfc858a08eae3e017adcd3e766078f0ffb87ca9b59411b897a255ab"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_fiscal_coverage_receipt.json",
+      "bytes": 7864,
+      "sha256": "d2ddabaad3798809af2daccf0fc3beffa92422060d3741024dd9e6aa5a496231"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/AU_normalized_observations.json",
+      "bytes": 16225,
+      "sha256": "05841d6830e689666af2e7c546d4da5143285939e91a7d324b19814649916a1f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/AU_yahoo_chart.json.gz",
+      "bytes": 5457,
+      "sha256": "f89787c3201e97b9f5aa1b0f33d4585125f7aecaab2328ed430aaa9a3dc50035"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_COVERAGE_20261020.md",
+      "bytes": 12067,
+      "sha256": "b03c25ca4f06ae266784ef43c7e3f85d31085ad59fcf342cb061ea3d9ff70c00"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_SOURCE_REVIEW_20261020.md",
+      "bytes": 5281,
+      "sha256": "89bfff203a1c738e2f43dcbdeea3dd9145f0a7c9db4efae6ca464715a781988b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/EZ_normalized_observations.json",
+      "bytes": 16199,
+      "sha256": "a2407e8a4a07f40e6a0fb1327a5a8efd24a4a9058664c8ee63c8f8b5ac7931b7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/EZ_yahoo_chart.json.gz",
+      "bytes": 5349,
+      "sha256": "5aad2d6901fe2d7eee352c9aa51fd47b47b91159a94c6b14bbed240a92ed517a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/GB_normalized_observations.json",
+      "bytes": 16204,
+      "sha256": "2cc3619e789dd5c747178bd3991e6c8d74ff6ecfcf76bce72e670164f7ed3940"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/GB_yahoo_chart.json.gz",
+      "bytes": 5283,
+      "sha256": "ac4b561e22a2496e2d022a7930382141394061f37fc6bd5ced45115e7d6e3616"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/IN_normalized_observations.json",
+      "bytes": 16075,
+      "sha256": "47d1f5ce1869b7b70d16fbca9763f735acec53398f32ebacfab4066f62730d36"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/IN_yahoo_chart.json.gz",
+      "bytes": 4145,
+      "sha256": "58c57a618249884be808cccd3e439e14304eb41d027bb7c5710dd4ec75a15055"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/JP_normalized_observations.json",
+      "bytes": 16187,
+      "sha256": "5773e56d1dc9a807ac7d47a8bd6a8cd4cf65935563302959ad145f31ff4b4a6c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/JP_yahoo_chart.json.gz",
+      "bytes": 3905,
+      "sha256": "f93713a28ccc2a1a3cf02ec1344ec0e85c1fc2ffe0a62ae53867d151e4944e8a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/KR_normalized_observations.json",
+      "bytes": 16029,
+      "sha256": "983bd7f0562b1e5242a703122f5c03acb9d58dc3917afe03ac28cdad0040b534"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/KR_yahoo_chart.json.gz",
+      "bytes": 3329,
+      "sha256": "53bac0eea6de3de2e155f0dc30e9f7ba6e51fafc654118aa6bd87fba1688e38a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/PR_CLAIM_REVIEW_20261020.md",
+      "bytes": 1564,
+      "sha256": "02107e69f6cf1efaeb2f2738861b2ea86b9f770fa4fd008a2758d9eccb46e971"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/TW_normalized_observations.json",
+      "bytes": 16181,
+      "sha256": "8eb8c14ac83631ae96fab59105d1366de53113dab7c3a4390ba151ef3aeaee9a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/TW_yahoo_chart.json.gz",
+      "bytes": 4486,
+      "sha256": "5ec0800b4d5c433cc4e9fae67a2a5139ece6ba72869f14ae023b6f046d6276ae"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/additional_incumbent_provider_probe.json",
+      "bytes": 5269,
+      "sha256": "0844fdf051abfd70380c95e678083613586b2255dca867330b34f40c45915f11"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_before_mobile_typography_fix.tar.gz",
+      "bytes": 11855050,
+      "sha256": "8aee6247af0e53579c119a5a910438a1d4b681d9196ef0ad1e6192d9b4013ddb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_before_typography_fix.tar.gz",
+      "bytes": 6076766,
+      "sha256": "a09cbe19039fadc007e59c76c6853b721c611c7684c9e6837e79aa8dfdb3a2d7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_run.json",
+      "bytes": 498,
+      "sha256": "db353a5732fe084c9d65dfee3f618d1596a9b0bc6b21e0dbbe0f35ca39713e4e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_run.log",
+      "bytes": 276,
+      "sha256": "7e3a657ac7c22354ca9bc9473fd56adb615a23b97b3e6f4ab982f495fde769d1"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/browser_verification.json",
+      "bytes": 53833,
+      "sha256": "c328198869c256cb95c9e98a67579b20c916e9989a955d482b773b5bb8a5fc62"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/build_currency_checkpoint.py",
+      "bytes": 11101,
+      "sha256": "2866162e0a9c56ec2a8c7e344267c94b83ca89c3b8fc3447c2abfaf2994a324b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/canonical_capture.log",
+      "bytes": 351,
+      "sha256": "cf2fb6d2891760c508a0eda11fb25060f456f3d10f532c90f00ce1122c5c34c9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/ci_dependency_coverage.json",
+      "bytes": 3028,
+      "sha256": "91ce32e11fb44f15b9baef307e4994bcd5d8d20275990920e15781b452bf5caf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/ci_dependency_coverage.log",
+      "bytes": 338,
+      "sha256": "ff7b929738b8c4db0941ed512992755e69aa57ff7c073f38a6722f53f6696040"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/country_and_public_tests.json",
+      "bytes": 797,
+      "sha256": "5348ae295b56c2968ca50974ba194fb46a762f7142e153150034c7e2258e677c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/country_and_public_tests.log",
+      "bytes": 2089,
+      "sha256": "1bd0b4283b199a812a6bc576299ec44954a0d93aecf42d454c41f0732acb0346"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_before_boundary_fix.tar.gz",
+      "bytes": 19471,
+      "sha256": "824925bb2191be885e4a8b9691f936ff4bf6f7754f66940e0b844854ab59006f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/au-desktop-light-zh.png",
+      "bytes": 23708,
+      "sha256": "00c24190f425b53109cb522ebd545b6930f016ea360e9d50b4c4bc182dfe1db1"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/in-narrow-light-en.png",
+      "bytes": 21845,
+      "sha256": "8b82d9c604b2ae1136fa77192ba06de48f8213bf7407077a479e7c44158fc28d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/jp-mobile-dark-zh.png",
+      "bytes": 14997,
+      "sha256": "4a2ea2136c2d10d27dc6aac6380ae10558ebc3be260a99351007133b72fed4f5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/kr-desktop-dark-en.png",
+      "bytes": 23403,
+      "sha256": "75321e4d6aadc4b51f264edcc6f3246437e64eb1f040daeddc18cb5d58c0bef6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/kr-desktop-light-en.png",
+      "bytes": 23879,
+      "sha256": "3ab8abd2f48a521c55269e987d29a23d38ab65a0bce9ba5682f623179a46d129"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/currency_shots/tw-mobile-light-en.png",
+      "bytes": 15320,
+      "sha256": "2f9ccb982b09e4e32f112c4f3c16a135dbf3692ccb26878569b909e168263d8d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/finalization.json",
+      "bytes": 502,
+      "sha256": "0d8f9babde711d9bf65c0542f11f8829eb6852f75dc7acf6303b71d81544e33c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/finalization.log",
+      "bytes": 956,
+      "sha256": "f95197ebd25e988ce332e6e32ecf92de4f01e49ba3ef8d72822b767251c4fdda"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/finalize_currency_evidence.py",
+      "bytes": 6775,
+      "sha256": "e1af893625fd2cd8f187877859eab5b4affb0d3beff029f85f7d651ec71c78c6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/design.log",
+      "bytes": 279,
+      "sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_catalogue_and_whitespace.json",
+      "bytes": 1165,
+      "sha256": "c85c9585d5410210b8c65c04aff00e3eb87ea307359335ae4ba254fd46e3e62c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_ci_fragments.log",
+      "bytes": 124,
+      "sha256": "5c24bb0309ff837e2139785557fa45685b38af863f1f5511c91f5975d9098424"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_tracked_whitespace.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_ui_delta.diff",
+      "bytes": 21482,
+      "sha256": "e325250c62463c1be12f23b8d9c6938e81c6ce2ef1e98fc7874b881547f12f0f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_ui_delta.diff.gz",
+      "bytes": 5952,
+      "sha256": "1a7d14b52553f06b7633016727173c4632b6b3843c0a936fc8bfe4c0d99d5dec"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/tracked_whitespace.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/verification.json",
+      "bytes": 2860,
+      "sha256": "e15c01c06a83953db948318ee7f4c8285e944d8d5bb0c6235f492dfe25bafb03"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/visual.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/incumbent_provider_probe.json",
+      "bytes": 2108,
+      "sha256": "454ba3a05d235d2e83159ae865a76331c3c6f48e0a534628595cbee3aa89e4c2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/inspect_incumbent_provider.py",
+      "bytes": 2723,
+      "sha256": "336b091c08b67be90d31fd552fe69c821d372a6dea0f2858da2b2e68ec9d51a8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/inspect_remaining_incumbent_provider.py",
+      "bytes": 3022,
+      "sha256": "caa6a4f1c69cd24992333dd3b3d08dbb1853dafb0e19876737b4903e75559242"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/integrity.json",
+      "bytes": 2033,
+      "sha256": "f9d5ee79da1d6cae8c374f84a55db22db4417259a014ee0f3d073c1d83ae298e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/materialize_paper_currency.py",
+      "bytes": 5609,
+      "sha256": "bb59d84334013e8375cd4a20c65d58b581f4d140ae03d86573137430531c1d02"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DMX-0.jpg",
+      "bytes": 211659,
+      "sha256": "05ef1c3828e91ba28b8b74d3932b31a5fe44fe3ae8e0da3b1001abf553c18879"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DMX-0.jsx",
+      "bytes": 92251,
+      "sha256": "6eb75c08b9661f301601638e043b79355a67df54c6440dd0d68ef5f488c727c0"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DMX-0_before.jsx",
+      "bytes": 91959,
+      "sha256": "0d1ca86a55432d41aa584f1b6a631568968d4803cc134c5c7f80a86b0a691ffc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DW7-0.jpg",
+      "bytes": 224070,
+      "sha256": "9615e31a1664c4ce7ca692a2f2332afafd3f41159b846e6363ef29bc29e9e6c0"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DW7-0.jsx",
+      "bytes": 92542,
+      "sha256": "71ef830582947caa6edc01e5241c9b5b4668b4834651463f718a47f8fbfc91dd"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_DW7-0_before.jsx",
+      "bytes": 92245,
+      "sha256": "8af4058c2509dd134d2821b62634c12db4b273bc915769c4f8030eac2e1b543c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_E4D-0.jpg",
+      "bytes": 83169,
+      "sha256": "6b003686c23e7986b6791d58d6929c2f0cf95f50b4780d6c6e1add5537f79933"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_E4D-0.jsx",
+      "bytes": 90343,
+      "sha256": "730cad3ea641532f13e8add155674a21d3ed72ea209ccb019fd79784bb856d5e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_E4D-0_before.jsx",
+      "bytes": 90051,
+      "sha256": "d10c4451638d958e56d70f8ae796abe2193619061b15148e894d92c4f9c6f5a2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_EC2-0.jpg",
+      "bytes": 88920,
+      "sha256": "e08fa331f9493cad42c8a84024a7ebee935e894d92ee0ec532b0f4aadf5cfd8c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_EC2-0.jsx",
+      "bytes": 90617,
+      "sha256": "90499ef84ebb692769fab7e1990a78bb4eb244a4e1723fe3ba52f4c13a35d66c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_EC2-0_before.jsx",
+      "bytes": 90320,
+      "sha256": "d24d53bf0f9c790fecb8a670fe43b5f18ca5e813087cb92e0ce562c4a77a0fdf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_capture_materialization.json",
+      "bytes": 4799,
+      "sha256": "1a29f2885b0971fd4c6d9f3ecb51edf4e83f998963f79c4be1a81015326cf3c3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_DSN-0.jpg",
+      "bytes": 10399,
+      "sha256": "90159d8e3448cf67924e1dc2816c48e6232832c0f2c215253d4c9aafca754e0d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_E04-0.jpg",
+      "bytes": 11076,
+      "sha256": "01e0338481decfa864cfd4afd83d45aa205b3cd8ae3eaf263e46ca0aadbcc71f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_E8X-0.jpg",
+      "bytes": 10013,
+      "sha256": "a30dbd0d3eac77af6312dab92fe019b70346cc9fa85bf3466740b5ddf74c5bde"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_EFZ-0.jpg",
+      "bytes": 10677,
+      "sha256": "41b0e6d3c0fb6abb4e89397ae0b05cd45a68bd53cd337858efd524a119784056"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_coverage_receipt.json",
+      "bytes": 8552,
+      "sha256": "79997eaa36f432ed03baa28fae53fc75ba46ca932c72da2732858183c55d50dc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_01_duplicate_dates.json",
+      "bytes": 48528,
+      "sha256": "8bdbd53479683b8da4ef0c3251f2c68904a69af549e54bc9495fc4e120d3e2ae"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_02_text.json",
+      "bytes": 51052,
+      "sha256": "c2b34d9b0c18872d804345fe01307fe1012f66f2e0a0bbbeda4826cc629a6f0e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_03_styles.json",
+      "bytes": 47893,
+      "sha256": "647659b0f4b1b9ee124a895c1beb6d549d712a01c6399038fcd0e82d45d6abc5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_04_order.json",
+      "bytes": 48353,
+      "sha256": "2f445be9cdf6d9c1e6cd98dba5e69bf4e046890376d9e6f769b2a07d45d298f6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_05_names.json",
+      "bytes": 47680,
+      "sha256": "01a5d777c4e55da082fdc14e4c589c5f87ef9a4768628a937129e90859b180cb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_effect_06_finish.json",
+      "bytes": 46909,
+      "sha256": "0ecb909fc50c62d2f0d448b573174f6642eed3e88a355a805c520c92edeee17b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_final_readback_verification.json",
+      "bytes": 5409,
+      "sha256": "bf2e4ef550314e09702b2ebd610fd3496b91269c7d6dc7fa2e8af737b9df52f8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_native_capture_bundle.json.gz",
+      "bytes": 624020,
+      "sha256": "caf6d64e8a93c2665271b7d481aa2c0b825db35d3ed8b9a63eb69603a59f9e2d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/assessment.json",
+      "bytes": 1174780,
+      "sha256": "5125bfcf4e7c6204e6593a41e6554947c5ee4ef46e25208e03d9a935357c8bc4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/country_inputs.json",
+      "bytes": 275988,
+      "sha256": "68b1f2806de3d39dc811419126617ac100d6c386fb1fdc158cd108ff59fdb8d5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/currency_replay.json",
+      "bytes": 8389,
+      "sha256": "a369f3b0ebf832e88d08b7eddeb08166366bd4c5ffcc4de16060757a2e2c4a69"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_country_preview.html",
+      "bytes": 250341,
+      "sha256": "d1e7bc139601e8ed8cb84d9368c0d284d98316061499ba850dbb3d42f86c5c70"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_country_preview.html.gz",
+      "bytes": 36504,
+      "sha256": "33368aa6d0ccc186fa372bbf43e879a6f91233708200e2504b679169c8c886a0"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_integrated_preview.html",
+      "bytes": 1673634,
+      "sha256": "8354968aecd636c43aad2c8945393b2fabee6f313181f90618825d90b6737b5a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_integrated_preview.html.gz",
+      "bytes": 78026,
+      "sha256": "8c2e9402510517d1523e81bbd3f37f82518e73a69780e438f0d162b5211b0257"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_stocks_integrated_preview.html",
+      "bytes": 97987,
+      "sha256": "94ff3532e86169db559f85ae74e21eb029524844bc8272d445f8db4d771672e8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_stocks_integrated_preview.html.gz",
+      "bytes": 22978,
+      "sha256": "1a32da7212bff3b3087d492e075cca96dd186ef49b6842cc5acd7ac367472864"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/manifest.json",
+      "bytes": 15329,
+      "sha256": "4f249b696bf2c1c04bb19998f7dbd1090b0d94ea43d576bac60665b57852f10e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/manifest.render-original.json",
+      "bytes": 14310,
+      "sha256": "47491290ea21b632189198c54090dd621ec8e53f8c3b40abf5cef0fd61a9d748"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/market_replay.json",
+      "bytes": 2903,
+      "sha256": "c4993a42d353c0dd105619b650af4e3bfcfbfd01ed20e92d9c0a58d2eb2ac567"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/qualify_retained_fx.py",
+      "bytes": 7195,
+      "sha256": "398d7859c1dd0d5f12292e934430cd96376825971055317bbb3e283e0c490a39"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/render.json",
+      "bytes": 838,
+      "sha256": "4dc2801140c8d1791d38fb2cd331e7c89c65d626c0a10e3e043cea7bb9e1084a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/render.log",
+      "bytes": 12104,
+      "sha256": "2e2e39ccea78cf50fa4c5933af965cca0061abdaf9d28781d90e210efcc203db"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/source_qualification.json",
+      "bytes": 8843,
+      "sha256": "d1dc2284abe7e3dd282e2b62a1b0fd0816e4c394e0dd817e629743e35f4b9174"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_attempt1.json",
+      "bytes": 319,
+      "sha256": "ec49a3b2d4dd10fa17520dddcda8786b30449c4a73705cd1e51aabba646644ff"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_attempt1.log",
+      "bytes": 9645,
+      "sha256": "cfc39a952b738b6c6979b6f8505f5ea867f485394eceba0fa2e2f940ebc0bc63"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_boundary_fixed.json",
+      "bytes": 376,
+      "sha256": "df9e50195147a4dbf1538441eeccb37bed01a6968923a90ab5ce7df29a06062a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_boundary_fixed.log",
+      "bytes": 1848,
+      "sha256": "8c1142a25cf8401302120518fbb38d70b8caef85ed23117cb286c9814e4cf62a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_capture_boundary_before.json",
+      "bytes": 407,
+      "sha256": "be63b86205464ce68a499fd443d548ee61e70bc576181ae1dc5461357e4baf94"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_capture_boundary_before.log",
+      "bytes": 5169,
+      "sha256": "7bb6d8bcea209e8ea697af7e49d76a652a9e04ddf10afe566c86e8e7762e9300"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/verify_currency_browser.py",
+      "bytes": 13426,
+      "sha256": "501e02749bad7cb2586a6efab1dc92360322ef57ef4de004f09992bdec76888e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/verify_currency_ci_dependencies.py",
+      "bytes": 3809,
+      "sha256": "51bcc798d62c61612758446e9a6ee3af243c432cfa623015e30763800a490524"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "bytes": 9184,
+      "sha256": "768ad617e869669b2ace68193e217bd6f88266a683b9c724c58b09670fc10ea0"
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "bytes": 26446,
+      "sha256": "9377dd2c31b10e306ff0ddd680724befa05611f5db847c7e891142b588ec32fe"
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "bytes": 30398,
+      "sha256": "98283868649de0b02ba958bf069575089506eb4712b5611c20305df6034093de"
+    },
+    {
+      "path": "templates/intl_country_cockpit.js",
+      "bytes": 2976,
+      "sha256": "bad5dbf81388a09eea15768ecff59a040a7fc5497154224d0b182872b7ac17ee"
+    },
+    {
+      "path": "tests/fixtures/intl_currency_observations_20261020.json",
+      "bytes": 74794,
+      "sha256": "5165bbf43f2ae38a677d1f3183918abec8f8ca1bb5da42c6f0459c2696bcc01a"
+    },
+    {
+      "path": "tests/test_intl_country_cockpit.py",
+      "bytes": 21934,
+      "sha256": "64a76604ea3d7f7cf45733a3d7f304eecdd630cda7cffef36e96366b76a14f07"
+    },
+    {
+      "path": "tests/test_intl_currency_observation.py",
+      "bytes": 15744,
+      "sha256": "384640aa4a6dc6cda4a97a7f0c044512f42ed36a2e92178d7b000515936458dc"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "bytes": 41599,
+      "sha256": "220d3790b2a0135b7ea1b8c75a1d0a68192d9e3082a72168c39b8850da5372cf"
+    }
+  ],
+  "metadata_maintenance": "PR body effect and final re-verification are recorded separately to avoid cyclic hashes."
+}

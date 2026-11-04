@@ -1,0 +1,19 @@
+{
+  "schema": "mastermind.intl_release_metadata_update.v1",
+  "observed_at": "2026-10-20T03:30:34.010Z",
+  "action": "update_existing_pr_body",
+  "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+  "pr_number": 9596,
+  "updated_at": "2026-10-20T03:30:33Z",
+  "draft": true,
+  "state": "open",
+  "head": "sol/web-intl-country-cockpit-20261018",
+  "head_sha": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+  "base_sha": "b912fd97827cca925a7123aa2012e9765077f3f7",
+  "mergeable": false,
+  "body_matches_prepared": true,
+  "prepared_body": "pr_body_prepared.md",
+  "checkpoint": "FISCAL_COVERAGE_20261020.json",
+  "checkpoint_sha256": "9dbb0e2f6bc05d052a5fa1173a38fd79f765a4e79951832c86c0a40d1d5b0064",
+  "source_publication_performed": false
+}

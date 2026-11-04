@@ -1,0 +1,45 @@
+.............................F.......................................... [ 19%]
+........................................................................ [ 39%]
+........................................................................ [ 58%]
+........................................................................ [ 78%]
+........................................................................ [ 97%]
+.........                                                                [100%]
+=================================== FAILURES ===================================
+_________________ test_bad_archive_does_not_stop_other_sources _________________
+
+    def test_bad_archive_does_not_stop_other_sources():
+>       result=collect_country_inputs(lambda url,**kw:b"invalid",retrieved_at="2026-10-18")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_intl_country_cockpit.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+collectors/intl_country_sources.py:254: in collect_country_inputs
+    forecasts.update(parser(argument, retrieved_at=retrieved_at))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+blob = b'invalid', retrieved_at = '2026-10-18'
+
+    def parse_imf_workbook(blob, *, retrieved_at):
+        """Validate the observed July edition; preserve the fiscal-year exception."""
+>       from openpyxl import load_workbook
+E       ModuleNotFoundError: No module named 'openpyxl'
+
+collectors/intl_country_sources.py:163: ModuleNotFoundError
+=============================== warnings summary ===============================
+../../../../../../private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-dc647492-2eeb-48b9-80d6-032028310340/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-dc647492-2eeb-48b9-80d6-032028310340/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-dc647492-2eeb-48b9-80d6-032028310340/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-dc647492-2eeb-48b9-80d6-032028310340/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_country_cockpit.py::test_bad_archive_does_not_stop_other_sources
+1 failed, 368 passed, 2 warnings in 16.10s

@@ -1,0 +1,262 @@
+{
+  "patch_sha256": "f38485f3d158183f231da84ac11ad27094d643e86a1158590f723005c8e3a3da",
+  "checks": [
+    {
+      "id": "gdp_uses_same_quarter_year_earlier_endpoints",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "gdp_quarter_end_and_original_quarter_labels",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "macro_absent_vintage_remains_absent",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_skipped_quarter",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_duplicate_quarter",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_monthly_label",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_zero_denominator",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_boolean_level",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_interior_nonfinite",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_future_quarter_before_period_end",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_wrong_series",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_duplicate_id",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reject_unknown_query",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "older_qualified_official_precedence",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "stored_fallback_after_missing",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "stored_fallback_after_future",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "stored_fallback_after_wrong_unit",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "stored_fallback_after_unusable_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "anonymous_legacy_scalar_not_promoted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reader_binds_config_metadata_and_raw_column",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reader_does_not_borrow_request_clock",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "reader_rejects_stale_sidecar_row_binding",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "legacy_scalars_preserved_60",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_actual_windows_60",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "trend_only_on_complete_200_60",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "legacy_scalars_preserved_99",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_actual_windows_99",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "trend_only_on_complete_200_99",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "legacy_scalars_preserved_100",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_actual_windows_100",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "trend_only_on_complete_200_100",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "legacy_scalars_preserved_199",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_actual_windows_199",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "trend_only_on_complete_200_199",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "legacy_scalars_preserved_200",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_actual_windows_200",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "trend_only_on_complete_200_200",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "legacy_scalars_preserved_252",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_actual_windows_252",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "trend_only_on_complete_200_252",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "legacy_scalars_preserved_400",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_actual_windows_400",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "trend_only_on_complete_200_400",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_tampered_average_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "custom_matrix_has_no_provider_identity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "dated_equity_evidence_preserved_without_current_read",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "strict_comparisons_keep_unrounded_precision",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equal_average_is_not_above",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "latest_tied_high_date",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "equity_missing_acquisition_and_finality",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "passed": 50,
+  "failed": 0,
+  "limits": [
+    "Actual function bodies extracted by AST; unrelated imports substituted.",
+    "Local pandas arithmetic executed; Parquet decoding substituted.",
+    "No remote process or file mutation; no production acquisition, full import, builder or browser run."
+  ]
+}

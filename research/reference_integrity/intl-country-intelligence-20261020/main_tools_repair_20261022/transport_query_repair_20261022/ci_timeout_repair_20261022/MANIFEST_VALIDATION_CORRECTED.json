@@ -1,0 +1,15 @@
+{
+  "schema": "intl.manifest-local-validation.v1",
+  "command": [
+    "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+    "scripts/run_ci_pack.py",
+    "--workflow",
+    ".github/ci/legacy-jobs.yml",
+    "--validate-only"
+  ],
+  "returncode": 0,
+  "started_at": "2026-10-22T21:22:53.054354+00:00",
+  "finished_at": "2026-10-22T21:22:54.329410+00:00",
+  "log": "manifest_validate_corrected.log",
+  "prior_invocation": "LOCAL_VALIDATION.json preserves the argument-error invocation missing --workflow; no semantic execution occurred in that invocation"
+}

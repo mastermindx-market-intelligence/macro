@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: ROOT already-canceled activation leaves disclosures and navigation unchanged
+not ok 1 - ROOT already-canceled activation leaves disclosures and navigation unchanged
+  ---
+  duration_ms: 1217.635333
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.cjs:312:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    a canceled activation must not open disclosures
+    + actual - expected
+    
+      {
+        jp: true,
+        legacy: false,
+    +   refFold: true,
+    +   tools: true
+    -   refFold: false,
+    -   tools: false
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    refFold: false
+    tools: false
+    legacy: false
+    jp: true
+  actual:
+    refFold: true
+    tools: true
+    legacy: false
+    jp: true
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.cjs:322:12)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: ROOT a newer destination outside Tools cancels its pending alignment
+not ok 2 - ROOT a newer destination outside Tools cancels its pending alignment
+  ---
+  duration_ms: 421.430959
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.cjs:327:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    the latest destination must remain the visible arrival
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.cjs:338:12)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3978.355208

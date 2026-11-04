@@ -1,0 +1,65 @@
+{
+  "schema": "intl.production_v3_helper_preparation.v1",
+  "execution": "static preparation only; no prepared helper or candidate was executed",
+  "frozen_reference_main": "24559ffa06bcf06fa8e9f36bb7e078412bd769fe",
+  "expected_source_paths": 108,
+  "expected_public_routes": 51,
+  "expected_ordinary_public_routes": 50,
+  "separate_runtime_overlay": "logo_config.js",
+  "explicit_static_mirror_checks": 9,
+  "pending_actual_identities": {
+    "source_commit": "PENDING_ACTUAL_INTEGRATED_SOURCE_COMMIT",
+    "evidence_commit": "PENDING_COMMIT_RETAINING_ACTUAL_COMPOSITION_BUILD_RECEIPT",
+    "frozen_reference_main": "24559ffa06bcf06fa8e9f36bb7e078412bd769fe",
+    "build_receipt_sha256": "PENDING_ACTUAL_COMPOSITION_BUILD_RECEIPT_SHA256",
+    "build_receipt_git_blob": "PENDING_ACTUAL_COMPOSITION_BUILD_RECEIPT_GIT_BLOB",
+    "build_driver_sha256": "73bdd3087b0c55542731cf318ace953e046e1b5415b45c755d41049ba4c0a8ce",
+    "input_snapshot_sha256": "081592644c4f2d425fdde59d7b8e153e4aa214aa00d115ba64b13bd31c145b08"
+  },
+  "preserved_baselines": {
+    "validate_production_release.cjs": "8bc0ff0242d1a7ea923d05f447d59cfc64a20c14e022335620cdd09e76669046",
+    "export_release_artifacts.py": "477ba8e68eeb25bb3c642b7c29cd95327d74c4134b9b007c4a185199dc3c1b11",
+    "verify_production_parent_v2.cjs": "4c6e3b59029e9d7f68a7892c192487cf6fff877b6a38b6669e9de8d65fee556f",
+    "verify_production_additions.cjs": "c2759d5e8c7772287f0b9104e0939e02184b0d4076b8b6366d7b9edc7afe984b"
+  },
+  "files": {
+    "validate_production_release_v3.cjs": {
+      "bytes": 39360,
+      "lines": 411,
+      "sha256": "9b668ef3c4e719edf0f7ba6aa6ab666974babbd5c51b0c19098df75a48c564ff",
+      "baseline": "validate_production_release.cjs",
+      "baseline_sha256": "8bc0ff0242d1a7ea923d05f447d59cfc64a20c14e022335620cdd09e76669046",
+      "patch_sha256": "6f1dbbf00f5ca93cdf969586862d34c5b87b762b59c564023d46df48f8b867ba",
+      "syntax_check": "Node --check PASS"
+    },
+    "export_release_artifacts_v3.py": {
+      "bytes": 17144,
+      "lines": 341,
+      "sha256": "99c641a72d0a5d5259e903e8119ee22a601134176318fc30f4c142e3f523da49",
+      "baseline": "export_release_artifacts.py",
+      "baseline_sha256": "477ba8e68eeb25bb3c642b7c29cd95327d74c4134b9b007c4a185199dc3c1b11",
+      "patch_sha256": "5d3ac0a071a505843e811781fa2fb6a320c89aec09eb0d7f89af7a310bae341b",
+      "syntax_check": "Python AST PASS"
+    },
+    "verify_production_parent_v3.cjs": {
+      "bytes": 75653,
+      "lines": 748,
+      "sha256": "9e6c358aca42b80b5fd30b838c7e3e4adc3162b9f7f307ae857f50088f4eda92",
+      "baseline": "verify_production_parent_v2.cjs",
+      "baseline_sha256": "4c6e3b59029e9d7f68a7892c192487cf6fff877b6a38b6669e9de8d65fee556f",
+      "patch_sha256": "66e8e13710899dd93c680f4c679c01a4947e4018c006d36e66ae946dbf07c578",
+      "syntax_check": "Node --check PASS"
+    },
+    "verify_production_additions_v3.cjs": {
+      "bytes": 72014,
+      "lines": 1049,
+      "sha256": "028542de817c4b49eb6f311cfa315dfe742871bd9d2ca743f6bebbc276dbbf5a",
+      "baseline": "verify_production_additions.cjs",
+      "baseline_sha256": "c2759d5e8c7772287f0b9104e0939e02184b0d4076b8b6366d7b9edc7afe984b",
+      "patch_sha256": "add1c312e7b057ac662a923eeb510ed9cee1ef9b5a3575f43ccf6c5327c533b5",
+      "syntax_check": "Node --check PASS"
+    }
+  },
+  "independent_pin_review": "current_main_advice confirmed all 13 explicit pins and all nine static mirrors against frozen24559",
+  "source_identity_requirement": "Actual integrated source descends from frozen24559; source-copy staging commit is insufficient"
+}

@@ -1,0 +1,20 @@
+{
+  "cc": "TW",
+  "requested_url": "https://ws.dgbas.gov.tw/001/Upload/463/relfile/10980/236591/news11508.pdf",
+  "request_method": "GET",
+  "request_headers": {
+    "Accept-Encoding": "identity",
+    "User-Agent": "InternationalMarketsSourceResearch/1.0"
+  },
+  "started_at": "2026-10-20T21:15:49.354074+00:00",
+  "status": "download_failed",
+  "source_artifact": null,
+  "source_sha256": null,
+  "source_bytes": null,
+  "production_admitted": false,
+  "error_type": "URLError",
+  "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>",
+  "redirect_chain": [],
+  "completed_at": "2026-10-20T21:15:49.716816+00:00",
+  "elapsed_seconds": 0.363
+}

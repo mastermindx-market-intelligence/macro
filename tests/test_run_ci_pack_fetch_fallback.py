@@ -290,9 +290,8 @@ prepare_canonical_main(
 )
 '''
 
-# Jobs whose frozen-file guard compares against canonical main through the
-# fail-closed helper: the test module the gate must precede and the exact
-# helper invocation (the dislocation job names its own compared paths; F10).
+# F10 gives W3U its explicit frozen paths without dropping the shared canonical
+# helper's fail-closed identity and gate ordering contracts.
 _INTERNATIONAL_CANONICAL_JOBS = {
     "international-workspace-browser": (
         "test_intl_gs_foundation.py", _INTERNATIONAL_CANONICAL_PYTHON),
@@ -413,6 +412,27 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
             assert forbidden not in command_surface, (
                 f"{job_id} depends on unrelated remote namespace via {forbidden!r}"
             )
+
+
+@pytest.mark.parametrize("case", [
+    "missing-gate", "renamed-gate", "duplicate-gate", "conditional-gate",
+    "gate-after-tests", "continue-on-error", "missing-import", "missing-call",
+    "wrong-import", "wrong-helper", "wrong-tested-identity",
+    "wrong-fallback-identity", "wrong-base", "swallowed-exception",
+    "shell-or-true", "trailing-shell",
+])
+def test_w3u_bounded_canonical_fetch_rejects_contract_mutation(case: str) -> None:
+    """W3U must keep the exact fail-closed helper before its actual frozen guard."""
+    payload = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
+    definition = _international_contract_mutation(
+        payload["jobs"]["international-dislocation-explorer"], case
+    )
+    with pytest.raises(AssertionError):
+        _assert_international_canonical_fetch(
+            definition,
+            frozen_test="test_intl_gs_dislocations_view.py",
+            expected_python=_DISLOCATION_CANONICAL_PYTHON,
+        )
 
 
 @pytest.fixture(scope="module")

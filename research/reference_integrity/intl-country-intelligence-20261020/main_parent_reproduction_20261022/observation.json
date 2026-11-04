@@ -1,0 +1,1730 @@
+{
+  "schema": "intl.actual_parent_observation.v1",
+  "started_at": "2026-10-22T02:25:51.670Z",
+  "parent_source": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "child_subject_head": "64c1903c0e3193314b27edca3b662263783a9302",
+  "environment": "isolated documented development fixture; guest identity; unmodified parent and child sources",
+  "repair_effect": "unresolved; no repair attempted",
+  "network_stubs": false,
+  "cases": [
+    {
+      "id": "parent_non_default_country_entry",
+      "passed": true,
+      "expected": "Japan disclosure opens through the actual supported parent"
+    },
+    {
+      "id": "child_country_selection",
+      "passed": true,
+      "expected": "Taiwan disclosure opens"
+    },
+    {
+      "id": "country_selection_one_history_entry",
+      "passed": true,
+      "actual_delta": 1
+    },
+    {
+      "id": "country_selection_retains_generation",
+      "passed": true
+    },
+    {
+      "id": "projected_tools_click_opens_disclosure",
+      "passed": false,
+      "actual_open": false,
+      "href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools"
+    },
+    {
+      "id": "tools_click_retains_generation",
+      "passed": true
+    },
+    {
+      "id": "tools_click_one_history_entry",
+      "passed": true,
+      "actual_delta": 1
+    },
+    {
+      "id": "repeated_projected_tools_click_opens_disclosure",
+      "passed": false,
+      "actual_open": false,
+      "history_delta": 0
+    },
+    {
+      "id": "parent_back_returns_taiwan",
+      "passed": true,
+      "actual_url": "http://127.0.0.1:3100/intl.html#imc-country-TW"
+    },
+    {
+      "id": "parent_forward_opens_tools",
+      "passed": true,
+      "actual_open": true
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "01-japan-entry.png",
+      "sha256": "43199a5b0589c73fa499bb41221447390fe9a4482b41c77a06fe0d731a20a50c",
+      "bytes": 173594
+    },
+    {
+      "name": "02-taiwan-selection.png",
+      "sha256": "b158790399769dc07e0486e2bd9d4263dd1ae3d10d017e244bbefb058535b9ff",
+      "bytes": 187336
+    },
+    {
+      "name": "03-tools-first-click.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "name": "04-tools-repeated-click.png",
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d",
+      "bytes": 193302
+    },
+    {
+      "name": "05-forward-tools.png",
+      "sha256": "4999beb990a1b6888884c5d66deda1e60e82ff55811d73eb9ad91b293131a75b",
+      "bytes": 183320
+    }
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "external_requests_blocked": [],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "status": 200,
+      "bytes": 48432,
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/components_1h20o7n._.css",
+      "status": 200,
+      "bytes": 25219,
+      "sha256": "ae0ea498331d1c3dd187b39d92f56282c5b959f695acd7bbec753e4665af6440"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/%5Broot-of-the-server%5D__1cug-a2._.css",
+      "status": 200,
+      "bytes": 789582,
+      "sha256": "56c18403e672d428acb3e3f5c9b2f6d27e6798317af7c4a734ebe95271b11601"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_1xx01vv._.js",
+      "status": 200,
+      "bytes": 675,
+      "sha256": "3e3d9e623ff85cdc88be5796f75c8e3d6fecc94ae3798e59254ab7e0cbb18974"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js",
+      "status": 200,
+      "bytes": 746647,
+      "sha256": "866e2a86617b4a0b84be757047cdebf0178e09260373134b4beaef756af2e0c0"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js",
+      "status": 200,
+      "bytes": 1057980,
+      "sha256": "82d958d7dbffa713f3752aecf2c36161e747654ec83500c9f611ffad44fd5937"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/_1anvha4._.js",
+      "status": 200,
+      "bytes": 756,
+      "sha256": "b8905e3967b86c31be2370f13c8c0290c5ac06ca450ebfe97a086cdeb9acd518"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_%40swc_helpers_cjs_1r9vbqw._.js",
+      "status": 200,
+      "bytes": 1984,
+      "sha256": "1d7bf5b220e682182b3db5dc5ddd99b5641a504f676e92eb7f5741cd6be775d0"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js",
+      "status": 200,
+      "bytes": 144344,
+      "sha256": "17cb28fb7cb5d73b71c3d9c52c147134fdf79b759472a996c56e25fdcdeccd67"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_164kp-6._.js",
+      "status": 200,
+      "bytes": 174652,
+      "sha256": "1c54324b107da76702257edaa95adf5c9a800ab6a8ae796d1ee08e8e6eb45494"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/turbopack-_01_ro95._.js",
+      "status": 200,
+      "bytes": 92351,
+      "sha256": "411befb0c372ee28e3bb06474a1baccbb3c62e3c1c186992c9d9451257bdfcce"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/app_layout_tsx_007e4b2._.js",
+      "status": 200,
+      "bytes": 340,
+      "sha256": "c668ead6b289e9e92508711f9041f1f7fb118065165a2a8e03859a127b696746"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js",
+      "status": 200,
+      "bytes": 248032,
+      "sha256": "540f2c63b68d1369b1849ab489c2e12204a76f088fe043b70d98aaddd8f7c9c3"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/app_error_tsx_02bmsz6._.js",
+      "status": 200,
+      "bytes": 241,
+      "sha256": "3568b5a1967429f418c078559e5b08642650d1dd6a8975203b245658c3d41487"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/_11w8w8b._.js",
+      "status": 200,
+      "bytes": 18382,
+      "sha256": "30af7117be0874732bb55bbdeceb3e61646e5285f26e358f098896efbe766fe5"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_next_12whqff._.js",
+      "status": 200,
+      "bytes": 221881,
+      "sha256": "de8b451f8d7e8d1746c1ed32bccff82c9aa7ba3caf3157472f278d8e65a7ead4"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/app_not-found_tsx_02bmsz6._.js",
+      "status": 200,
+      "bytes": 241,
+      "sha256": "254dc0e6327e14fd0521c3138ca45a946a02b15364268bbabdded747082d8c74"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/_0686a5u._.js",
+      "status": 200,
+      "bytes": 32713,
+      "sha256": "f4852c80a6ce638615c6826f6272e959425f95d46a14ccf86d97f58b81e8f703"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/_18t1y7x._.js",
+      "status": 200,
+      "bytes": 36271,
+      "sha256": "d8552b2671b4306f1f66bfc4d386a92e1444602ad9db5ff818dbc6fc317555f1"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/app_global-error_tsx_02bmsz6._.js",
+      "status": 200,
+      "bytes": 241,
+      "sha256": "126d112ec1b47ca3acb05bc87edea12db074b551773e8cd447e8efc323737107"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/_11idjuv._.js",
+      "status": 200,
+      "bytes": 315818,
+      "sha256": "242a5b707349453cdff20546d2be39daaf9fbade913c07f82f043ff09f91d2dd"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/components_12itnxu._.js",
+      "status": 200,
+      "bytes": 3630,
+      "sha256": "1a3f6d9b35fa2dd2c9c04a4d6500155da93d4dff9f643ed55be1c19fe84d279c"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/app_(shell)_layout_tsx_02bmsz6._.js",
+      "status": 200,
+      "bytes": 364,
+      "sha256": "47472f63bb11830ccbdc702c89c5cc5b9d96c9d3b58bcf5346fb0dfdc74f2c1c"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js",
+      "status": 200,
+      "bytes": 746552,
+      "sha256": "5a95e280842712b9a5817346a599f018bcc7048ba89ead7627a0e0b8848c69c7"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/_15bxkxe._.js",
+      "status": 200,
+      "bytes": 342669,
+      "sha256": "f34d94f2f297b7636aaed0bb6df6bd65a94d47ad8e18f6d7ac65276bd4852511"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/node_modules_00fz-k1._.js",
+      "status": 200,
+      "bytes": 1171122,
+      "sha256": "31334459856c0d8f46516249fb99e387b010a0eb2ab662afcaa90aa49329fd74"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_1xch-cm._.js",
+      "status": 200,
+      "bytes": 289,
+      "sha256": "983c026bb60fbf561de9f2f2666c82a7315526ffef1533ecd4748ae9d5a565f7"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_1mojsay._.js",
+      "status": 200,
+      "bytes": 15615,
+      "sha256": "afddc7ff7745c3b04afdf480abb98a2471f9652f2b701946d80264619672781b"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/components_SearchModal_tsx_0boz_tt._.js",
+      "status": 200,
+      "bytes": 621,
+      "sha256": "48fb9d29ec6b92dfa16dd177402f7464fe955a7ea378f9649f74af081aa07de8"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/components_chrome_shared-shell_SharedShellToolbar_tsx_1mtn3wa._.js",
+      "status": 200,
+      "bytes": 297,
+      "sha256": "6ccf90e31e02a487c493ec3583b23e2cfc5a505081438f2608ba39aa20ff793e"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/components_chrome_shared-shell_SharedShellRuntime_tsx_1mtn3wa._.js",
+      "status": 200,
+      "bytes": 241,
+      "sha256": "1cb4f9c1c85ca09ac7cb2f91d9814b951114b88822fa0789af9732740ed163b2"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/_0_alxuj._.js",
+      "status": 200,
+      "bytes": 156421,
+      "sha256": "a6ac335972cd40dfbcca6db84603694c942e5474582c0730d8ed9303eeacee20"
+    },
+    {
+      "url": "http://127.0.0.1:3100/_next/static/chunks/_12aqrlj._.js",
+      "status": 200,
+      "bytes": 845394,
+      "sha256": "eee64cc56b9d664d8ecd7a31f2ff25a5ecbaefce978fa117e605f52101f3fb35"
+    },
+    {
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "bytes": 217,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:3102/shared_shell.css?v=b1918cca",
+      "status": 200,
+      "bytes": 467,
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+    },
+    {
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=dd4e78a1-a201-4a20-af49-1cb02e04d509",
+      "status": 200,
+      "bytes": 3061443,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8"
+    },
+    {
+      "url": "http://127.0.0.1:3102/shared_shell_bridge.js?v=048314d5",
+      "status": 200,
+      "bytes": 51246,
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d"
+    },
+    {
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "bytes": 217,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=c04b19c2-da45-48a5-9442-d9c880b13b94",
+      "status": 200,
+      "bytes": 3061443,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8"
+    },
+    {
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "bytes": 217,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=dd4e78a1-a201-4a20-af49-1cb02e04d509",
+      "status": 200,
+      "bytes": 3061443,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8"
+    },
+    {
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=5bbba1ed-a6a6-43ee-a9b3-e9ff8d84afdf",
+      "status": 200,
+      "bytes": 3061443,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8"
+    }
+  ],
+  "snapshots": [
+    {
+      "label": "parent_japan_deep_link",
+      "parent": {
+        "url": "http://127.0.0.1:3100/intl.html#imc-country-JP",
+        "historyLength": 2,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "frameResponse": "content",
+        "events": [
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          }
+        ]
+      },
+      "child": {
+        "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=dd4e78a1-a201-4a20-af49-1cb02e04d509#imc-country-JP",
+        "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+        "historyLength": 2,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "countries": [
+          {
+            "id": "imc-country-KR",
+            "open": false
+          },
+          {
+            "id": "imc-country-JP",
+            "open": true
+          },
+          {
+            "id": "imc-country-TW",
+            "open": false
+          },
+          {
+            "id": "imc-country-IN",
+            "open": false
+          },
+          {
+            "id": "imc-country-AU",
+            "open": false
+          },
+          {
+            "id": "imc-country-GB",
+            "open": false
+          },
+          {
+            "id": "imc-country-EZ",
+            "open": false
+          }
+        ],
+        "toolsOpen": false,
+        "legacyOpen": false,
+        "toolsLinks": [
+          {
+            "href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "text": "Data & tools数据与工具 ↗"
+          }
+        ],
+        "legacyLinks": [
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚Entry-ready subsectors and stocks to review可关注的子行业与个股"
+          },
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/vector.html#strategy-track-record",
+            "text": "Strategy Track Record策略战绩Cycle and allocation evidence周期与配置的实证"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#gold",
+            "text": "Gold黄金↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#oil",
+            "text": "Crude oil原油↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#copper",
+            "text": "Copper铜↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-world",
+            "text": "World brief全球简报"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-countries",
+            "text": "Countries国家与地区"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-connections",
+            "text": "Connections全球关联"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=6",
+            "text": "A4 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=11",
+            "text": "A7 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=21",
+            "text": "A12 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          }
+        ],
+        "events": [
+          {
+            "type": "INIT",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#imc-country-JP",
+            "requestId": null
+          }
+        ]
+      }
+    },
+    {
+      "label": "child_taiwan_selection",
+      "parent": {
+        "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+        "historyLength": 3,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "frameResponse": "content",
+        "events": [
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+            "requestId": "req-1"
+          }
+        ]
+      },
+      "child": {
+        "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=dd4e78a1-a201-4a20-af49-1cb02e04d509#imc-country-TW",
+        "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+        "historyLength": 3,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "countries": [
+          {
+            "id": "imc-country-KR",
+            "open": false
+          },
+          {
+            "id": "imc-country-JP",
+            "open": false
+          },
+          {
+            "id": "imc-country-TW",
+            "open": true
+          },
+          {
+            "id": "imc-country-IN",
+            "open": false
+          },
+          {
+            "id": "imc-country-AU",
+            "open": false
+          },
+          {
+            "id": "imc-country-GB",
+            "open": false
+          },
+          {
+            "id": "imc-country-EZ",
+            "open": false
+          }
+        ],
+        "toolsOpen": false,
+        "legacyOpen": false,
+        "toolsLinks": [
+          {
+            "href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "text": "Data & tools数据与工具 ↗"
+          }
+        ],
+        "legacyLinks": [
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚Entry-ready subsectors and stocks to review可关注的子行业与个股"
+          },
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/vector.html#strategy-track-record",
+            "text": "Strategy Track Record策略战绩Cycle and allocation evidence周期与配置的实证"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#gold",
+            "text": "Gold黄金↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#oil",
+            "text": "Crude oil原油↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#copper",
+            "text": "Copper铜↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-world",
+            "text": "World brief全球简报"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-countries",
+            "text": "Countries国家与地区"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-connections",
+            "text": "Connections全球关联"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=6",
+            "text": "A4 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=11",
+            "text": "A7 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=21",
+            "text": "A12 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          }
+        ],
+        "events": [
+          {
+            "type": "INIT",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "LOCATION_ACCEPTED",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#imc-country-TW",
+            "requestId": "req-1"
+          }
+        ]
+      }
+    },
+    {
+      "label": "projected_tools_first_click",
+      "parent": {
+        "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+        "historyLength": 4,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "frameResponse": "content",
+        "events": [
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+            "requestId": "req-1"
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+            "requestId": "req-2"
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          }
+        ]
+      },
+      "child": {
+        "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=dd4e78a1-a201-4a20-af49-1cb02e04d509#intl-analysis-tools",
+        "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+        "historyLength": 4,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "countries": [
+          {
+            "id": "imc-country-KR",
+            "open": false
+          },
+          {
+            "id": "imc-country-JP",
+            "open": false
+          },
+          {
+            "id": "imc-country-TW",
+            "open": true
+          },
+          {
+            "id": "imc-country-IN",
+            "open": false
+          },
+          {
+            "id": "imc-country-AU",
+            "open": false
+          },
+          {
+            "id": "imc-country-GB",
+            "open": false
+          },
+          {
+            "id": "imc-country-EZ",
+            "open": false
+          }
+        ],
+        "toolsOpen": false,
+        "legacyOpen": false,
+        "toolsLinks": [
+          {
+            "href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "text": "Data & tools数据与工具 ↗"
+          }
+        ],
+        "legacyLinks": [
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚Entry-ready subsectors and stocks to review可关注的子行业与个股"
+          },
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/vector.html#strategy-track-record",
+            "text": "Strategy Track Record策略战绩Cycle and allocation evidence周期与配置的实证"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#gold",
+            "text": "Gold黄金↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#oil",
+            "text": "Crude oil原油↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#copper",
+            "text": "Copper铜↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-world",
+            "text": "World brief全球简报"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-countries",
+            "text": "Countries国家与地区"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-connections",
+            "text": "Connections全球关联"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=6",
+            "text": "A4 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=11",
+            "text": "A7 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=21",
+            "text": "A12 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          }
+        ],
+        "events": [
+          {
+            "type": "INIT",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "LOCATION_ACCEPTED",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#imc-country-TW",
+            "requestId": "req-1"
+          },
+          {
+            "type": "LOCATION_ACCEPTED",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#intl-analysis-tools",
+            "requestId": "req-2"
+          }
+        ]
+      }
+    },
+    {
+      "label": "projected_tools_repeated_click",
+      "parent": {
+        "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+        "historyLength": 4,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "frameResponse": "content",
+        "events": [
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+            "requestId": "req-1"
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+            "requestId": "req-2"
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          }
+        ]
+      },
+      "child": {
+        "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=dd4e78a1-a201-4a20-af49-1cb02e04d509#intl-analysis-tools",
+        "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+        "historyLength": 4,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "countries": [
+          {
+            "id": "imc-country-KR",
+            "open": false
+          },
+          {
+            "id": "imc-country-JP",
+            "open": false
+          },
+          {
+            "id": "imc-country-TW",
+            "open": true
+          },
+          {
+            "id": "imc-country-IN",
+            "open": false
+          },
+          {
+            "id": "imc-country-AU",
+            "open": false
+          },
+          {
+            "id": "imc-country-GB",
+            "open": false
+          },
+          {
+            "id": "imc-country-EZ",
+            "open": false
+          }
+        ],
+        "toolsOpen": false,
+        "legacyOpen": false,
+        "toolsLinks": [
+          {
+            "href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "text": "Data & tools数据与工具 ↗"
+          }
+        ],
+        "legacyLinks": [
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚Entry-ready subsectors and stocks to review可关注的子行业与个股"
+          },
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/vector.html#strategy-track-record",
+            "text": "Strategy Track Record策略战绩Cycle and allocation evidence周期与配置的实证"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#gold",
+            "text": "Gold黄金↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#oil",
+            "text": "Crude oil原油↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#copper",
+            "text": "Copper铜↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-world",
+            "text": "World brief全球简报"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-countries",
+            "text": "Countries国家与地区"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-connections",
+            "text": "Connections全球关联"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=6",
+            "text": "A4 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=11",
+            "text": "A7 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=21",
+            "text": "A12 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          }
+        ],
+        "events": [
+          {
+            "type": "INIT",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "LOCATION_ACCEPTED",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#imc-country-TW",
+            "requestId": "req-1"
+          },
+          {
+            "type": "LOCATION_ACCEPTED",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "/intl.html#intl-analysis-tools",
+            "requestId": "req-2"
+          }
+        ]
+      }
+    },
+    {
+      "label": "parent_back_after_tools",
+      "parent": {
+        "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+        "historyLength": 4,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "frameResponse": "content",
+        "events": [
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+            "requestId": "req-1"
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+            "requestId": "req-2"
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "c04b19c2-da45-48a5-9442-d9c880b13b94",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+            "requestId": null
+          }
+        ]
+      },
+      "child": {
+        "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=c04b19c2-da45-48a5-9442-d9c880b13b94#imc-country-TW",
+        "generation": "c04b19c2-da45-48a5-9442-d9c880b13b94",
+        "historyLength": 4,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "countries": [
+          {
+            "id": "imc-country-KR",
+            "open": false
+          },
+          {
+            "id": "imc-country-JP",
+            "open": false
+          },
+          {
+            "id": "imc-country-TW",
+            "open": true
+          },
+          {
+            "id": "imc-country-IN",
+            "open": false
+          },
+          {
+            "id": "imc-country-AU",
+            "open": false
+          },
+          {
+            "id": "imc-country-GB",
+            "open": false
+          },
+          {
+            "id": "imc-country-EZ",
+            "open": false
+          }
+        ],
+        "toolsOpen": false,
+        "legacyOpen": false,
+        "toolsLinks": [
+          {
+            "href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "text": "Data & tools数据与工具 ↗"
+          }
+        ],
+        "legacyLinks": [
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚Entry-ready subsectors and stocks to review可关注的子行业与个股"
+          },
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/vector.html#strategy-track-record",
+            "text": "Strategy Track Record策略战绩Cycle and allocation evidence周期与配置的实证"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#gold",
+            "text": "Gold黄金↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#oil",
+            "text": "Crude oil原油↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#copper",
+            "text": "Copper铜↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-world",
+            "text": "World brief全球简报"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-countries",
+            "text": "Countries国家与地区"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-connections",
+            "text": "Connections全球关联"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=6",
+            "text": "A4 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=11",
+            "text": "A7 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=21",
+            "text": "A12 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          }
+        ],
+        "events": [
+          {
+            "type": "INIT",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "c04b19c2-da45-48a5-9442-d9c880b13b94",
+            "href": "/intl.html#imc-country-TW",
+            "requestId": null
+          }
+        ]
+      }
+    },
+    {
+      "label": "parent_forward_to_tools",
+      "parent": {
+        "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+        "historyLength": 4,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "frameResponse": "content",
+        "events": [
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-JP",
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+            "requestId": "req-1"
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "NAVIGATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+            "requestId": "req-2"
+          },
+          {
+            "type": "VIEW_STATE",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "dd4e78a1-a201-4a20-af49-1cb02e04d509",
+            "href": null,
+            "requestId": null
+          },
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "c04b19c2-da45-48a5-9442-d9c880b13b94",
+            "href": "http://127.0.0.1:3102/intl.html#imc-country-TW",
+            "requestId": null
+          },
+          {
+            "type": "READY",
+            "origin": "http://127.0.0.1:3102",
+            "generation": "5bbba1ed-a6a6-43ee-a9b3-e9ff8d84afdf",
+            "href": "http://127.0.0.1:3102/intl.html#intl-analysis-tools",
+            "requestId": null
+          }
+        ]
+      },
+      "child": {
+        "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=5bbba1ed-a6a6-43ee-a9b3-e9ff8d84afdf#intl-analysis-tools",
+        "generation": "5bbba1ed-a6a6-43ee-a9b3-e9ff8d84afdf",
+        "historyLength": 4,
+        "root": {
+          "lang": "en",
+          "data-theme": "dark",
+          "data-lang": "en",
+          "data-mmx-shared-shell": "1"
+        },
+        "countries": [
+          {
+            "id": "imc-country-KR",
+            "open": true
+          },
+          {
+            "id": "imc-country-JP",
+            "open": false
+          },
+          {
+            "id": "imc-country-TW",
+            "open": false
+          },
+          {
+            "id": "imc-country-IN",
+            "open": false
+          },
+          {
+            "id": "imc-country-AU",
+            "open": false
+          },
+          {
+            "id": "imc-country-GB",
+            "open": false
+          },
+          {
+            "id": "imc-country-EZ",
+            "open": false
+          }
+        ],
+        "toolsOpen": true,
+        "legacyOpen": false,
+        "toolsLinks": [
+          {
+            "href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "text": "Data & tools数据与工具 ↗"
+          }
+        ],
+        "legacyLinks": [
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚Entry-ready subsectors and stocks to review可关注的子行业与个股"
+          },
+          {
+            "href": "http://127.0.0.1:3100/sector_central.html#confluence",
+            "text": "Subsector Confluence子行业汇聚↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/vector.html#strategy-track-record",
+            "text": "Strategy Track Record策略战绩Cycle and allocation evidence周期与配置的实证"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#gold",
+            "text": "Gold黄金↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#oil",
+            "text": "Crude oil原油↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/commodities.html#copper",
+            "text": "Copper铜↗"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-world",
+            "text": "World brief全球简报"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-countries",
+            "text": "Countries国家与地区"
+          },
+          {
+            "href": "http://127.0.0.1:3100/intl.html#imc-connections",
+            "text": "Connections全球关联"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+            "text": "A8 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+            "text": "A6 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+            "text": "A11 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=6",
+            "text": "A4 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=11",
+            "text": "A7 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=21",
+            "text": "A12 ↗"
+          },
+          {
+            "href": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+            "text": "A2 ↗"
+          }
+        ],
+        "events": [
+          {
+            "type": "INIT",
+            "origin": "http://127.0.0.1:3100",
+            "generation": "5bbba1ed-a6a6-43ee-a9b3-e9ff8d84afdf",
+            "href": "/intl.html#intl-analysis-tools",
+            "requestId": null
+          }
+        ]
+      }
+    }
+  ],
+  "browser": "155.0.8059.85",
+  "actual_tools_href": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+  "artifact_match": true,
+  "status": "reproduced_failure",
+  "finished_at": "2026-10-22T02:25:56.271Z"
+}

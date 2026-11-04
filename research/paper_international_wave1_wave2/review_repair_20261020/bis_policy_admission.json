@@ -1,0 +1,75 @@
+{
+  "schema": "intl_bis_policy_admission.v1",
+  "admitted_at": "2026-10-20T09:56:34.967433+00:00",
+  "baseline_before_sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27",
+  "baseline_after_sha256": "caac5a05beabc2fe552c0528d177886c4c335de3884d9670f86c02e1da9c15d1",
+  "source_receipt": "bis_policy_acquisition.json",
+  "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+  "countries": {
+    "EZ": {
+      "value": 2.5,
+      "period": "2026-09",
+      "instrument": "deposit_facility_rate",
+      "setting_qualifier": null,
+      "comparison_observation_date": "2026-09-30",
+      "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
+      "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+      "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+    },
+    "AU": {
+      "value": 4.6,
+      "period": "2026-09",
+      "instrument": "cash_rate_target",
+      "setting_qualifier": null,
+      "comparison_observation_date": "2026-09-30",
+      "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
+      "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+      "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+    },
+    "GB": {
+      "value": 3.75,
+      "period": "2026-09",
+      "instrument": "bank_rate",
+      "setting_qualifier": null,
+      "comparison_observation_date": "2026-09-30",
+      "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
+      "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+      "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+    },
+    "JP": {
+      "value": 1.25,
+      "period": "2026-09",
+      "instrument": "uncollateralized_overnight_call_rate_target",
+      "setting_qualifier": "around",
+      "comparison_observation_date": "2026-09-30",
+      "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
+      "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+      "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+    },
+    "KR": {
+      "value": 3.0,
+      "period": "2026-09",
+      "instrument": "bok_base_rate",
+      "setting_qualifier": null,
+      "comparison_observation_date": "2026-09-30",
+      "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
+      "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+      "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+    },
+    "IN": {
+      "value": 5.25,
+      "period": "2026-06",
+      "instrument": "policy_repo_rate",
+      "setting_qualifier": null,
+      "comparison_observation_date": "2026-06-30",
+      "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
+      "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+      "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+    }
+  },
+  "archive_records_preserved": 73,
+  "inflation_and_policy_decisions_unchanged": true,
+  "numeric_policy_points_unchanged": true,
+  "canonical_store_written": false,
+  "scope": "Actual acquired BIS monthly and corroborating daily source semantics admitted through the normal country merge; no invented acquisition clock."
+}

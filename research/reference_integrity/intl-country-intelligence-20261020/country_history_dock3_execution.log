@@ -1,0 +1,2 @@
+{"recorded_at": "2026-10-20T20:59:32.787772+00:00", "source_commit": "442042e591d255dd24b540ff240edb4c0410c297", "html_sha256": "aedfd6cc09e82c1297ea7f53f9b7ff6acfed2d372df343ffd5d51dc951ee341c", "passed": 112, "failed": 0, "limits": ["Actual anonymous isolated browser with immutable production asset files. No manual scroll correction, source acquisition or authenticated state.", "Direct country fragments, native browser Back/Forward, rapid fragment changes and empty-hash restoration are exercised."]}
+{"failed_checks": []}

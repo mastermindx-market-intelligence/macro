@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-10-20T10:39:57.833735+00:00",
+  "finished_at": "2026-10-20T10:42:18.615329+00:00",
+  "command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_intl_build.py",
+    "tests/test_site_access_boundary.py",
+    "-q"
+  ],
+  "exit_code": 0,
+  "log": "final_build_access.log",
+  "log_sha256": "d80a839b3929f92d3b2190e756a967d32e70064569578cbdea6fb7ce12805c1b",
+  "tail": "/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-81e87413-7592-459a-82dd-e6d8d79d50bc/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-81e87413-7592-459a-82dd-e6d8d79d50bc/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-81e87413-7592-459a-82dd-e6d8d79d50bc/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-81e87413-7592-459a-82dd-e6d8d79d50bc/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n40 passed, 2 warnings in 137.65s (0:02:17)\n"
+}

@@ -1,0 +1,1860 @@
+{
+  "schema": "intl.rig_review_repair_browser.v1",
+  "recorded_at": "2026-10-20T21:06:52.815313+00:00",
+  "source_commit": "442042e591d255dd24b540ff240edb4c0410c297",
+  "source_overlays": [],
+  "html_sha256": "ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0",
+  "build_receipt": "research/reference_integrity/intl-country-intelligence-20261020/repair_dock4_build_receipt.json",
+  "canonical_capture_exit": 0,
+  "checks": [
+    {
+      "id": "complete-local-static-dependencies",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "visible-section-navigation-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 32,
+            "right": 101.515625,
+            "width": 69.515625,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 129.515625,
+            "right": 189.171875,
+            "width": 59.65625,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 217.171875,
+            "right": 294.140625,
+            "width": 76.96875,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 1251.6875,
+            "right": 1346,
+            "width": 94.3125,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-desktop-en-light",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "left": 1362,
+        "top": 7,
+        "right": 1402,
+        "bottom": 47,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-en-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 32,
+            "right": 101.515625,
+            "width": 69.515625,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 129.515625,
+            "right": 189.171875,
+            "width": 59.65625,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 217.171875,
+            "right": 294.140625,
+            "width": 76.96875,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 1251.6875,
+            "right": 1346,
+            "width": 94.3125,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-desktop-en-dark",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-desktop-en-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-desktop-en-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "left": 1362,
+        "top": 7,
+        "right": 1402,
+        "bottom": 47,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-en-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 32,
+            "right": 82,
+            "width": 50,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 110,
+            "right": 172.5,
+            "width": 62.5,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 200.5,
+            "right": 250.5,
+            "width": 50,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 1263.703125,
+            "right": 1346,
+            "width": 82.296875,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-desktop-zh-light",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-desktop-zh-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-desktop-zh-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "left": 1362,
+        "top": 7,
+        "right": 1402,
+        "bottom": 47,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-zh-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 32,
+            "right": 82,
+            "width": 50,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 110,
+            "right": 172.5,
+            "width": 62.5,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 200.5,
+            "right": 250.5,
+            "width": 50,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 1263.703125,
+            "right": 1346,
+            "width": 82.296875,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-desktop-zh-dark",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-desktop-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-desktop-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "left": 1362,
+        "top": 7,
+        "right": 1402,
+        "bottom": 47,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-zh-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 14,
+            "right": 165,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 173,
+            "right": 324,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 14,
+            "right": 165,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 173,
+            "right": 324,
+            "width": 151,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-mobile-en-light",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-mobile-en-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-mobile-en-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "left": 332,
+        "top": 23,
+        "right": 372,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-en-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 14,
+            "right": 165,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 173,
+            "right": 324,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 14,
+            "right": 165,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 173,
+            "right": 324,
+            "width": 151,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-mobile-en-dark",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-mobile-en-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-mobile-en-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "left": 332,
+        "top": 23,
+        "right": 372,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-en-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 14,
+            "right": 165,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 173,
+            "right": 324,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 14,
+            "right": 165,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 173,
+            "right": 324,
+            "width": 151,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-mobile-zh-light",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-mobile-zh-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-mobile-zh-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "left": 332,
+        "top": 23,
+        "right": 372,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-zh-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 14,
+            "right": 165,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 173,
+            "right": 324,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 14,
+            "right": 165,
+            "width": 151,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 173,
+            "right": 324,
+            "width": 151,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-mobile-zh-dark",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "left": 332,
+        "top": 23,
+        "right": 372,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-zh-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 14,
+            "right": 130,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 138,
+            "right": 254,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 14,
+            "right": 130,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 138,
+            "right": 254,
+            "width": 116,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-narrow-en-light",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-narrow-en-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-narrow-en-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "left": 262,
+        "top": 23,
+        "right": 302,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-en-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "World brief",
+            "left": 14,
+            "right": 130,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "Countries",
+            "left": 138,
+            "right": 254,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "Connections",
+            "left": 14,
+            "right": 130,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "Data & tools\n\u2197",
+            "left": 138,
+            "right": 254,
+            "width": 116,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend",
+          "Equity trend"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-narrow-en-dark",
+      "passed": true,
+      "actual": [
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend",
+        "Equity trend"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-narrow-en-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-narrow-en-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "left": 262,
+        "top": 23,
+        "right": 302,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-en-dark",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 14,
+            "right": 130,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 138,
+            "right": 254,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 14,
+            "right": 130,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 138,
+            "right": 254,
+            "width": 116,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-narrow-zh-light",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-narrow-zh-light",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-narrow-zh-light",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "left": 262,
+        "top": 23,
+        "right": 302,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-zh-light",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "visible-section-navigation-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "navigation": [
+          {
+            "text": "\u5168\u7403\u7b80\u62a5",
+            "left": 14,
+            "right": 130,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "\u56fd\u5bb6\u4e0e\u5730\u533a",
+            "left": 138,
+            "right": 254,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "\u5168\u7403\u5173\u8054",
+            "left": 14,
+            "right": 130,
+            "width": 116,
+            "visible": true
+          },
+          {
+            "text": "\u6570\u636e\u4e0e\u5de5\u5177\n\u2197",
+            "left": 138,
+            "right": 254,
+            "width": 116,
+            "visible": true
+          }
+        ],
+        "equityLabels": [
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf",
+          "\u80a1\u5e02\u8d8b\u52bf"
+        ],
+        "overflow": false
+      }
+    },
+    {
+      "id": "equity-scope-narrow-zh-dark",
+      "passed": true,
+      "actual": [
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf",
+        "\u80a1\u5e02\u8d8b\u52bf"
+      ]
+    },
+    {
+      "id": "visible-tools-entry-opens-narrow-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "persistent-assistant-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "assistant-reserved-space-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "id": "existing-assistant-opens-narrow-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "assistant-close-and-focus-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "closed": true,
+        "focus": "mmb-launch"
+      }
+    },
+    {
+      "id": "assistant-after-close-reserved-space-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "left": 262,
+        "top": 23,
+        "right": 302,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-zh-dark",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-desktop-en-light.png",
+      "sha256": "7fff888f50dac833300bff721127b85573e89154177c024a3d15d56c2c74bb09",
+      "bytes": 118926,
+      "captured_at": "2026-10-20T21:06:00.141453+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-desktop-en-light.png",
+      "sha256": "0d7ee02f8899967077920a810263e339bdfebc1097c10e65af2ed1a319bfc8e0",
+      "bytes": 153623,
+      "captured_at": "2026-10-20T21:06:00.564846+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-desktop-en-light.png",
+      "sha256": "f7742e6e2c0299fd259eb63b66d66c36f46096c81b91f67ec093eb92e7dcf6ea",
+      "bytes": 119666,
+      "captured_at": "2026-10-20T21:06:00.997264+00:00",
+      "actual": {
+        "left": 1362,
+        "top": 7,
+        "right": 1402,
+        "bottom": 47,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-desktop-en-dark.png",
+      "sha256": "27d0e72a4f32343512921159202f55ee8e648845cd694f55bf729a0d95256582",
+      "bytes": 113991,
+      "captured_at": "2026-10-20T21:06:04.488326+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-desktop-en-dark.png",
+      "sha256": "a6b1a76455e48b5fc3a8c76527d371fa3ac722a995d04409ababf984082c5791",
+      "bytes": 138614,
+      "captured_at": "2026-10-20T21:06:04.934236+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-desktop-en-dark.png",
+      "sha256": "c9c8ca54071559735fc96e18faa9962af66865e693df4f5fab3014070c3687fd",
+      "bytes": 114540,
+      "captured_at": "2026-10-20T21:06:05.371925+00:00",
+      "actual": {
+        "left": 1362,
+        "top": 7,
+        "right": 1402,
+        "bottom": 47,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-desktop-zh-light.png",
+      "sha256": "c1edad8d87eabc45a755dcd9ba1e9559d4a53348ee0f984553e25c93dd77d8f3",
+      "bytes": 121138,
+      "captured_at": "2026-10-20T21:06:09.070759+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-desktop-zh-light.png",
+      "sha256": "9d91c28027fb46063d67a5eb6a0355b10e2bfea9aa371fd70e5102779ef7bab5",
+      "bytes": 152406,
+      "captured_at": "2026-10-20T21:06:09.539310+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-desktop-zh-light.png",
+      "sha256": "2812dd9c3fb4c0f8dd29692267919be22f88c4e3f6611d3b43a083678db90bb0",
+      "bytes": 121850,
+      "captured_at": "2026-10-20T21:06:10.012352+00:00",
+      "actual": {
+        "left": 1362,
+        "top": 7,
+        "right": 1402,
+        "bottom": 47,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-desktop-zh-dark.png",
+      "sha256": "6034b3276a36b3aa982040f47ee457a51f492f041d752e06a70538b67b5d891a",
+      "bytes": 115799,
+      "captured_at": "2026-10-20T21:06:13.761798+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-desktop-zh-dark.png",
+      "sha256": "522c82f915ef528e02f306857f2f65859d0c3079a8b861dda76a46ee4dfeca24",
+      "bytes": 136548,
+      "captured_at": "2026-10-20T21:06:14.242038+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-desktop-zh-dark.png",
+      "sha256": "b44117aaa860ec50fc15f1f8278b5da4bd0c6565940f09901c3332de2e991fe6",
+      "bytes": 116271,
+      "captured_at": "2026-10-20T21:06:14.713828+00:00",
+      "actual": {
+        "left": 1362,
+        "top": 7,
+        "right": 1402,
+        "bottom": 47,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-mobile-en-light.png",
+      "sha256": "8a29c029520d5b164b2cfc10a19804f31c0970c924a80ae148345950644919d4",
+      "bytes": 75898,
+      "captured_at": "2026-10-20T21:06:18.349878+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-mobile-en-light.png",
+      "sha256": "85ce52b224b1f315af859f03ea1652d7bdbd337918f2de390ac8434b36684ecf",
+      "bytes": 30848,
+      "captured_at": "2026-10-20T21:06:18.774296+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-mobile-en-light.png",
+      "sha256": "4261e1a7ee47d8b6aef7fee101ec4807fbbf9ef09e6fe7874b1f72057a9969a3",
+      "bytes": 76509,
+      "captured_at": "2026-10-20T21:06:19.193583+00:00",
+      "actual": {
+        "left": 332,
+        "top": 23,
+        "right": 372,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-mobile-en-dark.png",
+      "sha256": "8b03d7ab8153027f7477150cef592ff7b0a0473546d5d89431950ee3c96ed72b",
+      "bytes": 72848,
+      "captured_at": "2026-10-20T21:06:22.712798+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-mobile-en-dark.png",
+      "sha256": "30ba8d99e949024422d2c456fd02bf64efd58471075350a75780614365b8f373",
+      "bytes": 31618,
+      "captured_at": "2026-10-20T21:06:23.125803+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-mobile-en-dark.png",
+      "sha256": "f1c4f92e08820b84edbbfb9fc5c2dc7ad67b8301f1674b68883e83cadcbc82ab",
+      "bytes": 73372,
+      "captured_at": "2026-10-20T21:06:23.531651+00:00",
+      "actual": {
+        "left": 332,
+        "top": 23,
+        "right": 372,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-mobile-zh-light.png",
+      "sha256": "9cfbde3930b327632a19aa65eaf9e7a24987629ca147de19db359c68fdbcbf13",
+      "bytes": 81039,
+      "captured_at": "2026-10-20T21:06:27.159037+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-mobile-zh-light.png",
+      "sha256": "22aaa410524611c3eff813d4a970f407d818474dacecf8a9ad9e77ba5544b5af",
+      "bytes": 29617,
+      "captured_at": "2026-10-20T21:06:27.552086+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-mobile-zh-light.png",
+      "sha256": "122d7219a21ccbbdf28dd8ec64a6392c44e54f069426dae25bb40c975439808f",
+      "bytes": 81609,
+      "captured_at": "2026-10-20T21:06:27.956653+00:00",
+      "actual": {
+        "left": 332,
+        "top": 23,
+        "right": 372,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-mobile-zh-dark.png",
+      "sha256": "f5afe2a31ceed50ca42122b88bfb6aab06d4d3736459c7d4e566561130e96ac2",
+      "bytes": 77339,
+      "captured_at": "2026-10-20T21:06:31.602675+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-mobile-zh-dark.png",
+      "sha256": "11105b656d2d3b4fd0a1869219a3d3816ec443712130f15f2ea77f074154564d",
+      "bytes": 30605,
+      "captured_at": "2026-10-20T21:06:32.014567+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-mobile-zh-dark.png",
+      "sha256": "37bb33adc665587b407fe8ee443a9f7ac9f3a0c87c72239128841d81714c4420",
+      "bytes": 77926,
+      "captured_at": "2026-10-20T21:06:32.428947+00:00",
+      "actual": {
+        "left": 332,
+        "top": 23,
+        "right": 372,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-narrow-en-light.png",
+      "sha256": "e28f379fbfeeda1f261229b8f0128c18d181642efee7383a5188bdd27773107b",
+      "bytes": 65887,
+      "captured_at": "2026-10-20T21:06:36.052988+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-narrow-en-light.png",
+      "sha256": "f149fce53ab0ce4aa4a8abf74e9e0772ac62af819aaa20895f48678f5f95bd80",
+      "bytes": 29381,
+      "captured_at": "2026-10-20T21:06:36.515573+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-narrow-en-light.png",
+      "sha256": "e8edb4a358804cbe3cb2ae1fcba323f81c8e072786467ef8641efd11c95ed904",
+      "bytes": 66462,
+      "captured_at": "2026-10-20T21:06:36.954510+00:00",
+      "actual": {
+        "left": 262,
+        "top": 23,
+        "right": 302,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-narrow-en-dark.png",
+      "sha256": "9dfe000926e93cdf32f9ad5f15a9b160c617c7ac1f734160969531e500e702a0",
+      "bytes": 62813,
+      "captured_at": "2026-10-20T21:06:40.643213+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "Ask Mastermind",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-narrow-en-dark.png",
+      "sha256": "8220475ec0f6f6c6d8858f379dede28b8af97a32cddda274807e632a56ecfa90",
+      "bytes": 30117,
+      "captured_at": "2026-10-20T21:06:41.052228+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-narrow-en-dark.png",
+      "sha256": "25fb02498ce2d2da98fb03294e8a617f6851094e6fdc44927c209989d4f2ea39",
+      "bytes": 63344,
+      "captured_at": "2026-10-20T21:06:41.496313+00:00",
+      "actual": {
+        "left": 262,
+        "top": 23,
+        "right": 302,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-narrow-zh-light.png",
+      "sha256": "695cfb18034f84a09a836218a42c5752ac8da56a59d0f690d97e42a02628db87",
+      "bytes": 72289,
+      "captured_at": "2026-10-20T21:06:45.335317+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-narrow-zh-light.png",
+      "sha256": "c272cf64013f0b542c495a16c20223b27a4cf80371a545c8eba29251afcfc2f1",
+      "bytes": 28449,
+      "captured_at": "2026-10-20T21:06:45.758491+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-narrow-zh-light.png",
+      "sha256": "01bc48d949c99135b965f9402af3bf588f64648373ee3e54413388aae0e9a72d",
+      "bytes": 72854,
+      "captured_at": "2026-10-20T21:06:46.218665+00:00",
+      "actual": {
+        "left": 262,
+        "top": 23,
+        "right": 302,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/reading-narrow-zh-dark.png",
+      "sha256": "6b75c67a55bea7a6850cb98e82cb3ed1e91f5ca5877a4067bda5b8d43d74d9c4",
+      "bytes": 68955,
+      "captured_at": "2026-10-20T21:06:49.828339+00:00",
+      "actual": {
+        "id": "mmb-boot",
+        "position": "fixed",
+        "label": "\u95ee\u64cd\u76d8\u5927\u8111",
+        "inViewport": true,
+        "withinToolbarSlot": true
+      }
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-open-narrow-zh-dark.png",
+      "sha256": "627a277d1509b0c0af42bbd8c3777f19375540943c5474e144e5cb379ee0a26f",
+      "bytes": 29398,
+      "captured_at": "2026-10-20T21:06:50.232494+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/assistant-closed-narrow-zh-dark.png",
+      "sha256": "b7e5a7837024d0812fae3ec5c96e07deb8f67cc1096189a468713e0efcd7f6aa",
+      "bytes": 69532,
+      "captured_at": "2026-10-20T21:06:50.644146+00:00",
+      "actual": {
+        "left": 262,
+        "top": 23,
+        "right": 302,
+        "bottom": 63,
+        "width": 40,
+        "height": 40,
+        "withinToolbarSlot": true,
+        "visible": true,
+        "radius": "8px"
+      }
+    }
+  ],
+  "passed": 109,
+  "failed": 0,
+  "limits": [
+    "Actual anonymous isolated browser with copied production inputs; external calls aborted.",
+    "Assistant opening and closing tested; no prompt, account mutation or authenticated answer requested."
+  ]
+}

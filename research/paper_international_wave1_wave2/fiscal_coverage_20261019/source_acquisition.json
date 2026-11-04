@@ -1,0 +1,22 @@
+[
+  {
+    "series": "GGXCNL_NGDP",
+    "url": "https://www.imf.org/external/datamapper/api/v2/GGXCNL_NGDP/KOR/TWN/IND/AUS?periods=2026,2027",
+    "final_url": "https://www.imf.org/external/datamapper/api/v2/GGXCNL_NGDP/KOR/TWN/IND/AUS?periods=2026,2027",
+    "status": 200,
+    "retrieved_at": "2026-10-19T23:23:16.646965+00:00",
+    "bytes": 105327,
+    "content_type": "application/json",
+    "sha256": "9ab1ddb366c857eef29ba98d6d18b5d9dacec454fd0befcbf0b4f670f0b294d4"
+  },
+  {
+    "series": "GGXWDG_NGDP",
+    "url": "https://www.imf.org/external/datamapper/api/v2/GGXWDG_NGDP/KOR/TWN/IND/AUS?periods=2026,2027",
+    "final_url": "https://www.imf.org/external/datamapper/api/v2/GGXWDG_NGDP/KOR/TWN/IND/AUS?periods=2026,2027",
+    "status": 200,
+    "retrieved_at": "2026-10-19T23:23:16.609978+00:00",
+    "bytes": 98602,
+    "content_type": "application/json",
+    "sha256": "3ac90e0d6c92957fa5943f1cfd9ab19ba54e7b65e70bdeb6fa8b67dcb64aa53a"
+  }
+]

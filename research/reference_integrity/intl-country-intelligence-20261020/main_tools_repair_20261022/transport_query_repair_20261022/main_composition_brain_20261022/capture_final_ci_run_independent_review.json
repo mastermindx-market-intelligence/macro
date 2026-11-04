@@ -1,0 +1,46 @@
+{
+  "schema": "intl.final_ci_capture_independent_static_review.v1",
+  "reviewer": "/root/intl_parent_runtime_20261023",
+  "reviewed_at_utc": "2026-10-23T05:10:25.325129+00:00",
+  "verdict": "ACCEPT_STATIC_ONLY",
+  "release_acceptance": false,
+  "file": "/tmp/intl-production-verifier-review/capture_final_ci_run.py",
+  "bytes": 48724,
+  "lines": 886,
+  "sha256": "e000fe840f098a5be2fb423e1cb80d35c85bde419b39632b9fb299a91efc053f",
+  "patch": "/tmp/intl-production-verifier-review/capture_final_ci_run.py.patch",
+  "patch_sha256": "aea5fd8bb2b25e0d49e4dd5aa68b210f634ed825fcd8cf32c2baf085c31a9e74",
+  "preparation": "/tmp/intl-production-verifier-review/capture_final_ci_run_preparation.json",
+  "preparation_sha256": "5a702fbb9c37ba76d36a2e4683419f0ec975aafabf59cb05ab1936c6cc3fb013",
+  "baseline": "/tmp/intl-production-verifier-review/capture_completed_ci_run.py",
+  "baseline_sha256": "1a54f985910d3f9ad8e2003aeb11856b5431fc0a835216b3d7f61f571c9f6d6f",
+  "prior_reviewed_sha256": "db04187c273a73539fac8df4a880f84362ad6e7c32be69c8dd5dd585f10ae727",
+  "followup_scope": "Verified that the only change from the previously accepted revision is removal of the pre-alarm, pre-try driver_sha256 self-read from initial report construction.",
+  "verification": {
+    "python_ast_parse": "PASS",
+    "exact_baseline_to_final_patch": true,
+    "baseline_unchanged": true,
+    "reconstructing_deleted_expression_recovers_prior_reviewed_sha256": true,
+    "self_read_absent": true,
+    "preparation_matches_final_files": true
+  },
+  "retained_review_findings": [
+    "Explicit actual run, expected full head SHA, and attempt are mandatory; historical fixed identities and 12-pack assumptions are removed.",
+    "Actual v2 plan digest payload and pack/job/proof census align with pinned canonical protocol; aggregate census must cover the plan without outcome reclassification.",
+    "Current run, requested attempt, jobs, and artifacts are bracketed at start/end.",
+    "All run artifacts are preserved by ID; required artifacts bind a unique current-attempt upload event and exact producer job/log, action reference, name, ID, size, digest, and download URL.",
+    "Exclusive no-symlink output, bounded GET requests, strict JSON, safe ZIP extraction, finite storage/time limits, raw failure preservation, receipt snapshots, and single stdout remain.",
+    "Capture completion is separate from CI conclusion and release acceptance; canonical semantic reconciler is not imported or executed."
+  ],
+  "qualifications": [
+    "Changed-files linkage is raw GitHub ZIP/upload custody plus count correspondence; producer-specific normalization and published changed-files digest equivalence are not inferred.",
+    "Upload-log parsing is statically reviewed, not runtime-tested; unfamiliar or ambiguous log formats must fail incomplete.",
+    "Owner must provide actual immutable identities only after natural completion and use a new absolute output directory; acceptance of a capture requires exit 0 plus a complete matching receipt."
+  ],
+  "open_material_findings": [],
+  "helper_imported": false,
+  "helper_executed": false,
+  "candidate_or_server_executed": false,
+  "ci_actions_or_retries": false,
+  "network_requests_in_followup": 0
+}

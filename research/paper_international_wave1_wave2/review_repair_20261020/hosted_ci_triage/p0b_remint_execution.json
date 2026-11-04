@@ -1,0 +1,85 @@
+{
+  "source_head": "9abbe195c814db8568d26e7fb1b84c3843660b31",
+  "reason": "Renew actual shared-theme browser evidence after International custom-property additions",
+  "playwright": "1.62.0 task-local npm runtime; real installed Chrome",
+  "steps": [
+    {
+      "name": "render_fixture",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/render_stock_dashboard_fixture.py",
+        "--market",
+        "all",
+        "--out-dir",
+        "/tmp/intl-p0b-remint-20261020",
+        "--receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json"
+      ],
+      "started_at": "2026-10-20T12:51:38.659913+00:00",
+      "finished_at": "2026-10-20T12:51:42.019244+00:00",
+      "elapsed_seconds": 3.359,
+      "exit_code": 0,
+      "log": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/render_fixture.log"
+    },
+    {
+      "name": "hk_browser_matrix",
+      "command": [
+        "node",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "--html",
+        "/tmp/intl-p0b-remint-20261020/hk_stocks.html",
+        "--site-dir",
+        "site",
+        "--fixture-receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "--fixture-assets-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+        "--screenshot-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc",
+        "--historical-head",
+        "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+        "--historical-tree",
+        "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+        "--browser",
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "--out",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json"
+      ],
+      "started_at": "2026-10-20T12:51:42.019868+00:00",
+      "finished_at": "2026-10-20T12:54:25.888861+00:00",
+      "elapsed_seconds": 163.868,
+      "exit_code": 0,
+      "log": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/hk_browser_matrix.log"
+    },
+    {
+      "name": "ca_browser_matrix",
+      "command": [
+        "node",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "--html",
+        "/tmp/intl-p0b-remint-20261020/canada_stocks.html",
+        "--site-dir",
+        "site",
+        "--fixture-receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "--fixture-assets-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+        "--screenshot-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc",
+        "--historical-head",
+        "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+        "--historical-tree",
+        "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+        "--browser",
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "--out",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"
+      ],
+      "started_at": "2026-10-20T12:54:25.889455+00:00",
+      "finished_at": "2026-10-20T12:57:02.547306+00:00",
+      "elapsed_seconds": 156.657,
+      "exit_code": 0,
+      "log": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/ca_browser_matrix.log"
+    }
+  ]
+}

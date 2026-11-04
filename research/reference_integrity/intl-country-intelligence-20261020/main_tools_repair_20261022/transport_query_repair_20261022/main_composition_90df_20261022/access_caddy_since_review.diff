@@ -1,0 +1,23 @@
+diff --git a/app/deploy/Caddyfile b/app/deploy/Caddyfile
+index 7e13fc898177..ff424ff94e3d 100644
+--- a/app/deploy/Caddyfile
++++ b/app/deploy/Caddyfile
+@@ -277,7 +277,17 @@
+ 	# redirect stub. A server-side 301 consolidates the URL's equity onto the
+ 	# canonical successor instead of burning it in a noindex hop (SEO Supercharge
+ 	# W1b-redux ruling, research/SEO_SUPERCHARGE_MASTERPLAN_BY_FABLE.md).
+-	redir /baskets_china.html /sector_central_china.html 301
++	# A trusted opt-in parent must load the existing moved-page stub first:
++	# its bridge.navigate asks the parent to replace the route/generation. An
++	# HTTP redirect would report the successor as READY for the requested stub.
++	@baskets_seo_redirect {
++		path /baskets_china.html
++		not {
++			query mmx_shell=1
++			header Referer https://beta.mastermind-x.com/*
++		}
++	}
++	redir @baskets_seo_redirect /sector_central_china.html 301
+ 	# Daily Movers is no longer a standalone product surface. Its gainers, losers
+ 	# and same-direction theme read now live on the canonical US stock library.
+ 	# Keep the fragment in the Location header so old bookmarks land on the exact

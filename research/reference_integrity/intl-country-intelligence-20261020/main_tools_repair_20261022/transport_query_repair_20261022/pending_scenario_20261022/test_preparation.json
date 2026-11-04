@@ -1,0 +1,7 @@
+{
+  "recorded_at": "2026-10-22T19:53:33.325587+00:00",
+  "baseline_head": "9bf7161b6c856a8df5eaa18a0b9ef8fbb1e206bb",
+  "baseline_test_sha256": "3be38cbf6625b0ecd9c4371f319151b675183a8016a22d838e4a04500152a97e",
+  "candidate_test_sha256": "c204287d14ef72e62abba7b2f595dcb4803b0602defaeeee81da5b395de91011",
+  "production_source_changed": false
+}

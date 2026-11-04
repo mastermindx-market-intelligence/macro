@@ -1,0 +1,21 @@
+INFO intl regime: 7 economies, dominant=Stagflation, recession-watch=2, dd-watch=3
+INFO wrote japan.html (JP, score=47)
+INFO wrote south_korea.html (KR, score=36)
+INFO wrote euro_area.html (EZ, score=44)
+INFO wrote united_kingdom.html (GB, score=53)
+INFO wrote india.html (IN, score=33)
+::error title=international country dashboards failed::No module named 'rjsmin'
+ERROR international country dashboard render failed
+Traceback (most recent call last):
+  File "/private/tmp/intl-rig-review-repair-20261020/dock/source/scripts/build_intl.py", line 343, in main
+    _build_country_macro(latest, history_receipts=_intl_history_receipts)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/intl-rig-review-repair-20261020/dock/source/scripts/build_international_macro.py", line 169, in build_all
+    site_assets.copy_asset(asset, src, site)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/intl-rig-review-repair-20261020/dock/source/lib/site_assets.py", line 144, in copy_asset
+    text = emit_theme_js(src) if asset == "theme.js" else src.read_text()
+           ~~~~~~~~~~~~~^^^^^
+  File "/private/tmp/intl-rig-review-repair-20261020/dock/source/lib/site_assets.py", line 130, in emit_theme_js
+    from rjsmin import jsmin
+ModuleNotFoundError: No module named 'rjsmin'

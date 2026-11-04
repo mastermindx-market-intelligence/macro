@@ -1,0 +1,17 @@
+{
+  "schema": "intl.normal_main_merge_result.v1",
+  "effect_state": "APPLIED",
+  "source_commit": "45e70cb40d6e9ac1a49478b1920ab6a7275f7f58",
+  "parents": [
+    "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+    "90df0e302637ade26b894aee46141b6a1813a630"
+  ],
+  "process": 16689,
+  "exit_code": 0,
+  "clean_at_return": true,
+  "published": false,
+  "ci_jobs": 349,
+  "verified_ci_overlap_jobs": 4,
+  "conflicts_resolved": 4,
+  "theme_sha256": "50eb4991c6f9a2b00ad3accb33fa85cebc3dc0c7ceac2ab093d9e2e2f3045e51"
+}

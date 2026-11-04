@@ -1,0 +1,172 @@
+[
+  {
+    "cc": "KR",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/USDKRW%3DX?range=6mo&interval=1d",
+    "started_at": "2026-10-20T03:44:44.467586+00:00",
+    "attempts": 1,
+    "status": 200,
+    "final_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDKRW%3DX?range=6mo&interval=1d",
+    "content_type": "application/json;charset=utf-8",
+    "bytes": 14620,
+    "sha256": "df4ba5062f227e712be0ddd989ee566b742fcccd587ec9df772b7f4292afb88e",
+    "archive": "KR_yahoo_chart.json.gz",
+    "meta": {
+      "symbol": "USDKRW=X",
+      "currency": "KRW",
+      "instrumentType": "CURRENCY",
+      "exchangeName": "CCY",
+      "exchangeTimezoneName": "Europe/London",
+      "timezone": "BST",
+      "gmtoffset": 3600,
+      "dataGranularity": "1d",
+      "range": "6mo",
+      "regularMarketTime": 1792467725
+    },
+    "observation_count": 132,
+    "first": [
+      1776639600,
+      1465.1500244140625
+    ],
+    "last": [
+      1792467725,
+      1328.4100341796875
+    ],
+    "finished_at": "2026-10-20T03:44:44.612104+00:00"
+  },
+  {
+    "cc": "TW",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/USDTWD%3DX?range=6mo&interval=1d",
+    "started_at": "2026-10-20T03:44:44.468149+00:00",
+    "attempts": 1,
+    "status": 200,
+    "final_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDTWD%3DX?range=6mo&interval=1d",
+    "content_type": "application/json;charset=utf-8",
+    "bytes": 15221,
+    "sha256": "1426c1fc42939b9b4c3fb83268980a2c735afebad0241c1c99583586f73c73c9",
+    "archive": "TW_yahoo_chart.json.gz",
+    "meta": {
+      "symbol": "USDTWD=X",
+      "currency": "TWD",
+      "instrumentType": "CURRENCY",
+      "exchangeName": "CCY",
+      "exchangeTimezoneName": "Europe/London",
+      "timezone": "BST",
+      "gmtoffset": 3600,
+      "dataGranularity": "1d",
+      "range": "6mo",
+      "regularMarketTime": 1792467722
+    },
+    "observation_count": 132,
+    "first": [
+      1776639600,
+      31.468000411987305
+    ],
+    "last": [
+      1792467722,
+      32.55400085449219
+    ],
+    "finished_at": "2026-10-20T03:44:44.629407+00:00"
+  },
+  {
+    "cc": "IN",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/USDINR%3DX?range=6mo&interval=1d",
+    "started_at": "2026-10-20T03:44:44.612155+00:00",
+    "attempts": 1,
+    "status": 200,
+    "final_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDINR%3DX?range=6mo&interval=1d",
+    "content_type": "application/json;charset=utf-8",
+    "bytes": 14694,
+    "sha256": "64b65106dc798744142f5246a77d81808ec0f3bb8b99a0130402b6ccf2ce2427",
+    "archive": "IN_yahoo_chart.json.gz",
+    "meta": {
+      "symbol": "USDINR=X",
+      "currency": "INR",
+      "instrumentType": "CURRENCY",
+      "exchangeName": "CCY",
+      "exchangeTimezoneName": "Europe/London",
+      "timezone": "BST",
+      "gmtoffset": 3600,
+      "dataGranularity": "1d",
+      "range": "6mo",
+      "regularMarketTime": 1792467017
+    },
+    "observation_count": 132,
+    "first": [
+      1776639600,
+      92.60330200195312
+    ],
+    "last": [
+      1792467017,
+      94.91999816894531
+    ],
+    "finished_at": "2026-10-20T03:44:44.715058+00:00"
+  },
+  {
+    "cc": "GB",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/GBPUSD%3DX?range=6mo&interval=1d",
+    "started_at": "2026-10-20T03:44:44.629447+00:00",
+    "attempts": 1,
+    "status": 200,
+    "final_url": "https://query1.finance.yahoo.com/v8/finance/chart/GBPUSD%3DX?range=6mo&interval=1d",
+    "content_type": "application/json;charset=utf-8",
+    "bytes": 15314,
+    "sha256": "1e0d19af4c75c36b8f0b3a7f2b1fadc804a079b7fe661b6e72fe7e46830a11f8",
+    "archive": "GB_yahoo_chart.json.gz",
+    "meta": {
+      "symbol": "GBPUSD=X",
+      "currency": "USD",
+      "instrumentType": "CURRENCY",
+      "exchangeName": "CCY",
+      "exchangeTimezoneName": "Europe/London",
+      "timezone": "BST",
+      "gmtoffset": 3600,
+      "dataGranularity": "1d",
+      "range": "6mo",
+      "regularMarketTime": 1792467707
+    },
+    "observation_count": 132,
+    "first": [
+      1776639600,
+      1.348435878753662
+    ],
+    "last": [
+      1792467707,
+      1.3331201076507568
+    ],
+    "finished_at": "2026-10-20T03:44:44.729857+00:00"
+  },
+  {
+    "cc": "EZ",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?range=6mo&interval=1d",
+    "started_at": "2026-10-20T03:44:44.715210+00:00",
+    "attempts": 1,
+    "status": 200,
+    "final_url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?range=6mo&interval=1d",
+    "content_type": "application/json;charset=utf-8",
+    "bytes": 15315,
+    "sha256": "374565686165022d239f35571097c60aa2e66537d92d59b0af3ea0620846b1d2",
+    "archive": "EZ_yahoo_chart.json.gz",
+    "meta": {
+      "symbol": "EURUSD=X",
+      "currency": "USD",
+      "instrumentType": "CURRENCY",
+      "exchangeName": "CCY",
+      "exchangeTimezoneName": "Europe/London",
+      "timezone": "BST",
+      "gmtoffset": 3600,
+      "dataGranularity": "1d",
+      "range": "6mo",
+      "regularMarketTime": 1792467707
+    },
+    "observation_count": 132,
+    "first": [
+      1776639600,
+      1.1741223335266113
+    ],
+    "last": [
+      1792467707,
+      1.1232168674468994
+    ],
+    "finished_at": "2026-10-20T03:44:44.825649+00:00"
+  }
+]

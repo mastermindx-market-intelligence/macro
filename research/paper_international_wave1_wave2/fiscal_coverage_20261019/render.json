@@ -1,0 +1,73 @@
+{
+  "started_at": "2026-10-19T23:42:35.995101+00:00",
+  "finished_at": "2026-10-19T23:42:38.509169+00:00",
+  "exit_code": 0,
+  "rendered_at": "2026-10-19T23:42:36.148780+00:00",
+  "countries": 7,
+  "forecast_archive_count": 73,
+  "outlook_coverage": {
+    "JP": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "KR": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "TW": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "IN": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "AU": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "GB": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "EZ": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ]
+  },
+  "policy_coverage": {
+    "JP": "verified",
+    "KR": "verified",
+    "TW": "verified",
+    "IN": "verified",
+    "AU": "verified",
+    "GB": "verified",
+    "EZ": "verified"
+  },
+  "html_sha256": {
+    "intl_country_preview.html": "5e5a62db603220229dddc3655769a4e92493f51c898c45f630e474e9ded53ce4",
+    "intl_integrated_preview.html": "4189b3d035d509bd965037c071a60450f711783f082b314110f60271cc099f37",
+    "intl_stocks_integrated_preview.html": "115e3118713c9e2ca8dce307c5a088424347807de7d3f187c6b82eafcda68232"
+  }
+}

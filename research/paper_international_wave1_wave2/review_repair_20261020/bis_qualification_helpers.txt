@@ -1,0 +1,147 @@
+
+_BIS_POLICY_DATASET = "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip"
+_BIS_POLICY_SERIES = {"GB":"M.GB","AU":"M.AU","KR":"M.KR","IN":"M.IN","EZ":"M.XM","JP":"M.JP"}
+_BIS_POINT_ERAS = {
+    "GB": ("2006-08-03", "official bank rate", "bank_rate"),
+    "AU": ("1990-08-02", "cash rate target", "cash_rate_target"),
+    "KR": ("2008-03-07", "bank of korea base rate", "bok_base_rate"),
+    "IN": ("2001-04-03", "official repo overnight rate", "policy_repo_rate"),
+    "EZ": ("2024-09-18", "official central bank steering rate is the deposit facility rate, fixed rate",
+           "deposit_facility_rate"),
+}
+
+
+def _bis_date(text):
+    for fmt in ("%d %b %Y", "%d %B %Y"):
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            pass
+    return None
+
+
+def _bis_instrument(definition, cc, observed):
+    """Interpret an applicable compilation clause; never search older keywords."""
+    if type(definition) is not str or not 0 < len(definition) <= 30000:
+        return None
+    candidate, newer, uncertain = None, None, []
+    for clause in definition.split(";"):
+        clause = " ".join(clause.strip().split())
+        if not clause:
+            continue
+        match = re.fullmatch(
+            r"from (\d{1,2} [a-z]+ \d{4})(?: (onwards)| to (\d{1,2} [a-z]+ \d{4}))?:\s*(.+)",
+            clause, re.I)
+        if not match:
+            uncertain.append(clause)
+            if candidate is None:
+                return None
+            continue
+        start = _bis_date(match[1])
+        end = _bis_date(match[3]) if match[3] else None
+        if start is None or (match[3] and end is None) or (end is not None and end < start):
+            if candidate is None:
+                return None
+            uncertain.append(clause)
+            continue
+        if newer is not None and (start >= newer or (end is not None and end >= newer)):
+            return None
+        if start <= observed and (end is None or observed <= end) and candidate is None:
+            candidate = (start, match[4].rstrip(".").lower())
+        newer = start
+    if candidate is None:
+        return None
+    start, description = candidate
+    # Incomplete historic JP clauses are harmless only when their stated years
+    # are unambiguously older than the selected, independently parsed era.
+    if any(not re.findall(r"\b\d{4}\b", clause)
+           or max(map(int,re.findall(r"\b\d{4}\b",clause))) >= start.year for clause in uncertain):
+        return None
+    if cc in _BIS_POINT_ERAS:
+        expected_start, expected_description, instrument = _BIS_POINT_ERAS[cc]
+        if start.isoformat() == expected_start and description == expected_description:
+            return instrument, None, start.isoformat(), None
+        return None
+    if cc == "JP":
+        match = re.fullmatch(
+            r"the boj encourages the uncollateralized overnight call rate to remain at around "
+            r"(-?\d+(?:\.\d+)?) (?:percent|%)", description)
+        if match:
+            return "uncollateralized_overnight_call_rate_target", "around", start.isoformat(), float(match[1])
+    return None
+
+
+def qualify_bis_monthly_policy(raw, cc, *, today):
+    """Source-defined instrument and conservative comparison timing.
+
+    Daily corroboration is a dated observation from the same retained source.
+    It is not an invented business calendar or a claim that a generic weekday
+    must be the monthly series' final business day.
+    """
+    if type(raw) is not dict:
+        return raw
+    result = deepcopy(raw)
+    for key in ("instrument","observation_convention","setting_qualifier","definition_version",
+                "instrument_effective_from","comparison_observation_date","comparison_qualification"):
+        result.pop(key, None)
+    result["comparison_qualification"] = "unqualified_source"
+    label = raw.get("period")
+    if type(label) is not str or not re.fullmatch(r"\d{4}-\d{2}", label):
+        return result
+    try:
+        year, month = map(int,label.split("-"))
+        first, last = date(year,month,1), date(year,month,monthrange(year,month)[1])
+    except ValueError:
+        return result
+    digest = raw.get("source_sha256")
+    known = raw.get("first_observed_at") or raw.get("retrieved_at")
+    if (cc not in _BIS_POLICY_SERIES or raw.get("metric") != "policy"
+            or raw.get("provider") != "Bank for International Settlements"
+            or raw.get("source_url") != "https://data.bis.org/topics/CBPOL"
+            or raw.get("dataset_url") != _BIS_POLICY_DATASET
+            or raw.get("series_id") != _BIS_POLICY_SERIES[cc]
+            or raw.get("frequency") != "monthly" or raw.get("unit") != "%"
+            or raw.get("status") not in ("observed","provisional") or not _finite(raw.get("value"))
+            or type(digest) is not str or re.fullmatch(r"[0-9a-f]{64}",digest) is None
+            or type(known) is not str or "T" not in known or _time(known) is None
+            or _time(known).date() > today or last > today):
+        return result
+    result["first_observed_at"] = known
+    reference = raw.get("daily_reference")
+    comparison = None
+    if reference is not None:
+        if type(reference) is not dict:
+            return result
+        comparison = _day(reference.get("date"))
+        if (comparison is None or not first <= comparison <= last
+                or reference.get("series_id") != _BIS_POLICY_SERIES[cc].replace("M.","D.",1)
+                or reference.get("source_sha256") != digest
+                or not _finite(reference.get("value")) or reference["value"] != raw["value"]):
+            result["comparison_qualification"] = "daily_monthly_disagreement"
+            return result
+    applicable = _bis_instrument(raw.get("definition"), cc, comparison or last)
+    if applicable is None:
+        result["comparison_qualification"] = "unrecognized_instrument_era"
+        return result
+    if comparison is not None:
+        daily_semantics = _bis_instrument(reference.get("definition"), cc, comparison)
+        if daily_semantics != applicable:
+            result["comparison_qualification"] = "daily_monthly_disagreement"
+            return result
+    else:
+        earlier = _bis_instrument(raw.get("definition"),cc,first)
+        if earlier is None or earlier[:2] != applicable[:2]:
+            result["comparison_qualification"] = "unresolved_instrument_transition"
+            return result
+    instrument, qualifier, effective_from, target = applicable
+    if target is not None and target != raw["value"]:
+        result["comparison_qualification"] = "definition_value_disagreement"
+        return result
+    result.update(instrument=instrument, setting_qualifier=qualifier,
+                  observation_convention="end_of_period",
+                  definition_version="bis_cbpol_compilation_20260924_v1",
+                  instrument_effective_from=effective_from,
+                  comparison_observation_date=comparison.isoformat() if comparison else None,
+                  comparison_qualification="qualified")
+    return result
+

@@ -1,0 +1,57 @@
+{
+  "utc": "2026-10-22T05:03:15.894292+00:00",
+  "head": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "source_root": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018",
+  "reason": "LOWER_TOTAL_OVERHEAD; closed independent R3 review list",
+  "r3_status": "REQUEST_CHANGES / NOT_ACCEPTED",
+  "candidate_status": "AWAITING_INDEPENDENT_REVIEW",
+  "paths": {
+    "templates/intl_country_cockpit.js": {
+      "before_sha256": "0369cf148ef3a3994967945ca1893563d1975a1c8d3a24a08ded3ecd830c0838",
+      "after_sha256": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042",
+      "before_bytes": 13505,
+      "after_bytes": 13841
+    },
+    "tests/intl_country_cockpit_navigation.test.cjs": {
+      "before_sha256": "0e05b12898c46178daf03375183d112d6d0dd3976a0467b84c6b2fb27a826161",
+      "after_sha256": "e5ce4d082e182986931a3d68a6ca6d49ca4e36227df9d4e21cdbdc2064b37f20",
+      "before_bytes": 34852,
+      "after_bytes": 42626
+    }
+  },
+  "unchanged_bridge_sha256": {
+    "templates/shared_shell_bridge.js": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+    "site/shared_shell_bridge.js": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30"
+  },
+  "preimages": "/tmp/intl_root_review_correction_preimages_20261022",
+  "delta_sha256": "e169ee1993cd500ea3034d99041cb86839e4023448082e96dada43f08db546d5",
+  "checks": [
+    {
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--check",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/templates/intl_country_cockpit.js"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--check",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_country_cockpit_navigation.test.cjs"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  ]
+}

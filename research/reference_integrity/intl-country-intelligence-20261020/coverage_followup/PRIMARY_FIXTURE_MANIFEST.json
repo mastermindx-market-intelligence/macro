@@ -1,0 +1,144 @@
+{
+  "scope": "research source artifacts and local parser proof; no production admission",
+  "created_at": "2026-10-20T21:10:59.355973+00:00",
+  "india_source_acquired": true,
+  "taiwan_source_acquired": false,
+  "pdf_dependencies": {
+    "pdfplumber": "0.11.9",
+    "pypdf": "6.10.0"
+  },
+  "india_fixture_execution": {
+    "tool": "exec_command",
+    "chunk_id": "c9099b",
+    "exit_code": 0,
+    "checks_passed": 18
+  },
+  "artifacts": [
+    {
+      "relative_path": "SOURCE_FIXTURE_HANDOFF.md",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/SOURCE_FIXTURE_HANDOFF.md",
+      "bytes": 5847,
+      "sha256": "72ec9a8ee397ab4e9a80a798171d15a88be78c2029daa020747e54875db7e70e"
+    },
+    {
+      "relative_path": "acquire_primary.py",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/acquire_primary.py",
+      "bytes": 4791,
+      "sha256": "3281a5cb43ed60972cdca620b0b60b3643ea7c0aab5b6c0e0a6d26c4a1c59645"
+    },
+    {
+      "relative_path": "acquire_taiwan_chinese.py",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/acquire_taiwan_chinese.py",
+      "bytes": 544,
+      "sha256": "814dd09fea052e5a5a1245f877f8ed45ea692f0a2b90ec8a739f866fda6cab2d"
+    },
+    {
+      "relative_path": "acquire_taiwan_pdf.py",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/acquire_taiwan_pdf.py",
+      "bytes": 555,
+      "sha256": "1ab25d739ba8fd30c8cc2360522445554ec2035aac26635dcc02a7ba3b3be556"
+    },
+    {
+      "relative_path": "india_fixture_parser.py",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/india_fixture_parser.py",
+      "bytes": 8272,
+      "sha256": "5803d6a629b4dca1d255093b50e02954c0a88199e8026ed60bbf8c10dabd6120"
+    },
+    {
+      "relative_path": "india_fixture_probe.py",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/india_fixture_probe.py",
+      "bytes": 5116,
+      "sha256": "c0ae43046da009debe6d0fc01c891be4e53a06c76517eb8c21aeba5cb3745b71"
+    },
+    {
+      "relative_path": "primary_artifacts/in_acquisition_receipt.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/in_acquisition_receipt.json",
+      "bytes": 1541,
+      "sha256": "433a80b75d52cff2ec711645606caa3a2c2b563465810f85c5b8a0ab4aaab35f"
+    },
+    {
+      "relative_path": "primary_artifacts/mospi_q1_fy2026_27_20260831.pdf",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/mospi_q1_fy2026_27_20260831.pdf",
+      "bytes": 821560,
+      "sha256": "152d9020853769fe4fe4433bec038a558aae1312bbb13ec072058e8dd5b0bc49"
+    },
+    {
+      "relative_path": "primary_artifacts/in_extracted_pages.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/in_extracted_pages.json",
+      "bytes": 20233,
+      "sha256": "1c5d4a84e8b3f0408b657d5c364169ef18d3588acf72829ed1b3cf6910ed4c24"
+    },
+    {
+      "relative_path": "primary_artifacts/in_extracted_pages.txt",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/in_extracted_pages.txt",
+      "bytes": 17886,
+      "sha256": "302b6f8a0e7a17ad58ffff0a9f7aa5fb3efdae24c6d516824d1f5ce5dff5600e"
+    },
+    {
+      "relative_path": "primary_artifacts/in_physical_page_9.png",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/in_physical_page_9.png",
+      "bytes": 235273,
+      "sha256": "cb2051c220d37b69c271f3c27a4f9a959cdbe08e8dd8eb2be9278c6a6b4f4f2a"
+    },
+    {
+      "relative_path": "primary_artifacts/in_fixture_probe_receipt.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/in_fixture_probe_receipt.json",
+      "bytes": 2667,
+      "sha256": "60dcbae0201f6006fb29799e8030dac26f8236a56528ba6233a1aae5c95f8362"
+    },
+    {
+      "relative_path": "primary_artifacts/in_parser_result_research_only.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/in_parser_result_research_only.json",
+      "bytes": 2201,
+      "sha256": "0a480535959930a4057db067e0f09aa7ff2e0c67030963b5435df8400ec5315a"
+    },
+    {
+      "relative_path": "primary_artifacts/tw_acquisition_receipt.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/tw_acquisition_receipt.json",
+      "bytes": 1100,
+      "sha256": "12fb7c33d963c2a1b8bbe5ea011b202d6530292d89aa1879f74234a487e97dd8"
+    },
+    {
+      "relative_path": "primary_artifacts/tw_http_error_response.bin",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/tw_http_error_response.bin",
+      "bytes": 98,
+      "sha256": "33fbc61ad080ef68dd7a6479f8c53f1bf864dba2930567dbbc4ceb47490a1909"
+    },
+    {
+      "relative_path": "primary_artifacts/tw_chinese/tw_acquisition_receipt.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/tw_chinese/tw_acquisition_receipt.json",
+      "bytes": 1108,
+      "sha256": "c6476870feb2eac38cf9bab4c3a6d721fc84ced14e471a4eda8722753b4ec2cb"
+    },
+    {
+      "relative_path": "primary_artifacts/tw_chinese/tw_http_error_response.bin",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/tw_chinese/tw_http_error_response.bin",
+      "bytes": 98,
+      "sha256": "33fbc61ad080ef68dd7a6479f8c53f1bf864dba2930567dbbc4ceb47490a1909"
+    },
+    {
+      "relative_path": "primary_artifacts/tw_pdf/tw_acquisition_receipt.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/tw_pdf/tw_acquisition_receipt.json",
+      "bytes": 1137,
+      "sha256": "3d517665a1b91953e595e972ba6e1e7233852c738bd1c4a5089b2aa9cf475514"
+    },
+    {
+      "relative_path": "primary_artifacts/tw_pdf/tw_http_error_response.bin",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/tw_pdf/tw_http_error_response.bin",
+      "bytes": 98,
+      "sha256": "33fbc61ad080ef68dd7a6479f8c53f1bf864dba2930567dbbc4ceb47490a1909"
+    },
+    {
+      "relative_path": "primary_artifacts/sandbox_denied/in_acquisition_receipt.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/sandbox_denied/in_acquisition_receipt.json",
+      "bytes": 738,
+      "sha256": "cb6d545443ebfbc874a56427c0928c461d7e1afea87791792f48dd7a027e1452"
+    },
+    {
+      "relative_path": "primary_artifacts/sandbox_denied/tw_acquisition_receipt.json",
+      "absolute_path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/primary_artifacts/sandbox_denied/tw_acquisition_receipt.json",
+      "bytes": 636,
+      "sha256": "290dfc667006ab26e8a2818edbcdea36c1b458795a61af1c532c3a0c7aab66d2"
+    }
+  ]
+}

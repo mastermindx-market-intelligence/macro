@@ -1,0 +1,9 @@
+{
+  "schema": "intl.archive_roundtrip.v1",
+  "archive_sha256": "df8e74b13511259675f355ccb05aa86fb0b371ddf98fe656e768cf27cf842c02",
+  "source_head": "ba4466fc170f2f4f3cdfdb131ca6b51508703934",
+  "members": 259,
+  "all_byte_equal": true,
+  "all_mode_equal": true,
+  "result": "PASS"
+}

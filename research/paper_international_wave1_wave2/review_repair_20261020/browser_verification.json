@@ -1,0 +1,2856 @@
+{
+  "schema": "mastermind.intl_integrated_browser_verification.v1",
+  "focus_checks": [
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "en",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "zh",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "en",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "zh",
+      "passed": true,
+      "tag": "A",
+      "focusVisible": true,
+      "outlineWidth": "2px",
+      "outlineStyle": "solid"
+    }
+  ],
+  "source_parent": "1a292672de4bb3f14b00c88e4af1f493b854a364",
+  "main_parent": "422e121246f956834085853a49dfc6c2250d3dab",
+  "scope": "Anonymous isolated integrated template in real Chrome; external requests blocked.",
+  "started_at": "2026-10-20T10:31:04.727367+00:00",
+  "finished_at": "2026-10-20T10:33:18.090346+00:00",
+  "html_sha256": "78ed1612a2f2756ad1024f08a7a60552d082c5d3e80e92fd9d435c3f0b5129dc",
+  "canonical_manifest": "mockups/evidence/intl-review-repair-20261020/manifest.json",
+  "canonical_manifest_sha256": "cf54ca25d4d8fe681f99c2a24b4e4530353b755f3074d25e2568e7bd3e0eabad",
+  "canonical_capture_exit": 0,
+  "country_checks": 84,
+  "passed": 84,
+  "page_errors": [],
+  "history": [
+    {
+      "action": "back",
+      "cc": "IN",
+      "passed": true
+    },
+    {
+      "action": "forward",
+      "cc": "KR",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "research/paper_international_wave1_wave2/review_repair_20261020/currency_shots/kr-desktop-light-en.png",
+      "sha256": "3ab8abd2f48a521c55269e987d29a23d38ab65a0bce9ba5682f623179a46d129"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/review_repair_20261020/currency_shots/au-desktop-light-zh.png",
+      "sha256": "00c24190f425b53109cb522ebd545b6930f016ea360e9d50b4c4bc182dfe1db1"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/review_repair_20261020/currency_shots/kr-desktop-dark-en.png",
+      "sha256": "75321e4d6aadc4b51f264edcc6f3246437e64eb1f040daeddc18cb5d58c0bef6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/review_repair_20261020/currency_shots/tw-mobile-light-en.png",
+      "sha256": "2f9ccb982b09e4e32f112c4f3c16a135dbf3692ccb26878569b909e168263d8d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/review_repair_20261020/currency_shots/jp-mobile-dark-zh.png",
+      "sha256": "4a2ea2136c2d10d27dc6aac6380ae10558ebc3be260a99351007133b72fed4f5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/review_repair_20261020/currency_shots/in-narrow-light-en.png",
+      "sha256": "9cd21ec23135ea8ae732394db5a06030c47a3a7437514137fc55a7c4b76cd570"
+    }
+  ],
+  "checks": [
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "JPY vs USD · 3 months",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "KRW vs USD · 3 months",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "TWD vs USD · 3 months",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "INR vs USD · 3 months",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "AUD vs USD · 3 months",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "GBP vs USD · 3 months",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "EUR vs USD · 3 months",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "JPY 兑美元 · 3个月",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "KRW 兑美元 · 3个月",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "TWD 兑美元 · 3个月",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "INR 兑美元 · 3个月",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "AUD 兑美元 · 3个月",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "GBP 兑美元 · 3个月",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "EUR 兑美元 · 3个月",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "JPY vs USD · 3 months",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "KRW vs USD · 3 months",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "TWD vs USD · 3 months",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "INR vs USD · 3 months",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "AUD vs USD · 3 months",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "GBP vs USD · 3 months",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "EUR vs USD · 3 months",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "JPY 兑美元 · 3个月",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "KRW 兑美元 · 3个月",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "TWD 兑美元 · 3个月",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "INR 兑美元 · 3个月",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "AUD 兑美元 · 3个月",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "GBP 兑美元 · 3个月",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 1440,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "17px",
+      "trendTextFont": "17px",
+      "quality": "current",
+      "label": "EUR 兑美元 · 3个月",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "JPY vs USD · 3 months",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "KRW vs USD · 3 months",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "TWD vs USD · 3 months",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "INR vs USD · 3 months",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "AUD vs USD · 3 months",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "GBP vs USD · 3 months",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "EUR vs USD · 3 months",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "JPY 兑美元 · 3个月",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "KRW 兑美元 · 3个月",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "TWD 兑美元 · 3个月",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "INR 兑美元 · 3个月",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "AUD 兑美元 · 3个月",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "GBP 兑美元 · 3个月",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "EUR 兑美元 · 3个月",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "JPY vs USD · 3 months",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "KRW vs USD · 3 months",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "TWD vs USD · 3 months",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "INR vs USD · 3 months",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "AUD vs USD · 3 months",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "GBP vs USD · 3 months",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "EUR vs USD · 3 months",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "JPY 兑美元 · 3个月",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "KRW 兑美元 · 3个月",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "TWD 兑美元 · 3个月",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "INR 兑美元 · 3个月",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "AUD 兑美元 · 3个月",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "GBP 兑美元 · 3个月",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "EUR 兑美元 · 3个月",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "JPY vs USD · 3 months",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "KRW vs USD · 3 months",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "TWD vs USD · 3 months",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "INR vs USD · 3 months",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "AUD vs USD · 3 months",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "GBP vs USD · 3 months",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "EUR vs USD · 3 months",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "JPY 兑美元 · 3个月",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "KRW 兑美元 · 3个月",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "TWD 兑美元 · 3个月",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "INR 兑美元 · 3个月",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "AUD 兑美元 · 3个月",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "GBP 兑美元 · 3个月",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "light",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "EUR 兑美元 · 3个月",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "JPY vs USD · 3 months",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "KRW vs USD · 3 months",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "TWD vs USD · 3 months",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "INR vs USD · 3 months",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "AUD vs USD · 3 months",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "GBP vs USD · 3 months",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "EUR vs USD · 3 months",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "Through 2026-10-19",
+      "lang": "en"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "JPY 兑美元 · 3个月",
+      "value": "+2.90%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "KRW 兑美元 · 3个月",
+      "value": "+10.91%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "TWD 兑美元 · 3个月",
+      "value": "-0.38%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "INR 兑美元 · 3个月",
+      "value": "+1.76%",
+      "valueClass": "imc-up",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "AUD 兑美元 · 3个月",
+      "value": "-0.39%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "GBP 兑美元 · 3个月",
+      "value": "-1.06%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    },
+    {
+      "viewport": "narrow",
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "source_verified": true,
+      "selectedCountryShadow": "none",
+      "selectedCountryWeight": "600",
+      "mainNavEdgeWidth": "0px",
+      "mainNavWeight": "700",
+      "horizonEdges": [
+        "0px"
+      ],
+      "viewportWidth": 320,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflow": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "trendFont": "15px",
+      "trendTextFont": "15px",
+      "quality": "current",
+      "label": "EUR 兑美元 · 3个月",
+      "value": "-1.92%",
+      "valueClass": "imc-down",
+      "date": "截至 2026-10-19",
+      "lang": "zh"
+    }
+  ],
+  "ageing_controls": [
+    {
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "evaluated_at": "2026-10-25",
+      "quality": "dated",
+      "theme": "light",
+      "locale": "en",
+      "passed": true,
+      "text": "KRW vs USD · 3 months\n+10.91%\nDated · 2026-10-19"
+    },
+    {
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "evaluated_at": "2026-10-25",
+      "quality": "dated",
+      "theme": "light",
+      "locale": "zh",
+      "passed": true,
+      "text": "KRW 兑美元 · 3个月\n+10.91%\n较早观测 · 2026-10-19"
+    },
+    {
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "evaluated_at": "2026-10-25",
+      "quality": "dated",
+      "theme": "dark",
+      "locale": "en",
+      "passed": true,
+      "text": "KRW vs USD · 3 months\n+10.91%\nDated · 2026-10-19"
+    },
+    {
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "evaluated_at": "2026-10-25",
+      "quality": "dated",
+      "theme": "dark",
+      "locale": "zh",
+      "passed": true,
+      "text": "KRW 兑美元 · 3个月\n+10.91%\n较早观测 · 2026-10-19"
+    },
+    {
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "evaluated_at": "2026-11-03",
+      "quality": "missing",
+      "theme": "light",
+      "locale": "en",
+      "passed": true,
+      "text": "KRW vs USD · 3 months\n—\nObservation unavailable"
+    },
+    {
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "evaluated_at": "2026-11-03",
+      "quality": "missing",
+      "theme": "light",
+      "locale": "zh",
+      "passed": true,
+      "text": "KRW 兑美元 · 3个月\n—\n暂无可用观测"
+    },
+    {
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "evaluated_at": "2026-11-03",
+      "quality": "missing",
+      "theme": "dark",
+      "locale": "en",
+      "passed": true,
+      "text": "KRW vs USD · 3 months\n—\nObservation unavailable"
+    },
+    {
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "evaluated_at": "2026-11-03",
+      "quality": "missing",
+      "theme": "dark",
+      "locale": "zh",
+      "passed": true,
+      "text": "KRW 兑美元 · 3个月\n—\n暂无可用观测"
+    }
+  ],
+  "ageing_passed": 8
+}

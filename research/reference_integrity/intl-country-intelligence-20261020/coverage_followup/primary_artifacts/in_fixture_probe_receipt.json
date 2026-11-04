@@ -1,0 +1,99 @@
+{
+  "scope": "research-only actual source fixture and targeted in-memory rejection cases; no production admission",
+  "run_at": "2026-10-20T21:09:35.562357+00:00",
+  "checks_passed": 18,
+  "checks": [
+    {
+      "case": "actual_reviewed_pdf_and_receipt",
+      "status": "passed"
+    },
+    {
+      "case": "changed_wire_bytes",
+      "status": "passed",
+      "rejection": "unreviewed_source_payload"
+    },
+    {
+      "case": "html_instead_of_pdf",
+      "status": "passed",
+      "rejection": "invalid_pdf_bytes"
+    },
+    {
+      "case": "wrong_source_url",
+      "status": "passed",
+      "rejection": "source_url_mismatch"
+    },
+    {
+      "case": "wrong_receipt_hash",
+      "status": "passed",
+      "rejection": "source_receipt_hash_or_length_mismatch"
+    },
+    {
+      "case": "naive_retrieval_clock",
+      "status": "passed",
+      "rejection": "retrieval_clock_must_be_aware"
+    },
+    {
+      "case": "retrieved_before_publication",
+      "status": "passed",
+      "rejection": "retrieval_clock_out_of_order"
+    },
+    {
+      "case": "future_retrieval_clock",
+      "status": "passed",
+      "rejection": "retrieval_clock_out_of_order"
+    },
+    {
+      "case": "forecast_wording",
+      "status": "passed",
+      "rejection": "observed_real_headline_not_unique"
+    },
+    {
+      "case": "nominal_headline",
+      "status": "passed",
+      "rejection": "observed_real_headline_not_unique"
+    },
+    {
+      "case": "old_price_base",
+      "status": "passed",
+      "rejection": "price_base_mismatch"
+    },
+    {
+      "case": "wrong_native_quarter",
+      "status": "passed",
+      "rejection": "native_period_mismatch"
+    },
+    {
+      "case": "wrong_table_columns",
+      "status": "passed",
+      "rejection": "column_order_mismatch"
+    },
+    {
+      "case": "sequential_growth_basis",
+      "status": "passed",
+      "rejection": "growth_basis_mismatch"
+    },
+    {
+      "case": "conflicting_statements",
+      "status": "passed",
+      "rejection": "gdp_statements_disagree"
+    },
+    {
+      "case": "level_growth_disagrees",
+      "status": "passed",
+      "rejection": "current_level_rate_disagreement"
+    },
+    {
+      "case": "wrong_native_units",
+      "status": "passed",
+      "rejection": "native_unit_mismatch"
+    },
+    {
+      "case": "new_seasonal_claim",
+      "status": "passed",
+      "rejection": "seasonal_label_requires_new_review"
+    }
+  ],
+  "source_sha256": "152d9020853769fe4fe4433bec038a558aae1312bbb13ec072058e8dd5b0bc49",
+  "parser_sha256": "5803d6a629b4dca1d255093b50e02954c0a88199e8026ed60bbf8c10dabd6120",
+  "probe_sha256": "c0ae43046da009debe6d0fc01c891be4e53a06c76517eb8c21aeba5cb3745b71"
+}

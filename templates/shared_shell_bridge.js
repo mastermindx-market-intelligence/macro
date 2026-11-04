@@ -133,6 +133,9 @@
 
   var installed = true;
   w.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
+  // Instance liveness for the public API. cleanup() retires this candidate; a
+  // persisted pagehide never calls cleanup, so a BFCache document stays live.
+  var apiLive = true;
 
   var state = { active: false, chrome: false, anchors: false, runtime: false };
   var admitted = null;
@@ -496,6 +499,55 @@
     } catch (e) {}
   }
   function preventDefault(e) { try { if (typeof e.preventDefault === "function") e.preventDefault(); } catch (err) {} }
+
+  /* ---- shared anchor classification ----
+   * "What would activating this anchor mean" is one decision, and the page has to be
+   * able to ask it without also being able to perform it. onClick and the public
+   * sameDocumentFragment() below therefore share classifyAnchor(), so no navigation
+   * policy is restated on the consumer side and neither answer can drift from the
+   * other.
+   *
+   * The private projected record is the only provenance that exists: an anchor
+   * authored "#id" and one authored "/intl.html#id" project to the SAME displayed
+   * href, so the displayed attribute cannot tell a same-document fragment from an
+   * explicit first-party page link once the parent has changed the current query. The
+   * recorded authored value is honored only while the href attribute still equals
+   * exactly what the bridge projected; after any rewrite the current attribute is
+   * authoritative, so a stale destination is never classified.
+   *
+   * This function is pure with respect to the document: no attribute or WeakMap
+   * write, no history change, no message, error or request id, no enqueue, no scroll,
+   * focus or observer work. It never navigates in order to classify.
+   */
+  var CLASS_NONE = "none", CLASS_EXTERNAL = "external", CLASS_BLOCKED = "blocked", CLASS_LOCAL = "local";
+  function classifyAnchor(a) {
+    if (skipIntercept(a)) return { kind: CLASS_NONE };
+    var attr = null;
+    try { attr = a.getAttribute("href"); } catch (e) { return { kind: CLASS_NONE }; }
+    var rec = projected ? projected.get(a) : null;
+    var raw = (rec && attr === rec.projected) ? rec.original : attr;
+    var hs = coerceHref(raw);
+    if (hs === null) return { kind: CLASS_NONE };
+    var low = hs.trim().toLowerCase();
+    if (DEAD_SCHEME_RE.test(low)) return { kind: CLASS_NONE };
+    var u = resolveHref(hs);
+    if (!u) return { kind: CLASS_NONE };
+    if (u.origin !== childOrigin) {
+      var mapped = firstPartyToChild(u);
+      if (mapped) {
+        u = mapped;  // first-party target classified against the child catalog
+      } else {
+        return { kind: CLASS_EXTERNAL, url: u };
+      }
+    }
+    if (!credentialsFree(u)) return { kind: CLASS_BLOCKED, code: "navigation_unavailable", url: u };
+    if (isSensitiveURL(u)) return { kind: CLASS_BLOCKED, code: "authentication_navigation", url: u };
+    var canonical = canonicalHref(u);
+    var curC = currentCanonical();
+    if (!canonical || canonical.length > MAX_URL || !isAdmitted(u.pathname) || curC === null)
+      return { kind: CLASS_BLOCKED, code: "navigation_unavailable", url: u };
+    return { kind: CLASS_LOCAL, url: u, canonical: canonical, current: curC };
+  }
   function onClick(e) {
     try {
       if (!state.active || !e || e.defaultPrevented) return;
@@ -506,46 +558,22 @@
       if (node.nodeType !== undefined && node.nodeType !== 1) node = node.parentElement;
       if (!node || typeof node.closest !== "function") return;
       var a = node.closest("a[href]");
-      if (!a || skipIntercept(a)) return;
-      var attr = null;
-      try { attr = a.getAttribute("href"); } catch (err) { return; }
-      var rec = projected ? projected.get(a) : null;
-      // Use the recorded authored value only while the attribute is still exactly what
-      // the bridge projected. An unregistered rewrite is reclassified from the current
-      // value, so a stale destination is never navigated to.
-      var raw = (rec && attr === rec.projected) ? rec.original : attr;
-      var hs = coerceHref(raw);
-      if (hs === null) return;
-      var low = hs.trim().toLowerCase();
-      if (DEAD_SCHEME_RE.test(low)) return;
-      var u = resolveHref(hs);
-      if (!u) return;
-      if (u.origin !== childOrigin) {
-        var mapped = firstPartyToChild(u);
-        if (mapped) {
-          u = mapped;  // first-party target classified against the child catalog
-        } else {
-          if (u.protocol === "http:" || u.protocol === "https:") {
-            try {
-              if (anchorTarget(a) === "") a.setAttribute("target", "_blank");
-            } catch (err) {}
-            addNoopener(a);
-          }
-          return;
+      if (!a) return;
+      var cls = classifyAnchor(a);
+      if (cls.kind === CLASS_NONE) return;
+      if (cls.kind === CLASS_EXTERNAL) {
+        if (cls.url.protocol === "http:" || cls.url.protocol === "https:") {
+          try {
+            if (anchorTarget(a) === "") a.setAttribute("target", "_blank");
+          } catch (err) {}
+          addNoopener(a);
         }
-      }
-      if (!credentialsFree(u)) { preventDefault(e); emitError("navigation_unavailable"); return; }
-      if (isSensitiveURL(u)) { preventDefault(e); emitError("authentication_navigation"); return; }
-      var canonical = canonicalHref(u);
-      var curC = currentCanonical();
-      if (!canonical || canonical.length > MAX_URL || !isAdmitted(u.pathname) || curC === null) {
-        preventDefault(e);
-        emitError("navigation_unavailable");
         return;
       }
+      if (cls.kind === CLASS_BLOCKED) { preventDefault(e); emitError(cls.code); return; }
       preventDefault(e);
-      if (isFragmentAgainst(canonical, curC)) { applyFragmentNavigation(u, canonical, curC, "push"); return; }
-      emitNavigate(canonical, "push", canonical === curC);
+      if (isFragmentAgainst(cls.canonical, cls.current)) { applyFragmentNavigation(cls.url, cls.canonical, cls.current, "push"); return; }
+      emitNavigate(cls.canonical, "push", cls.canonical === cls.current);
     } catch (err) {}
   }
   function installAnchors() {
@@ -1052,6 +1080,7 @@
       correctionCancelers.length = 0;
     } catch (e) {}
     try { if (anchorObserver) { anchorObserver.disconnect(); anchorObserver = null; } } catch (e) {}
+    apiLive = false;
     domReadyWaiters = null;
     domReadyListener = null;
     domReadyHandlerRef = null;
@@ -1086,6 +1115,70 @@
       if (!state.active) return enqueue({ kind: "auth", intent: intent });
       send("AUTH_REQUEST", { intent: intent });
       return true;
+    },
+    /* Read-only classification of one REAL anchor element.
+     *
+     * Returns the ENCODED fragment, without a leading "#", when activating this anchor
+     * would be a same-document fragment change against the CURRENT child location -
+     * the same answer onClick would act on. Returns null for everything else: before
+     * INIT, a non-anchor or attribute-less element, an anchor whose native semantics
+     * the bridge deliberately leaves alone (_blank, download, role=button), a dead
+     * scheme, a foreign origin, a different path, different query bytes, credentials,
+     * a sensitive or unadmitted path, or an href with no fragment.
+     *
+     * The ELEMENT is required rather than an href string, because the answer depends on
+     * the private projection record: two anchors showing the identical projected href
+     * classify differently. A copied node carries no record and is therefore classified
+     * from its own current attribute - provenance is never inherited.
+     *
+     * It returns a value; it does not navigate. No attribute or record write, no
+     * history change, no message, error or request id, nothing queued for a later
+     * INIT, and no scroll, focus or observer effect. Consumers must use the return
+     * value only to decide what they do for themselves. */
+    sameDocumentFragment: function (a) {
+      try {
+        if (!state.active) return null;
+        var cls = classifyAnchor(a);
+        if (cls.kind !== CLASS_LOCAL) return null;
+        if (!isFragmentAgainst(cls.canonical, cls.current)) return null;
+        return fragmentOf(cls.canonical);
+      } catch (e) { return null; }
+    },
+    /* Read-only projection of the query of the page this document is already
+     * showing, with the two transport pairs removed by the SAME byte-preserving
+     * filter the canonical projection uses. Those two pairs belong to the shell
+     * frame rather than to the page's own query vocabulary, so a child that reads
+     * location.search itself sees them as foreign keys; the page that needs the
+     * business query asks here instead of re-implementing - or loosely
+     * approximating - that filter.
+     *
+     * Every other byte survives exactly: encoding, order, duplicates and empty
+     * segments are returned unchanged, so the caller's own strict validation still
+     * decides what is acceptable and no wildcard, normalization, serialization,
+     * truncation or parser relaxation is introduced here.
+     *
+     * A projection of the CURRENT page is not evidence of parent admission, of an
+     * accepted destination or of LOCATION_ACCEPTED, and it carries no navigation
+     * authority: a caller that needs any of those must go through navigate() and the
+     * parent's acknowledgment. It returns a value; it never navigates. No message,
+     * error or request id, nothing queued for a later INIT, and no history, DOM,
+     * attribute, scroll, focus or observer effect.
+     *
+     * It is available before INIT - the API is installed by the blocking head script
+     * ahead of every page script - because a fresh document has to know its own query
+     * before any parent context arrives. It is NOT available after cleanup(): the
+     * retired flag plus the exact-instance identity check make a cached reference to a
+     * cleaned-up bridge refuse, exactly like any other dead capability. A persisted
+     * pagehide performs no cleanup, so a BFCache document keeps its live reader.
+     */
+    readPageSearch: function () {
+      try {
+        if (!apiLive) return null;
+        if (w.MMXSharedShell !== api) return null;
+        var raw = null;
+        try { raw = String(w.location.search || ""); } catch (e) { return null; }
+        return filterTransport(raw);
+      } catch (e) { return null; }
     }
   };
   try {

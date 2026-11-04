@@ -1,0 +1,124 @@
+{
+  "recorded_at": "2026-10-20T15:29:18.030971+00:00",
+  "source_commit": "0be244ba05355f4260b28da89dac4587f5a772e4",
+  "html_sha256": "22a3f22411c315606cd6e4ad9ad111103711841cea0585f5b5a68e267948de4e",
+  "prior_failed_receipt": {
+    "path": "final_source_disclosure_audit.json",
+    "sha256": "06901ff7e25bd980deafb7a498a1fb4ad1592f11b8b2dde2708dc5140e94a072",
+    "preserved_passed": 80,
+    "preserved_failed": 2
+  },
+  "cause": "The first audit required a GDP source link even when no GDP observation was admitted. Both economies already lacked observed GDP in the original complete-input build.",
+  "resolution": "Source links are required for admitted observations. Missing observations remain unavailable without invented numbers or attribution; this receipt verifies only those missing-data cases.",
+  "checks": [
+    {
+      "id": "TW-no-admitted-GDP",
+      "passed": true,
+      "actual": {
+        "value": null,
+        "source_url": null,
+        "evidence": null,
+        "quality": "missing"
+      }
+    },
+    {
+      "id": "TW-original-unavailable-observation",
+      "passed": true,
+      "actual": [
+        "GDP growth GDP增长",
+        "—",
+        "—",
+        "Existing international macro series"
+      ]
+    },
+    {
+      "id": "TW-original-visible-missing-data",
+      "passed": true,
+      "actual": [
+        "GDP growth GDP增长 — No current observation 暂无当前观测",
+        "Inflation 通胀 — No current observation 暂无当前观测"
+      ]
+    },
+    {
+      "id": "TW-repaired-unavailable-observation",
+      "passed": true,
+      "actual": [
+        "GDP growth GDP增长",
+        "—",
+        "—",
+        "—"
+      ]
+    },
+    {
+      "id": "TW-repaired-visible-missing-data",
+      "passed": true,
+      "actual": [
+        "GDP growth GDP增长 — No current observation 暂无当前观测",
+        "Inflation 通胀 — No current observation 暂无当前观测"
+      ]
+    },
+    {
+      "id": "TW-no-invented-GDP-inputs",
+      "passed": true
+    },
+    {
+      "id": "IN-no-admitted-GDP",
+      "passed": true,
+      "actual": {
+        "value": null,
+        "source_url": null,
+        "evidence": null,
+        "quality": "missing"
+      }
+    },
+    {
+      "id": "IN-original-unavailable-observation",
+      "passed": true,
+      "actual": [
+        "GDP growth GDP增长",
+        "—",
+        "—",
+        "Existing international macro series"
+      ]
+    },
+    {
+      "id": "IN-original-visible-missing-data",
+      "passed": true,
+      "actual": [
+        "GDP growth GDP增长 — No current observation 暂无当前观测",
+        "Inflation 通胀 4.44 % 2026-07 · year over year 同比 +0.96 pp over 3 months 个百分点 / 3个月"
+      ]
+    },
+    {
+      "id": "IN-repaired-unavailable-observation",
+      "passed": true,
+      "actual": [
+        "GDP growth GDP增长",
+        "—",
+        "—",
+        "—"
+      ]
+    },
+    {
+      "id": "IN-repaired-visible-missing-data",
+      "passed": true,
+      "actual": [
+        "GDP growth GDP增长 — No current observation 暂无当前观测",
+        "Inflation 通胀 4.44 % 2026-07 · year over year 同比 +0.96 pp over 3 months 个百分点 / 3个月"
+      ]
+    },
+    {
+      "id": "IN-no-invented-GDP-inputs",
+      "passed": true
+    }
+  ],
+  "passed": 12,
+  "failed": 0,
+  "remaining_coverage_gap": [
+    "Taiwan observed GDP",
+    "India observed GDP"
+  ],
+  "limits": [
+    "Does not fill either observation gap, prove production adoption, or change the preserved 80-pass/2-fail audit."
+  ]
+}

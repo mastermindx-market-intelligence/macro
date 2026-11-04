@@ -1,0 +1,14 @@
+{
+  "before_manifest_sha256": "6a6d47b3b0f4a54df8722a636f18438febecfa5fc626820aadc174d0a102780f",
+  "after_manifest_sha256": "75f30eaba75c3904548bdfda8a7c9016f664af34e1d94afbb4bef4697970c0fa",
+  "before_normalized_jobs_sha256": "46206eb8f995dcf3da44eb46dc2c9878fb1f08959123ca897939becfec72c20e",
+  "after_normalized_jobs_sha256": "abc3fa30907e577dfa8c92f2e031ad84cfad526546bd92d8a17bab61d8f2c005",
+  "jobs": 349,
+  "other_job_objects_unchanged": true,
+  "only_delta": "one exact committed theme fixture in international-workspace-browser.paths",
+  "fixture": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/proposed_main6a420261022_repair/theme.css",
+  "fixture_sha256": "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+  "browser_paths_before": 360,
+  "browser_paths_after": 361,
+  "test_sha256": "63476a21195abec2e3cad8a687104d44c5d9ac6e098d232287645fc172fb3d8c"
+}

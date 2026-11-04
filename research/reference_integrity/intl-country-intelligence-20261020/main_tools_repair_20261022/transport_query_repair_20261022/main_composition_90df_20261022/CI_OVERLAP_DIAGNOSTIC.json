@@ -1,0 +1,13 @@
+{
+  "initial_guard": "stopped_before_resolution_on_any_both_parent_job_change",
+  "initial_process": 11323,
+  "initial_exit": 1,
+  "outcome": "No conflict resolution or product writes occurred; preflight receipts only",
+  "observed_jobs": [
+    "intelligence-registry",
+    "nw-lobe-unfreeze",
+    "unrun-picks-boards",
+    "washout-turn-organ"
+  ],
+  "subsequent_ruling": "All four changes are exact path unions; local non-path fields equal base and merged non-path fields equal main. No CI source edits required."
+}

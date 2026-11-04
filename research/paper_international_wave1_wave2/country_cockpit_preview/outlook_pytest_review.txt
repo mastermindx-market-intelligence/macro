@@ -1,0 +1,55 @@
+........................................................................ [ 45%]
+.........F.............................................................. [ 90%]
+................                                                         [100%]
+=================================== FAILURES ===================================
+_ test_conflict_at_another_official_url_invalidates_the_same_country_bank_thesis[TW] _
+
+cc = 'TW'
+
+    @pytest.mark.parametrize("cc", ["GB", "TW"])
+    def test_conflict_at_another_official_url_invalidates_the_same_country_bank_thesis(cc):
+        decisions = baseline()["policy_decisions"]
+        prior = next(r for r in decisions if r["cc"] == cc)
+        alternate = {**deepcopy(prior),
+                     "source_url": prior["source_url"] + "?version=alternative",
+                     "rationale_en": "A materially conflicting rationale at another official URL."}
+        decisions.append(alternate)
+        selected = select_policy_decision(decisions, cc, today=TODAY)
+        assert selected["state"] == "conflict"
+        commentary = research()
+        # Either version may be the representative. Bind commentary to the other
+        # official URL so the test cannot pass through an incidental URL match.
+        commentary[cc]["source_url"] = next(
+            r["source_url"] for r in (prior, alternate)
+            if r["source_url"] != selected["source_url"]
+        )
+        country = next(c for c in assessment(commentary=commentary, decisions=decisions)["countries"]
+                       if c["cc"] == cc)
+>       assert country["research"] is None
+E       AssertionError: assert {'kind': 'attributed_assessment', 'published': '2026-09-17', 'provider': 'Central Bank of Taiwan', 'source_url': 'https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html?version=alternative', ...} is None
+
+tests/test_intl_outlook_interpretation.py:146: AssertionError
+=============================== warnings summary ===============================
+tests/test_intl_session_asof.py::test_intl_session_anchor_resolves_without_alpha_as_of
+  /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/test_intl_session_asof.py:30: Pandas4Warning: Timestamp.utcnow is deprecated and will be removed in a future version. Use Timestamp.now('UTC') instead.
+    before = str(pd.Timestamp.utcnow().date())
+
+tests/test_intl_session_asof.py::test_intl_session_anchor_resolves_without_alpha_as_of
+  /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/scripts/build_intl_library.py:308: Pandas4Warning: Timestamp.utcnow is deprecated and will be removed in a future version. Use Timestamp.now('UTC') instead.
+    return str(pd.Timestamp.utcnow().date()), False
+
+tests/test_intl_session_asof.py::test_intl_session_anchor_resolves_without_alpha_as_of
+  /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/test_intl_session_asof.py:32: Pandas4Warning: Timestamp.utcnow is deprecated and will be removed in a future version. Use Timestamp.now('UTC') instead.
+    after = str(pd.Timestamp.utcnow().date())
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-715433f7-9e24-419c-a653-93c1aa027bcd/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-715433f7-9e24-419c-a653-93c1aa027bcd/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_outlook_interpretation.py::test_conflict_at_another_official_url_invalidates_the_same_country_bank_thesis[TW]
+1 failed, 159 passed, 4 warnings in 11.78s

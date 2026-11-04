@@ -1,0 +1,202 @@
+{
+  "schema": "intl.integrated_navigation_regressions.v1",
+  "started_at": "2026-10-22T13:22:35.162317+00:00",
+  "subject": "df1aa0c587bd1fef7a6b20fb69ca2e22afd423fd",
+  "driver_sha256": "f764d3a90330dc1b2d59950479895a3a73993508f29363815f0c98290ddf58c4",
+  "files": [
+    {
+      "path": "templates/shared_shell_bridge.js",
+      "sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf"
+    },
+    {
+      "path": "site/shared_shell_bridge.js",
+      "sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf"
+    },
+    {
+      "path": "templates/intl_country_cockpit.js",
+      "sha256": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042"
+    },
+    {
+      "path": "tests/js/shared_shell_bridge.test.cjs",
+      "sha256": "b8a2c6ca0931aa314684ebf3e104b5cc098b4d9e7dad093eb65d08493402186a"
+    },
+    {
+      "path": "tests/intl_country_cockpit_navigation.test.cjs",
+      "sha256": "c78620ad415d2265ac7f6c0faf2d6e247c9b233f0fe6974003194217d17add72"
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "c7e8fd0cd445670e1cc0c784ab309c97965bb6954e3f47324fd7eec476f7f67a"
+    },
+    {
+      "path": "templates/intl_workspace.js",
+      "sha256": "2a087839c3fbb93d02de2e3c9c2798ffa5727dd1c0d3aff38717aa62b247a8dd"
+    },
+    {
+      "path": "site/intl_workspace.js",
+      "sha256": "2a087839c3fbb93d02de2e3c9c2798ffa5727dd1c0d3aff38717aa62b247a8dd"
+    },
+    {
+      "path": "templates/intl_workspace_state.js",
+      "sha256": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d"
+    },
+    {
+      "path": "tests/intl_workspace_controller.test.cjs",
+      "sha256": "f41291389c4d9d0441502ca4fe31bcbf1432071fcc01c964a19bb0876b421a39"
+    },
+    {
+      "path": "tests/intl_workspace_state.test.cjs",
+      "sha256": "d87966bde8189161c2d9cdfc79c605bfbd11524f54e7a48fec397906c58293d8"
+    }
+  ],
+  "environment": {
+    "node": "v26.5.0",
+    "python": "Python 3.12.13",
+    "playwright": "1.61.1",
+    "channel": "chrome",
+    "browser_concurrency": 3
+  },
+  "checks": [
+    {
+      "name": "shared_bridge_and_adapters",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "tests/js/shared_shell_bridge.test.cjs",
+        "tests/js/shared_shell_navigation_adapters.test.cjs",
+        "tests/js/shared_shell_owner_adapters.test.cjs",
+        "tests/js/shared_shell_terminal_handoff.test.cjs"
+      ],
+      "started_at": "2026-10-22T13:22:35.232570+00:00",
+      "completed_at": "2026-10-22T13:22:36.597949+00:00",
+      "duration_seconds": 1.37,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/regressions_candidate/shared_bridge_and_adapters.log",
+      "log_sha256": "8345f086fc4db6d3d66d2533b57248048ac833c1fe3f7c727a7b2fad2fdf9cc5",
+      "error": null,
+      "counts": {
+        "tests": 192,
+        "pass": 192,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "name": "international_browser",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=3",
+        "tests/intl_workspace_generation_controller.test.cjs",
+        "tests/intl_workspace_generation_integration.test.cjs",
+        "tests/intl_workspace_compare_controller.test.cjs",
+        "tests/intl_workspace_controller.test.cjs",
+        "tests/intl_workspace_page.test.cjs",
+        "tests/intl_workspace_legacy_navigation.test.cjs",
+        "tests/intl_country_cockpit_navigation.test.cjs",
+        "tests/intl_workspace_library_controller.test.cjs",
+        "tests/intl_workspace_inspector_integration.test.cjs",
+        "tests/intl_workspace_risk_controller.test.cjs",
+        "tests/intl_workspace_history_controller.test.cjs",
+        "tests/intl_workspace_history_independent.test.cjs"
+      ],
+      "started_at": "2026-10-22T13:22:35.232709+00:00",
+      "completed_at": "2026-10-22T13:25:39.133101+00:00",
+      "duration_seconds": 183.9,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/regressions_candidate/international_browser.log",
+      "log_sha256": "bca4c57982c5f422ad39c91fb63f16a3950462d4656ee3128f109012210a9344",
+      "error": null,
+      "counts": {
+        "tests": 220,
+        "pass": 220,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "name": "workspace_state",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "tests/intl_workspace_state.test.cjs"
+      ],
+      "started_at": "2026-10-22T13:22:36.598873+00:00",
+      "completed_at": "2026-10-22T13:22:36.728975+00:00",
+      "duration_seconds": 0.13,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/regressions_candidate/workspace_state.log",
+      "log_sha256": "df357d397597f80436c652d8457fb5608c0dc1d4e4462ea3a4a2aa74eb037d50",
+      "error": null,
+      "counts": {
+        "tests": 21,
+        "pass": 21,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "name": "shared_shell_injection",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_shared_shell_injection.py",
+        "-q"
+      ],
+      "started_at": "2026-10-22T13:22:36.729812+00:00",
+      "completed_at": "2026-10-22T13:22:41.309360+00:00",
+      "duration_seconds": 4.58,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/regressions_candidate/shared_shell_injection.log",
+      "log_sha256": "cd8304de65e551bb8707688233910d37952ec13ba70da787aeadeb28e14a5930",
+      "error": null
+    },
+    {
+      "name": "template_site_sync",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-22T13:22:41.312482+00:00",
+      "completed_at": "2026-10-22T13:22:42.427668+00:00",
+      "duration_seconds": 1.12,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/regressions_candidate/template_site_sync.log",
+      "log_sha256": "6449780c512785c0926e7ad0509729aafa8053afc719f4f3f314e62321d8c4da",
+      "error": null
+    },
+    {
+      "name": "ci_manifest",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--gate",
+        "code",
+        "--validate-only"
+      ],
+      "started_at": "2026-10-22T13:22:42.428038+00:00",
+      "completed_at": "2026-10-22T13:22:44.340917+00:00",
+      "duration_seconds": 1.91,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/regressions_candidate/ci_manifest.log",
+      "log_sha256": "d24a896260eb3c320d93ba07f161139ddee8b2bd4c89ad349117d207d65d16be",
+      "error": null
+    }
+  ],
+  "source_acquisition": false,
+  "production_mutation": false,
+  "completed_at": "2026-10-22T13:25:39.134042+00:00",
+  "pass": true
+}

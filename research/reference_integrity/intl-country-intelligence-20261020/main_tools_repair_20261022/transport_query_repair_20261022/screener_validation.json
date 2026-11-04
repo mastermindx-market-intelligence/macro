@@ -1,0 +1,23 @@
+{
+  "schema": "intl.screener_repair_validation.v1",
+  "started_at": "2026-10-22T08:12:39.831741+00:00",
+  "source_commit": "45e70cb40d6e9ac1a49478b1920ab6a7275f7f58",
+  "checks": [
+    {
+      "name": "canonical_bake",
+      "exit_code": 0,
+      "duration_seconds": 0.54,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/canonical_bake.log",
+      "log_sha256": "a4fc0e64001c2b3cb4edc6117103558caeec8a252941aa25c75e9982165d44e8"
+    },
+    {
+      "name": "research_screener_suite",
+      "exit_code": 0,
+      "duration_seconds": 5.11,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/research_screener_suite.log",
+      "log_sha256": "c4d726a97b4a6f5afc88d4051692ce09c820ac39d252898211296e3b6cde895a"
+    }
+  ],
+  "completed_at": "2026-10-22T08:12:45.482418+00:00",
+  "pass": true
+}

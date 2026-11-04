@@ -1,0 +1,26 @@
+{
+  "state": "PASS",
+  "archive_sha256": "a1ce35bc320b7ed0ab8cad673f446bae79669540acd06ca44fef55acf85a2da9",
+  "members": [
+    {
+      "path": "source-base-098acfb.tar",
+      "sha256": "54ac0178e91f6ae634b88c66b0f8523c8418ea1465f689dbfbad71924dd3e89e",
+      "bytes": 153948160
+    },
+    {
+      "path": "committed-inputs-19a896b.tar",
+      "sha256": "e0ab64bc8e180d781e6d0a3705c3d93a0568df1acf8213f5abde96dbc577676a",
+      "bytes": 57722880
+    },
+    {
+      "path": "input_manifest.json",
+      "sha256": "901bf8dd07b9878426f94a45f386c3dde5a3e65a96705ede108f8e40153f1af1",
+      "bytes": 114569
+    },
+    {
+      "path": "source_overlay.json",
+      "sha256": "19e10c928a81596290af75406586bd8c97cf01a50ea5bed248beafb37b0fba68",
+      "bytes": 1293
+    }
+  ]
+}

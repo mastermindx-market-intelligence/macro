@@ -210,3 +210,116 @@
   .intl-compare__table th:first-child { inline-size:30%; }
   [data-theme="light"] .intl-compare__metrics > div + div { border-inline-start:0; border-block-start:1px solid var(--line); }
 }
+
+/* Compact, unranked evidence: qualification stays adjacent to readable market rows. */
+.intl-overview__first-read--unranked { grid-template-columns:minmax(0,1fr); gap:var(--fs-body); }
+.intl-overview__first-read--unranked .intl-overview__summary { display:flex; flex-wrap:wrap; align-items:baseline; gap:calc(var(--fs-body) / 2) calc(var(--fs-body) * 1.5); padding:var(--fs-body) calc(var(--fs-body) * 1.5); background:var(--panel2); box-shadow:none; }
+.intl-overview__first-read--unranked .intl-overview__summary h3 { font-size:var(--fs-body); margin:0; }
+.intl-overview__first-read--unranked .intl-overview__summary p { margin:0; font-size:var(--fs-sm); color:var(--muted); }
+.intl-overview__first-read--unranked .intl-overview__focus > h3 { padding:var(--fs-body) calc(var(--fs-body) * 1.5); font-size:var(--fs-body); }
+/* Unranked rows align identity, index, calculation dates and return. */
+.intl-overview__first-read--unranked .intl-overview__focus-list { display:block; }
+.intl-overview__first-read--unranked .intl-overview__focus-list > li { grid-template-columns:minmax(130px,1fr) minmax(110px,1fr) minmax(220px,1.4fr) minmax(90px,.5fr); align-items:center; gap:var(--fs-body); padding:var(--fs-body) calc(var(--fs-body) * 1.5); }
+.intl-overview__first-read--unranked .intl-overview__market-name { grid-column:1; grid-row:1; }
+.intl-overview__first-read--unranked .intl-overview__index:not([data-im-return-window]) { grid-column:2; grid-row:1; }
+.intl-overview__first-read--unranked .intl-overview__return { grid-column:4; grid-row:1; text-align:end; font-size:var(--fs-md); }
+.intl-overview__first-read--unranked [data-im-return-window] { grid-column:3; grid-row:1; font-variant-numeric:tabular-nums; }
+@media (max-width:768px) {
+  .intl-overview__first-read--unranked .intl-overview__focus-list > li { grid-template-columns:minmax(0,1fr) auto; gap:calc(var(--fs-body) / 2) var(--fs-body); }
+  .intl-overview__first-read--unranked .intl-overview__index:not([data-im-return-window]) { grid-column:1; grid-row:2; }
+  .intl-overview__first-read--unranked .intl-overview__return { grid-column:2; grid-row:1 / span 2; font-size:var(--fs-h2); }
+  .intl-overview__first-read--unranked [data-im-return-window] { grid-column:1 / -1; grid-row:3; }
+}
+@media (max-width:390px) {
+  .intl-overview__first-read--unranked .intl-overview__summary,
+  .intl-overview__first-read--unranked .intl-overview__focus > h3,
+  .intl-overview__first-read--unranked .intl-overview__focus-list > li { padding:var(--fs-body); }
+}
+
+
+/* Paper research workbench: one clear tool rail and compact, persistent context.
+   The existing controller retains every view, selection and availability gate. */
+body.imc-page #intl-analysis-tools>.imc-tools-heading,
+body.imc-page #intl-analysis-tools .imc-tools-heading{display:grid;gap:3px;padding-block:14px}
+body.imc-page #intl-analysis-tools .imc-tools-heading small{font-size:var(--fs-label);font-weight:400;color:var(--muted);line-height:1.6}
+body.imc-page .intl-workspace>header{margin-bottom:16px}
+body.imc-page .intl-workspace [data-im-heading]{font-size:var(--fs-num-lg);font-weight:650;letter-spacing:-.025em;margin:0 0 5px}
+body.imc-page .intl-workspace>header>p{font-size:var(--fs-sm);color:var(--muted);margin:0}
+body.imc-page .intl-workspace [data-im-eod-disclosure]{font-size:var(--fs-label);line-height:1.7;color:var(--muted);background:var(--panel2);border:1px solid var(--line-quiet,var(--line));border-radius:var(--r-ctl,8px);padding:12px 16px;margin:0 0 16px}
+body.imc-page .intl-workspace__toolbar{display:flex;gap:12px 20px;align-items:center;padding:0;margin:0 0 20px}
+body.imc-page .intl-workspace__toolbar legend{font-size:var(--fs-label);font-weight:500;color:var(--muted);margin-bottom:8px}
+body.imc-page .intl-workspace__view-nav{flex:1 0 100%;display:flex;flex-wrap:nowrap;gap:3px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding:4px;border:1px solid var(--line-quiet,var(--line));border-radius:var(--r-btn,10px);background:var(--panel2)}
+body.imc-page .intl-workspace__view-nav button{flex:1 0 auto;white-space:nowrap;min-height:44px;padding:8px 12px;background:transparent;box-shadow:none;border:1px solid transparent;border-radius:var(--r-ctl,8px);font-size:var(--fs-sm);font-weight:500;color:var(--muted)}
+body.imc-page .intl-workspace__view-nav button:not(:disabled):hover{background:var(--panel);color:var(--text)}
+body.imc-page .intl-workspace__view-nav button[aria-pressed="true"]{background:var(--panel);border-color:var(--line);color:var(--text);font-weight:600}
+body.imc-page .intl-workspace__view-nav button:disabled{opacity:.55}
+body.imc-page .intl-workspace__toolbar>label{display:flex;flex-direction:row;align-items:center;gap:10px;font-size:var(--fs-label)}
+body.imc-page .intl-workspace__toolbar>label.intl-workspace__view-select{display:none}
+body.imc-page .intl-workspace__toolbar select{min-height:40px;width:auto;min-width:100px;padding:8px 30px 8px 12px;background:var(--panel);box-shadow:none;font-size:var(--fs-sm)}
+body.imc-page .intl-overview__context{font-size:var(--fs-label)}
+body.imc-page .intl-overview__summary,
+body.imc-page .intl-overview__focus,
+body.imc-page .intl-overview__market{border-radius:var(--r-btn,10px);box-shadow:none}
+body.imc-page .intl-workspace>.intl-gs:has(>[data-im-panel]):not(:has(>[data-im-panel]:not([hidden]))){display:none}
+body.imc-page .intl-inspectors{margin-top:20px}
+body.imc-page .intl-inspector__fallback>summary{font-size:var(--fs-sm)}
+@media(max-width:768px){
+ body.imc-page .intl-workspace__view-nav{display:none}
+ body.imc-page .intl-workspace__toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ body.imc-page .intl-workspace__toolbar>label{display:flex;flex-direction:column;align-items:stretch;gap:5px}
+ body.imc-page .intl-workspace__toolbar>label.intl-workspace__view-select{display:flex;grid-column:1/-1}
+ body.imc-page .intl-workspace__toolbar select{width:100%;min-width:0;min-height:44px;padding-right:25px}
+ body.imc-page .intl-workspace [data-im-eod-disclosure]{padding:12px;font-size:var(--fs-micro)}
+ body.imc-page .intl-workspace [data-im-heading]{font-size:var(--fs-h2)}
+}
+
+
+/* A deferred research view keeps context and a useful, accessible loading state. */
+.intl-workspace__deferred{padding:calc(var(--fs-body) * 2);min-block-size:200px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px)}
+.intl-workspace__deferred-kicker{font-size:var(--fs-micro);font-weight:600;letter-spacing:.08em;color:var(--muted)}
+.intl-workspace__deferred h2{font-size:var(--fs-num-lg);line-height:1.3;margin-block:var(--fs-sm)}
+.intl-workspace__deferred p{font-size:var(--fs-sm);color:var(--muted);max-inline-size:60ch}
+.intl-workspace__deferred a{display:inline-flex;align-items:center;min-block-size:44px;color:var(--link);font-size:var(--fs-sm)}
+@media(max-width:768px){.intl-workspace__deferred{padding:calc(var(--fs-body) * 1.5)}}
+
+.intl-workspace [data-gs-select-market][aria-disabled="true"]{color:var(--muted);text-decoration:none;cursor:default;opacity:.6}
+
+/* Keep usable research controls close to the selected observations. The wider
+   catalogue and its honest availability states remain in Coverage. */
+body.imc-page .intl-workspace[data-im-enhanced="true"] [data-view="dossier"] .intl-gs__pickerlist{display:flex;flex-wrap:wrap;gap:8px}
+body.imc-page .intl-workspace[data-im-enhanced="true"] [data-view="dossier"] .intl-gs__pickergroup{display:contents}
+body.imc-page .intl-workspace[data-im-enhanced="true"] [data-view="dossier"] .intl-gs__pickergrouplabel,
+body.imc-page .intl-workspace[data-im-enhanced="true"] [data-view="dossier"] .intl-gs__picklink[aria-disabled="true"]{display:none}
+body.imc-page .intl-workspace[data-im-enhanced="true"] [data-view="dossier"] .intl-gs__picklink{min-block-size:44px;border:1px solid var(--line);gap:6px;padding:8px 12px}
+body.imc-page .intl-workspace[data-im-enhanced="true"] [data-view="dossier"] .intl-gs__picklink[aria-current="true"]{background:var(--panel2);font-weight:600}
+
+/* Put the value before its source badges; long qualification copy must never
+   compete with the label for the same narrow horizontal slot. */
+body.imc-page .intl-workspace .intl-gs__view--scanner .intl-gs__kpi__head{display:contents}
+body.imc-page .intl-workspace .intl-gs__view--scanner .intl-gs__kpi__label{order:0;flex:none}
+body.imc-page .intl-workspace .intl-gs__view--scanner .intl-gs__kpi__value{order:1}
+body.imc-page .intl-workspace .intl-gs__view--scanner .intl-gs__kpi__meta{order:2}
+body.imc-page .intl-workspace .intl-gs__view--scanner .intl-gs__kpi__tier{order:3;margin-block-start:6px;justify-content:flex-start}
+body.imc-page .intl-workspace .intl-gs__view--scanner .intl-gs__split{flex-direction:column}
+body.imc-page .intl-workspace .intl-gs__view--scanner .intl-gs__rail{width:100%}
+
+body.imc-page .intl-workspace .intl-gs__view--scanner .intl-gs__kpi__tier>.intl-gs__chip{max-inline-size:100%;white-space:normal;height:auto;min-block-size:20px;line-height:1.4;overflow-wrap:anywhere}
+
+/* The workbench already supplies the mobile gutter. Avoid three nested padding
+   layers so research labels, clocks and values keep usable reading width. */
+@media(max-width:768px){
+ body.imc-page .intl-workspace:has(>.intl-gs>[data-im-panel]:not([hidden])){padding:12px}
+ body.imc-page .intl-workspace>.intl-gs{padding:0;max-width:none;margin:0}
+ body.imc-page .intl-workspace>.intl-gs>[data-im-panel]{padding:0;border:0;background:transparent}
+ body.imc-page .intl-workspace .intl-gs__qcard{flex-direction:column;padding:10px;gap:6px}
+ body.imc-page .intl-workspace .intl-gs__qcard__title{overflow-wrap:anywhere}
+ body.imc-page .intl-workspace .intl-gs__snapshot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:12px}
+ body.imc-page .intl-workspace .intl-gs__snapcontrols,
+ body.imc-page .intl-workspace .intl-gs__snapshot__note{grid-column:1/-1}
+ body.imc-page .intl-workspace .intl-gs__snapclock__value{font-size:var(--fs-label);overflow-wrap:anywhere}
+ body.imc-page .intl-workspace .intl-gs__snapcontrols{gap:8px}
+ body.imc-page .intl-workspace .intl-gs__snapctl{flex-direction:column;align-items:flex-start;gap:4px}
+ body.imc-page .intl-workspace .intl-gs__snapshot .intl-gs__seg{width:auto;height:auto}
+ body.imc-page .intl-workspace .intl-gs__snapshot .intl-gs__seg__opt{min-height:36px}
+ body.imc-page .intl-workspace .intl-gs__snapshot__note{font-size:var(--fs-micro);line-height:1.5}
+}

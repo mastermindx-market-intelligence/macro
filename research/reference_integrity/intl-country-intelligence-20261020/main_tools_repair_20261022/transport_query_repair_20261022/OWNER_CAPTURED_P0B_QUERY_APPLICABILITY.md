@@ -1,0 +1,5 @@
+# P0B and pending query repair applicability
+
+Recorded 2026-10-22 08:10:38 UTC; independent reviewer /root/intl_release_gate_review. Prior complete receipts at64ef retained by90df: HK20construction+28loaded/53closurepaths; Canada18+31/56closurepaths; shared fixture23inputs. Exact intersection with shared_shell_bridge.js or intl_workspace.js (any copy) is[]. No intl_ or shared_shell path occurs. This justified immediate real capture against composed theme50eb4991c6f9a2b00ad3accb33fa85cebc3dc0c7ceac2ab093d9e2e2f3045e51.
+
+Actual fresh capture completed at source45e70cb40d6e9ac1a49478b1920ab6a7275f7f58; see main_composition_90df_20261022/p0b_execution.json,p0b_rebind.json,validation.json.128cases/16captures passed;136canonicaltests passed9cleanupwarnings64.79s;receipt closure exit0. The new complete receipt closure is undergoing independent review. Later query-only source edits may retain applicability only after hashing the new receipt's actual construction inputs, loaded assets, verifier and fixture bindings. Preserve original capture/source identity; never relabel it as captured at a later head.

@@ -1,0 +1,311 @@
+schema: mastermind.rig_review.v1
+reference_id: intl-country-intelligence-20261020
+role: visual_taste
+reviewer:
+  identity: /root/intl_rig_visual_quarantined
+  model: GPT-6 Astra Pro
+  independent_of_author: true
+artifact_sha: 883a1e48efdf9c334c08665262efa0961b1997a0
+quarantine:
+  rationale_received_after_first_pass: true
+first_pass:
+  artifact_sha: 46f02fa355abbfaa4387203c0e3190db6747bed9
+  frozen_at: '2026-10-20T14:03:31.850411+00:00'
+  raw_path: first_pass_visual.yml
+  sha256: f4fb166ffcd8097a379c3710ab53f2f57b608d6e70d73fbad11c6fc60ec9bcce
+  verdict: PASS_WITH_CONDITIONS
+  findings:
+  - id: VTC-001
+    severity: major
+    finding: In the English 390px and 320px entry views, the Data & tools navigation item is respectively reduced to
+      a sliver or entirely off-screen, while its alternative appears near the end of the report, making the preserved
+      Compare, Macro, Risk, History and Library views unnecessarily difficult to discover (after_full/viewport-mobile-en-light.png,
+      after_full/viewport-narrow-en-light.png, after_full/8269cad1004b37dd.png; templates/intl_country_cockpit.css:204).
+  - id: VTC-002
+    severity: major
+    finding: Ask Mastermind loses the persistent visible entry present in the captured production view and appears only
+      at the end of the proposed page, removing immediate access to the assistant while reading country research even
+      though its underlying control remains present (before/viewport-desktop-en-light.png, before/viewport-mobile-en-light.png,
+      after_full/6e6f66d8f4dd124b.png, after_full/8269cad1004b37dd.png; templates/intl_country_cockpit.css:244).
+  - id: VTC-003
+    severity: major
+    finding: Country summaries place an unlabeled colored Under pressure or Uptrend status beside the economic thesis
+      and GDP forecasts, while the explicit Equity trend label appears inside the expanded Market conditions section,
+      leaving the compact country overview ambiguous about whether the status describes equities or the wider economy
+      (after_full/viewport-desktop-en-light.png, after_full/6e6f66d8f4dd124b.png; templates/intl_country_cockpit.html.j2:44
+      and :144).
+second_pass:
+  artifact_sha: 46f02fa355abbfaa4387203c0e3190db6747bed9
+  amended_at: '2026-10-20T14:05:03Z'
+  raw_path: second_pass_visual.yml
+  verdict: PASS_WITH_CONDITIONS
+  amendments:
+  - finding: VTC-001
+    action: upheld
+    note: 'Giving country interpretation priority and placing supporting tools behind a disclosure is a defensible hierarchy
+      choice, which the rationale openly acknowledges. That choice does not require clipping the tools entry in the English
+      mobile navigation: the finding concerns discovery of the retained tools, rather than their reduced prominence or
+      the additional disclosure action.'
+  - finding: VTC-002
+    action: upheld
+    note: The rationale does not establish an alternative readily visible assistant entry or explain how footer-only
+      placement preserves access during research reading. A restrained research surface can accommodate a compact assistant
+      entry without restoring a large overlay, so the observed discoverability loss remains a mitigable defect.
+  - finding: VTC-003
+    action: upheld
+    note: The rationale explicitly limits market-state labels to observed equity windows and distinguishes their clock
+      from economic projections, which supports the need to make that scope visible in the country summary. Describing
+      the state as an equity observation in the rationale does not resolve the unlabeled colored status beside the economic
+      thesis and GDP forecast in the inspected artifact.
+repair_pass:
+  artifact_sha: 883a1e48efdf9c334c08665262efa0961b1997a0
+  raw_path: repair_pass_visual.yml
+  sha256: 1a47e12b9b30f68f47a3d11698faf6f6ad4e51cc70199d48493c68d55cb6754c
+  review:
+    role: visual_taste
+    reviewer_identity: /root/intl_rig_visual_quarantined
+    reviewer_model: GPT-6 Astra Pro, independent native principal
+    pass: final_repair_review
+    reviewed_at: '2026-10-20T21:17:03Z'
+    verdict: PASS
+    artifact:
+      commit: 883a1e48efdf9c334c08665262efa0961b1997a0
+      source_commit: 442042e591d255dd24b540ff240edb4c0410c297
+      html_sha256: ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0
+      evidence_manifest: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/FINAL_ARTIFACT_EVIDENCE.json
+    canonical_judgment: Making this artifact canonical improves the country research surface. The country summaries,
+      published paths, observed conditions and mechanisms for change form a coherent reading sequence, with comparison
+      and research tools accessible as supporting tasks. The final repairs resolve the material navigation, assistant
+      and equity-scope defects I recorded. I observed no new major visual regression in the final evidence inspected.
+    finding_resolutions:
+    - id: VTC-001
+      original_severity: major
+      status: resolved
+      history: The original finding and rationale-pass decision remain upheld in their historical records.
+      reason: At 320 and 390 pixels the four section links fit in a two-column, two-row arrangement, with Data & tools
+        fully visible beside a separate assistant slot in both languages and themes. The final browser record also exercises
+        the visible tools entry and query/click destinations.
+      evidence:
+      - after_dock4_repair/viewport-narrow-en-light.png
+      - after_dock4_repair/viewport-narrow-zh-dark.png
+      - after_dock4_repair/viewport-mobile-en-light.png
+      - after_dock4_repair/viewport-mobile-zh-dark.png
+      - 'repair_dock4/review_counterexamples.json: visible-section-navigation and visible-tools-entry-opens checks'
+      - 'repair_dock4/complete_browser_receipt.json: query-view and click-view checks'
+    - id: VTC-002
+      original_severity: major
+      status: resolved
+      history: The original finding and rationale-pass decision remain upheld in their historical records.
+      reason: The existing star launcher remains visible in the sticky International toolbar throughout country reading.
+        The shared assistant opens as a side panel on desktop and a full-screen panel on mobile; after closing, the loaded
+        launcher returns to the reserved slot with visible focus restoration. I inspected all twelve open and all twelve
+        post-close language/theme/width states.
+      evidence:
+      - after_dock4_repair/reading-desktop-en-light.png
+      - after_dock4_repair/reading-narrow-en-dark.png
+      - after_dock4_repair/assistant-open-desktop-zh-dark.png
+      - after_dock4_repair/assistant-open-mobile-zh-dark.png
+      - after_dock4_repair/assistant-closed-narrow-en-dark.png
+      - after_dock4_repair/assistant-closed-desktop-zh-dark.png
+      - 'repair_dock4/review_counterexamples.json: existing-assistant-opens, assistant-close-and-focus and assistant-after-close-reserved-space
+        checks'
+    - id: VTC-003
+      original_severity: major
+      status: resolved
+      history: The original finding and rationale-pass decision remain upheld in their historical records.
+      reason: Equity trend and 股市趋势 explicitly scope the colored market state in the country summaries, including the
+        compact collapsed rows. The labels separate the equity reading from the economic thesis and GDP forecast in EN/ZH
+        and light/dark states.
+      evidence:
+      - after_dock4_repair/viewport-desktop-en-light.png
+      - after_dock4_repair/viewport-narrow-zh-dark.png
+      - after_dock4_repair/8eb3ccd5f1f426a7.png
+      - after_dock4_repair/89c1340f2b642c8a.png
+      - 'repair_dock4/review_counterexamples.json: equity-scope checks for seven labels in every state'
+    - id: VTC-004
+      original_severity: major
+      status: resolved
+      history: The material overlap found in the 0be244ba repair remains recorded against that artifact; this final repair
+        does not erase it.
+      reason: The assistant now occupies an opaque toolbar slot outside the reading columns. Across all twelve reading
+        and post-close states it no longer covers country thesis text, transmission explanations, conditions or collapsed
+        country labels. The 320-pixel layout reserves its own 40-by-40-pixel control area without clipping the four navigation
+        links.
+      evidence:
+      - after_dock4_repair/reading-narrow-en-light.png
+      - after_dock4_repair/reading-narrow-en-dark.png
+      - after_dock4_repair/reading-desktop-zh-dark.png
+      - after_dock4_repair/assistant-closed-narrow-zh-light.png
+      - after_dock4_repair/assistant-closed-mobile-en-light.png
+      - 'repair_dock4/review_counterexamples.json: assistant-reserved-space and assistant-after-close-reserved-space
+        checks'
+    new_findings: []
+    conditions: []
+    prior_provisional_conditions:
+    - condition: Faithful production typography and local asset bundle
+      status: satisfied
+      evidence: The final build record includes Inter, account.js, favicon.svg, mm_brain_visuals.css and nav_market.js;
+        the final capture and focused records report no failed local static responses. I inspected the resulting final
+        typography and layouts rather than carrying forward the dock2 fallback-font verdict.
+    - condition: Repair Japan same-document landing in desktop Chinese dark mode
+      status: satisfied
+      evidence: The actual final anchor-imc-country-JP-desktop-zh-dark.png shows the Japan header beneath the toolbar.
+        toolbar_dock4_landings.json records country top 70.015625 and toolbar bottom 54; country_history_dock4.json exercises
+        native fragment and history transitions without manual scroll correction.
+    - condition: Verify loaded launcher geometry after assistant close
+      status: satisfied
+      evidence: All twelve final assistant-closed screenshots were visually inspected. Their paired final records place
+        the loaded mmb-launch control within its toolbar slot at 40 by 40 pixels, visible, with an 8-pixel radius and
+        restored focus.
+    - condition: Bind final review to immutable source, complete-input HTML and evidence
+      status: satisfied
+      evidence: This review is bound to artifact 883a1e48efdf9c334c08665262efa0961b1997a0, source 442042e591d255dd24b540ff240edb4c0410c297
+        and HTML ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0. All eighty images listed below are
+        present in FINAL_ARTIFACT_EVIDENCE.json.
+    strengths:
+    - 'The selected country has a clear visual sequence: concise thesis, attributed economic path, policy and fiscal
+      context, observations, market transmission, and conditions that could change the view. The six collapsed country
+      summaries remain easy to scan.'
+    - The solid history and dashed projection, source dates, scoped equity labels and separate conditions panel reduce
+      confusion between observations, published forecasts and conditional interpretation.
+    - On-demand source, GDP-input and equity-input disclosures keep the primary reading surface manageable while exposing
+      dates, units, native values and links in legible narrow layouts.
+    - The Inter typography, restrained blue accents, cool surfaces and existing assistant star retain the shared product
+      identity. Light and dark states preserve the same hierarchy, and both language versions remain usable at 320 and
+      390 pixels.
+    - The opaque sticky toolbar gives persistent access to country navigation, supporting tools and the assistant without
+      covering the research text.
+    limitations:
+    - This is an independent visual and product-presentation judgment based on actual images and their browser receipts.
+      The aggregate test counts are supporting evidence, not the basis for the taste verdict.
+    - 'I directly inspected eighty of the manifest''s 106 final PNGs: all twelve entry, reading, assistant-open and assistant-closed
+      states; all eight canonical full pages; ten source disclosures; eight selected landings; and six supporting-tool
+      views. The remaining twenty-six PNGs were not directly inspected in this final pass.'
+    - The final capture is an anonymous isolated browser using retained production inputs. The assistant was inspected
+      in its signed-out state; no authenticated conversation, tier state or separate stock-route rendering was established
+      by this review.
+    - The inputs were not reacquired. Unavailable and not-supplied states remain visible in the supporting tools; this
+      verdict does not certify data freshness, economic accuracy or unknown FX qualification.
+    - Supporting tools retain dense table and leaderboard layouts, including a narrow Chinese country-name column. The
+      canonical country reading flow is stronger; this verdict does not characterize every retained supporting component
+      as polished.
+    - The original public before state had failed workspace JavaScript and stylesheet loading. I inspected the before
+      viewports and preserved source capabilities separately; the extremely tall before full-page images were not meaningfully
+      inspected, so I make no clean-working-baseline or page-height-reduction claim.
+    - The initial four-image final source response was truncated. Those four images were subsequently reopened and actually
+      inspected individually before being counted here.
+    - During this final repair review I performed no source edits, remote processes, browser mutations, publication or
+      release actions. This visual verdict does not replace other delivery gates.
+    history_preserved:
+      first_pass_file: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/first_pass_visual.yml
+      first_pass_sha256: f4fb166ffcd8097a379c3710ab53f2f57b608d6e70d73fbad11c6fc60ec9bcce
+      first_pass_frozen_at: '2026-10-20T14:03:31.850411+00:00'
+      rationale_pass_amended_at: '2026-10-20T14:05:03Z'
+      rationale_pass_result: VTC-001, VTC-002 and VTC-003 upheld; PASS_WITH_CONDITIONS.
+      dock2_provisional_local_file: /workspace/scratch/26adebeff658/intl_rig_visual_dock2_provisional.yml
+      dock2_provisional_sha256: 0ca2664349b6ef64e5d82900281ec84b9b8c08fc85583e1b42285d69b0f9a5e7
+      preservation: Earlier findings and verdicts remain attached to their original artifacts. This is a new judgment
+        of the repaired dock4 artifact.
+    evidence_paths_note: Finding evidence prefixes after_dock4_* resolve under the screenshot parent directory listed
+      below; receipt prefixes resolve under the RIG directory. Inspected image filenames are exact and grouped by their
+      absolute directories.
+    screenshot_parent_directory: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/mockups/refs/reference_integrity/intl-country-intelligence-20261020
+    rig_directory: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020
+    receipts_read:
+    - /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/repair_dock4/complete_build_receipt.json
+    - /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/repair_dock4/complete_capture_manifest.json
+    - /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/repair_dock4/complete_browser_receipt.json
+    - /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/repair_dock4/review_counterexamples.json
+    - /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/toolbar_dock4_landings.json
+    - /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/country_history_dock4.json
+    - /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/dock4_source_disclosure_browser.json
+    - /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/FINAL_ARTIFACT_EVIDENCE.json
+    inspected_images:
+    - directory: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair
+      files:
+      - viewport-narrow-en-light.png
+      - viewport-narrow-en-dark.png
+      - viewport-narrow-zh-light.png
+      - viewport-narrow-zh-dark.png
+      - viewport-mobile-en-light.png
+      - viewport-mobile-en-dark.png
+      - viewport-mobile-zh-light.png
+      - viewport-mobile-zh-dark.png
+      - viewport-desktop-en-light.png
+      - viewport-desktop-en-dark.png
+      - viewport-desktop-zh-light.png
+      - viewport-desktop-zh-dark.png
+      - reading-desktop-en-light.png
+      - reading-desktop-en-dark.png
+      - reading-desktop-zh-light.png
+      - reading-desktop-zh-dark.png
+      - reading-mobile-en-light.png
+      - reading-mobile-en-dark.png
+      - reading-mobile-zh-light.png
+      - reading-mobile-zh-dark.png
+      - reading-narrow-en-light.png
+      - reading-narrow-en-dark.png
+      - reading-narrow-zh-light.png
+      - reading-narrow-zh-dark.png
+      - assistant-closed-narrow-en-light.png
+      - assistant-closed-narrow-en-dark.png
+      - assistant-closed-narrow-zh-light.png
+      - assistant-closed-narrow-zh-dark.png
+      - assistant-closed-mobile-en-light.png
+      - assistant-closed-mobile-en-dark.png
+      - assistant-closed-mobile-zh-light.png
+      - assistant-closed-mobile-zh-dark.png
+      - assistant-closed-desktop-en-light.png
+      - assistant-closed-desktop-en-dark.png
+      - assistant-closed-desktop-zh-light.png
+      - assistant-closed-desktop-zh-dark.png
+      - assistant-open-narrow-en-light.png
+      - assistant-open-narrow-en-dark.png
+      - assistant-open-narrow-zh-light.png
+      - assistant-open-narrow-zh-dark.png
+      - assistant-open-mobile-en-light.png
+      - assistant-open-mobile-en-dark.png
+      - assistant-open-mobile-zh-light.png
+      - assistant-open-mobile-zh-dark.png
+      - assistant-open-desktop-en-light.png
+      - assistant-open-desktop-en-dark.png
+      - assistant-open-desktop-zh-light.png
+      - assistant-open-desktop-zh-dark.png
+      - 8eb3ccd5f1f426a7.png
+      - cbe8bef5c212bb15.png
+      - 5c45d2f6af1c662f.png
+      - 9c64a241c0e2373e.png
+      - 224d48abf1c10496.png
+      - 40293a6c2e53387c.png
+      - 57294f0b154e0784.png
+      - 89c1340f2b642c8a.png
+      - tools-overview-desktop-en-light.png
+      - tools-compare-mobile-zh-dark.png
+      - tools-macro-desktop-en-light.png
+      - tools-risk-mobile-zh-dark.png
+      - tools-history-desktop-en-light.png
+      - tools-library-mobile-zh-dark.png
+    - directory: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_sources
+      files:
+      - sources-JP-narrow-en-dark.png
+      - sources-JP-narrow-zh-light.png
+      - sources-EZ-narrow-en-dark.png
+      - sources-EZ-narrow-zh-light.png
+      - gdp-JP-narrow-en-dark.png
+      - gdp-JP-narrow-zh-light.png
+      - gdp-EZ-narrow-en-dark.png
+      - gdp-EZ-narrow-zh-light.png
+      - equity-rows-JP-narrow-en-dark.png
+      - equity-rows-JP-narrow-zh-light.png
+    - directory: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors
+      files:
+      - anchor-imc-country-JP-desktop-zh-dark.png
+      - anchor-imc-country-JP-desktop-en-light.png
+      - anchor-imc-country-JP-narrow-en-dark.png
+      - anchor-imc-country-JP-narrow-zh-light.png
+      - anchor-intl-growth-inflation-narrow-en-light.png
+      - anchor-intl-central-banks-mobile-zh-dark.png
+      - anchor-intl-credit-bonds-narrow-en-dark.png
+      - anchor-lb-board-mobile-zh-dark.png
+history_note: Original blind and rationale passes concern their original artifact and remain unchanged. The separately
+  authored repair pass reviews the final frozen bytes.

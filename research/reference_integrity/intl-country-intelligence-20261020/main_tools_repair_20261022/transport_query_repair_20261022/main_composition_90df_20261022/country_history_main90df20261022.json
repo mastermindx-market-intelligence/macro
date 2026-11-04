@@ -1,0 +1,513 @@
+{
+  "recorded_at": "2026-10-22T08:20:04.798714+00:00",
+  "driver_sha256": "9365fa1b6c28700c8c4034e8b481d72107a28537093192fc25a41e9491de5771",
+  "matrix": "representative desktop English light and 320px Chinese dark",
+  "source_commit": "48b5c3312a22548010f330f03ac0b261695c16b6",
+  "html_sha256": "8bb526d514e49ad35a4dc577684ff8da78b460f3f2ba463d3830c53843c44cbc",
+  "checks": [
+    {
+      "id": "same-document-JP-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-JP",
+        "scrollY": 506,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-JP"
+        ],
+        "active": [
+          "#imc-country-JP"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-KR-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-KR",
+        "scrollY": 406,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-KR"
+        ],
+        "active": [
+          "#imc-country-KR"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-TW-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-TW",
+        "scrollY": 606,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-TW"
+        ],
+        "active": [
+          "#imc-country-TW"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-IN-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-IN",
+        "scrollY": 706,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-IN"
+        ],
+        "active": [
+          "#imc-country-IN"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-AU-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-AU",
+        "scrollY": 806,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-AU"
+        ],
+        "active": [
+          "#imc-country-AU"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-GB-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-GB",
+        "scrollY": 906,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-GB"
+        ],
+        "active": [
+          "#imc-country-GB"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-EZ-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-EZ",
+        "scrollY": 1006,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-EZ"
+        ],
+        "active": [
+          "#imc-country-EZ"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "history-back-GB-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-GB",
+        "scrollY": 906,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-GB"
+        ],
+        "active": [
+          "#imc-country-GB"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "history-back-AU-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-AU",
+        "scrollY": 806,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-AU"
+        ],
+        "active": [
+          "#imc-country-AU"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "history-forward-GB-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-GB",
+        "scrollY": 906,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-GB"
+        ],
+        "active": [
+          "#imc-country-GB"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "history-forward-EZ-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-EZ",
+        "scrollY": 1006,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-EZ"
+        ],
+        "active": [
+          "#imc-country-EZ"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "rapid-latest-destination-desktop-en-light",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-EZ",
+        "scrollY": 1006,
+        "top": 70.265625,
+        "toolbarBottom": 54,
+        "open": [
+          "imc-country-EZ"
+        ],
+        "active": [
+          "#imc-country-EZ"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "empty-hash-restoration-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "hash": "",
+        "scrollY": 0,
+        "open": [
+          "imc-country-KR"
+        ]
+      },
+      "initial": {
+        "historyLength": 2,
+        "country": "imc-country-KR",
+        "scrollY": 0
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-en-light",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "same-document-JP-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-JP",
+        "scrollY": 590,
+        "top": 102.359375,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-JP"
+        ],
+        "active": [
+          "#imc-country-JP"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-KR-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-KR",
+        "scrollY": 449,
+        "top": 101.71875,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-KR"
+        ],
+        "active": [
+          "#imc-country-KR"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-TW-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-TW",
+        "scrollY": 732,
+        "top": 102,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-TW"
+        ],
+        "active": [
+          "#imc-country-TW"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-IN-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-IN",
+        "scrollY": 874,
+        "top": 101.640625,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-IN"
+        ],
+        "active": [
+          "#imc-country-IN"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-AU-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-AU",
+        "scrollY": 1028,
+        "top": 101.9375,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-AU"
+        ],
+        "active": [
+          "#imc-country-AU"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-GB-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-GB",
+        "scrollY": 1170,
+        "top": 101.578125,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-GB"
+        ],
+        "active": [
+          "#imc-country-GB"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "same-document-EZ-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-EZ",
+        "scrollY": 1311,
+        "top": 102.21875,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-EZ"
+        ],
+        "active": [
+          "#imc-country-EZ"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "history-back-GB-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-GB",
+        "scrollY": 1170,
+        "top": 101.578125,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-GB"
+        ],
+        "active": [
+          "#imc-country-GB"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "history-back-AU-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-AU",
+        "scrollY": 1028,
+        "top": 101.9375,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-AU"
+        ],
+        "active": [
+          "#imc-country-AU"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "history-forward-GB-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-GB",
+        "scrollY": 1170,
+        "top": 101.578125,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-GB"
+        ],
+        "active": [
+          "#imc-country-GB"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "history-forward-EZ-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-EZ",
+        "scrollY": 1311,
+        "top": 102.21875,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-EZ"
+        ],
+        "active": [
+          "#imc-country-EZ"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "rapid-latest-destination-narrow-zh-dark",
+      "passed": true,
+      "timed_out": false,
+      "actual": {
+        "hash": "#imc-country-EZ",
+        "scrollY": 1311,
+        "top": 102.21875,
+        "toolbarBottom": 86,
+        "open": [
+          "imc-country-EZ"
+        ],
+        "active": [
+          "#imc-country-EZ"
+        ],
+        "clear": true,
+        "correct": true
+      }
+    },
+    {
+      "id": "empty-hash-restoration-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "hash": "",
+        "scrollY": 0,
+        "open": [
+          "imc-country-KR"
+        ]
+      },
+      "initial": {
+        "historyLength": 2,
+        "country": "imc-country-KR",
+        "scrollY": 0
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-zh-dark",
+      "passed": true,
+      "actual": []
+    }
+  ],
+  "passed": 28,
+  "failed": 0,
+  "limits": [
+    "Actual anonymous isolated browser with immutable production asset files. No manual scroll correction, source acquisition or authenticated state.",
+    "Direct country fragments, native browser Back/Forward, rapid fragment changes and empty-hash restoration are exercised."
+  ]
+}

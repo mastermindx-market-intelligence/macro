@@ -1,0 +1,345 @@
+{
+  "schema": "intl.production_implementation.v1",
+  "state": "VERIFIED_LOCAL_RELEASE_CANDIDATE",
+  "mission_complete": false,
+  "created_at": "2026-11-04T07:11:27.971353+00:00",
+  "procedure_pin": "2b12028b3910303e85d8e591fd40bb35c779ab78",
+  "operation_id": "intl-country-cockpit-20261018",
+  "repository": "mastermindx-market-intelligence/macro",
+  "branch": "sol/web-intl-country-cockpit-20261018",
+  "pr": 9596,
+  "source_identity": {
+    "state": "PASS",
+    "time": "2026-11-04T07:11:12.007216+00:00",
+    "head": "851c6abebf01c5c8096e7822436455fd1040152a",
+    "original_merge_head": "c6ac417f4a1d561f8c80a0a6b1977d5ffec6d090",
+    "integrated_protected_base": "bb3b7273f1e9ccb869b6500c97871093eb22005a",
+    "prepackage_index_tree": "d1581ee61b759e076d0ef712b2f1bec212c08552",
+    "ordinary_build": {
+      "state": "PASS",
+      "command": [
+        "/tmp/intl-country-ci-20261103/bin/python",
+        "-m",
+        "scripts.build_intl"
+      ],
+      "cwd": "/tmp/intl-production-r4-20261104/source",
+      "started_at": "2026-11-04T06:54:11.748173+00:00",
+      "source_tree": "c6f8e03b355751fc6e929825879261c27a823608",
+      "exit_code": 0,
+      "completed_at": "2026-11-04T06:55:59.028091+00:00",
+      "log_sha256": "d70f3417ebc54d367cfa4012ef5a016a0d4016f11fb0bf35a22d753f3599a85d",
+      "input_commit": "19a896b97ae20f2c12475a0207678f92dc4f335b",
+      "committed_inputs": 511,
+      "no_reacquisition": true,
+      "no_production_mutation": true,
+      "html_sha256": "b9bc0a8133f34ea530df5b192a20756ea37561ec4453002eaeae87aaaeb3c1ca",
+      "html_bytes": 3844803
+    },
+    "source_paths": {
+      ".github/ci/legacy-jobs.yml": "6635258c0759f442c536e5ab61ef362498698cc421f34a085c340621fa3b30e7",
+      ".github/workflows/render.yml": "1b081d66046f910bbae2136bbe95e5fc09fe143eee689cf12253c6fe8a52abb4",
+      "app/deploy/Caddyfile": "d0a77db175ecc5f9050585cf829c53f8ed88fb1f6aeb680f88adc111234f165e",
+      "config/site_access.yml": "af83b44b12398398807350dbd3cca79a47a3b6a9893406b930bbadbd85dd433c",
+      "lib/intl_workspace_fragments.py": "9a855ae3575e2350a651b61ac32a04b034ba85f8d82f2e7d357b883c921addc8",
+      "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+      "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+      "scripts/build_intl.py": "a022a95f2868d474bc2b326ec0a35ad07c727678824539d6037deac6616295d8",
+      "scripts/capture_page_evidence.py": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+      "scripts/check_ui_visual_evidence.py": "c1604698d38e6f6bb8079f468e11caa581d8efacc9ed53413c6c34a96f1dcf1a",
+      "scripts/sync_chat_nav.py": "3d93a8eacbcbfc8ec33de3cceff3ce061f6f3794d83e2b3267a4643b9528fd2f",
+      "site/chat.html": "d902fef319104ab56fc020128235cd8b478d9a69daffbd0b01c605f1cfa62015",
+      "site/intl.html": "b9bc0a8133f34ea530df5b192a20756ea37561ec4453002eaeae87aaaeb3c1ca",
+      "site/intl_workspace.css": "1e7c73d7717d7f31d1037395924f598fa2665505d2cdaf26af205685b34341bd",
+      "site/intl_workspace.js": "54fbe37c016257db9e257bb23ac996e8bf02cb98072bb65ad6f8f06853916437",
+      "site/shared_shell_bridge.js": "818f0a7843c5aaed3d7b204bfc8ab518ba4859e27decfefdb02a05e51e14e649",
+      "site/theme.css": "f8d6007517b54e870c7101e66af828aabd90ab73b00c4847afcee112f1ffebb0",
+      "templates/_site_nav.html.j2": "e5c2b28d3d9a38d85461d88ac7b58006c1cf6836b28d0a1b06dc09f671504465",
+      "templates/chat.html": "d902fef319104ab56fc020128235cd8b478d9a69daffbd0b01c605f1cfa62015",
+      "templates/intl.html.j2": "3f7892197e6a9c254edb3c777e25f5c31470bbfb27feb6b9cf84ed42b5f1cece",
+      "templates/intl_country_cockpit.css": "e2406a1e76f3bcb65390c1e7193102ba950c6ab778eadac46c1a4dd790582c82",
+      "templates/intl_country_cockpit.html.j2": "a5dd4586473a5f97197a40ccfdf3e26a5564b90ee40ca926fb88b9ae63b41cbd",
+      "templates/intl_country_cockpit.js": "05d441d7b8c7aac95e4e7b14dc6b4a70b45b77339d6017763d71fe76306429fb",
+      "templates/intl_library_search.js": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+      "templates/intl_stock.html.j2": "1e57cd59f4e229bc9ed3a87b3d8897a219f380801fa09f868d661d011eab65e5",
+      "templates/intl_workspace.css": "1e7c73d7717d7f31d1037395924f598fa2665505d2cdaf26af205685b34341bd",
+      "templates/intl_workspace.js": "54fbe37c016257db9e257bb23ac996e8bf02cb98072bb65ad6f8f06853916437",
+      "templates/intl_workspace/_gs_dossier_macros.html.j2": "5d437e6f8e75251dcbbc50ff62706d9017952aec4a3a5e389e498b1bc8a70f09",
+      "templates/intl_workspace/_gs_macros.html.j2": "51815910da862022f79ee16b49d600662e7c6df2d81e1fc142cc7fcd61f114f2",
+      "templates/intl_workspace/_gs_scanner_macros.html.j2": "096659f403948a022d07ec2c71c282f83247bdb0d246b8943503001e92310379",
+      "templates/intl_workspace/_gs_state_fixture.html.j2": "f1fe3efb0105f843f45cdc32a7f4d08c13a233bd555a19750f73db3be490463c",
+      "templates/intl_workspace/chart_cohorts.html.j2": "46beff878bdf3ad3b5e79c4565a1647338994614047acccb01475f651d5ceabc",
+      "templates/intl_workspace/compare.html.j2": "899e0fc4b4110ac0c60e3d616ae2bb7fa8958dfc41e8c861745e0dc6c5415c17",
+      "templates/intl_workspace/coverage.html.j2": "a864ec919fe4fb01b6155b4018b5c70a36ddd343b4351754e5c587477174e23b",
+      "templates/intl_workspace/dislocations.html.j2": "c0f54e308e2e0491d75dc4d02f3f499f29fcb16349e2e25da9424db2ae261c54",
+      "templates/intl_workspace/dossier.html.j2": "4b1379eab715c9986794c991a57056211046a93b6bdcabc408c0962fdbac715f",
+      "templates/intl_workspace/history.html.j2": "2b9bedbac77bbf692d21f314cd853820bc74953ace8722bcd341106f2d62ab64",
+      "templates/intl_workspace/inspector.html.j2": "697563d2765402a6e796aeeeaed1068aaa02747c03d3352bd2afe0e65b7082ff",
+      "templates/intl_workspace/library.html.j2": "45bacd0239214a99597c53bce290af5744ea60c198ea2510154064b791d80ae0",
+      "templates/intl_workspace/macro.html.j2": "153c31c19bcea3cdad53295ca0052f9f8bb8fdd0df8362b9e824e633689f1f7b",
+      "templates/intl_workspace/overview.html.j2": "43bf4de60406425f8f68b885d8d1b285127122c9ce9b886a7ea19d6e7e7041a6",
+      "templates/intl_workspace/risk.html.j2": "d5368422992e59cc6fed72fe42d81b08025bbd3bcefcef4f6b2d37dcef012f0a",
+      "templates/intl_workspace/scanner.html.j2": "7474eb566cfce8d819756c8ca6154ff0ce50b015fee2e245cb78fb0d048f9437",
+      "templates/intl_workspace/shell.html.j2": "f854a9db6cb6a5aefdda0607dd7d91719508eb16a0cc7d64ae18f855a7b40f87",
+      "templates/intl_workspace/transmission.html.j2": "4b41599763aa003aff8d4798850562e92f292d28ca766284112e9456294c9ba9",
+      "templates/intl_workspace_entry.js": "3b476b4ce04b91f0a8854c4a3e5b2e26f672cfa21c67445d8ce765edc62a8b1b",
+      "templates/intl_workspace_history.css": "a4d333467c17afeffd8a47316082357a89d5d85618c37a613be25e6e240807d0",
+      "templates/intl_workspace_macro.css": "11b8e48f9f15a8e90c556e0c703e60818ac1db8a9c02786fd6f59ccbc219dc15",
+      "templates/intl_workspace_risk.css": "5f21f98f0604c86876fd2d693e542094c85c8107da127b409c0b2865726a816e",
+      "templates/intl_workspace_scenario.js": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+      "templates/intl_workspace_state.js": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+      "templates/intl_workspace_surveillance.css": "e7ccff77c7e095d600921282da70683f580e8df368e8933349438cc7cb36ff16",
+      "templates/shared_shell_bridge.js": "818f0a7843c5aaed3d7b204bfc8ab518ba4859e27decfefdb02a05e51e14e649",
+      "templates/theme.css": "f8d6007517b54e870c7101e66af828aabd90ab73b00c4847afcee112f1ffebb0",
+      "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+      "tests/intl_country_cockpit_navigation.test.cjs": "f203e526dd3843c541e6da548b3a1be262fdfa3bd3a6cf7e09fbf3992a7537f7",
+      "tests/intl_workspace_controller.test.cjs": "f7cbf7426fa78aaf25a9bf6d5322a44690b19185370c59480d228ebcea990fd4",
+      "tests/intl_workspace_deferred.test.cjs": "21501755d76585a38352fdd2982ef397d7c1dc8b711210eeea39c28f9f3ffbac",
+      "tests/intl_workspace_legacy_navigation.test.cjs": "a575c830d5800aa3a37626d8e106ee1c741131760712e834f06d542583b984cd",
+      "tests/intl_workspace_library_controller.test.cjs": "72d383b1655f9c48552f21c17e4b2b28a0a668defef715faefbf92f51410c62c",
+      "tests/intl_workspace_page.test.cjs": "4b021a46096427dbf13bf6b568c94cc62d8e5aeb8fb8f868b77759416fd54967",
+      "tests/intl_workspace_state.test.cjs": "d87966bde8189161c2d9cdfc79c605bfbd11524f54e7a48fec397906c58293d8",
+      "tests/test_intl_gs_dislocations_view.py": "d75b6fb5bba913595e824066005dc54b5a9f818d95c09b40bbc733e6898c2a77",
+      "tests/test_intl_gs_transmission_view.py": "f40d6a78771892e4b12d1a3e8db59a2e975a682686309a31fc0bb4c67f87e340",
+      "tests/test_intl_workspace_fragments.py": "f01fea0ab7ca85b72b10a17a06c73028290d9b9218b704a6aac5a0a65a68d166",
+      "tests/test_site_access_boundary.py": "80a83ebdac12004e8402626c596c9a6b99d0db7ce7d943ce04a714ca787409cf"
+    },
+    "build_source_match_paths": [
+      "lib/intl_workspace_fragments.py",
+      "lib/pages.py",
+      "lib/shared_shell.py",
+      "scripts/build_intl.py",
+      "templates/_site_nav.html.j2",
+      "templates/chat.html",
+      "templates/intl.html.j2",
+      "templates/intl_country_cockpit.css",
+      "templates/intl_country_cockpit.html.j2",
+      "templates/intl_country_cockpit.js",
+      "templates/intl_library_search.js",
+      "templates/intl_stock.html.j2",
+      "templates/intl_workspace.css",
+      "templates/intl_workspace.js",
+      "templates/intl_workspace/_gs_dossier_macros.html.j2",
+      "templates/intl_workspace/_gs_macros.html.j2",
+      "templates/intl_workspace/_gs_scanner_macros.html.j2",
+      "templates/intl_workspace/_gs_state_fixture.html.j2",
+      "templates/intl_workspace/chart_cohorts.html.j2",
+      "templates/intl_workspace/compare.html.j2",
+      "templates/intl_workspace/coverage.html.j2",
+      "templates/intl_workspace/dislocations.html.j2",
+      "templates/intl_workspace/dossier.html.j2",
+      "templates/intl_workspace/history.html.j2",
+      "templates/intl_workspace/inspector.html.j2",
+      "templates/intl_workspace/library.html.j2",
+      "templates/intl_workspace/macro.html.j2",
+      "templates/intl_workspace/overview.html.j2",
+      "templates/intl_workspace/risk.html.j2",
+      "templates/intl_workspace/scanner.html.j2",
+      "templates/intl_workspace/shell.html.j2",
+      "templates/intl_workspace/transmission.html.j2",
+      "templates/intl_workspace_entry.js",
+      "templates/intl_workspace_history.css",
+      "templates/intl_workspace_macro.css",
+      "templates/intl_workspace_risk.css",
+      "templates/intl_workspace_scenario.js",
+      "templates/intl_workspace_state.js",
+      "templates/intl_workspace_surveillance.css",
+      "templates/theme.css",
+      "templates/theme.js"
+    ],
+    "source_match_result": "All named build runtime files byte-identical to the qualified isolated ordinary-build source. Later protected-main delta contains only9123 nonoverlapping data paths.",
+    "html_elements": 66683,
+    "html_bytes": 3844803,
+    "asset_count": 84,
+    "descriptor_count": 30,
+    "production_effect": "NONE",
+    "held_effect": "intl-20261022-workspace-transport-query-r2 remains terminal, execution not eligible, execution absence unproven, retry false."
+  },
+  "verification": {
+    "ordinary_build": {
+      "state": "PASS",
+      "receipt": "proof/ordinary_build.json",
+      "sha256": "1bcac30459872d4421cb6192613f442f8fb466070c54f82a61c8994c8b6d71fd"
+    },
+    "release_research_visual": {
+      "state": "PASS",
+      "receipt": "proof/release_research_visual.json",
+      "sha256": "d14939d15a39803cdf78047ca62a74f3852b146e5d44f8ccfd69713ef10f7290"
+    },
+    "release_generated_asset_boundary": {
+      "state": "PASS",
+      "receipt": "proof/release_generated_asset_boundary.json",
+      "sha256": "91ef2dce4ecc92adeb3291e9f9f830cbced2791a6e2aa64872916e99ad81dc69"
+    },
+    "release_canonical_package": {
+      "state": "PASS",
+      "receipt": "proof/release_canonical_package.json",
+      "sha256": "3efdca0f1a9344435cf4fa3efa0c8eea91577fbd66e0361423f374eb4641d6c5"
+    },
+    "release_visual_evidence_guard": {
+      "state": "PASS",
+      "receipt": "proof/release_visual_evidence_guard.json",
+      "sha256": "a8dd08e0caeecd4e8db312ccb64a8f748b6706415c612f597bb3a2fb7021d522"
+    },
+    "final_controller_regressions": {
+      "state": "PASS",
+      "receipt": "proof/final_controller_regressions.json",
+      "sha256": "44682f3ef6617900275616b3378b49b9717de73d03aae3cb7aa5e917add0b2b0"
+    },
+    "shared_header_and_frozen_regressions": {
+      "state": "PASS",
+      "receipt": "proof/shared_header_and_frozen_regressions.json",
+      "sha256": "4d4c2d41b5974f09351f36a39d1941bc65ee205f31043c656b15ab87faa783b3"
+    },
+    "public_asset_boundary": {
+      "state": "PASS",
+      "receipt": "proof/public_asset_boundary.json",
+      "sha256": "f9a9dac3b683d53c2cc63efb6994475df4167b28bd0c42c3c65044a0cfa99ad1"
+    },
+    "caddy_fragment_semantic_delta_verified": {
+      "state": "PASS",
+      "receipt": "proof/caddy_fragment_semantic_delta_verified.json",
+      "sha256": "9f64e27fd0d14bc63733278b1b77856e3a4f5a5517ec6e12ac1c5b1da13a1e33"
+    },
+    "p0b_integrity": {
+      "state": "PASS",
+      "receipt": "proof/p0b_integrity.json",
+      "sha256": "8eca11650d2b996e59e6ecae29b6ec4046a85fbf6a9ed224cdc4889f12e10d88"
+    },
+    "p0b_closure_final": {
+      "state": "PASS",
+      "receipt": "proof/p0b_closure_final.json",
+      "sha256": "c7643377e29304eef2ff7fa549db5c70ec127bc6173eb9fada1f56f4042e18d8"
+    },
+    "mobile_spacing_asset_sync": {
+      "state": "PASS",
+      "receipt": "proof/mobile_spacing_asset_sync.json",
+      "sha256": "fbfb69c847b09c90ee05cb0f14f8c6ae0a02e7c60753459d2db6fe2f9fbafac3"
+    },
+    "mobile_spacing_design_system": {
+      "state": "PASS",
+      "receipt": "proof/mobile_spacing_design_system.json",
+      "sha256": "7f01ed441d2cfcff9dee16a4f2050840a2cce0ec8858776d1c498c0ccec55f14"
+    },
+    "final_ci_trigger_closure": {
+      "state": "PASS",
+      "receipt": "proof/final_ci_trigger_closure.json",
+      "sha256": "5a234b9da73c6f750e8aee01dbcf7098cef76919adaa576518c7d00d85d96ab8"
+    },
+    "scenario_native_journeys_corrected": {
+      "state": "PASS",
+      "receipt": "proof/scenario_native_journeys_corrected.json",
+      "sha256": "7990c4df5d37a65c2346dd0d82af340cec28524acd76b9a3b423df69523e01d7"
+    },
+    "p0b_pre_refresh_retention": {
+      "state": "PASS",
+      "receipt": "proof/p0b_pre_refresh_retention.json",
+      "sha256": "a0865c385ea03a9953019cef7dc2dcded2a0225acf80be1bfe77afe3a7ea5827"
+    },
+    "release_source_records": {
+      "state": "PASS",
+      "receipt": "release_validation.json",
+      "sha256": "b68eb3a530197a73f8c20a97d3194175b2ccb8a49e5d7bb8b9e65e10198d31f0"
+    }
+  },
+  "canonical_observations": 26,
+  "canonical_rest_cells": 16,
+  "canonical_real_interactions": 10,
+  "initial_cost": {
+    "before_html_bytes": 23104850,
+    "after_html_bytes": 3844803,
+    "html_reduction_percent": 83.36,
+    "before_raw_elements": 422633,
+    "after_raw_elements": 66683,
+    "scope": "Exact local build, not production field telemetry."
+  },
+  "archive": {
+    "path": "implementation-evidence.tar.gz",
+    "bytes": 40929361,
+    "sha256": "dc58f3d6add5b8c04c3ffe33676033a4ccf90f8e9eaedc70e16161567ea0f4e6",
+    "members": 446,
+    "manifest_sha256": "b274ba4bd4fffeb421a2e04a877523dfdeb094d74df0c287bd4a335472827c0a",
+    "readback": "Every member byte length and SHA-256 verified after archive creation."
+  },
+  "previews": {
+    "country-desktop.png": "0c24f0342120ccdcc02b1151ea26d32c2541489802571efdf8fc2806b707d75e",
+    "country-mobile.png": "bb9c52a9b14b5a3b34e343d356cb3f51ec913c4c5579a94b53ca6b9d116e0fb9"
+  },
+  "preserved_failures": {
+    "caddy_fragment_semantic_delta.json": {
+      "state": "FAILED",
+      "error": null,
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    },
+    "full_page_browser_initial_mount_failure.json": {
+      "state": "FAILED",
+      "error": "",
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    },
+    "deferred_controller.json": {
+      "state": "FAILED",
+      "error": null,
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    },
+    "remaining_browser_journeys.json": {
+      "state": "FAILED",
+      "error": "Locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-im-scenario-action=\\\"set_tab\\\"][data-im-scenario-tab=\\\"scenario\\\"]:visible\")\n",
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    },
+    "final_research_visual.json": {
+      "state": "FAILED",
+      "error": "",
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    },
+    "final_research_overflow_diagnostic_setup.json": {
+      "state": "RUNNING",
+      "error": null,
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    },
+    "scenario_native_journeys.json": {
+      "state": "FAILED",
+      "error": "",
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    },
+    "scenario_diagnostic_setup.json": {
+      "state": "RUNNING",
+      "error": null,
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    },
+    "full_page_browser.json": {
+      "state": "FAILED",
+      "error": "('dislocations', 0)",
+      "note": "Preserved original result; see IMPLEMENTATION.md for correction, proof scope and historical setup-only receipts."
+    }
+  },
+  "source_access": "Exclusive public rendered presentation prefix with no-store; Caddy source is qualified, installation unproven.",
+  "publication": {
+    "state": "NOT_YET_COMMITTED_OR_PUSHED_BY_THIS_SLICE",
+    "production_deployed": false,
+    "required_method": "Exact HEAD/base/tree fenced native publisher; original carrier only.",
+    "candidate_changed_paths": 2978,
+    "changed_path_census_sha256": "5698cd8f0d16072eec25161abf4967585875cd4586043c72fabb11bc06c23125",
+    "integrated_base": "bb3b7273f1e9ccb869b6500c97871093eb22005a"
+  },
+  "formal_review": {
+    "state": "FULL_REREVIEW_REQUIRED_DRAFT_HOLD",
+    "blocking_review_id": 5723137485,
+    "older_approval_id": 5725414473,
+    "technical_verdict_is_formal_review": false
+  },
+  "remaining": [
+    "Exact source publication and GitHub readback",
+    "Current-head hosted CI and admitted independent technical review",
+    "Formal blocking-review disposition and applicable F10/W3U conditions",
+    "Applicable actual-parent Saved/focus findings",
+    "Normal renderer/updater and installed serving-policy adoption",
+    "Actual www/beta/app/Terminal journeys and existing full-history FX acceptance",
+    "Subsequent normal refresh and user design acceptance"
+  ],
+  "limits": [
+    "Current source snapshots use511 committed genuine inputs, with no provider reacquisition.",
+    "Earlier R6 failed screenshots may have been overwritten under reused names; failed receipts/logs and all current release captures are retained.",
+    "No local pass is a production or formal acceptance receipt.",
+    "Historical setup-only RUNNING files do not indicate active background execution."
+  ],
+  "current_document_sha256": "fde736bfcd01a2cc16103a7459038bf91477a2a753cfc0622e13a8de482d8bcc"
+}

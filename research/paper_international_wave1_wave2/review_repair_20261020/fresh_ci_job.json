@@ -1,0 +1,69 @@
+{
+  "started_at": "2026-10-20T10:25:06.776608+00:00",
+  "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "executable": "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+  "job": "international-workspace-foundation",
+  "manifest_sha256": "28cefb0648c9479bc4b15516377a3b0f3954fda06a74746e53f8499e5bfa4888",
+  "installation_contract": [
+    "pip install pytest pandas numpy pyyaml pyarrow jinja2 \"yfinance>=0.2.50\""
+  ],
+  "environment": "fresh Python 3.12 venv without system packages; PYTHONPATH and PYTHONHOME removed",
+  "steps": [
+    {
+      "name": "International return identity, windows and observation provenance",
+      "command": "python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py -q",
+      "started_at": "2026-10-20T10:25:07.269742+00:00",
+      "finished_at": "2026-10-20T10:26:36.474706+00:00",
+      "exit_code": 0,
+      "log": "research/paper_international_wave1_wave2/review_repair_20261020/fresh_ci_step_1.log",
+      "log_sha256": "2495aa2d7dd33a7936b1e8ea9aa83df5a591b6195d5674c5ec86c5d940ae7a26",
+      "tail": "rning: This process (pid=38055) is multi-threaded, use of fork() may lead to deadlocks in the child.\n    child_pid = os.fork()\n\n../../../../../../private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95\n  /private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-1c693482-cb58-4579-b526-44a5f4a62eef/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-1c693482-cb58-4579-b526-44a5f4a62eef/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n../../../../../../private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95\n  /private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-1c693482-cb58-4579-b526-44a5f4a62eef/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-1c693482-cb58-4579-b526-44a5f4a62eef/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1363 passed, 3 warnings in 81.65s (0:01:21)\n"
+    },
+    {
+      "name": "International country evidence, outlook and publication custody",
+      "command": "python -m pytest tests/test_intl_country_cockpit.py tests/test_intl_forecast_vintages.py tests/test_intl_outlook_interpretation.py tests/test_intl_policy_evidence.py tests/test_intl_currency_observation.py -q",
+      "started_at": "2026-10-20T10:26:36.476596+00:00",
+      "finished_at": "2026-10-20T10:26:54.493500+00:00",
+      "exit_code": 1,
+      "log": "research/paper_international_wave1_wave2/review_repair_20261020/fresh_ci_step_2.log",
+      "log_sha256": "00b7845ef824aa22f2bf5f96790e6ab3e1c1b289703f4249b4faf4ca15b8eaf5",
+      "tail": "3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-dc647492-2eeb-48b9-80d6-032028310340/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-dc647492-2eeb-48b9-80d6-032028310340/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n../../../../../../private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95\n  /private/tmp/intl-country-cockpit-ci-20261020/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-dc647492-2eeb-48b9-80d6-032028310340/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-dc647492-2eeb-48b9-80d6-032028310340/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n\nNOTE: sparse worktree \u2014 data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_intl_country_cockpit.py::test_bad_archive_does_not_stop_other_sources\n1 failed, 368 passed, 2 warnings in 16.10s\n"
+    }
+  ],
+  "installed_packages": [
+    "beautifulsoup4==4.15.0",
+    "certifi==2026.10.19",
+    "cffi==2.1.1",
+    "charset-normalizer==3.5.2",
+    "curl_cffi==0.16.3",
+    "idna==3.20",
+    "iniconfig==2.3.1",
+    "Jinja2==3.1.6",
+    "lxml==6.1.3",
+    "MarkupSafe==3.0.4",
+    "multitasking==0.0.13",
+    "numpy==2.5.4",
+    "packaging==26.3",
+    "pandas==3.0.6",
+    "peewee==4.5.3",
+    "platformdirs==4.13.5",
+    "pluggy==1.7.0",
+    "protobuf==7.36.2",
+    "pyarrow==26.0.0",
+    "pycparser==3.11",
+    "Pygments==2.21.0",
+    "pytest==9.1.1",
+    "python-dateutil==2.9.0.post0",
+    "pytz==2026.5",
+    "PyYAML==6.0.3",
+    "requests==2.34.2",
+    "six==1.17.0",
+    "soupsieve==3.0.3",
+    "typing_extensions==4.16.0",
+    "urllib3==2.8.0",
+    "websockets==17.3",
+    "yfinance==1.7.0"
+  ],
+  "finished_at": "2026-10-20T10:26:54.494669+00:00",
+  "passed": false
+}

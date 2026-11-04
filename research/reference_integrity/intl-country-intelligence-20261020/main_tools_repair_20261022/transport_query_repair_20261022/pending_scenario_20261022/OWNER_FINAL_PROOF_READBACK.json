@@ -1,0 +1,336 @@
+{
+  "schema": "intl.owner_final_parent_readback.v1",
+  "recorded_at": "2026-10-22T20:20:46.759042+00:00",
+  "source": "bdeb609bf11a170c39713461eace85b47d2ca18c",
+  "source_bindings": {
+    "templates/intl_workspace.js": "bf3b3d81c4a51d1771400d801450620e1e5b538333c5604bcac486080d5bd5ae",
+    "site/intl_workspace.js": "bf3b3d81c4a51d1771400d801450620e1e5b538333c5604bcac486080d5bd5ae",
+    "templates/intl_workspace_state.js": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+    "site/intl_workspace_state.js": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+    "templates/shared_shell_bridge.js": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+    "site/shared_shell_bridge.js": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf"
+  },
+  "driver_sha256": "aa4f29148e418d0ceffe94e87a5fee0dc44e8eb1a748409cd52be30b91e8e53e",
+  "observation_sha256": "3e24194eb252ef1ce530944293b63b17c4ebde6983ea7b8dc8a2396343b14e75",
+  "observation_bytes": 7933358,
+  "review_extract_sha256": "ba753fc7fbc4ff2de49e756b877d1cc0a47433ed6ce1808887dbb860787e7a6b",
+  "contexts": 21,
+  "passed": 866,
+  "failed": 0,
+  "all_response_count": 345,
+  "critical_response_count": 251,
+  "critical_status_counts": {
+    "200": 219,
+    "304": 32
+  },
+  "coverage": [
+    {
+      "scope": "1440-en-dark",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "1440-en-light",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "1440-zh-dark",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "1440-zh-light",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "768-en-dark",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "768-en-light",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "768-zh-dark",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "768-zh-light",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "390-en-dark",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "390-en-light",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "390-zh-dark",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "390-zh-light",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "320-en-dark",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "320-en-light",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "320-zh-dark",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "320-zh-light",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "1440-en-dark-query",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "390-zh-dark-ordinary",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "390-zh-dark-valid-nondefault",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "390-zh-dark-invalid-unknown",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    {
+      "scope": "390-zh-dark-invalid-empty",
+      "assets": [
+        "/intl.html",
+        "/intl_workspace.js",
+        "/intl_workspace_state.js",
+        "/shared_shell.css",
+        "/shared_shell_bridge.js"
+      ]
+    }
+  ],
+  "screenshots_verified": 14,
+  "shutdown": {
+    "stopped_at": "2026-10-22T20:17:54.093781+00:00",
+    "processes": {
+      "child": {
+        "pid": 2450,
+        "exit_code": -15
+      },
+      "parent": {
+        "pid": 2451,
+        "exit_code": 0
+      }
+    },
+    "parent_tracked_source_clean": true
+  },
+  "execution": {
+    "command": [
+      "node",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/candidate_parent_scenario_v13/verify_actual_parent_v13.cjs",
+      "--artifact",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/proposed_scenariopop20261022_repair",
+      "--output",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/candidate_parent_scenario_v13",
+      "--phase",
+      "candidate",
+      "--matrix",
+      "full",
+      "--source-sha",
+      "bdeb609bf11a170c39713461eace85b47d2ca18c",
+      "--runtime",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/candidate_parent_scenario_v13/runtime.json",
+      "--build-receipt",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/repair_scenariopop20261022_build_receipt.json"
+    ],
+    "started_at": "2026-10-22T20:15:05.618518+00:00",
+    "driver_sha256": "aa4f29148e418d0ceffe94e87a5fee0dc44e8eb1a748409cd52be30b91e8e53e",
+    "coordinator_sha256": "692e8afce60f19b212120bc3ce1c8f2642dd4ce4c730fef25b42df49df13df46",
+    "owned_supervisor_pid": 2435,
+    "exit_code": 0,
+    "finished_at": "2026-10-22T20:17:54.228908+00:00"
+  },
+  "parent_runtime": {
+    "schema": "intl.actual_parent_runtime.v2",
+    "started_at": "2026-10-22T20:15:05.817051+00:00",
+    "supervisor_pid": 2435,
+    "parent_source": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+    "parent_tracked_source_clean": true,
+    "macro_head_at_start": "bdeb609bf11a170c39713461eace85b47d2ca18c",
+    "artifact": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/proposed_scenariopop20261022_repair",
+    "html_sha256": "8a1af9804fc9b424ecfe1e7312b84ae35015c6ddca3a5d1750b6d67abfaa1405",
+    "controller_delivery": "inlined in intl.html; whole-document response hash binds the controller",
+    "fixture_env": {
+      "NODE_ENV": "development",
+      "MMX_SHARED_SHELL": "1",
+      "MMX_SHARED_SHELL_LEGACY_ORIGIN": "http://127.0.0.1:3102",
+      "TERMINAL_E2E_FIXTURE": "1",
+      "TERMINAL_E2E_EMAIL": "responsive@example.com",
+      "TERMINAL_E2E_ENTITLEMENT": "unlimited",
+      "FLOW_FIXTURE": "1",
+      "NEXT_PUBLIC_SUPABASE_URL": "http://127.0.0.1:54321",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "fixture-anon-key",
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "RATE_LIMIT_MAX": "100000"
+    },
+    "commands": {
+      "child": [
+        "/private/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "-m",
+        "http.server",
+        "3102",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/proposed_scenariopop20261022_repair"
+      ],
+      "parent": [
+        "/opt/homebrew/bin/node",
+        "/Users/chriswong/Documents/Cluade/charting-app/.claude/worktrees/intl-parent-proof-20261022/terminal/node_modules/next/dist/bin/next",
+        "dev",
+        "--hostname",
+        "127.0.0.1",
+        "--port",
+        "3100"
+      ]
+    },
+    "processes": {
+      "child": 2450,
+      "parent": 2451
+    },
+    "maximum_runtime_seconds": 2200,
+    "boundary": "owned local development guest fixture; actual unmodified supported parent"
+  },
+  "pass": true,
+  "limitations": [
+    "Receipt readback, not new execution",
+    "Independent v13 reviewer will assess every conditional response; v13 execution already asserted same-context exact-URL earlier GET200 and matching cache validators",
+    "Local unchanged development parent and retained-store build, not production served or acquisition acceptance"
+  ]
+}

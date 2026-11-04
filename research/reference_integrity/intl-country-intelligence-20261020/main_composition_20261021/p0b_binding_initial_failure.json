@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-22T00:07:32.933914+00:00",
+  "process_pid": 89885,
+  "driver_sha256": "28861a032893a8c680428ce2c67c09a77daa076eb2e3f376c06dc93b34c14840",
+  "error": "TypeError: string indices must be integers, not str",
+  "cause": "Binding utility assumed an array; canonical construction_inputs is a path-to-SHA256 mapping.",
+  "effects": "Failure before manifest write; successful browser receipts and screenshots unchanged.",
+  "repair": "Iterate canonical mapping items and verify every actual source input."
+}

@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-10-20T05:05:39.682159+00:00",
+  "gates": [
+    {
+      "name": "ci_fragments",
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/ci_pack_fragments.py",
+        "--check"
+      ],
+      "started_at": "2026-10-20T05:05:38.372287+00:00",
+      "finished_at": "2026-10-20T05:05:38.473327+00:00",
+      "exit_code": 0,
+      "log": {
+        "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_ci_fragments.log",
+        "bytes": 124,
+        "sha256": "5c24bb0309ff837e2139785557fa45685b38af863f1f5511c91f5975d9098424"
+      }
+    },
+    {
+      "name": "tracked_whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started_at": "2026-10-20T05:05:38.473687+00:00",
+      "finished_at": "2026-10-20T05:05:39.681918+00:00",
+      "exit_code": 0,
+      "log": {
+        "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/final_tracked_whitespace.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,8 @@
+{
+  "verified_at": "2026-10-19T23:54:09.480030+00:00",
+  "same_populated_render_bytes": true,
+  "html_sha256": "5e5a62db603220229dddc3655769a4e92493f51c898c45f630e474e9ded53ce4",
+  "template_sha256": "9646d04a14eca1c88f0e1415aff4468c2feba8208aa0e37e217609acfd025fc3",
+  "assessment_sha256": "21bf1d7c977bef9efbe894cf729ff3ab4b588ed6655ce466730c36cafc3439cc",
+  "scope": "Final partial-withdrawal template produces byte-identical populated country preview from the same assessment; integrated capture remains bound to the unchanged country content."
+}

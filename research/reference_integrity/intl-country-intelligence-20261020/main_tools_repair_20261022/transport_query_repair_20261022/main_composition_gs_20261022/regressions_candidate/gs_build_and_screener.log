@@ -1,0 +1,32 @@
+.................................................F...................... [ 44%]
+........................................................................ [ 88%]
+...................                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_frozen_files_unchanged_vs_origin_main[templates/theme.css] ________
+
+path = 'templates/theme.css'
+
+    @pytest.mark.parametrize("path", [
+        "templates/theme.css",
+        "templates/_navlinks.html.j2",
+        "engine/intl_global_universe.py",
+        "engine/intl_global_observation.py",
+        "lib/intl_global_observation_adapter.py",
+    ])
+    def test_frozen_files_unchanged_vs_origin_main(path):
+        base = _frozen_base()
+        result = subprocess.run(["git", "diff", "--quiet", base, "--", path],
+                                cwd=REPO, capture_output=True, text=True)
+        if result.returncode not in (0, 1):
+            pytest.fail(f"FAIL CLOSED: git diff {base} -- {path} errored: {result.stderr.strip()}")
+>       assert result.returncode == 0, f"{path} changed vs merge-base(origin/main, HEAD) {base}"
+E       AssertionError: templates/theme.css changed vs merge-base(origin/main, HEAD) 6a4c0079d1aec13b08cb554f6f7424b775165d09
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'diff', '--quiet', '6a4c0079d1aec13b08cb554f6f7424b775165d09', '--', 'templates/theme.css'], returncode=1, stdout='', stderr='').returncode
+
+tests/test_intl_gs_foundation.py:754: AssertionError
+
+NOTE: sparse worktree — artifacts, data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_gs_foundation.py::test_frozen_files_unchanged_vs_origin_main[templates/theme.css]
+1 failed, 162 passed in 67.18s (0:01:07)

@@ -1,0 +1,51 @@
+{
+  "schema": "intl.actual_parent_runtime.v2",
+  "started_at": "2026-10-22T03:19:49.829584+00:00",
+  "supervisor_pid": 53721,
+  "parent_source": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "parent_tracked_source_clean": true,
+  "macro_head_at_start": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "artifact": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/proposed_main25020261022_repair",
+  "html_sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+  "controller_delivery": "inlined in intl.html; whole-document response hash binds the controller",
+  "fixture_env": {
+    "NODE_ENV": "development",
+    "MMX_SHARED_SHELL": "1",
+    "MMX_SHARED_SHELL_LEGACY_ORIGIN": "http://127.0.0.1:3102",
+    "TERMINAL_E2E_FIXTURE": "1",
+    "TERMINAL_E2E_EMAIL": "responsive@example.com",
+    "TERMINAL_E2E_ENTITLEMENT": "unlimited",
+    "FLOW_FIXTURE": "1",
+    "NEXT_PUBLIC_SUPABASE_URL": "http://127.0.0.1:54321",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "fixture-anon-key",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "RATE_LIMIT_MAX": "100000"
+  },
+  "commands": {
+    "child": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "http.server",
+      "3102",
+      "--bind",
+      "127.0.0.1",
+      "--directory",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/proposed_main25020261022_repair"
+    ],
+    "parent": [
+      "/opt/homebrew/bin/node",
+      "/Users/chriswong/Documents/Cluade/charting-app/.claude/worktrees/intl-parent-proof-20261022/terminal/node_modules/next/dist/bin/next",
+      "dev",
+      "--hostname",
+      "127.0.0.1",
+      "--port",
+      "3100"
+    ]
+  },
+  "processes": {
+    "child": 53759,
+    "parent": 53760
+  },
+  "maximum_runtime_seconds": 2400,
+  "boundary": "owned local development guest fixture; actual unmodified supported parent"
+}

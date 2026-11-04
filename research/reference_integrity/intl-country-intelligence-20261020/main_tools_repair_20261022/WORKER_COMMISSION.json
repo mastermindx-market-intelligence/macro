@@ -1,0 +1,70 @@
+{
+  "schema": "intl.bounded_repair_commission.v1",
+  "assignment": "Explicit current-user supersession recorded in OWNER_SUPERSESSION.md",
+  "original_root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "current_run": "intl-20261022-shell-tools-repair-r2",
+  "immediate_parent_native": "/root",
+  "parent_id_encoded": "root",
+  "prior_run_outcome": "UNKNOWN; not cancelled, retried or consumed",
+  "delivery": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_request",
+    "run_id": "intl-20261022-shell-tools-repair-r2",
+    "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "parent_id": "root",
+    "controller_pid": 30810,
+    "delivery": "CONTROLLER_CREATED",
+    "worker_started": null,
+    "worker_start_proven": false,
+    "adapter_exit_code": null,
+    "execution_absence_proven": false,
+    "next_observation": "fabric_status with the same run and root; fabric_controller_output with this PID when needed",
+    "retry_allowed": false
+  },
+  "observation": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_status",
+    "run_id": "intl-20261022-shell-tools-repair-r2",
+    "effective_run_id": "intl-20261022-shell-tools-repair-r2",
+    "expected_root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "status": {
+      "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+      "acceptance_state": "UNVERIFIED",
+      "accepted": null,
+      "accepted_by": null,
+      "controller_lineage": {
+        "state": "UNVERIFIED"
+      },
+      "controller_observation": {
+        "configured_controller_wait_seconds": 7193,
+        "last_poll_at": "2026-10-22T03:12Z",
+        "last_poll_elapsed_seconds": 30,
+        "retry_authorized": false,
+        "silence_lower_bound_seconds": 0,
+        "source": "local_retained_controller_log",
+        "state": "LOCAL_POLL_EVIDENCE_ONLY",
+        "worker_state": "UNKNOWN"
+      },
+      "parent_run_id": null,
+      "rc": null,
+      "result_available": false,
+      "result_bytes": null,
+      "root_id": null,
+      "run_id": "intl-20261022-shell-tools-repair-r2",
+      "schema": "mastermind.fabric_task_status.v1",
+      "signal": null,
+      "state": "ACTIVE_OR_WAITING",
+      "continuation": {
+        "requested_run_id": "intl-20261022-shell-tools-repair-r2",
+        "effective_run_id": "intl-20261022-shell-tools-repair-r2",
+        "prior_attempts": [],
+        "controller_return": "UNCONFIRMED",
+        "controller_reason": null
+      }
+    },
+    "root_verified": false,
+    "execution_absence_proven": false,
+    "retry_allowed": false
+  },
+  "return_and_acceptance": "Pending; controller creation and launch log are not accepted result"
+}

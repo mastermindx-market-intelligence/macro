@@ -345,3 +345,21 @@ test('20. factories remain independent and forged prior-source return contexts r
   saved.return_stack[0].context.source_reference='src-2';
   const bad=a.reduce(saved,{type:'back'});assert.equal(bad.ok,false);assert.equal(bad.state,null);assert.equal(bad.issues[0].code,'INVALID_STATE');
 });
+
+
+test('query source contract: business parser never exempts shell-looking keys or malformed bytes', () => {
+  const core = coreModule.createIntlWorkspaceState(makeConfig());
+  for (const key of ['mmx_shell', 'mmx_generation', 'mmx_feature', 'mmx_shell_extra', 'MMX_SHELL', '%6Dmx_shell']) {
+    const result = core.parseQuery(key + '=1');
+    assert.equal(result.ok, false, key);
+    assert.equal(result.issues[0].code, 'INVALID_QUERY', key);
+    assert.deepEqual(result.state, core.initialState);
+    assert.equal(typeof result.issues[0].field, 'string');
+  }
+  for (const query of ['view', 'view=%zz', 'view=overview&%76iew=history', 'view=overview&&market=us-tech', 'view=overview&']) {
+    const result = core.parseQuery(query);
+    assert.equal(result.ok, false, query);
+    assert.equal(result.issues[0].code, 'INVALID_QUERY', query);
+    assert.deepEqual(result.state, core.initialState);
+  }
+});

@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_intl_gs_foundation.py",
+    "-q"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-22T19:08:01.494663+00:00",
+  "completed_at": "2026-10-22T19:08:28.640180+00:00",
+  "duration_seconds": 27.15,
+  "test_sha256": "63476a21195abec2e3cad8a687104d44c5d9ac6e098d232287645fc172fb3d8c",
+  "manifest_sha256": "75f30eaba75c3904548bdfda8a7c9016f664af34e1d94afbb4bef4697970c0fa",
+  "theme_sha256": "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+  "fixture_sha256": "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+  "log_sha256": "ae7021ea6f2bf86e73e28507b7da90f511cba4baa61b3316386a9d5ad3690091",
+  "production_source_changed": false,
+  "historical_git_objects_required_by_fixture": false
+}

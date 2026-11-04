@@ -1,0 +1,175 @@
+{
+  "recorded_at": "2026-10-22T19:11:25.006117+00:00",
+  "source_commit": "d7f3becfea06fbce54c3e04de5f974e257b96023",
+  "ordered_parents": [
+    "96cf630b9dffec366568216e8d5ef1125e212cbf",
+    "2d33475adef502ab6b00b8003356c1b0ad1673c0"
+  ],
+  "commit_metadata": "commit d7f3becfea06fbce54c3e04de5f974e257b96023\nMerge: 96cf630b9dff 2d33475adef5\nAuthor:     Sol CEO <actions@users.noreply.github.com>\nAuthorDate: Thu Oct 22 12:04:36 2026 -0700\nCommit:     Sol CEO <actions@users.noreply.github.com>\nCommitDate: Thu Oct 22 12:04:36 2026 -0700\n\n    merge(intl): preserve query repair and GS foundation from main\n",
+  "bindings": [
+    {
+      "path": "templates/shared_shell_bridge.js",
+      "committed_sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+      "full_suite_sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+      "identical": true
+    },
+    {
+      "path": "site/shared_shell_bridge.js",
+      "committed_sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+      "full_suite_sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+      "identical": true
+    },
+    {
+      "path": "templates/intl_country_cockpit.js",
+      "committed_sha256": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042",
+      "full_suite_sha256": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042",
+      "identical": true
+    },
+    {
+      "path": "tests/js/shared_shell_bridge.test.cjs",
+      "committed_sha256": "b8a2c6ca0931aa314684ebf3e104b5cc098b4d9e7dad093eb65d08493402186a",
+      "full_suite_sha256": "b8a2c6ca0931aa314684ebf3e104b5cc098b4d9e7dad093eb65d08493402186a",
+      "identical": true
+    },
+    {
+      "path": "tests/intl_country_cockpit_navigation.test.cjs",
+      "committed_sha256": "c78620ad415d2265ac7f6c0faf2d6e247c9b233f0fe6974003194217d17add72",
+      "full_suite_sha256": "c78620ad415d2265ac7f6c0faf2d6e247c9b233f0fe6974003194217d17add72",
+      "identical": true
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "committed_sha256": "6a6d47b3b0f4a54df8722a636f18438febecfa5fc626820aadc174d0a102780f",
+      "full_suite_sha256": "6a6d47b3b0f4a54df8722a636f18438febecfa5fc626820aadc174d0a102780f",
+      "identical": true
+    },
+    {
+      "path": "templates/intl_workspace.js",
+      "committed_sha256": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d",
+      "full_suite_sha256": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d",
+      "identical": true
+    },
+    {
+      "path": "site/intl_workspace.js",
+      "committed_sha256": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d",
+      "full_suite_sha256": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d",
+      "identical": true
+    },
+    {
+      "path": "templates/intl_workspace_state.js",
+      "committed_sha256": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+      "full_suite_sha256": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+      "identical": true
+    },
+    {
+      "path": "tests/intl_workspace_controller.test.cjs",
+      "committed_sha256": "3be38cbf6625b0ecd9c4371f319151b675183a8016a22d838e4a04500152a97e",
+      "full_suite_sha256": "3be38cbf6625b0ecd9c4371f319151b675183a8016a22d838e4a04500152a97e",
+      "identical": true
+    },
+    {
+      "path": "tests/intl_workspace_state.test.cjs",
+      "committed_sha256": "d87966bde8189161c2d9cdfc79c605bfbd11524f54e7a48fec397906c58293d8",
+      "full_suite_sha256": "d87966bde8189161c2d9cdfc79c605bfbd11524f54e7a48fec397906c58293d8",
+      "identical": true
+    },
+    {
+      "path": "site/intl_workspace_state.js",
+      "committed_sha256": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+      "full_suite_sha256": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+      "identical": true
+    },
+    {
+      "path": "templates/intl.html.j2",
+      "committed_sha256": "6735b1984d0e346ff62ef591810b90da9819e6c25aa47e4fcbb45c12381db03f",
+      "full_suite_sha256": "6735b1984d0e346ff62ef591810b90da9819e6c25aa47e4fcbb45c12381db03f",
+      "identical": true
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "committed_sha256": "edf479bc1d6630d2eaff2a35df15c4a1e3830a0d303757a17d50670a10983b6f",
+      "full_suite_sha256": "edf479bc1d6630d2eaff2a35df15c4a1e3830a0d303757a17d50670a10983b6f",
+      "identical": true
+    },
+    {
+      "path": "tests/test_intl_build.py",
+      "committed_sha256": "52d2d882f862307f76920ff04504ca4c0d34c29fe304dc7e99c7dacac0b563d6",
+      "full_suite_sha256": "52d2d882f862307f76920ff04504ca4c0d34c29fe304dc7e99c7dacac0b563d6",
+      "identical": true
+    },
+    {
+      "path": "tests/test_intl_gs_foundation.py",
+      "committed_sha256": "bce69151444a9d113a6b25d86fc3c68c15028fb42a826fe6ab59d5697e58ad1a",
+      "full_suite_sha256": "bce69151444a9d113a6b25d86fc3c68c15028fb42a826fe6ab59d5697e58ad1a",
+      "identical": true
+    },
+    {
+      "path": "tests/intl_gs_foundation_browser.test.cjs",
+      "committed_sha256": "270387202cc6f29b3dc56c8f08dc838166771840b41393160a9aba74606733f2",
+      "full_suite_sha256": "270387202cc6f29b3dc56c8f08dc838166771840b41393160a9aba74606733f2",
+      "identical": true
+    },
+    {
+      "path": "tests/intl_gs_fixture_site.py",
+      "committed_sha256": "94e7e009c7d02f07b8649827d6ba29a1facbbd4249251b82d01e904785775a88",
+      "full_suite_sha256": "94e7e009c7d02f07b8649827d6ba29a1facbbd4249251b82d01e904785775a88",
+      "identical": true
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "committed_sha256": "a527e904ea6973f33dd5bfb06655ddc961f8c8f656f70f928ff66b523c4de925",
+      "full_suite_sha256": "a527e904ea6973f33dd5bfb06655ddc961f8c8f656f70f928ff66b523c4de925",
+      "identical": true
+    },
+    {
+      "path": "config/site_access.yml",
+      "committed_sha256": "86f7f206d25c2f5a851e56ac9643de85652e87656512b83f93c20ddc5b2fbf01",
+      "full_suite_sha256": "86f7f206d25c2f5a851e56ac9643de85652e87656512b83f93c20ddc5b2fbf01",
+      "identical": true
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "committed_sha256": "abf8357c3f8e2ac7193f6d8fb9055cca30180bbc0e71b97a3ae2afd78cd02423",
+      "full_suite_sha256": "abf8357c3f8e2ac7193f6d8fb9055cca30180bbc0e71b97a3ae2afd78cd02423",
+      "identical": true
+    },
+    {
+      "path": "lib/intl_gs_display.py",
+      "committed_sha256": "f8e2dc04b3c55c162c8c173abd0d5193172fe09cbe19bc8ce7ef064816506e1d",
+      "full_suite_sha256": "f8e2dc04b3c55c162c8c173abd0d5193172fe09cbe19bc8ce7ef064816506e1d",
+      "identical": true
+    },
+    {
+      "path": "lib/intl_gs_observations.py",
+      "committed_sha256": "12d14486312c08f6c40178e051f0b04b83e5578950e21774adbba0d075be29b9",
+      "full_suite_sha256": "12d14486312c08f6c40178e051f0b04b83e5578950e21774adbba0d075be29b9",
+      "identical": true
+    },
+    {
+      "path": "lib/intl_surveillance_mount.py",
+      "committed_sha256": "587679b43e88d3396731079d62c43d4da560969b319009f911f4f78402d1f039",
+      "full_suite_sha256": "587679b43e88d3396731079d62c43d4da560969b319009f911f4f78402d1f039",
+      "identical": true
+    },
+    {
+      "path": "templates/intl_workspace_surveillance.css",
+      "committed_sha256": "8398ff14812c347fc62ea7e98c6d59ff099bcd601e7c09bbbfa503614d34fb1b",
+      "full_suite_sha256": "8398ff14812c347fc62ea7e98c6d59ff099bcd601e7c09bbbfa503614d34fb1b",
+      "identical": true
+    },
+    {
+      "path": "site/intl_workspace_surveillance.css",
+      "committed_sha256": "8398ff14812c347fc62ea7e98c6d59ff099bcd601e7c09bbbfa503614d34fb1b",
+      "full_suite_sha256": "8398ff14812c347fc62ea7e98c6d59ff099bcd601e7c09bbbfa503614d34fb1b",
+      "identical": true
+    },
+    {
+      "path": "site/research_screener.html",
+      "committed_sha256": "64334eca555dd0fd3d98ad8d30ee20e90640a682e8329865d327f86b212cff8f",
+      "full_suite_sha256": "64334eca555dd0fd3d98ad8d30ee20e90640a682e8329865d327f86b212cff8f",
+      "identical": true
+    }
+  ],
+  "all_match_full_regressions": true,
+  "merge_ref_absent": true
+}

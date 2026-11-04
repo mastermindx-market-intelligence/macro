@@ -1,0 +1,56 @@
+{
+  "prior": "c3623f7b9804fee28fa8204775f952fb22fe3d98",
+  "current": "28f704ab42c4866cec3f33dad6b787bfb8feef47",
+  "comparison": "complete exact protected text",
+  "rows": [
+    {
+      "path": "docs/sol_skills/INDEX.md",
+      "prior_chars": 19151,
+      "current_chars": 19151,
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+      "prior_chars": 53395,
+      "current_chars": 53395,
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/SESSION_RELIABILITY.md",
+      "prior_chars": 16457,
+      "current_chars": 16457,
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+      "prior_chars": 17923,
+      "current_chars": 17923,
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/REVIEW_RETURN.md",
+      "prior_chars": 15201,
+      "current_chars": 15201,
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/RECONCILE_STATE.md",
+      "prior_chars": 12942,
+      "current_chars": 12942,
+      "unchanged": true
+    },
+    {
+      "path": "docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md",
+      "prior_chars": 33823,
+      "current_chars": 33823,
+      "unchanged": true
+    },
+    {
+      "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "prior_chars": 24389,
+      "current_chars": 24389,
+      "unchanged": true
+    }
+  ],
+  "compatible": true
+}

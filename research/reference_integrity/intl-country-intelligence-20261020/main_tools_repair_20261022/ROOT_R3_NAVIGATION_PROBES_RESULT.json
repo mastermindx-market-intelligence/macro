@@ -1,0 +1,17 @@
+{
+  "source_head": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "product_sha256": {
+    "templates/shared_shell_bridge.js": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+    "templates/intl_country_cockpit.js": "0369cf148ef3a3994967945ca1893563d1975a1c8d3a24a08ded3ecd830c0838"
+  },
+  "command": [
+    "/opt/homebrew/bin/node",
+    "--test",
+    "--test-reporter=tap",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.cjs"
+  ],
+  "started_at": "2026-10-22T04:47:42.846450+00:00",
+  "completed_at": "2026-10-22T04:47:47.005202+00:00",
+  "exit_code": 1,
+  "log_sha256": "a3b31351d3db0e7fdfb73b7597b1c3c119938be6dd1176bc17c583678ee7486f"
+}

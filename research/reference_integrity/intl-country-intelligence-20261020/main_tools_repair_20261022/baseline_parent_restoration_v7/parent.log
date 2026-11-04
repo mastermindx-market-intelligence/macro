@@ -1,0 +1,16 @@
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://127.0.0.1:3100
+- Network:       http://127.0.0.1:3100
+✓ Ready in 430ms
+
+ GET /intl.html 200 in 776ms (next.js: 395ms, proxy.ts: 128ms, application-code: 253ms)
+ GET /api/shared-shell/status 200 in 58ms (next.js: 48ms, application-code: 10ms)
+ GET /intl.html 200 in 71ms (next.js: 13ms, proxy.ts: 7ms, application-code: 51ms)
+ GET /api/shared-shell/status 200 in 5ms (next.js: 2ms, application-code: 3ms)
+ GET /api/shared-shell/status 200 in 5ms (next.js: 1648µs, application-code: 3ms)
+[analyticsEvents] SUPABASE_SERVICE_ROLE_KEY absent — events held in memory only (dev mode)
+ POST /api/collect 204 in 78ms (next.js: 65ms, application-code: 13ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1526µs, application-code: 3ms)
+ GET /api/shared-shell/status 200 in 7ms (next.js: 3ms, application-code: 4ms)
+ POST /api/collect 204 in 7ms (next.js: 3ms, application-code: 5ms)
+[?25h

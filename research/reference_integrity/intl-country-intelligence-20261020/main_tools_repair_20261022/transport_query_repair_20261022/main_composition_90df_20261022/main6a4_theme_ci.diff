@@ -1,0 +1,127 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index 7146ad743f5c..915e97642b00 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -11848,6 +11848,8 @@ jobs:
+       - "scripts/build_debt_maturity.py"
+       - "scripts/build_fundamental_forensics.py"
+       - "scripts/build_finance_intelligence_page.py"
++      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
++      - "scripts/build_expectation_surface.py"
+       - "scripts/build_index_leadership.py"
+       - "scripts/build_intelligence_registry.py"
+       - "scripts/build_live_overlay.py"
+@@ -13775,6 +13777,8 @@ jobs:
+       - "templates/finance_intelligence.js"
+       - "templates/finance_intelligence.css"
+       - "scripts/build_finance_intelligence_page.py"
++      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
++      - "scripts/build_expectation_surface.py"
+       - "tests/test_finance_intelligence_page.py"
+       - "tests/test_finance_intelligence_hydration.py"
+       - "tests/finance_intelligence_hydration_harness.js"
+@@ -18137,6 +18141,8 @@ jobs:
+       - scripts/build_crossmarket.py
+       - scripts/build_debt_maturity.py
+       - scripts/build_finance_intelligence_page.py
++      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
++      - scripts/build_expectation_surface.py
+       - engine/sector_intelligence/finance_watching.py
+       - engine/sector_intelligence/finance_witness_hints.py
+       - engine/sector_intelligence/finance_page_signal.py
+@@ -21129,6 +21135,8 @@ jobs:
+       - "scripts/build_debt_maturity.py"
+       - "scripts/build_fundamental_forensics.py"
+       - "scripts/build_finance_intelligence_page.py"
++      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
++      - "scripts/build_expectation_surface.py"
+       - "scripts/build_index_leadership.py"
+       - "scripts/build_live_overlay.py"
+       # F01 R1B closure widening 2026-09-04 (contract-delta): imported by
+@@ -27949,6 +27957,14 @@ jobs:
+       - "engine/sector_intelligence/__init__.py"
+       - "scripts/build_debt_maturity.py"
+       - "scripts/build_finance_intelligence_page.py"
++      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
++      - "scripts/build_expectation_surface.py"
++      # ITP-ES wave 1: the expectation-surface contract suite + the template
++      # family it renders through the real jinja2 environment.
++      - "tests/test_build_expectation_surface.py"
++      - "templates/expectation_surface.html.j2"
++      - "templates/_seo_head.html.j2"
++      - "templates/_site_nav.html.j2"
+       - "engine/sector_intelligence/finance_watching.py"
+       - "engine/sector_intelligence/finance_witness_hints.py"
+       - "engine/sector_intelligence/finance_page_signal.py"
+@@ -28252,6 +28268,11 @@ jobs:
+         run: python -m pytest tests/test_us_candidate_episode_recorded_at_clock.py -q
+       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
+         run: python -m pytest tests/test_cn_live_pack_archive.py -q
++      # ITP-ES wave 1 (2026-10-21): Expectation Surface page builder contract —
++      # deterministic synthetic-fixture suite; rides this job's single install
++      # step (pytest pandas pyarrow jinja2) and its declared scope above.
++      - name: expectation surface page builder contract (ITP-ES wave 1)
++        run: python -m pytest tests/test_build_expectation_surface.py -q
+ 
+   prophet-anticipation-intake:
+     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
+@@ -29346,6 +29367,8 @@ jobs:
+       - "scripts/build_debt_maturity.py"
+       - "scripts/build_fundamental_forensics.py"
+       - "scripts/build_finance_intelligence_page.py"
++      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
++      - "scripts/build_expectation_surface.py"
+       - "engine/sector_intelligence/finance_watching.py"
+       - "engine/sector_intelligence/finance_witness_hints.py"
+       - "engine/sector_intelligence/finance_page_signal.py"
+@@ -36955,6 +36978,8 @@ jobs:
+       - "scripts/build_debt_maturity.py"
+       - "scripts/build_fundamental_forensics.py"
+       - "scripts/build_finance_intelligence_page.py"
++      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
++      - "scripts/build_expectation_surface.py"
+       - "engine/sector_intelligence/finance_watching.py"
+       - "engine/sector_intelligence/finance_witness_hints.py"
+       - "engine/sector_intelligence/finance_page_signal.py"
+diff --git a/templates/theme.css b/templates/theme.css
+index 3e132c2782b1..5fc8db9655af 100644
+--- a/templates/theme.css
++++ b/templates/theme.css
+@@ -189,6 +189,21 @@
+   --mc-stance-bad: transparent;
+   --mc-stance-neutral: transparent;
+   --mc-stance-fill: var(--mc-stance-neutral);
++  /* Expectation Surface page tokens (templates/expectation_surface.html.j2 aliases them under body.page-es) */
++  --esurf-hair: color-mix(in srgb, var(--line) 78%, transparent);
++  --esurf-hair-soft: color-mix(in srgb, var(--line) 44%, transparent);
++  --esurf-ser1: var(--info);
++  --esurf-ser2: #d4a017;
++  --esurf-band: color-mix(in srgb, var(--esurf-ser1) 15%, transparent);
++  --esurf-flat: #5f6879;
++  --esurf-skel: #22262f;
++  --esurf-neutral-soft: color-mix(in srgb, var(--muted) 14%, transparent);
++  --esurf-warn-soft: color-mix(in srgb, var(--warn) 13%, transparent);
++  --esurf-warn-line: color-mix(in srgb, var(--warn) 40%, transparent);
++  --esurf-ok-soft: color-mix(in srgb, var(--ok) 13%, transparent);
++  --esurf-btn-hover: color-mix(in srgb, var(--panel2) 72%, var(--line));
++  --esurf-chip-warn-hover: color-mix(in srgb, var(--warn) 18%, transparent);
++  --esurf-mv-hover: color-mix(in srgb, var(--panel2) 60%, transparent);
+ }
+ html[data-theme="light"] {
+   /* light glass buttons: white reads thin when too transparent, so lift the fill
+@@ -208,6 +223,15 @@ html[data-theme="light"] {
+   --mc-stance-warn: color-mix(in srgb, var(--warn) 6%, transparent);
+   --mc-stance-bad: color-mix(in srgb, var(--act) 6%, transparent);
+   --mc-stance-neutral: color-mix(in srgb, var(--muted) 6%, transparent);
++  --esurf-ser1: #2f63c4;
++  --esurf-ser2: #8f6a04;
++  --esurf-band: color-mix(in srgb, var(--esurf-ser1) 11%, transparent);
++  --esurf-flat: #8a93a1;
++  --esurf-skel: #e9ecf1;
++  --esurf-neutral-soft: var(--panel2);
++  --esurf-warn-soft: color-mix(in srgb, var(--warn) 12%, var(--panel));
++  --esurf-warn-line: color-mix(in srgb, var(--warn) 45%, transparent);
++  --esurf-ok-soft: color-mix(in srgb, var(--ok) 10%, var(--panel));
+ }
+ html[data-theme="light"] {
+   /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA

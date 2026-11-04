@@ -1,0 +1,18 @@
+{
+  "schema": "intl.normal_main_merge_start.v1",
+  "at": "2026-10-22T07:45:28.948190+00:00",
+  "ours": "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+  "main": "90df0e302637ade26b894aee46141b6a1813a630",
+  "merge_base": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+  "kind": "ordinary_local_two_parent_merge_no_rewrite",
+  "remote_effect": false,
+  "exit_code": 1,
+  "output": "Auto-merging .github/ci/legacy-jobs.yml\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/manifest.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/manifest.json\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\nAuto-merging site/research_screener.html\nCONFLICT (content): Merge conflict in site/research_screener.html\nAuto-merging site/theme.css\nAuto-merging templates/theme.css\nAuto-merging tests/test_site_access_boundary.py\nAutomatic merge failed; fix conflicts and then commit the result.\n",
+  "unmerged": [
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+    "site/research_screener.html"
+  ],
+  "merge_head": "90df0e302637ade26b894aee46141b6a1813a630"
+}

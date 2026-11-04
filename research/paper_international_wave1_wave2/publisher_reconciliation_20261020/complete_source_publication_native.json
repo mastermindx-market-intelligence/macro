@@ -1,0 +1,50 @@
+{
+  "schema": "mastermind.intl_source_publication_native_retention.v1",
+  "commit": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"schema\": \"mastermind.studio_git_commit_result.v1\",\n  \"status\": \"OK\",\n  \"effect_state\": \"APPLIED\",\n  \"code\": \"APPLIED\",\n  \"action_ref\": \"69c4209187ba34b871ba4320c901eb09a26d83c2a113659c99348395168699ec\",\n  \"operation_id\": \"intl-country-cockpit-20261018\",\n  \"branch\": \"sol/web-intl-country-cockpit-20261018\",\n  \"previous_head_sha\": \"11c83bb5dfb0c8199a0fb0cb2c6e70452c724984\",\n  \"commit_head_sha\": \"ec1277e909ffed27f58f9f4b107b81f5985fb7b8\",\n  \"local_head_sha\": \"ec1277e909ffed27f58f9f4b107b81f5985fb7b8\",\n  \"clean\": true,\n  \"index_synced\": true\n}"
+      }
+    ],
+    "structuredContent": {
+      "schema": "mastermind.studio_git_commit_result.v1",
+      "status": "OK",
+      "effect_state": "APPLIED",
+      "code": "APPLIED",
+      "action_ref": "69c4209187ba34b871ba4320c901eb09a26d83c2a113659c99348395168699ec",
+      "operation_id": "intl-country-cockpit-20261018",
+      "branch": "sol/web-intl-country-cockpit-20261018",
+      "previous_head_sha": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+      "commit_head_sha": "ec1277e909ffed27f58f9f4b107b81f5985fb7b8",
+      "local_head_sha": "ec1277e909ffed27f58f9f4b107b81f5985fb7b8",
+      "clean": true,
+      "index_synced": true
+    },
+    "isError": false
+  },
+  "push": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"schema\": \"mastermind.studio_git_push_result.v1\",\n  \"status\": \"OK\",\n  \"effect_state\": \"APPLIED\",\n  \"code\": \"APPLIED\",\n  \"action_ref\": \"93e05b2966daa48421c33b01dcd7f2fa434df1e6f6df9bae970c63d6bd59c424\",\n  \"push_attempted\": true,\n  \"operation_id\": \"intl-country-cockpit-20261018\",\n  \"branch\": \"sol/web-intl-country-cockpit-20261018\",\n  \"local_head_sha\": \"ec1277e909ffed27f58f9f4b107b81f5985fb7b8\",\n  \"remote_head_sha\": \"ec1277e909ffed27f58f9f4b107b81f5985fb7b8\",\n  \"clean\": true,\n  \"publication_state\": \"APPLIED\",\n  \"ready_to_push\": false\n}"
+      }
+    ],
+    "structuredContent": {
+      "schema": "mastermind.studio_git_push_result.v1",
+      "status": "OK",
+      "effect_state": "APPLIED",
+      "code": "APPLIED",
+      "action_ref": "93e05b2966daa48421c33b01dcd7f2fa434df1e6f6df9bae970c63d6bd59c424",
+      "push_attempted": true,
+      "operation_id": "intl-country-cockpit-20261018",
+      "branch": "sol/web-intl-country-cockpit-20261018",
+      "local_head_sha": "ec1277e909ffed27f58f9f4b107b81f5985fb7b8",
+      "remote_head_sha": "ec1277e909ffed27f58f9f4b107b81f5985fb7b8",
+      "clean": true,
+      "publication_state": "APPLIED",
+      "ready_to_push": false
+    },
+    "isError": false
+  }
+}

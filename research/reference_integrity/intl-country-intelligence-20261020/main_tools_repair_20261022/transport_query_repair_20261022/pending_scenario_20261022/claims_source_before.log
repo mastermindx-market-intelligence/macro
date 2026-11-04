@@ -1,0 +1,1 @@
+::error title=allowlist-missing::data/regime/validated_claims_allowlist.json is absent — this checkout cannot answer which 'validated' claims are backed. That is a CHECKOUT fault (partial/sparse tree), NOT a wave of new unearned claims: restore the file, do not rewrite the copy a full-tree run would report.

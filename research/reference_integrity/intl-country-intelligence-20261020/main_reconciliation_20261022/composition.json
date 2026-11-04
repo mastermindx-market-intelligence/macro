@@ -1,0 +1,208 @@
+{
+  "schema": "intl.current_main_reconciliation.v1",
+  "at": "2026-10-22T00:51:04.740899+00:00",
+  "parents": [
+    "7e99587336105a939c830a00b799d7787624d09b",
+    "25051144947f027c698cd1ce10e3c8824ee6ade9"
+  ],
+  "base": "2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915",
+  "reason": "REST PR base and test-merge refs were stale; actual current main caused three P0B receipt conflicts and suppressed pull_request CI.",
+  "ci_jobs": 348,
+  "unchanged_main_jobs": 340,
+  "local_changed_job_checks": [
+    {
+      "job": "international-workspace-foundation",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_prices.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py",
+        "templates/intl_country_cockpit.css",
+        "templates/intl_country_cockpit.html.j2",
+        "templates/intl_country_cockpit.js",
+        "tests/fixtures/intl_currency_observations_20261020.json",
+        "tests/fixtures/intl_weo_october_2026_fiscal_api.json",
+        "tests/fixtures/intl_weo_october_2026_tables.json",
+        "tests/test_intl_country_cockpit.py",
+        "tests/test_intl_currency_observation.py",
+        "tests/test_intl_forecast_vintages.py",
+        "tests/test_intl_outlook_interpretation.py",
+        "tests/test_intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "international-workspace-browser",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py",
+        "templates/intl_country_cockpit.css",
+        "templates/intl_country_cockpit.html.j2",
+        "templates/intl_country_cockpit.js"
+      ]
+    },
+    {
+      "job": "intelligence-registry",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "itr-turn-rotation",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "biocatalyst-serving",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "lib/intl_currency_observation.py"
+      ]
+    },
+    {
+      "job": "washout-turn-organ",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "unrun-picks-boards",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "lib/intl_currency_observation.py"
+      ]
+    }
+  ],
+  "unmerged_paths_resolved": [
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"
+  ],
+  "parent_evidence": [
+    {
+      "parent": "7e99587336105a939c830a00b799d7787624d09b",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/previous_published/manifest.json",
+      "sha256": "f4c5a4701396a8e4ed32790e81bc8a33dc078c534947c44791353c9e8c6e011d"
+    },
+    {
+      "parent": "7e99587336105a939c830a00b799d7787624d09b",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/previous_published/mobile-layout.json",
+      "sha256": "cf14eb806fc9151123df35404439af9d6a597f9329a3a4cb5ee6cd1fe92202a5"
+    },
+    {
+      "parent": "7e99587336105a939c830a00b799d7787624d09b",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/previous_published/mobile-layout-canada.json",
+      "sha256": "a69115921c8233b2fc20b4cfd25c0184def0aec5423960474ced3ffb462b2c5d"
+    },
+    {
+      "parent": "7e99587336105a939c830a00b799d7787624d09b",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/previous_published/rendered-fixture.json",
+      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+    },
+    {
+      "parent": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/incoming_main/manifest.json",
+      "sha256": "c679b7fae5fa312857eb2a8769b988182b1777845632fed801706c82b9e60c8f"
+    },
+    {
+      "parent": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/incoming_main/mobile-layout.json",
+      "sha256": "67c2507347d089b35316bf41e16b0eb488f7cd9f6e35da40b8c2bf417af4c8b9"
+    },
+    {
+      "parent": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/incoming_main/mobile-layout-canada.json",
+      "sha256": "1301819e5858fefd046abecbe842eb59e9d72717e685854961a3f36811b8b5b8"
+    },
+    {
+      "parent": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/incoming_main/rendered-fixture.json",
+      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+    }
+  ],
+  "direct_country_source_unchanged": true,
+  "shared_runtime_changed": true,
+  "p0b_state": "Both parents archived; incoming-main receipts are only a historical staging point. Fresh actual remint required.",
+  "production_acceptance": false,
+  "shared_shell_repair_fence": "unchanged; no retry, replacement, or consumption of unknown result"
+}

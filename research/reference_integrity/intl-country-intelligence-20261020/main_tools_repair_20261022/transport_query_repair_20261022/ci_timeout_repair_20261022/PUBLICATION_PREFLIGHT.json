@@ -1,0 +1,30 @@
+{
+  "schema": "intl.budget-publication-preflight.v1",
+  "head": "d73b6f4bb15fb7882fbedb83aac41a354a02458b",
+  "observed_base": "2d33475adef502ab6b00b8003356c1b0ad1673c0",
+  "modified_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/CHECKPOINT.md",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/evidence_archive_20261022/README.md"
+  ],
+  "new_paths": [
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/CI_BUDGET.patch",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/CI_BUDGET_REPAIR.json",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/LOCAL_VALIDATION.json",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/MANIFEST_VALIDATION_CORRECTED.json",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/OLD_PACK11_FAILURE.log",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/OWNER_CAPTURED_CI_REVIEW.md",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/PR_BODY_BEFORE_BUDGET_PUBLICATION.md",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/manifest_validate.log",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/manifest_validate_corrected.log",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/ci_timeout_repair_20261022/restored_gs_frozen_fixture.log",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/evidence_archive_20261022/GS_THEME_FIXTURE_QUALIFICATION.json",
+    "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/proposed_main6a420261022_repair/theme.css"
+  ],
+  "projected_pr_paths": 2844,
+  "projected_includes_this_receipt": false,
+  "expected_after_adding_this_receipt": 2845,
+  "source_delta": "one manifest timeout field; exact GS fixture restoration; archive qualification and evidence only",
+  "current_theme_sha256": "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+  "time": "2026-10-22T21:24:35.797760+00:00"
+}

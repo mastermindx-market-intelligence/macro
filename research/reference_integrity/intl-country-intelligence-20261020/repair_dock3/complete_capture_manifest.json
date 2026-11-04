@@ -1,0 +1,319 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-20T20:57:30Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://intl.test/nav_market.js?v=20261015-mm-return-language",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "https://cloud.umami.is/script.js",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://intl.test/nav_market.js?v=20261015-mm-return-language"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3371,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 5172,
+            "elements_wider_than_viewport": 111,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 3371,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 3,
+          "h2": 20,
+          "h3": 64,
+          "h4": 77,
+          "h5": 21,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop"
+        },
+        "panel_count": 43,
+        "payload_bytes_total": 454418,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 28,
+        "screenshot_completion": 1.0,
+        "section_count": 2,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 790
+      },
+      "page_id": "intl.html",
+      "registry_route": "/intl.html",
+      "route": "/intl.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 572530,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock3_repair/6f5d9537b3254f87.png",
+          "force_state": null,
+          "height": 3371,
+          "locale": "en",
+          "sha256": "6f5d9537b3254f878e937689f5812a8a2d2aaad6c37e9206c16e17922adbcff4",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 543226,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock3_repair/41c4bef4a992d248.png",
+          "force_state": null,
+          "height": 3371,
+          "locale": "en",
+          "sha256": "41c4bef4a992d248695b42a624c1e1037bb21dea0af5d0b135ce34e0da910dd5",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 574121,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock3_repair/796b727c51d9899a.png",
+          "force_state": null,
+          "height": 3329,
+          "locale": "zh",
+          "sha256": "796b727c51d9899a3571ab732d6693a1ac8cede5fb6b3f3364d5160cc86e1029",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 545333,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock3_repair/9c64a241c0e2373e.png",
+          "force_state": null,
+          "height": 3329,
+          "locale": "zh",
+          "sha256": "9c64a241c0e2373e9f40440d70c1fe3583fb19e2e3089ca734b50d1c06596c33",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 449314,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock3_repair/8b4c4535bbdbb1f1.png",
+          "force_state": null,
+          "height": 5172,
+          "locale": "en",
+          "sha256": "8b4c4535bbdbb1f1bdf3bbf55b955a74804a67756b0495e589300f34a12dd236",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 431598,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock3_repair/9a2ef2e2f206931b.png",
+          "force_state": null,
+          "height": 5172,
+          "locale": "en",
+          "sha256": "9a2ef2e2f206931bff73f2877a89797707b14ae7d32a9a60eac56444197b81dd",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 445003,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock3_repair/57294f0b154e0784.png",
+          "force_state": null,
+          "height": 4794,
+          "locale": "zh",
+          "sha256": "57294f0b154e0784bdd0171fe40e46a9ee9600af84374d1b55b98d139c3e7f0f",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 425931,
+          "captured": true,
+          "file": "../../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock3_repair/7eaa8645e9c54805.png",
+          "force_state": null,
+          "height": 4794,
+          "locale": "zh",
+          "sha256": "7eaa8645e9c548054d240c751ea557353f4a89358aacd26a181d5ea4affb02fb",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/intl.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "http://intl.test",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

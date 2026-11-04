@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_intl_build.py",
+    "tests/test_public_chrome.py::test_shared_public_nav_matches_landing_core_information_architecture",
+    "tests/test_public_chrome.py::test_shared_public_footer_matches_landing_information_architecture"
+  ],
+  "started_at": "2026-10-19T10:52:33.660062+00:00",
+  "finished_at": "2026-10-19T10:52:46.223715+00:00",
+  "exit_code": 0,
+  "log": "research/paper_international_wave1_wave2/policy_coverage_20261019/public_html_tests.log"
+}

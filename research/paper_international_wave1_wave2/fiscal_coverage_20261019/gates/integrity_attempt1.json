@@ -1,0 +1,394 @@
+{
+  "schema": "mastermind.intl_fiscal_integrity.v1",
+  "checked_at": "2026-10-20T02:54:06.190275+00:00",
+  "baseline_sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27",
+  "baseline_matches_admission": true,
+  "archive_count": 73,
+  "prior_archive_count": 37,
+  "preserved_baseline_fields": {
+    "schema": true,
+    "official": true,
+    "forecasts": true,
+    "sources": true,
+    "errors": true,
+    "forecast_basis": true,
+    "snapshot_note": true,
+    "forecast_diagnostics": true,
+    "cpi_series": true,
+    "policy_decisions": true,
+    "policy_reviews": true
+  },
+  "all_original_records_preserved": false,
+  "new_fiscal_count": 8,
+  "new_fiscal_ids_present": true,
+  "cutoff_corrections": [
+    {
+      "record_id": "19bada3706525f26e602:89ead72674c712931dbe:1",
+      "original_id": "19bada3706525f26e602:0e52ef339e5cf2326ddb:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "77486419e3dc38fc842c:90f7ec8102b9e444391b:1",
+      "original_id": "77486419e3dc38fc842c:d811d8998c4958a203ba:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "b64386d1f9515b6c271f:9e2779f5d9c913b3434a:1",
+      "original_id": "b64386d1f9515b6c271f:f34b33ca568ad9061e72:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "b6c649591197a474e6a8:7adb55bfaf35ab0c1605:1",
+      "original_id": "b6c649591197a474e6a8:08d4e2644933b75c74ec:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "1fc061b537bc64b082e9:76b7ecafa4d96436a9aa:1",
+      "original_id": "1fc061b537bc64b082e9:08dc6731ef9957a0e871:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "778e9ce95e9281c3bf97:a43ac8c370aedd721985:1",
+      "original_id": "778e9ce95e9281c3bf97:86f06fb6072f195fc802:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "fddfd4de33450f47f162:74addd9a745fd30c9335:1",
+      "original_id": "fddfd4de33450f47f162:b80f32c0e3f515e31e27:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "92c5b444202c9bd37c0a:55f76e1025fe810cb55e:1",
+      "original_id": "92c5b444202c9bd37c0a:29eda8abc7e13a89354b:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "7016e5539eeadad3b11f:cb20f453a1c880514852:1",
+      "original_id": "7016e5539eeadad3b11f:e947330b684c4b310077:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "8067e6bc49735ec8b9a0:67f126c04ec0c33daa5c:1",
+      "original_id": "8067e6bc49735ec8b9a0:6c66f0789587d223a8e3:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "74e5c1362730537b50fe:04d78852f4e2dd8ab39c:1",
+      "original_id": "74e5c1362730537b50fe:abcbffb131bfac00aff5:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "4ad98d87f89a9d17c913:71ef2e86aabf00f475d9:1",
+      "original_id": "4ad98d87f89a9d17c913:252096ac5279f2aa6e54:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "936683262c12aabc2a73:bbecac6edc6ea3278a4f:1",
+      "original_id": "936683262c12aabc2a73:37dd2e2fc0b1a0a0c018:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "210641af717d57d2b3d9:4b551ac1b290012a8b5f:1",
+      "original_id": "210641af717d57d2b3d9:7504fab310aaf2b40d5b:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "2362bf3b00c99bf64698:5e645829b570a6cdf1b7:1",
+      "original_id": "2362bf3b00c99bf64698:b88cad8edd006fa8ac33:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "7c309047ba22295ae6ed:6d02e7b1dff25fac8e69:1",
+      "original_id": "7c309047ba22295ae6ed:291c694cc06fb96b9e1d:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "e934b5cbc59b5298fee6:b03ee12c1e9a6748a1ee:1",
+      "original_id": "e934b5cbc59b5298fee6:a4e4f4b9cb6b844cbc33:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "e4229e86866db17f953f:1cc470b0f509ccf9f625:1",
+      "original_id": "e4229e86866db17f953f:bfb0989eb81278c1b002:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "1cf121efc4a07b68e480:cb2515049e9afff724c5:1",
+      "original_id": "1cf121efc4a07b68e480:068758b2b28b7d4b63cc:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "081734c97c6fb5128178:948fc0a7a8453ea5bc70:1",
+      "original_id": "081734c97c6fb5128178:a23ab2407836ecc0952c:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "ed3a0f7b026c8afebacf:bf8f60ad5913ac8c3786:1",
+      "original_id": "ed3a0f7b026c8afebacf:996d731c2e37519340fe:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "9828d6110ad543ca476b:33388552d7c3cfc9b3ac:1",
+      "original_id": "9828d6110ad543ca476b:735788528a4c0fdc63f9:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "97ff8952df4efe32b6c2:988b027ebd8f053e4ba1:1",
+      "original_id": "97ff8952df4efe32b6c2:1d2eac1ba01fd3cb2b48:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "09d68c9ea76e2743e8d5:586723dcc4d98a8a6ce0:1",
+      "original_id": "09d68c9ea76e2743e8d5:6826887a722c6f6810a8:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "12caa1110c2e03cb7e10:696dd8e1dab4ef7e5096:1",
+      "original_id": "12caa1110c2e03cb7e10:39aab3319f3063f72e32:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "d8b312308ea19037ad2c:c878d255f3e3d40c6b87:1",
+      "original_id": "d8b312308ea19037ad2c:56b82be8ca1729c70bf4:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "6fe2da7526203d3994d6:5875d751b38ad0f7f9e6:1",
+      "original_id": "6fe2da7526203d3994d6:ed620533c6943fdfc4dd:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    },
+    {
+      "record_id": "71d3f4c854d8671a3f19:5cb54ee7064816010341:1",
+      "original_id": "71d3f4c854d8671a3f19:dfd4f47c95806d555157:0",
+      "data_and_source_preserved": true,
+      "cutoff": "2026-09-30",
+      "sequence": 1,
+      "custody_is_actual_admission": true
+    }
+  ],
+  "source_raw_checks": [
+    {
+      "series": "GGXCNL_NGDP",
+      "hash_match": true,
+      "bytes_match": true,
+      "http_status": 200
+    },
+    {
+      "series": "GGXWDG_NGDP",
+      "hash_match": true,
+      "bytes_match": true,
+      "http_status": 200
+    }
+  ],
+  "canonical_manifest_matches_browser": true,
+  "canonical_capture_checks": [
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/38283fb7ae98b30b.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/8e4709407ebff72d.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/29eeb910e7c5e101.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/e7c899162c3daccc.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/14f3fb6cb2955dc5.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/e61f6736bf33575b.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/513b7f6b255ec54f.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/b4bb52d215857270.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/c01e2e5043d1efe4.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/7c1b35f179b04869.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/dad5e401dc04fbd4.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    },
+    {
+      "file": "mockups/evidence/intl-fiscal-coverage-20261020/5674755a39231c86.png",
+      "hash_match": true,
+      "bytes_match": true,
+      "captured": true
+    }
+  ],
+  "focused_screenshot_checks": [
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/kr-desktop-light-en.png",
+      "hash_match": true
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/au-desktop-light-zh.png",
+      "hash_match": true
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/kr-desktop-dark-en.png",
+      "hash_match": true
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/tw-mobile-light-en.png",
+      "hash_match": true
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/in-mobile-dark-zh.png",
+      "hash_match": true
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/fiscal_shots/in-narrow-light-en.png",
+      "hash_match": true
+    }
+  ],
+  "html_archive_checks": [
+    {
+      "html": "intl_country_preview.html",
+      "archive_hash_match": true,
+      "raw_hash_match": true
+    },
+    {
+      "html": "intl_integrated_preview.html",
+      "archive_hash_match": true,
+      "raw_hash_match": true
+    },
+    {
+      "html": "intl_stocks_integrated_preview.html",
+      "archive_hash_match": true,
+      "raw_hash_match": true
+    }
+  ],
+  "paper_artifact_hashes_match": true,
+  "paper_manifest_binding_matches": true,
+  "asset_repair_hashes_match": true,
+  "removed_archived_integrated_text_copies": [
+    "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_integrated_preview.html",
+    "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_stocks_integrated_preview.html"
+  ],
+  "new_text_whitespace_findings": [],
+  "tracked_diff_check_exit": 0,
+  "head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "head_preserved": true,
+  "passed": false
+}

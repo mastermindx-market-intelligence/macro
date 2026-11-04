@@ -1,0 +1,13 @@
+{
+  "recorded_at": "2026-10-20T21:20:43.495189+00:00",
+  "parent_head": "883a1e48efdf9c334c08665262efa0961b1997a0",
+  "source_commit": "442042e591d255dd24b540ff240edb4c0410c297",
+  "artifact_commit": "883a1e48efdf9c334c08665262efa0961b1997a0",
+  "html_sha256": "ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0",
+  "approval_sha256": "ec306697c6566e12eff6a4ece99f1fbfc82cff86207f382a4781fb188e5e7044",
+  "local_gates_sha256": "fceaeeaa38b2f35727937e2f01d2cecdbad3e669dc3fba70089a61f7ff1bd7b8",
+  "expected_prior_remote_head": "6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7",
+  "changed_paths": 48,
+  "unexpected_paths": [],
+  "production_claimed": false
+}

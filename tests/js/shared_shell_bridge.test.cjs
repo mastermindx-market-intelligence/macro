@@ -1692,6 +1692,285 @@ test('credential-bearing history URLs never mutate or enter the protocol', () =>
   }
 });
 
+/* ===================================================================
+ * MMXSharedShell.sameDocumentFragment(): read-only classification of a
+ * REAL anchor element.
+ *
+ * The provenance these tests pin is the private projected record. Two
+ * anchors authored "#id" and "/intl.html#id" project to the identical
+ * displayed href, so nothing a consumer can read off the DOM separates
+ * them; only the bridge's own record does. A controller that guessed from
+ * the displayed URL gets the second one wrong the moment the parent
+ * changes the current query.
+ * =================================================================== */
+
+const LIBRARY = '?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=';
+
+function activated(extra) {
+  const ctx = harness(extra);
+  ctx.activate();
+  return ctx;
+}
+// An anchor that reaches the projection sweep the way a real one does.
+function projected(ctx, attrs, id) {
+  const el = ctx.mkEl('A', Object.assign({ id: id || attrs.href }, attrs));
+  ctx.mutateAdd(el);
+  return el;
+}
+// The incumbent page changing its own view: a wrapped same-document history
+// call the parent accepts, which is the real path to a changed current query.
+function acceptViewChange(ctx, search) {
+  const before = ctx.activeCount('NAVIGATE');
+  ctx.sandbox.history.replaceState({ view: 'library' }, '', '/tools' + search);
+  assert.strictEqual(ctx.activeCount('NAVIGATE'), before + 1, 'view change must reach the parent');
+  const nav = ctx.lastOf('NAVIGATE');
+  ctx.dispatchMessage({
+    protocol: 'mmx.shared-shell.v1', frameGeneration: 'g1', type: 'LOCATION_ACCEPTED',
+    requestId: nav.requestId, canonicalPath: nav.href,
+  });
+  return ctx;
+}
+
+test('A authored fragment stays same-document across a view query change; an authored path does not', () => {
+  const ctx = activated({ childUrl: 'https://www.mastermind-x.com/tools?mmx_shell=1&mmx_generation=g1' });
+  const fragmentAuthored = projected(ctx, { href: '#lead-rotation' }, 'a-fragment');
+  const pathAuthored = projected(ctx, { href: '/tools#lead-rotation' }, 'a-path');
+
+  // Anti-vacuity: the two anchors really do display one identical href.
+  assert.strictEqual(fragmentAuthored.getAttribute('href'), pathAuthored.getAttribute('href'));
+  assert.strictEqual(fragmentAuthored.getAttribute('href'), PROD + '/tools#lead-rotation');
+  assert.strictEqual(ctx.api().sameDocumentFragment(fragmentAuthored), 'lead-rotation');
+  assert.strictEqual(ctx.api().sameDocumentFragment(pathAuthored), 'lead-rotation');
+
+  acceptViewChange(ctx, LIBRARY);
+  assert.strictEqual(ctx.api().sameDocumentFragment(fragmentAuthored), 'lead-rotation');
+  assert.strictEqual(ctx.api().sameDocumentFragment(pathAuthored), null);
+  // Still the identical displayed href: the answer came from provenance alone.
+  assert.strictEqual(fragmentAuthored.getAttribute('href'), pathAuthored.getAttribute('href'));
+
+  // A copied node carries no record, so it must not inherit the classification.
+  const clone = ctx.mkEl('A', { id: 'a-clone', href: fragmentAuthored.getAttribute('href') });
+  assert.strictEqual(clone.getAttribute('href'), fragmentAuthored.getAttribute('href'));
+  assert.strictEqual(ctx.api().sameDocumentFragment(clone), null);
+  assert.strictEqual(ctx.api().sameDocumentFragment(fragmentAuthored), 'lead-rotation');
+});
+
+test('B classification reads the current href attribute, never a stale projected record', () => {
+  const ctx = activated({ childUrl: 'https://www.mastermind-x.com/tools?q=alpha&mmx_shell=1&mmx_generation=g1' });
+  const a = projected(ctx, { href: '#lead-rotation' }, 'a-rewritten');
+  // Projected against the child's CURRENT query, which is exactly the href the old
+  // controller-only heuristic would have compared.
+  assert.strictEqual(a.getAttribute('href'), PROD + '/tools?q=alpha#lead-rotation');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'lead-rotation');
+
+  // Rewritten before any MutationObserver delivery: the current attribute wins.
+  a.setAttribute('href', '?q=alpha#other-panel');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'other-panel');
+  a.setAttribute('href', '?q=beta#other-panel');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
+  a.setAttribute('href', '/dashboard#other-panel');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
+  a.setAttribute('href', 'https://evil.example/tools#other-panel');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
+  a.setAttribute('href', 'https://user:secret@www.mastermind-x.com/tools#other-panel');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
+  a.setAttribute('href', 'https://www.mastermind-x.com/login#other-panel');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
+  a.setAttribute('href', 'https://www.mastermind-x.com/tools#other-panel');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), null,
+    'an explicit CHILD path without the current query is a page link, not a fragment of this document');
+  a.setAttribute('href', '?q=alpha#other-panel');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'other-panel');
+  a.setAttribute('href', '#lost-provenance');
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'lost-provenance');
+
+  // The stale record is gone with it: real navigation now follows the rewrite,
+  // and never the value the bridge once projected.
+  ctx.click(a);
+  assert.strictEqual(ctx.lastOf('NAVIGATE').href, 'https://www.mastermind-x.com/tools?q=alpha#lost-provenance');
+  assert.strictEqual(ctx.lastOf('NAVIGATE').sameDocument, true);
+
+  // ...and an unregistered rewrite of an external target still keeps native semantics.
+  const external = projected(ctx, { href: '#panel' }, 'a-external');
+  external.setAttribute('href', 'https://evil.example/tools#panel');
+  const navsBefore = ctx.activeCount('NAVIGATE');
+  const evt = ctx.click(external);
+  assert.strictEqual(evt.defaultPrevented, false);
+  assert.strictEqual(ctx.activeCount('NAVIGATE'), navsBefore);
+  assert.strictEqual(external.getAttribute('target'), '_blank');
+  assert.ok(String(external.getAttribute('rel')).includes('noopener'));
+});
+
+test('C raw query bytes decide equality: spaces, plus, comma, %2c, duplicates and empty segments', () => {
+  const raw = '?q=A%20B&set=1,2&set=3%2c4&plus=A+B&empty=&flag';
+  const ctx = activated({ childUrl: 'https://www.mastermind-x.com/tools' + raw + '&mmx_shell=1&mmx_generation=g1' });
+
+  // Transport keys are filtered; every other byte is preserved as the server sent it.
+  assert.strictEqual(ctx.lastOf('READY').href, 'https://www.mastermind-x.com/tools' + raw);
+
+  // Authored fragment inherits the current query byte for byte.
+  assert.strictEqual(ctx.api().sameDocumentFragment(projected(ctx, { href: '#panel' }, 'a-inherit')), 'panel');
+  // An explicitly written identical query is still the same document.
+  assert.strictEqual(ctx.api().sameDocumentFragment(projected(ctx, { href: raw + '#panel' }, 'a-same')), 'panel');
+  // Transport keys alone never decide it either way.
+  assert.strictEqual(
+    ctx.api().sameDocumentFragment(projected(ctx, { href: '?mmx_shell=1&mmx_generation=g1&q=A%20B&set=1,2&set=3%2c4&plus=A+B&empty=&flag#panel' }, 'a-transport')),
+    'panel');
+
+  // One byte different is a different destination, however a parser might normalise it.
+  const nearMisses = [
+    ['?q=A+B&set=1,2&set=3%2c4&plus=A+B&empty=&flag#panel', 'space encoded as plus'],
+    ['?q=A%20B&set=1,2&set=3%2C4&plus=A+B&empty=&flag#panel', 'lowercase %2c normalised'],
+    ['?set=1,2&q=A%20B&set=3%2c4&plus=A+B&empty=&flag#panel', 'duplicate parameter reordered'],
+    ['?q=A%20B&set=1,2&set=3%2c4&plus=A%20B&empty=&flag#panel', 'plus decoded to space'],
+  ];
+  for (const [href, why] of nearMisses) {
+    assert.strictEqual(ctx.api().sameDocumentFragment(projected(ctx, { href }, 'a-' + why.replace(/\W+/g, '-'))),
+      null, why);
+  }
+  assert.strictEqual(ctx.api().sameDocumentFragment(projected(ctx, { href: raw + '#panel' }, 'a-exact')), 'panel');
+
+  // Empty segments are bytes, not noise a parser may collapse.
+  const seg = activated({ childUrl: 'https://www.mastermind-x.com/tools?a=1&&b=2&&mmx_shell=1&mmx_generation=g1' });
+  assert.strictEqual(seg.lastOf('READY').href, 'https://www.mastermind-x.com/tools?a=1&&b=2&');
+  assert.strictEqual(seg.api().sameDocumentFragment(projected(seg, { href: '#panel' }, 'a-seg')), 'panel');
+  assert.strictEqual(seg.api().sameDocumentFragment(projected(seg, { href: '?a=1&&b=2&#panel' }, 'a-seg-ok')), 'panel');
+  assert.strictEqual(seg.api().sameDocumentFragment(projected(seg, { href: '?a=1&b=2&#panel' }, 'a-seg-collapsed')), null);
+});
+
+test('D the helper is pure: no location, history, message, attribute, focus or scroll effect', () => {
+  // Before INIT it answers null and queues nothing for the INIT that follows.
+  const pre = harness({ childUrl: 'https://www.mastermind-x.com/tools?mmx_shell=1&mmx_generation=g1' });
+  const preAnchor = pre.mkEl('A', { id: 'a-pre', href: '#panel' });
+  const preUrl = pre.location().href;
+  assert.strictEqual(pre.api().active, false);
+  assert.strictEqual(pre.api().sameDocumentFragment(preAnchor), null);
+  assert.strictEqual(pre.sent.length, 0);
+  assert.strictEqual(pre.replaceCalls.length, 0);
+  assert.strictEqual(pre.pushCalls.length, 0);
+  assert.strictEqual(pre.calls.focus.length, 0);
+  assert.strictEqual(pre.calls.scrollTo.length, 0);
+  pre.activate();
+  assert.strictEqual(pre.activeCount('READY'), 1);
+  assert.strictEqual(pre.activeCount('NAVIGATE'), 0, 'no work may be replayed from a later INIT');
+  assert.strictEqual(pre.activeCount('ERROR'), 0);
+  assert.strictEqual(pre.location().href, preUrl);
+  assert.strictEqual(pre.api().sameDocumentFragment(preAnchor), 'panel');
+
+  const ctx = activated({ childUrl: 'https://www.mastermind-x.com/tools?q=alpha&mmx_shell=1&mmx_generation=g1' });
+  const a = projected(ctx, { href: '#lead-rotation' }, 'a-pure');
+  const blank = projected(ctx, { href: '#panel' }, 'a-blank');
+  const snapshot = {
+    url: ctx.location().href, sent: ctx.sent.length,
+    replace: ctx.replaceCalls.length, push: ctx.pushCalls.length,
+    focus: ctx.calls.focus.length, scroll: ctx.calls.scrollTo.length,
+    href: a.getAttribute('href'), target: a.getAttribute('target'), rel: a.getAttribute('rel'),
+    dispatched: ctx.dispatched.length,
+  };
+  // Repeated, interleaved and invalid calls in every order.
+  for (let i = 0; i < 5; i++) {
+    assert.strictEqual(ctx.api().sameDocumentFragment(a), 'lead-rotation');
+    assert.strictEqual(ctx.api().sameDocumentFragment(blank), 'panel');
+    for (const bad of [null, undefined, 0, '', 'a-panel', {}, [], ctx.docEl, ctx.body, ctx.head, ctx.mkEl('P', { id: 'p' })]) {
+      assert.strictEqual(ctx.api().sameDocumentFragment(bad), null, String(bad));
+    }
+    const detached = ctx.mkEl('A', { id: 'a-noattr-' + i });
+    assert.strictEqual(ctx.api().sameDocumentFragment(detached), null);
+  }
+  assert.deepStrictEqual({
+    url: ctx.location().href, sent: ctx.sent.length,
+    replace: ctx.replaceCalls.length, push: ctx.pushCalls.length,
+    focus: ctx.calls.focus.length, scroll: ctx.calls.scrollTo.length,
+    href: a.getAttribute('href'), target: a.getAttribute('target'), rel: a.getAttribute('rel'),
+    dispatched: ctx.dispatched.length,
+  }, snapshot);
+
+  // Native targets stay excluded, and the projection still behaves afterwards.
+  for (const attrs of [{ target: '_blank' }, { download: '' }, { role: 'button' }]) {
+    const native = projected(ctx, Object.assign({ href: '#panel' }, attrs), 'a-native');
+    assert.strictEqual(ctx.api().sameDocumentFragment(native), null, JSON.stringify(attrs));
+    assert.strictEqual(ctx.click(native).defaultPrevented, false, JSON.stringify(attrs));
+  }
+  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'lead-rotation');
+  ctx.click(a);
+  assert.strictEqual(ctx.lastOf('NAVIGATE').href, 'https://www.mastermind-x.com/tools?q=alpha#lead-rotation');
+  assert.strictEqual(a.getAttribute('href'), snapshot.href, 'the helper never rewrites the anchor');
+});
+
+
+// The page query is a pure projection, not a navigation or admission signal.
+function queryReadSnapshot(ctx) {
+  return JSON.stringify({
+    href: ctx.location().href, active: ctx.api() && ctx.api().active,
+    sent: ctx.sent, sequence: ctx.seq, dispatched: ctx.dispatched.length,
+    pushes: ctx.pushCalls, replacements: ctx.replaceCalls,
+    scrolls: ctx.calls.scrollTo.length, focuses: ctx.calls.focus.length,
+    cssReads: ctx.calls.cssReads, styles: ctx.styles.length,
+    attributes: ctx.nodes.map(node => node.__attrs),
+    observers: ctx.docEl.__observers.map(observer => observer.__active),
+    windowListeners: Object.fromEntries(Object.entries(ctx.winL).map(([key, value]) => [key, value.length])),
+    documentListeners: Object.fromEntries(Object.entries(ctx.docL).map(([key, value]) => [key, value.length]))
+  });
+}
+
+test('page search: exact decoded transport keys are removed without changing other bytes', () => {
+  const cases = [
+    ['?mmx_shell=1&mmx_generation=g1', ''],
+    ['?view=library&market=TW&mmx_shell=1&horizon=3m&basis=local&mmx_generation=g1', '?view=library&market=TW&horizon=3m&basis=local'],
+    ['?mmx_shell=1&%6Dmx_generation=g1&%6Dmx_shell=other&mmx_generation=g1&q=A%20B&q=A+B&set=1%2c2', '?q=A%20B&q=A+B&set=1%2c2'],
+    ['?mmx_shell=1&&view=library&&mmx_generation=g1&', '?&view=library&&'],
+    ['?mmx_shell=1&mmx_generation=g1&mmx_feature=x&mmx_shell_extra=1&MMX_SHELL=1&bad%zz=x&flag', '?mmx_feature=x&mmx_shell_extra=1&MMX_SHELL=1&bad%zz=x&flag'],
+    ['?mmx_shell=1&mmx_generation=g1&q=' + 'x'.repeat(9000), '?q=' + 'x'.repeat(9000)]
+  ];
+  for (const [query, expected] of cases) {
+    const ctx = harness({ childUrl: 'https://www.mastermind-x.com/tools' + query });
+    const api = ctx.api();
+    assert.equal(api.active, false);
+    assert.equal(api.readPageSearch(), expected);
+    assert.ok(Object.keys(api).includes('readPageSearch'));
+    assert.equal(Object.isFrozen(api), true);
+  }
+});
+
+test('page search: repeated pre and post INIT reads have no effects or queued work', () => {
+  const ctx = harness();
+  let timerCalls = 0;
+  const timer = ctx.sandbox.setTimeout;
+  ctx.sandbox.setTimeout = function () { timerCalls++; return timer.apply(this, arguments); };
+  for (const active of [false, true]) {
+    if (active) ctx.activate();
+    const before = queryReadSnapshot(ctx);
+    const timersBefore = timerCalls;
+    for (let i = 0; i < 100; i++) assert.equal(ctx.api().readPageSearch(), '?q=alpha');
+    assert.equal(queryReadSnapshot(ctx), before);
+    assert.equal(timerCalls, timersBefore);
+    assert.equal(ctx.api().active, active);
+  }
+  assert.equal(ctx.activeCount('NAVIGATE'), 0);
+  assert.equal(ctx.activeCount('READY'), 1);
+});
+
+test('page search: actual cleanup retires cached reader while persisted pagehide preserves it', () => {
+  const ctx = activated();
+  const reader = ctx.api().readPageSearch;
+  ctx.fireWin('pagehide', { persisted: true });
+  assert.equal(reader(), '?q=alpha');
+  ctx.fireWin('pagehide', { persisted: false });
+  assert.equal(ctx.sandbox.__MMX_SHARED_BRIDGE_INSTALLED__, true);
+  assert.equal(reader(), null);
+});
+
+test('page search: replacement and throwing current capability or location refuse without throwing', () => {
+  for (const failure of ['replacement', 'provider getter', 'location getter']) {
+    const ctx = harness();
+    const reader = ctx.api().readPageSearch;
+    if (failure === 'replacement') ctx.sandbox.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1' };
+    if (failure === 'provider getter') Object.defineProperty(ctx.sandbox, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider unavailable'); } });
+    if (failure === 'location getter') Object.defineProperty(ctx.sandbox, 'location', { configurable: true, get() { throw new Error('location unavailable'); } });
+    assert.equal(reader(), null, failure);
+  }
+});
+
 // The public application joins the existing beta origin; it does not admit arbitrary parents.
 test('app production parent earns the same exact READY handshake as beta', () => {
   const parent = 'https://app.mastermind-x.com';

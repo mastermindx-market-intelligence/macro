@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/tmp/intl-country-ci-20261103/bin/python",
+    "scripts/agentos.py",
+    "validate",
+    "--root",
+    "agentos"
+  ],
+  "started_at": "2026-11-03T08:56:09.255021+00:00",
+  "state": "PASS",
+  "exit_code": 0,
+  "completed_at": "2026-11-03T08:56:11.649977+00:00"
+}

@@ -1,0 +1,32 @@
+{
+  "recorded_at": "2026-10-22T20:06:18.467272+00:00",
+  "source_head": "9bf7161b6c856a8df5eaa18a0b9ef8fbb1e206bb",
+  "materialized_exact_tracked_path": "data/regime/validated_claims_allowlist.json",
+  "sha256": "f252221c9b6ef40f7ac49fd0503c4c10e68b7b01557d2c324ddfea1d9188c0fc",
+  "source_or_allowlist_semantics_changed": false,
+  "prior_local_attempt": "source_claim_gate_receipt.json; CHECKOUT_FAILURE allowlist missing, not a claims verdict",
+  "checks": [
+    {
+      "name": "claims_selftest_qualified",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_validated_claims.py",
+        "--selftest"
+      ],
+      "exit_code": 0,
+      "log_sha256": "6cfb20cb5ae91c27955df424b4884a15d10d6665ada51ab9022c76c751264810"
+    },
+    {
+      "name": "claims_source_qualified",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_validated_claims.py",
+        "--scope",
+        "source"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b68abaa8622383e451c7bc5d9aea75115eb94b4d99e701f96c265c8f9d8ab23f"
+    }
+  ],
+  "pass": true
+}

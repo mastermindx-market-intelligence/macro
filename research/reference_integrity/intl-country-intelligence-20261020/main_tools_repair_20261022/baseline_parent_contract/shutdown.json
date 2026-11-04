@@ -1,0 +1,14 @@
+{
+  "stopped_at": "2026-10-22T03:47:16.184678+00:00",
+  "processes": {
+    "child": {
+      "pid": 22386,
+      "exit_code": -15
+    },
+    "parent": {
+      "pid": 22387,
+      "exit_code": 0
+    }
+  },
+  "parent_tracked_source_clean": true
+}

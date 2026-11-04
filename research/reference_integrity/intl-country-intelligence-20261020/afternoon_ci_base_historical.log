@@ -1,0 +1,188 @@
+2026-10-20T11:15:15.9806553Z .....................s................................                   [100%]
+2026-10-20T11:15:15.9807030Z =================================== FAILURES ===================================
+2026-10-20T11:15:15.9807512Z ____________ test_all_fifteen_built_pages_are_clean_outside_details ____________
+2026-10-20T11:15:15.9807795Z 
+2026-10-20T11:15:15.9808550Z tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7f0a4e21b050>, _basetemp=PosixPath('/tmp/pytest-of-runner/pytest-4'), _retention_count=3, _retention_policy='all')
+2026-10-20T11:15:15.9809077Z 
+2026-10-20T11:15:15.9809275Z     def test_all_fifteen_built_pages_are_clean_outside_details(tmp_path_factory) -> None:
+2026-10-20T11:15:15.9809711Z         """P5 acceptance: hub + 14 deep-link pages, zero banned hits outside
+2026-10-20T11:15:15.9810071Z         .mc-details / .mc-primer."""
+2026-10-20T11:15:15.9810392Z         out = tmp_path_factory.mktemp("macro_command_15") / "site"
+2026-10-20T11:15:15.9810737Z         pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
+2026-10-20T11:15:15.9811123Z         names = {p.name for p in pages}
+2026-10-20T11:15:15.9811398Z         assert builder.HUB_PAGE.output in names
+2026-10-20T11:15:15.9811796Z         deep = [p for p in pages if p.name.startswith("macro_") and p.name.endswith(".html")
+2026-10-20T11:15:15.9812198Z                 and p.name != builder.HUB_PAGE.output]
+2026-10-20T11:15:15.9812668Z         assert len(deep) == 14, f"expected 14 deep-link pages, got {len(deep)}: {sorted(p.name for p in deep)}"
+2026-10-20T11:15:15.9813065Z         dirty: list[str] = []
+2026-10-20T11:15:15.9813432Z         for path in pages:
+2026-10-20T11:15:15.9813724Z             hits = guard.find_violations(path.read_text(encoding="utf-8"))
+2026-10-20T11:15:15.9814015Z             if hits:
+2026-10-20T11:15:15.9814250Z                 dirty.append(f"{path.name}: {hits[:4]}")
+2026-10-20T11:15:15.9814535Z >       assert dirty == [], dirty
+2026-10-20T11:15:15.9815815Z E       AssertionError: ['macro_labor_markets.html: [\'banned phrase \\\'axis\\\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5\']']
+2026-10-20T11:15:15.9816627Z E       assert ["macro_labor...om spec §5']"] == []
+2026-10-20T11:15:15.9816874Z E         
+2026-10-20T11:15:15.9817900Z E         Left contains one more item: 'macro_labor_markets.html: [\'banned phrase \\\'axis\\\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5\']'
+2026-10-20T11:15:15.9818653Z E         
+2026-10-20T11:15:15.9818842Z E         Full diff:
+2026-10-20T11:15:15.9819023Z E         - []
+2026-10-20T11:15:15.9819678Z E         + [
+2026-10-20T11:15:15.9820057Z E         +     "macro_labor_markets.html: ['banned phrase \\'axis\\' found in the reading "
+2026-10-20T11:15:15.9820568Z E         +     'path (outside mc-details/mc-primer) — move it into <details '
+2026-10-20T11:15:15.9820998Z E         +     'class="mc-details"> or replace it with the plain-word copy from spec '
+2026-10-20T11:15:15.9821237Z E         +     "§5']",
+2026-10-20T11:15:15.9821358Z E         + ]
+2026-10-20T11:15:15.9821427Z 
+2026-10-20T11:15:15.9821546Z tests/test_macro_command_copy_law.py:315: AssertionError
+2026-10-20T11:15:15.9821857Z ----------------------------- Captured stdout call -----------------------------
+2026-10-20T11:15:15.9824032Z ##[warning]no customer name for owner_ref 'business_cycle:leading_tier_index:2ee8a7fe62d231b4'
+2026-10-20T11:15:15.9825240Z ##[warning]no customer name for owner_ref 'business_cycle:leading_tier_momentum_6m:2078136e945d7215'
+2026-10-20T11:15:15.9826054Z ##[warning]no customer name for owner_ref 'business_cycle:leading_tier_index:2ee8a7fe62d231b4'
+2026-10-20T11:15:15.9826857Z ##[warning]no customer name for owner_ref 'business_cycle:leading_tier_momentum_6m:2078136e945d7215'
+2026-10-20T11:15:15.9827399Z _______________ test_user_facing_numbers_have_no_machine_floats ________________
+2026-10-20T11:15:15.9827562Z 
+2026-10-20T11:15:15.9827651Z     @pytest.mark.needs_full_checkout("site")
+2026-10-20T11:15:15.9827882Z     def test_user_facing_numbers_have_no_machine_floats() -> None:
+2026-10-20T11:15:15.9828222Z         """E-m3: rendered suite HTML never ships ≥4 fractional digits or e±."""
+2026-10-20T11:15:15.9828517Z         from scripts.build_macro_suite_pages import HUB_PAGE, SECTIONS, SUITE_PAGES
+2026-10-20T11:15:15.9828765Z         from lib.macro_suite_labels import (
+2026-10-20T11:15:15.9828976Z             format_user_facing_number, format_user_facing_text,
+2026-10-20T11:15:15.9829163Z         )
+2026-10-20T11:15:15.9829336Z         assert format_user_facing_number(0.7084035025522297) == "0.71"
+2026-10-20T11:15:15.9829778Z         assert format_user_facing_number(-0.21603351448561625) == "\u22120.22"
+2026-10-20T11:15:15.9830210Z         assert format_user_facing_number(66.66666666666667, kind="percent") == "66.7%"
+2026-10-20T11:15:15.9830572Z         rewritten = format_user_facing_text(
+2026-10-20T11:15:15.9830904Z             "6-month momentum 0.7084035025522297, breadth 66.66666666666667")
+2026-10-20T11:15:15.9831244Z         assert "0.7084035025522297" not in rewritten
+2026-10-20T11:15:15.9831505Z         assert "0.71" in rewritten
+2026-10-20T11:15:15.9831745Z         assert "66.7%" in rewritten
+2026-10-20T11:15:15.9832058Z         pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+2026-10-20T11:15:15.9832492Z         present = [name for name in pages if (ROOT / "site" / name).is_file()]
+2026-10-20T11:15:15.9832858Z         assert len(present) >= 14, present
+2026-10-20T11:15:15.9833429Z         hub = (ROOT / "site" / HUB_PAGE.output).read_text(encoding="utf-8")
+2026-10-20T11:15:15.9833843Z         found_sections = [sec.id for sec in SECTIONS if sec.id in hub]
+2026-10-20T11:15:15.9834213Z         assert len(found_sections) >= 12, found_sections
+2026-10-20T11:15:15.9834494Z         for name in present:
+2026-10-20T11:15:15.9834806Z             html = (ROOT / "site" / name).read_text(encoding="utf-8")
+2026-10-20T11:15:15.9835184Z >           assert guard.find_violations(html) == [], name
+2026-10-20T11:15:15.9835532Z E           AssertionError: macro_labor_markets.html
+2026-10-20T11:15:15.9835949Z E           assert ['banned phra...from spec §5'] == []
+2026-10-20T11:15:15.9836149Z E             
+2026-10-20T11:15:15.9836743Z E             Left contains one more item: 'banned phrase \'axis\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5'
+2026-10-20T11:15:15.9837166Z E             
+2026-10-20T11:15:15.9837297Z E             Full diff:
+2026-10-20T11:15:15.9837435Z E             - []
+2026-10-20T11:15:15.9837687Z E             + [
+2026-10-20T11:15:15.9837895Z E             +     "banned phrase 'axis' found in the reading path (outside "
+2026-10-20T11:15:15.9838243Z E             +     'mc-details/mc-primer) — move it into <details class="mc-details"> or '
+2026-10-20T11:15:15.9838651Z E             +     'replace it with the plain-word copy from spec §5',
+2026-10-20T11:15:15.9838837Z E             + ]
+2026-10-20T11:15:15.9838906Z 
+2026-10-20T11:15:15.9839028Z tests/test_macro_command_copy_law.py:1706: AssertionError
+2026-10-20T11:15:15.9839287Z =========================== short test summary info ============================
+2026-10-20T11:15:15.9840238Z FAILED tests/test_macro_command_copy_law.py::test_all_fifteen_built_pages_are_clean_outside_details - AssertionError: ['macro_labor_markets.html: [\'banned phrase \\\'axis\\\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5\']']
+2026-10-20T11:15:15.9840925Z assert ["macro_labor...om spec §5']"] == []
+2026-10-20T11:15:15.9841092Z   
+2026-10-20T11:15:15.9841666Z   Left contains one more item: 'macro_labor_markets.html: [\'banned phrase \\\'axis\\\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5\']'
+2026-10-20T11:15:15.9842139Z   
+2026-10-20T11:15:15.9842248Z   Full diff:
+2026-10-20T11:15:15.9842360Z   - []
+2026-10-20T11:15:15.9842470Z   + [
+2026-10-20T11:15:15.9842676Z   +     "macro_labor_markets.html: ['banned phrase \\'axis\\' found in the reading "
+2026-10-20T11:15:15.9842986Z   +     'path (outside mc-details/mc-primer) — move it into <details '
+2026-10-20T11:15:15.9843408Z   +     'class="mc-details"> or replace it with the plain-word copy from spec '
+2026-10-20T11:15:15.9843627Z   +     "§5']",
+2026-10-20T11:15:15.9843744Z   + ]
+2026-10-20T11:15:15.9844088Z FAILED tests/test_macro_command_copy_law.py::test_user_facing_numbers_have_no_machine_floats - AssertionError: macro_labor_markets.html
+2026-10-20T11:15:15.9844457Z assert ['banned phra...from spec §5'] == []
+2026-10-20T11:15:15.9844611Z   
+2026-10-20T11:15:15.9845117Z   Left contains one more item: 'banned phrase \'axis\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5'
+2026-10-20T11:15:15.9845530Z   
+2026-10-20T11:15:15.9845635Z   Full diff:
+2026-10-20T11:15:15.9845747Z   - []
+2026-10-20T11:15:15.9845853Z   + [
+2026-10-20T11:15:15.9846027Z   +     "banned phrase 'axis' found in the reading path (outside "
+2026-10-20T11:15:15.9846326Z   +     'mc-details/mc-primer) — move it into <details class="mc-details"> or '
+2026-10-20T11:15:15.9846613Z   +     'replace it with the plain-word copy from spec §5',
+2026-10-20T11:15:15.9846785Z   + ]
+2026-10-20T11:15:15.9846952Z 2 failed, 548 passed, 8 skipped in 65.84s (0:01:05)
+2026-10-20T11:15:16.0597620Z ##[endgroup]
+2026-10-20T11:15:16.0629650Z ##[error]market-os-macro-suite-pages: step 'Market OS macro suite pages — shell, labels, view model, builder' exited 1
+2026-10-20T11:15:17.8317936Z ##[group]dependency environment attempt 1 — pip install pytest pandas numpy pyarrow pyyaml
+
+2026-10-20T11:21:03.0289693Z .....................s................................                   [100%]
+2026-10-20T11:21:03.0290537Z =================================== FAILURES ===================================
+2026-10-20T11:21:03.0290832Z ____________ test_all_fifteen_built_pages_are_clean_outside_details ____________
+2026-10-20T11:21:03.0291001Z 
+2026-10-20T11:21:03.0291591Z tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7ffbc3fc2120>, _basetemp=PosixP...ork/_temp/ci-base-replay-rjajczxq/runner-temp/pytest-of-runner/pytest-1'), _retention_count=3, _retention_policy='all')
+2026-10-20T11:21:03.0292103Z 
+2026-10-20T11:21:03.0292272Z     def test_all_fifteen_built_pages_are_clean_outside_details(tmp_path_factory) -> None:
+2026-10-20T11:21:03.0292587Z         """P5 acceptance: hub + 14 deep-link pages, zero banned hits outside
+2026-10-20T11:21:03.0292828Z         .mc-details / .mc-primer."""
+2026-10-20T11:21:03.0293039Z         out = tmp_path_factory.mktemp("macro_command_15") / "site"
+2026-10-20T11:21:03.0293543Z         pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
+2026-10-20T11:21:03.0293920Z         names = {p.name for p in pages}
+2026-10-20T11:21:03.0294191Z         assert builder.HUB_PAGE.output in names
+2026-10-20T11:21:03.0294563Z         deep = [p for p in pages if p.name.startswith("macro_") and p.name.endswith(".html")
+2026-10-20T11:21:03.0294827Z                 and p.name != builder.HUB_PAGE.output]
+2026-10-20T11:21:03.0295167Z         assert len(deep) == 14, f"expected 14 deep-link pages, got {len(deep)}: {sorted(p.name for p in deep)}"
+2026-10-20T11:21:03.0295469Z         dirty: list[str] = []
+2026-10-20T11:21:03.0295696Z         for path in pages:
+2026-10-20T11:21:03.0296010Z             hits = guard.find_violations(path.read_text(encoding="utf-8"))
+2026-10-20T11:21:03.0296325Z             if hits:
+2026-10-20T11:21:03.0296578Z                 dirty.append(f"{path.name}: {hits[:4]}")
+2026-10-20T11:21:03.0296871Z >       assert dirty == [], dirty
+2026-10-20T11:21:03.0298210Z E       AssertionError: ['macro_labor_markets.html: [\'banned phrase \\\'axis\\\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5\']']
+2026-10-20T11:21:03.0298937Z E       assert ["macro_labor...om spec §5']"] == []
+2026-10-20T11:21:03.0299105Z E         
+2026-10-20T11:21:03.0299763Z E         Left contains one more item: 'macro_labor_markets.html: [\'banned phrase \\\'axis\\\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5\']'
+2026-10-20T11:21:03.0300266Z E         Use -v to get more diff
+2026-10-20T11:21:03.0300365Z 
+2026-10-20T11:21:03.0300485Z tests/test_macro_command_copy_law.py:315: AssertionError
+2026-10-20T11:21:03.0300800Z ----------------------------- Captured stdout call -----------------------------
+2026-10-20T11:21:03.0301733Z ##[warning]no customer name for owner_ref 'business_cycle:leading_tier_index:2ee8a7fe62d231b4'
+2026-10-20T11:21:03.0302796Z ##[warning]no customer name for owner_ref 'business_cycle:leading_tier_momentum_6m:2078136e945d7215'
+2026-10-20T11:21:03.0305887Z ##[warning]no customer name for owner_ref 'business_cycle:leading_tier_index:2ee8a7fe62d231b4'
+2026-10-20T11:21:03.0307050Z ##[warning]no customer name for owner_ref 'business_cycle:leading_tier_momentum_6m:2078136e945d7215'
+2026-10-20T11:21:03.0307887Z _______________ test_user_facing_numbers_have_no_machine_floats ________________
+2026-10-20T11:21:03.0308142Z 
+2026-10-20T11:21:03.0308271Z     @pytest.mark.needs_full_checkout("site")
+2026-10-20T11:21:03.0308624Z     def test_user_facing_numbers_have_no_machine_floats() -> None:
+2026-10-20T11:21:03.0309672Z         """E-m3: rendered suite HTML never ships ≥4 fractional digits or e±."""
+2026-10-20T11:21:03.0310138Z         from scripts.build_macro_suite_pages import HUB_PAGE, SECTIONS, SUITE_PAGES
+2026-10-20T11:21:03.0310505Z         from lib.macro_suite_labels import (
+2026-10-20T11:21:03.0310951Z             format_user_facing_number, format_user_facing_text,
+2026-10-20T11:21:03.0311225Z         )
+2026-10-20T11:21:03.0311490Z         assert format_user_facing_number(0.7084035025522297) == "0.71"
+2026-10-20T11:21:03.0311892Z         assert format_user_facing_number(-0.21603351448561625) == "\u22120.22"
+2026-10-20T11:21:03.0312332Z         assert format_user_facing_number(66.66666666666667, kind="percent") == "66.7%"
+2026-10-20T11:21:03.0312704Z         rewritten = format_user_facing_text(
+2026-10-20T11:21:03.0313044Z             "6-month momentum 0.7084035025522297, breadth 66.66666666666667")
+2026-10-20T11:21:03.0313605Z         assert "0.7084035025522297" not in rewritten
+2026-10-20T11:21:03.0313883Z         assert "0.71" in rewritten
+2026-10-20T11:21:03.0314124Z         assert "66.7%" in rewritten
+2026-10-20T11:21:03.0314448Z         pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+2026-10-20T11:21:03.0314851Z         present = [name for name in pages if (ROOT / "site" / name).is_file()]
+2026-10-20T11:21:03.0315181Z         assert len(present) >= 14, present
+2026-10-20T11:21:03.0315479Z         hub = (ROOT / "site" / HUB_PAGE.output).read_text(encoding="utf-8")
+2026-10-20T11:21:03.0315734Z         found_sections = [sec.id for sec in SECTIONS if sec.id in hub]
+2026-10-20T11:21:03.0315965Z         assert len(found_sections) >= 12, found_sections
+2026-10-20T11:21:03.0316148Z         for name in present:
+2026-10-20T11:21:03.0316344Z             html = (ROOT / "site" / name).read_text(encoding="utf-8")
+2026-10-20T11:21:03.0316584Z >           assert guard.find_violations(html) == [], name
+2026-10-20T11:21:03.0316807Z E           AssertionError: macro_labor_markets.html
+2026-10-20T11:21:03.0317154Z E           assert ['banned phra...from spec §5'] == []
+2026-10-20T11:21:03.0317329Z E             
+2026-10-20T11:21:03.0317937Z E             Left contains one more item: 'banned phrase \'axis\' found in the reading path (outside mc-details/mc-primer) — move it into <details class="mc-details"> or replace it with the plain-word copy from spec §5'
+2026-10-20T11:21:03.0318397Z E             Use -v to get more diff
+2026-10-20T11:21:03.0318499Z 
+2026-10-20T11:21:03.0318624Z tests/test_macro_command_copy_law.py:1706: AssertionError
+2026-10-20T11:21:03.0318881Z =========================== short test summary info ============================
+2026-10-20T11:21:03.0319250Z FAILED tests/test_macro_command_copy_law.py::test_all_fifteen_built_pages_are_clean_outside_details
+2026-10-20T11:21:03.0319633Z FAILED tests/test_macro_command_copy_law.py::test_user_facing_numbers_have_no_machine_floats
+2026-10-20T11:21:03.0320070Z 2 failed, 548 passed, 8 skipped in 70.62s (0:01:10)
+2026-10-20T11:21:03.1291932Z ##[endgroup]
+2026-10-20T11:21:03.1328283Z ##[error]market-os-macro-suite-pages: step 'Market OS macro suite pages — shell, labels, view model, builder' exited 1
+2026-10-20T11:21:03.4021017Z HEAD is now at a815e54f50 fif: runtime source-rights hold wired into capture admission (Z0 A52) (#9859)
+2026-10-20T11:21:03.7138898Z HEAD is now at a815e54f50 fif: runtime source-rights hold wired into capture admission (Z0 A52) (#9859)

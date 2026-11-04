@@ -1,0 +1,270 @@
+/* === INTL-GS §5.3 TOKENS — amendment A1 (2026-10-22): pure theme derivations, no literals === */
+.intl-gs{
+  --r-panel:var(--r-card); --r-btn:var(--r-ctl);
+  --r-pill:calc(var(--r-card) * 100);   /* pill = any radius ≥ half-height; theme has no pill token */
+  --ser-1:var(--info); --ser-2:var(--q2); --ser-3:var(--ok); --ser-4:var(--orange);
+  --ink-tier:var(--ink-link);           /* tier_preview.css's own default outside the prophet gate */
+}
+/* returns heat — FILL ONLY, never text ink; follows --up/--down so light theme and ZH red-up
+   hold BY CONSTRUCTION (theme.css L277 swaps --up/--down under html[data-lang="zh"]) */
+.intl-gs__heat--up-soft{fill:var(--up);fill-opacity:.14;}
+.intl-gs__heat--up-mid{fill:var(--up);fill-opacity:.26;}
+.intl-gs__heat--up-strong{fill:var(--up);fill-opacity:.42;}
+.intl-gs__heat--down-soft{fill:var(--down);fill-opacity:.14;}
+.intl-gs__heat--down-mid{fill:var(--down);fill-opacity:.26;}
+.intl-gs__heat--down-strong{fill:var(--down);fill-opacity:.42;}
+.intl-gs__heatbg{position:relative;isolation:isolate;}
+.intl-gs__heatbg::before{content:"";position:absolute;inset:0;background:var(--heat-ink);opacity:var(--heat-a);z-index:-1;pointer-events:none;}
+.intl-gs__heatbg--up-strong{--heat-ink:var(--up);--heat-a:.42;}
+.intl-gs__heatbg--down-strong{--heat-ink:var(--down);--heat-a:.42;}
+/* === END INTL-GS §5.3 TOKENS === */
+
+/* ==== INTL-GS shared primitives — spec R14 §7/§8/§9/§11 (DEC:INTL-GS-R14-DESIGN-FREEZE ruling 2) ====
+   Laws honoured: L1 no coloured edge on any container (even 1px var(--line)
+   borders only; single-side hairlines appear solely as neutral table row
+   separators); L2 selected/featured = 1.5px var(--info) ring, focus =
+   2px var(--link) offset 3, hover = neutral surface; L3 fonts via tokens;
+   L4 semantic direction tokens only; L5 no glows; L7 .intl-gs scope;
+   L9 no literal colour/radius/font outside the token block above. */
+
+/* ---- scope & layout ---- */
+.intl-gs,.intl-gs *{box-sizing:border-box;}
+.intl-gs{max-width:1376px;margin-inline:auto;display:flex;flex-direction:column;gap:16px;padding:20px 32px 48px;min-width:0;font-family:var(--font-ui);color:var(--text);}
+
+/* ---- typography ---- */
+.intl-gs__num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+.intl-gs__num--up{color:var(--ink-up);}
+.intl-gs__num--down{color:var(--ink-down);}
+.intl-gs__num--muted{color:var(--muted);}
+.intl-gs__eyebrow{margin:0;font-size:var(--fs-label);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+html[data-lang="zh"] .intl-gs .intl-gs__eyebrow{text-transform:none;letter-spacing:0.02em;}
+.intl-gs__footnote{margin:0;font-size:var(--fs-label);color:var(--muted);max-width:960px;line-height:1.5;}
+
+/* ---- L2 focus / selected / featured / hover ---- */
+.intl-gs :is(button,select,a,[tabindex],.intl-gs__seg__opt,.intl-gs__qcard,.intl-gs__row,.intl-gs__chip--link):focus-visible{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs__featured{outline:1.5px solid var(--info);}
+/* VF9: the ring draws INSIDE the row box so the clipped table wrap cannot
+   cut it — all four sides render at 1440. Never inset, never single-side. */
+.intl-gs__table tbody tr.is-selected{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs__qcard.is-answered .intl-gs__qcard__n,.intl-gs__qcard.is-active .intl-gs__qcard__n{outline:1.5px solid var(--info);}
+.intl-gs__btn:not(:disabled):hover,.intl-gs__seg__opt:not(.is-active):hover,.intl-gs__qcard:hover,.intl-gs__table tbody tr:hover,.intl-gs a[data-gs-select-market]:hover{background:var(--panel2);}
+/* X6 selected-market marking: the selected row keeps the 1.5px --info ring
+   (a full outline, offset inside — never inset, never a single-side border);
+   the global :focus-visible rule above stays on top for focusable children. */
+.intl-gs [data-gs-market-row][data-gs-selected]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+
+/* ---- chips (§7/§8) ---- */
+.intl-gs__chip{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:var(--fs-micro);font-weight:600;line-height:1;white-space:nowrap;}
+.intl-gs__chip--ok{border-color:var(--ok);color:var(--ink-ok);}
+.intl-gs__chip--warn{border-color:var(--warn);color:var(--ink-warn);}
+.intl-gs__chip--warn-dashed{border-color:var(--warn);border-style:dashed;color:var(--ink-warn);}
+.intl-gs__chip--muted-dashed{border-color:var(--muted);border-style:dashed;color:var(--muted);}
+.intl-gs__chip--info{border-color:var(--info);color:var(--ink-link);}
+.intl-gs__chip--tier{border-color:var(--line);color:var(--ink-tier);}
+.intl-gs__chip--prov{border-color:var(--line);color:var(--prov-ink);}
+.intl-gs__chip--specimen{border-color:var(--warn);border-style:dashed;color:var(--ink-warn);}
+.intl-gs__chip--get-ready{border-color:var(--warn);color:var(--ink-warn);}
+.intl-gs__chip--watch{border-color:var(--info);color:var(--ink-link);}
+.intl-gs__chip--stand-aside{border-color:var(--muted);color:var(--muted);}
+/* F7a (spec §7 chip table): Loading and Empty chips carry the --muted border
+   (the --muted text comes from the base chip rule). */
+.intl-gs__chip--loading,.intl-gs__chip--empty{border-color:var(--muted);}
+.intl-gs__chip--link{cursor:pointer;}
+/* FX3: a chip that is a direct child of the flex-column panel keeps its
+   content width — the specimen chip must never stretch to the panel width
+   (IM13/IM14 panels inherit this). */
+.intl-gs__panel > .intl-gs__chip{align-self:flex-start;}
+
+/* ---- buttons (h40, no filled primary) ---- */
+.intl-gs__btn,.intl-gs__seg__opt{font-family:var(--font-ui);}
+.intl-gs__btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:var(--r-btn,8px);border:1px solid var(--line);background:transparent;color:var(--text);font-size:var(--fs-sm);font-weight:600;cursor:pointer;}
+.intl-gs__btn--primary{border-color:var(--link);color:var(--link);}
+.intl-gs__btn:disabled{color:var(--muted);border-style:dashed;cursor:not-allowed;}
+
+/* ---- segmented control (h32 desktop / h40 mobile) ---- */
+.intl-gs__seg{display:inline-flex;align-items:stretch;height:32px;border:1px solid var(--line);border-radius:var(--r-btn,8px);overflow:hidden;background:transparent;}
+.intl-gs__seg__opt{display:inline-flex;align-items:center;padding:0 10px;border:none;background:transparent;color:var(--muted);font-size:var(--fs-sm);cursor:pointer;}
+.intl-gs__seg__opt.is-active{background:var(--panel2);color:var(--text);font-weight:600;}
+
+/* ---- six-question strip + card ---- */
+.intl-gs__qstrip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;}
+.intl-gs__qcard{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-btn,8px);background:var(--panel);text-align:start;}
+.intl-gs__qcard__n{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid var(--line);border-radius:var(--r-pill,999px);color:var(--muted);font-size:var(--fs-label);font-weight:700;}
+.intl-gs__qcard__body{min-width:0;display:flex;flex-direction:column;gap:2px;}
+.intl-gs__qcard__title{font-size:var(--fs-sm);font-weight:600;color:var(--text);line-height:1.4;}
+.intl-gs__qcard__answer{font-size:var(--fs-label);color:var(--muted);line-height:1.4;}
+
+/* ---- page header (§10.0; W2F-X X5) ---- */
+.intl-gs__pagehead{display:flex;flex-direction:column;gap:4px;margin:0;}
+.intl-gs__pagehead__title{margin:0;font-size:var(--fs-h1);font-weight:700;color:var(--text);line-height:1.2;}
+.intl-gs__pagehead__lede{margin:0;max-width:760px;font-size:var(--fs-md);color:var(--muted);line-height:1.5;}
+
+/* ---- panel / band / band head ---- */
+.intl-gs__panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,12px);padding:16px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;}
+.intl-gs__band{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,12px);padding:16px 20px;display:flex;flex-direction:column;gap:16px;min-width:0;}
+.intl-gs__bandhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0;}
+.intl-gs__bandhead__title{margin:0;font-size:var(--fs-h2);font-weight:600;color:var(--text);}
+.intl-gs__bandhead__sub{font-size:var(--fs-sm);color:var(--muted);}
+.intl-gs__bandhead__clock{margin-left:auto;font-size:var(--fs-micro);color:var(--muted);}
+
+/* ---- split layout + inspector rail (§8/§11) ---- */
+.intl-gs__split{display:flex;gap:16px;align-items:flex-start;min-width:0;}
+.intl-gs__split__main{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
+.intl-gs__rail{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,12px);padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px;min-width:0;}
+
+/* ---- snapshot bar (§10.0; X5 clock cells + read-out) ---- */
+.intl-gs__snapshot{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,12px);padding:14px 16px;}
+.intl-gs__snapclock{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.intl-gs__snapclock__label{font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+html[data-lang="zh"] .intl-gs .intl-gs__snapclock__label{text-transform:none;letter-spacing:0.02em;}
+.intl-gs__snapclock__value{font-size:var(--fs-sm);color:var(--text);}
+.intl-gs__snapclock__empty{font-size:var(--fs-micro);color:var(--muted);}
+.intl-gs__snapshot__note{font-size:var(--fs-sm);color:var(--muted);flex-basis:100%;}
+.intl-gs__snapcontrols{display:flex;flex-wrap:wrap;align-items:center;gap:12px;}
+/* FX4: the control itself wraps (row gap 6px) so a long chip — e.g. the
+   hedged-basis abstain — moves to its own line instead of squeezing the
+   label or the pill; labels and read-only pills never break internally
+   (per-character wrapping of 模式/口径/区间 at 390 was the defect). */
+.intl-gs__snapctl{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;row-gap:6px;}
+.intl-gs__snapctl__label{font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;flex-shrink:0;}
+html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;letter-spacing:0.02em;}
+.intl-gs__seg--readonly .intl-gs__seg__opt{cursor:default;}
+.intl-gs__snapshot .intl-gs__seg--readonly .intl-gs__seg__opt{white-space:nowrap;}
+
+/* ---- KPI card ---- */
+.intl-gs__kpirow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+.intl-gs__kpi{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,12px);padding:14px 16px;}
+/* VF11: label and tier chip share one header row — the chip keeps its place
+   in flow, and at ≤900 the label takes the full first line so a long EN label
+   never collides with a wide chip on a narrow card. */
+.intl-gs__kpi__head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0;}
+.intl-gs__kpi__label{font-size:var(--fs-label);font-weight:700;color:var(--muted);flex:1;min-width:0;}
+.intl-gs__kpi__value{font-size:var(--fs-num-lg);font-weight:700;color:var(--text);}
+.intl-gs__kpi__meta{font-size:var(--fs-micro);color:var(--muted);}
+.intl-gs__kpi__tier{flex:none;}
+@media (max-width:900px){.intl-gs__kpi__head{flex-wrap:wrap;}.intl-gs__kpi__label{flex-basis:100%;}}
+
+/* ---- session hand-off strip (h56) ---- */
+.intl-gs__handoff{display:flex;flex-wrap:wrap;align-items:center;gap:12px;min-height:56px;border:1px solid var(--line);border-radius:var(--r-panel,12px);padding:8px 16px;background:var(--panel);}
+.intl-gs__handoff__step{display:flex;align-items:center;gap:8px;font-size:var(--fs-sm);font-weight:600;color:var(--text);}
+.intl-gs__handoff__arrow{color:var(--muted);}
+
+/* ---- table (§8) ---- */
+.intl-gs__tablewrap{border:1px solid var(--line);border-radius:var(--r-panel,12px);overflow:clip;background:var(--panel);}
+.intl-gs__table{width:100%;border-collapse:separate;border-spacing:0;font-size:var(--fs-body);color:var(--text);}
+.intl-gs__table th{background:var(--panel2);color:var(--muted);font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-align:left;height:36px;padding:0 16px;white-space:nowrap;}
+.intl-gs__table th.is-active{color:var(--text);}
+.intl-gs__table td{height:48px;padding:0 16px;border-bottom:1px solid var(--line);vertical-align:middle;}
+.intl-gs__table tbody tr:last-child td{border-bottom:none;}
+.intl-gs__table td.is-num,.intl-gs__table th.is-num{text-align:right;}
+
+/* ---- signed bars / sparkline / typed edges (§9; geometry as SVG attrs) ---- */
+.intl-gs__zero-tick{stroke:var(--muted);stroke-width:1;}
+.intl-gs__minibar__leg--local{fill:var(--ser-1);}
+.intl-gs__minibar__leg--fx{fill:var(--ser-2);}
+.intl-gs__divbar__fill--up{fill:var(--up);}
+.intl-gs__divbar__fill--down{fill:var(--down);}
+.intl-gs__divbar__tick{stroke:var(--line);stroke-width:1;stroke-dasharray:2 4;}
+.intl-gs__spark__line{fill:none;stroke:var(--ser-1);stroke-width:1.5;}
+.intl-gs__spark__baseline{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3;}
+.intl-gs__spark__dot{fill:var(--ser-1);}
+.intl-gs__spark__tail{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:2 3;}
+.intl-gs__edge{fill:none;}
+.intl-gs__edge--flow{stroke:var(--ser-1);stroke-width:2.5;}
+.intl-gs__edge--lending{stroke:var(--ser-2);stroke-width:2.5;stroke-dasharray:6 4;}
+.intl-gs__edge--credit{stroke:var(--ser-3);stroke-width:2.5;stroke-dasharray:2 3;}
+.intl-gs__edge--commodity{stroke:var(--ser-4);stroke-width:2.5;stroke-dasharray:10 4;}
+
+/* ---- coverage glyphs (§7, 12×12) ---- */
+.intl-gs__glyph--complete circle{fill:var(--ok);}
+.intl-gs__glyph--qualified rect{fill:none;stroke:var(--warn);stroke-dasharray:2 2;}
+.intl-gs__glyph--partial circle{fill:none;stroke:var(--warn);}
+.intl-gs__glyph--stale rect{fill:var(--warn);}
+.intl-gs__glyph--abstain line{stroke:var(--muted);}
+.intl-gs__glyph--closed circle{fill:none;stroke:var(--muted);}
+.intl-gs__glyph--restricted rect{fill:none;stroke:var(--ink-tier);}
+.intl-gs__glyph--corrected circle{fill:none;stroke:var(--info);}
+
+/* ---- rights slot / skeleton ---- */
+.intl-gs__rights-slot{display:inline-block;width:72px;height:22px;border:1px dashed var(--line);border-radius:calc(var(--r-btn,8px)*0.75);background:transparent;}
+.intl-gs__skel{display:block;height:10px;border-radius:calc(var(--r-btn,8px)*0.5);background:var(--panel2);animation:intl-gs-skel-pulse 1200ms ease-in-out infinite;}
+.intl-gs__skel--sm{height:8px;width:70%;}
+@keyframes intl-gs-skel-pulse{0%{opacity:1;}50%{opacity:0.55;}100%{opacity:1;}}
+
+/* ---- state cell (§7; VF2: exactly three rows) ---- */
+.intl-gs__statecell{display:flex;flex-direction:column;gap:4px;min-height:92px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,12px);}
+.intl-gs__statecell--qualified{border:1px dashed var(--warn);}
+.intl-gs__statecell--abstain{border:1px dashed var(--muted);}
+.intl-gs__statecell--corrected{outline:1px solid var(--info);}
+.intl-gs__statecell__top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.intl-gs__statecell__mainrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;min-width:0;}
+.intl-gs__statecell--loading .intl-gs__statecell__mainrow{flex-direction:column;align-items:stretch;}
+.intl-gs__statecell__metarow{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;min-width:0;}
+.intl-gs__statecell__market{font-size:var(--fs-label);font-weight:600;color:var(--muted);}
+.intl-gs__statecell__value{font-size:var(--fs-h2);font-weight:700;}
+.intl-gs__statecell__basis{font-size:var(--fs-label);color:var(--muted);}
+.intl-gs__statecell__clock{font-size:var(--fs-micro);color:var(--muted);}
+.intl-gs__statecell__reason{font-size:var(--fs-label);color:var(--muted);}
+.intl-gs__statecell--stale .intl-gs__statecell__value,.intl-gs__statecell--closed .intl-gs__statecell__value,.intl-gs__statecell--suspended .intl-gs__statecell__value{color:var(--muted);}
+.intl-gs__old{font-size:var(--fs-sm);color:var(--muted);text-decoration:line-through;}
+
+/* VF15: the page-wide h2::before 3px gradient rail (templates/intl.html.j2)
+   never renders inside the surveillance scope — neutral surface hierarchy
+   only (Chairman design rule 2026-10-18). */
+.intl-gs h2::before{content:none;}
+
+/* ---- correction note ---- */
+.intl-gs__corr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;font-size:var(--fs-sm);color:var(--text);}
+
+/* ---- coverage glyph rows (§7; VF7: 12×12 glyph + numeral 10 clock) ---- */
+.intl-gs__glyphwrap{display:inline-flex;align-items:center;gap:4px;min-width:0;}
+.intl-gs__glyphwrap .intl-gs__num{font-size:var(--fs-micro);color:var(--muted);}
+
+/* ---- typed-edge legend (§8; VF8: 11 --muted words beside the 28×10 glyph) ---- */
+.intl-gs__edgelabel{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-label);color:var(--muted);}
+/* figure numerals after bars (§8: 12.5/700, never 17) */
+.intl-gs__num--fig{font-size:var(--fs-sm);font-weight:700;}
+
+/* ---- fixture helpers (test/evidence only) ---- */
+.intl-gs__statematrix{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:8px;}
+.intl-gs__demorow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+/* VF13: the fixture page reserves space under the floating copilot launcher
+   so no specimen is covered (production pages never carry this class). */
+.intl-gs--fixture{padding-bottom:96px;}
+/* VF14: the specimen chip sits in the fixture header row with >=12px below. */
+.intl-gs__specimen-head{margin:0 0 12px;}
+
+/* ---- motion ---- */
+.intl-gs__btn,.intl-gs__seg__opt,.intl-gs__chip--link,.intl-gs__table tbody tr{transition:background-color 120ms ease,color 120ms ease;}
+@media (prefers-reduced-motion:reduce){.intl-gs,.intl-gs *{transition:none;animation:none;}}
+
+/* ---- breakpoints (§11) ---- */
+@media (max-width:1439px){.intl-gs{max-width:none;}}
+@media (min-width:1100px){.intl-gs__rail{width:400px;position:sticky;top:80px;}}
+@media (min-width:1100px) and (max-width:1279px){.intl-gs__rail{width:360px;}}
+@media (max-width:1099px){.intl-gs__split{flex-direction:column;}.intl-gs__rail{width:100%;position:static;}.intl-gs__kpirow{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media (max-width:900px){
+  .intl-gs{padding:16px 16px 40px;}
+  /* VF12 (§11): the six-question strip is a 2×3 grid at ≤900 so no EN or ZH
+     label clips or ellipsises at 390. */
+  .intl-gs__qstrip{grid-template-columns:repeat(2,minmax(0,1fr));}
+  /* F6 (spec §10.2 mobile page header H1 22/700): the existing 22px type
+     token (--fs-num-lg) — no px literal, no new token. */
+  .intl-gs__pagehead__title{font-size:var(--fs-num-lg);}
+  .intl-gs__snapshot{flex-direction:column;align-items:stretch;}
+  .intl-gs__seg{height:40px;width:100%;}
+  .intl-gs__seg__opt{flex:1;justify-content:center;min-height:40px;}
+  .intl-gs__tablewrap{border:none;background:transparent;overflow:visible;}
+  .intl-gs__table thead{display:none;}
+  .intl-gs__table,.intl-gs__table tbody,.intl-gs__table tr,.intl-gs__table td{display:block;width:100%;}
+  .intl-gs__table tbody tr{border:1px solid var(--line);border-radius:var(--r-panel,12px);background:var(--panel);padding:8px 0;margin-bottom:8px;}
+  .intl-gs__table td{height:auto;padding:4px 14px;display:flex;justify-content:space-between;gap:12px;border-bottom:none;}
+  .intl-gs__statematrix{grid-template-columns:1fr;}
+}
+/* ==== W2A region (IM13 scanner + coverage): the W2A lane inserts its rules between this line and the next ==== */
+/* ==== end W2A region ==== */
+/* spacer 1: keep unchanged; separates the two lane regions */
+/* spacer 2: keep unchanged */
+/* spacer 3: keep unchanged */
+/* ==== W2B region (IM14 dossier): the W2B lane inserts its rules between this line and the next ==== */
+/* ==== end W2B region ==== */

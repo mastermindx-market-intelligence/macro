@@ -1,0 +1,29 @@
+schema: mastermind.rig_approval.v1
+reference_id: intl-country-intelligence-20261020
+approved_at: '2026-10-20T21:18:35.353292+00:00'
+artifact_sha: 883a1e48efdf9c334c08665262efa0961b1997a0
+verdict: APPROVE_WITH_CONDITIONS
+authority: /root — project owner and reference design authority
+author: /root
+reviewers:
+- /root/intl_rig_product_quarantined
+- /root/intl_rig_visual_quarantined
+overrides:
+- finding: task.scan-legacy-world
+  authority: /root — project owner and reference design authority
+  justification: 'Accept the explicitly WORSE initial aggregate-board scan: the user directs country interpretation to
+    be the primary feature. Preserve the source content and direct fragments; expose the secondary entrance visibly at
+    every supported width. This is a documented hierarchy tradeoff, not a waiver of the repaired mobile discoverability
+    defect.'
+conditions:
+- id: RELEASE-INTL-FX-CUSTODY
+  required_before: claiming complete production acquisition and market acceptance
+  requirement: Run the existing protected-main intl_prices backfill after normal source acceptance; inspect actual published
+    canonical stores, genuine adapter capture receipts and their final renderer consumption. Retained copied stores and
+    a green workflow alone are insufficient. Until then preserve unavailable qualified FX states.
+- id: RELEASE-INTL-SERVED
+  required_before: claiming the rebuild shipped and adopted
+  requirement: Complete applicable exact-head hosted CI and normal merge, a covering International render, normal updater
+    adoption, and actual served anonymous desktop/mobile language/theme/navigation/assistant checks with public assets
+    and protected access boundaries. This reference approval does not establish those steps.
+scope: Reference artifact approval only; production acceptance remains explicit.

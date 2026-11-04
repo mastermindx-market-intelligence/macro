@@ -1,0 +1,54 @@
+{
+  "schema": "mastermind.intl_original_push_server_evidence.v1",
+  "read_only": true,
+  "requests": [
+    {
+      "name": "branch_activity_page1",
+      "started_at": "2026-10-20T07:15:39.814055+00:00",
+      "finished_at": "2026-10-20T07:15:40.407244+00:00",
+      "endpoint": "repos/mastermindx-market-intelligence/macro/activity?ref=refs%2Fheads%2Fsol%2Fweb-intl-country-cockpit-20261018&per_page=100&direction=desc",
+      "command": [
+        "/opt/homebrew/bin/gh",
+        "api",
+        "--method",
+        "GET",
+        "--include",
+        "-H",
+        "Accept: application/vnd.github+json",
+        "-H",
+        "X-GitHub-Api-Version: 2022-11-28",
+        "repos/mastermindx-market-intelligence/macro/activity?ref=refs%2Fheads%2Fsol%2Fweb-intl-country-cockpit-20261018&per_page=100&direction=desc"
+      ],
+      "returncode": 0,
+      "timeout": false,
+      "response_file": "branch_activity_page1.http",
+      "response_sha256": "76da4b8a0df4684f14bc67466313d357bd0f42e30aefbdbb6389e573a7695c88",
+      "response_bytes": 3996,
+      "stderr_file": "branch_activity_page1.stderr"
+    },
+    {
+      "name": "expected_commit",
+      "started_at": "2026-10-20T07:15:40.407494+00:00",
+      "finished_at": "2026-10-20T07:15:40.898035+00:00",
+      "endpoint": "repos/mastermindx-market-intelligence/macro/commits/11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+      "command": [
+        "/opt/homebrew/bin/gh",
+        "api",
+        "--method",
+        "GET",
+        "--include",
+        "-H",
+        "Accept: application/vnd.github+json",
+        "-H",
+        "X-GitHub-Api-Version: 2022-11-28",
+        "repos/mastermindx-market-intelligence/macro/commits/11c83bb5dfb0c8199a0fb0cb2c6e70452c724984"
+      ],
+      "returncode": 1,
+      "timeout": false,
+      "response_file": "expected_commit.http",
+      "response_sha256": "807582dcb52bbb7d9ae1d39d516c22d0b67c7d0bde8957a8725b325aaab22a04",
+      "response_bytes": 1436,
+      "stderr_file": "expected_commit.stderr"
+    }
+  ]
+}

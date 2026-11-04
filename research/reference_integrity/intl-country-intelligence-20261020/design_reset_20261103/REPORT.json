@@ -1,0 +1,240 @@
+{
+  "schema": "intl.design_reset_checkpoint.v1",
+  "created_at": "2026-11-03T08:49:38.468571+00:00",
+  "operation_id": "intl-country-cockpit-20261018",
+  "branch": "sol/web-intl-country-cockpit-20261018",
+  "pr": 9596,
+  "mission_complete": false,
+  "disposition": "Local design and implementation advanced; publication and production acceptance blocked.",
+  "prior_visual_result": "User rejected the earlier local polish as 4/10; previous proof is not accepted design.",
+  "protected_procedure_pin": "e39a617b6771cb6b07323a533b4cf9db7e78900a",
+  "head": "851c6abebf01c5c8096e7822436455fd1040152a",
+  "merge_head": "c6ac417f4a1d561f8c80a0a6b1977d5ffec6d090",
+  "tested_source_tree": "44e97000aa1c2625f0081fb612666fda4b098b41",
+  "runtime_hashes": {
+    "templates/intl_country_cockpit.html.j2": "a5dd4586473a5f97197a40ccfdf3e26a5564b90ee40ca926fb88b9ae63b41cbd",
+    "templates/intl_country_cockpit.css": "e2406a1e76f3bcb65390c1e7193102ba950c6ab778eadac46c1a4dd790582c82",
+    "templates/intl.html.j2": "3f7892197e6a9c254edb3c777e25f5c31470bbfb27feb6b9cf84ed42b5f1cece",
+    "templates/intl_workspace.css": "d2a73cb4d678333e15302d879ec4ab39431a59e8e10df4cf5079db92fab7759e",
+    "templates/intl_workspace/shell.html.j2": "f854a9db6cb6a5aefdda0607dd7d91719508eb16a0cc7d64ae18f855a7b40f87",
+    "templates/theme.css": "b580b1ff5ddf74130a76bc4736cc12011e095d9c58a0b161b9ca13de8adc509e",
+    "site/theme.css": "b580b1ff5ddf74130a76bc4736cc12011e095d9c58a0b161b9ca13de8adc509e",
+    "site/intl_workspace.css": "d2a73cb4d678333e15302d879ec4ab39431a59e8e10df4cf5079db92fab7759e"
+  },
+  "generated_html_sha256": "ae736327bb00ddfd2725b09d3f12a33c614a0ba57ab30051429fb6f28ba06ea8",
+  "generated_html_bytes": 23104850,
+  "inputs": {
+    "count": 511,
+    "commit": "19a896b97ae20f2c12475a0207678f92dc4f335b",
+    "archive_sha256": "e0ab64bc8e180d781e6d0a3705c3d93a0568df1acf8213f5abde96dbc577676a",
+    "snapshot": "2026-10-30",
+    "provider_reacquisition": false
+  },
+  "paper": {
+    "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "R12": [
+      "DW7-0",
+      "DMX-0"
+    ],
+    "R14": [
+      "G9J-0",
+      "GWG-0",
+      "IRV-0"
+    ],
+    "role": "Native reference reads/JSX; R14 specimen facts were not admitted. No Paper mutation in this reset."
+  },
+  "changes": [
+    "Exact Paper canvas/surface tokens survive shared soft-contrast overrides; ambient aurora removed from country page",
+    "Seven-country next-year growth strip with complete fiscal-year labels",
+    "Selected country becomes the main dossier; native no-JS disclosures remain available",
+    "Economic observations and market conditions in one coherent band",
+    "Full-width historical/projected growth chart with native exact-value table; duplicate forecast tiles removed",
+    "Balanced policy, conditions, fiscal and transmission sections with stronger explanatory text",
+    "Explicit Research tools entry, bordered workbench and compact responsive context controls",
+    "Unranked returns align identity, index, exact windows and return; inactive surveillance wrapper reserves no space"
+  ],
+  "verification": {
+    "focused_render_tests": 158,
+    "responsive_states": 20,
+    "widths": [
+      1440,
+      1024,
+      768,
+      390,
+      320
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "countries_per_state": 7,
+    "additional_journey_groups": 5,
+    "tools_currency_selections": 8,
+    "canonical_unique_states": 26,
+    "canonical_raw_captures": 30,
+    "p0b_primary_and_degraded_cases": 128,
+    "p0b_screenshots": 16,
+    "guards": [
+      "design_added",
+      "template_site_sync_final",
+      "runtime_style_final",
+      "p0b_closure_final",
+      "visual_evidence_guard"
+    ],
+    "console_and_local_resource_errors": 0
+  },
+  "failed_attempts_preserved": [
+    "R1 literal-radius design guard; replaced with shared radius tokens",
+    "R1 palette inherited late blue-grey soft-contrast values; isolated Paper aliases now consumed",
+    "R2 mobile chart had 4px negative-margin overflow; corrected in R3",
+    "Initial R3 runtime-style command used unsupported diff flag; corrected invocation passed",
+    "Initial R3 plain-copy guard found workspace CSS not recopied; actual builder output copied and final guard passed",
+    "Initial P0B closure required fresh browser receipts; actual exact-runtime 128-case remint passed",
+    "P0B suite 143 passed and one parent-binding assertion failed after remint; genuine current receipt hashes refreshed and targeted assertion passed",
+    "First R3 tools observer matched hidden overview buttons; observer scoped to navigation and all eight selections plus scanner round trips passed"
+  ],
+  "advisory": {
+    "role": "Principal advisory visual judgment; not formal independent source/release review",
+    "inspected": [
+      "country-desktop.png",
+      "country-mobile.png",
+      "research-tools.png"
+    ],
+    "finding": "No concrete remaining visual blocker in the inspected final English captures.",
+    "improvements": [
+      "Primary full-width growth chart with historical/projected distinction and exact-value disclosure",
+      "Readable policy, conditions and fiscal explanations",
+      "Explicit Research tools entry and bordered workbench",
+      "Aligned qualified-return rows with individual windows",
+      "Coherent mobile reading order"
+    ],
+    "limits": [
+      "Static captured states only",
+      "Does not attest cold-load performance, publication or user acceptance",
+      "EN/ZH and theme/width behavior are separately recorded in actual browser proof"
+    ],
+    "parent_additional_visual_inspection": [
+      "1440-light-zh-full.png",
+      "390-dark-zh-full.png",
+      "1440-dark-en.png"
+    ],
+    "architecture_decision": "Retain the existing country-centered product contract; use R14 visual discipline and connected existing tools. Default-global-scanner proposal remains unadopted."
+  },
+  "cold_load": {
+    "scope": "Two local cold-load observations of the complete ordinary page, including shared chrome; no production/network percentile claim",
+    "states": [
+      {
+        "width": 1440,
+        "layout_shift_sum": 0.7378220043041088,
+        "dom_nodes": 428715
+      },
+      {
+        "width": 390,
+        "layout_shift_sum": 0.2813969169700743,
+        "dom_nodes": 428715
+      }
+    ],
+    "status": "OPEN shared-header initialization/performance dependency; no production-ready performance claim."
+  },
+  "publication": {
+    "schema": "intl.design_reset_publication_readback.v1",
+    "observed_at": "2026-11-03 08:27:07 UTC",
+    "operation_id": "intl-country-cockpit-20261018",
+    "status_result": {
+      "schema": "mastermind.studio_git_tool_error.v1",
+      "status": "REFUSED",
+      "effect_state": "NOT_APPLIED",
+      "code": "TYPED_GIT_PRECHECK_REFUSED",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "remote_branch": {
+      "ref": "refs/heads/sol/web-intl-country-cockpit-20261018",
+      "node_id": "REF_kwDOS4LjItoAMHJlZnMvaGVhZHMvc29sL3dlYi1pbnRsLWNvdW50cnktY29ja3BpdC0yMDI2MTAxOA",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/refs/heads/sol/web-intl-country-cockpit-20261018",
+      "object": {
+        "sha": "851c6abebf01c5c8096e7822436455fd1040152a",
+        "type": "commit",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/851c6abebf01c5c8096e7822436455fd1040152a"
+      }
+    },
+    "current_main": {
+      "ref": "refs/heads/main",
+      "node_id": "REF_kwDOS4LjIq9yZWZzL2hlYWRzL21haW4",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/refs/heads/main",
+      "object": {
+        "sha": "b48e4e157537098f847fcb8811e756b44c2faaa0",
+        "type": "commit",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/b48e4e157537098f847fcb8811e756b44c2faaa0"
+      }
+    },
+    "boundary": "Read-only publisher precheck refused; no commit, push, merge or deployment attempted. Existing operation and pending merge retained."
+  },
+  "latest_pr_read": {
+    "number": 9596,
+    "state": "open",
+    "draft": true,
+    "head": "851c6abebf01c5c8096e7822436455fd1040152a",
+    "base": "bca436e58f7069ff8b52d31074f30726cfecf0e4",
+    "merged": false,
+    "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+    "scope": "Fresh read-only metadata. No branch write or publication."
+  },
+  "remaining": [
+    "Supported native Macro pending-merge publication capability",
+    "Reconcile current main after original pending merge is safely published",
+    "Exact-current-source independent review and hosted full-data CI",
+    "Shared-header cold-load movement, large DOM/long-session performance, and applicable actual-parent Saved/focus findings",
+    "Normal renderer/updater adoption, actual served journeys and subsequent normal publication",
+    "User design acceptance"
+  ],
+  "authority": "No commit, push, merge, deployment, Vercel, alternate source publisher, new workspace, remote message or held-Fabric retry. Principal child supplied advisory design judgment only.",
+  "archives": [
+    {
+      "path": "reproduction-inputs.tar.gz",
+      "sha256": "a1ce35bc320b7ed0ab8cad673f446bae79669540acd06ca44fef55acf85a2da9",
+      "bytes": 79667702,
+      "members": [
+        {
+          "path": "source-base-098acfb.tar",
+          "sha256": "54ac0178e91f6ae634b88c66b0f8523c8418ea1465f689dbfbad71924dd3e89e",
+          "bytes": 153948160
+        },
+        {
+          "path": "committed-inputs-19a896b.tar",
+          "sha256": "e0ab64bc8e180d781e6d0a3705c3d93a0568df1acf8213f5abde96dbc577676a",
+          "bytes": 57722880
+        },
+        {
+          "path": "input_manifest.json",
+          "sha256": "901bf8dd07b9878426f94a45f386c3dde5a3e65a96705ede108f8e40153f1af1",
+          "bytes": 114569
+        },
+        {
+          "path": "source_overlay.json",
+          "sha256": "19e10c928a81596290af75406586bd8c97cf01a50ea5bed248beafb37b0fba68",
+          "bytes": 1293
+        }
+      ]
+    },
+    {
+      "path": "evidence.tar.gz",
+      "sha256": "b8dc9669822f2ecadff08e348d4fa17a11630e6983a998286ebf5848b5f9f19e",
+      "bytes": 23954572,
+      "member_count": 241
+    }
+  ],
+  "archive_layout": "ARCHIVE_LAYOUT.json",
+  "runtime_patch": {
+    "path": "runtime.patch",
+    "base_tree": "6a695db8fb1b789b27760de261e472387784cb9a",
+    "format": "Git binary-capable diff with zero context",
+    "sha256": "136d5628dac0630c601b7d4ee8eb38b85b7da189ae994e7720bea881861e38af",
+    "bytes": 100306,
+    "application": "git apply --unidiff-zero runtime.patch against the recorded baseline",
+    "validation": "Reverse --check against the current eight exact runtime files passed"
+  }
+}

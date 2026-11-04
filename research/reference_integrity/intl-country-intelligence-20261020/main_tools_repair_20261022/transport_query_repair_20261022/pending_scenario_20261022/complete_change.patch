@@ -1,0 +1,176 @@
+diff --git a/site/intl_workspace.js b/site/intl_workspace.js
+index e0f99095d70e..577b71560f18 100644
+--- a/site/intl_workspace.js
++++ b/site/intl_workspace.js
+@@ -1774,11 +1774,15 @@
+     var hadInspector = !!controller.inspector;
+     if (hadInspector) visuallyCloseInspector(controller, { release: true });
+     var parsed = controller.reducer.parseQuery(external.query);
+-    parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed), external.query);
++    parsed = clampGsMarket(controller, parsed);
+     var committed = commitResearch(controller, parsed, 'popstate');
+-    if (controller.pendingScenario) {
++    // A valid refused Scenario traversal owns its one serialized restoration.
++    // Invalid queries stay untouched; GS alignment follows final acceptance.
++    if (parsed.ok && controller.pendingScenario) {
+       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
+       catch (_) { committed.issues=[{code:'UI_UPDATE_FAILED',field:'url'}]; }
++    } else if (parsed.ok && committed.ok) {
++      alignGsMarketUrl(controller, committed, external.query);
+     }
+     controller.issues = committed.issues;
+     if (hadInspector) {
+diff --git a/templates/intl_workspace.js b/templates/intl_workspace.js
+index e0f99095d70e..577b71560f18 100644
+--- a/templates/intl_workspace.js
++++ b/templates/intl_workspace.js
+@@ -1774,11 +1774,15 @@
+     var hadInspector = !!controller.inspector;
+     if (hadInspector) visuallyCloseInspector(controller, { release: true });
+     var parsed = controller.reducer.parseQuery(external.query);
+-    parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed), external.query);
++    parsed = clampGsMarket(controller, parsed);
+     var committed = commitResearch(controller, parsed, 'popstate');
+-    if (controller.pendingScenario) {
++    // A valid refused Scenario traversal owns its one serialized restoration.
++    // Invalid queries stay untouched; GS alignment follows final acceptance.
++    if (parsed.ok && controller.pendingScenario) {
+       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
+       catch (_) { committed.issues=[{code:'UI_UPDATE_FAILED',field:'url'}]; }
++    } else if (parsed.ok && committed.ok) {
++      alignGsMarketUrl(controller, committed, external.query);
+     }
+     controller.issues = committed.issues;
+     if (hadInspector) {
+diff --git a/tests/intl_workspace_controller.test.cjs b/tests/intl_workspace_controller.test.cjs
+index 59de6a33e21f..f0716542686f 100644
+--- a/tests/intl_workspace_controller.test.cjs
++++ b/tests/intl_workspace_controller.test.cjs
+@@ -1915,17 +1915,18 @@ test('Macro v2 refuses non-price return basis even with the correct generation',
+ 
+ // A routed cross-origin child runs the real blocking bridge, controller and entry.
+ // The modelled parent deliberately withholds INIT until the test asks for it.
+-async function withQueryFrames(run, { gs = false } = {}) {
++async function withQueryFrames(run, { gs = false, scenario = null } = {}) {
+   const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL } : {}) });
+   const bridge = fs.readFileSync(path.join(__dirname, '../templates/shared_shell_bridge.js'), 'utf8');
+   const entry = fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_entry.js'), 'utf8');
+   const css = fs.readFileSync(path.join(__dirname, '../templates/shared_shell.css'), 'utf8');
+   const script = source => '<script>' + source.replace(/<\/script/gi, '<\\/script') + '</script>';
+-  let markup = workspaceMarkup().replace('</select>', option('TW') + '</select>');
++  const pageConfig = scenario ? scenario.config : config;
++  let markup = scenario ? scenario.html : workspaceMarkup().replace('</select>', option('TW') + '</select>');
+   markup = markup.replace('<p data-im-unavailable>', '<article data-im-panel data-view="library" data-horizon="3m" data-basis="local" data-source="fixture:v1"><input id="query-library-search" type="search"></article><article data-im-panel data-view="history" data-horizon="3m" data-basis="local" data-source="fixture:v1">Taiwan history</article><p data-im-unavailable>');
+   if (gs) markup = markup.replace('<p data-im-unavailable>', '<div data-gs-market-scope><div data-gs-market="JP" data-gs-market-default>Japan GS content</div><div data-gs-market="KR">Korea GS content</div></div><p data-im-unavailable>');
+-  markup = markup.replace('<h1', '<script type="application/json" data-im-config>' + JSON.stringify(config) + '</script><fieldset data-im-controls disabled><h1');
+-  markup = markup.replace('</section>', '</fieldset><details id="intl-legacy-research" open><summary>Retained research</summary><p>Readable evidence</p></details></section>');
++  markup = markup.replace('<h1', '<script type="application/json" data-im-config>' + JSON.stringify(pageConfig) + '</script><fieldset data-im-controls disabled><h1');
++  markup = markup.replace(/<\/section>\s*$/, '</fieldset><details id="intl-legacy-research" open><summary>Retained research</summary><p>Readable evidence</p></details></section>');
+   async function open(query, beforeEntry = '') {
+     const page = await browser.newPage();
+     const errors = [];
+@@ -1937,7 +1938,7 @@ async function withQueryFrames(run, { gs = false } = {}) {
+     }));
+     await page.route('http://127.0.0.1:3102/**', route => route.fulfill({
+       contentType: 'text/html',
+-      body: '<!doctype html><html lang="en"><head><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><style>' + css + '</style>' + script(bridge) + '</head><body>' + markup + script(reducerSource) + script(adapterSource) + script(beforeEntry) + script(
++      body: '<!doctype html><html lang="en"><head><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><style>' + css + '</style>' + script(bridge) + '</head><body>' + markup + script(reducerSource) + (scenario ? script(fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_scenario.js'), 'utf8')) : '') + script(adapterSource) + script(beforeEntry) + script(
+         'window.queryBoot={href:location.href,length:history.length};window.queryMounts=0;window.queryRootBefore=document.querySelector("[data-im-workspace]").outerHTML;' +
+         'const originalMount=IntlWorkspace.mountIntlWorkspace;IntlWorkspace.mountIntlWorkspace=function(){queryMounts++;const handle=originalMount.apply(this,arguments);window.queryHandle=handle;return handle;};'
+       ) + script(entry) + '</body></html>'
+@@ -2423,3 +2424,95 @@ test('GS query composition: native Back and Forward preserve one intended clamp
+     }
+   }, { gs: true });
+ });
++
++
++for (const admitted of [false, true]) {
++  for (const kind of ['invalid-existing', 'valid-existing', 'valid-new']) {
++    test('Scenario query ordering: ' + kind + (admitted ? ' after INIT' : ' before INIT'), async () => {
++      const fixture = JSON.parse(require('node:child_process').execFileSync('python3', ['-m', 'tests.history_browser_fixture'], { cwd: path.resolve(__dirname, '..'), encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }));
++      // KR is configured by the real Scenario fixture but absent from this GS surface.
++      fixture.html = fixture.html.replace('<h1', '<div data-gs-market-scope><div data-gs-market="JP" data-gs-market-default>Japan GS content</div></div><h1');
++      await withQueryFrames(async open => {
++        const child = await open('?view=history&market=JP&horizon=1m&basis=usd_unhedged&return_basis=price&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
++        if (admitted) await child.init();
++        await child.frame.locator('#im-scenario-local').fill('5');
++        await child.frame.locator('#im-scenario-fx').fill('-3');
++        await child.frame.locator('[data-im-scenario-action="calculate"]').click();
++        if (kind !== 'valid-new') {
++          await child.frame.locator('[data-im-action="set_horizon"]').selectOption('3m');
++          await child.frame.locator('#im-scenario-local').fill('10');
++        }
++        const snapshot = () => child.frame.evaluate(() => ({
++          state: queryHandle.getState(),
++          local: document.getElementById('im-scenario-local').value,
++          fx: document.getElementById('im-scenario-fx').value,
++          pending: !document.querySelector('[data-im-scenario-confirm-context]').hidden,
++          query: MMXSharedShell.readPageSearch(), raw: location.search,
++          writes: gsQueryWrites.slice(), length: history.length,
++          focus: document.activeElement.id
++        }));
++        const before = await snapshot();
++        assert.equal(before.pending, kind !== 'valid-new');
++        assert.equal(before.state.selected_market, 'JP');
++        assert.equal(before.state.horizon, '1m');
++        assert.deepEqual(before.writes, [], 'pending proposal setup does not write history');
++        const serialized = await child.frame.evaluate(c => IntlWorkspaceState.createIntlWorkspaceState(c).serializeQuery(queryHandle.getState()).query, fixture.config);
++        const target = kind === 'invalid-existing'
++          ? '?view=unknown&market=KR&mmx_shell=1&mmx_generation=query-g1'
++          : '?view=history&market=KR&horizon=3m&basis=usd_unhedged&return_basis=price&mmx_shell=1&mmx_generation=query-g1';
++        await child.frame.evaluate(target => {
++          const original = location.href;
++          History.prototype.pushState.call(history, null, '', target);
++          History.prototype.pushState.call(history, null, '', original);
++          window.scenarioNativeLength = history.length;
++          window.scenarioPopDone = false;
++          addEventListener('popstate', () => { scenarioPopDone = true; }, { once: true });
++          history.back();
++        }, target);
++        await child.frame.waitForFunction(() => scenarioPopDone);
++        const after = await snapshot();
++        assert.deepEqual(after.state, before.state, 'refused traversal retains committed research state');
++        assert.equal(after.local, before.local);
++        assert.equal(after.fx, before.fx);
++        assert.equal(after.pending, true);
++        assert.equal(after.length, await child.frame.evaluate(() => scenarioNativeLength));
++        if (kind === 'invalid-existing') {
++          assert.equal(after.raw, target, 'invalid destination remains unsanitized');
++          assert.deepEqual(after.writes, [], 'invalid parse does not restore or align history');
++          assert.equal(after.focus, before.focus);
++        } else {
++          assert.equal(after.writes.length, 1, 'confirmation refusal performs only its serialized restoration');
++          assert.equal(after.writes[0].method, 'replaceState');
++          assert.equal(after.query, '?' + serialized);
++          assert.equal(new URL(after.writes[0].url, 'http://127.0.0.1:3102').search, '?' + serialized);
++        }
++        if (!admitted) await child.init();
++        const requests = await gsNavigationMessages(child);
++        assert.equal(requests.length, kind === 'invalid-existing' ? 0 : 1, 'no extra queued or emitted GS navigation');
++        if (requests.length) {
++          assert.equal(requests[0].mode, 'replace');
++          assert.equal(requests[0].sameDocument, true);
++          assert.equal(new URL(requests[0].href).search, '?' + serialized);
++        }
++        // Exercise both public outcomes. Existing proposals must retain their
++        // original JP/3m target, rather than adopting the refused KR traversal.
++        const action = admitted ? 'confirm_context' : 'cancel_context';
++        await child.frame.locator('[data-im-scenario-action="' + action + '"]').click();
++        const finished = await snapshot();
++        assert.equal(finished.pending, false);
++        if (admitted) {
++          assert.equal(finished.state.horizon, '3m');
++          assert.equal(finished.state.selected_market, kind === 'valid-new' ? null : 'JP');
++        } else {
++          assert.equal(finished.state.horizon, '1m');
++          assert.equal(finished.state.selected_market, 'JP');
++          assert.equal(finished.local, '5');
++          assert.equal(finished.fx, '-3');
++          assert.match(await child.frame.locator('[data-im-scenario-usd]').innerText(), /1\.85/);
++        }
++        assert.deepEqual(child.errors, []);
++        await child.close();
++      }, { scenario: fixture });
++    });
++  }
++}

@@ -9,6 +9,10 @@
   'unsupported': {'en': 'Unsupported', 'zh': '不支持'},
   'unknown': {'en': 'Unavailable', 'zh': '不可用'}
 } %}
+{# Daily midnight endpoints display as dates; machine-readable precision remains intact. #}
+{% macro window_date(value) -%}
+  {{ (value[:-9] if value.endswith('T00:00:00') else value)|e }}
+{%- endmacro %}
 {% macro quality_notice(metric) %}
   {% if metric.value is none %}
     {% set quality = quality_labels.get(metric.quality, quality_labels.unknown) %}
@@ -32,7 +36,7 @@
     <span class="l-zh" lang="zh">市场概览</span>
   </h2>
 
-  <div class="intl-overview__first-read">
+  <div class="intl-overview__first-read{% if overview.ranking_reason == 'unequal_windows' and projection_context.eligible_count > 0 %} intl-overview__first-read--unranked{% endif %}">
     <div class="intl-overview__context">
       <span class="l-en">{{ projection_context.configured_count }} configured markets, {{ projection_context.eligible_count }} qualified returns</span>
       <span class="l-zh" lang="zh">覆盖市场 {{ projection_context.configured_count }} 个，符合条件的回报 {{ projection_context.eligible_count }} 个</span>
@@ -65,6 +69,7 @@
         {% endif %}
       {% elif overview.ranking_reason == 'unequal_windows' %}
         <h3><span class="l-en">Available returns use different calculation windows</span><span class="l-zh" lang="zh">可用回报采用不同计算窗口</span></h3>
+        <p><span class="l-en">Each market is shown with its own dates. A cross-market ranking is unavailable.</span><span class="l-zh" lang="zh">每个市场均显示各自的计算日期，暂不提供跨市场排名。</span></p>
       {% else %}
         <h3><span class="l-en">Current returns unavailable</span><span class="l-zh" lang="zh">当前回报不可用</span></h3>
       {% endif %}
@@ -103,6 +108,24 @@
             </li>
           {% endfor %}
         </ol>
+      </div>
+    {% elif overview.ranking_reason == 'unequal_windows' and projection_context.eligible_count > 0 %}
+      <div class="intl-overview__focus" data-im-unranked>
+        <h3><span class="l-en">Returns by market</span><span class="l-zh" lang="zh">各市场回报</span></h3>
+        <ul class="intl-overview__focus-list" data-im-unranked-list>
+          {% for row in overview.rows %}
+            {% if row.quality not in ['denied', 'unknown'] and row.market_id is defined and row.metric.quality == 'qualified' and row.metric.value is not none %}
+              <li data-im-unranked-item data-market-id="{{ row.market_id|e }}" id="{{ context_id|e }}-unranked-{{ row.slot|e }}">
+                <span class="intl-overview__market-name"><span class="l-en">{{ row.name_en|e }}</span><span class="l-zh" lang="zh">{{ row.name_zh|e }}</span></span>
+                {% if row.index_id is defined %}<span class="intl-overview__index">{{ row.index_label|e }}</span>{% endif %}
+                <span class="intl-overview__return" data-im-return>{{ '%+.2f'|format(row.metric.value) if row.metric.value > 0 else '%.2f'|format(row.metric.value) }}%</span>
+                {% if row.metric.window %}
+                  <span class="intl-overview__index" data-im-return-window><time datetime="{{ row.metric.window.start|e }}">{{ window_date(row.metric.window.start) }}</time>–<time datetime="{{ row.metric.window.end|e }}">{{ window_date(row.metric.window.end) }}</time></span>
+                {% endif %}
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
       </div>
     {% endif %}
   </div>
@@ -155,7 +178,7 @@
                 <div><span class="l-en">USD</span><span class="l-zh" lang="zh">美元</span> <span data-im-usd>{% if row.usd.value is none %}{{ quality_notice(row.usd) }}{% else %}{{ '%+.2f'|format(row.usd.value) if row.usd.value > 0 else '%.2f'|format(row.usd.value) }}{% if row.usd.unit == 'percent' %}%{% endif %}{% endif %}</span></div>
                 <div><span class="l-en">Currency effect</span><span class="l-zh" lang="zh">汇率影响</span> <span data-im-fx>{% if row.fx_contribution.value is none %}{{ quality_notice(row.fx_contribution) }}{% else %}{{ '%+.2f'|format(row.fx_contribution.value) if row.fx_contribution.value > 0 else '%.2f'|format(row.fx_contribution.value) }}{% if row.fx_contribution.unit == 'percentage_points' %} <span class="l-en">pp</span><span class="l-zh" lang="zh">个百分点</span>{% endif %}{% endif %}</span></div>
                 {% if row.metric.window %}
-                  <div data-im-window><span class="l-en">Calculation window</span><span class="l-zh" lang="zh">计算窗口</span> <time datetime="{{ row.metric.window.start|e }}">{{ row.metric.window.start|e }}</time>–<time datetime="{{ row.metric.window.end|e }}">{{ row.metric.window.end|e }}</time></div>
+                  <div data-im-window><span class="l-en">Calculation window</span><span class="l-zh" lang="zh">计算窗口</span> <time datetime="{{ row.metric.window.start|e }}">{{ window_date(row.metric.window.start) }}</time>–<time datetime="{{ row.metric.window.end|e }}">{{ window_date(row.metric.window.end) }}</time></div>
                 {% endif %}
               </div>
             </div>

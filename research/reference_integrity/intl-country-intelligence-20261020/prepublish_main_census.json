@@ -1,0 +1,37 @@
+{
+  "recorded_at": "2026-10-20T21:10:00.102734+00:00",
+  "integrated_main": "0ef818070c57709a67e44dca2193652d41e29640",
+  "observed_main": "0bd1bedcff4069b0a06b6679566c430c19a25e4f",
+  "changed_path_count": 43,
+  "relevant_changed_paths": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "non_data_changes": [
+    ".github/ci/legacy-jobs.yml",
+    "agentos/handoffs/FINANCIAL-INTELLIGENCE-FABRIC-2026-10-20-fif-z0-closure-wave.md",
+    "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md",
+    "docs/runbooks/OPTIONS_OCC_CONTRACT_TERMS.md",
+    "engine/options_occ_contract_terms.py",
+    "research/financial_intelligence_fabric/FIF_A36_COVERAGE_REMEASURE_2026-10-20.md",
+    "research/financial_intelligence_fabric/FIF_A37_HELD_OUT_QUALIFIED_ABSTAIN_2026-10-20.md",
+    "research/financial_intelligence_fabric/FIF_Z0_CLOSURE_MATRIX.json",
+    "research/financial_intelligence_fabric/FIF_Z1_INDEPENDENT_REVIEW_2026-10-20.md",
+    "tests/test_options_occ_contract_terms.py",
+    "tests/test_options_occ_contract_terms_native.py"
+  ],
+  "recent_commits": [
+    "0bd1bedcff4069b0a06b6679566c430c19a25e4f feat(options): decode explicit OCC contract terms with native identity (#9727)",
+    "236974adf7981427d1ec666047457d02895b3cf2 data: nightly timings us_scan_tier 2026-10-20",
+    "5996c79af9372c6d0e8cf901d51565f04a76fe63 us-scan-tier: widened seeing set + shallow-cache heal 2026-10-20",
+    "e905d47c21bc3e1d53ab78398651335c4f2961e7 data: nightly timings stock_briefs 2026-10-20",
+    "b147bff879ef5f9d4a3f9f616b5343629c35151c press-wire: tick 2026-10-20T20:51Z [skip ci]",
+    "a0ecafcc7a6508a785b4e5b3f1150946b0500fb0 data: nightly timings standout_audit_us 2026-10-20",
+    "9b716c624d66d5af812c2a2f29caf0ffbefe7c1c data: nightly timings causal 2026-10-20",
+    "658a8664ac644dbc51fa8753a2f7e62e24ef1687 causal: frontier drift + lab state 2026-10-20",
+    "c41774c53b41f0493f5590f8f07dce339e7836c4 data: nightly timings cortex 2026-10-20",
+    "033f436e2194b6b500580a79dff489abd0b3cd65 cortex: attention grades + A2 earn-in + hypothesis metabolism 2026-10-20",
+    "3c4a1c3c1e28d4b6eef78ead7c756638d6602e37 render-public: public pages + asset stamps",
+    "0a74c1196c687cfeb4ec094187aca9344d3c3579 FIF Z0 closure wave records: matrix, workstream, A36 remeasure, A37 abstain, handoff (#9891)"
+  ],
+  "mutation": "fetch only; candidate source and review artifact unchanged"
+}

@@ -1,0 +1,136 @@
+....................................F...................F......          [100%]
+=================================== FAILURES ===================================
+_ test_malformed_serialized_return_withholds_without_exception[100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000] _
+
+value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize("value", [True, float("nan"), float("inf"), 10**500, None])
+    def test_malformed_serialized_return_withholds_without_exception(value):
+        raw = observation()
+        raw["value"] = value
+>       assert not currency_observation_view(raw, "KR", today=TODAY)["available"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_intl_currency_observation.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = {'schema': 'intl_currency_observation.v1', 'status': 'available', 'cc': 'KR', 'currency': 'KRW', ...}
+cc = 'KR', today = datetime.date(2026, 10, 20)
+
+    def currency_observation_view(raw, cc, *, today):
+        """Validate identity/dates/provenance and recompute the displayed return.
+    
+        This verifies the serialized endpoints. The producer seeing the full series
+        is responsible for selecting the latest eligible observations.
+        """
+        missing = {"available": False, "value": None, "quality": "missing",
+                   "start_date": None, "end_date": None, "source_url": None}
+        if cc not in SPECS or type(today) is not date or type(raw) is not dict:
+            return missing
+        keys = {"schema", "status", "cc", "currency", "counter_currency", "ticker",
+                "quote_convention", "method", "unit", "same_day_policy",
+                "reference_target", "start", "end", "value", "source", "evidence_sha256"}
+        if (set(raw) != keys or raw["schema"] != SCHEMA or raw["status"] != "available"
+                or raw["cc"] != cc or raw["currency"] != SPECS[cc][0]
+                or raw["counter_currency"] != "USD" or raw["ticker"] != SPECS[cc][1]
+                or raw["quote_convention"] != SPECS[cc][2] or raw["method"] != METHOD
+                or raw["unit"] != "percent" or raw["same_day_policy"] != "exclude"
+                or not _valid_source(raw["source"], cc, today)):
+            return missing
+        if any(type(raw[k]) is not dict or set(raw[k]) != {"date", "quote"} for k in ("start", "end")):
+            return missing
+        start, end = _day(raw["start"]["date"]), _day(raw["end"]["date"])
+        a, b = _price(raw["start"]["quote"]), _price(raw["end"]["quote"])
+        if (start is None or end is None or a is None or b is None
+                or not start < end < today or (today - end).days > MAX_END_AGE_DAYS):
+            return missing
+        try:
+            target = reference_date(end)
+        except ValueError:
+            return missing
+        if (raw["reference_target"] != target.isoformat()
+                or not 0 <= (target - start).days <= MAX_REFERENCE_GAP_DAYS):
+            return missing
+        value = _return(a, b, SPECS[cc][2])
+        if (value is None or type(raw["value"]) not in (int, float)
+>               or not isfinite(raw["value"])
+                       ^^^^^^^^^^^^^^^^^^^^^^
+                or not isclose(raw["value"], value, rel_tol=1e-12, abs_tol=1e-12)):
+E               OverflowError: int too large to convert to float
+
+lib/intl_currency_observation.py:238: OverflowError
+_ test_captured_source_requires_aware_nonfuture_utc_receipt_and_correct_identity[changes2] _
+
+changes = {'retrieved_at': '0001-01-01T00:00:00+01:00'}
+
+    @pytest.mark.parametrize("changes", [
+        {"retrieved_at": "2026-10-20T12:00:00"},
+        {"retrieved_at": "2026-10-20T23:30:00-02:00"},
+        {"retrieved_at": "0001-01-01T00:00:00+01:00"},
+        {"response_sha256": "not-a-hash"},
+        {"provider_symbol": "AUDUSD=X"},
+        {"dataset_url": "https://example.com/rates"},
+    ])
+    def test_captured_source_requires_aware_nonfuture_utc_receipt_and_correct_identity(changes):
+        source = captured_source_context("JP", retrieved_at="2026-10-20T03:41:08Z",
+                                         response_sha256="c" * 64, provider_symbol="JPY=X")
+        source.update(changes)
+>       assert observation("JP", source=source)["reason"] == "source_unavailable"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_intl_currency_observation.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_intl_currency_observation.py:27: in observation
+    return build_currency_observation(
+lib/intl_currency_observation.py:156: in build_currency_observation
+    if not _valid_source(source, cc, today):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+source = {'provider': 'Yahoo Finance', 'collector': 'intl_prices', 'price_field': 'close', 'kind': 'captured_response', ...}
+cc = 'JP', today = datetime.date(2026, 10, 20)
+
+    def _valid_source(source, cc, today):
+        keys = {"provider", "collector", "price_field", "kind", "source_url",
+                "dataset_url", "retrieved_at", "response_sha256", "provider_symbol"}
+        if (type(source) is not dict or set(source) != keys
+                or source["provider"] != "Yahoo Finance"
+                or source["collector"] != "intl_prices"
+                or source["price_field"] != "close"
+                or source["source_url"] != _source_url(cc)):
+            return False
+        if source["kind"] == "configured_store":
+            return all(source[k] is None for k in (
+                "dataset_url", "retrieved_at", "response_sha256", "provider_symbol"))
+        if (source["kind"] != "captured_response"
+                or source["dataset_url"] != provider_dataset_url(cc)
+                or source["provider_symbol"] not in SPECS[cc][3]
+                or type(source["response_sha256"]) is not str
+                or re.fullmatch(r"[0-9a-f]{64}", source["response_sha256"]) is None
+                or type(source["retrieved_at"]) is not str):
+            return False
+        try:
+            retrieved = datetime.fromisoformat(source["retrieved_at"].replace("Z", "+00:00"))
+>           return retrieved.tzinfo is not None and retrieved.astimezone(timezone.utc).date() <= today
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OverflowError: date value out of range
+
+lib/intl_currency_observation.py:126: OverflowError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-0e7d9dc9-4aac-4be5-8d8a-8e0b73143b24/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-0e7d9dc9-4aac-4be5-8d8a-8e0b73143b24/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-0e7d9dc9-4aac-4be5-8d8a-8e0b73143b24/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-0e7d9dc9-4aac-4be5-8d8a-8e0b73143b24/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_currency_observation.py::test_malformed_serialized_return_withholds_without_exception[100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]
+FAILED tests/test_intl_currency_observation.py::test_captured_source_requires_aware_nonfuture_utc_receipt_and_correct_identity[changes2]
+2 failed, 61 passed, 2 warnings in 2.40s

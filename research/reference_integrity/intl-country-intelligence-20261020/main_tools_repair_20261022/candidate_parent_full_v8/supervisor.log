@@ -1,0 +1,2 @@
+{"state": "SERVERS_LAUNCHED", "supervisor_pid": 47788, "processes": {"child": 47792, "parent": 47793}, "output": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/candidate_parent_full_v8"}
+{"stopped_at": "2026-10-22T06:20:04.464438+00:00", "processes": {"child": {"pid": 47792, "exit_code": -15}, "parent": {"pid": 47793, "exit_code": 0}}, "parent_tracked_source_clean": true}

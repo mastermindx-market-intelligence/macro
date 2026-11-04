@@ -1,0 +1,232 @@
+{
+  "schema": "mastermind.intl_current_integration_proof.v1",
+  "started_at": "2026-10-20T10:30:49.016070+00:00",
+  "source_parent": "1a292672de4bb3f14b00c88e4af1f493b854a364",
+  "main_parent": "422e121246f956834085853a49dfc6c2250d3dab",
+  "inputs": {
+    ".github/ci/legacy-jobs.yml": "2688244bbe02b2160ef9a6ea8943361d18002ba5e3588fc6a2877c97e195c10d",
+    "scripts/run_ci_pack.py": "0c9813ff5d312bcfff9734b712b317ca5cc9ef7722a5a8cba812964e18bf2aa5",
+    "scripts/ci_scope_dependencies.py": "74f9afe96de53fd01c1630fdcef8db6c13680442085acb16c262a5927f090546",
+    "scripts/audit_unrun_tests.py": "e50ba44cb678761d55f1c5bb9828390bd7c21c1672760d6f52781ca194dd7d47",
+    "app/deploy/Caddyfile": "91e6670d68ad69235dc3f80088c3a69ca930ee8a3f9a4ae24ecd74f8b3e7e959",
+    "config/site_access.yml": "900c9612e3d6f4e0af37997ac27b01a999b09ea8bb0cd4fb9d9cc59c4440917d",
+    "tests/test_site_access_boundary.py": "55724269e662af26a3a0d7a6c76b1538943d0073d4f1e598952b52c84f64d104"
+  },
+  "source_matcher_checks": [
+    {
+      "matcher": "reg_asset",
+      "occurrence": 0,
+      "exact_international_additions": 9
+    },
+    {
+      "matcher": "reg_asset",
+      "occurrence": 1,
+      "exact_international_additions": 0
+    },
+    {
+      "matcher": "reg_asset_err",
+      "occurrence": 0,
+      "exact_international_additions": 9
+    },
+    {
+      "matcher": "reg_asset_err",
+      "occurrence": 1,
+      "exact_international_additions": 0
+    },
+    {
+      "matcher": "public_static",
+      "occurrence": 0,
+      "exact_international_additions": 9
+    },
+    {
+      "matcher": "public_versioned",
+      "occurrence": 0,
+      "exact_international_additions": 9
+    }
+  ],
+  "policy_only_adds_exact_nine_presentation_assets": true,
+  "caddy_adaptation": {
+    "both_exit_zero": true,
+    "changed_path_lists": [
+      {
+        "path": [
+          "apps",
+          "http",
+          "servers",
+          "srv0",
+          "routes",
+          "8",
+          "handle",
+          "0",
+          "routes",
+          "1",
+          "match",
+          "0",
+          "path"
+        ],
+        "assets": 9
+      },
+      {
+        "path": [
+          "apps",
+          "http",
+          "servers",
+          "srv0",
+          "routes",
+          "8",
+          "handle",
+          "0",
+          "routes",
+          "3",
+          "match",
+          "0",
+          "path"
+        ],
+        "assets": 9
+      },
+      {
+        "path": [
+          "apps",
+          "http",
+          "servers",
+          "srv0",
+          "routes",
+          "8",
+          "handle",
+          "0",
+          "routes",
+          "43",
+          "match",
+          "0",
+          "not",
+          "0",
+          "path"
+        ],
+        "assets": 9
+      },
+      {
+        "path": [
+          "apps",
+          "http",
+          "servers",
+          "srv0",
+          "errors",
+          "routes",
+          "1",
+          "handle",
+          "0",
+          "routes",
+          "0",
+          "handle",
+          "0",
+          "routes",
+          "0",
+          "match",
+          "0",
+          "not",
+          "0",
+          "path"
+        ],
+        "assets": 9
+      },
+      {
+        "path": [
+          "apps",
+          "http",
+          "servers",
+          "srv1",
+          "routes",
+          "1",
+          "handle",
+          "0",
+          "routes",
+          "1",
+          "match",
+          "0",
+          "path"
+        ],
+        "assets": 9
+      },
+      {
+        "path": [
+          "apps",
+          "http",
+          "servers",
+          "srv1",
+          "routes",
+          "1",
+          "handle",
+          "0",
+          "routes",
+          "3",
+          "match",
+          "0",
+          "path"
+        ],
+        "assets": 9
+      },
+      {
+        "path": [
+          "apps",
+          "http",
+          "servers",
+          "srv1",
+          "routes",
+          "1",
+          "handle",
+          "0",
+          "routes",
+          "43",
+          "match",
+          "0",
+          "not",
+          "0",
+          "path"
+        ],
+        "assets": 9
+      },
+      {
+        "path": [
+          "apps",
+          "http",
+          "servers",
+          "srv1",
+          "errors",
+          "routes",
+          "0",
+          "handle",
+          "0",
+          "routes",
+          "0",
+          "handle",
+          "0",
+          "routes",
+          "0",
+          "match",
+          "0",
+          "not",
+          "0",
+          "path"
+        ],
+        "assets": 9
+      }
+    ],
+    "other_adapted_differences": 0,
+    "runtime_started_or_reloaded": false
+  },
+  "main_ci_paths_preserved": true,
+  "currency_engine_scopes": [
+    "international-workspace-foundation",
+    "international-workspace-browser",
+    "itr-turn-rotation",
+    "nw-lobe-unfreeze",
+    "biocatalyst-serving",
+    "washout-turn-organ",
+    "unrun-picks-boards"
+  ],
+  "import_closure_findings": {},
+  "unwired_suites": [],
+  "inputs_unchanged": true,
+  "finished_at": "2026-10-20T10:37:53.860974+00:00",
+  "passed": true
+}

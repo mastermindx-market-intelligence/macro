@@ -1,0 +1,27 @@
+[
+  {
+    "file": "tests/policy_country_tests.log",
+    "original_sha256": "d0cecf260b61fadf4e2e235579efe0e669e9cf477b4c03a1a3e75e9e0cfaa3e4",
+    "normalized_sha256": "d0cecf260b61fadf4e2e235579efe0e669e9cf477b4c03a1a3e75e9e0cfaa3e4",
+    "normalization": "strip trailing whitespace; preserve line order and content"
+  },
+  {
+    "file": "tests/policy_country_tests_v2.log",
+    "original_sha256": "59d5147e11df99e95f2a30403d3d4f2db7c96fb99a0bb7f9c2f438b0da9b637a",
+    "normalized_sha256": "59d5147e11df99e95f2a30403d3d4f2db7c96fb99a0bb7f9c2f438b0da9b637a",
+    "normalization": "strip trailing whitespace; preserve line order and content"
+  },
+  {
+    "file": "tests/policy_country_tests_v3.log",
+    "original_sha256": "7e820cf9bb37624a891fe264622b3bee79aa546d5995a7535fef3304764a2565",
+    "normalized_sha256": "7e820cf9bb37624a891fe264622b3bee79aa546d5995a7535fef3304764a2565",
+    "normalization": "strip trailing whitespace; preserve line order and content"
+  },
+  {
+    "file": "tests/review_regressions_before_fix.log",
+    "original_sha256": "3c8db8a164435faa1d678abf92ffd103cf6d560ee3194d1054a7e3d496e62143",
+    "normalized_sha256": "986bd5ffb914de7df9d9b34da12f754020b5a338a9cccc3a131d8132d7ab5559",
+    "normalization": "strip trailing whitespace; preserve line order and content",
+    "original_archive": "tests/review_regressions_before_fix.log.raw.gz"
+  }
+]

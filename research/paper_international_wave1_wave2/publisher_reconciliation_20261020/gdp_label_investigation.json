@@ -1,0 +1,25 @@
+{
+  "schema": "mastermind.intl_gdp_label_investigation.v1",
+  "recorded_at": "2026-10-20T07:34:24.364612+00:00",
+  "finding": "suspected_Q4_label_not_reproduced",
+  "retained_korea_gdp": {
+    "key": "gdp",
+    "label_en": "GDP growth",
+    "label_zh": "GDP\u589e\u957f",
+    "value": 3.75,
+    "period": "2026-04",
+    "unit": "% y/y",
+    "current": true,
+    "quality": "current",
+    "source": "Existing international macro series",
+    "source_url": null,
+    "change_3m_pp": null
+  },
+  "generated_html_contains_2026_Q4": false,
+  "generated_html_sha256": "8354968aecd636c43aad2c8945393b2fabee6f313181f90618825d90b6737b5a",
+  "assessment_sha256": "5125bfcf4e7c6204e6593a41e6554947c5ee4ef46e25208e03d9a935357c8bc4",
+  "template_behavior": "Renders m.period unchanged in observation card and source table.",
+  "controller_period_transformation": false,
+  "source_change_needed_for_reported_issue": false,
+  "qualification": "The small 2026-04 date in the prior screenshot was misread as Q4. This finding establishes the retained label, not new macro source qualification or new observed GDP acquisition."
+}

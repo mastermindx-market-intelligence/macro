@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: basis-only proposal texts distinguish original and candidate currency basis
+ok 1 - basis-only proposal texts distinguish original and candidate currency basis
+  ---
+  duration_ms: 1385.267125
+  type: 'test'
+  ...
+# Subtest: changing return horizon does not rewrite mounted observation scores
+ok 2 - changing return horizon does not rewrite mounted observation scores
+  ---
+  duration_ms: 445.610709
+  type: 'test'
+  ...
+# Subtest: calculate is reduced once from the native submit path
+ok 3 - calculate is reduced once from the native submit path
+  ---
+  duration_ms: 538.294958
+  type: 'test'
+  ...
+# Subtest: tiny nonzero conditional return uses scientific notation instead of a rounded zero
+ok 4 - tiny nonzero conditional return uses scientific notation instead of a rounded zero
+  ---
+  duration_ms: 534.517083
+  type: 'test'
+  ...
+# Subtest: missing scenario helper leaves the published fieldset disabled and history unmatched
+ok 5 - missing scenario helper leaves the published fieldset disabled and history unmatched
+  ---
+  duration_ms: 395.0545
+  type: 'test'
+  ...
+# Subtest: unsupported restored view with a nonempty draft keeps the entire committed state and reports Unsupported value
+ok 6 - unsupported restored view with a nonempty draft keeps the entire committed state and reports Unsupported value
+  ---
+  duration_ms: 510.766333
+  type: 'test'
+  ...
+# Subtest: malformed restored query with a nonempty draft reports Invalid URL state restored and does not stage confirmation
+ok 7 - malformed restored query with a nonempty draft reports Invalid URL state restored and does not stage confirmation
+  ---
+  duration_ms: 526.697625
+  type: 'test'
+  ...
+# Subtest: empty draft invalid popstate preserves committed state and does not adopt the parser initial workspace
+ok 8 - empty draft invalid popstate preserves committed state and does not adopt the parser initial workspace
+  ---
+  duration_ms: 429.16075
+  type: 'test'
+  ...
+# Subtest: invalid popstate during pending confirmation keeps the origin tuple and rejected URL, and still requires confirm
+ok 9 - invalid popstate during pending confirmation keeps the origin tuple and rejected URL, and still requires confirm
+  ---
+  duration_ms: 541.418167
+  type: 'test'
+  ...
+# Subtest: invalid popstate during reset keeps assumptions, reset confirmation, and the entire committed state
+ok 10 - invalid popstate during reset keeps assumptions, reset confirmation, and the entire committed state
+  ---
+  duration_ms: 543.931167
+  type: 'test'
+  ...
+# Subtest: history market options use data-im-label-zh after document language changes
+ok 11 - history market options use data-im-label-zh after document language changes
+  ---
+  duration_ms: 443.525708
+  type: 'test'
+  ...
+# Subtest: pending basis review text follows document language without losing the original/candidate pair
+ok 12 - pending basis review text follows document language without losing the original/candidate pair
+  ---
+  duration_ms: 488.231
+  type: 'test'
+  ...
+# Subtest: without a History draft the incumbent popstate path still stages the parsed result
+ok 13 - without a History draft the incumbent popstate path still stages the parsed result
+  ---
+  duration_ms: 348.284459
+  type: 'test'
+  ...
+# Subtest: resize is admitted during pending confirmation while pin and view remain refused
+ok 14 - resize is admitted during pending confirmation while pin and view remain refused
+  ---
+  duration_ms: 546.345209
+  type: 'test'
+  ...
+# Subtest: replaceSource without rewriting generation attributes invalidates the old history panel and keeps raw inputs
+ok 15 - replaceSource without rewriting generation attributes invalidates the old history panel and keeps raw inputs
+  ---
+  duration_ms: 472.007667
+  type: 'test'
+  ...
+# Subtest: unknown KR roster slot is shown as qualified-history-unavailable, not as an empty success
+ok 16 - unknown KR roster slot is shown as qualified-history-unavailable, not as an empty success
+  ---
+  duration_ms: 417.355666
+  type: 'test'
+  ...
+# Subtest: empty draft adopts a basis change immediately without confirmation
+ok 17 - empty draft adopts a basis change immediately without confirmation
+  ---
+  duration_ms: 396.579084
+  type: 'test'
+  ...
+# Subtest: overview regression: same controller hides history, keeps pins, and restores the blank-unrelated draft
+ok 18 - overview regression: same controller hides history, keeps pins, and restores the blank-unrelated draft
+  ---
+  duration_ms: 529.45575
+  type: 'test'
+  ...
+# Subtest: candidate edits during pending do not become origin raw until confirm; cancel restores the calculated pair
+ok 19 - candidate edits during pending do not become origin raw until confirm; cancel restores the calculated pair
+  ---
+  duration_ms: 667.87875
+  type: 'test'
+  ...
+# Subtest: nested workspace submit cannot calculate the owning draft
+ok 20 - nested workspace submit cannot calculate the owning draft
+  ---
+  duration_ms: 533.263875
+  type: 'test'
+  ...
+# Subtest: destroy restores blank disabled fallback and a new mount starts blank
+ok 21 - destroy restores blank disabled fallback and a new mount starts blank
+  ---
+  duration_ms: 521.916417
+  type: 'test'
+  ...
+# Subtest: Escape cancels staged context and restores focus to the initiating control
+ok 22 - Escape cancels staged context and restores focus to the initiating control
+  ---
+  duration_ms: 549.084416
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13250.498584

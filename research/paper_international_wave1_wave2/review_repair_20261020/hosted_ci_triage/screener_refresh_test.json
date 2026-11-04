@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_research_screener.py",
+    "-q"
+  ],
+  "started_at": "2026-10-20T12:49:29.058412+00:00",
+  "finished_at": "2026-10-20T12:49:34.772409+00:00",
+  "elapsed_seconds": 5.714,
+  "exit_code": 0,
+  "head": "9abbe195c814db8568d26e7fb1b84c3843660b31",
+  "payload_sha256": "d64dbf30c9a1632c8dffd5c4a3ba82e0f015d76afb65d87dfe2bf3f648f41322",
+  "html_sha256": "4f6a635dcc81beecfb2ef7a66fa7b4c378ff475d6f67bf16d3e5e51a420fd82e",
+  "prior_attempt": "PID17534 ended during gateway failure; no output retained. This observed verification is after OS reconciliation confirmed no running prior process."
+}

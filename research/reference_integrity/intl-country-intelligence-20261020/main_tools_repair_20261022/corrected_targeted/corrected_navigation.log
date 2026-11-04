@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: E first and repeated Tools activation from the root and from the sibling section
+ok 1 - E first and repeated Tools activation from the root and from the sibling section
+  ---
+  duration_ms: 2051.407
+  type: 'test'
+  ...
+# Subtest: E Tools still activates after the parent changes the current query
+ok 2 - E Tools still activates after the parent changes the current query
+  ---
+  duration_ms: 759.767041
+  type: 'test'
+  ...
+# Subtest: E the same nested destination repeats after Library with every ancestor manually closed
+ok 3 - E the same nested destination repeats after Library with every ancestor manually closed
+  ---
+  duration_ms: 731.515041
+  type: 'test'
+  ...
+# Subtest: E the nested destination is not left below the fold or under the sticky toolbar
+ok 4 - E the nested destination is not left below the fold or under the sticky toolbar
+  ---
+  duration_ms: 697.434667
+  type: 'test'
+  ...
+# Subtest: E unicode, malformed, missing and unrelated ids are handled without guessing
+ok 5 - E unicode, malformed, missing and unrelated ids are handled without guessing
+  ---
+  duration_ms: 635.551542
+  type: 'test'
+  ...
+# Subtest: F modified, non-primary, native-target and lookalike activations preserve the current page
+ok 6 - F modified, non-primary, native-target and lookalike activations preserve the current page
+  ---
+  duration_ms: 512.999375
+  type: 'test'
+  ...
+# Subtest: G an accepted location is read from this window, never from event.detail
+ok 7 - G an accepted location is read from this window, never from event.detail
+  ---
+  duration_ms: 492.093041
+  type: 'test'
+  ...
+# Subtest: G country selection keeps its own focus, rail and history behaviour
+ok 8 - G country selection keeps its own focus, rail and history behaviour
+  ---
+  duration_ms: 568.182375
+  type: 'test'
+  ...
+# Subtest: G reveal never steals focus from a keyboard activation
+ok 9 - G reveal never steals focus from a keyboard activation
+  ---
+  duration_ms: 484.812917
+  type: 'test'
+  ...
+# Subtest: G a newer destination cancels the stale deferred scroll
+ok 10 - G a newer destination cancels the stale deferred scroll
+  ---
+  duration_ms: 493.709459
+  type: 'test'
+  ...
+# Subtest: G modeled history dispatches wrapped child navigation (not saved-view restoration)
+ok 11 - G modeled history dispatches wrapped child navigation (not saved-view restoration)
+  ---
+  duration_ms: 626.994584
+  type: 'test'
+  ...
+# Subtest: G standalone keeps a strict local test for hash and direct nested activation
+ok 12 - G standalone keeps a strict local test for hash and direct nested activation
+  ---
+  duration_ms: 543.771041
+  type: 'test'
+  ...
+# Subtest: E protocol, version and admission are unchanged by the repair
+ok 13 - E protocol, version and admission are unchanged by the repair
+  ---
+  duration_ms: 514.204542
+  type: 'test'
+  ...
+# Subtest: G a live bridge without the helper fails closed and keeps the accepted-location fallback
+ok 14 - G a live bridge without the helper fails closed and keeps the accepted-location fallback
+  ---
+  duration_ms: 534.637792
+  type: 'test'
+  ...
+# Subtest: F native Tools links remain native in root and sibling positions, embedded and standalone
+ok 15 - F native Tools links remain native in root and sibling positions, embedded and standalone
+  ---
+  duration_ms: 1988.318459
+  type: 'test'
+  ...
+# Subtest: F an intercepted parent-origin role=button repeats the current Tools fragment
+ok 16 - F an intercepted parent-origin role=button repeats the current Tools fragment
+  ---
+  duration_ms: 1213.541041
+  type: 'test'
+  ...
+# Subtest: F an activation canceled at window capture leaves disclosure, position and navigation unchanged
+ok 17 - F an activation canceled at window capture leaves disclosure, position and navigation unchanged
+  ---
+  duration_ms: 520.167583
+  type: 'test'
+  ...
+# Subtest: G newer outside, missing, country and query destinations cancel pending research alignment
+ok 18 - G newer outside, missing, country and query destinations cancel pending research alignment
+  ---
+  duration_ms: 1799.515708
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 16796.584083

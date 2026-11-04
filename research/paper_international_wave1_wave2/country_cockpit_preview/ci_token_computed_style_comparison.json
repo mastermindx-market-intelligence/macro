@@ -1,0 +1,61 @@
+{
+  "before_commit": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+  "after_integrated_html_sha256": "b9b77bdeb442c9d0ee7df6f013318145be0536a8a8b138236e0e5349ca0a2dfa",
+  "qualification": "Real anonymous Chrome, original and current HTML plus corresponding template assets; all International element color/background/border/outline/shadow/image computed styles; animations disabled only in this diagnostic. Isolated fixture, not production.",
+  "checks": [
+    {
+      "theme": "dark",
+      "state": "rest",
+      "before_elements": 3168,
+      "after_elements": 3168,
+      "identical": true,
+      "difference_count": 0,
+      "differences": []
+    },
+    {
+      "theme": "dark",
+      "state": "hover",
+      "before_elements": 3168,
+      "after_elements": 3168,
+      "identical": true,
+      "difference_count": 0,
+      "differences": []
+    },
+    {
+      "theme": "dark",
+      "state": "focus",
+      "before_elements": 3168,
+      "after_elements": 3168,
+      "identical": true,
+      "difference_count": 0,
+      "differences": []
+    },
+    {
+      "theme": "light",
+      "state": "rest",
+      "before_elements": 3168,
+      "after_elements": 3168,
+      "identical": true,
+      "difference_count": 0,
+      "differences": []
+    },
+    {
+      "theme": "light",
+      "state": "hover",
+      "before_elements": 3168,
+      "after_elements": 3168,
+      "identical": true,
+      "difference_count": 0,
+      "differences": []
+    },
+    {
+      "theme": "light",
+      "state": "focus",
+      "before_elements": 3168,
+      "after_elements": 3168,
+      "identical": true,
+      "difference_count": 0,
+      "differences": []
+    }
+  ]
+}

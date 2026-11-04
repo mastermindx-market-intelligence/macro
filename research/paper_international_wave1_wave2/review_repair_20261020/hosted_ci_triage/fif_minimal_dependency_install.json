@@ -1,0 +1,24 @@
+{
+  "owner": "fif-kernel-guards / install minimal deps",
+  "command": [
+    "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+    "-m",
+    "pip",
+    "install",
+    "pytest",
+    "pandas",
+    "numpy",
+    "pyarrow",
+    "pyyaml",
+    "requests",
+    "fastapi",
+    "httpx",
+    "jsonschema",
+    "jinja2"
+  ],
+  "started_at": "2026-10-20T13:20:15.744955+00:00",
+  "finished_at": "2026-10-20T13:20:18.979469+00:00",
+  "elapsed_seconds": 3.234,
+  "exit_code": 0,
+  "prior_unavailable_call": "Connection failed before a process receipt; same-host readback found no install log, receipt or running install/test before this action."
+}

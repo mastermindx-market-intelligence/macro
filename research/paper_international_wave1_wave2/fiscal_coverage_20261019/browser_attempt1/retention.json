@@ -1,0 +1,46 @@
+{
+  "retained_at": "2026-10-20T01:46:32.899435+00:00",
+  "reason": "Initial fiscal proof found open-source disclosure overflow on mobile. 28/84 passed; values and panel layouts passed, source disclosure width failed. New final capture has its own October20 canonical directory.",
+  "files": [
+    {
+      "original_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_verification.json",
+      "retained_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/browser_verification.json",
+      "sha256": "155f09094d6222ba62f45fbe2894fe84e08e9237962510173d7fc066a1b51554"
+    },
+    {
+      "original_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_run.json",
+      "retained_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/browser_run.json",
+      "sha256": "9fc87932f97e0a4591c2f35c1c0d754c86630268139c29f314b6a2cc2e7eb776"
+    },
+    {
+      "original_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_run.log",
+      "retained_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/browser_run.log",
+      "sha256": "1deee2e69255864cb89d76a443bd3b532d80cb84a3f979368d68e5ee8862a044"
+    },
+    {
+      "original_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/canonical_capture.log",
+      "retained_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/canonical_capture.log",
+      "sha256": "598dc56f61ae20c5eb8e651568c058dd9db3c92412bd8620def518320b4f8483"
+    },
+    {
+      "original_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/manifest.json",
+      "retained_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/preview/manifest.json",
+      "sha256": "7035cd521a91663b358874cacbf63830240b3eeb73a4c879b1d11070c0064123"
+    },
+    {
+      "original_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_country_preview.html",
+      "retained_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/preview/intl_country_preview.html.gz",
+      "uncompressed_sha256": "5e5a62db603220229dddc3655769a4e92493f51c898c45f630e474e9ded53ce4"
+    },
+    {
+      "original_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_integrated_preview.html",
+      "retained_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/preview/intl_integrated_preview.html.gz",
+      "uncompressed_sha256": "4189b3d035d509bd965037c071a60450f711783f082b314110f60271cc099f37"
+    },
+    {
+      "original_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/intl_stocks_integrated_preview.html",
+      "retained_path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/browser_attempt1/preview/intl_stocks_integrated_preview.html.gz",
+      "uncompressed_sha256": "115e3118713c9e2ca8dce307c5a088424347807de7d3f187c6b82eafcda68232"
+    }
+  ]
+}

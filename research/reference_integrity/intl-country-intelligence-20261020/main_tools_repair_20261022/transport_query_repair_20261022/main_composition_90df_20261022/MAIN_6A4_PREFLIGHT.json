@@ -1,0 +1,13 @@
+{
+  "schema": "intl.latest_main6a4_preflight.v1",
+  "started_at": "2026-10-22T08:47:31.189444+00:00",
+  "completed_at": "2026-10-22T08:47:44.756774+00:00",
+  "local_head": "3b7d6537c6f344f250ff822af5091aa2660f0b0f",
+  "main_head": "6a4c0079d1aec13b08cb554f6f7424b775165d09",
+  "fetch_exit_code": 0,
+  "merge_tree_exit_code": 1,
+  "tree": "312faf2c10c5709b2f5c8dbc312f289da884e888",
+  "source_or_branch_ref_mutation": false,
+  "head_unchanged": true,
+  "fetch_write_fetch_head": false
+}

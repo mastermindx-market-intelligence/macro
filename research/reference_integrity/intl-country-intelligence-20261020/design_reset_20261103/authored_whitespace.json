@@ -1,0 +1,26 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--check",
+    "6a695db8fb1b789b27760de261e472387784cb9a",
+    "--",
+    "templates/intl_country_cockpit.html.j2",
+    "templates/intl_country_cockpit.css",
+    "templates/intl.html.j2",
+    "templates/intl_workspace.css",
+    "templates/intl_workspace/shell.html.j2",
+    "templates/theme.css",
+    "site/theme.css",
+    "site/intl_workspace.css",
+    "agentos/handoffs/PAPER-INTERNATIONAL-WAVES-2026-11-03.md",
+    "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+    "research/paper_international_wave1_wave2/README.md",
+    "research/reference_integrity/intl-country-intelligence-20261020/OWNER_CHECKPOINT.md",
+    "research/reference_integrity/intl-country-intelligence-20261020/design_reset_20261103/DESIGN_RESET.md"
+  ],
+  "started_at": "2026-11-03T08:56:11.651074+00:00",
+  "state": "PASS",
+  "exit_code": 0,
+  "completed_at": "2026-11-03T08:56:12.643008+00:00"
+}

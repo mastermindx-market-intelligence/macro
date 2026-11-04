@@ -1,0 +1,13 @@
+{
+  "recorded_at": "2026-10-20T20:50:14.588491+00:00",
+  "parent": "5b6b88fc16a1b11f2dc394ad17a3ecc996d0cefd",
+  "observed_failure": "toolbar_dock2_landings.json: landing-imc-country-JP-desktop-zh-dark; target top -1647.984375 after same-document legacy fragment transitions; 131 other checks passed.",
+  "diagnostic": "country_anchor_dock2_diagnostic.json: three instrumented repeats did not reproduce; preserve original failure. Native scroll behavior is auto, not smooth.",
+  "repair": "After country disclosure reconciliation, align the active country on the next animation frame; skip if the hash has already changed. Do not override native restoration for an empty hash. Also use established --r-ctl,8px token.",
+  "source_hashes": {
+    "templates/intl_country_cockpit.html.j2": "cada0b3035ddd4926e4210c0215a680c909be88c01adeca27bf51dc047fd9413",
+    "templates/intl_country_cockpit.css": "8609d1f0588f6cba3bcaca0589f8fbf7d1d69b92c66d75f8ef57fffa041b9b87",
+    "templates/intl_country_cockpit.js": "d9827c38995d766f0cf7a4c1112353d1dabb42835ba5fd88ade1ef95dd83d45a"
+  },
+  "verification_pending": "New no-overlay dock3 build, complete capture, same-document landings, keyboard focus and country evidence equivalence."
+}

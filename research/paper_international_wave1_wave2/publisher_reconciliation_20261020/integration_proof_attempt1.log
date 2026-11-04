@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/publisher_reconciliation_20261020/verify_current_integration.py", line 45, in <module>
+    assert ASSETS <= b and ASSETS.isdisjoint(a) and c == a|ASSETS, (name,index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('reg_asset', 1)

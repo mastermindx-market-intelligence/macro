@@ -1,0 +1,268 @@
+{
+  "schema": "intl_country_verification.v1",
+  "operation_id": "intl-country-cockpit-20261018",
+  "recorded_at": "2026-10-18T06:28:37.102843+00:00",
+  "base_sha": "1ed4b870a426ff3cafb439152072c5bf47858551",
+  "branch": "sol/web-intl-country-cockpit-20261018",
+  "source_state": "UNCOMMITTED_OWNED_WORKSPACE",
+  "paper_applied": true,
+  "published": false,
+  "pytest": {
+    "passed": 77,
+    "warnings": 4,
+    "exit_code": 0,
+    "process_id": 15539,
+    "seconds": 10.51,
+    "command": "/tmp/intl-country-cockpit-testenv-20261018/bin/python -m pytest -q tests/test_intl_country_cockpit.py tests/test_intl_equity_risk.py tests/test_intl_build.py tests/test_intl_library_mount.py tests/test_intl_workspace_integration.py tests/test_intl_session_asof.py",
+    "output": "country_cockpit_preview/final_pytest_output.txt",
+    "warning_scope": "Three pre-existing Pandas Timestamp.utcnow deprecations and one pytest cleanup warning on unrelated historical Chromium.app garbage; no cleanup was performed."
+  },
+  "browser": {
+    "exit_code": 0,
+    "process_id": 5637,
+    "rendered_at": "2026-10-18T05:51:30.097403+00:00",
+    "states_passed": 12,
+    "widths": [
+      1440,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "journeys_passed": 6,
+    "receipts": "country_cockpit_preview/integrated_receipts.json",
+    "journeys": [
+      {
+        "journey": "country-select-history-keyboard-sources-tools",
+        "passed": true
+      },
+      {
+        "journey": "legacy-deep-link",
+        "suffix": "#intl-cross-country",
+        "passed": true
+      },
+      {
+        "journey": "legacy-deep-link",
+        "suffix": "?view=compare&market=JP",
+        "passed": true
+      },
+      {
+        "journey": "legacy-assets-401-core-remains-readable",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "journey": "incumbent-assistant-footer-load-open-reopen",
+        "passed": true
+      },
+      {
+        "journey": "no-javascript-country-and-evidence",
+        "passed": true
+      }
+    ],
+    "errors": 0,
+    "horizontal_overflow": false,
+    "assistant_overlay_obstruction": false,
+    "commands": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python research/paper_international_wave1_wave2/preview_country_cockpit.py --source-dir . --output-dir research/paper_international_wave1_wave2/country_cockpit_preview --reuse-inputs",
+      "INTL_BROWSER_RUNTIME=/Users/chriswong/.local/share/mastermind-browser-control/mcp-runtime/node_modules/playwright PLAYWRIGHT_CHROMIUM_CHANNEL=chrome node research/paper_international_wave1_wave2/verify_country_cockpit.cjs"
+    ]
+  },
+  "principal_visual_judgment": {
+    "accepted": true,
+    "states": [
+      "integrated_1440_dark_en.png",
+      "integrated_390_light_en.png"
+    ],
+    "scope": "Bounded product comprehension and layout judgment; not formal data, security, release or coverage certification."
+  },
+  "final_metadata_validation": {
+    "git_diff_check_exit_code": 0,
+    "preview_generator_ast_parse": true,
+    "workstream_yaml_parse": true,
+    "receipt_json_parse": true
+  },
+  "fingerprints": {
+    "collectors/intl_macro.py": {
+      "bytes": 14983,
+      "sha256": "e2765426a3fd4c235dc546782b0984942e8223b02a6486d1cdf29f377d95abad"
+    },
+    "collectors/intl_country_sources.py": {
+      "bytes": 15430,
+      "sha256": "51d32b6c062d11adda5b3adaf93129d3b59dd2deb10c0d8c3c559c760879adc6"
+    },
+    "config/intl_country_baseline.json": {
+      "bytes": 17813,
+      "sha256": "ae9089672035ae2474eaab4ed03275919e993ccf279607b5e2185566a2a7576a"
+    },
+    "config/intl_country_commentary.json": {
+      "bytes": 8605,
+      "sha256": "3858d378beeac4b6b289ca3cb7d18611e609c92ca65a648112b0fdd82cb86f77"
+    },
+    "engine/intl_equity_risk.py": {
+      "bytes": 3342,
+      "sha256": "6e6ab463ea63abb24d6543dfd16d15d81e7d6fe893c3da9dc6cbd353a17aa38c"
+    },
+    "engine/intl_run.py": {
+      "bytes": 8948,
+      "sha256": "a5f8bc238ba25e52face4808b99fadbfc9d4ebfe75ae640fcdcc28053f5989ab"
+    },
+    "lib/intl_country_assessment.py": {
+      "bytes": 26845,
+      "sha256": "7705bcf03603ba7f85af370a6c58ac433ca03a68c53d5aad4a759e1fa9813f61"
+    },
+    "lib/intl_country_inputs.py": {
+      "bytes": 1330,
+      "sha256": "9f7153a891cbc83524bcd6e954394d9499e176d9f3b7fff12884198e362a18c0"
+    },
+    "scripts/build_intl.py": {
+      "bytes": 59681,
+      "sha256": "762147ef56cdf4d08d9d0478a144d920708f39c059019e35c43140062d36032d"
+    },
+    "templates/intl.html.j2": {
+      "bytes": 166075,
+      "sha256": "21f4e94703df9f21bc7b224c91c1e66682dade50610ec492d962118b70896a28"
+    },
+    "templates/intl_country_cockpit.html.j2": {
+      "bytes": 16363,
+      "sha256": "ce2f8befd377615971d5672ef1ea36156c20ba8a5f29b96d045c30435a0f8bcb"
+    },
+    "templates/intl_country_cockpit.css": {
+      "bytes": 20890,
+      "sha256": "166b4eee34a62e6e2ddf1f502c762f182f09526b61d39fdfd7fa073449015d71"
+    },
+    "templates/intl_country_cockpit.js": {
+      "bytes": 2976,
+      "sha256": "bad5dbf81388a09eea15768ecff59a040a7fc5497154224d0b182872b7ac17ee"
+    },
+    "tests/test_intl_country_cockpit.py": {
+      "bytes": 12779,
+      "sha256": "11a36bd7d27cc69d0fdcc9bbf48a05acc47f0dafd118eee2cec7c717cda3f117"
+    },
+    "research/paper_international_wave1_wave2/preview_country_cockpit.py": {
+      "bytes": 7338,
+      "sha256": "c74c821e2cc46b1b505a973c0b8093949fa05213977b4decdaba4be8a3622321"
+    },
+    "research/paper_international_wave1_wave2/verify_country_cockpit.cjs": {
+      "bytes": 8356,
+      "sha256": "fe32fba221b4322c82c4cd9b0bc80638e9c93fec20d92a899e06dd99f7b897a6"
+    },
+    "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md": {
+      "bytes": 15166,
+      "sha256": "c4b82cfca099d5d3591d69c08110d270a17ff3694d362ca4ada43b50e119a25e"
+    },
+    "research/paper_international_wave1_wave2/COUNTRY_ANALYSIS_REBRIEF_20261018.md": {
+      "bytes": 9599,
+      "sha256": "5187dfbc4cc1e564e447ab7aa45dc5b59e0c696b2eb7cf6b9c25b59cc95a17fa"
+    },
+    "research/paper_international_wave1_wave2/country_publication_diagnosis.json": {
+      "bytes": 5555,
+      "sha256": "710b0ad8a6e1e87187d757a0369ea957db403ce363ce06d990d18194cbc23052"
+    },
+    "research/paper_international_wave1_wave2/paper_r11_receipt.json": {
+      "bytes": 9980,
+      "sha256": "f3f18c0d4609338354b2c8565492f213cb352d77546b7f97be54612adcd5e175"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/assessment.json": {
+      "bytes": 93491,
+      "sha256": "1be120abe0948d36ced8ac45c98cc3d520865096e8f7697eb71400f133623700"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/country_inputs.json": {
+      "bytes": 17626,
+      "sha256": "bf294f942f475a9576f2c7c78e4c729d5d838a52d69a6f2fe65440f558d89974"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/final_pytest_output.txt": {
+      "bytes": 2384,
+      "sha256": "73b1f8d6e7ba926368125fcdd43fb1b090f39d04e108cfa1e069036986a2bb6b"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_dark_en.png": {
+      "bytes": 482688,
+      "sha256": "bbeffa839a045855c1307b454fb25ee649caab7dfe4e9711580a6faedb8162f4"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_dark_zh.png": {
+      "bytes": 474469,
+      "sha256": "b47391754a4b79caaec9ae0035307074f20db9905de73c6d41cdd88e25de4140"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_light_en.png": {
+      "bytes": 509330,
+      "sha256": "388fa28fe935d67f74dcb0dbdf0c52f660d27285819af7284c40e2af7ab39202"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_light_zh.png": {
+      "bytes": 501403,
+      "sha256": "480284432fcaf88c2814c46b9ec5df2b2bb552d7c6b3850b2e6e594e2caf1f1f"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_dark_en.png": {
+      "bytes": 121070,
+      "sha256": "0d434195c2f2d52fdfbf6ba176fb02bde873aa1ac2a636430c9a620118e706e5"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_dark_zh.png": {
+      "bytes": 120459,
+      "sha256": "565fde33b3b25dbaa2ba7961229ae452b283102f01fd3165c18796369a40c7e3"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_light_en.png": {
+      "bytes": 123336,
+      "sha256": "d90eaf1fa135104ae3188c88fbd542db555f6fcd203197d1e22d9ad2698658ee"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_light_zh.png": {
+      "bytes": 123761,
+      "sha256": "ad789129aeec21344ace054546848a2ed403ddda2ceb0befc831e921b631f319"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_dark_en.png": {
+      "bytes": 131785,
+      "sha256": "d7d244604ea4bfbb2daa3d62463fd94e6c101f670cb35624d814741662b19fc0"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_dark_zh.png": {
+      "bytes": 130365,
+      "sha256": "937c2a69e1f5b110be6867804b1c236c663195a0daec704d6cf5ecd359ae9ff6"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_light_en.png": {
+      "bytes": 134177,
+      "sha256": "e43c6a331f16778b52ba2b13052e2ad06923afbfe0369346847f1ba5df5d9fd4"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_light_zh.png": {
+      "bytes": 133214,
+      "sha256": "e3451f8ed0c78d12501d3eacb8f63941c97cd05ebf541d5c33a8facf7561a900"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_receipts.json": {
+      "bytes": 6302,
+      "sha256": "1d6412aeccbcd677f33fb738d0a5cbfcbf5998997b2b8634ae357fd6011026b9"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/intl_integrated_preview.html": {
+      "bytes": 1636203,
+      "sha256": "fd4400e2ed1c81f4c3d13b1ece6e5916e5819602d85d5e9cc547552465b2e256"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/intl_stocks_integrated_preview.html": {
+      "bytes": 97987,
+      "sha256": "c94c8cee10f2fd6dc5df63802401f76a1ba08920fc6f57e02314d525422ab152"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/manifest.json": {
+      "bytes": 1447,
+      "sha256": "5c922c03d8612d932c0830c7efb767166ce71388720a4947bf598e767030a7d6"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/market_replay.json": {
+      "bytes": 2903,
+      "sha256": "c4993a42d353c0dd105619b650af4e3bfcfbfd01ed20e92d9c0a58d2eb2ac567"
+    },
+    "research/paper_international_wave1_wave2/country_cockpit_preview/verified_forecast_seed.json": {
+      "bytes": 6738,
+      "sha256": "bfe02084d8b58302999cfdff16e47917afff4a4438251e4969a64143327325cb"
+    }
+  },
+  "remaining_gates": [
+    "Installer-owner accepted C2 Personal publisher migration and native read-only Macro selection",
+    "Typed commit and push effect receipts",
+    "Independent source/data/publisher review and hosted CI",
+    "Existing release holds and served production/browser acceptance"
+  ],
+  "limits": [
+    "Fixed official forecast vintages and explicit retrieval failures are documented; automated newest-vintage discovery is not claimed.",
+    "Live workspace asset repair and existing Saved migration are not established by this operation.",
+    "Final tests precede metadata-only closeout edits; production implementation bytes have not changed since the final passing run."
+  ]
+}

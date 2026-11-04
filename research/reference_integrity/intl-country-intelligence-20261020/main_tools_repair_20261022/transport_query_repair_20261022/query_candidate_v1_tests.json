@@ -1,0 +1,50 @@
+{
+  "command": [
+    "/opt/homebrew/bin/node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-name-pattern=^(query source:|query source contract:|page search:)",
+    "tests/js/shared_shell_bridge.test.cjs",
+    "tests/intl_workspace_controller.test.cjs",
+    "tests/intl_workspace_state.test.cjs"
+  ],
+  "exit_code": 1,
+  "seconds": 58.61,
+  "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/query_candidate_v1_tests.log",
+  "log_sha256": "a4cf30f85a5f811d4a83fe1a68e44368590ec92a1d91f4ffd6764e404ec945e2",
+  "patch_sha256": "646f840eeaded12d9707ffd861e9c0a0c9e4e3b8e4b2b3f2afee104e447b54cb",
+  "source_files": [
+    {
+      "path": "templates/shared_shell_bridge.js",
+      "sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf"
+    },
+    {
+      "path": "site/shared_shell_bridge.js",
+      "sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf"
+    },
+    {
+      "path": "templates/intl_workspace.js",
+      "sha256": "2a087839c3fbb93d02de2e3c9c2798ffa5727dd1c0d3aff38717aa62b247a8dd"
+    },
+    {
+      "path": "site/intl_workspace.js",
+      "sha256": "2a087839c3fbb93d02de2e3c9c2798ffa5727dd1c0d3aff38717aa62b247a8dd"
+    },
+    {
+      "path": "tests/js/shared_shell_bridge.test.cjs",
+      "sha256": "b8a2c6ca0931aa314684ebf3e104b5cc098b4d9e7dad093eb65d08493402186a"
+    },
+    {
+      "path": "tests/intl_workspace_controller.test.cjs",
+      "sha256": "a648bb52fb15cf18fd3221e07216422b94b4cb26045c01cd3cd94fd017ac3277"
+    },
+    {
+      "path": "tests/intl_workspace_state.test.cjs",
+      "sha256": "d87966bde8189161c2d9cdfc79c605bfbd11524f54e7a48fec397906c58293d8"
+    },
+    {
+      "path": "tests/intl_country_cockpit_navigation.test.cjs",
+      "sha256": "c78620ad415d2265ac7f6c0faf2d6e247c9b233f0fe6974003194217d17add72"
+    }
+  ]
+}

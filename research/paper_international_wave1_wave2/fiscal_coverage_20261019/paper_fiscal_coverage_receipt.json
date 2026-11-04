@@ -1,0 +1,178 @@
+{
+  "schema": "mastermind.intl_fiscal_paper_coverage_receipt.v1",
+  "recorded_at": "2026-10-20T02:50:18.430671+00:00",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-G-0",
+  "url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-G-0",
+  "boards": [
+    "DMX-0",
+    "DW7-0",
+    "E4D-0",
+    "EC2-0",
+    "ER4-0",
+    "ER5-0"
+  ],
+  "parents": [
+    {
+      "path": "research/paper_international_wave1_wave2/paper_r12_receipt.json",
+      "sha256": "b74bb57b8f724d0d766a88a6a42c61d98329326de9d3fca383691d7785a8e846",
+      "bytes": 25184
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper_policy_coverage_receipt.json",
+      "sha256": "c9aad285a3ee80e54b0b125274f0251122f68d3b1a7862f0b1620227e69f6a24",
+      "bytes": 4740
+    }
+  ],
+  "scope": "Additional fiscal rows, forecast units, September30 information cutoff, and Taiwan light-theme correction on the existing R12 references.",
+  "effects": [
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_01.json",
+      "sha256": "531ba08a524bff1579e824acd54eabe7387a0bd79ce95931cb0e5ba3c3340a4c",
+      "bytes": 5231
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_02.json",
+      "sha256": "e868f09cbde580967b464dccf724180be997641b10a9c306d42dfd131a73eb33",
+      "bytes": 6827
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_03.json",
+      "sha256": "bacfa007c7767737d016a0aff58bf7cc83c9d984bfcd5f88135119021f2e468f",
+      "bytes": 4173
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_04.json",
+      "sha256": "196711b97450b22fbb38b4d9eff513509b7cd409ec0b68767142ec96f211de19",
+      "bytes": 1470
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_05_recovered.json",
+      "sha256": "63071fb20f346a45a9041648ad67492aedd79976044b8b3a59223032f6b6d9a9",
+      "bytes": 4450
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_06.json",
+      "sha256": "96e77a9f28fabfca82c96cd1792666b3c330b8f9db3b73fa51d2b8143186325b",
+      "bytes": 34791
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_07_finish.json",
+      "sha256": "f6eb1a914f5b3f52bffbc767a18fc4102d526adb17d4f85a76b6ca4569029303",
+      "bytes": 1147
+    }
+  ],
+  "effect_count_including_finish": 7,
+  "original_response_retained_count": 6,
+  "recovered_effect": {
+    "operation_id": "intl-country-cockpit-20261018-fiscal-paper-layer-names-20261020",
+    "original_state_observed": "APPLIED_RESPONSE_OBSERVED",
+    "original_response_retained": false,
+    "readback": "paper_effect_05_recovered.json",
+    "limitation": "The store copy was lost across an app-context refresh. Twelve layer names were independently read back; the mutation was not replayed."
+  },
+  "verification": {
+    "text_nodes": 56,
+    "text_passed": 56,
+    "style_properties": 16,
+    "style_passed": 16,
+    "boards_finished": 6,
+    "readback": {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_final_readback_verification.json",
+      "sha256": "4e4f9599310b9d926b2a598a657d192a605076f33c9a171e23bfe1277045a483",
+      "bytes": 12608
+    },
+    "capture_materialization": {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_capture_materialization.json",
+      "sha256": "4efe054445b6cc575fbc3fe5d948d7213e9c08bb3ccbdb3e5e21dbca095a84c3",
+      "bytes": 3428
+    }
+  },
+  "artifacts": [
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_DMX-0.jsx",
+      "bytes": 91960,
+      "sha256": "a87e1b14115544ffb15bab984858fafcebdce2a4d2fb384a55143dd60c3b79e7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_DMX-0_1.jpg",
+      "bytes": 211216,
+      "sha256": "c59ccf91fe5bad7db52eea15bee8f78b34fe7a416ac1d9e5fbb3228e25c51ec8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_DW7-0.jsx",
+      "bytes": 92246,
+      "sha256": "86556713173ec187250fbacdfae6561ee6a78ed7290eca95b901e79b47093585"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_DW7-0_1.jpg",
+      "bytes": 225004,
+      "sha256": "d49bb1769a14f47cb1ddeb50e5650b0b4d7a9a7b1e150a0846a5231a983a1cb4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_E4D-0.jsx",
+      "bytes": 90052,
+      "sha256": "a207c128da185690759a1015ce4369e157a1416109ae620e20a473795fd0ff6a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_E4D-0_1.jpg",
+      "bytes": 84698,
+      "sha256": "5332b4ff12c723739cfc3c739387a3b8245ab0787d19490d49cbfece8e698d7d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_EC2-0.jsx",
+      "bytes": 90321,
+      "sha256": "ed5bf2dae48f6a6023077465a04f9ec88ce0fc4c8abbe7e4b972530f6da2d20b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_EC2-0_1.jpg",
+      "bytes": 90510,
+      "sha256": "4d08fa782e3b7ac55040dad7233d69581966e0d57e4ef449162c84140fdd3f26"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_ER4-0.jsx",
+      "bytes": 13694,
+      "sha256": "3f0a967f9eba64da5700ada2fab6a80fabf25cb986c2767cb0659d48ac348416"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_ER4-0_1.jpg",
+      "bytes": 106963,
+      "sha256": "60e1fc53052a081cfed01996dad7d7f6eddc8470c48ee4df954b1156e6d8a949"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_ER5-0.jsx",
+      "bytes": 17612,
+      "sha256": "0e839c2e2a52ca84d843b545847d18ffacec745f054150e6007fd2a034c8e2cb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_ER5-0_1.jpg",
+      "bytes": 140760,
+      "sha256": "f954889d56b5877d598edcb9f667f2bd34c8b109c9eaed7655ae7edf9d0c0f98"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_effect_05_recovered.json",
+      "bytes": 4450,
+      "sha256": "63071fb20f346a45a9041648ad67492aedd79976044b8b3a59223032f6b6d9a9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_final_native_bundle.json.gz",
+      "bytes": 785444,
+      "sha256": "193ea32bc7e36c4383220287adce678e5da1e4c0c2ac91d67896adbebb78bbf3"
+    }
+  ],
+  "visual_review": {
+    "scope": "Six boards reviewed; Taiwan was recaptured after correcting light-theme text and divider tokens.",
+    "repairs": [
+      "The cloned Taiwan fiscal card now uses the light-theme text, muted text and divider tokens.",
+      "The working HTML country grid item has min-width:0; expanded source disclosure now fits 320px."
+    ],
+    "reference_date": "Paper header remains 19 October 2026; the browser fixture was rendered on 20 October UTC.",
+    "market_replay_date": "2026-10-15"
+  },
+  "limitations": [
+    "Paper source labels remain static design references. Real URLs and disclosure interactions are proved separately in Chrome.",
+    "Native screenshots retain their original returned bytes. Tall overview boards are downscaled by Paper; JSX and focused browser captures provide readable detail.",
+    "This is design and local implementation proof, not production or authenticated acceptance.",
+    "The target is explicit R12 page p-G-0; the file title and unrelated active page still reference R10."
+  ]
+}

@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_country_cockpit.css
+- templates/intl_country_cockpit.html.j2
+- templates/intl_country_cockpit.js
+manifest: mockups/evidence/intl-country-polish-20261103/manifest.json

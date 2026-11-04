@@ -1,0 +1,67 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_____ test_captured_intraday_quote_never_matures_merely_by_replaying_later _____
+
+    def test_captured_intraday_quote_never_matures_merely_by_replaying_later():
+        source = captured_source_context("KR", retrieved_at="2026-10-20T03:44:44Z",
+                                         response_sha256="d" * 64, provider_symbol="USDKRW=X")
+        observations = [("2026-07-17", 100), ("2026-07-20", 99),
+                        ("2026-10-19", 80), ("2026-10-20", 5)]
+        first = build_currency_observation("KR", observations, today=TODAY, source=source)
+        later = build_currency_observation("KR", observations, today=TODAY + timedelta(days=1), source=source)
+>       assert first == later
+E       AssertionError: assert {'schema': 'i...': 'KRW', ...} == {'schema': 'i...': 'KRW', ...}
+E         
+E         Omitting 11 identical items, use -vv to show
+E         Differing items:
+E         {'reference_target': '2026-07-19'} != {'reference_target': '2026-07-20'}
+E         {'end': {'date': '2026-10-19', 'quote': 80.0}} != {'end': {'date': '2026-10-20', 'quote': 5.0}}
+E         {'evidence_sha256': '9392f62d76fa0d4d03b3405f1ed59d731df6907a9e573de13b6804fcfdea63f7'} != {'evidence_sha256': 'b72671a54e22e1353b045304a863ede1eec22820e30ecf3e43afed17a798b56e'}
+E         {'value': 25.0} != {'value': 1880.0}
+E         {'start': {'date': '2026-07-17', 'quote': 100.0}} != {'start': {'date': '2026-07-20', 'quote': 99.0}}
+E         Use -v to get more diff
+
+tests/test_intl_currency_observation.py:240: AssertionError
+________ test_rehashed_captured_endpoint_cannot_follow_the_capture_day _________
+
+    def test_rehashed_captured_endpoint_cannot_follow_the_capture_day():
+        later = TODAY + timedelta(days=1)
+        raw = build_currency_observation("KR", [("2026-07-20", 100), ("2026-10-20", 80)],
+                                         today=later, source=context())
+        raw["source"] = captured_source_context(
+            "KR", retrieved_at="2026-10-20T03:44:44Z",
+            response_sha256="d" * 64, provider_symbol="USDKRW=X")
+>       assert not currency_observation_view(signed(raw), "KR", today=later)["available"]
+E       assert not True
+
+tests/test_intl_currency_observation.py:251: AssertionError
+________ test_capture_receipt_before_the_observation_cannot_support_it _________
+
+    def test_capture_receipt_before_the_observation_cannot_support_it():
+        raw = observation()
+        raw["source"] = captured_source_context(
+            "KR", retrieved_at="2026-10-18T03:44:44Z",
+            response_sha256="d" * 64, provider_symbol="USDKRW=X")
+>       assert not currency_observation_view(signed(raw), "KR", today=TODAY)["available"]
+E       assert not True
+
+tests/test_intl_currency_observation.py:259: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-c58315a9-6ca7-4978-8e12-ae27f0fe12b8/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-c58315a9-6ca7-4978-8e12-ae27f0fe12b8/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-c58315a9-6ca7-4978-8e12-ae27f0fe12b8/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-c58315a9-6ca7-4978-8e12-ae27f0fe12b8/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_currency_observation.py::test_captured_intraday_quote_never_matures_merely_by_replaying_later
+FAILED tests/test_intl_currency_observation.py::test_rehashed_captured_endpoint_cannot_follow_the_capture_day
+FAILED tests/test_intl_currency_observation.py::test_capture_receipt_before_the_observation_cannot_support_it
+3 failed, 63 deselected, 2 warnings in 2.17s

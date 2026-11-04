@@ -1,0 +1,135 @@
+{
+  "schema": "mastermind.intl_fiscal_candidate.v1",
+  "candidate_id": "AU:IMF_Article_IV:CR_26_38:Table_1:2026_02",
+  "country": "AU",
+  "status": "PENDING_QUALIFICATION_NOT_ADMITTED",
+  "admitted": false,
+  "source_family": "IMF Article IV — Australia",
+  "source_document": "IMF Country Report 26/38 — Australia: 2025 Article IV Consultation",
+  "source_urls": {
+    "country_index": "https://www.imf.org/en/Countries/AUS",
+    "landing_page": "https://www.imf.org/en/publications/cr/issues/2026/02/12/australia-2025-article-iv-consultation-press-release-staff-report-and-statement-by-the-573934",
+    "original_pdf": "https://www.imf.org/-/media/files/publications/cr/2026/english/1ausea2026001-source-pdf.pdf"
+  },
+  "clocks": {
+    "public_release": "2026-02-15",
+    "board_consideration": "2026-02-09",
+    "staff_report_completion": "2026-01-21",
+    "discussions_completion": "2025-11-20",
+    "added_staff_statement": "2026-02-09",
+    "precise_fiscal_information_cutoff": null,
+    "note": "The dated discussions and report-completion events do not establish a common fiscal-series information cutoff. The landing URL's date component is not substituted for the PDF publication statement."
+  },
+  "candidate_table": {
+    "identifier": "Table 1",
+    "locations": [
+      "Front matter Table 1, PDF pages 4–5 in the web extraction",
+      "Repeated Table 1, printed page 37 / PDF page 42"
+    ],
+    "government_scope": "General government, as identified by this source",
+    "unit": "percent of GDP",
+    "period_convention": "Fiscal years ending in June",
+    "period_note": "Table 1 footnote 3 establishes the June fiscal-year convention. The prior fiscal year remains a projection from this release vintage, despite now having elapsed.",
+    "rows": [
+      {
+        "indicator": "general_government_net_lending_borrowing",
+        "period_label": "FY2025/26",
+        "period_end": "2026-06-30",
+        "value": -2.9,
+        "observation_kind": "published_projection_candidate"
+      },
+      {
+        "indicator": "general_government_net_lending_borrowing",
+        "period_label": "FY2026/27",
+        "period_end": "2027-06-30",
+        "value": -2,
+        "observation_kind": "published_projection_candidate"
+      },
+      {
+        "indicator": "general_government_gross_debt",
+        "period_label": "FY2025/26",
+        "period_end": "2026-06-30",
+        "value": 51.5,
+        "observation_kind": "published_projection_candidate"
+      },
+      {
+        "indicator": "general_government_gross_debt",
+        "period_label": "FY2026/27",
+        "period_end": "2027-06-30",
+        "value": 51.2,
+        "observation_kind": "published_projection_candidate"
+      }
+    ],
+    "interpretation_boundary": "Commonwealth-only balances and net debt are separate table rows and must not be substituted."
+  },
+  "evidence_scope": {
+    "table_1_text": "Read in accessible official PDF text by root and the fiscal principal.",
+    "table_2": {
+      "location": "Printed page 38 / PDF page 43",
+      "visually_inspected": false,
+      "status": "Not independently readable in the available extraction; screenshot requests returned text placeholders without usable images."
+    },
+    "debt_coverage_figure": {
+      "location": "Printed page 48 / PDF page 53",
+      "visually_inspected": false,
+      "status": "Coverage and perimeter reconciliation incomplete."
+    },
+    "annex_iii_reported_discrepancy": {
+      "reported_by": "intl_fiscal_coverage_judgment",
+      "root_independently_cross_checked": false,
+      "source": "Same official PDF, Annex III baseline",
+      "year_labels": [
+        "2026",
+        "2027"
+      ],
+      "reported_public_debt_values": [
+        51,
+        50.8
+      ],
+      "period_and_definition_reconciled": false,
+      "interpretation": "Principal-reported ambiguity only; do not treat these as alternative admitted observations or infer the reason for the difference."
+    }
+  },
+  "original_byte_custody": {
+    "acquisition_receipt": "australia_fiscal_acquisition.json",
+    "acquisition_receipt_sha256": "dbc416bf98707a0f520179b828405d71c409fae3eb00d9229a27bf3ab66add33",
+    "attempted_at": "2026-10-19T10:44:40.828474+00:00",
+    "outcome": "HTTP_403",
+    "pdf_bytes_acquired": false,
+    "pdf_sha256": null,
+    "retry_performed": false
+  },
+  "admission_obstacles": [
+    "Original-document bytes and immutable document identity unavailable.",
+    "Table 2 column alignment, fiscal footnotes and scope have not been independently qualified.",
+    "Annex III debt values differ from Table 1; period and coverage must be reconciled or explicitly separated."
+  ],
+  "required_next_evidence": [
+    "Acquire the original PDF through an authorized official route and retain its identity.",
+    "Read Table 2 and the government/debt coverage figure clearly.",
+    "Resolve or explicitly separate the Annex III measure.",
+    "Retain Article IV source family, June fiscal years, projection vintage and separate clocks through any later admission."
+  ],
+  "current_product_effect": "None. The current baseline and assessment inputs remain unchanged; missing fiscal balance and gross debt for KR/TW/IN/AU remain missing.",
+  "other_bounded_source_findings": [
+    {
+      "country": "KR",
+      "source_url": "https://www.imf.org/en/Countries/KOR",
+      "latest_article_iv_index_date": "2025-11-24",
+      "age_days_on_2026_10_19": 329,
+      "status": "Outside the existing 270-day eligibility window; not admitted."
+    },
+    {
+      "country": "IN",
+      "source_url": "https://www.imf.org/en/Countries/IND",
+      "latest_article_iv_index_date": "2025-11-26",
+      "age_days_on_2026_10_19": 327,
+      "status": "Outside the existing 270-day eligibility window; not admitted."
+    },
+    {
+      "source_url": "https://www.imf.org/en/Publications/REO/APAC",
+      "status": "Web tool returned InternalError; no acquired table or HTTP response code asserted."
+    }
+  ],
+  "review_qualification": "Advisory source qualification. Root persisted this bounded record from the completed principal findings and root acquisition receipt; this is not formal approval."
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "mastermind.paper_observed_effect_recovery.v1",
+  "operation_id": "intl-country-cockpit-20261018-fiscal-paper-layer-names-20261020",
+  "tool": "rename_nodes",
+  "original_effect_observed": "APPLIED_RESPONSE_OBSERVED",
+  "original_retry_allowed": false,
+  "original_response_retained": false,
+  "reason": "The execution-store copy was lost across an app-context refresh before being saved. The effect was observed in-session; it was not replayed.",
+  "original_snapshot": null,
+  "readback_at": "2026-10-20T02:45:19.857Z",
+  "readbacks": [
+    {
+      "node_id": "EO8-0",
+      "result": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M3P1TW5Y3XWQC37ADDS8K5AG\",\n    \"name\": \"International Markets \u00b7 R10 \u00b7 Current Build\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"501cd923\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"summary\": \"Frame \\\"External and fiscal position\\\" (EO8-0) ?\u00d7?\\n  Frame \\\"Frame\\\" (EO9-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Current account projection\\\" (EOD-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Government balance projection\\\" (EVO-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Gross government debt projection\\\" (EW0-0) ?\u00d7?\\n    ... 2 children\",\n  \"nodeId\": \"EO8-0\",\n  \"depth\": 1\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "EOQ-0",
+      "result": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M3P1TW5Y3XWQC37ADDS8K5AG\",\n    \"name\": \"International Markets \u00b7 R10 \u00b7 Current Build\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"501cd923\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"summary\": \"Frame \\\"External and fiscal position\\\" (EOQ-0) ?\u00d7?\\n  Frame \\\"Frame\\\" (EOR-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Current account projection\\\" (EOV-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Government balance projection\\\" (EWC-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Gross government debt projection\\\" (EWO-0) ?\u00d7?\\n    ... 2 children\",\n  \"nodeId\": \"EOQ-0\",\n  \"depth\": 1\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "EP8-0",
+      "result": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M3P1TW5Y3XWQC37ADDS8K5AG\",\n    \"name\": \"International Markets \u00b7 R10 \u00b7 Current Build\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"501cd923\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"summary\": \"Frame \\\"External and fiscal position\\\" (EP8-0) ?\u00d7?\\n  Frame \\\"Frame\\\" (EP9-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Current account projection\\\" (EPD-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Government balance projection\\\" (EX0-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Gross government debt projection\\\" (EXC-0) ?\u00d7?\\n    ... 2 children\",\n  \"nodeId\": \"EP8-0\",\n  \"depth\": 1\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "EPQ-0",
+      "result": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M3P1TW5Y3XWQC37ADDS8K5AG\",\n    \"name\": \"International Markets \u00b7 R10 \u00b7 Current Build\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"501cd923\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"summary\": \"Frame \\\"External and fiscal position\\\" (EPQ-0) ?\u00d7?\\n  Frame \\\"Frame\\\" (EPR-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Current account projection\\\" (EPV-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Government balance projection\\\" (EXO-0) ?\u00d7?\\n    ... 2 children\\n  Frame \\\"Gross government debt projection\\\" (EY0-0) ?\u00d7?\\n    ... 2 children\",\n  \"nodeId\": \"EPQ-0\",\n  \"depth\": 1\n}"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

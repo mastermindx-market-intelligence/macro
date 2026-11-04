@@ -1,0 +1,70 @@
+[
+  {
+    "cc": "JP",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/USDJPY%3DX?range=6mo&interval=1d",
+    "started_at": "2026-10-20T03:41:08.361555+00:00",
+    "attempts": 1,
+    "status": 200,
+    "final_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDJPY%3DX?range=6mo&interval=1d",
+    "content_type": "application/json;charset=utf-8",
+    "bytes": 15176,
+    "sha256": "c2379893379040fecd4d4bdb23501c4842308de46fa4399ee078507cacbc4c5c",
+    "archive": "JP_yahoo_chart.json.gz",
+    "meta": {
+      "symbol": "JPY=X",
+      "currency": "JPY",
+      "instrumentType": "CURRENCY",
+      "exchangeName": "CCY",
+      "exchangeTimezoneName": "Europe/London",
+      "timezone": "BST",
+      "gmtoffset": 3600,
+      "dataGranularity": "1d",
+      "range": "6mo",
+      "regularMarketTime": 1792467667
+    },
+    "observation_count": 132,
+    "first": [
+      1776639600,
+      159.16099548339844
+    ],
+    "last": [
+      1792467667,
+      158.32400512695312
+    ],
+    "finished_at": "2026-10-20T03:41:08.547672+00:00"
+  },
+  {
+    "cc": "AU",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/AUDUSD%3DX?range=6mo&interval=1d",
+    "started_at": "2026-10-20T03:41:08.362329+00:00",
+    "attempts": 1,
+    "status": 200,
+    "final_url": "https://query1.finance.yahoo.com/v8/finance/chart/AUDUSD%3DX?range=6mo&interval=1d",
+    "content_type": "application/json;charset=utf-8",
+    "bytes": 15413,
+    "sha256": "48defaef25473a18e53fb2992e23e94d711b3c60b5e1e0e24d3f5c5012bf503b",
+    "archive": "AU_yahoo_chart.json.gz",
+    "meta": {
+      "symbol": "AUDUSD=X",
+      "currency": "USD",
+      "instrumentType": "CURRENCY",
+      "exchangeName": "CCY",
+      "exchangeTimezoneName": "Europe/London",
+      "timezone": "BST",
+      "gmtoffset": 3600,
+      "dataGranularity": "1d",
+      "range": "6mo",
+      "regularMarketTime": 1792467647
+    },
+    "observation_count": 132,
+    "first": [
+      1776639600,
+      0.7134998440742493
+    ],
+    "last": [
+      1792467647,
+      0.6991051435470581
+    ],
+    "finished_at": "2026-10-20T03:41:08.633741+00:00"
+  }
+]

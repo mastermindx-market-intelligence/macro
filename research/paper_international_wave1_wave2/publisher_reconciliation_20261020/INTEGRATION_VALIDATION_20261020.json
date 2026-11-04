@@ -1,0 +1,184 @@
+{
+  "schema": "mastermind.intl_current_main_integration_validation.v1",
+  "validated_at": "2026-10-20T08:22:24.401475+00:00",
+  "source_parent": "ec1277e909ffed27f58f9f4b107b81f5985fb7b8",
+  "main_parent": "13e098071ab2799c41a170d21ad522f751dfb15a",
+  "conflict_resolution": "main_conflict_resolution.json",
+  "application_and_integration_inputs": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "62e68a7145bd3dc8760ca704b07cee8ab2870c522f0709e642b0e6842175c7e7"
+    },
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "sha256": "e54f4e161a4a13ec2ce5674e57786394907f9726bed97e3391ab79bcca0ef782"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "sha256": "0cbe288bf37b66ff899714496c5984bbd096225f86664775fe76a1711c454e4d"
+    },
+    {
+      "path": "collectors/intl_country_sources.py",
+      "sha256": "65837c20a24060068fe795a9dd42757c1d05dd76e326729faa1554fd643d7b4a"
+    },
+    {
+      "path": "collectors/intl_macro.py",
+      "sha256": "e2765426a3fd4c235dc546782b0984942e8223b02a6486d1cdf29f377d95abad"
+    },
+    {
+      "path": "collectors/intl_policy_sources.py",
+      "sha256": "08e48a54bdfedf006aaad7ded702582368d32cd297bf5e51d3dac11e206c9c84"
+    },
+    {
+      "path": "collectors/intl_weo.py",
+      "sha256": "18ee3594029a1d17a827de7d491a1bd29b683f840e86def00f239a1745799775"
+    },
+    {
+      "path": "config/intl_country_baseline.json",
+      "sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27"
+    },
+    {
+      "path": "config/intl_country_commentary.json",
+      "sha256": "e1e9c6639e76d92a31a440ded152efd199e860b66737265acb1b725cc19f58d9"
+    },
+    {
+      "path": "config/intl_country_releases.json",
+      "sha256": "c058a84efd3e776b53fd01345b764afdb0baa4c23ec4bb24e8f6443ac4f87bd5"
+    },
+    {
+      "path": "config/site_access.yml",
+      "sha256": "b00d7b94c12c551ae984eb0999387cc4972ba8d53b10a736c3471355f57607ab"
+    },
+    {
+      "path": "engine/intl_equity_risk.py",
+      "sha256": "6e6ab463ea63abb24d6543dfd16d15d81e7d6fe893c3da9dc6cbd353a17aa38c"
+    },
+    {
+      "path": "engine/intl_run.py",
+      "sha256": "2cf905292d14de983e232f89ca939fbbc70e1f093944b6acfc46335f8119e079"
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "sha256": "05d75f867a5be25d278c34a0e818e1025c716fb34fa4cfe0faf1ef0bc0a5256f"
+    },
+    {
+      "path": "lib/intl_country_inputs.py",
+      "sha256": "5e94af0773273114c6225440516527e3e23f1a7881ec8f4faa8aa9b1616e60e8"
+    },
+    {
+      "path": "lib/intl_country_outlook.py",
+      "sha256": "8f1afe03ef49523f2707fe7be9e5f49ba1664a36841a038cff810b58c9aea772"
+    },
+    {
+      "path": "lib/intl_currency_observation.py",
+      "sha256": "915a3b10ec60a760e50b2d2283c677e5d8aa67627cd876eff3e8bbc2dcad628b"
+    },
+    {
+      "path": "lib/intl_forecast_vintages.py",
+      "sha256": "c7119cb5dea4debca20093ae69ce148fcbf8530f7d82ca7fe9f5918459c84cbc"
+    },
+    {
+      "path": "lib/intl_policy_evidence.py",
+      "sha256": "b16a1a367c8b1480cb4d1d716ab0db6223500139a12e08c33972af74219a4a3a"
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "sha256": "1f71f6f93515655b4adc596b61af0052b6465ad9fc923bdbb15595dc9f42bdf1"
+    },
+    {
+      "path": "site/theme.css",
+      "sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7"
+    },
+    {
+      "path": "templates/intl.html.j2",
+      "sha256": "21f4e94703df9f21bc7b224c91c1e66682dade50610ec492d962118b70896a28"
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "sha256": "9457e4ae764137013c5d1148a7a289cd4e69560f1bc03cfe47c45442b0b7828e"
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "sha256": "98283868649de0b02ba958bf069575089506eb4712b5611c20305df6034093de"
+    },
+    {
+      "path": "templates/intl_country_cockpit.js",
+      "sha256": "bad5dbf81388a09eea15768ecff59a040a7fc5497154224d0b182872b7ac17ee"
+    },
+    {
+      "path": "templates/theme.css",
+      "sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7"
+    },
+    {
+      "path": "tests/fixtures/intl_currency_observations_20261020.json",
+      "sha256": "5165bbf43f2ae38a677d1f3183918abec8f8ca1bb5da42c6f0459c2696bcc01a"
+    },
+    {
+      "path": "tests/fixtures/intl_weo_october_2026_fiscal_api.json",
+      "sha256": "f457a604b7f97280c30dfb128753dc01f470dd1bb2c45d1fbe661b8e49a99e34"
+    },
+    {
+      "path": "tests/fixtures/intl_weo_october_2026_tables.json",
+      "sha256": "b333cd0cf10e3a3616b9d64ef82418c376ef04ded881029febdaa831f3535c67"
+    },
+    {
+      "path": "tests/test_intl_build.py",
+      "sha256": "09636fc99c862233dc37704ba862e9ca3e97ac1a41c8dedbc854fb6199ad544c"
+    },
+    {
+      "path": "tests/test_intl_country_cockpit.py",
+      "sha256": "64a76604ea3d7f7cf45733a3d7f304eecdd630cda7cffef36e96366b76a14f07"
+    },
+    {
+      "path": "tests/test_intl_currency_observation.py",
+      "sha256": "384640aa4a6dc6cda4a97a7f0c044512f42ed36a2e92178d7b000515936458dc"
+    },
+    {
+      "path": "tests/test_intl_forecast_vintages.py",
+      "sha256": "c2f52e4a47bf35e6fbd1014ea4ebfd57c6ff2ecd4756989f4c658ff56c53d30c"
+    },
+    {
+      "path": "tests/test_intl_outlook_interpretation.py",
+      "sha256": "fad34398f1e4273a36460977dd468fe5ec4fbbcc261dc3c7b511982676cfb3ef"
+    },
+    {
+      "path": "tests/test_intl_policy_evidence.py",
+      "sha256": "6b3207822a2f94229042c17fa3e8551daa551356855e6db1ec713f491b51ab39"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "sha256": "55724269e662af26a3a0d7a6c76b1538943d0073d4f1e598952b52c84f64d104"
+    }
+  ],
+  "country_and_access_tests": {
+    "receipt": "integrated_country_and_access_tests.json",
+    "sha256": "69f28ff69a9c4c6f4337ee77b5b190fae1fb5ecfbcc77b536258a0bbf5ef0a09",
+    "passed": 327
+  },
+  "composition": {
+    "receipt": "current_integration_proof.json",
+    "sha256": "114de34efafb7478f693f3251d366957ee23d60ba9588ef36bb376b33c9c65bc",
+    "passed": true
+  },
+  "browser": {
+    "receipt": "browser_verification.json",
+    "sha256": "f1503be9d64e5510538910f2a1aaf7a97a79271142b42575315ecbb5835bab08",
+    "country_checks": 84,
+    "focus_checks": 12,
+    "ageing_checks": 8,
+    "page_exceptions": 0,
+    "html_sha256": "b52af79822e09ae3e1182a6b57dcb39eb94c0aeeb839c673032c8ebd82dd39b6",
+    "manifest": "mockups/evidence/intl-integration-20261020/manifest.json",
+    "manifest_sha256": "9da2bca152518112b6bad544620a1019da9ae074d3525564538e8d4e97ed5eff"
+  },
+  "design_guards": {
+    "receipt": "integration_design_guards.json",
+    "sha256": "d370ad53be362ca6da5ae4c25c7debdd86b13d056318cf37df3a9faa2820b449",
+    "passed": true
+  },
+  "paper": {
+    "receipt": "paper_edge_correction_summary.json",
+    "sha256": "02103377a63813bd8342bd89e743aef897206fd7b32c0d890dbe488b7a0619ed"
+  },
+  "acceptance_limit": "Source and isolated browser composition only. Complete independent review, applicable holding-authority release, hosted CI and actual served adoption remain separate gates."
+}

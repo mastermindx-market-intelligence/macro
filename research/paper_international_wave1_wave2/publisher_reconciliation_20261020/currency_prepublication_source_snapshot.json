@@ -1,0 +1,106 @@
+{
+  "schema": "mastermind.intl_currency_source_custody.v1",
+  "recorded_at": "2026-10-20T07:36:33.098997+00:00",
+  "parent_checkpoint": "research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_COVERAGE_20261020.json",
+  "parent_checkpoint_sha256": "bd1a5b8021609eafaad4d683836163d4fce174f78df4809bc6b8c3e4295a8f95",
+  "verified_parent_fingerprints": 164,
+  "snapshot_sha256": "c79abb702329f775d827e1856591c424506448b67881efbe253bd93a2bf701b4",
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "bytes": 1747545,
+      "sha256": "cf48a86a4dd7a8bbfce028bdd3641062e8166fc01efa6b6fa5289bc262074309"
+    },
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "bytes": 31348,
+      "sha256": "99750b6a5c46fe132aa3e1c7c1b8668ca4160dcecc730b808982311eadb99ee4"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "bytes": 74539,
+      "sha256": "eb0abf17c03d1ef5ab2c6378ac67d6dfb71b58b5353810af64a08c4629780190"
+    },
+    {
+      "path": "collectors/intl_prices.py",
+      "bytes": 7342,
+      "sha256": "602f7d5a09df3e6140e8fe99ee3d2d0408993e45a9e269b8bd9bf9283a73f279"
+    },
+    {
+      "path": "config/intl_country_baseline.json",
+      "bytes": 274521,
+      "sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27"
+    },
+    {
+      "path": "config/site_access.yml",
+      "bytes": 44189,
+      "sha256": "127dd1de71c979910601a8df89132244e95c0d1991c194408281072ace6384c9"
+    },
+    {
+      "path": "engine/intl_inputs.py",
+      "bytes": 50013,
+      "sha256": "bbb2a634bbe0ae06c8e8b21f5bf9882a8697bf4eb5a57252e7593759a1ba11ae"
+    },
+    {
+      "path": "engine/intl_run.py",
+      "bytes": 9829,
+      "sha256": "2cf905292d14de983e232f89ca939fbbc70e1f093944b6acfc46335f8119e079"
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "bytes": 27893,
+      "sha256": "05d75f867a5be25d278c34a0e818e1025c716fb34fa4cfe0faf1ef0bc0a5256f"
+    },
+    {
+      "path": "lib/intl_currency_observation.py",
+      "bytes": 11646,
+      "sha256": "915a3b10ec60a760e50b2d2283c677e5d8aa67627cd876eff3e8bbc2dcad628b"
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "bytes": 26446,
+      "sha256": "9377dd2c31b10e306ff0ddd680724befa05611f5db847c7e891142b588ec32fe"
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "bytes": 30398,
+      "sha256": "98283868649de0b02ba958bf069575089506eb4712b5611c20305df6034093de"
+    },
+    {
+      "path": "templates/intl_country_cockpit.js",
+      "bytes": 2976,
+      "sha256": "bad5dbf81388a09eea15768ecff59a040a7fc5497154224d0b182872b7ac17ee"
+    },
+    {
+      "path": "tests/fixtures/intl_currency_observations_20261020.json",
+      "bytes": 74794,
+      "sha256": "5165bbf43f2ae38a677d1f3183918abec8f8ca1bb5da42c6f0459c2696bcc01a"
+    },
+    {
+      "path": "tests/test_intl_country_cockpit.py",
+      "bytes": 21934,
+      "sha256": "64a76604ea3d7f7cf45733a3d7f304eecdd630cda7cffef36e96366b76a14f07"
+    },
+    {
+      "path": "tests/test_intl_currency_observation.py",
+      "bytes": 15744,
+      "sha256": "384640aa4a6dc6cda4a97a7f0c044512f42ed36a2e92178d7b000515936458dc"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "bytes": 41599,
+      "sha256": "220d3790b2a0135b7ea1b8c75a1d0a68192d9e3082a72168c39b8850da5372cf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/capture_country_cockpit.py",
+      "bytes": 2315,
+      "sha256": "4ea4a527bb92b9279e0b3ea00696c8c3fb322a70c79a0f0698dac46d1b0d0dc5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "bytes": 9184,
+      "sha256": "768ad617e869669b2ace68193e217bd6f88266a683b9c724c58b09670fc10ea0"
+    }
+  ],
+  "reason": "Preserve the exact currency verification source before changing its fingerprinted workstream status for lawful publication; application source remains unchanged."
+}

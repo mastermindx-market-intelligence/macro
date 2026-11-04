@@ -1,0 +1,231 @@
+{
+  "schema": "intl_currency_qualification.v1",
+  "qualified_at": "2026-10-20T04:13:01.093508+00:00",
+  "evaluation_day": "2026-10-20",
+  "kind": "RETAINED_PROVIDER_RESPONSES_NOT_CANONICAL_STORE_ADMISSION",
+  "quote_timezone": "Europe/London",
+  "same_day_policy": "exclude evaluation day and recorded UTC capture day",
+  "canonical_store_writes": false,
+  "countries": [
+    {
+      "cc": "JP",
+      "currency": "JPY",
+      "configured_ticker": "USDJPY=X",
+      "provider_symbol": "JPY=X",
+      "quote_convention": "local_per_USD",
+      "source_url": "https://finance.yahoo.com/quote/JPY%3DX/history/",
+      "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDJPY%3DX?range=6mo&interval=1d",
+      "retrieved_at": "2026-10-20T03:41:08.547672+00:00",
+      "raw_archive": "JP_yahoo_chart.json.gz",
+      "response_sha256": "c2379893379040fecd4d4bdb23501c4842308de46fa4399ee078507cacbc4c5c",
+      "timestamp_rows": 133,
+      "valid_quotes": 132,
+      "missing_quotes": 1,
+      "excluded_on_or_after_capture_day": 1,
+      "reference_gap_days": 2,
+      "expected": {
+        "start": {
+          "date": "2026-07-17",
+          "quote": 162.37600708007812
+        },
+        "end": {
+          "date": "2026-10-19",
+          "quote": 157.80599975585938
+        },
+        "reference_target": "2026-07-19",
+        "value_decimal": "2.895965509099126870271576971514152631700",
+        "display_percent": "+2.90%"
+      },
+      "evidence_sha256": "94163bfe4129efdde4f225e3291335c578211724fe743b6108b2f480b51396b4"
+    },
+    {
+      "cc": "KR",
+      "currency": "KRW",
+      "configured_ticker": "USDKRW=X",
+      "provider_symbol": "USDKRW=X",
+      "quote_convention": "local_per_USD",
+      "source_url": "https://finance.yahoo.com/quote/USDKRW%3DX/history/",
+      "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDKRW%3DX?range=6mo&interval=1d",
+      "retrieved_at": "2026-10-20T03:44:44.612104+00:00",
+      "raw_archive": "KR_yahoo_chart.json.gz",
+      "response_sha256": "df4ba5062f227e712be0ddd989ee566b742fcccd587ec9df772b7f4292afb88e",
+      "timestamp_rows": 133,
+      "valid_quotes": 132,
+      "missing_quotes": 1,
+      "excluded_on_or_after_capture_day": 1,
+      "reference_gap_days": 2,
+      "expected": {
+        "start": {
+          "date": "2026-07-17",
+          "quote": 1478.8499755859375
+        },
+        "end": {
+          "date": "2026-10-19",
+          "quote": 1333.4300537109375
+        },
+        "reference_target": "2026-07-19",
+        "value_decimal": "10.90570303783810604314988503183835816110",
+        "display_percent": "+10.91%"
+      },
+      "evidence_sha256": "519cd4e8532d4650fdef124c7e5420cd39d1dc9170f4a6eb172be5b2d0ec1fed"
+    },
+    {
+      "cc": "TW",
+      "currency": "TWD",
+      "configured_ticker": "USDTWD=X",
+      "provider_symbol": "USDTWD=X",
+      "quote_convention": "local_per_USD",
+      "source_url": "https://finance.yahoo.com/quote/USDTWD%3DX/history/",
+      "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDTWD%3DX?range=6mo&interval=1d",
+      "retrieved_at": "2026-10-20T03:44:44.629407+00:00",
+      "raw_archive": "TW_yahoo_chart.json.gz",
+      "response_sha256": "1426c1fc42939b9b4c3fb83268980a2c735afebad0241c1c99583586f73c73c9",
+      "timestamp_rows": 133,
+      "valid_quotes": 132,
+      "missing_quotes": 1,
+      "excluded_on_or_after_capture_day": 1,
+      "reference_gap_days": 2,
+      "expected": {
+        "start": {
+          "date": "2026-07-17",
+          "quote": 32.26430130004883
+        },
+        "end": {
+          "date": "2026-10-19",
+          "quote": 32.387001037597656
+        },
+        "reference_target": "2026-07-19",
+        "value_decimal": "-0.3788548912151064597236713990261570585800",
+        "display_percent": "-0.38%"
+      },
+      "evidence_sha256": "492c394bf5624e45814cfe4bf823128501ca8b0e7b88ce2fdec72355d11c861d"
+    },
+    {
+      "cc": "IN",
+      "currency": "INR",
+      "configured_ticker": "USDINR=X",
+      "provider_symbol": "USDINR=X",
+      "quote_convention": "local_per_USD",
+      "source_url": "https://finance.yahoo.com/quote/USDINR%3DX/history/",
+      "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/USDINR%3DX?range=6mo&interval=1d",
+      "retrieved_at": "2026-10-20T03:44:44.715058+00:00",
+      "raw_archive": "IN_yahoo_chart.json.gz",
+      "response_sha256": "64b65106dc798744142f5246a77d81808ec0f3bb8b99a0130402b6ccf2ce2427",
+      "timestamp_rows": 133,
+      "valid_quotes": 132,
+      "missing_quotes": 1,
+      "excluded_on_or_after_capture_day": 1,
+      "reference_gap_days": 2,
+      "expected": {
+        "start": {
+          "date": "2026-07-17",
+          "quote": 96.6521987915039
+        },
+        "end": {
+          "date": "2026-10-19",
+          "quote": 94.97769927978516
+        },
+        "reference_target": "2026-07-19",
+        "value_decimal": "1.763044929932448586606220929869069792300",
+        "display_percent": "+1.76%"
+      },
+      "evidence_sha256": "e3b6e943f641cb990379dde3bd5aae23bd60b30ce8425a93dbcc578952d042b6"
+    },
+    {
+      "cc": "AU",
+      "currency": "AUD",
+      "configured_ticker": "AUDUSD=X",
+      "provider_symbol": "AUDUSD=X",
+      "quote_convention": "USD_per_local",
+      "source_url": "https://finance.yahoo.com/quote/AUDUSD%3DX/history/",
+      "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/AUDUSD%3DX?range=6mo&interval=1d",
+      "retrieved_at": "2026-10-20T03:41:08.633741+00:00",
+      "raw_archive": "AU_yahoo_chart.json.gz",
+      "response_sha256": "48defaef25473a18e53fb2992e23e94d711b3c60b5e1e0e24d3f5c5012bf503b",
+      "timestamp_rows": 133,
+      "valid_quotes": 132,
+      "missing_quotes": 1,
+      "excluded_on_or_after_capture_day": 1,
+      "reference_gap_days": 2,
+      "expected": {
+        "start": {
+          "date": "2026-07-17",
+          "quote": 0.6999399662017822
+        },
+        "end": {
+          "date": "2026-10-19",
+          "quote": 0.6972100138664246
+        },
+        "reference_target": "2026-07-19",
+        "value_decimal": "-0.3900266404519892302177650172219954300200",
+        "display_percent": "-0.39%"
+      },
+      "evidence_sha256": "f2849e31d2119bf6d5b2c63612c2ec33da5341a7c3848a77151577ce54247394"
+    },
+    {
+      "cc": "GB",
+      "currency": "GBP",
+      "configured_ticker": "GBPUSD=X",
+      "provider_symbol": "GBPUSD=X",
+      "quote_convention": "USD_per_local",
+      "source_url": "https://finance.yahoo.com/quote/GBPUSD%3DX/history/",
+      "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/GBPUSD%3DX?range=6mo&interval=1d",
+      "retrieved_at": "2026-10-20T03:44:44.729857+00:00",
+      "raw_archive": "GB_yahoo_chart.json.gz",
+      "response_sha256": "1e0d19af4c75c36b8f0b3a7f2b1fadc804a079b7fe661b6e72fe7e46830a11f8",
+      "timestamp_rows": 133,
+      "valid_quotes": 132,
+      "missing_quotes": 1,
+      "excluded_on_or_after_capture_day": 1,
+      "reference_gap_days": 2,
+      "expected": {
+        "start": {
+          "date": "2026-07-17",
+          "quote": 1.3478904962539673
+        },
+        "end": {
+          "date": "2026-10-19",
+          "quote": 1.3335645198822021
+        },
+        "reference_target": "2026-07-19",
+        "value_decimal": "-1.062844230416320348089010670834772174440",
+        "display_percent": "-1.06%"
+      },
+      "evidence_sha256": "bdeecdd0c4aca391613bd62af183de0158300688614c93fcd30cd0faf1ab264b"
+    },
+    {
+      "cc": "EZ",
+      "currency": "EUR",
+      "configured_ticker": "EURUSD=X",
+      "provider_symbol": "EURUSD=X",
+      "quote_convention": "USD_per_local",
+      "source_url": "https://finance.yahoo.com/quote/EURUSD%3DX/history/",
+      "dataset_url": "https://query1.finance.yahoo.com/v8/finance/chart/EURUSD%3DX?range=6mo&interval=1d",
+      "retrieved_at": "2026-10-20T03:44:44.825649+00:00",
+      "raw_archive": "EZ_yahoo_chart.json.gz",
+      "response_sha256": "374565686165022d239f35571097c60aa2e66537d92d59b0af3ea0620846b1d2",
+      "timestamp_rows": 133,
+      "valid_quotes": 132,
+      "missing_quotes": 1,
+      "excluded_on_or_after_capture_day": 1,
+      "reference_gap_days": 2,
+      "expected": {
+        "start": {
+          "date": "2026-07-17",
+          "quote": 1.1444659233093262
+        },
+        "end": {
+          "date": "2026-10-19",
+          "quote": 1.1225486993789673
+        },
+        "reference_target": "2026-07-19",
+        "value_decimal": "-1.915061294877463439239924637494849397620",
+        "display_percent": "-1.92%"
+      },
+      "evidence_sha256": "3826934dd67ad45e50b1f3a6fc7a1601274b6c96f66e3a88ada1e8422752683a"
+    }
+  ],
+  "fixture_sha256": "5165bbf43f2ae38a677d1f3183918abec8f8ca1bb5da42c6f0459c2696bcc01a",
+  "currency_replay_sha256": "a369f3b0ebf832e88d08b7eddeb08166366bd4c5ffcc4de16060757a2e2c4a69",
+  "passed": true
+}

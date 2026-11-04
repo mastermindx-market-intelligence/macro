@@ -1,0 +1,31 @@
+{
+  "schema": "intl_caddy_main_composition.v1",
+  "base": "422e121246f956834085853a49dfc6c2250d3dab",
+  "resolved_files": 1,
+  "resolved_hunks": 4,
+  "changed_lines_relative_base": [
+    345,
+    492,
+    536,
+    571
+  ],
+  "additions_per_line": [
+    "/intl_workspace.css",
+    "/intl_workspace_macro.css",
+    "/intl_workspace_risk.css",
+    "/intl_workspace_history.css",
+    "/intl_workspace_state.js",
+    "/intl_library_search.js",
+    "/intl_workspace_scenario.js",
+    "/intl_workspace.js",
+    "/intl_workspace_entry.js"
+  ],
+  "removed_tokens": [],
+  "preserves_new_main_assets": [
+    "/mm_brain_visuals.js",
+    "/mm_brain_visuals.css"
+  ],
+  "source_sha256": "91e6670d68ad69235dc3f80088c3a69ca930ee8a3f9a4ae24ecd74f8b3e7e959",
+  "runtime_applied": false,
+  "preflight_correction": "Earlier one-hunk expectation failed before writes; actual four hunks inspected and identical scoped token deltas established."
+}

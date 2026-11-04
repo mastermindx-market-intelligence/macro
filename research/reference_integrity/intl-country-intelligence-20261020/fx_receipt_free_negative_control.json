@@ -1,0 +1,260 @@
+{
+  "recorded_at": "2026-10-20T20:42:24.416257+00:00",
+  "scope": "Real copied Parquet negative control only; no workflow or source acquisition was performed. Supplied zero-length window is explicitly a test input, not a real backfill.",
+  "source_head": "5b6b88fc16a1b11f2dc394ad17a3ecc996d0cefd",
+  "command": [
+    "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+    "-B",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/production_fx_acceptance.py",
+    "--repo",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018",
+    "--data",
+    "/tmp/intl-rig-review-repair-20261020/final/source/data",
+    "--backfill-run-id",
+    "NOT_A_WORKFLOW_NEGATIVE_CONTROL",
+    "--backfill-start",
+    "2026-10-20T00:00:00Z",
+    "--backfill-end",
+    "2026-10-20T00:00:00Z",
+    "--as-of",
+    "2026-10-20"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "actual_report": {
+    "schema": "intl_fx_production_acceptance.v1",
+    "probed_at_utc": "2026-10-20T20:42:20.137761+00:00",
+    "evaluated_on": "2026-10-20",
+    "repository": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018",
+    "data_directory": "/private/tmp/intl-rig-review-repair-20261020/final/source/data",
+    "supplied_backfill": {
+      "run_id": "NOT_A_WORKFLOW_NEGATIVE_CONTROL",
+      "start_utc": "2026-10-20T00:00:00+00:00",
+      "end_utc": "2026-10-20T00:00:00+00:00",
+      "binding": "owner_supplied_clock_window"
+    },
+    "verdict": "FAIL",
+    "currencies": [
+      {
+        "cc": "JP",
+        "currency": "JPY",
+        "configured_ticker": "USDJPY=X",
+        "quote_convention": "local_per_USD",
+        "provider": "Yahoo Finance",
+        "expected_source_url": "https://finance.yahoo.com/quote/JPY%3DX/history/",
+        "input_observations": 0,
+        "verdict": "FAIL",
+        "errors": [
+          "currency_evidence_unavailable"
+        ],
+        "selector_status": "unavailable",
+        "selector_reason": "observation_unavailable",
+        "consumer_available": false,
+        "consumer_quality": "missing",
+        "legacy_only_control": {
+          "selector_status": "unavailable",
+          "consumer_available": false
+        },
+        "canonical_store": {
+          "path": "/private/tmp/intl-rig-review-repair-20261020/final/source/data/intl/USDJPY_X.parquet",
+          "bytes": 109335,
+          "sha256": "8119b2b17e50fa24e9a136936687404fa30fa5b6ae95ec0c912c5020578f9bb2"
+        },
+        "store_unchanged_during_probe": true
+      },
+      {
+        "cc": "KR",
+        "currency": "KRW",
+        "configured_ticker": "USDKRW=X",
+        "quote_convention": "local_per_USD",
+        "provider": "Yahoo Finance",
+        "expected_source_url": "https://finance.yahoo.com/quote/USDKRW%3DX/history/",
+        "input_observations": 0,
+        "verdict": "FAIL",
+        "errors": [
+          "currency_evidence_unavailable"
+        ],
+        "selector_status": "unavailable",
+        "selector_reason": "observation_unavailable",
+        "consumer_available": false,
+        "consumer_quality": "missing",
+        "legacy_only_control": {
+          "selector_status": "unavailable",
+          "consumer_available": false
+        },
+        "canonical_store": {
+          "path": "/private/tmp/intl-rig-review-repair-20261020/final/source/data/intl/USDKRW_X.parquet",
+          "bytes": 83991,
+          "sha256": "1e96c968ef3313b0cfc61ece6c96457d6fd542aa826cbffe7eb57a67ea258258"
+        },
+        "store_unchanged_during_probe": true
+      },
+      {
+        "cc": "TW",
+        "currency": "TWD",
+        "configured_ticker": "USDTWD=X",
+        "quote_convention": "local_per_USD",
+        "provider": "Yahoo Finance",
+        "expected_source_url": "https://finance.yahoo.com/quote/USDTWD%3DX/history/",
+        "input_observations": 0,
+        "verdict": "FAIL",
+        "errors": [
+          "currency_evidence_unavailable"
+        ],
+        "selector_status": "unavailable",
+        "selector_reason": "observation_unavailable",
+        "consumer_available": false,
+        "consumer_quality": "missing",
+        "legacy_only_control": {
+          "selector_status": "unavailable",
+          "consumer_available": false
+        },
+        "canonical_store": {
+          "path": "/private/tmp/intl-rig-review-repair-20261020/final/source/data/intl/USDTWD_X.parquet",
+          "bytes": 71345,
+          "sha256": "aef1807449b2b4305c2d2593663cd97b70e1f43f06027649acdc75c6e5e1fdf5"
+        },
+        "store_unchanged_during_probe": true
+      },
+      {
+        "cc": "IN",
+        "currency": "INR",
+        "configured_ticker": "USDINR=X",
+        "quote_convention": "local_per_USD",
+        "provider": "Yahoo Finance",
+        "expected_source_url": "https://finance.yahoo.com/quote/USDINR%3DX/history/",
+        "input_observations": 0,
+        "verdict": "FAIL",
+        "errors": [
+          "currency_evidence_unavailable"
+        ],
+        "selector_status": "unavailable",
+        "selector_reason": "observation_unavailable",
+        "consumer_available": false,
+        "consumer_quality": "missing",
+        "legacy_only_control": {
+          "selector_status": "unavailable",
+          "consumer_available": false
+        },
+        "canonical_store": {
+          "path": "/private/tmp/intl-rig-review-repair-20261020/final/source/data/intl/USDINR_X.parquet",
+          "bytes": 85466,
+          "sha256": "e49d8de256ac56b75a4403ffd68c0bcfcbc0983218df5746ffd373962694ab33"
+        },
+        "store_unchanged_during_probe": true
+      },
+      {
+        "cc": "AU",
+        "currency": "AUD",
+        "configured_ticker": "AUDUSD=X",
+        "quote_convention": "USD_per_local",
+        "provider": "Yahoo Finance",
+        "expected_source_url": "https://finance.yahoo.com/quote/AUDUSD%3DX/history/",
+        "input_observations": 0,
+        "verdict": "FAIL",
+        "errors": [
+          "currency_evidence_unavailable"
+        ],
+        "selector_status": "unavailable",
+        "selector_reason": "observation_unavailable",
+        "consumer_available": false,
+        "consumer_quality": "missing",
+        "legacy_only_control": {
+          "selector_status": "unavailable",
+          "consumer_available": false
+        },
+        "canonical_store": {
+          "path": "/private/tmp/intl-rig-review-repair-20261020/final/source/data/intl/AUDUSD_X.parquet",
+          "bytes": 76840,
+          "sha256": "f877656346aa34ca40ea30669728546e32723a01f248ca89bf305fa02971ceb9"
+        },
+        "store_unchanged_during_probe": true
+      },
+      {
+        "cc": "GB",
+        "currency": "GBP",
+        "configured_ticker": "GBPUSD=X",
+        "quote_convention": "USD_per_local",
+        "provider": "Yahoo Finance",
+        "expected_source_url": "https://finance.yahoo.com/quote/GBPUSD%3DX/history/",
+        "input_observations": 0,
+        "verdict": "FAIL",
+        "errors": [
+          "currency_evidence_unavailable"
+        ],
+        "selector_status": "unavailable",
+        "selector_reason": "observation_unavailable",
+        "consumer_available": false,
+        "consumer_quality": "missing",
+        "legacy_only_control": {
+          "selector_status": "unavailable",
+          "consumer_available": false
+        },
+        "canonical_store": {
+          "path": "/private/tmp/intl-rig-review-repair-20261020/final/source/data/intl/GBPUSD_X.parquet",
+          "bytes": 86494,
+          "sha256": "8e5c3b376ad976e4dbac678bc76170db3c5dfab4824658bcfd5fdeb783c76c5d"
+        },
+        "store_unchanged_during_probe": true
+      },
+      {
+        "cc": "EZ",
+        "currency": "EUR",
+        "configured_ticker": "EURUSD=X",
+        "quote_convention": "USD_per_local",
+        "provider": "Yahoo Finance",
+        "expected_source_url": "https://finance.yahoo.com/quote/EURUSD%3DX/history/",
+        "input_observations": 0,
+        "verdict": "FAIL",
+        "errors": [
+          "currency_evidence_unavailable"
+        ],
+        "selector_status": "unavailable",
+        "selector_reason": "observation_unavailable",
+        "consumer_available": false,
+        "consumer_quality": "missing",
+        "legacy_only_control": {
+          "selector_status": "unavailable",
+          "consumer_available": false
+        },
+        "canonical_store": {
+          "path": "/private/tmp/intl-rig-review-repair-20261020/final/source/data/intl/EURUSD_X.parquet",
+          "bytes": 85065,
+          "sha256": "46a3d5438ac59bd048aef7f236b900dc6a399d7a068787c9c3864c2956f23c93"
+        },
+        "store_unchanged_during_probe": true
+      }
+    ],
+    "errors": [],
+    "source_files": {
+      "lib/intl_currency_observation.py": {
+        "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/lib/intl_currency_observation.py",
+        "bytes": 17788,
+        "sha256": "0d8f17822dd84e96e65a1c314d63c19c1b5fb0a7fb5c6cbcd155e2c96555e2b4"
+      },
+      "engine/intl_inputs.py": {
+        "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/engine/intl_inputs.py",
+        "bytes": 51344,
+        "sha256": "705a4fe7c0b0d4e816dfe28f060b446dd0adb5dc0ac84de677cb0b608959ab5b"
+      },
+      "lib/store.py": {
+        "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/lib/store.py",
+        "bytes": 18793,
+        "sha256": "7424b19d2a418d6611c6346b20764a89d6ffe34ad9e6f3a115ec78e6a45b826b"
+      },
+      "lib/config.py": {
+        "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/lib/config.py",
+        "bytes": 1131,
+        "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+      },
+      "collectors/intl_prices.py": {
+        "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/collectors/intl_prices.py",
+        "bytes": 8653,
+        "sha256": "51269d0c848fba48bc4bc502ec694add836a30ff20efdff076801e0f2182f9ce"
+      }
+    },
+    "reader_function_sha256": "5a9a75b3628d49944d2b93434f945b371b89cd0df4ba89d6b88781a02303e655",
+    "pass_count": 0,
+    "read_only_violations": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "comparison_base": "902c107227006802bde8312ffd78b4685d0f7949",
+  "head": "9abbe195c814db8568d26e7fb1b84c3843660b31",
+  "includes_current_working_diff": true,
+  "steps": [
+    {
+      "name": "closure",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/tmp/intl-p0b-remint-20261020/changed.txt",
+        "--event",
+        "pull_request"
+      ],
+      "started_at": "2026-10-20T12:58:48.180650+00:00",
+      "finished_at": "2026-10-20T12:58:48.284276+00:00",
+      "elapsed_seconds": 0.104,
+      "exit_code": 0,
+      "log": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/closure.log"
+    },
+    {
+      "name": "closure_selftest",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_p0b_receipt_closure.py",
+        "--selftest"
+      ],
+      "started_at": "2026-10-20T12:58:48.285105+00:00",
+      "finished_at": "2026-10-20T12:58:48.330319+00:00",
+      "elapsed_seconds": 0.045,
+      "exit_code": 0,
+      "log": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/closure_selftest.log"
+    },
+    {
+      "name": "receipt_and_first_frame_tests",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_check_p0b_receipt_closure.py",
+        "tests/test_stock_dashboard_first_frame.py",
+        "tests/test_stock_dashboard_first_frame_data.py",
+        "-q"
+      ],
+      "started_at": "2026-10-20T12:58:48.331111+00:00",
+      "finished_at": "2026-10-20T12:59:50.011576+00:00",
+      "elapsed_seconds": 61.68,
+      "exit_code": 1,
+      "log": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/receipt_and_first_frame_tests.log"
+    }
+  ]
+}

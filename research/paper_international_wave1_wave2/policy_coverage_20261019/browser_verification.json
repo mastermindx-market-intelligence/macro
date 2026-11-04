@@ -1,0 +1,1722 @@
+{
+  "schema": "mastermind.intl_policy_browser_verification.v1",
+  "scope": "Anonymous isolated integrated template in real Chrome; external requests are blocked.",
+  "started_at": "2026-10-19T10:55:29.652923+00:00",
+  "finished_at": "2026-10-19T10:56:39.097468+00:00",
+  "html_sha256": "3c72e6b3f8e01095e5eecafad4ce2ee91fec89d011aca7a3dda21b5256820d74",
+  "canonical_manifest": "mockups/evidence/intl-policy-coverage-20261019/manifest.json",
+  "canonical_manifest_sha256": "a5b29697943072c43fab283fbd129c1f3c75d34a42fef7f05c8d0281debf129f",
+  "canonical_capture_exit": 0,
+  "viewport_count": 3,
+  "country_checks": 84,
+  "passed": 84,
+  "page_errors": [],
+  "history": [
+    {
+      "action": "back",
+      "cc": "JP",
+      "passed": true
+    },
+    {
+      "action": "forward",
+      "cc": "KR",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-desktop-light-en.png",
+      "sha256": "6259bfaf504ff5a430a4a625ec428d68d2cf5f03a77a33217ac965e4689c8e24"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/ez-desktop-light-zh.png",
+      "sha256": "7dd8c6188721bd6b390de6f071f6d93022bc4dd9884b2b64403eb4c452d4df08"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-desktop-dark-en.png",
+      "sha256": "8d55f56e62310e104b5f18428198390009e9b77a9a257b0a13f5429beef4af31"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/au-mobile-dark-en.png",
+      "sha256": "dc0dda178e331b7b7e5ad15aa2358d38bd66e26aed1d789faf2147e563260aa7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-mobile-dark-zh.png",
+      "sha256": "00eca88aeb7d77b1dc462eccb86fa969faaf40a49d1b772921c2584bf5ffb3c7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/in-narrow-light-en.png",
+      "sha256": "3638c266e63f4b56137a57a7fbd6e93f2382205ced09e761d1758bcf9a469843"
+    }
+  ],
+  "checks": [
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Japan\nAround\n1.25%\nOvernight call-rate target\nRaised 25bp · Decided 2026-09-18\nFrom around 1.00% · Effective 2026-09-24\n\nThe BOJ raised the target by a 7–2 majority as wage and input costs spread into prices. Further normalization depends on activity, inflation and financial conditions.\n\nRead the decision ↗ · Published 2026-09-18\n\nDecision reference ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Korea\n3.00%\nBOK Base Rate\nRaised 25bp · Decided 2026-08-27\nFrom 2.75% · Effective 2026-08-27\n\nExport strength is lifting domestic demand while inflation and Seoul housing risks persist. Six members backed an increase; one preferred a hold.\n\nRead the decision ↗ · Published 2026-08-27\n\nRate history ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nCentral Bank of the Republic of China (Taiwan)\n2.00%\nDiscount rate\nHeld · Decided 2026-09-17\nEffective 2026-09-17\n\nThe CBC balanced contained inflation and strong activity against global uncertainty. A discount-rate hold can coexist with rising market borrowing costs.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of India\n5.50%\nPolicy repo rate · LAF\nRaised 25bp · Decided 2026-10-07\nFrom 5.25% · Effective 2026-10-07\n\nResilient demand met rising inflation risks. All six members backed the rate increase; two separately opposed changing the stance from neutral to calibrated tightening.\n\nRead the decision ↗ · Published 2026-10-07\n\nImplementation notice ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of Australia\n4.60%\nCash-rate target\nRaised 25bp · Decided 2026-09-29\nFrom 4.35% · Effective 2026-09-30\n\nInflation pressure broadened as energy and capacity costs rose, despite cooling spending and housing. The Board unanimously judged further tightening necessary.\n\nRead the decision ↗ · Published 2026-09-29\n\nRate history ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of England\n3.75%\nBank Rate\nHeld · Decided 2026-09-16\nEffective 2026-09-16\n\nEnergy-price persistence raises inflation risks. Soft labour conditions and higher borrowing costs pull the other way; three members favoured an increase.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nEuropean Central Bank\n2.50%\nDeposit-facility rate\nRaised 25bp · Decided 2026-09-10\nFrom 2.25% · Effective 2026-09-16\n\nThe energy shock prolonged inflation pressure despite resilient growth. The increase was unanimous; subsequent decisions remain dependent on incoming evidence.\n\nRead the decision ↗ · Published 2026-09-10\n\nPolicy discussion ↗\nRate history ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Japan\n约\n1.25%\n无担保隔夜拆借利率目标\n上调 25基点 · 决定于 2026-09-18\n原为 约 1.00% · 生效于 2026-09-24\n\n工资与投入成本向价格传导，日银以7票对2票上调目标。后续正常化取决于经济活动、通胀与金融条件。\n\n阅读政策决定 ↗ · 发布于 2026-09-18\n\n决定参考资料 ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Korea\n3.00%\n韩国央行基准利率\n上调 25基点 · 决定于 2026-08-27\n原为 2.75% · 生效于 2026-08-27\n\n出口强劲带动内需，通胀与首尔房市风险仍在。六名委员支持加息，一名主张维持不变。\n\n阅读政策决定 ↗ · 发布于 2026-08-27\n\n利率记录 ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nCentral Bank of the Republic of China (Taiwan)\n2.00%\n贴现率\n维持不变 · 决定于 2026-09-17\n生效于 2026-09-17\n\n台湾央行权衡可控通胀、强劲经济活动与全球不确定性。贴现率维持不变，并不代表市场借贷成本不会上升。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of India\n5.50%\n流动性调节机制政策回购利率\n上调 25基点 · 决定于 2026-10-07\n原为 5.25% · 生效于 2026-10-07\n\n需求保持韧性，通胀风险上升。六名委员均支持加息；其中两名另行反对将中性立场改为审慎收紧。\n\n阅读政策决定 ↗ · 发布于 2026-10-07\n\n生效通知 ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of Australia\n4.60%\n现金利率目标\n上调 25基点 · 决定于 2026-09-29\n原为 4.35% · 生效于 2026-09-30\n\n能源与产能成本上升使通胀压力扩散，消费与住房却在降温。委员会一致认为需要进一步收紧政策。\n\n阅读政策决定 ↗ · 发布于 2026-09-29\n\n利率记录 ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of England\n3.75%\n英国央行基准利率\n维持不变 · 决定于 2026-09-16\n生效于 2026-09-16\n\n能源价格持续偏高加大通胀风险；劳动力市场偏软与借贷成本上升形成反向影响。三名委员主张加息。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nEuropean Central Bank\n2.50%\n存款便利利率\n上调 25基点 · 决定于 2026-09-10\n原为 2.25% · 生效于 2026-09-16\n\n增长保持韧性，能源冲击却延长了通胀压力。本次加息获一致支持；后续决定仍取决于新信息。\n\n阅读政策决定 ↗ · 发布于 2026-09-10\n\n政策讨论 ↗\n利率记录 ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Japan\nAround\n1.25%\nOvernight call-rate target\nRaised 25bp · Decided 2026-09-18\nFrom around 1.00% · Effective 2026-09-24\n\nThe BOJ raised the target by a 7–2 majority as wage and input costs spread into prices. Further normalization depends on activity, inflation and financial conditions.\n\nRead the decision ↗ · Published 2026-09-18\n\nDecision reference ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Korea\n3.00%\nBOK Base Rate\nRaised 25bp · Decided 2026-08-27\nFrom 2.75% · Effective 2026-08-27\n\nExport strength is lifting domestic demand while inflation and Seoul housing risks persist. Six members backed an increase; one preferred a hold.\n\nRead the decision ↗ · Published 2026-08-27\n\nRate history ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nCentral Bank of the Republic of China (Taiwan)\n2.00%\nDiscount rate\nHeld · Decided 2026-09-17\nEffective 2026-09-17\n\nThe CBC balanced contained inflation and strong activity against global uncertainty. A discount-rate hold can coexist with rising market borrowing costs.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of India\n5.50%\nPolicy repo rate · LAF\nRaised 25bp · Decided 2026-10-07\nFrom 5.25% · Effective 2026-10-07\n\nResilient demand met rising inflation risks. All six members backed the rate increase; two separately opposed changing the stance from neutral to calibrated tightening.\n\nRead the decision ↗ · Published 2026-10-07\n\nImplementation notice ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of Australia\n4.60%\nCash-rate target\nRaised 25bp · Decided 2026-09-29\nFrom 4.35% · Effective 2026-09-30\n\nInflation pressure broadened as energy and capacity costs rose, despite cooling spending and housing. The Board unanimously judged further tightening necessary.\n\nRead the decision ↗ · Published 2026-09-29\n\nRate history ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of England\n3.75%\nBank Rate\nHeld · Decided 2026-09-16\nEffective 2026-09-16\n\nEnergy-price persistence raises inflation risks. Soft labour conditions and higher borrowing costs pull the other way; three members favoured an increase.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nEuropean Central Bank\n2.50%\nDeposit-facility rate\nRaised 25bp · Decided 2026-09-10\nFrom 2.25% · Effective 2026-09-16\n\nThe energy shock prolonged inflation pressure despite resilient growth. The increase was unanimous; subsequent decisions remain dependent on incoming evidence.\n\nRead the decision ↗ · Published 2026-09-10\n\nPolicy discussion ↗\nRate history ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Japan\n约\n1.25%\n无担保隔夜拆借利率目标\n上调 25基点 · 决定于 2026-09-18\n原为 约 1.00% · 生效于 2026-09-24\n\n工资与投入成本向价格传导，日银以7票对2票上调目标。后续正常化取决于经济活动、通胀与金融条件。\n\n阅读政策决定 ↗ · 发布于 2026-09-18\n\n决定参考资料 ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Korea\n3.00%\n韩国央行基准利率\n上调 25基点 · 决定于 2026-08-27\n原为 2.75% · 生效于 2026-08-27\n\n出口强劲带动内需，通胀与首尔房市风险仍在。六名委员支持加息，一名主张维持不变。\n\n阅读政策决定 ↗ · 发布于 2026-08-27\n\n利率记录 ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nCentral Bank of the Republic of China (Taiwan)\n2.00%\n贴现率\n维持不变 · 决定于 2026-09-17\n生效于 2026-09-17\n\n台湾央行权衡可控通胀、强劲经济活动与全球不确定性。贴现率维持不变，并不代表市场借贷成本不会上升。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of India\n5.50%\n流动性调节机制政策回购利率\n上调 25基点 · 决定于 2026-10-07\n原为 5.25% · 生效于 2026-10-07\n\n需求保持韧性，通胀风险上升。六名委员均支持加息；其中两名另行反对将中性立场改为审慎收紧。\n\n阅读政策决定 ↗ · 发布于 2026-10-07\n\n生效通知 ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of Australia\n4.60%\n现金利率目标\n上调 25基点 · 决定于 2026-09-29\n原为 4.35% · 生效于 2026-09-30\n\n能源与产能成本上升使通胀压力扩散，消费与住房却在降温。委员会一致认为需要进一步收紧政策。\n\n阅读政策决定 ↗ · 发布于 2026-09-29\n\n利率记录 ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of England\n3.75%\n英国央行基准利率\n维持不变 · 决定于 2026-09-16\n生效于 2026-09-16\n\n能源价格持续偏高加大通胀风险；劳动力市场偏软与借贷成本上升形成反向影响。三名委员主张加息。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 1440,
+      "panelWidth": 864,
+      "panelScrollWidth": 864,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nEuropean Central Bank\n2.50%\n存款便利利率\n上调 25基点 · 决定于 2026-09-10\n原为 2.25% · 生效于 2026-09-16\n\n增长保持韧性，能源冲击却延长了通胀压力。本次加息获一致支持；后续决定仍取决于新信息。\n\n阅读政策决定 ↗ · 发布于 2026-09-10\n\n政策讨论 ↗\n利率记录 ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Japan\nAround\n1.25%\nOvernight call-rate target\nRaised 25bp · Decided 2026-09-18\nFrom around 1.00% · Effective 2026-09-24\n\nThe BOJ raised the target by a 7–2 majority as wage and input costs spread into prices. Further normalization depends on activity, inflation and financial conditions.\n\nRead the decision ↗ · Published 2026-09-18\n\nDecision reference ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Korea\n3.00%\nBOK Base Rate\nRaised 25bp · Decided 2026-08-27\nFrom 2.75% · Effective 2026-08-27\n\nExport strength is lifting domestic demand while inflation and Seoul housing risks persist. Six members backed an increase; one preferred a hold.\n\nRead the decision ↗ · Published 2026-08-27\n\nRate history ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nCentral Bank of the Republic of China (Taiwan)\n2.00%\nDiscount rate\nHeld · Decided 2026-09-17\nEffective 2026-09-17\n\nThe CBC balanced contained inflation and strong activity against global uncertainty. A discount-rate hold can coexist with rising market borrowing costs.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of India\n5.50%\nPolicy repo rate · LAF\nRaised 25bp · Decided 2026-10-07\nFrom 5.25% · Effective 2026-10-07\n\nResilient demand met rising inflation risks. All six members backed the rate increase; two separately opposed changing the stance from neutral to calibrated tightening.\n\nRead the decision ↗ · Published 2026-10-07\n\nImplementation notice ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of Australia\n4.60%\nCash-rate target\nRaised 25bp · Decided 2026-09-29\nFrom 4.35% · Effective 2026-09-30\n\nInflation pressure broadened as energy and capacity costs rose, despite cooling spending and housing. The Board unanimously judged further tightening necessary.\n\nRead the decision ↗ · Published 2026-09-29\n\nRate history ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of England\n3.75%\nBank Rate\nHeld · Decided 2026-09-16\nEffective 2026-09-16\n\nEnergy-price persistence raises inflation risks. Soft labour conditions and higher borrowing costs pull the other way; three members favoured an increase.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nEuropean Central Bank\n2.50%\nDeposit-facility rate\nRaised 25bp · Decided 2026-09-10\nFrom 2.25% · Effective 2026-09-16\n\nThe energy shock prolonged inflation pressure despite resilient growth. The increase was unanimous; subsequent decisions remain dependent on incoming evidence.\n\nRead the decision ↗ · Published 2026-09-10\n\nPolicy discussion ↗\nRate history ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Japan\n约\n1.25%\n无担保隔夜拆借利率目标\n上调 25基点 · 决定于 2026-09-18\n原为 约 1.00% · 生效于 2026-09-24\n\n工资与投入成本向价格传导，日银以7票对2票上调目标。后续正常化取决于经济活动、通胀与金融条件。\n\n阅读政策决定 ↗ · 发布于 2026-09-18\n\n决定参考资料 ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Korea\n3.00%\n韩国央行基准利率\n上调 25基点 · 决定于 2026-08-27\n原为 2.75% · 生效于 2026-08-27\n\n出口强劲带动内需，通胀与首尔房市风险仍在。六名委员支持加息，一名主张维持不变。\n\n阅读政策决定 ↗ · 发布于 2026-08-27\n\n利率记录 ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nCentral Bank of the Republic of China (Taiwan)\n2.00%\n贴现率\n维持不变 · 决定于 2026-09-17\n生效于 2026-09-17\n\n台湾央行权衡可控通胀、强劲经济活动与全球不确定性。贴现率维持不变，并不代表市场借贷成本不会上升。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of India\n5.50%\n流动性调节机制政策回购利率\n上调 25基点 · 决定于 2026-10-07\n原为 5.25% · 生效于 2026-10-07\n\n需求保持韧性，通胀风险上升。六名委员均支持加息；其中两名另行反对将中性立场改为审慎收紧。\n\n阅读政策决定 ↗ · 发布于 2026-10-07\n\n生效通知 ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of Australia\n4.60%\n现金利率目标\n上调 25基点 · 决定于 2026-09-29\n原为 4.35% · 生效于 2026-09-30\n\n能源与产能成本上升使通胀压力扩散，消费与住房却在降温。委员会一致认为需要进一步收紧政策。\n\n阅读政策决定 ↗ · 发布于 2026-09-29\n\n利率记录 ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of England\n3.75%\n英国央行基准利率\n维持不变 · 决定于 2026-09-16\n生效于 2026-09-16\n\n能源价格持续偏高加大通胀风险；劳动力市场偏软与借贷成本上升形成反向影响。三名委员主张加息。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nEuropean Central Bank\n2.50%\n存款便利利率\n上调 25基点 · 决定于 2026-09-10\n原为 2.25% · 生效于 2026-09-16\n\n增长保持韧性，能源冲击却延长了通胀压力。本次加息获一致支持；后续决定仍取决于新信息。\n\n阅读政策决定 ↗ · 发布于 2026-09-10\n\n政策讨论 ↗\n利率记录 ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Japan\nAround\n1.25%\nOvernight call-rate target\nRaised 25bp · Decided 2026-09-18\nFrom around 1.00% · Effective 2026-09-24\n\nThe BOJ raised the target by a 7–2 majority as wage and input costs spread into prices. Further normalization depends on activity, inflation and financial conditions.\n\nRead the decision ↗ · Published 2026-09-18\n\nDecision reference ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Korea\n3.00%\nBOK Base Rate\nRaised 25bp · Decided 2026-08-27\nFrom 2.75% · Effective 2026-08-27\n\nExport strength is lifting domestic demand while inflation and Seoul housing risks persist. Six members backed an increase; one preferred a hold.\n\nRead the decision ↗ · Published 2026-08-27\n\nRate history ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nCentral Bank of the Republic of China (Taiwan)\n2.00%\nDiscount rate\nHeld · Decided 2026-09-17\nEffective 2026-09-17\n\nThe CBC balanced contained inflation and strong activity against global uncertainty. A discount-rate hold can coexist with rising market borrowing costs.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of India\n5.50%\nPolicy repo rate · LAF\nRaised 25bp · Decided 2026-10-07\nFrom 5.25% · Effective 2026-10-07\n\nResilient demand met rising inflation risks. All six members backed the rate increase; two separately opposed changing the stance from neutral to calibrated tightening.\n\nRead the decision ↗ · Published 2026-10-07\n\nImplementation notice ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of Australia\n4.60%\nCash-rate target\nRaised 25bp · Decided 2026-09-29\nFrom 4.35% · Effective 2026-09-30\n\nInflation pressure broadened as energy and capacity costs rose, despite cooling spending and housing. The Board unanimously judged further tightening necessary.\n\nRead the decision ↗ · Published 2026-09-29\n\nRate history ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of England\n3.75%\nBank Rate\nHeld · Decided 2026-09-16\nEffective 2026-09-16\n\nEnergy-price persistence raises inflation risks. Soft labour conditions and higher borrowing costs pull the other way; three members favoured an increase.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nEuropean Central Bank\n2.50%\nDeposit-facility rate\nRaised 25bp · Decided 2026-09-10\nFrom 2.25% · Effective 2026-09-16\n\nThe energy shock prolonged inflation pressure despite resilient growth. The increase was unanimous; subsequent decisions remain dependent on incoming evidence.\n\nRead the decision ↗ · Published 2026-09-10\n\nPolicy discussion ↗\nRate history ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Japan\n约\n1.25%\n无担保隔夜拆借利率目标\n上调 25基点 · 决定于 2026-09-18\n原为 约 1.00% · 生效于 2026-09-24\n\n工资与投入成本向价格传导，日银以7票对2票上调目标。后续正常化取决于经济活动、通胀与金融条件。\n\n阅读政策决定 ↗ · 发布于 2026-09-18\n\n决定参考资料 ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Korea\n3.00%\n韩国央行基准利率\n上调 25基点 · 决定于 2026-08-27\n原为 2.75% · 生效于 2026-08-27\n\n出口强劲带动内需，通胀与首尔房市风险仍在。六名委员支持加息，一名主张维持不变。\n\n阅读政策决定 ↗ · 发布于 2026-08-27\n\n利率记录 ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nCentral Bank of the Republic of China (Taiwan)\n2.00%\n贴现率\n维持不变 · 决定于 2026-09-17\n生效于 2026-09-17\n\n台湾央行权衡可控通胀、强劲经济活动与全球不确定性。贴现率维持不变，并不代表市场借贷成本不会上升。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of India\n5.50%\n流动性调节机制政策回购利率\n上调 25基点 · 决定于 2026-10-07\n原为 5.25% · 生效于 2026-10-07\n\n需求保持韧性，通胀风险上升。六名委员均支持加息；其中两名另行反对将中性立场改为审慎收紧。\n\n阅读政策决定 ↗ · 发布于 2026-10-07\n\n生效通知 ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of Australia\n4.60%\n现金利率目标\n上调 25基点 · 决定于 2026-09-29\n原为 4.35% · 生效于 2026-09-30\n\n能源与产能成本上升使通胀压力扩散，消费与住房却在降温。委员会一致认为需要进一步收紧政策。\n\n阅读政策决定 ↗ · 发布于 2026-09-29\n\n利率记录 ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of England\n3.75%\n英国央行基准利率\n维持不变 · 决定于 2026-09-16\n生效于 2026-09-16\n\n能源价格持续偏高加大通胀风险；劳动力市场偏软与借贷成本上升形成反向影响。三名委员主张加息。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 390,
+      "panelWidth": 332,
+      "panelScrollWidth": 332,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nEuropean Central Bank\n2.50%\n存款便利利率\n上调 25基点 · 决定于 2026-09-10\n原为 2.25% · 生效于 2026-09-16\n\n增长保持韧性，能源冲击却延长了通胀压力。本次加息获一致支持；后续决定仍取决于新信息。\n\n阅读政策决定 ↗ · 发布于 2026-09-10\n\n政策讨论 ↗\n利率记录 ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Japan\nAround\n1.25%\nOvernight call-rate target\nRaised 25bp · Decided 2026-09-18\nFrom around 1.00% · Effective 2026-09-24\n\nThe BOJ raised the target by a 7–2 majority as wage and input costs spread into prices. Further normalization depends on activity, inflation and financial conditions.\n\nRead the decision ↗ · Published 2026-09-18\n\nDecision reference ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Korea\n3.00%\nBOK Base Rate\nRaised 25bp · Decided 2026-08-27\nFrom 2.75% · Effective 2026-08-27\n\nExport strength is lifting domestic demand while inflation and Seoul housing risks persist. Six members backed an increase; one preferred a hold.\n\nRead the decision ↗ · Published 2026-08-27\n\nRate history ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nCentral Bank of the Republic of China (Taiwan)\n2.00%\nDiscount rate\nHeld · Decided 2026-09-17\nEffective 2026-09-17\n\nThe CBC balanced contained inflation and strong activity against global uncertainty. A discount-rate hold can coexist with rising market borrowing costs.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of India\n5.50%\nPolicy repo rate · LAF\nRaised 25bp · Decided 2026-10-07\nFrom 5.25% · Effective 2026-10-07\n\nResilient demand met rising inflation risks. All six members backed the rate increase; two separately opposed changing the stance from neutral to calibrated tightening.\n\nRead the decision ↗ · Published 2026-10-07\n\nImplementation notice ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of Australia\n4.60%\nCash-rate target\nRaised 25bp · Decided 2026-09-29\nFrom 4.35% · Effective 2026-09-30\n\nInflation pressure broadened as energy and capacity costs rose, despite cooling spending and housing. The Board unanimously judged further tightening necessary.\n\nRead the decision ↗ · Published 2026-09-29\n\nRate history ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of England\n3.75%\nBank Rate\nHeld · Decided 2026-09-16\nEffective 2026-09-16\n\nEnergy-price persistence raises inflation risks. Soft labour conditions and higher borrowing costs pull the other way; three members favoured an increase.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nEuropean Central Bank\n2.50%\nDeposit-facility rate\nRaised 25bp · Decided 2026-09-10\nFrom 2.25% · Effective 2026-09-16\n\nThe energy shock prolonged inflation pressure despite resilient growth. The increase was unanimous; subsequent decisions remain dependent on incoming evidence.\n\nRead the decision ↗ · Published 2026-09-10\n\nPolicy discussion ↗\nRate history ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Japan\n约\n1.25%\n无担保隔夜拆借利率目标\n上调 25基点 · 决定于 2026-09-18\n原为 约 1.00% · 生效于 2026-09-24\n\n工资与投入成本向价格传导，日银以7票对2票上调目标。后续正常化取决于经济活动、通胀与金融条件。\n\n阅读政策决定 ↗ · 发布于 2026-09-18\n\n决定参考资料 ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Korea\n3.00%\n韩国央行基准利率\n上调 25基点 · 决定于 2026-08-27\n原为 2.75% · 生效于 2026-08-27\n\n出口强劲带动内需，通胀与首尔房市风险仍在。六名委员支持加息，一名主张维持不变。\n\n阅读政策决定 ↗ · 发布于 2026-08-27\n\n利率记录 ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nCentral Bank of the Republic of China (Taiwan)\n2.00%\n贴现率\n维持不变 · 决定于 2026-09-17\n生效于 2026-09-17\n\n台湾央行权衡可控通胀、强劲经济活动与全球不确定性。贴现率维持不变，并不代表市场借贷成本不会上升。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of India\n5.50%\n流动性调节机制政策回购利率\n上调 25基点 · 决定于 2026-10-07\n原为 5.25% · 生效于 2026-10-07\n\n需求保持韧性，通胀风险上升。六名委员均支持加息；其中两名另行反对将中性立场改为审慎收紧。\n\n阅读政策决定 ↗ · 发布于 2026-10-07\n\n生效通知 ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of Australia\n4.60%\n现金利率目标\n上调 25基点 · 决定于 2026-09-29\n原为 4.35% · 生效于 2026-09-30\n\n能源与产能成本上升使通胀压力扩散，消费与住房却在降温。委员会一致认为需要进一步收紧政策。\n\n阅读政策决定 ↗ · 发布于 2026-09-29\n\n利率记录 ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of England\n3.75%\n英国央行基准利率\n维持不变 · 决定于 2026-09-16\n生效于 2026-09-16\n\n能源价格持续偏高加大通胀风险；劳动力市场偏软与借贷成本上升形成反向影响。三名委员主张加息。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nEuropean Central Bank\n2.50%\n存款便利利率\n上调 25基点 · 决定于 2026-09-10\n原为 2.25% · 生效于 2026-09-16\n\n增长保持韧性，能源冲击却延长了通胀压力。本次加息获一致支持；后续决定仍取决于新信息。\n\n阅读政策决定 ↗ · 发布于 2026-09-10\n\n政策讨论 ↗\n利率记录 ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Japan\nAround\n1.25%\nOvernight call-rate target\nRaised 25bp · Decided 2026-09-18\nFrom around 1.00% · Effective 2026-09-24\n\nThe BOJ raised the target by a 7–2 majority as wage and input costs spread into prices. Further normalization depends on activity, inflation and financial conditions.\n\nRead the decision ↗ · Published 2026-09-18\n\nDecision reference ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of Korea\n3.00%\nBOK Base Rate\nRaised 25bp · Decided 2026-08-27\nFrom 2.75% · Effective 2026-08-27\n\nExport strength is lifting domestic demand while inflation and Seoul housing risks persist. Six members backed an increase; one preferred a hold.\n\nRead the decision ↗ · Published 2026-08-27\n\nRate history ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nCentral Bank of the Republic of China (Taiwan)\n2.00%\nDiscount rate\nHeld · Decided 2026-09-17\nEffective 2026-09-17\n\nThe CBC balanced contained inflation and strong activity against global uncertainty. A discount-rate hold can coexist with rising market borrowing costs.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of India\n5.50%\nPolicy repo rate · LAF\nRaised 25bp · Decided 2026-10-07\nFrom 5.25% · Effective 2026-10-07\n\nResilient demand met rising inflation risks. All six members backed the rate increase; two separately opposed changing the stance from neutral to calibrated tightening.\n\nRead the decision ↗ · Published 2026-10-07\n\nImplementation notice ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nReserve Bank of Australia\n4.60%\nCash-rate target\nRaised 25bp · Decided 2026-09-29\nFrom 4.35% · Effective 2026-09-30\n\nInflation pressure broadened as energy and capacity costs rose, despite cooling spending and housing. The Board unanimously judged further tightening necessary.\n\nRead the decision ↗ · Published 2026-09-29\n\nRate history ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nBank of England\n3.75%\nBank Rate\nHeld · Decided 2026-09-16\nEffective 2026-09-16\n\nEnergy-price persistence raises inflation risks. Soft labour conditions and higher borrowing costs pull the other way; three members favoured an increase.\n\nRead the decision ↗ · Published 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "en",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "en",
+      "visibleText": "Policy decision\nEuropean Central Bank\n2.50%\nDeposit-facility rate\nRaised 25bp · Decided 2026-09-10\nFrom 2.25% · Effective 2026-09-16\n\nThe energy shock prolonged inflation pressure despite resilient growth. The increase was unanimous; subsequent decisions remain dependent on incoming evidence.\n\nRead the decision ↗ · Published 2026-09-10\n\nPolicy discussion ↗\nRate history ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "JP",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-JP"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Japan\n约\n1.25%\n无担保隔夜拆借利率目标\n上调 25基点 · 决定于 2026-09-18\n原为 约 1.00% · 生效于 2026-09-24\n\n工资与投入成本向价格传导，日银以7票对2票上调目标。后续正常化取决于经济活动、通胀与金融条件。\n\n阅读政策决定 ↗ · 发布于 2026-09-18\n\n决定参考资料 ↗",
+      "links": [
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+        "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "KR",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-KR"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of Korea\n3.00%\n韩国央行基准利率\n上调 25基点 · 决定于 2026-08-27\n原为 2.75% · 生效于 2026-08-27\n\n出口强劲带动内需，通胀与首尔房市风险仍在。六名委员支持加息，一名主张维持不变。\n\n阅读政策决定 ↗ · 发布于 2026-08-27\n\n利率记录 ↗",
+      "links": [
+        "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+        "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "TW",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-TW"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nCentral Bank of the Republic of China (Taiwan)\n2.00%\n贴现率\n维持不变 · 决定于 2026-09-17\n生效于 2026-09-17\n\n台湾央行权衡可控通胀、强劲经济活动与全球不确定性。贴现率维持不变，并不代表市场借贷成本不会上升。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "IN",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-IN"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of India\n5.50%\n流动性调节机制政策回购利率\n上调 25基点 · 决定于 2026-10-07\n原为 5.25% · 生效于 2026-10-07\n\n需求保持韧性，通胀风险上升。六名委员均支持加息；其中两名另行反对将中性立场改为审慎收紧。\n\n阅读政策决定 ↗ · 发布于 2026-10-07\n\n生效通知 ↗",
+      "links": [
+        "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+        "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "AU",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-AU"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nReserve Bank of Australia\n4.60%\n现金利率目标\n上调 25基点 · 决定于 2026-09-29\n原为 4.35% · 生效于 2026-09-30\n\n能源与产能成本上升使通胀压力扩散，消费与住房却在降温。委员会一致认为需要进一步收紧政策。\n\n阅读政策决定 ↗ · 发布于 2026-09-29\n\n利率记录 ↗",
+      "links": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+        "https://www.rba.gov.au/statistics/cash-rate/"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "GB",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-GB"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nBank of England\n3.75%\n英国央行基准利率\n维持不变 · 决定于 2026-09-16\n生效于 2026-09-16\n\n能源价格持续偏高加大通胀风险；劳动力市场偏软与借贷成本上升形成反向影响。三名委员主张加息。\n\n阅读政策决定 ↗ · 发布于 2026-09-17",
+      "links": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026"
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "cc": "EZ",
+      "passed": true,
+      "documentWidth": 320,
+      "panelWidth": 262,
+      "panelScrollWidth": 262,
+      "overflowing": [],
+      "openCountries": [
+        "imc-country-EZ"
+      ],
+      "lang": "zh",
+      "visibleText": "政策决定\nEuropean Central Bank\n2.50%\n存款便利利率\n上调 25基点 · 决定于 2026-09-10\n原为 2.25% · 生效于 2026-09-16\n\n增长保持韧性，能源冲击却延长了通胀压力。本次加息获一致支持；后续决定仍取决于新信息。\n\n阅读政策决定 ↗ · 发布于 2026-09-10\n\n政策讨论 ↗\n利率记录 ↗",
+      "links": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+        "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      ]
+    }
+  ]
+}

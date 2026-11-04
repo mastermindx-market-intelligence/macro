@@ -1,0 +1,34 @@
+{
+  "schema": "mastermind.intl_paper_fiscal_effect.v1",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-G-0",
+  "operation_id": "intl-country-cockpit-20261018-fiscal-paper-taiwan-order-20261020",
+  "tool": "move_nodes",
+  "arguments": {
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "moves": [
+      {
+        "nodeId": "EYC-0",
+        "before": "ETK-0"
+      }
+    ]
+  },
+  "expected_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "retry_allowed": false,
+  "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "observed_at": "2026-10-20T01:45:13.107Z",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"file\": {\n    \"id\": \"01M3P1TW5Y3XWQC37ADDS8K5AG\",\n    \"name\": \"International Markets · R10 · Current Build\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"501cd923\"\n  }\n}"
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"EYC-0\",\n      \"parentId\": \"ER5-0\",\n      \"index\": 3\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ER5-0\",\n      \"childIds\": [\n        \"ERQ-0\",\n        \"ERV-0\",\n        \"ES5-0\",\n        \"EYC-0\",\n        \"ETK-0\",\n        \"EUI-0\"\n      ]\n    }\n  ]\n}"
+      }
+    ]
+  }
+}

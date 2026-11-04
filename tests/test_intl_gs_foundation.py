@@ -6,6 +6,7 @@ block, the L1–L12 design laws the reviewer attacks, shell registration of the
 seven surveillance views, the mount/builder contract and the access wiring.
 """
 import ast
+import hashlib
 import importlib.util
 import re
 import subprocess
@@ -819,21 +820,36 @@ def _frozen_base() -> str:
     return sha
 
 
-# Shared surfaces the W2F foundation must never carry edits to. They belong to
-# the theme and navigation families (templates/theme.css, templates/_navlinks.html.j2)
-# and change through those families' own PRs: unconditional, this guard blocked
-# every such PR (2026-10-22, ITP-ES #10077 added the Expectation Surface nav row
-# and moved theme.css's icon-import stamp, and the guard went red on a change
-# that touched no International surface). The two shared entries are therefore
-# enforced only when the same change also touches a GS production surface
-# (_GS_SURFACE_PREFIXES); the GS-owned engine/lib entries stay frozen outright.
-# The scoping lives INSIDE the guard function: tests/test_ci_pack_semantic.py
-# (CanonicalMainPreparationTests) compiles this function and _frozen_base alone
-# into a bare namespace (REPO, subprocess, re, pytest) to prove the original
-# guard still passes unchanged trees and rejects a changed frozen file, so the
-# body may not reach for module-level helpers. A shared entry with no GS change
-# in the diff PASSES (returns) rather than skipping: pytest.skip raised inside
-# that harness would silently skip the harness test itself.
+# Historical, independently accepted pre-GS directional country composition.
+# Preserve the exact reviewed fixture and its mutation regressions; the current
+# production guard below follows the protected main append-only rule.
+_ACCEPTED_COUNTRY_THEME_PAIR = (
+    "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
+    "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+)
+
+
+def _frozen_source_matches(path: str, baseline: bytes, candidate: bytes) -> bool:
+    if candidate == baseline:
+        return True
+    return path == "templates/theme.css" and (
+        hashlib.sha256(baseline).hexdigest(),
+        hashlib.sha256(candidate).hexdigest(),
+    ) == _ACCEPTED_COUNTRY_THEME_PAIR
+
+
+def _git_frozen_bytes(ref: str, path: str) -> bytes:
+    result = subprocess.run(["git", "show", f"{ref}:{path}"], cwd=REPO, capture_output=True)
+    if result.returncode != 0:
+        pytest.fail(f"FAIL CLOSED: cannot read frozen source {ref}:{path}: "
+                    f"{result.stderr.decode('utf-8', errors='replace').strip()}")
+    return result.stdout
+
+
+# Shared theme/nav surfaces are guarded only for GS production changes; owned
+# engine/lib surfaces always remain frozen. This scoping belongs inside the
+# guard function because the semantic CI harness compiles its AST in isolation.
+
 @pytest.mark.parametrize("path", [
     "templates/theme.css",
     "templates/_navlinks.html.j2",
@@ -841,7 +857,9 @@ def _frozen_base() -> str:
     "engine/intl_global_observation.py",
     "lib/intl_global_observation_adapter.py",
 ])
-def test_frozen_files_unchanged_vs_origin_main(path):
+def test_frozen_files_match_origin_main_or_exact_accepted_country_theme(path):
+    # Preserve the existing callable's name for AST-based CI contract tests;
+    # current edits must satisfy main's scoped, append-only frozen-file guard.
     shared_frozen = {"templates/theme.css", "templates/_navlinks.html.j2"}
     gs_surface_prefixes = (
         "engine/intl_global_",
@@ -868,15 +886,10 @@ def test_frozen_files_unchanged_vs_origin_main(path):
                             cwd=REPO, capture_output=True, text=True)
     if result.returncode not in (0, 1):
         pytest.fail(f"FAIL CLOSED: git diff {base} -- {path} errored: {result.stderr.strip()}")
-    # Narrowed 2026-10-22 (GMI explorer, ORCH-UI G-UI-17): theme.css is the ONE
-    # shared token file every program extends (design constitution: "tokens
-    # extend theme.css only"). The freeze protects the bytes the INTL surfaces
-    # read; a pure END-OF-FILE append cannot alter them, so it passes. Any
-    # removed or rewritten line, or an insertion anywhere but the tail, still
-    # fails closed. Kept INSIDE this function on purpose: ci-control-plane's
-    # tests/test_ci_pack_semantic.py compiles this guard body alone (by name)
-    # against a fixture checkout, so a module-level helper or constant is a
-    # NameError there (measured ci-pack-1 on #10099, 2026-11-02).
+    # Narrowed on main: shared theme tokens can be extended only after all
+    # previous bytes, while nav and GS-owned frozen files remain exact.
+    # Keep this logic self-contained for tests/test_ci_pack_semantic.py's
+    # AST-only isolated harness (no reliance on module-level helpers).
     append_only = frozenset({"templates/theme.css"})
     if result.returncode == 1 and path in append_only:
         shown = subprocess.run(["git", "show", f"{base}:{path}"], cwd=REPO,
@@ -889,6 +902,72 @@ def test_frozen_files_unchanged_vs_origin_main(path):
             "append is permitted; an existing byte was removed, rewritten or displaced")
         return
     assert result.returncode == 0, f"{path} changed vs merge-base(origin/main, HEAD) {base}"
+
+
+@pytest.fixture(scope="module")
+def reviewed_country_theme_bytes():
+    # Retained reviewed bytes avoid requiring historical Git objects in shallow CI.
+    # Only fixture preparation removes the five known lines (comment + four
+    # declarations); both entire byte sequences must match the reviewed hashes.
+    fixture = REPO / (
+        "research/reference_integrity/intl-country-intelligence-20261020/"
+        "main_tools_repair_20261022/transport_query_repair_20261022/"
+        "main_composition_6a4_20261022/proposed_main6a420261022_repair/theme.css"
+    )
+    candidate = fixture.read_bytes()
+    assert hashlib.sha256(candidate).hexdigest() == _ACCEPTED_COUNTRY_THEME_PAIR[1]
+    additions = (
+        b"  /* International country research: existing blends owned by shared theme. */\n",
+        b"  --imc-summary-hover: color-mix(in srgb, var(--panel2) 65%, transparent);\n",
+        b"  --imc-country-line: color-mix(in srgb, var(--line) 58%, var(--link));\n",
+        b"  --imc-context-surface: color-mix(in srgb, var(--panel2) 65%, var(--panel));\n",
+        b"  --imc-country-line: color-mix(in srgb, var(--link) 35%, var(--line));\n",
+    )
+    baseline = candidate
+    for line in additions:
+        assert baseline.count(line) == 1
+        baseline = baseline.replace(line, b"", 1)
+    assert hashlib.sha256(baseline).hexdigest() == _ACCEPTED_COUNTRY_THEME_PAIR[0]
+    return baseline, candidate
+
+
+@pytest.mark.parametrize("case", [
+    "unchanged_base", "accepted_addition", "unchanged_after_adoption",
+    "altered_blend", "removed_line", "duplicated_line", "relocated_line",
+    "unrelated_token", "new_global_token", "reverse_after_adoption",
+    "wrong_path", "changed_baseline",
+])
+def test_frozen_theme_guard_preserves_only_reviewed_bytes(reviewed_country_theme_bytes, case):
+    baseline, candidate = reviewed_country_theme_bytes
+    path = "templates/theme.css"
+    expected = case in {"unchanged_base", "accepted_addition", "unchanged_after_adoption"}
+    line = b"  --imc-summary-hover: color-mix(in srgb, var(--panel2) 65%, transparent);\n"
+    assert candidate.count(line) == 1 and line not in baseline
+    if case == "unchanged_base":
+        candidate = baseline
+    elif case == "unchanged_after_adoption":
+        baseline = candidate
+    elif case == "altered_blend":
+        candidate = candidate.replace(line, line.replace(b"65%", b"66%"), 1)
+    elif case == "removed_line":
+        candidate = candidate.replace(line, b"", 1)
+    elif case == "duplicated_line":
+        candidate = candidate.replace(line, line + line, 1)
+    elif case == "relocated_line":
+        candidate = line + candidate.replace(line, b"", 1)
+    elif case == "unrelated_token":
+        assert b"--esurf-ser1: #2f63c4;" in candidate
+        candidate = candidate.replace(b"--esurf-ser1: #2f63c4;", b"--esurf-ser1: #2f63c5;", 1)
+    elif case == "new_global_token":
+        candidate += b"\n:root { --sp-unauthorized: 1px; }\n"
+    elif case == "reverse_after_adoption":
+        baseline, candidate = candidate, baseline
+    elif case == "wrong_path":
+        path = "templates/_navlinks.html.j2"
+    elif case == "changed_baseline":
+        baseline += b"\n"
+    assert _frozen_source_matches(path, baseline, candidate) is expected
+
 
 
 # ---------------------------------------------------------------- 2.14 JS

@@ -1,0 +1,44 @@
+{
+  "checks": [
+    {
+      "name": "gs_query_targeted_v2",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-name-pattern=^GS query composition:",
+        "tests/intl_workspace_controller.test.cjs"
+      ],
+      "exit_code": 0,
+      "expected_negative": false,
+      "started_at": "2026-10-22T18:53:27.323390+00:00",
+      "completed_at": "2026-10-22T18:53:52.404134+00:00",
+      "duration_seconds": 25.08,
+      "log_sha256": "1b5056ecab92ad458e16f4fadab94f66a998d9786e881b1d5273942d39b82cbf",
+      "candidate_source_sha256": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d",
+      "mechanical_source_sha256": "776ac6f10a391cb900e3eaf20c9d9dac664f7465c5adae62375ffc02ad1e0f99",
+      "test_sha256": "3be38cbf6625b0ecd9c4371f319151b675183a8016a22d838e4a04500152a97e"
+    },
+    {
+      "name": "gs_mechanical_negative",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--require",
+        "/tmp/intl-resume-main-20261022T1252/gs_mechanical_preload.cjs",
+        "--test",
+        "--test-reporter=tap",
+        "--test-name-pattern=^GS query composition: (transport|rejected)",
+        "tests/intl_workspace_controller.test.cjs"
+      ],
+      "exit_code": 1,
+      "expected_negative": true,
+      "started_at": "2026-10-22T18:53:52.405715+00:00",
+      "completed_at": "2026-10-22T18:53:59.764736+00:00",
+      "duration_seconds": 7.36,
+      "log_sha256": "38bb409475f7c8c7ac547183e2cd55995050269c46c754626c8ee96a162beead",
+      "candidate_source_sha256": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d",
+      "mechanical_source_sha256": "776ac6f10a391cb900e3eaf20c9d9dac664f7465c5adae62375ffc02ad1e0f99",
+      "test_sha256": "3be38cbf6625b0ecd9c4371f319151b675183a8016a22d838e4a04500152a97e"
+    }
+  ]
+}

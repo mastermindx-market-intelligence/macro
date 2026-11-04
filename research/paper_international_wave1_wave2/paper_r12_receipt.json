@@ -1,0 +1,571 @@
+{
+  "schema": "intl_paper_country_reference.v1",
+  "revision": "R12",
+  "recorded_at": "2026-10-19T01:08:18+00:00",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-G-0",
+  "url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-G-0",
+  "prior_receipt": "paper_r11_receipt.json",
+  "finish_observed": true,
+  "production_published": false,
+  "boards": {
+    "DMX-0": {
+      "name": "R12 · Country Intelligence · Desktop Dark",
+      "width": 1440
+    },
+    "DW7-0": {
+      "name": "R12 · Country Intelligence · Desktop Light",
+      "width": 1440
+    },
+    "E4D-0": {
+      "name": "R12 · Country Intelligence · Mobile Dark",
+      "width": 390
+    },
+    "EC2-0": {
+      "name": "R12 · Country Intelligence · Mobile Light",
+      "width": 390
+    },
+    "ER4-0": {
+      "name": "R12 · UK · Policy and fiscal detail",
+      "width": 768
+    },
+    "ER5-0": {
+      "name": "R12 · Taiwan · Policy and forecast detail",
+      "width": 768
+    }
+  },
+  "copy_nodes_updated": 108,
+  "applied_effects": 67,
+  "effects": [
+    {
+      "operation_id": "intl-r12-create-page-20261019",
+      "tool": "create_page",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "341f97e4351553c3f8cd2eb578c8a1ca5df72d02f279933f848f08b38c2c6f61",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-move-reference-boards-20261019",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-name-reference-boards-20261019",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-source-backed-copy-20261019",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-layout-reference-20261019",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-chart-desktop-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-chart-desktop-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-chart-mobile-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-chart-mobile-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-place-growth-charts-20261019",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-inflation-desktop-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-inflation-desktop-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-inflation-mobile-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-inflation-mobile-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-place-inflation-paths-20261019",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-spacing-conditions-20261019",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-desktop-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-desktop-dark-20261019-row",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-desktop-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-desktop-light-20261019-row",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-mobile-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-mobile-dark-20261019-row",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-mobile-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-mobile-light-20261019-row",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-place-external-context-20261019",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-external-contrast-20261019",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-bok-assessment-desktop-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-bok-assessment-desktop-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-bok-assessment-mobile-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-bok-assessment-mobile-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-place-bok-assessments-20261019",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-market-reading-desktop-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-market-reading-desktop-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-market-reading-mobile-dark-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-market-reading-mobile-light-20261019",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-place-market-readings-20261019",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-uk-detail-board-20261019",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-tw-detail-board-20261019",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-detail-thesis",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-detail-path",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-policy-header",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-detail-thesis",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-detail-path",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-policy-header",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-policy-setting",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-policy-reading",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-policy-setting",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-policy-reading",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-context-header",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-context-row-0",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-context-row-1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-context-row-2",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-context-source",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-context-header",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-context-row-0",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-context-row-1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-context-source",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-conditions-header",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-condition-upside",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-condition-downside",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-GB-watch",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-conditions-header",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-condition-upside",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-condition-downside",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-TW-watch",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-detail-artboard-fit-20261019",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    },
+    {
+      "operation_id": "intl-r12-finish-six-references-20261019",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+      "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7"
+    }
+  ],
+  "visual_reviews": [
+    {
+      "nodes": [
+        "DQG-0",
+        "E9P-0",
+        "EGR-0"
+      ],
+      "section": "Growth and annual inflation paths",
+      "result": "Readable historical/projected series; named years; date and information cutoff; desktop and mobile reviewed."
+    },
+    {
+      "nodes": [
+        "EO8-0",
+        "EOQ-0",
+        "EP8-0",
+        "EPQ-0"
+      ],
+      "section": "External position",
+      "result": "Corrected inherited text contrast; label, values, periods and GDP units readable."
+    },
+    {
+      "nodes": [
+        "DZE-0"
+      ],
+      "section": "Conditions and central-bank assessment",
+      "result": "Specific conditions, dated source and watch items fit without a stretched empty panel."
+    },
+    {
+      "nodes": [
+        "DS5-0",
+        "EBG-0"
+      ],
+      "section": "World and market interpretation",
+      "result": "Actual global aggregate and overlapping AI/energy channels; market explanation states measured relationships."
+    },
+    {
+      "nodes": [
+        "ER4-0",
+        "ER5-0"
+      ],
+      "section": "National detail states",
+      "result": "Named policy instrument and decision/publication dates; UK fiscal ratios and CBC independent forecasts; source-specific conditions."
+    },
+    {
+      "nodes": [
+        "DMX-0",
+        "DW7-0",
+        "E8P-0",
+        "EFR-0"
+      ],
+      "section": "Final overview and mobile analysis",
+      "result": "Reviewed spacing, type, contrast, alignment, fit and repeated rows in both themes."
+    }
+  ],
+  "qualification": "Layered Paper design reference. Production behavior and financial source qualification are verified separately.",
+  "design_decisions": [
+    "Country interpretation is the main task; legacy data tools remain subordinate.",
+    "Quantitative paths retain their provider, target periods and publication cutoff.",
+    "Policy instruments retain their national names and dates.",
+    "Country conditions are evidence-linked interpretations, without invented probabilities or price targets."
+  ]
+}

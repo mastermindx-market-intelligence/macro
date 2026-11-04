@@ -1,0 +1,39 @@
+{
+  "scope": "local reconciliation rerun of existing unchanged diagnostic; no remote or public requests",
+  "started_at": "2026-10-20T20:52:37.804368+00:00",
+  "completed_at": "2026-10-20T20:52:37.841310+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/admission_probe.py"
+  ],
+  "cwd": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020",
+  "exit_code": 0,
+  "stdout": "{\n  \"scope\": \"local diagnostic against read-tool snapshot; synthetic inputs; no acquisition\",\n  \"checks_passed\": 6,\n  \"checks\": [\n    \"Current validator rejects a quarterly GDP y/y receipt.\",\n    \"Changing only the period does not repair the wrong GDP unit rule.\",\n    \"Changing only the unit does not repair the monthly-only period rule.\",\n    \"Widening only the merge allowlist would admit an incorrectly typed monthly GDP record.\",\n    \"Merge's explicit metric allowlist excludes GDP.\",\n    \"Existing Taiwan parser extracts forecasts and omits the observed quarterly GDP text.\"\n  ],\n  \"snapshot_text_sha256\": \"9e51a27575659140fed98b7d5cc88d11e1812e8994b7b24c0dab13f1ae82b5c7\",\n  \"source_wire_sha256\": null\n}\n",
+  "stderr": "",
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/INTEGRATION_HANDOFF.md",
+      "bytes": 16883,
+      "characters": 16839,
+      "lines_splitlines": 171,
+      "lines_split_newline": 172,
+      "sha256": "6cef148362e1f03ebfc56306d287a12dbf4e39fbac340e5911d63065b340cb5c"
+    },
+    {
+      "path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/collector_snapshot.py",
+      "bytes": 22110,
+      "characters": 22110,
+      "lines_splitlines": 404,
+      "lines_split_newline": 405,
+      "sha256": "9e51a27575659140fed98b7d5cc88d11e1812e8994b7b24c0dab13f1ae82b5c7"
+    },
+    {
+      "path": "/workspace/scratch/26adebeff658/intl_gdp_coverage_20261020/admission_probe.py",
+      "bytes": 3443,
+      "characters": 3443,
+      "lines_splitlines": 74,
+      "lines_split_newline": 75,
+      "sha256": "b2de1d7255e96ec1124d67bb5690e7212c7aef7ac44edf680dcdb284841de61c"
+    }
+  ]
+}

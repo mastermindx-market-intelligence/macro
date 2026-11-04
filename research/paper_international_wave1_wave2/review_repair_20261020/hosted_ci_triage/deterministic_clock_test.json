@@ -1,0 +1,20 @@
+{
+  "source_path": "tests/test_fundamental_forensics_latency.py",
+  "before_sha256": "29fb4d48a851b01300ef2656d3fbc4f7c4f8c353f8b7a7db6abbc036980afd31",
+  "after_sha256": "280092167d98a82ffc2207d7c16941e73436245f6075ca24ff0c2ae507cc3d31",
+  "production_health_owner_sha256": "a37b1bd483b1d8f620d40c398225d4a69c9672da30211c979c0e6bc3ecdf96c6",
+  "production_health_owner_unchanged": true,
+  "command": [
+    "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_fundamental_forensics_latency.py",
+    "-q"
+  ],
+  "started_at": "2026-10-20T13:15:31.560820+00:00",
+  "finished_at": "2026-10-20T13:15:36.933494+00:00",
+  "elapsed_seconds": 5.372,
+  "exit_code": 2,
+  "patch_reviewer": "/root/intl_hosted_ci_resolution",
+  "preserved_contract": "real health evaluation, complete response byte equality, recorder-refusal path and Server-Timing assertions"
+}

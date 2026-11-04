@@ -1,0 +1,2 @@
+{"recorded_at": "2026-10-20T21:02:31.940659+00:00", "source_commit": "442042e591d255dd24b540ff240edb4c0410c297", "html_sha256": "aedfd6cc09e82c1297ea7f53f9b7ff6acfed2d372df343ffd5d51dc951ee341c", "passed": 12, "failed": 0, "limits": ["Actual isolated anonymous browser; retained production inputs without reacquisition; external requests blocked."]}
+{"failed_checks": []}

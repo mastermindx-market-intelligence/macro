@@ -1,0 +1,11 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_country_cockpit.css
+- templates/intl_country_cockpit.html.j2
+- templates/intl.html.j2
+- templates/theme.css
+- site/theme.css
+- templates/_site_nav.html.j2
+- templates/chat.html
+- site/chat.html
+manifest: mockups/evidence/intl-design-reset-20261103/country/manifest.json

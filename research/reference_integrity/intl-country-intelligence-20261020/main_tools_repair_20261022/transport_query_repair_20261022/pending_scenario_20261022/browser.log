@@ -1,0 +1,1514 @@
+TAP version 13
+# Subtest: E first and repeated Tools activation from the root and from the sibling section
+ok 1 - E first and repeated Tools activation from the root and from the sibling section
+  ---
+  duration_ms: 1717.4245
+  type: 'test'
+  ...
+# Subtest: E Tools still activates after the parent changes the current query
+ok 2 - E Tools still activates after the parent changes the current query
+  ---
+  duration_ms: 1018.461666
+  type: 'test'
+  ...
+# Subtest: E the same nested destination repeats after Library with every ancestor manually closed
+ok 3 - E the same nested destination repeats after Library with every ancestor manually closed
+  ---
+  duration_ms: 698.329041
+  type: 'test'
+  ...
+# Subtest: E the nested destination is not left below the fold or under the sticky toolbar
+ok 4 - E the nested destination is not left below the fold or under the sticky toolbar
+  ---
+  duration_ms: 616.832875
+  type: 'test'
+  ...
+# Subtest: E unicode, malformed, missing and unrelated ids are handled without guessing
+ok 5 - E unicode, malformed, missing and unrelated ids are handled without guessing
+  ---
+  duration_ms: 647.871916
+  type: 'test'
+  ...
+# Subtest: F modified, non-primary, native-target and lookalike activations preserve the current page
+ok 6 - F modified, non-primary, native-target and lookalike activations preserve the current page
+  ---
+  duration_ms: 661.2595
+  type: 'test'
+  ...
+# Subtest: G an accepted location is read from this window, never from event.detail
+ok 7 - G an accepted location is read from this window, never from event.detail
+  ---
+  duration_ms: 449.9955
+  type: 'test'
+  ...
+# Subtest: G country selection keeps its own focus, rail and history behaviour
+ok 8 - G country selection keeps its own focus, rail and history behaviour
+  ---
+  duration_ms: 538.629125
+  type: 'test'
+  ...
+# Subtest: G reveal never steals focus from a keyboard activation
+ok 9 - G reveal never steals focus from a keyboard activation
+  ---
+  duration_ms: 464.266834
+  type: 'test'
+  ...
+# Subtest: G a newer destination cancels the stale deferred scroll
+ok 10 - G a newer destination cancels the stale deferred scroll
+  ---
+  duration_ms: 363.628208
+  type: 'test'
+  ...
+# Subtest: G modeled history dispatches wrapped child navigation (not saved-view restoration)
+ok 11 - G modeled history dispatches wrapped child navigation (not saved-view restoration)
+  ---
+  duration_ms: 578.009375
+  type: 'test'
+  ...
+# Subtest: G standalone keeps a strict local test for hash and direct nested activation
+ok 12 - G standalone keeps a strict local test for hash and direct nested activation
+  ---
+  duration_ms: 541.912334
+  type: 'test'
+  ...
+# Subtest: E protocol, version and admission are unchanged by the repair
+ok 13 - E protocol, version and admission are unchanged by the repair
+  ---
+  duration_ms: 358.730208
+  type: 'test'
+  ...
+# Subtest: G a live bridge without the helper fails closed and keeps the accepted-location fallback
+ok 14 - G a live bridge without the helper fails closed and keeps the accepted-location fallback
+  ---
+  duration_ms: 500.7005
+  type: 'test'
+  ...
+# Subtest: F native Tools links remain native in root and sibling positions, embedded and standalone
+ok 15 - F native Tools links remain native in root and sibling positions, embedded and standalone
+  ---
+  duration_ms: 1992.778709
+  type: 'test'
+  ...
+# Subtest: F an intercepted parent-origin role=button repeats the current Tools fragment
+ok 16 - F an intercepted parent-origin role=button repeats the current Tools fragment
+  ---
+  duration_ms: 1118.092667
+  type: 'test'
+  ...
+# Subtest: F an activation canceled at window capture leaves disclosure, position and navigation unchanged
+ok 17 - F an activation canceled at window capture leaves disclosure, position and navigation unchanged
+  ---
+  duration_ms: 441.302416
+  type: 'test'
+  ...
+# Subtest: G newer outside, missing, country and query destinations cancel pending research alignment
+ok 18 - G newer outside, missing, country and query destinations cancel pending research alignment
+  ---
+  duration_ms: 1379.296292
+  type: 'test'
+  ...
+# Subtest: production page shows seven disabled surveillance tabs
+ok 19 - production page shows seven disabled surveillance tabs
+  ---
+  duration_ms: 8269.247208
+  type: 'test'
+  ...
+# Subtest: coverage tab is enabled, clickable, shows its panel and empties issues
+ok 20 - coverage tab is enabled, clickable, shows its panel and empties issues
+  ---
+  duration_ms: 6553.031916
+  type: 'test'
+  ...
+# Subtest: ?view=scanner without a panel behaves like an unsupported view
+ok 21 - ?view=scanner without a panel behaves like an unsupported view
+  ---
+  duration_ms: 5180.44525
+  type: 'test'
+  ...
+# Subtest: legacy views still switch while the surveillance seam exists
+ok 22 - legacy views still switch while the surveillance seam exists
+  ---
+  duration_ms: 6486.591667
+  type: 'test'
+  ...
+# Subtest: X6a: ?view=coverage&market=JP selects JP and scopes to JP only
+ok 23 - X6a: ?view=coverage&market=JP selects JP and scopes to JP only
+  ---
+  duration_ms: 5606.05825
+  type: 'test'
+  ...
+# Subtest: X6b: market=zz and unknown ids are ignored with empty issues
+ok 24 - X6b: market=zz and unknown ids are ignored with empty issues
+  ---
+  duration_ms: 17431.971916
+  type: 'test'
+  ...
+# Subtest: X6c: a market select link switches view and updates the URL
+ok 25 - X6c: a market select link switches view and updates the URL
+  ---
+  duration_ms: 7260.741583
+  type: 'test'
+  ...
+# Subtest: X6d: back and forward restore both view and market
+ok 26 - X6d: back and forward restore both view and market
+  ---
+  duration_ms: 8580.159791
+  type: 'test'
+  ...
+# Subtest: X6e: selected market rows carry the 1.5px --info ring and aria-current
+ok 27 - X6e: selected market rows carry the 1.5px --info ring and aria-current
+  ---
+  duration_ms: 7093.306209
+  type: 'test'
+  ...
+# Subtest: VF1/VF2/VF5/VF15: fixture page canvas, anatomy, muted values, h2 bar
+ok 28 - VF1/VF2/VF5/VF15: fixture page canvas, anatomy, muted values, h2 bar
+  ---
+  duration_ms: 5429.433708
+  type: 'test'
+  ...
+# Subtest: VF7/VF9/VF12: glyph row wraps, selected ring complete, mobile question grid
+ok 29 - VF7/VF9/VF12: glyph row wraps, selected ring complete, mobile question grid
+  ---
+  duration_ms: 6192.733625
+  type: 'test'
+  ...
+# Subtest: VF11: the KPI tier chip never overlaps the label at 390
+ok 30 - VF11: the KPI tier chip never overlaps the label at 390
+  ---
+  duration_ms: 6225.448792
+  type: 'test'
+  ...
+# Subtest: VF13/VF14: fixture reserves copilot space and header chip gap
+ok 31 - VF13/VF14: fixture reserves copilot space and header chip gap
+  ---
+  duration_ms: 5661.181333
+  type: 'test'
+  ...
+# Subtest: VF16: both fixture pages load with zero console errors and zero failed requests
+ok 32 - VF16: both fixture pages load with zero console errors and zero failed requests
+  ---
+  duration_ms: 15193.23425
+  type: 'test'
+  ...
+# Subtest: FX3: specimen chip keeps intrinsic width in flex-column panels
+ok 33 - FX3: specimen chip keeps intrinsic width in flex-column panels
+  ---
+  duration_ms: 6188.2375
+  type: 'test'
+  ...
+# Subtest: FX4: snapshot controls never break per character at 390
+ok 34 - FX4: snapshot controls never break per character at 390
+  ---
+  duration_ms: 5411.480917
+  type: 'test'
+  ...
+# Subtest: F6: pagehead title computes to 22px at 390 through the token
+ok 35 - F6: pagehead title computes to 22px at 390 through the token
+  ---
+  duration_ms: 4770.368541
+  type: 'test'
+  ...
+# Subtest: F7a: loading and empty chips carry the muted border in both themes
+ok 36 - F7a: loading and empty chips carry the muted border in both themes
+  ---
+  duration_ms: 4931.058083
+  type: 'test'
+  ...
+# Subtest: zero/one/two/four/fifth pins use server order, never rounded displayed values
+ok 37 - zero/one/two/four/fifth pins use server order, never rounded displayed values
+  ---
+  duration_ms: 1648.642916
+  type: 'test'
+  ...
+# Subtest: unequal windows and denied/unknown selections remain present without a qualified subset
+ok 38 - unequal windows and denied/unknown selections remain present without a qualified subset
+  ---
+  duration_ms: 791.862916
+  type: 'test'
+  ...
+# Subtest: native picker and remove use the reducer and language/resize add no history
+ok 39 - native picker and remove use the reducer and language/resize add no history
+  ---
+  duration_ms: 664.450375
+  type: 'test'
+  ...
+# Subtest: malformed duplicate slot refuses the panel and keeps pins
+ok 40 - malformed duplicate slot refuses the panel and keeps pins
+  ---
+  duration_ms: 383.28475
+  type: 'test'
+  ...
+# Subtest: malformed wrong cohort refuses the panel and keeps pins
+ok 41 - malformed wrong cohort refuses the panel and keeps pins
+  ---
+  duration_ms: 447.848
+  type: 'test'
+  ...
+# Subtest: malformed duplicate group slot refuses the panel and keeps pins
+ok 42 - malformed duplicate group slot refuses the panel and keeps pins
+  ---
+  duration_ms: 533.251584
+  type: 'test'
+  ...
+# Subtest: malformed financial JSON refuses the panel and keeps pins
+ok 43 - malformed financial JSON refuses the panel and keeps pins
+  ---
+  duration_ms: 394.353834
+  type: 'test'
+  ...
+# Subtest: malformed missing return basis refuses the panel and keeps pins
+ok 44 - malformed missing return basis refuses the panel and keeps pins
+  ---
+  duration_ms: 442.7755
+  type: 'test'
+  ...
+# Subtest: malformed denied picker option refuses the panel and keeps pins
+ok 45 - malformed denied picker option refuses the panel and keeps pins
+  ---
+  duration_ms: 506.880917
+  type: 'test'
+  ...
+# Subtest: failed history restores original rows, children, state and listeners; destroy restores native order
+ok 46 - failed history restores original rows, children, state and listeners; destroy restores native order
+  ---
+  duration_ms: 460.30675
+  type: 'test'
+  ...
+# Subtest: two roots remain isolated and popstate restores pins without another history entry
+ok 47 - two roots remain isolated and popstate restores pins without another history entry
+  ---
+  duration_ms: 471.411417
+  type: 'test'
+  ...
+# Subtest: source replacement cannot borrow old panel; local context preserves selections
+ok 48 - source replacement cannot borrow old panel; local context preserves selections
+  ---
+  duration_ms: 432.415584
+  type: 'test'
+  ...
+# Subtest: a DOM failure during sort rolls back every row and leaves original listeners intact
+ok 49 - a DOM failure during sort rolls back every row and leaves original listeners intact
+  ---
+  duration_ms: 452.306291
+  type: 'test'
+  ...
+# Subtest: focused Remove survives row movement on successful pin
+ok 50 - focused Remove survives row movement on successful pin
+  ---
+  duration_ms: 387.0045
+  type: 'test'
+  ...
+# Subtest: focused Remove survives row movement and history rollback
+ok 51 - focused Remove survives row movement and history rollback
+  ---
+  duration_ms: 418.452208
+  type: 'test'
+  ...
+# Subtest: actual records, catalogue and Jinja reach the browser with unchanged financial text and canonical order
+ok 52 - actual records, catalogue and Jinja reach the browser with unchanged financial text and canonical order
+  ---
+  duration_ms: 1790.004875
+  type: 'test'
+  ...
+# Subtest: source-bound chart obeys 2–4 native pins without exposing unselected series
+ok 53 - source-bound chart obeys 2–4 native pins without exposing unselected series
+  ---
+  duration_ms: 565.573834
+  type: 'test'
+  ...
+# Subtest: chart visibility rolls back on failed history and follows native popstate
+ok 54 - chart visibility rolls back on failed history and follows native popstate
+  ---
+  duration_ms: 461.22325
+  type: 'test'
+  ...
+# Subtest: actions, fifth pin, focused view control, URL and state stay aligned
+ok 55 - actions, fifth pin, focused view control, URL and state stay aligned
+  ---
+  duration_ms: 3296.904333
+  type: 'test'
+  ...
+# Subtest: invalid URL uses defaults and reports invalid state without changing URL
+ok 56 - invalid URL uses defaults and reports invalid state without changing URL
+  ---
+  duration_ms: 3957.556791
+  type: 'test'
+  ...
+# Subtest: popstate parses current source, clears stack and does not push
+ok 57 - popstate parses current source, clears stack and does not push
+  ---
+  duration_ms: 3687.927792
+  type: 'test'
+  ...
+# Subtest: replaceSource preserves context, clears bounds, and stale source is refused
+ok 58 - replaceSource preserves context, clears bounds, and stale source is refused
+  ---
+  duration_ms: 3646.626208
+  type: 'test'
+  ...
+# Subtest: replaceSource preserves expanded context before clearing source bounds
+ok 59 - replaceSource preserves expanded context before clearing source bounds
+  ---
+  duration_ms: 3226.983333
+  type: 'test'
+  ...
+# Subtest: multiple panels are ambiguous and unsupported view is rejected
+ok 60 - multiple panels are ambiguous and unsupported view is rejected
+  ---
+  duration_ms: 3444.393709
+  type: 'test'
+  ...
+# Subtest: duplicate mounts preserve identity and destroy restores original nodes and listeners
+ok 61 - duplicate mounts preserve identity and destroy restores original nodes and listeners
+  ---
+  duration_ms: 3250.111125
+  type: 'test'
+  ...
+# Subtest: failed mount restores attributes and listeners without replacing original nodes
+ok 62 - failed mount restores attributes and listeners without replacing original nodes
+  ---
+  duration_ms: 3450.665625
+  type: 'test'
+  ...
+# Subtest: language change repaints issue text only and context is unchanged
+ok 63 - language change repaints issue text only and context is unchanged
+  ---
+  duration_ms: 3565.962
+  type: 'test'
+  ...
+# Subtest: back focus uses visible root anchor otherwise heading
+ok 64 - back focus uses visible root anchor otherwise heading
+  ---
+  duration_ms: 4138.120917
+  type: 'test'
+  ...
+# Subtest: import, no-JS visibility and stock mode remain untouched
+ok 65 - import, no-JS visibility and stock mode remain untouched
+  ---
+  duration_ms: 9204.377458
+  type: 'test'
+  ...
+# Subtest: nearest control wins and unrelated nested input is untouched
+ok 66 - nearest control wins and unrelated nested input is untouched
+  ---
+  duration_ms: 4021.297417
+  type: 'test'
+  ...
+# Subtest: URL privacy, canonical hash and backslash-safe path are enforced
+ok 67 - URL privacy, canonical hash and backslash-safe path are enforced
+  ---
+  duration_ms: 4112.703792
+  type: 'test'
+  ...
+# Subtest: failed history commit restores owned state and attributes, preserving third-party node listeners
+ok 68 - failed history commit restores owned state and attributes, preserving third-party node listeners
+  ---
+  duration_ms: 3766.620416
+  type: 'test'
+  ...
+# Subtest: nested workspaces and their interactive descendants are outside parent custody
+ok 69 - nested workspaces and their interactive descendants are outside parent custody
+  ---
+  duration_ms: 4556.953
+  type: 'test'
+  ...
+# Subtest: progressive expansion preserves focus, pins, URL and no-JS original visibility
+ok 70 - progressive expansion preserves focus, pins, URL and no-JS original visibility
+  ---
+  duration_ms: 3674.268834
+  type: 'test'
+  ...
+# Subtest: returned state and caller config cannot mutate the current admitted state
+ok 71 - returned state and caller config cannot mutate the current admitted state
+  ---
+  duration_ms: 3874.245709
+  type: 'test'
+  ...
+# Subtest: malformed action accessors are rejected before invocation
+ok 72 - malformed action accessors are rejected before invocation
+  ---
+  duration_ms: 4402.15075
+  type: 'test'
+  ...
+# Subtest: failed setup restores nested text container node identities and listeners
+ok 73 - failed setup restores nested text container node identities and listeners
+  ---
+  duration_ms: 4632.390208
+  type: 'test'
+  ...
+# Subtest: destroy preserves changes made by unrelated legacy control owners
+ok 74 - destroy preserves changes made by unrelated legacy control owners
+  ---
+  duration_ms: 3840.2225
+  type: 'test'
+  ...
+# Subtest: inspector open/read/ledger/field/deeper/back/escape/close leave history and reducer state untouched
+ok 75 - inspector open/read/ledger/field/deeper/back/escape/close leave history and reducer state untouched
+  ---
+  duration_ms: 3849.996958
+  type: 'test'
+  ...
+# Subtest: inspector matching refuses borrowed source, denied payload, wrong tuple and accessors
+ok 76 - inspector matching refuses borrowed source, denied payload, wrong tuple and accessors
+  ---
+  duration_ms: 4031.122916
+  type: 'test'
+  ...
+# Subtest: inspector failed showModal rolls back to native fallback without cloning
+ok 77 - inspector failed showModal rolls back to native fallback without cloning
+  ---
+  duration_ms: 3771.646958
+  type: 'test'
+  ...
+# Subtest: failed workspace pushState and failed replaceSource keep inspector modal payload and focus
+ok 78 - failed workspace pushState and failed replaceSource keep inspector modal payload and focus
+  ---
+  duration_ms: 4037.770541
+  type: 'test'
+  ...
+# Subtest: successful context change and replaceSource close inspector; stale source leaves it open
+ok 79 - successful context change and replaceSource close inspector; stale source leaves it open
+  ---
+  duration_ms: 3800.440292
+  type: 'test'
+  ...
+# Subtest: popstate closes inspector without restoring prior inspector context
+ok 80 - popstate closes inspector without restoring prior inspector context
+  ---
+  duration_ms: 3763.7215
+  type: 'test'
+  ...
+# Subtest: inspector nested roots, remount, resize and language preserve the live article
+ok 81 - inspector nested roots, remount, resize and language preserve the live article
+  ---
+  duration_ms: 3945.5245
+  type: 'test'
+  ...
+# Subtest: inspector no-JS fallback keeps native details and hidden enhancement
+ok 82 - inspector no-JS fallback keeps native details and hidden enhancement
+  ---
+  duration_ms: 3514.163959
+  type: 'test'
+  ...
+# Subtest: inspector empty deeper destinations are honest and external open uses named trigger
+ok 83 - inspector empty deeper destinations are honest and external open uses named trigger
+  ---
+  duration_ms: 3561.381125
+  type: 'test'
+  ...
+# Subtest: following a deeper destination closes the inspector without restoring old scroll
+ok 84 - following a deeper destination closes the inspector without restoring old scroll
+  ---
+  duration_ms: 4034.19475
+  type: 'test'
+  ...
+# Subtest: ambiguous inspector payloads are refused and null source matches only empty public binding
+ok 85 - ambiguous inspector payloads are refused and null source matches only empty public binding
+  ---
+  duration_ms: 4299.178209
+  type: 'test'
+  ...
+# Subtest: openInspector refuses coerced toJSON, valueOf, nested objects, functions, symbols and nonfinite numbers
+ok 86 - openInspector refuses coerced toJSON, valueOf, nested objects, functions, symbols and nonfinite numbers
+  ---
+  duration_ms: 3721.891625
+  type: 'test'
+  ...
+# Subtest: openInspector requires the active Overview panel and exact inspector-context join
+ok 87 - openInspector requires the active Overview panel and exact inspector-context join
+  ---
+  duration_ms: 3945.194291
+  type: 'test'
+  ...
+# Subtest: failed inspector mode restores owned presentation and openInspector does not succeed after false
+ok 88 - failed inspector mode restores owned presentation and openInspector does not succeed after false
+  ---
+  duration_ms: 4160.817958
+  type: 'test'
+  ...
+# Subtest: failed inspector heading focus after showModal closes native dialog and later open recovers
+ok 89 - failed inspector heading focus after showModal closes native dialog and later open recovers
+  ---
+  duration_ms: 4144.795917
+  type: 'test'
+  ...
+# Subtest: native dialog.close restores article home and same-article open reopens
+ok 90 - native dialog.close restores article home and same-article open reopens
+  ---
+  duration_ms: 3915.709916
+  type: 'test'
+  ...
+# Subtest: rapid native close then reopen survives queued close
+ok 91 - rapid native close then reopen survives queued close
+  ---
+  duration_ms: 4118.317
+  type: 'test'
+  ...
+# Subtest: failed history transaction delayed close does not destroy rehydrated inspector
+ok 92 - failed history transaction delayed close does not destroy rehydrated inspector
+  ---
+  duration_ms: 3466.238208
+  type: 'test'
+  ...
+# Subtest: failed rehydrate showModal during pushState and replaceSource returns accessible original payload
+ok 93 - failed rehydrate showModal during pushState and replaceSource returns accessible original payload
+  ---
+  duration_ms: 3552.705958
+  type: 'test'
+  ...
+# Subtest: failed rehydrate mode restore during pushState and replaceSource returns accessible original payload
+ok 94 - failed rehydrate mode restore during pushState and replaceSource returns accessible original payload
+  ---
+  duration_ms: 3145.203792
+  type: 'test'
+  ...
+# Subtest: Macro selection paints only owned attributes and destroy restores originals
+ok 95 - Macro selection paints only owned attributes and destroy restores originals
+  ---
+  duration_ms: 3260.703334
+  type: 'test'
+  ...
+# Subtest: Macro failed history transaction restores selected row and leaves native evidence intact
+ok 96 - Macro failed history transaction restores selected row and leaves native evidence intact
+  ---
+  duration_ms: 3420.109375
+  type: 'test'
+  ...
+# Subtest: Macro v2 refuses non-price return basis even with the correct generation
+ok 97 - Macro v2 refuses non-price return basis even with the correct generation
+  ---
+  duration_ms: 3228.486542
+  type: 'test'
+  ...
+# Subtest: query source: real bridge and entry restore actual state before INIT without remount or warning
+ok 98 - query source: real bridge and entry restore actual state before INIT without remount or warning
+  ---
+  duration_ms: 3065.53625
+  type: 'test'
+  ...
+# Subtest: query source: real native history reads the current projected query before INIT
+ok 99 - query source: real native history reads the current projected query before INIT
+  ---
+  duration_ms: 3465.392667
+  type: 'test'
+  ...
+# Subtest: query source: invalid business strings retain standalone issue text, state and untouched URL
+ok 100 - query source: invalid business strings retain standalone issue text, state and untouched URL
+  ---
+  duration_ms: 10629.34925
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back installed-deleted
+ok 101 - query source: unavailable mount rolls back installed-deleted
+  ---
+  duration_ms: 2964.091458
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back installed-null
+ok 102 - query source: unavailable mount rolls back installed-null
+  ---
+  duration_ms: 4087.018458
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back installed-foreign
+ok 103 - query source: unavailable mount rolls back installed-foreign
+  ---
+  duration_ms: 4232.760708
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back occupied-undefined
+ok 104 - query source: unavailable mount rolls back occupied-undefined
+  ---
+  duration_ms: 3366.275167
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back occupied-null
+ok 105 - query source: unavailable mount rolls back occupied-null
+  ---
+  duration_ms: 3447.339125
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back foreign
+ok 106 - query source: unavailable mount rolls back foreign
+  ---
+  duration_ms: 3191.897708
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back older
+ok 107 - query source: unavailable mount rolls back older
+  ---
+  duration_ms: 3038.937625
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back provider-getter
+ok 108 - query source: unavailable mount rolls back provider-getter
+  ---
+  duration_ms: 3358.041167
+  type: 'test'
+  ...
+# Subtest: query source: unavailable mount rolls back reader-getter
+ok 109 - query source: unavailable mount rolls back reader-getter
+  ---
+  duration_ms: 4359.237541
+  type: 'test'
+  ...
+# Subtest: query source: actual bridge cleanup before entry leaves the readable fallback
+ok 110 - query source: actual bridge cleanup before entry leaves the readable fallback
+  ---
+  duration_ms: 3875.94475
+  type: 'test'
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for provider-getter
+ok 111 - query source: native popstate refusal is atomic with an open inspector for provider-getter
+  ---
+  duration_ms: 4208.034166
+  type: 'test'
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for reader-getter
+ok 112 - query source: native popstate refusal is atomic with an open inspector for reader-getter
+  ---
+  duration_ms: 4029.305084
+  type: 'test'
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for replacement
+ok 113 - query source: native popstate refusal is atomic with an open inspector for replacement
+  ---
+  duration_ms: 3854.383583
+  type: 'test'
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for deleted
+ok 114 - query source: native popstate refusal is atomic with an open inspector for deleted
+  ---
+  duration_ms: 3453.441708
+  type: 'test'
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for method-throw
+ok 115 - query source: native popstate refusal is atomic with an open inspector for method-throw
+  ---
+  duration_ms: 3547.417625
+  type: 'test'
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for null
+ok 116 - query source: native popstate refusal is atomic with an open inspector for null
+  ---
+  duration_ms: 3419.250083
+  type: 'test'
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for nonstring
+ok 117 - query source: native popstate refusal is atomic with an open inspector for nonstring
+  ---
+  duration_ms: 3884.699625
+  type: 'test'
+  ...
+# Subtest: query source: refused native popstate preserves the pending scenario and its original draft
+ok 118 - query source: refused native popstate preserves the pending scenario and its original draft
+  ---
+  duration_ms: 4531.538875
+  type: 'test'
+  ...
+# Subtest: query source: standalone search getter failure stays inside the live refusal boundary
+ok 119 - query source: standalone search getter failure stays inside the live refusal boundary
+  ---
+  duration_ms: 4238.783
+  type: 'test'
+  ...
+# Subtest: GS query composition: transport and unchanged business selection cause no history or navigation writes
+ok 120 - GS query composition: transport and unchanged business selection cause no history or navigation writes
+  ---
+  duration_ms: 4053.17525
+  type: 'test'
+  ...
+# Subtest: GS query composition: one market-only correction preserves raw business bytes before INIT
+ok 121 - GS query composition: one market-only correction preserves raw business bytes before INIT
+  ---
+  duration_ms: 4143.447042
+  type: 'test'
+  ...
+# Subtest: GS query composition: rejected business queries are not sanitized by market alignment
+ok 122 - GS query composition: rejected business queries are not sanitized by market alignment
+  ---
+  duration_ms: 6472.443958
+  type: 'test'
+  ...
+# Subtest: GS query composition: native Back and Forward preserve one intended clamp before and after INIT
+ok 123 - GS query composition: native Back and Forward preserve one intended clamp before and after INIT
+  ---
+  duration_ms: 4482.255875
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: invalid-existing before INIT
+ok 124 - Scenario query ordering: invalid-existing before INIT
+  ---
+  duration_ms: 5056.837125
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: valid-existing before INIT
+ok 125 - Scenario query ordering: valid-existing before INIT
+  ---
+  duration_ms: 4107.746625
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: valid-new before INIT
+ok 126 - Scenario query ordering: valid-new before INIT
+  ---
+  duration_ms: 4200.420708
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: invalid-existing after INIT
+ok 127 - Scenario query ordering: invalid-existing after INIT
+  ---
+  duration_ms: 3799.174083
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: valid-existing after INIT
+ok 128 - Scenario query ordering: valid-existing after INIT
+  ---
+  duration_ms: 3797.063542
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: valid-new after INIT
+ok 129 - Scenario query ordering: valid-new after INIT
+  ---
+  duration_ms: 3912.169
+  type: 'test'
+  ...
+# Subtest: partial disclosure permits both contexts without rewriting financial source or URL
+ok 130 - partial disclosure permits both contexts without rewriting financial source or URL
+  ---
+  duration_ms: 873.812708
+  type: 'test'
+  ...
+# Subtest: NULL Inspector joins exact NULL panel; nonnull context uses its own source
+ok 131 - NULL Inspector joins exact NULL panel; nonnull context uses its own source
+  ---
+  duration_ms: 412.687542
+  type: 'test'
+  ...
+# Subtest: NULL is not a wildcard into nonnull Overview, including fallback
+ok 132 - NULL is not a wildcard into nonnull Overview, including fallback
+  ---
+  duration_ms: 458.746208
+  type: 'test'
+  ...
+# Subtest: unknown version refuses atomically
+ok 133 - unknown version refuses atomically
+  ---
+  duration_ms: 373.548916
+  type: 'test'
+  ...
+# Subtest: boolean version refuses atomically
+ok 134 - boolean version refuses atomically
+  ---
+  duration_ms: 484.776167
+  type: 'test'
+  ...
+# Subtest: noncanonical nonce refuses atomically
+ok 135 - noncanonical nonce refuses atomically
+  ---
+  duration_ms: 423.828708
+  type: 'test'
+  ...
+# Subtest: missing panel generation refuses atomically
+ok 136 - missing panel generation refuses atomically
+  ---
+  duration_ms: 331.8925
+  type: 'test'
+  ...
+# Subtest: mixed panel generation refuses atomically
+ok 137 - mixed panel generation refuses atomically
+  ---
+  duration_ms: 461.079458
+  type: 'test'
+  ...
+# Subtest: missing article generation refuses atomically
+ok 138 - missing article generation refuses atomically
+  ---
+  duration_ms: 405.663709
+  type: 'test'
+  ...
+# Subtest: missing trigger generation refuses atomically
+ok 139 - missing trigger generation refuses atomically
+  ---
+  duration_ms: 455.820958
+  type: 'test'
+  ...
+# Subtest: missing origin generation refuses atomically
+ok 140 - missing origin generation refuses atomically
+  ---
+  duration_ms: 563.829459
+  type: 'test'
+  ...
+# Subtest: v1 with generation sidecars refuses atomically
+ok 141 - v1 with generation sidecars refuses atomically
+  ---
+  duration_ms: 435.973875
+  type: 'test'
+  ...
+# Subtest: entry keeps native research readable when version refuses
+ok 142 - entry keeps native research readable when version refuses
+  ---
+  duration_ms: 435.6485
+  type: 'test'
+  ...
+# Subtest: same numerical source new generation rejects old nodes, clears bounds and retains selections
+ok 143 - same numerical source new generation rejects old nodes, clears bounds and retains selections
+  ---
+  duration_ms: 419.909125
+  type: 'test'
+  ...
+# Subtest: fresh publication nodes with same numerical source activate after replace
+ok 144 - fresh publication nodes with same numerical source activate after replace
+  ---
+  duration_ms: 431.465334
+  type: 'test'
+  ...
+# Subtest: stale trigger never silently uses current generation
+ok 145 - stale trigger never silently uses current generation
+  ---
+  duration_ms: 509.196791
+  type: 'test'
+  ...
+# Subtest: invalid replacement nonce refuses without changes
+ok 146 - invalid replacement nonce refuses without changes
+  ---
+  duration_ms: 405.489042
+  type: 'test'
+  ...
+# Subtest: failed replacement preserves original modal article, state and focus
+ok 147 - failed replacement preserves original modal article, state and focus
+  ---
+  duration_ms: 540.221167
+  type: 'test'
+  ...
+# Subtest: nested foreign version never belongs to outer generation validation
+ok 148 - nested foreign version never belongs to outer generation validation
+  ---
+  duration_ms: 490.572
+  type: 'test'
+  ...
+# Subtest: language and resize preserve generation state and history
+ok 149 - language and resize preserve generation state and history
+  ---
+  duration_ms: 366.03025
+  type: 'test'
+  ...
+# Subtest: actual partial-grant producer mounts Overview, Compare, Inspector and null-source Library
+ok 150 - actual partial-grant producer mounts Overview, Compare, Inspector and null-source Library
+  ---
+  duration_ms: 1466.494791
+  type: 'test'
+  ...
+# Subtest: actual unknown keeps unavailable values and exact NULL Inspector semantics
+ok 151 - actual unknown keeps unavailable values and exact NULL Inspector semantics
+  ---
+  duration_ms: 783.233625
+  type: 'test'
+  ...
+# Subtest: actual denied keeps unavailable values and exact NULL Inspector semantics
+ok 152 - actual denied keeps unavailable values and exact NULL Inspector semantics
+  ---
+  duration_ms: 819.386291
+  type: 'test'
+  ...
+# Subtest: actual one-horizon permission never supplies source to another horizon
+ok 153 - actual one-horizon permission never supplies source to another horizon
+  ---
+  duration_ms: 615.427375
+  type: 'test'
+  ...
+# Subtest: actual producer v2 fallback stays native and readable without controller
+ok 154 - actual producer v2 fallback stays native and readable without controller
+  ---
+  duration_ms: 476.586625
+  type: 'test'
+  ...
+# Subtest: real mounted form starts blank and calculates accepted arithmetic
+ok 155 - real mounted form starts blank and calculates accepted arithmetic
+  ---
+  duration_ms: 1099.605417
+  type: 'test'
+  ...
+# Subtest: market selection paints only the exact configured history
+ok 156 - market selection paints only the exact configured history
+  ---
+  duration_ms: 575.246458
+  type: 'test'
+  ...
+# Subtest: invalid edit clears the former result and calculate focuses its field
+ok 157 - invalid edit clears the former result and calculate focuses its field
+  ---
+  duration_ms: 751.924084
+  type: 'test'
+  ...
+# Subtest: horizon proposal preserves old context and raw; cancel restores exact result
+ok 158 - horizon proposal preserves old context and raw; cancel restores exact result
+  ---
+  duration_ms: 706.45975
+  type: 'test'
+  ...
+# Subtest: confirm commits reviewed inputs and context with no annualization
+ok 159 - confirm commits reviewed inputs and context with no annualization
+  ---
+  duration_ms: 737.2935
+  type: 'test'
+  ...
+# Subtest: invalid confirm keeps original research tuple and focuses candidate
+ok 160 - invalid confirm keeps original research tuple and focuses candidate
+  ---
+  duration_ms: 603.966708
+  type: 'test'
+  ...
+# Subtest: internal tab and route roundtrips retain the manual draft
+ok 161 - internal tab and route roundtrips retain the manual draft
+  ---
+  duration_ms: 538.021167
+  type: 'test'
+  ...
+# Subtest: reset confirms once, cancellation keeps state and confirmation preserves research context
+ok 162 - reset confirms once, cancellation keeps state and confirmation preserves research context
+  ---
+  duration_ms: 796.4685
+  type: 'test'
+  ...
+# Subtest: context proposal from another view reveals review without silently changing market
+ok 163 - context proposal from another view reveals review without silently changing market
+  ---
+  duration_ms: 891.333291
+  type: 'test'
+  ...
+# Subtest: failed URL commit rolls back both research and scenario draft
+ok 164 - failed URL commit rolls back both research and scenario draft
+  ---
+  duration_ms: 796.777292
+  type: 'test'
+  ...
+# Subtest: source refresh preserves raw draft and admits no old generation result data
+ok 165 - source refresh preserves raw draft and admits no old generation result data
+  ---
+  duration_ms: 647.199
+  type: 'test'
+  ...
+# Subtest: language change preserves raw and calculation and translates field errors
+ok 166 - language change preserves raw and calculation and translates field errors
+  ---
+  duration_ms: 680.360917
+  type: 'test'
+  ...
+# Subtest: destroy restores blank disabled fallback and a new mount starts blank
+ok 167 - destroy restores blank disabled fallback and a new mount starts blank
+  ---
+  duration_ms: 1064.005833
+  type: 'test'
+  ...
+# Subtest: Escape cancels staged context and restores focus to the initiating control
+ok 168 - Escape cancels staged context and restores focus to the initiating control
+  ---
+  duration_ms: 707.699125
+  type: 'test'
+  ...
+# Subtest: Escape cancels reset without clearing assumptions
+ok 169 - Escape cancels reset without clearing assumptions
+  ---
+  duration_ms: 865.167791
+  type: 'test'
+  ...
+# Subtest: browser Back stages changed context, restores URL, and cancel keeps original context
+ok 170 - browser Back stages changed context, restores URL, and cancel keeps original context
+  ---
+  duration_ms: 758.484583
+  type: 'test'
+  ...
+# Subtest: source replacement while pending cannot resurrect the prior generation on confirm
+ok 171 - source replacement while pending cannot resurrect the prior generation on confirm
+  ---
+  duration_ms: 799.607542
+  type: 'test'
+  ...
+# Subtest: a pending confirmation does not allow pin or another context to overwrite its origin
+ok 172 - a pending confirmation does not allow pin or another context to overwrite its origin
+  ---
+  duration_ms: 838.546042
+  type: 'test'
+  ...
+# Subtest: successful confirm leaves focus on a visible control
+ok 173 - successful confirm leaves focus on a visible control
+  ---
+  duration_ms: 635.463167
+  type: 'test'
+  ...
+# Subtest: nested workspace events cannot edit the owning workspace draft
+ok 174 - nested workspace events cannot edit the owning workspace draft
+  ---
+  duration_ms: 752.35625
+  type: 'test'
+  ...
+# Subtest: basis-only proposal texts distinguish original and candidate currency basis
+ok 175 - basis-only proposal texts distinguish original and candidate currency basis
+  ---
+  duration_ms: 1793.777209
+  type: 'test'
+  ...
+# Subtest: changing return horizon does not rewrite mounted observation scores
+ok 176 - changing return horizon does not rewrite mounted observation scores
+  ---
+  duration_ms: 529.940625
+  type: 'test'
+  ...
+# Subtest: calculate is reduced once from the native submit path
+ok 177 - calculate is reduced once from the native submit path
+  ---
+  duration_ms: 726.626417
+  type: 'test'
+  ...
+# Subtest: tiny nonzero conditional return uses scientific notation instead of a rounded zero
+ok 178 - tiny nonzero conditional return uses scientific notation instead of a rounded zero
+  ---
+  duration_ms: 603.626542
+  type: 'test'
+  ...
+# Subtest: missing scenario helper leaves the published fieldset disabled and history unmatched
+ok 179 - missing scenario helper leaves the published fieldset disabled and history unmatched
+  ---
+  duration_ms: 377.730417
+  type: 'test'
+  ...
+# Subtest: unsupported restored view with a nonempty draft keeps the entire committed state and reports Unsupported value
+ok 180 - unsupported restored view with a nonempty draft keeps the entire committed state and reports Unsupported value
+  ---
+  duration_ms: 573.608
+  type: 'test'
+  ...
+# Subtest: malformed restored query with a nonempty draft reports Invalid URL state restored and does not stage confirmation
+ok 181 - malformed restored query with a nonempty draft reports Invalid URL state restored and does not stage confirmation
+  ---
+  duration_ms: 686.134417
+  type: 'test'
+  ...
+# Subtest: empty draft invalid popstate preserves committed state and does not adopt the parser initial workspace
+ok 182 - empty draft invalid popstate preserves committed state and does not adopt the parser initial workspace
+  ---
+  duration_ms: 594.615167
+  type: 'test'
+  ...
+# Subtest: invalid popstate during pending confirmation keeps the origin tuple, restores the committed URL, and still requires confirm
+not ok 183 - invalid popstate during pending confirmation keeps the origin tuple, restores the committed URL, and still requires confirm
+  ---
+  duration_ms: 744.898291
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_history_independent.test.cjs:213:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /horizon=1m/. Input:
+    
+    '?view=not-a-view&market=KR&pins=&horizon=12m&basis=local&return_basis=price&group='
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '?view=not-a-view&market=KR&pins=&horizon=12m&basis=local&return_basis=price&group='
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_history_independent.test.cjs:224:10)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: invalid popstate during reset keeps assumptions, reset confirmation, and the entire committed state
+ok 184 - invalid popstate during reset keeps assumptions, reset confirmation, and the entire committed state
+  ---
+  duration_ms: 658.888625
+  type: 'test'
+  ...
+# Subtest: history market options use data-im-label-zh after document language changes
+ok 185 - history market options use data-im-label-zh after document language changes
+  ---
+  duration_ms: 496.501875
+  type: 'test'
+  ...
+# Subtest: pending basis review text follows document language without losing the original/candidate pair
+ok 186 - pending basis review text follows document language without losing the original/candidate pair
+  ---
+  duration_ms: 642.608375
+  type: 'test'
+  ...
+# Subtest: without a History draft the incumbent popstate path still stages the parsed result
+ok 187 - without a History draft the incumbent popstate path still stages the parsed result
+  ---
+  duration_ms: 501.836292
+  type: 'test'
+  ...
+# Subtest: resize is admitted during pending confirmation while pin and view remain refused
+ok 188 - resize is admitted during pending confirmation while pin and view remain refused
+  ---
+  duration_ms: 710.924833
+  type: 'test'
+  ...
+# Subtest: replaceSource without rewriting generation attributes invalidates the old history panel and keeps raw inputs
+ok 189 - replaceSource without rewriting generation attributes invalidates the old history panel and keeps raw inputs
+  ---
+  duration_ms: 589.127791
+  type: 'test'
+  ...
+# Subtest: unknown KR roster slot is shown as qualified-history-unavailable, not as an empty success
+ok 190 - unknown KR roster slot is shown as qualified-history-unavailable, not as an empty success
+  ---
+  duration_ms: 474.98925
+  type: 'test'
+  ...
+# Subtest: empty draft adopts a basis change immediately without confirmation
+ok 191 - empty draft adopts a basis change immediately without confirmation
+  ---
+  duration_ms: 536.041667
+  type: 'test'
+  ...
+# Subtest: overview regression: same controller hides history, keeps pins, and restores the blank-unrelated draft
+ok 192 - overview regression: same controller hides history, keeps pins, and restores the blank-unrelated draft
+  ---
+  duration_ms: 621.907041
+  type: 'test'
+  ...
+# Subtest: candidate edits during pending do not become origin raw until confirm; cancel restores the calculated pair
+ok 193 - candidate edits during pending do not become origin raw until confirm; cancel restores the calculated pair
+  ---
+  duration_ms: 663.078208
+  type: 'test'
+  ...
+# Subtest: nested workspace submit cannot calculate the owning draft
+ok 194 - nested workspace submit cannot calculate the owning draft
+  ---
+  duration_ms: 572.566
+  type: 'test'
+  ...
+# Subtest: destroy restores blank disabled fallback and a new mount starts blank
+ok 195 - destroy restores blank disabled fallback and a new mount starts blank
+  ---
+  duration_ms: 654.169167
+  type: 'test'
+  ...
+# Subtest: Escape cancels staged context and restores focus to the initiating control
+ok 196 - Escape cancels staged context and restores focus to the initiating control
+  ---
+  duration_ms: 636.61675
+  type: 'test'
+  ...
+# Subtest: actual server-rendered Inspector opens through entry and preserves financial facts and original nodes
+ok 197 - actual server-rendered Inspector opens through entry and preserves financial facts and original nodes
+  ---
+  duration_ms: 3942.150666
+  type: 'test'
+  ...
+# Subtest: failed real workspace history transaction preserves the modal, successful basis change closes it
+ok 198 - failed real workspace history transaction preserves the modal, successful basis change closes it
+  ---
+  duration_ms: 4257.054209
+  type: 'test'
+  ...
+# Subtest: startup without hash leaves legacy collapsed
+ok 199 - startup without hash leaves legacy collapsed
+  ---
+  duration_ms: 991.9135
+  type: 'test'
+  ...
+# Subtest: startup opens the direct legacy target
+ok 200 - startup opens the direct legacy target
+  ---
+  duration_ms: 428.660833
+  type: 'test'
+  ...
+# Subtest: startup opens every containing nested disclosure
+ok 201 - startup opens every containing nested disclosure
+  ---
+  duration_ms: 445.313208
+  type: 'test'
+  ...
+# Subtest: startup accepts a percent-encoded Unicode ID
+ok 202 - startup accepts a percent-encoded Unicode ID
+  ---
+  duration_ms: 800.782917
+  type: 'test'
+  ...
+# Subtest: hashchange reveals legacy and preserves state for malformed and unknown targets
+ok 203 - hashchange reveals legacy and preserves state for malformed and unknown targets
+  ---
+  duration_ms: 530.6485
+  type: 'test'
+  ...
+# Subtest: same-hash activation reopens a manually collapsed target
+ok 204 - same-hash activation reopens a manually collapsed target
+  ---
+  duration_ms: 563.191667
+  type: 'test'
+  ...
+# Subtest: full and relative same-document URL activation reveals nested targets
+ok 205 - full and relative same-document URL activation reveals nested targets
+  ---
+  duration_ms: 558.476625
+  type: 'test'
+  ...
+# Subtest: nonlocal links do not reveal legacy details
+ok 206 - nonlocal links do not reveal legacy details
+  ---
+  duration_ms: 618.411291
+  type: 'test'
+  ...
+# Subtest: the optional outer jump link can be absent
+ok 207 - the optional outer jump link can be absent
+  ---
+  duration_ms: 559.5985
+  type: 'test'
+  ...
+# Subtest: failed mount enables graceful legacy fallback
+ok 208 - failed mount enables graceful legacy fallback
+  ---
+  duration_ms: 441.505458
+  type: 'test'
+  ...
+# Subtest: no macro root makes no mount call
+ok 209 - no macro root makes no mount call
+  ---
+  duration_ms: 548.063792
+  type: 'test'
+  ...
+# Subtest: startup with \#%ZZ does not expose retained research
+ok 210 - startup with \#%ZZ does not expose retained research
+  ---
+  duration_ms: 582.729458
+  type: 'test'
+  ...
+# Subtest: startup with \#missing-target does not expose retained research
+ok 211 - startup with \#missing-target does not expose retained research
+  ---
+  duration_ms: 478.69825
+  type: 'test'
+  ...
+# Subtest: startup with \#unrelated-target does not expose retained research
+ok 212 - startup with \#unrelated-target does not expose retained research
+  ---
+  duration_ms: 414.80075
+  type: 'test'
+  ...
+# Subtest: Library mount enables search and preserves the exact original row identities on destroy
+ok 213 - Library mount enables search and preserves the exact original row identities on destroy
+  ---
+  duration_ms: 4052.72525
+  type: 'test'
+  ...
+# Subtest: search uses accepted bilingual ranking and conjunction without putting the query in the URL
+ok 214 - search uses accepted bilingual ranking and conjunction without putting the query in the URL
+  ---
+  duration_ms: 3995.420625
+  type: 'test'
+  ...
+# Subtest: invalid and empty matches hide stale results without truncating the draft
+ok 215 - invalid and empty matches hide stale results without truncating the draft
+  ---
+  duration_ms: 4335.983125
+  type: 'test'
+  ...
+# Subtest: IME keeps committed results throughout interim input and language changes
+ok 216 - IME keeps committed results throughout interim input and language changes
+  ---
+  duration_ms: 3751.874208
+  type: 'test'
+  ...
+# Subtest: group navigation focuses visible destinations, Clear preserves group and Back preserves draft
+ok 217 - group navigation focuses visible destinations, Clear preserves group and Back preserves draft
+  ---
+  duration_ms: 4469.426125
+  type: 'test'
+  ...
+# Subtest: browser history restores group state while preserving the local search draft
+ok 218 - browser history restores group state while preserving the local search draft
+  ---
+  duration_ms: 4111.567375
+  type: 'test'
+  ...
+# Subtest: one metadata panel follows horizon and basis without changing source identity
+ok 219 - one metadata panel follows horizon and basis without changing source identity
+  ---
+  duration_ms: 3698.817208
+  type: 'test'
+  ...
+# Subtest: history failure restores moved rows, exact DOM and third-party listeners
+ok 220 - history failure restores moved rows, exact DOM and third-party listeners
+  ---
+  duration_ms: 3706.609875
+  type: 'test'
+  ...
+# Subtest: catalogue malformed refuses enhancement but keeps approved static rows readable
+ok 221 - catalogue malformed refuses enhancement but keeps approved static rows readable
+  ---
+  duration_ms: 3475.038625
+  type: 'test'
+  ...
+# Subtest: catalogue duplicate refuses enhancement but keeps approved static rows readable
+ok 222 - catalogue duplicate refuses enhancement but keeps approved static rows readable
+  ---
+  duration_ms: 3498.538875
+  type: 'test'
+  ...
+# Subtest: catalogue wrong-group refuses enhancement but keeps approved static rows readable
+ok 223 - catalogue wrong-group refuses enhancement but keeps approved static rows readable
+  ---
+  duration_ms: 3988.948542
+  type: 'test'
+  ...
+# Subtest: failed setup restores original rows, control attributes and node identity
+ok 224 - failed setup restores original rows, control attributes and node identity
+  ---
+  duration_ms: 4281.741791
+  type: 'test'
+  ...
+# Subtest: nested workspaces cannot supply catalogue rows or controls to the parent
+ok 225 - nested workspaces cannot supply catalogue rows or controls to the parent
+  ---
+  duration_ms: 3855.432833
+  type: 'test'
+  ...
+# Subtest: submitting the search form stays local and hash navigation retains query state
+ok 226 - submitting the search form stays local and hash navigation retains query state
+  ---
+  duration_ms: 3890.344209
+  type: 'test'
+  ...
+# Subtest: failed search paint restores the committed draft and matching result nodes
+ok 227 - failed search paint restores the committed draft and matching result nodes
+  ---
+  duration_ms: 4136.619166
+  type: 'test'
+  ...
+# Subtest: a group outside the search-owned container refuses enhancement
+ok 228 - a group outside the search-owned container refuses enhancement
+  ---
+  duration_ms: 4219.547167
+  type: 'test'
+  ...
+# Subtest: focused Library item survives resize and language repaint: groups
+ok 229 - focused Library item survives resize and language repaint: groups
+  ---
+  duration_ms: 3861.523042
+  type: 'test'
+  ...
+# Subtest: focused Library item survives resize and language repaint: currency
+ok 230 - focused Library item survives resize and language repaint: currency
+  ---
+  duration_ms: 4169.264
+  type: 'test'
+  ...
+# Subtest: real macro entry mounts one panel, changes exact context, returns with browser history and opens legacy
+ok 231 - real macro entry mounts one panel, changes exact context, returns with browser history and opens legacy
+  ---
+  duration_ms: 4906.1475
+  type: 'test'
+  ...
+# Subtest: no JavaScript retains every roster and legacy research
+ok 232 - no JavaScript retains every roster and legacy research
+  ---
+  duration_ms: 4062.351542
+  type: 'test'
+  ...
+# Subtest: failed enhancement restores readable page
+ok 233 - failed enhancement restores readable page
+  ---
+  duration_ms: 4057.896791
+  type: 'test'
+  ...
+# Subtest: actual theme/language owner, 32 responsive and text-size states, keyboard and touch targets
+ok 234 - actual theme/language owner, 32 responsive and text-size states, keyboard and touch targets
+  ---
+  duration_ms: 8422.795792
+  type: 'test'
+  ...
+# Subtest: synthetic qualified actual projection and template remain readable and preserve disclosure
+ok 235 - synthetic qualified actual projection and template remain readable and preserve disclosure
+  ---
+  duration_ms: 6312.098459
+  type: 'test'
+  ...
+# Subtest: synthetic negative actual projection and template remain readable and preserve disclosure
+ok 236 - synthetic negative actual projection and template remain readable and preserve disclosure
+  ---
+  duration_ms: 6158.404709
+  type: 'test'
+  ...
+# Subtest: synthetic denied actual projection and template remain readable and preserve disclosure
+ok 237 - synthetic denied actual projection and template remain readable and preserve disclosure
+  ---
+  duration_ms: 5157.440375
+  type: 'test'
+  ...
+# Subtest: actual Library search and retained research link work at 1440px
+ok 238 - actual Library search and retained research link work at 1440px
+  ---
+  duration_ms: 4049.495625
+  type: 'test'
+  ...
+# Subtest: actual Library search and retained research link work at 390px
+ok 239 - actual Library search and retained research link work at 390px
+  ---
+  duration_ms: 3933.509041
+  type: 'test'
+  ...
+# Subtest: Risk selection uses the configured slot, retains pins and ignores nested workspaces
+ok 240 - Risk selection uses the configured slot, retains pins and ignores nested workspaces
+  ---
+  duration_ms: 960.168166
+  type: 'test'
+  ...
+# Subtest: a redacted slot shows its withheld content without borrowing another market
+ok 241 - a redacted slot shows its withheld content without borrowing another market
+  ---
+  duration_ms: 377.282125
+  type: 'test'
+  ...
+# Subtest: Risk duplicate slot withholds ambiguous currency content
+ok 242 - Risk duplicate slot withholds ambiguous currency content
+  ---
+  duration_ms: 396.949917
+  type: 'test'
+  ...
+# Subtest: Risk wrong identity withholds ambiguous currency content
+ok 243 - Risk wrong identity withholds ambiguous currency content
+  ---
+  duration_ms: 460.788167
+  type: 'test'
+  ...
+# Subtest: failed history commit restores Risk selection and native open evidence
+ok 244 - failed history commit restores Risk selection and native open evidence
+  ---
+  duration_ms: 442.795666
+  type: 'test'
+  ...
+# Subtest: contextual Back closes the same detail and restores focus without changing research state
+ok 245 - contextual Back closes the same detail and restores focus without changing research state
+  ---
+  duration_ms: 583.963834
+  type: 'test'
+  ...
+# Subtest: Risk rejects non-price basis and cannot borrow a stale publication generation
+ok 246 - Risk rejects non-price basis and cannot borrow a stale publication generation
+  ---
+  duration_ms: 493.158417
+  type: 'test'
+  ...
+# Subtest: new publication hides old Risk panels while preserving selected market and pins
+ok 247 - new publication hides old Risk panels while preserving selected market and pins
+  ---
+  duration_ms: 457.49325
+  type: 'test'
+  ...
+# Subtest: destroy restores server Risk DOM and attributes exactly
+ok 248 - destroy restores server Risk DOM and attributes exactly
+  ---
+  duration_ms: 326.678333
+  type: 'test'
+  ...
+1..248
+# tests 248
+# suites 0
+# pass 247
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 314981.594083

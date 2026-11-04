@@ -1,0 +1,61 @@
+{
+  "recorded_at": "2026-10-20T15:13:52.368723+00:00",
+  "comparison": {
+    "original_full_input": [
+      {
+        "cc": "TW",
+        "gdp_ledger_cells": [
+          "GDP growth GDP增长",
+          "—",
+          "—",
+          "Existing international macro series"
+        ],
+        "vitals": [
+          "GDP growth GDP增长 — No current observation 暂无当前观测",
+          "Inflation 通胀 — No current observation 暂无当前观测"
+        ]
+      },
+      {
+        "cc": "IN",
+        "gdp_ledger_cells": [
+          "GDP growth GDP增长",
+          "—",
+          "—",
+          "Existing international macro series"
+        ],
+        "vitals": [
+          "GDP growth GDP增长 — No current observation 暂无当前观测",
+          "Inflation 通胀 4.44 % 2026-07 · year over year 同比 +0.96 pp over 3 months 个百分点 / 3个月"
+        ]
+      }
+    ],
+    "repaired_full_input": [
+      {
+        "cc": "TW",
+        "gdp_ledger_cells": [
+          "GDP growth GDP增长",
+          "—",
+          "—",
+          "—"
+        ],
+        "vitals": [
+          "GDP growth GDP增长 — No current observation 暂无当前观测",
+          "Inflation 通胀 — No current observation 暂无当前观测"
+        ]
+      },
+      {
+        "cc": "IN",
+        "gdp_ledger_cells": [
+          "GDP growth GDP增长",
+          "—",
+          "—",
+          "—"
+        ],
+        "vitals": [
+          "GDP growth GDP增长 — No current observation 暂无当前观测",
+          "Inflation 通胀 4.44 % 2026-07 · year over year 同比 +0.96 pp over 3 months 个百分点 / 3个月"
+        ]
+      }
+    ]
+  }
+}

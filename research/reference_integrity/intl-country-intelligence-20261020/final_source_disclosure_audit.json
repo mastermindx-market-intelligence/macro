@@ -1,0 +1,1311 @@
+{
+  "recorded_at": "2026-10-20T15:10:18.814381+00:00",
+  "source_commit": "0be244ba05355f4260b28da89dac4587f5a772e4",
+  "html_sha256": "22a3f22411c315606cd6e4ad9ad111103711841cea0585f5b5a68e267948de4e",
+  "evaluation_day": "2026-10-20",
+  "checks": [
+    {
+      "id": "JP-country-rendered",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "JP-gdp-source-link",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "JP-gdp-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2025-04-01",
+            "594629.6"
+          ],
+          [
+            "2025-07-01",
+            "592407.5"
+          ],
+          [
+            "2025-10-01",
+            "593959.0"
+          ],
+          [
+            "2026-01-01",
+            "596799.3"
+          ],
+          [
+            "2026-04-01",
+            "598950.5"
+          ]
+        ],
+        "expected": [
+          [
+            "2025-04-01",
+            "594629.6"
+          ],
+          [
+            "2025-07-01",
+            "592407.5"
+          ],
+          [
+            "2025-10-01",
+            "593959.0"
+          ],
+          [
+            "2026-01-01",
+            "596799.3"
+          ],
+          [
+            "2026-04-01",
+            "598950.5"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "JP-gdp-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "JP-gdp-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "JP-unemployment-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2026-07-01",
+            "2.4"
+          ]
+        ],
+        "expected": [
+          [
+            "2026-07-01",
+            "2.4"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "JP-unemployment-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "JP-unemployment-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "JP-equity-admitted",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "JP-equity-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "JP-equity-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered_count": 252,
+        "expected_count": 252,
+        "first": [
+          "2025-10-01",
+          "44550.8515625"
+        ],
+        "last": [
+          "2026-10-15",
+          "65007.1015625"
+        ]
+      }
+    },
+    {
+      "id": "JP-equity-windows",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "50-observation mean 50次观测均值",
+            "66287.393",
+            "50",
+            "2026-07-31 → 2026-10-15"
+          ],
+          [
+            "200-observation mean 200次观测均值",
+            "61041.507",
+            "200",
+            "2025-12-17 → 2026-10-15"
+          ],
+          [
+            "Recent high 近期高点",
+            "72366.344",
+            "252",
+            "2025-10-01 → 2026-10-15"
+          ]
+        ],
+        "expected_values": [
+          [
+            "66287.393",
+            "50",
+            "2026-07-31 → 2026-10-15"
+          ],
+          [
+            "61041.507",
+            "200",
+            "2025-12-17 → 2026-10-15"
+          ],
+          [
+            "72366.344",
+            "252",
+            "2025-10-01 → 2026-10-15"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "JP-equity-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-country-rendered",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-gdp-source-link",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-gdp-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2025-04-01",
+            "578719200.0"
+          ],
+          [
+            "2025-07-01",
+            "586599900.0"
+          ],
+          [
+            "2025-10-01",
+            "585964000.0"
+          ],
+          [
+            "2026-01-01",
+            "596692800.0"
+          ],
+          [
+            "2026-04-01",
+            "600405700.0"
+          ]
+        ],
+        "expected": [
+          [
+            "2025-04-01",
+            "578719200.0"
+          ],
+          [
+            "2025-07-01",
+            "586599900.0"
+          ],
+          [
+            "2025-10-01",
+            "585964000.0"
+          ],
+          [
+            "2026-01-01",
+            "596692800.0"
+          ],
+          [
+            "2026-04-01",
+            "600405700.0"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "KR-gdp-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-gdp-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-unemployment-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2026-07-01",
+            "2.8"
+          ]
+        ],
+        "expected": [
+          [
+            "2026-07-01",
+            "2.8"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "KR-unemployment-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-unemployment-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-equity-admitted",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-equity-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "KR-equity-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered_count": 252,
+        "expected_count": 252,
+        "first": [
+          "2025-09-29",
+          "3431.2099609375"
+        ],
+        "last": [
+          "2026-10-15",
+          "5544.77001953125"
+        ]
+      }
+    },
+    {
+      "id": "KR-equity-windows",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "50-observation mean 50次观测均值",
+            "6690.6187",
+            "50",
+            "2026-07-31 → 2026-10-15"
+          ],
+          [
+            "200-observation mean 200次观测均值",
+            "6402.7535",
+            "200",
+            "2025-12-17 → 2026-10-15"
+          ],
+          [
+            "Recent high 近期高点",
+            "9114.5498",
+            "252",
+            "2025-09-29 → 2026-10-15"
+          ]
+        ],
+        "expected_values": [
+          [
+            "6690.6187",
+            "50",
+            "2026-07-31 → 2026-10-15"
+          ],
+          [
+            "6402.7535",
+            "200",
+            "2025-12-17 → 2026-10-15"
+          ],
+          [
+            "9114.5498",
+            "252",
+            "2025-09-29 → 2026-10-15"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "KR-equity-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "TW-country-rendered",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "TW-gdp-source-link",
+      "passed": false,
+      "actual": null
+    },
+    {
+      "id": "TW-equity-admitted",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "TW-equity-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "TW-equity-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered_count": 252,
+        "expected_count": 252,
+        "first": [
+          "2025-09-30",
+          "25820.5390625"
+        ],
+        "last": [
+          "2026-10-15",
+          "47271.921875"
+        ]
+      }
+    },
+    {
+      "id": "TW-equity-windows",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "50-observation mean 50次观测均值",
+            "46629.801",
+            "50",
+            "2026-08-04 → 2026-10-15"
+          ],
+          [
+            "200-observation mean 200次观测均值",
+            "39866.563",
+            "200",
+            "2025-12-16 → 2026-10-15"
+          ],
+          [
+            "Recent high 近期高点",
+            "49822.551",
+            "252",
+            "2025-09-30 → 2026-10-15"
+          ]
+        ],
+        "expected_values": [
+          [
+            "46629.801",
+            "50",
+            "2026-08-04 → 2026-10-15"
+          ],
+          [
+            "39866.563",
+            "200",
+            "2025-12-16 → 2026-10-15"
+          ],
+          [
+            "49822.551",
+            "252",
+            "2025-09-30 → 2026-10-15"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "TW-equity-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "IN-country-rendered",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "IN-gdp-source-link",
+      "passed": false,
+      "actual": null
+    },
+    {
+      "id": "IN-equity-admitted",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "IN-equity-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "IN-equity-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered_count": 252,
+        "expected_count": 252,
+        "first": [
+          "2025-10-07",
+          "25108.30078125"
+        ],
+        "last": [
+          "2026-10-14",
+          "22622.69921875"
+        ]
+      }
+    },
+    {
+      "id": "IN-equity-windows",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "50-observation mean 50次观测均值",
+            "23611.128",
+            "50",
+            "2026-08-04 → 2026-10-14"
+          ],
+          [
+            "200-observation mean 200次观测均值",
+            "24221.779",
+            "200",
+            "2025-12-22 → 2026-10-14"
+          ],
+          [
+            "Recent high 近期高点",
+            "26328.551",
+            "252",
+            "2025-10-07 → 2026-10-14"
+          ]
+        ],
+        "expected_values": [
+          [
+            "23611.128",
+            "50",
+            "2026-08-04 → 2026-10-14"
+          ],
+          [
+            "24221.779",
+            "200",
+            "2025-12-22 → 2026-10-14"
+          ],
+          [
+            "26328.551",
+            "252",
+            "2025-10-07 → 2026-10-14"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "IN-equity-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-country-rendered",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-gdp-source-link",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-gdp-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2025-04-01",
+            "684822.0"
+          ],
+          [
+            "2025-07-01",
+            "688271.0"
+          ],
+          [
+            "2025-10-01",
+            "694551.0"
+          ],
+          [
+            "2026-01-01",
+            "696539.0"
+          ],
+          [
+            "2026-04-01",
+            "699461.0"
+          ]
+        ],
+        "expected": [
+          [
+            "2025-04-01",
+            "684822.0"
+          ],
+          [
+            "2025-07-01",
+            "688271.0"
+          ],
+          [
+            "2025-10-01",
+            "694551.0"
+          ],
+          [
+            "2026-01-01",
+            "696539.0"
+          ],
+          [
+            "2026-04-01",
+            "699461.0"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "AU-gdp-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-gdp-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-unemployment-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2026-07-01",
+            "4.461825"
+          ]
+        ],
+        "expected": [
+          [
+            "2026-07-01",
+            "4.461825"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "AU-unemployment-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-unemployment-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-equity-admitted",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-equity-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "AU-equity-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered_count": 252,
+        "expected_count": 252,
+        "first": [
+          "2025-10-20",
+          "9031.900390625"
+        ],
+        "last": [
+          "2026-10-15",
+          "8702.2001953125"
+        ]
+      }
+    },
+    {
+      "id": "AU-equity-windows",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "50-observation mean 50次观测均值",
+            "8897.6041",
+            "50",
+            "2026-08-07 → 2026-10-15"
+          ],
+          [
+            "200-observation mean 200次观测均值",
+            "8827.056",
+            "200",
+            "2026-01-05 → 2026-10-15"
+          ],
+          [
+            "Recent high 近期高点",
+            "9271.5996",
+            "252",
+            "2025-10-20 → 2026-10-15"
+          ]
+        ],
+        "expected_values": [
+          [
+            "8897.6041",
+            "50",
+            "2026-08-07 → 2026-10-15"
+          ],
+          [
+            "8827.056",
+            "200",
+            "2026-01-05 → 2026-10-15"
+          ],
+          [
+            "9271.5996",
+            "252",
+            "2025-10-20 → 2026-10-15"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "AU-equity-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-country-rendered",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-gdp-source-link",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-gdp-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2025-04-01",
+            "704274.0"
+          ],
+          [
+            "2025-07-01",
+            "704802.0"
+          ],
+          [
+            "2025-10-01",
+            "705160.0"
+          ],
+          [
+            "2026-01-01",
+            "709598.0"
+          ],
+          [
+            "2026-04-01",
+            "712545.0"
+          ]
+        ],
+        "expected": [
+          [
+            "2025-04-01",
+            "704274.0"
+          ],
+          [
+            "2025-07-01",
+            "704802.0"
+          ],
+          [
+            "2025-10-01",
+            "705160.0"
+          ],
+          [
+            "2026-01-01",
+            "709598.0"
+          ],
+          [
+            "2026-04-01",
+            "712545.0"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "GB-gdp-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-gdp-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-unemployment-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2026-05-01",
+            "4.9"
+          ]
+        ],
+        "expected": [
+          [
+            "2026-05-01",
+            "4.9"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "GB-unemployment-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-unemployment-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-equity-admitted",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-equity-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "GB-equity-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered_count": 252,
+        "expected_count": 252,
+        "first": [
+          "2025-10-16",
+          "9436.099609375"
+        ],
+        "last": [
+          "2026-10-14",
+          "10724.900390625"
+        ]
+      }
+    },
+    {
+      "id": "GB-equity-windows",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "50-observation mean 50次观测均值",
+            "10717.44",
+            "50",
+            "2026-08-05 → 2026-10-14"
+          ],
+          [
+            "200-observation mean 200次观测均值",
+            "10483.643",
+            "200",
+            "2025-12-31 → 2026-10-14"
+          ],
+          [
+            "Recent high 近期高点",
+            "10910.6",
+            "252",
+            "2025-10-16 → 2026-10-14"
+          ]
+        ],
+        "expected_values": [
+          [
+            "10717.44",
+            "50",
+            "2026-08-05 → 2026-10-14"
+          ],
+          [
+            "10483.643",
+            "200",
+            "2025-12-31 → 2026-10-14"
+          ],
+          [
+            "10910.6",
+            "252",
+            "2025-10-16 → 2026-10-14"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "GB-equity-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-country-rendered",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-gdp-source-link",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-gdp-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2025-04-01",
+            "2879781.3"
+          ],
+          [
+            "2025-07-01",
+            "2888691.6"
+          ],
+          [
+            "2025-10-01",
+            "2895172.7"
+          ],
+          [
+            "2026-01-01",
+            "2894748.1"
+          ],
+          [
+            "2026-04-01",
+            "2913099.7"
+          ]
+        ],
+        "expected": [
+          [
+            "2025-04-01",
+            "2879781.3"
+          ],
+          [
+            "2025-07-01",
+            "2888691.6"
+          ],
+          [
+            "2025-10-01",
+            "2895172.7"
+          ],
+          [
+            "2026-01-01",
+            "2894748.1"
+          ],
+          [
+            "2026-04-01",
+            "2913099.7"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "EZ-gdp-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-gdp-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-unemployment-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "2026-08-01",
+            "6.4"
+          ]
+        ],
+        "expected": [
+          [
+            "2026-08-01",
+            "6.4"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "EZ-unemployment-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-unemployment-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-equity-admitted",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-equity-identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "EZ-equity-raw-inputs",
+      "passed": true,
+      "actual": {
+        "rendered_count": 252,
+        "expected_count": 252,
+        "first": [
+          "2025-10-13",
+          "566.6300048828125"
+        ],
+        "last": [
+          "2026-10-14",
+          "637.75"
+        ]
+      }
+    },
+    {
+      "id": "EZ-equity-windows",
+      "passed": true,
+      "actual": {
+        "rendered": [
+          [
+            "50-observation mean 50次观测均值",
+            "644.6632",
+            "50",
+            "2026-08-06 → 2026-10-14"
+          ],
+          [
+            "200-observation mean 200次观测均值",
+            "625.44325",
+            "200",
+            "2025-12-29 → 2026-10-14"
+          ],
+          [
+            "Recent high 近期高点",
+            "660.51001",
+            "252",
+            "2025-10-13 → 2026-10-14"
+          ]
+        ],
+        "expected_values": [
+          [
+            "644.6632",
+            "50",
+            "2026-08-06 → 2026-10-14"
+          ],
+          [
+            "625.44325",
+            "200",
+            "2025-12-29 → 2026-10-14"
+          ],
+          [
+            "660.51001",
+            "252",
+            "2025-10-13 → 2026-10-14"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "EZ-equity-no-invented-vintage",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "seven-countries",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "five-calculated-gdp",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "id": "legacy-generic-source-removed",
+      "passed": true,
+      "actual": null
+    }
+  ],
+  "countries": [
+    {
+      "cc": "JP",
+      "gdp": {
+        "value": 0.7266540380768127,
+        "period": "2026-Q2",
+        "period_end": "2026-06-30",
+        "source": "FRED · JP. Cabinet Office",
+        "source_url": "https://fred.stlouisfed.org/series/JPNRGDPEXP",
+        "quality": "current"
+      },
+      "gdp_calculated": true,
+      "unemployment": {
+        "value": 2.4,
+        "period": "2026-07",
+        "source": "FRED · OECD",
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTJPM156S",
+        "quality": "current"
+      },
+      "equity": {
+        "state": "pullback",
+        "as_of": "2026-10-15",
+        "source": {
+          "provider": "Yahoo Finance",
+          "adapter": "yfinance",
+          "symbol": "^N225",
+          "source_url": "https://finance.yahoo.com/quote/%5EN225/",
+          "store_group": "intl",
+          "price_field": "Close",
+          "auto_adjust": true,
+          "interval": "1d",
+          "date_basis": "provider_daily_label"
+        },
+        "observations": 252
+      },
+      "currency_available": false
+    },
+    {
+      "cc": "KR",
+      "gdp": {
+        "value": 3.7473268555803907,
+        "period": "2026-Q2",
+        "period_end": "2026-06-30",
+        "source": "FRED · International Monetary Fund",
+        "source_url": "https://fred.stlouisfed.org/series/NGDPRSAXDCKRQ",
+        "quality": "current"
+      },
+      "gdp_calculated": true,
+      "unemployment": {
+        "value": 2.8,
+        "period": "2026-07",
+        "source": "FRED · OECD",
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTKRM156S",
+        "quality": "current"
+      },
+      "equity": {
+        "state": "pressure",
+        "as_of": "2026-10-15",
+        "source": {
+          "provider": "Yahoo Finance",
+          "adapter": "yfinance",
+          "symbol": "^KS11",
+          "source_url": "https://finance.yahoo.com/quote/%5EKS11/",
+          "store_group": "intl",
+          "price_field": "Close",
+          "auto_adjust": true,
+          "interval": "1d",
+          "date_basis": "provider_daily_label"
+        },
+        "observations": 252
+      },
+      "currency_available": false
+    },
+    {
+      "cc": "TW",
+      "gdp": {
+        "value": null,
+        "period": null,
+        "period_end": null,
+        "source": null,
+        "source_url": null,
+        "quality": "missing"
+      },
+      "gdp_calculated": false,
+      "unemployment": {
+        "value": null,
+        "period": null,
+        "source": null,
+        "source_url": null,
+        "quality": "missing"
+      },
+      "equity": {
+        "state": "uptrend",
+        "as_of": "2026-10-15",
+        "source": {
+          "provider": "Yahoo Finance",
+          "adapter": "yfinance",
+          "symbol": "^TWII",
+          "source_url": "https://finance.yahoo.com/quote/%5ETWII/",
+          "store_group": "intl",
+          "price_field": "Close",
+          "auto_adjust": true,
+          "interval": "1d",
+          "date_basis": "provider_daily_label"
+        },
+        "observations": 252
+      },
+      "currency_available": false
+    },
+    {
+      "cc": "IN",
+      "gdp": {
+        "value": null,
+        "period": null,
+        "period_end": null,
+        "source": null,
+        "source_url": null,
+        "quality": "missing"
+      },
+      "gdp_calculated": false,
+      "unemployment": {
+        "value": null,
+        "period": null,
+        "source": null,
+        "source_url": null,
+        "quality": "missing"
+      },
+      "equity": {
+        "state": "pressure",
+        "as_of": "2026-10-14",
+        "source": {
+          "provider": "Yahoo Finance",
+          "adapter": "yfinance",
+          "symbol": "^NSEI",
+          "source_url": "https://finance.yahoo.com/quote/%5ENSEI/",
+          "store_group": "intl",
+          "price_field": "Close",
+          "auto_adjust": true,
+          "interval": "1d",
+          "date_basis": "provider_daily_label"
+        },
+        "observations": 252
+      },
+      "currency_available": false
+    },
+    {
+      "cc": "AU",
+      "gdp": {
+        "value": 2.137635765206136,
+        "period": "2026-Q2",
+        "period_end": "2026-06-30",
+        "source": "FRED · International Monetary Fund",
+        "source_url": "https://fred.stlouisfed.org/series/NGDPRSAXDCAUQ",
+        "quality": "current"
+      },
+      "gdp_calculated": true,
+      "unemployment": {
+        "value": 4.461825,
+        "period": "2026-07",
+        "source": "FRED · OECD",
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTAUM156S",
+        "quality": "current"
+      },
+      "equity": {
+        "state": "pressure",
+        "as_of": "2026-10-15",
+        "source": {
+          "provider": "Yahoo Finance",
+          "adapter": "yfinance",
+          "symbol": "^AXJO",
+          "source_url": "https://finance.yahoo.com/quote/%5EAXJO/",
+          "store_group": "intl",
+          "price_field": "Close",
+          "auto_adjust": true,
+          "interval": "1d",
+          "date_basis": "provider_daily_label"
+        },
+        "observations": 252
+      },
+      "currency_available": false
+    },
+    {
+      "cc": "GB",
+      "gdp": {
+        "value": 1.1744008723877375,
+        "period": "2026-Q2",
+        "period_end": "2026-06-30",
+        "source": "FRED · International Monetary Fund",
+        "source_url": "https://fred.stlouisfed.org/series/NGDPRSAXDCGBQ",
+        "quality": "current"
+      },
+      "gdp_calculated": true,
+      "unemployment": {
+        "value": 4.9,
+        "period": "2026-05",
+        "source": "FRED · OECD",
+        "source_url": "https://fred.stlouisfed.org/series/LRHUTTTTGBM156S",
+        "quality": "dated"
+      },
+      "equity": {
+        "state": "uptrend",
+        "as_of": "2026-10-14",
+        "source": {
+          "provider": "Yahoo Finance",
+          "adapter": "yfinance",
+          "symbol": "^FTSE",
+          "source_url": "https://finance.yahoo.com/quote/%5EFTSE/",
+          "store_group": "intl",
+          "price_field": "Close",
+          "auto_adjust": true,
+          "interval": "1d",
+          "date_basis": "provider_daily_label"
+        },
+        "observations": 252
+      },
+      "currency_available": false
+    },
+    {
+      "cc": "EZ",
+      "gdp": {
+        "value": 1.1569767468106118,
+        "period": "2026-Q2",
+        "period_end": "2026-06-30",
+        "source": "FRED · Eurostat",
+        "source_url": "https://fred.stlouisfed.org/series/CLVMNACSCAB1GQEA19",
+        "quality": "current"
+      },
+      "gdp_calculated": true,
+      "unemployment": {
+        "value": 6.4,
+        "period": "2026-08",
+        "source": "Eurostat",
+        "source_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_m?lang=en&geo=EA21&s_adj=SA&age=TOTAL&unit=PC_ACT&sex=T&sinceTimePeriod=2000-01",
+        "quality": "current"
+      },
+      "equity": {
+        "state": "pullback",
+        "as_of": "2026-10-14",
+        "source": {
+          "provider": "Yahoo Finance",
+          "adapter": "yfinance",
+          "symbol": "^STOXX",
+          "source_url": "https://finance.yahoo.com/quote/%5ESTOXX/",
+          "store_group": "intl",
+          "price_field": "Close",
+          "auto_adjust": true,
+          "interval": "1d",
+          "date_basis": "provider_daily_label"
+        },
+        "observations": 252
+      },
+      "currency_available": false
+    }
+  ],
+  "passed": 80,
+  "failed": 2,
+  "limits": [
+    "Stored input snapshot was copied without source reacquisition.",
+    "This audit compares the actual build model and rendered evidence, not authenticated access or production adoption."
+  ]
+}

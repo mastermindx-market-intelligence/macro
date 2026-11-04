@@ -1,0 +1,74 @@
+{
+  "schema": "mastermind.paper_country_copy_readback.v1",
+  "requested": [
+    {
+      "nodeId": "DTA-0",
+      "textContent": "Wage inflation keeps normalization in play"
+    },
+    {
+      "nodeId": "DU0-0",
+      "textContent": "Strong demand meets renewed inflation pressure"
+    },
+    {
+      "nodeId": "DUD-0",
+      "textContent": "Inflation persists as demand cools"
+    },
+    {
+      "nodeId": "DV3-0",
+      "textContent": "Resilient growth faces an energy constraint"
+    },
+    {
+      "nodeId": "DZ1-0",
+      "textContent": "Wage inflation keeps normalization in play"
+    },
+    {
+      "nodeId": "DYB-0",
+      "textContent": "Strong demand meets renewed inflation pressure"
+    },
+    {
+      "nodeId": "DXY-0",
+      "textContent": "Inflation persists as demand cools"
+    },
+    {
+      "nodeId": "DX8-0",
+      "textContent": "Resilient growth faces an energy constraint"
+    },
+    {
+      "nodeId": "E7U-0",
+      "textContent": "Wage inflation keeps normalization in play"
+    },
+    {
+      "nodeId": "E74-0",
+      "textContent": "Strong demand meets renewed inflation pressure"
+    },
+    {
+      "nodeId": "E6R-0",
+      "textContent": "Inflation persists as demand cools"
+    },
+    {
+      "nodeId": "E61-0",
+      "textContent": "Resilient growth faces an energy constraint"
+    },
+    {
+      "nodeId": "EEW-0",
+      "textContent": "Wage inflation keeps normalization in play"
+    },
+    {
+      "nodeId": "EE6-0",
+      "textContent": "Strong demand meets renewed inflation pressure"
+    },
+    {
+      "nodeId": "EDT-0",
+      "textContent": "Inflation persists as demand cools"
+    },
+    {
+      "nodeId": "ED3-0",
+      "textContent": "Resilient growth faces an energy constraint"
+    }
+  ],
+  "result": {
+    "checks": 16,
+    "passed": 16,
+    "failures": []
+  }
+}

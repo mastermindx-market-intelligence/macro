@@ -1,0 +1,7 @@
+{
+  "started_at": "2026-10-19T23:50:01.714916+00:00",
+  "finished_at": "2026-10-19T23:51:21.068731+00:00",
+  "exit_code": 1,
+  "python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "log": "browser_run.log"
+}

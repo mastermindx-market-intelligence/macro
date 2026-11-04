@@ -1,0 +1,194 @@
+{
+  "schema": "mastermind.intl_repaired_source_binding.v1",
+  "recorded_at": "2026-10-20T10:45:56.230353+00:00",
+  "source_parent": "1a292672de4bb3f14b00c88e4af1f493b854a364",
+  "main_parent": "422e121246f956834085853a49dfc6c2250d3dab",
+  "source": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "bytes": 1932559,
+      "sha256": "2688244bbe02b2160ef9a6ea8943361d18002ba5e3588fc6a2877c97e195c10d"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "bytes": 75063,
+      "sha256": "91e6670d68ad69235dc3f80088c3a69ca930ee8a3f9a4ae24ecd74f8b3e7e959"
+    },
+    {
+      "path": "collectors/intl_country_sources.py",
+      "bytes": 22110,
+      "sha256": "9e51a27575659140fed98b7d5cc88d11e1812e8994b7b24c0dab13f1ae82b5c7"
+    },
+    {
+      "path": "collectors/intl_macro.py",
+      "bytes": 14983,
+      "sha256": "e2765426a3fd4c235dc546782b0984942e8223b02a6486d1cdf29f377d95abad"
+    },
+    {
+      "path": "collectors/intl_policy_sources.py",
+      "bytes": 22285,
+      "sha256": "08e48a54bdfedf006aaad7ded702582368d32cd297bf5e51d3dac11e206c9c84"
+    },
+    {
+      "path": "collectors/intl_prices.py",
+      "bytes": 8653,
+      "sha256": "51269d0c848fba48bc4bc502ec694add836a30ff20efdff076801e0f2182f9ce"
+    },
+    {
+      "path": "collectors/intl_weo.py",
+      "bytes": 19461,
+      "sha256": "18ee3594029a1d17a827de7d491a1bd29b683f840e86def00f239a1745799775"
+    },
+    {
+      "path": "config/intl_country_baseline.json",
+      "bytes": 282434,
+      "sha256": "caac5a05beabc2fe552c0528d177886c4c335de3884d9670f86c02e1da9c15d1"
+    },
+    {
+      "path": "config/intl_country_commentary.json",
+      "bytes": 11546,
+      "sha256": "e1e9c6639e76d92a31a440ded152efd199e860b66737265acb1b725cc19f58d9"
+    },
+    {
+      "path": "config/intl_country_releases.json",
+      "bytes": 2199,
+      "sha256": "c058a84efd3e776b53fd01345b764afdb0baa4c23ec4bb24e8f6443ac4f87bd5"
+    },
+    {
+      "path": "config/site_access.yml",
+      "bytes": 44742,
+      "sha256": "900c9612e3d6f4e0af37997ac27b01a999b09ea8bb0cd4fb9d9cc59c4440917d"
+    },
+    {
+      "path": "engine/intl_equity_risk.py",
+      "bytes": 3342,
+      "sha256": "6e6ab463ea63abb24d6543dfd16d15d81e7d6fe893c3da9dc6cbd353a17aa38c"
+    },
+    {
+      "path": "engine/intl_inputs.py",
+      "bytes": 51344,
+      "sha256": "705a4fe7c0b0d4e816dfe28f060b446dd0adb5dc0ac84de677cb0b608959ab5b"
+    },
+    {
+      "path": "engine/intl_run.py",
+      "bytes": 10229,
+      "sha256": "611d106bfbd4159bad79b4f573af89c15e6a3281e55d37dba8512c415ea1f89f"
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "bytes": 28156,
+      "sha256": "b1fd1d4730dc96a9dddad68a760e90c61b940bf502e8be06ba532ece93be535b"
+    },
+    {
+      "path": "lib/intl_country_inputs.py",
+      "bytes": 1353,
+      "sha256": "5e94af0773273114c6225440516527e3e23f1a7881ec8f4faa8aa9b1616e60e8"
+    },
+    {
+      "path": "lib/intl_country_outlook.py",
+      "bytes": 20377,
+      "sha256": "bb5de24540aeeb8d9229499ad50ab125b5a6b385bc9cd79d1ef6dfe2ada4b914"
+    },
+    {
+      "path": "lib/intl_currency_observation.py",
+      "bytes": 17788,
+      "sha256": "0d8f17822dd84e96e65a1c314d63c19c1b5fb0a7fb5c6cbcd155e2c96555e2b4"
+    },
+    {
+      "path": "lib/intl_forecast_vintages.py",
+      "bytes": 28978,
+      "sha256": "78a32fd42b52f1353ca275c5f53536031685ebda42a40e119ce07e8bd4e24d91"
+    },
+    {
+      "path": "lib/intl_policy_evidence.py",
+      "bytes": 32864,
+      "sha256": "94d1ea5ae4aa10d2b38a9b446dcf1173cfc7ea5b5afd026a72fbfd5fdb3f1e32"
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "bytes": 60225,
+      "sha256": "1bf350f28aa294aa7f56d33effed2a6853cce42ddda2926c5cb0a862bfd84bd9"
+    },
+    {
+      "path": "site/theme.css",
+      "bytes": 222317,
+      "sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7"
+    },
+    {
+      "path": "templates/intl.html.j2",
+      "bytes": 166075,
+      "sha256": "21f4e94703df9f21bc7b224c91c1e66682dade50610ec492d962118b70896a28"
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "bytes": 26639,
+      "sha256": "70940736c59a193b82e86fc52af011ec76c0dec13f9f59f1c98be924db7c5fa9"
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "bytes": 30691,
+      "sha256": "0cff56979b6ddf145869379fbac78ee3133cad1a1dd6a287270c3d9602ba68c9"
+    },
+    {
+      "path": "templates/intl_country_cockpit.js",
+      "bytes": 3416,
+      "sha256": "c19785d65c49dea8ce045571b34f53593607a937161622e3ec062d86b60de873"
+    },
+    {
+      "path": "templates/theme.css",
+      "bytes": 222317,
+      "sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7"
+    },
+    {
+      "path": "tests/fixtures/intl_currency_observations_20261020.json",
+      "bytes": 74794,
+      "sha256": "5165bbf43f2ae38a677d1f3183918abec8f8ca1bb5da42c6f0459c2696bcc01a"
+    },
+    {
+      "path": "tests/fixtures/intl_weo_october_2026_fiscal_api.json",
+      "bytes": 3119,
+      "sha256": "f457a604b7f97280c30dfb128753dc01f470dd1bb2c45d1fbe661b8e49a99e34"
+    },
+    {
+      "path": "tests/fixtures/intl_weo_october_2026_tables.json",
+      "bytes": 35206,
+      "sha256": "b333cd0cf10e3a3616b9d64ef82418c376ef04ded881029febdaa831f3535c67"
+    },
+    {
+      "path": "tests/test_intl_build.py",
+      "bytes": 14073,
+      "sha256": "2919f16fed5554bd066b4e148b184200f8294377b619847ab48cbaeec76324ef"
+    },
+    {
+      "path": "tests/test_intl_country_cockpit.py",
+      "bytes": 22981,
+      "sha256": "8a557e9bb83d78f46c43ef5bb5adbecae1b4c571cc1b2dfefe6cf6f8b9892785"
+    },
+    {
+      "path": "tests/test_intl_currency_observation.py",
+      "bytes": 26583,
+      "sha256": "18ca169153f7768a764d834e24de752cb2fa4bd1367f67527f27aa77aa954297"
+    },
+    {
+      "path": "tests/test_intl_forecast_vintages.py",
+      "bytes": 31840,
+      "sha256": "6a8a222c54992d542ed8a7b891d87b1b2b1c0b70685ee2a19251dc33cdcec74c"
+    },
+    {
+      "path": "tests/test_intl_outlook_interpretation.py",
+      "bytes": 8007,
+      "sha256": "fad34398f1e4273a36460977dd468fe5ec4fbbcc261dc3c7b511982676cfb3ef"
+    },
+    {
+      "path": "tests/test_intl_policy_evidence.py",
+      "bytes": 38754,
+      "sha256": "d985dfcbd5149cb2a259a3c9f7926ba3d4635df4f45de6afeaeced0ca0bda5c8"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "bytes": 42803,
+      "sha256": "55724269e662af26a3a0d7a6c76b1538943d0073d4f1e598952b52c84f64d104"
+    }
+  ],
+  "scope": "All candidate product/source/test/site paths differing from the composed main; immutable SHA is supplied by the actual subsequent commit and reviewer binding."
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "intl.production_completion.integration.v1",
+  "started_at": "2026-11-04T05:26:52.151447+00:00",
+  "procedure_pin": "2b12028b3910303e85d8e591fd40bb35c779ab78",
+  "head": "851c6abebf01c5c8096e7822436455fd1040152a",
+  "original_merge_head": "c6ac417f4a1d561f8c80a0a6b1977d5ffec6d090",
+  "original_tree": "37b1ec6ce8df8e5454713db83166d2022913129a",
+  "target": "460760a9dde15b9e41e1bb02d8ab353e28b1a089",
+  "publication": "Native Macro status now works; commit/push have not been attempted.",
+  "integration_method": "Three-tree integration in the original worktree: old protected base, saved candidate, newer protected descendant.",
+  "direct_work_reason": "PRINCIPAL_JUDGMENT / UNIQUE_APPROVED_ACCESS; source-custody integration stays with the incumbent; prior held Fabric attempt remains held.",
+  "performance_findings": {
+    "html_bytes": 23104850,
+    "html_elements": 422633,
+    "workbench_elements": 411445,
+    "dossier_elements": 300704
+  },
+  "status": "INTEGRATED_LOCALLY_NOT_COMMITTED",
+  "prepared_ours_tree": "c7d6f6f0b491f53ede3debbc934d01eee0e668ed",
+  "read_tree_exit": 0,
+  "read_tree_stderr": "",
+  "integration_ours_tree": "9523d18cc28686495ed4c2c284c3336068b8ddc7",
+  "conflicts_before_resolution": [
+    ".github/ci/legacy-jobs.yml",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+    "site/canada_stocks.html",
+    "site/hk_stocks.html",
+    "site/intl.html",
+    "site/research_screener.html"
+  ],
+  "resolutions": {
+    ".github/ci/legacy-jobs.yml": "Clean three-way textual merge; retains current-main scopes and candidate's measured International import closure.",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": "Preserved actual candidate-era proof. Current-main stocktable change invalidates asset closure; fresh pinned-browser recapture required before release. No receipt hash is manually forged.",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": "Preserved actual candidate-era proof. Current-main stocktable change invalidates asset closure; fresh pinned-browser recapture required before release. No receipt hash is manually forged.",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": "Preserved actual candidate-era proof. Current-main stocktable change invalidates asset closure; fresh pinned-browser recapture required before release. No receipt hash is manually forged.",
+    "site/canada_stocks.html": "Current protected generated output retained; paired HK/Canada/Screener templates have no candidate delta. International will be emitted by its ordinary builder.",
+    "site/hk_stocks.html": "Current protected generated output retained; paired HK/Canada/Screener templates have no candidate delta. International will be emitted by its ordinary builder.",
+    "site/intl.html": "Current protected generated output retained; paired HK/Canada/Screener templates have no candidate delta. International will be emitted by its ordinary builder.",
+    "site/research_screener.html": "Current protected generated output retained; paired HK/Canada/Screener templates have no candidate delta. International will be emitted by its ordinary builder."
+  },
+  "unmerged_remaining": "",
+  "integrated_tree_before_receipt": "98bb8ebef9e3e1398153750c3bc094916414c570",
+  "candidate_path_count_against_target": 3074,
+  "remaining": [
+    "Fresh P0B browser closure for current stocktable and page tokens",
+    "Affected integrated tests",
+    "Performance implementation",
+    "Typed fenced commit and push",
+    "Hosted CI and current-source independent review",
+    "Normal render/updater and served acceptance"
+  ]
+}

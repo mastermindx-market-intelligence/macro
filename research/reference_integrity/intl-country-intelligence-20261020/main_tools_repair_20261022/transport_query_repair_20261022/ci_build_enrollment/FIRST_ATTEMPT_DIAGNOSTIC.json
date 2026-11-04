@@ -1,0 +1,11 @@
+{
+  "schema": "intl.ci_wrapper_diagnostic.v1",
+  "process_pid": 93633,
+  "process_exit": 1,
+  "runtime_seconds": 166.96,
+  "unrun_cli_exit": 2,
+  "reason": "Wrapper used bare --json; actual audit CLI requires --json PATH. Empty stdout failed JSON parse. No gate PASS or raw enrollment result claimed.",
+  "retained_source": "../verify_build_ci_enrollment_v1.py",
+  "retained_stderr": "unrun_census.stderr.log",
+  "correction": "Pass explicit output path, persist scope results before census, retain separate v2 stdout/stderr and raw JSON. No manifest, baseline, product or test assertion change."
+}

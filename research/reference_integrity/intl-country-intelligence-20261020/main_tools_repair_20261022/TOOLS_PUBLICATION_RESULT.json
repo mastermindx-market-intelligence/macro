@@ -1,0 +1,42 @@
+{
+  "gate_commit": {
+    "schema": "mastermind.studio_git_commit_result.v1",
+    "status": "OK",
+    "effect_state": "APPLIED",
+    "code": "APPLIED",
+    "action_ref": "86129cde67ad196c001eaae64f2db33ff0da74390f3b92c14b31915bcd0c9eb1",
+    "operation_id": "intl-country-cockpit-20261018",
+    "branch": "sol/web-intl-country-cockpit-20261018",
+    "previous_head_sha": "612b8e4814c8ea9343dc35f01808fcfd84c7ee6f",
+    "commit_head_sha": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+    "local_head_sha": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+    "clean": true,
+    "index_synced": true
+  },
+  "push": {
+    "schema": "mastermind.studio_git_push_result.v1",
+    "status": "OK",
+    "effect_state": "APPLIED",
+    "code": "APPLIED",
+    "action_ref": "134b8e38e670c76ffeda33293d11a7d69254363098711e982997a93e1bd39034",
+    "push_attempted": true,
+    "operation_id": "intl-country-cockpit-20261018",
+    "branch": "sol/web-intl-country-cockpit-20261018",
+    "local_head_sha": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+    "remote_head_sha": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+    "clean": true,
+    "publication_state": "APPLIED",
+    "ready_to_push": false
+  },
+  "github_readback": {
+    "head": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+    "draft": true,
+    "mergeable": true,
+    "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+    "ci_run": 39735499640,
+    "fences_run": 39735499502,
+    "authority_run": 39735494186
+  },
+  "pr_body_updated_at": "2026-10-22T06:43:37Z",
+  "source": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2"
+}

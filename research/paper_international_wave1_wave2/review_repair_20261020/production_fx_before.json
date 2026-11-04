@@ -1,0 +1,93 @@
+{
+  "source_sha256": "915a3b10ec60a760e50b2d2283c677e5d8aa67627cd876eff3e8bbc2dcad628b",
+  "observations": [
+    [
+      "2026-07-17",
+      100
+    ],
+    [
+      "2026-07-20",
+      99
+    ],
+    [
+      "2026-10-19",
+      80
+    ],
+    [
+      "2026-10-20",
+      5
+    ]
+  ],
+  "capture_evidence": null,
+  "same_unchanged_data": true,
+  "evaluations": {
+    "2026-10-20": {
+      "schema": "intl_currency_observation.v1",
+      "status": "available",
+      "cc": "KR",
+      "currency": "KRW",
+      "counter_currency": "USD",
+      "ticker": "USDKRW=X",
+      "quote_convention": "local_per_USD",
+      "method": "local_currency_usd_return_3_calendar_months_v1",
+      "unit": "percent",
+      "same_day_policy": "exclude",
+      "reference_target": "2026-07-19",
+      "start": {
+        "date": "2026-07-17",
+        "quote": 100.0
+      },
+      "end": {
+        "date": "2026-10-19",
+        "quote": 80.0
+      },
+      "value": 25.0,
+      "source": {
+        "provider": "Yahoo Finance",
+        "collector": "intl_prices",
+        "price_field": "close",
+        "kind": "configured_store",
+        "source_url": "https://finance.yahoo.com/quote/USDKRW%3DX/history/",
+        "dataset_url": null,
+        "retrieved_at": null,
+        "response_sha256": null,
+        "provider_symbol": null
+      },
+      "evidence_sha256": "ffdd4bc32fc437aa69ca809d957cd16c08fb4d5ce41001668c5423abc3a6f8c1"
+    },
+    "2026-10-21": {
+      "schema": "intl_currency_observation.v1",
+      "status": "available",
+      "cc": "KR",
+      "currency": "KRW",
+      "counter_currency": "USD",
+      "ticker": "USDKRW=X",
+      "quote_convention": "local_per_USD",
+      "method": "local_currency_usd_return_3_calendar_months_v1",
+      "unit": "percent",
+      "same_day_policy": "exclude",
+      "reference_target": "2026-07-20",
+      "start": {
+        "date": "2026-07-20",
+        "quote": 99.0
+      },
+      "end": {
+        "date": "2026-10-20",
+        "quote": 5.0
+      },
+      "value": 1880.0,
+      "source": {
+        "provider": "Yahoo Finance",
+        "collector": "intl_prices",
+        "price_field": "close",
+        "kind": "configured_store",
+        "source_url": "https://finance.yahoo.com/quote/USDKRW%3DX/history/",
+        "dataset_url": null,
+        "retrieved_at": null,
+        "response_sha256": null,
+        "provider_symbol": null
+      },
+      "evidence_sha256": "6a42d8dd13e96977e4787de04831f1fe2a6df135462cbc210391e38ad64d3dab"
+    }
+  }
+}

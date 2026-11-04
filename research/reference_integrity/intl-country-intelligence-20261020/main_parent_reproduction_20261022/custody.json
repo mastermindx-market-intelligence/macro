@@ -1,0 +1,22 @@
+{
+  "schema": "intl.parent_reproduction_custody.v1",
+  "created_at": "2026-10-22T02:30:08.281421+00:00",
+  "published_product_head": "64c1903c0e3193314b27edca3b662263783a9302",
+  "parent_source": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "parent_tracked_source_clean": true,
+  "cases_passed": 8,
+  "cases_failed": 2,
+  "observed_status": "reproduced_failure",
+  "source_overlay": [],
+  "repair_attempted": false,
+  "servers_stopped": true,
+  "ports_after_stop": {
+    "3100": "free_after_owned_shutdown",
+    "3102": "free_after_owned_shutdown"
+  },
+  "root_inspected_images": [
+    "03-tools-first-click.png",
+    "05-forward-tools.png"
+  ],
+  "visual_scope": "First-click image visibly confirms closed tools disclosure. Forward image has the disclosure below viewport; its open state is DOM evidence only. No full visual approval."
+}

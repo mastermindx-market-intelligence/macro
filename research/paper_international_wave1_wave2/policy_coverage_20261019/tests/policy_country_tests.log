@@ -1,0 +1,29 @@
+........................................................................ [ 55%]
+......F...................................................               [100%]
+=================================== FAILURES ===================================
+_________________ test_bad_archive_does_not_stop_other_sources _________________
+
+    def test_bad_archive_does_not_stop_other_sources():
+        result=collect_country_inputs(lambda url,**kw:b"invalid",retrieved_at="2026-10-18")
+>       assert len(result["errors"])==7
+E       AssertionError: assert 12 == 7
+E        +  where 12 = len([{'source': 'inflation', 'error': 'BadZipFile'}, {'source': 'policy', 'error': 'BadZipFile'}, {'source': 'imf', 'error...-minutes/2026/september-2026', 'error': 'ValueError', 'detail': 'boe_release_identity_or_rationale_changed', ...}, ...])
+
+tests/test_intl_country_cockpit.py:208: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-4c952ef1-77f0-4805-a5d3-560c5699f59f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-4c952ef1-77f0-4805-a5d3-560c5699f59f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-4c952ef1-77f0-4805-a5d3-560c5699f59f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-4c952ef1-77f0-4805-a5d3-560c5699f59f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_country_cockpit.py::test_bad_archive_does_not_stop_other_sources
+1 failed, 129 passed, 2 warnings in 5.61s

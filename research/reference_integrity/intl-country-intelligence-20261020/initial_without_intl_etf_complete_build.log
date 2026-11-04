@@ -1,0 +1,46 @@
+INFO intl regime: 7 economies, dominant=Stagflation, recession-watch=2, dd-watch=3
+INFO wrote japan.html (JP, score=47)
+INFO wrote south_korea.html (KR, score=36)
+INFO wrote euro_area.html (EZ, score=44)
+INFO wrote united_kingdom.html (GB, score=53)
+INFO wrote india.html (IN, score=33)
+WARNING world_risk: CNY=X missing — CN momentum leg falls back to local terms
+WARNING [timing] DY spillover: insufficient data in 0.02s
+INFO [timing] contagion_links compute: 0.19s
+WARNING smile_decomp skipped: forex latest.json asof='2026-10-17' stale/missing
+INFO [timing] build_intl intl_risk block: 0.46s
+INFO wrote data/intl_risk/latest.json (em_stress=calm, contagion=quiet, vuln_fragile=0)
+WARNING flow_regime: missing intl_etf/EWJ
+WARNING flow_regime: missing intl_etf/EWG
+WARNING flow_regime: missing intl_etf/EWU
+WARNING flow_regime: missing intl_etf/EWC
+WARNING flow_regime: missing intl_etf/EWA
+WARNING flow_regime: missing intl_etf/EWL
+WARNING flow_regime: missing intl_etf/EWZ
+WARNING flow_regime: missing intl_etf/EWW
+WARNING flow_regime: missing intl_etf/INDA
+WARNING flow_regime: missing intl_etf/EIDO
+WARNING flow_regime: missing intl_etf/EZA
+WARNING flow_regime: missing intl_etf/EWY
+INFO wrote data/flow_regime/latest.json (regime=goldilocks_synchronized, disc=n/a — no elevated outflow pressure)
+WARNING flow_regime: missing intl_etf/EWJ
+WARNING flow_regime: missing intl_etf/EWG
+WARNING flow_regime: missing intl_etf/EWU
+WARNING flow_regime: missing intl_etf/EWC
+WARNING flow_regime: missing intl_etf/EWA
+WARNING flow_regime: missing intl_etf/EWL
+WARNING flow_regime: missing intl_etf/EWZ
+WARNING flow_regime: missing intl_etf/EWW
+WARNING flow_regime: missing intl_etf/INDA
+WARNING flow_regime: missing intl_etf/EIDO
+WARNING flow_regime: missing intl_etf/EZA
+WARNING flow_regime: missing intl_etf/EWY
+INFO flow_regime.accrue_history: replaced same-day row for 2026-10-16
+INFO flow_regime.accrue_history: appended 1 new rows (up to 2026-10-19)
+INFO flow_regime.accrue_history: history.parquet now has 8487 rows
+INFO ITR turn engine: 10 states, 10 events, bench_note=None
+WARNING intl library: no universe panel — skipped
+WARNING International EOD evidence withheld; no current qualified returns
+INFO wrote intl.html + intl_stocks.html (7 economies, 0 standouts)
+[timing] DY spillover: insufficient_data in 0.02s
+[timing] build_intl intl_risk block: 0.46s

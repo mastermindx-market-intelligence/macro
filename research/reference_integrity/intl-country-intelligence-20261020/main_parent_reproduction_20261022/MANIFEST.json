@@ -1,0 +1,91 @@
+{
+  "schema": "intl.parent_reproduction_manifest.v1",
+  "created_at": "2026-10-22T02:32:01.399013+00:00",
+  "product_subject": "64c1903c0e3193314b27edca3b662263783a9302",
+  "files": [
+    {
+      "path": "01-japan-entry.png",
+      "bytes": 173594,
+      "sha256": "43199a5b0589c73fa499bb41221447390fe9a4482b41c77a06fe0d731a20a50c"
+    },
+    {
+      "path": "02-taiwan-selection.png",
+      "bytes": 187336,
+      "sha256": "b158790399769dc07e0486e2bd9d4263dd1ae3d10d017e244bbefb058535b9ff"
+    },
+    {
+      "path": "03-tools-first-click.png",
+      "bytes": 193302,
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d"
+    },
+    {
+      "path": "04-tools-repeated-click.png",
+      "bytes": 193302,
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d"
+    },
+    {
+      "path": "05-forward-tools.png",
+      "bytes": 183320,
+      "sha256": "4999beb990a1b6888884c5d66deda1e60e82ff55811d73eb9ad91b293131a75b"
+    },
+    {
+      "path": "INDEPENDENT_REVIEW.md",
+      "bytes": 3904,
+      "sha256": "ce6255a5c4a0f65005b1edbfc2492ee14ed15b108e553a69445c84dcaa1d69a1"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8317,
+      "sha256": "9f5fe86538f83cf1be6a57d976e74bdde12522e3f9af5e20b27e80911f1c6d78"
+    },
+    {
+      "path": "child.log",
+      "bytes": 2653,
+      "sha256": "cb93a556dfeb87899fbf9e27f4121714fb5dea2652b20a37dd3dc4c4293970ea"
+    },
+    {
+      "path": "ci_semantic_evidence_subject_64c.json",
+      "bytes": 156071,
+      "sha256": "831fa06820e3106813ebe695ccefe7faa6cc885a6f02169b9d2d844960da8787"
+    },
+    {
+      "path": "custody.json",
+      "bytes": 840,
+      "sha256": "e18a532725fa0dda3eb3492b982962676cbd700f9b8bab5f90b025b919ca623c"
+    },
+    {
+      "path": "observation.json",
+      "bytes": 60464,
+      "sha256": "a639c1b995d1a54b4188174cdaf6b35a930438ab8c7526daee4fa51ab3d8191c"
+    },
+    {
+      "path": "observe.cjs",
+      "bytes": 9513,
+      "sha256": "22fc448a20d6aec86ef1b98c8a596c416521734abed54e393b6deb3b13389856"
+    },
+    {
+      "path": "parent.log",
+      "bytes": 668,
+      "sha256": "71387ff2d2b420e0ad853d8a755fd1bb66da95a4de18d1dd7ee14c7cf1c11bcd"
+    },
+    {
+      "path": "qualification_http.json",
+      "bytes": 1656,
+      "sha256": "7c22b87369fe05abc669d9c33967cea45c473ac305b7d2822594bb8fde8c6f3e"
+    },
+    {
+      "path": "runtime.json",
+      "bytes": 1145,
+      "sha256": "dc52a4ed4446ca6be2a260d7939e13e5ea3e86e0d5f1b7c88800541d402f567f"
+    },
+    {
+      "path": "shutdown.json",
+      "bytes": 207,
+      "sha256": "c89ccbeec157dbd10296b01c3049d394a2eb195f9c3cb9dcf37e10bc104d59b4"
+    }
+  ],
+  "file_count_excluding_manifest": 16,
+  "total_bytes_excluding_manifest": 1176292,
+  "product_source_changes": false,
+  "disposition": "reproduced_failure; no repair performed"
+}

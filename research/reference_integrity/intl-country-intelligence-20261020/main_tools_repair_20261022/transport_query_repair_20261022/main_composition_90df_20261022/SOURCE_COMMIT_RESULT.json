@@ -1,0 +1,23 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"schema\": \"mastermind.studio_git_commit_result.v1\",\n  \"status\": \"OK\",\n  \"effect_state\": \"APPLIED\",\n  \"code\": \"APPLIED\",\n  \"action_ref\": \"38b5157adc482b924ff7148ee5ee42768c3c13183d4ed845d79dd2cb5ac133c8\",\n  \"operation_id\": \"intl-country-cockpit-20261018\",\n  \"branch\": \"sol/web-intl-country-cockpit-20261018\",\n  \"previous_head_sha\": \"45e70cb40d6e9ac1a49478b1920ab6a7275f7f58\",\n  \"commit_head_sha\": \"48b5c3312a22548010f330f03ac0b261695c16b6\",\n  \"local_head_sha\": \"48b5c3312a22548010f330f03ac0b261695c16b6\",\n  \"clean\": true,\n  \"index_synced\": true\n}"
+    }
+  ],
+  "structuredContent": {
+    "schema": "mastermind.studio_git_commit_result.v1",
+    "status": "OK",
+    "effect_state": "APPLIED",
+    "code": "APPLIED",
+    "action_ref": "38b5157adc482b924ff7148ee5ee42768c3c13183d4ed845d79dd2cb5ac133c8",
+    "operation_id": "intl-country-cockpit-20261018",
+    "branch": "sol/web-intl-country-cockpit-20261018",
+    "previous_head_sha": "45e70cb40d6e9ac1a49478b1920ab6a7275f7f58",
+    "commit_head_sha": "48b5c3312a22548010f330f03ac0b261695c16b6",
+    "local_head_sha": "48b5c3312a22548010f330f03ac0b261695c16b6",
+    "clean": true,
+    "index_synced": true
+  },
+  "isError": false
+}

@@ -1,0 +1,125 @@
+{
+  "schema": "intl_country_publication_diagnosis.v1",
+  "operation_id": "intl-country-cockpit-20261018",
+  "recorded_at": "2026-10-18T06:10:07.069Z",
+  "state": "BLOCKED_INSTALLER_OWNER_CORRECTION_REQUIRED",
+  "precheck": {
+    "tool": "studio_git_publish_status",
+    "arguments": {
+      "operation_id": "intl-country-cockpit-20261018"
+    },
+    "calls": 1,
+    "status": "REFUSED",
+    "code": "TYPED_GIT_PRECHECK_REFUSED",
+    "error_code": "INVALID_ARGUMENT",
+    "effect_state": "NOT_APPLIED"
+  },
+  "source_workspace": {
+    "repository": "macro",
+    "lane": "web",
+    "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018",
+    "branch": "sol/web-intl-country-cockpit-20261018",
+    "head_sha": "1ed4b870a426ff3cafb439152072c5bf47858551",
+    "canonical_status": "PRESERVED_DIRTY",
+    "owned_registration_valid": true
+  },
+  "installed_runtime": {
+    "account": "chatgpt2-personal",
+    "label": "com.mastermind.studio-direct-private.chatgpt2-personal",
+    "directory": "/Users/chriswong/.local/share/studio-direct-mcp/private/chatgpt2-personal",
+    "publisher_sha256": "9d50cd828e51d0c08a7be0ca7b18c89bfd8fb767a548bb1e4deaddaf185225ae",
+    "observed_manifest_sha256": "c5744dcc7a96d0bc0b019f3c153e8acc8761320ff11541340df753fb493c5460",
+    "publisher_kind": "legacy_single_repository",
+    "source_repository": "/Users/chriswong/Documents/GitHub/Mastermind",
+    "allowed_remote_urls": [
+      "https://github.com/mastermindx-market-intelligence/Mastermind.git"
+    ],
+    "repository_workspaces_config_present": false,
+    "publisher_workspace_status_omits_repository_selector": true
+  },
+  "canonical_cli_evidence": {
+    "environment_matches_supported_closed_selector": true,
+    "macro": {
+      "exit_code": 0,
+      "repository": "macro",
+      "schema_version": "mastermind.workspace_cli/v2",
+      "effect": "NOT_APPLIED",
+      "correct_branch_and_head": true
+    },
+    "mastermind": {
+      "exit_code": 2,
+      "stdout_empty": true,
+      "typed_error": "workspace is not registered to the source repository",
+      "exact_five_key_stderr": true
+    },
+    "terminal": {
+      "exit_code": 2,
+      "stdout_empty": true,
+      "typed_error": "workspace is not registered to the source repository",
+      "exact_five_key_stderr": true
+    }
+  },
+  "causal_diagnosis": "The installed legacy publisher selects the default Mastermind registry and only allows the Mastermind origin. It cannot resolve the correctly registered Macro operation. The valid canonical registration does not require recreation.",
+  "owner_correction": {
+    "component": "Studio Direct private_service installer",
+    "target_account": "chatgpt2-personal",
+    "requirement": "An owner-reviewed exact-predecessor migration must admit this Personal installation to the supported Macro-aware publisher/profile, preserve its existing Paper, fleet, tailnet and authentication capabilities, and use the installer-owned manifest-fenced stopped-service transaction. The current enrolled-fleet and Business-only flags do not admit this seat.",
+    "fresh_evidence_after_correction": [
+      "Installed publisher/profile identity and preserved runtime capabilities",
+      "Canonical registration selection for this original operation",
+      "Read-only typed publication status resolving Macro before any commit or push"
+    ]
+  },
+  "effects": {
+    "source_commit": false,
+    "source_push": false,
+    "new_pull_request": false,
+    "production_deploy": false,
+    "installed_runtime_mutated": false,
+    "alternate_publication_carrier_used": false,
+    "old_pr8754_preserved": true
+  },
+  "resume_sequence": [
+    "After accepted owner correction, reconcile publication status for the original operation through the same typed carrier.",
+    "Commit the reviewable source at the newly observed expected HEAD; push that exact clean branch through the typed publisher.",
+    "Obtain independent source/data/publisher review and hosted CI, then the existing release and served-browser acceptance."
+  ],
+  "limits": [
+    "Diagnostic evidence is not a runtime installation or publication grant.",
+    "No financial data admission, authenticated served proof, merge or production release is claimed."
+  ],
+  "inspected_source": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "sha": "e0e846952a3ce67504889b49fb1b0fe11fe39e18",
+    "paths": [
+      "integrations/studio_direct_mcp/git-publish.mjs",
+      "integrations/studio_direct_mcp/private_service.py",
+      "integrations/studio_direct_mcp/README.md"
+    ],
+    "closed_publisher_supported": true,
+    "operation_only_schema_supported": true,
+    "personal_predecessor_hash_explicitly_pinned": true,
+    "existing_fleet_publisher_migration_accounts": [
+      "chatgpt1",
+      "chatgpt3"
+    ],
+    "business_compatibility_account": "chatgpt2-business",
+    "business_compatibility_preserves_mastermind_only": true,
+    "generic_upgrade_guards_fleet_capability_preservation": true
+  },
+  "owner_route_observation": {
+    "observed_at": "2026-10-18T06:27:30.932123+00:00",
+    "executive_state": {
+      "code": "backend_unavailable",
+      "request_sent": false,
+      "execution_readiness_observed": false
+    },
+    "session_targets": {
+      "code": "backend_unavailable",
+      "message": "installed Session Bridge owner is unavailable"
+    },
+    "owner_summon_attempted": false,
+    "owner_message_sent": false,
+    "scope": "These read failures do not establish global Fabric unavailability or permission for another execution carrier."
+  }
+}

@@ -1,0 +1,598 @@
+{
+  "git-publish.mjs": [
+    {
+      "line": 414,
+      "text": "  const remove = dependencies.rm ?? rm;"
+    },
+    {
+      "line": 415,
+      "text": ""
+    },
+    {
+      "line": 416,
+      "text": "  async function run(file, args, { cwd, timeoutMs = cfg.commandTimeoutMs, envExtra = {}, encoding = 'utf8' } = {}) {"
+    },
+    {
+      "line": 417,
+      "text": "    return execFile(file, args, {"
+    },
+    {
+      "line": 418,
+      "text": "      cwd,"
+    },
+    {
+      "line": 419,
+      "text": "      timeout: timeoutMs,"
+    },
+    {
+      "line": 420,
+      "text": "      maxBuffer: MAX_STDIO_BYTES,"
+    },
+    {
+      "line": 421,
+      "text": "      encoding,"
+    },
+    {
+      "line": 422,
+      "text": "      env: {"
+    },
+    {
+      "line": 423,
+      "text": "        PATH: '/usr/bin:/bin:/usr/sbin:/sbin',"
+    },
+    {
+      "line": 424,
+      "text": "        HOME: process.env.HOME ?? '',"
+    },
+    {
+      "line": 425,
+      "text": "        USER: process.env.USER ?? '',"
+    },
+    {
+      "line": 426,
+      "text": "        LOGNAME: process.env.LOGNAME ?? '',"
+    },
+    {
+      "line": 427,
+      "text": "        LANG: 'C',"
+    },
+    {
+      "line": 428,
+      "text": "        LC_ALL: 'C',"
+    },
+    {
+      "line": 429,
+      "text": "        GIT_TERMINAL_PROMPT: '0',"
+    },
+    {
+      "line": 430,
+      "text": "        GIT_ASKPASS: '/usr/bin/false',"
+    },
+    {
+      "line": 431,
+      "text": "        SSH_ASKPASS: '/usr/bin/false',"
+    },
+    {
+      "line": 432,
+      "text": "        ...envExtra,"
+    },
+    {
+      "line": 433,
+      "text": "      },"
+    },
+    {
+      "line": 434,
+      "text": "    });"
+    },
+    {
+      "line": 435,
+      "text": "  }"
+    },
+    {
+      "line": 436,
+      "text": ""
+    },
+    {
+      "line": 437,
+      "text": "  async function git(cwd, args, options = {}) {"
+    },
+    {
+      "line": 438,
+      "text": "    return run(cfg.gitBinary, args, { cwd, ...options });"
+    },
+    {
+      "line": 439,
+      "text": "  }"
+    },
+    {
+      "line": 440,
+      "text": ""
+    },
+    {
+      "line": 441,
+      "text": "  async function gitWithIndex(cwd, args, indexPath, options = {}) {"
+    },
+    {
+      "line": 442,
+      "text": "    return git(cwd, args, { ...options, envExtra: { GIT_INDEX_FILE: indexPath } });"
+    },
+    {
+      "line": 443,
+      "text": "  }"
+    },
+    {
+      "line": 444,
+      "text": ""
+    },
+    {
+      "line": 445,
+      "text": "  async function gitQuiet(cwd, args, options = {}) {"
+    },
+    {
+      "line": 446,
+      "text": "    try {"
+    },
+    {
+      "line": 447,
+      "text": "      await git(cwd, args, options);"
+    },
+    {
+      "line": 448,
+      "text": "      return true;"
+    },
+    {
+      "line": 449,
+      "text": "    } catch (error) {"
+    },
+    {
+      "line": 450,
+      "text": "      if (error?.code === 1) return false;"
+    },
+    {
+      "line": 451,
+      "text": "      throw error;"
+    },
+    {
+      "line": 452,
+      "text": "    }"
+    },
+    {
+      "line": 453,
+      "text": "  }"
+    },
+    {
+      "line": 454,
+      "text": ""
+    },
+    {
+      "line": 455,
+      "text": "  async function seedPrivateIndex(workspacePath, indexPath) {"
+    },
+    {
+      "line": 456,
+      "text": "    const {stdout} = await git(workspacePath, ['rev-parse', '--git-path', 'index']);"
+    },
+    {
+      "line": 457,
+      "text": "    const realIndexPath = path.resolve(workspacePath, oneLine(stdout, 'real index path'));"
+    },
+    {
+      "line": 458,
+      "text": "    const originalIndex = await readFile(realIndexPath);"
+    },
+    {
+      "line": 459,
+      "text": "    await writeFile(indexPath, originalIndex);"
+    },
+    {
+      "line": 460,
+      "text": "    return {realIndexPath, originalIndex};"
+    },
+    {
+      "line": 461,
+      "text": "  }"
+    },
+    {
+      "line": 462,
+      "text": ""
+    },
+    {
+      "line": 463,
+      "text": "  async function syncRealIndex(realIndexPath, originalIndex, stagedIndexPath) {"
+    },
+    {
+      "line": 464,
+      "text": "    // read-tree after a successful commit also destroys sparse skip-worktree"
+    },
+    {
+      "line": 465,
+      "text": "    // metadata. The private staged index already encodes the exact committed"
+    },
+    {
+      "line": 466,
+      "text": "    // tree; install those bytes with Git's normal exclusive index.lock protocol."
+    },
+    {
+      "line": 978,
+      "text": "  }"
+    },
+    {
+      "line": 979,
+      "text": ""
+    },
+    {
+      "line": 980,
+      "text": "  async function push(args) {"
+    },
+    {
+      "line": 981,
+      "text": "    if (!args || typeof args !== 'object' || Array.isArray(args) || Object.keys(args).some((key) => !['operation_id', 'expected_head_sha'].includes(key))) {"
+    },
+    {
+      "line": 982,
+      "text": "      throw new TypeError('studio_git_push_current_branch arguments are invalid');"
+    },
+    {
+      "line": 983,
+      "text": "    }"
+    },
+    {
+      "line": 984,
+      "text": "    const operationId = validateOperationId(args.operation_id);"
+    },
+    {
+      "line": 985,
+      "text": "    const expectedHead = validateExpectedHead(args.expected_head_sha);"
+    },
+    {
+      "line": 986,
+      "text": "    const before = await workspace(operationId);"
+    },
+    {
+      "line": 987,
+      "text": "    const ref = actionRef(operationId, before.branch, expectedHead);"
+    },
+    {
+      "line": 988,
+      "text": ""
+    },
+    {
+      "line": 989,
+      "text": "    if (before.localHead !== expectedHead) {"
+    },
+    {
+      "line": 990,
+      "text": "      return {"
+    },
+    {
+      "line": 991,
+      "text": "        schema: 'mastermind.studio_git_push_result.v1',"
+    },
+    {
+      "line": 992,
+      "text": "        status: 'REFUSED',"
+    },
+    {
+      "line": 993,
+      "text": "        effect_state: 'NOT_APPLIED',"
+    },
+    {
+      "line": 994,
+      "text": "        code: 'EXPECTED_HEAD_MISMATCH',"
+    },
+    {
+      "line": 995,
+      "text": "        action_ref: ref,"
+    },
+    {
+      "line": 996,
+      "text": "        ...publicStatus(before),"
+    },
+    {
+      "line": 997,
+      "text": "      };"
+    },
+    {
+      "line": 998,
+      "text": "    }"
+    },
+    {
+      "line": 999,
+      "text": "    if (before.remoteHead === expectedHead) {"
+    },
+    {
+      "line": 1000,
+      "text": "      return {"
+    },
+    {
+      "line": 1001,
+      "text": "        schema: 'mastermind.studio_git_push_result.v1',"
+    },
+    {
+      "line": 1002,
+      "text": "        status: 'OK',"
+    },
+    {
+      "line": 1003,
+      "text": "        effect_state: 'APPLIED',"
+    },
+    {
+      "line": 1004,
+      "text": "        code: 'ALREADY_APPLIED',"
+    },
+    {
+      "line": 1005,
+      "text": "        action_ref: ref,"
+    },
+    {
+      "line": 1006,
+      "text": "        push_attempted: false,"
+    },
+    {
+      "line": 1007,
+      "text": "        ...publicStatus(before),"
+    },
+    {
+      "line": 1008,
+      "text": "      };"
+    },
+    {
+      "line": 1009,
+      "text": "    }"
+    },
+    {
+      "line": 1010,
+      "text": "    if (!before.clean) {"
+    },
+    {
+      "line": 1011,
+      "text": "      return {"
+    },
+    {
+      "line": 1012,
+      "text": "        schema: 'mastermind.studio_git_push_result.v1',"
+    },
+    {
+      "line": 1013,
+      "text": "        status: 'REFUSED',"
+    },
+    {
+      "line": 1014,
+      "text": "        effect_state: 'NOT_APPLIED',"
+    },
+    {
+      "line": 1015,
+      "text": "        code: 'WORKSPACE_DIRTY',"
+    },
+    {
+      "line": 1016,
+      "text": "        action_ref: ref,"
+    },
+    {
+      "line": 1017,
+      "text": "        ...publicStatus(before),"
+    },
+    {
+      "line": 1018,
+      "text": "      };"
+    },
+    {
+      "line": 1019,
+      "text": "    }"
+    },
+    {
+      "line": 1020,
+      "text": ""
+    },
+    {
+      "line": 1021,
+      "text": "    const submodulePolicy = await boundedSubmodulePolicy(before.workspacePath);"
+    },
+    {
+      "line": 1022,
+      "text": "    await verifyDestinationBinding(before.remoteBinding);"
+    },
+    {
+      "line": 1023,
+      "text": "    try {"
+    },
+    {
+      "line": 1024,
+      "text": "      await git("
+    },
+    {
+      "line": 1025,
+      "text": "        before.workspacePath,"
+    },
+    {
+      "line": 1026,
+      "text": "        // Push the fenced commit object, never mutable HEAD. A concurrent local"
+    },
+    {
+      "line": 1027,
+      "text": "        // branch advance after precheck must not widen the authorized remote effect."
+    },
+    {
+      "line": 1028,
+      "text": "        [...before.remoteBinding.gitArgs, 'push', '--porcelain', '--no-follow-tags', '--no-force', '--no-mirror', `--recurse-submodules=${submodulePolicy}`, 'origin', `${expectedHead}:${before.ref}`],"
+    },
+    {
+      "line": 1029,
+      "text": "        { timeoutMs: cfg.pushTimeoutMs },"
+    },
+    {
+      "line": 1030,
+      "text": "      );"
+    },
+    {
+      "line": 1031,
+      "text": "    } catch (error) {"
+    },
+    {
+      "line": 1032,
+      "text": "      try {"
+    },
+    {
+      "line": 1033,
+      "text": "        const afterFailure = await workspace(operationId, {remoteBinding: before.remoteBinding});"
+    },
+    {
+      "line": 1034,
+      "text": "        if (afterFailure.remoteHead === expectedHead) {"
+    },
+    {
+      "line": 1035,
+      "text": "          return {"
+    },
+    {
+      "line": 1036,
+      "text": "            schema: 'mastermind.studio_git_push_result.v1',"
+    },
+    {
+      "line": 1037,
+      "text": "            status: 'OK',"
+    },
+    {
+      "line": 1038,
+      "text": "            effect_state: 'APPLIED',"
+    },
+    {
+      "line": 1039,
+      "text": "            code: 'APPLIED_AFTER_AMBIGUOUS_PUSH_RETURN',"
+    },
+    {
+      "line": 1040,
+      "text": "            action_ref: ref,"
+    },
+    {
+      "line": 1041,
+      "text": "            push_attempted: true,"
+    },
+    {
+      "line": 1042,
+      "text": "            ...publicStatus(afterFailure),"
+    },
+    {
+      "line": 1043,
+      "text": "          };"
+    },
+    {
+      "line": 1044,
+      "text": "        }"
+    },
+    {
+      "line": 1045,
+      "text": "      } catch {"
+    },
+    {
+      "line": 1046,
+      "text": "        // The attempted remote write remains ambiguous. Do not replace the"
+    },
+    {
+      "line": 1047,
+      "text": "        // original effect uncertainty with a readback failure."
+    },
+    {
+      "line": 1048,
+      "text": "      }"
+    },
+    {
+      "line": 1049,
+      "text": "      return {"
+    },
+    {
+      "line": 1050,
+      "text": "        schema: 'mastermind.studio_git_push_result.v1',"
+    },
+    {
+      "line": 1051,
+      "text": "        status: 'UNKNOWN',"
+    },
+    {
+      "line": 1052,
+      "text": "        effect_state: 'EFFECT_UNKNOWN',"
+    },
+    {
+      "line": 1053,
+      "text": "        code: 'PUSH_RESULT_UNCERTAIN',"
+    },
+    {
+      "line": 1054,
+      "text": "        action_ref: ref,"
+    }
+  ],
+  "gateway.mjs": [
+    {
+      "line": 1396,
+      "text": "          ? await this.gitPublisher.status(args)"
+    },
+    {
+      "line": 1397,
+      "text": "          : name === STUDIO_GIT_COMMIT_CURRENT_CHANGES_TOOL.name"
+    },
+    {
+      "line": 1398,
+      "text": "            ? await this.gitPublisher.commit(args)"
+    },
+    {
+      "line": 1399,
+      "text": "            : await this.gitPublisher.push(args);"
+    },
+    {
+      "line": 1400,
+      "text": "        const isError = data?.status === 'REFUSED' || data?.status === 'PARTIAL' || data?.effect_state === 'EFFECT_UNKNOWN';"
+    },
+    {
+      "line": 1401,
+      "text": "        if (data?.effect_state === 'EFFECT_UNKNOWN') this.taint('typed git mutation effect unknown');"
+    },
+    {
+      "line": 1402,
+      "text": "        log(isError ? 'warn' : 'info', 'tool_call', {"
+    },
+    {
+      "line": 1403,
+      "text": "          sid: this.tag, tool: name, durationMs: Date.now() - started,"
+    },
+    {
+      "line": 1404,
+      "text": "          classification: isError ? CLASSIFICATION.TOOL_ERROR : CLASSIFICATION.OK,"
+    },
+    {
+      "line": 1405,
+      "text": "          effect: typeof data?.effect_state === 'string' ? data.effect_state : undefined,"
+    },
+    {
+      "line": 1406,
+      "text": "        });"
+    },
+    {
+      "line": 1407,
+      "text": "        return gitToolResult(data, isError);"
+    },
+    {
+      "line": 1408,
+      "text": "      } catch {"
+    },
+    {
+      "line": 1409,
+      "text": "        log('info', 'tool_call', {"
+    },
+    {
+      "line": 1410,
+      "text": "          sid: this.tag, tool: name, durationMs: Date.now() - started,"
+    },
+    {
+      "line": 1411,
+      "text": "          classification: CLASSIFICATION.TOOL_ERROR,"
+    },
+    {
+      "line": 1412,
+      "text": "        });"
+    },
+    {
+      "line": 1413,
+      "text": "        return gitToolResult({"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "command": [
+    "node",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/candidate_parent_full_v8/verify_actual_parent_v8.cjs",
+    "--artifact",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/proposed_shelltools20261022_repair",
+    "--output",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/candidate_parent_full_v8",
+    "--phase",
+    "candidate",
+    "--matrix",
+    "full",
+    "--source-sha",
+    "ca4efe7b36a47887c18746ffa9d931e15b97e5f2",
+    "--runtime",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/candidate_parent_full_v8/runtime.json",
+    "--build-receipt",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/repair_shelltools20261022_build_receipt.json"
+  ],
+  "started_at": "2026-10-22T06:17:16.479270+00:00",
+  "driver_sha256": "c281eab40c4715ff86583c43377c63c7ff425cd86d2bacab44df7c2e30c60cf8",
+  "coordinator_sha256": "f07a91d20c55ea0d198094ce9f572ccca87372767c709529e791d46dfbca6a6c",
+  "owned_supervisor_pid": 47788,
+  "exit_code": 1,
+  "finished_at": "2026-10-22T06:20:04.562783+00:00"
+}

@@ -1,0 +1,790 @@
+{
+  "schema": "intl.reference_complete_browser.v1",
+  "build_receipt": "complete_build_receipt.json",
+  "source_commit": "6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7",
+  "html_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+  "canonical_capture_exit": 0,
+  "states": [
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-desktop-en-light.png",
+      "sha256": "66bb89ddebbbd70f55c24e5f450a6d357e1506de902a0eb63b9ca27846b9a94b",
+      "bytes": 259126,
+      "captured_at": "2026-10-20T11:46:00.313796+00:00",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "locale": "en",
+      "theme": "light",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "en",
+        "theme": "light",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 782,
+        "height": 3415
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-desktop-en-dark.png",
+      "sha256": "270aeaba44f2ce868644c80955340436390d7a838b8f5c1378293fe91ac78a63",
+      "bytes": 246652,
+      "captured_at": "2026-10-20T11:46:01.870992+00:00",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "en",
+        "theme": "dark",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 782,
+        "height": 3415
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-desktop-zh-light.png",
+      "sha256": "f7d29afbff0afb3c4e62a610ae1a46b7a5909692db06eb113944adb0f35c57c0",
+      "bytes": 261674,
+      "captured_at": "2026-10-20T11:46:03.422159+00:00",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "zh",
+        "theme": "light",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 356,
+        "height": 3373
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-desktop-zh-dark.png",
+      "sha256": "e0f9c13b9c6e7ccc72ec99f51238d2731e3c92f5821424c4613fd1efd273af33",
+      "bytes": 248653,
+      "captured_at": "2026-10-20T11:46:05.012255+00:00",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "zh",
+        "theme": "dark",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 356,
+        "height": 3373
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-mobile-en-light.png",
+      "sha256": "42ed8389446ab743d780f4bfe27443f82c2baae2b25897e909ed010fa49d49b9",
+      "bytes": 136433,
+      "captured_at": "2026-10-20T11:46:06.478411+00:00",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "theme": "light",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "en",
+        "theme": "light",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 744,
+        "height": 5087
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-mobile-en-dark.png",
+      "sha256": "47a561893affe2e3a9a4de15c0e94b1f3a4f36a262b53f2f7f62cec4b903d059",
+      "bytes": 134097,
+      "captured_at": "2026-10-20T11:46:07.962766+00:00",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "en",
+        "theme": "dark",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 744,
+        "height": 5087
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-mobile-zh-light.png",
+      "sha256": "6bf0c32929382788241eecbe461418137281184c133c150f37fa4861e0c6d5af",
+      "bytes": 137265,
+      "captured_at": "2026-10-20T11:46:09.436621+00:00",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "zh",
+        "theme": "light",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 330,
+        "height": 4709
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-mobile-zh-dark.png",
+      "sha256": "a40f134609cbbf6794e17594c52c2998297dedb15ab35fceff92e9e68349ae82",
+      "bytes": 134460,
+      "captured_at": "2026-10-20T11:46:10.987678+00:00",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "zh",
+        "theme": "dark",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 330,
+        "height": 4709
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-narrow-en-light.png",
+      "sha256": "1d79d9bbecf74de2681ffa2117a49d5d2dfc8c427fa581692dc4a069f455bd2a",
+      "bytes": 119114,
+      "captured_at": "2026-10-20T11:46:12.489747+00:00",
+      "viewport": "narrow",
+      "width": 320,
+      "height": 720,
+      "locale": "en",
+      "theme": "light",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "en",
+        "theme": "light",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 744,
+        "height": 5573
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-narrow-en-dark.png",
+      "sha256": "c7bee2e779c7c84ff2b4e9b55bb55a24e61d106caae10c9aabe48cf7fc0a34db",
+      "bytes": 118009,
+      "captured_at": "2026-10-20T11:46:13.999490+00:00",
+      "viewport": "narrow",
+      "width": 320,
+      "height": 720,
+      "locale": "en",
+      "theme": "dark",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "en",
+        "theme": "dark",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 744,
+        "height": 5573
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-narrow-zh-light.png",
+      "sha256": "8f9400b77793ead4d843c15eb46415cc05ec892a04da91181ca1ec33d2a07edc",
+      "bytes": 120369,
+      "captured_at": "2026-10-20T11:46:15.653335+00:00",
+      "viewport": "narrow",
+      "width": 320,
+      "height": 720,
+      "locale": "zh",
+      "theme": "light",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "zh",
+        "theme": "light",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 330,
+        "height": 4913
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-narrow-zh-dark.png",
+      "sha256": "c1584a491885d67c0e34e8555548c3d9f6a7203a89e3c9089369f51b9efb7fc4",
+      "bytes": 119017,
+      "captured_at": "2026-10-20T11:46:17.301272+00:00",
+      "viewport": "narrow",
+      "width": 320,
+      "height": 720,
+      "locale": "zh",
+      "theme": "dark",
+      "response_sha256": "f8457cca66eb6f7177b87a6aa52787d501dba3e1c221bee1a74ef5981f7f5c83",
+      "actual": {
+        "locale": "zh",
+        "theme": "dark",
+        "overflow": false,
+        "toolsOpen": false,
+        "countryCount": 7,
+        "visibleWords": 330,
+        "height": 4913
+      },
+      "page_errors": [
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-overview-desktop-en-light.png",
+      "sha256": "42a0936abd04892f3a7fe1eca5aea1e6385fd78994df0848047b8258da5a7c6d",
+      "bytes": 188306,
+      "captured_at": "2026-10-20T11:46:19.273740+00:00",
+      "task": "overview",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=overview",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-compare-desktop-en-light.png",
+      "sha256": "02a15a985a1b15799b12cae37281c24a2c0f1c231e05d2a918664cd3e32c4ba1",
+      "bytes": 109867,
+      "captured_at": "2026-10-20T11:46:20.547071+00:00",
+      "task": "compare",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=compare",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-macro-desktop-en-light.png",
+      "sha256": "653f96544c76f06da14f04ca7d0c165a343cb104eafb5073c6e0839fbc5de3e5",
+      "bytes": 138200,
+      "captured_at": "2026-10-20T11:46:21.747712+00:00",
+      "task": "macro",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=macro",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-risk-desktop-en-light.png",
+      "sha256": "a02c2875ca420bd91f5181943aae9812e59e7f28bd314c1df2b0cadb02ce04a6",
+      "bytes": 115248,
+      "captured_at": "2026-10-20T11:46:23.418619+00:00",
+      "task": "risk",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=risk",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-history-desktop-en-light.png",
+      "sha256": "60e42848f6746f05420a90adc871d116254bb7f1869c1b9305b35b6f1667d97f",
+      "bytes": 117306,
+      "captured_at": "2026-10-20T11:46:24.760888+00:00",
+      "task": "history",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=history",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-library-desktop-en-light.png",
+      "sha256": "844a1110786d6728b08b27b340028b39e03bd83bd85b19696e9480f5f5bda64c",
+      "bytes": 187316,
+      "captured_at": "2026-10-20T11:46:26.063930+00:00",
+      "task": "library",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=library",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-overview-mobile-zh-dark.png",
+      "sha256": "2b29ed31fd709469a80011d0110bafe14b1624cfb1b8594da0f0d5f424cd72e1",
+      "bytes": 97408,
+      "captured_at": "2026-10-20T11:46:34.593143+00:00",
+      "task": "overview",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=overview",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-compare-mobile-zh-dark.png",
+      "sha256": "359122ac44bd8ecb2b8349fa5be9b3fcc6d91e5242feda545a9173d3e3b93497",
+      "bytes": 54371,
+      "captured_at": "2026-10-20T11:46:35.900769+00:00",
+      "task": "compare",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=compare",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-macro-mobile-zh-dark.png",
+      "sha256": "6d42a4be5e80ff209e0bf053a981afcc98f86c2a1898e0cdef0323ff0db451af",
+      "bytes": 44887,
+      "captured_at": "2026-10-20T11:46:37.214504+00:00",
+      "task": "macro",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=macro",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-risk-mobile-zh-dark.png",
+      "sha256": "fbf6e1335ee504b75bb87b2a10b3ecf2197e5faaeca558d14ae399dbd199c158",
+      "bytes": 49061,
+      "captured_at": "2026-10-20T11:46:38.527314+00:00",
+      "task": "risk",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=risk",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-history-mobile-zh-dark.png",
+      "sha256": "6575052855444f0f558be38775499c7ebba0cdae6e94de679a817081b0c2dcc0",
+      "bytes": 94973,
+      "captured_at": "2026-10-20T11:46:39.858534+00:00",
+      "task": "history",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=history",
+      "control_enabled": true
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/tools-library-mobile-zh-dark.png",
+      "sha256": "ba5fde5489524777f0c33b4418ebd770fc48d73fe696efaa37149b2167d2e359",
+      "bytes": 94723,
+      "captured_at": "2026-10-20T11:46:41.195147+00:00",
+      "task": "library",
+      "tools_open": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=library",
+      "control_enabled": true
+    }
+  ],
+  "checks": [
+    {
+      "id": "default-desktop-en-light",
+      "passed": false
+    },
+    {
+      "id": "default-desktop-en-dark",
+      "passed": false
+    },
+    {
+      "id": "default-desktop-zh-light",
+      "passed": false
+    },
+    {
+      "id": "default-desktop-zh-dark",
+      "passed": false
+    },
+    {
+      "id": "default-mobile-en-light",
+      "passed": false
+    },
+    {
+      "id": "default-mobile-en-dark",
+      "passed": false
+    },
+    {
+      "id": "default-mobile-zh-light",
+      "passed": false
+    },
+    {
+      "id": "default-mobile-zh-dark",
+      "passed": false
+    },
+    {
+      "id": "default-narrow-en-light",
+      "passed": false
+    },
+    {
+      "id": "default-narrow-en-dark",
+      "passed": false
+    },
+    {
+      "id": "default-narrow-zh-light",
+      "passed": false
+    },
+    {
+      "id": "default-narrow-zh-dark",
+      "passed": false
+    },
+    {
+      "id": "query-view-overview-desktop",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=overview",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-compare-desktop",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=compare",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-macro-desktop",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=macro",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-risk-desktop",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=risk",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-history-desktop",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=history",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-library-desktop",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=library",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "click-view-macro-desktop",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=macro&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-risk-desktop",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=risk&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-history-desktop",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-library-desktop",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-overview-desktop",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=overview&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-compare-desktop",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=compare&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "legacy-anchor-intl-growth-inflation-desktop",
+      "passed": true,
+      "actual": {
+        "exists": 1,
+        "visible": true,
+        "tools_open": true
+      }
+    },
+    {
+      "id": "legacy-anchor-intl-central-banks-desktop",
+      "passed": true,
+      "actual": {
+        "exists": 1,
+        "visible": true,
+        "tools_open": true
+      }
+    },
+    {
+      "id": "legacy-anchor-intl-credit-bonds-desktop",
+      "passed": true,
+      "actual": {
+        "exists": 1,
+        "visible": true,
+        "tools_open": true
+      }
+    },
+    {
+      "id": "legacy-anchor-lb-board-desktop",
+      "passed": true,
+      "actual": {
+        "exists": 1,
+        "visible": true,
+        "tools_open": true
+      }
+    },
+    {
+      "id": "tools-page-exceptions-desktop",
+      "passed": false,
+      "errors": [
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list"
+      ]
+    },
+    {
+      "id": "query-view-overview-mobile",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=overview",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-compare-mobile",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=compare",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-macro-mobile",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=macro",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-risk-mobile",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=risk",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-history-mobile",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=history",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "query-view-library-mobile",
+      "passed": true,
+      "actual": {
+        "tools_open": true,
+        "visible_panels": 1,
+        "url": "http://intl.test/intl.html?view=library",
+        "control_enabled": true
+      }
+    },
+    {
+      "id": "click-view-macro-mobile",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=macro&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-risk-mobile",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=risk&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-history-mobile",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=history&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-library-mobile",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-overview-mobile",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=overview&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "click-view-compare-mobile",
+      "passed": true,
+      "enabled": true,
+      "visible_panels": 1,
+      "url": "http://intl.test/intl.html?view=compare&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    },
+    {
+      "id": "legacy-anchor-intl-growth-inflation-mobile",
+      "passed": true,
+      "actual": {
+        "exists": 1,
+        "visible": true,
+        "tools_open": true
+      }
+    },
+    {
+      "id": "legacy-anchor-intl-central-banks-mobile",
+      "passed": true,
+      "actual": {
+        "exists": 1,
+        "visible": true,
+        "tools_open": true
+      }
+    },
+    {
+      "id": "legacy-anchor-intl-credit-bonds-mobile",
+      "passed": true,
+      "actual": {
+        "exists": 1,
+        "visible": true,
+        "tools_open": true
+      }
+    },
+    {
+      "id": "legacy-anchor-lb-board-mobile",
+      "passed": true,
+      "actual": {
+        "exists": 1,
+        "visible": true,
+        "tools_open": true
+      }
+    },
+    {
+      "id": "tools-page-exceptions-mobile",
+      "passed": false,
+      "errors": [
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list",
+        "Malformed arrow function parameter list"
+      ]
+    }
+  ],
+  "passed": 32,
+  "failed": 14,
+  "limits": [
+    "Anonymous isolated browser; external calls aborted.",
+    "Input copy does not acquire new source observations or qualify unknown FX receipts.",
+    "No authenticated tier state was forced. Separate stock routes retain source identity but are not part of this page capture."
+  ]
+}

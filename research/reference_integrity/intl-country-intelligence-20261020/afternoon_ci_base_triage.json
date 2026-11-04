@@ -1,0 +1,67 @@
+{
+  "schema": "intl.inherited_ci_triage.v1",
+  "recorded_at_utc": "2026-10-20T20:49:40.698744+00:00",
+  "reviewer": "/root/intl_hosted_ci_base_triage",
+  "classification": "already_repaired_by_new_main",
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 9596,
+  "historical_failure": {
+    "run_id": 39411669144,
+    "job_id": 118592201829,
+    "job": "ci-pack-3",
+    "legacy_job": "market-os-macro-suite-pages",
+    "step": "Market OS macro suite pages — shell, labels, view model, builder",
+    "head": "6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7",
+    "tested_merge": "a737077fceef114ea07250d190c5a58adebf98e8",
+    "tested_base": "a815e54f50e012fd693c9a1ec311f5e814f330bd",
+    "runner": "Ubuntu 24.04.5; Python 3.12.13",
+    "first_signature_utc": "2026-10-20T11:15:15.9815815Z",
+    "candidate_result": "2 failed, 548 passed, 8 skipped in 65.84s",
+    "base_replay_result": "2 failed, 548 passed, 8 skipped in 70.62s",
+    "tests": [
+      "tests/test_macro_command_copy_law.py::test_all_fifteen_built_pages_are_clean_outside_details",
+      "tests/test_macro_command_copy_law.py::test_user_facing_numbers_have_no_machine_floats"
+    ],
+    "cause": "The rendered labor coverage refusal exposed axis in the main reading path."
+  },
+  "landed_repair": {
+    "sha": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1",
+    "pr": 9816,
+    "landed_at_utc": "2026-10-20T19:31:43Z",
+    "included_in_main": "0ef818070c57709a67e44dca2193652d41e29640",
+    "current_candidate_supplied_by_parent": "5b6b88fc16a1b11f2dc394ad17a3ecc996d0cefd",
+    "path": "lib/macro_suite_labels.py",
+    "mechanism": "Exact reviewed bilingual PLAIN_PRODUCER mapping; original evidence preserved.",
+    "regression_test": "tests/test_macro_command_copy_law.py::test_labor_coverage_refusal_has_plain_copy_without_changing_source",
+    "workspace_labels_equal_immutable_github_main": true
+  },
+  "bounded_checks": {
+    "old_mapping_absent": true,
+    "old_producer_sentence_fails_unmodified_guard": [
+      "banned phrase 'axis' found in the reading path (outside mc-details/mc-primer) — move it into <details class=\"mc-details\"> or replace it with the plain-word copy from spec §5"
+    ],
+    "new_mapping_preserves_absence_and_non_neutral_meaning": {
+      "en": "Labor-market data coverage is below the required minimum, so no overall reading is shown. Missing data is not treated as a neutral reading.",
+      "zh": "劳动力市场数据覆盖未达到所需下限，因此不展示总体读数。缺失数据不会被当作中性读数。"
+    },
+    "new_reading_guard_violations": [],
+    "current_committed_labor_page_guard_violations": []
+  },
+  "local_file_hashes": {
+    "scripts/check_macro_command_copy.py": "a392b039a25f86cde95d07862d343c1e23a5cf92d424eccbf590beef69a67ddc",
+    "lib/macro_suite_labels.py": "7f026b89624046e8f508b4f4fab463d1a4c15766ba3803fa5f6f5dc86f735a35",
+    "lib/macro_suite_zh_parity.py": "bfe42e01941d8c04254ac4f55b9c933c45f4638cb3241c119aa9babefbe76571",
+    "site/macro_labor_markets.html": "3c9b5284d1bb3e08298eab3d68cf340cb8523f8b3671a5e432638ed5a6d7dcae",
+    "hosted_failure_excerpt.log": "1eeb950730a1cc090bb516f73078b6b15008ada5aa76009da6e9c8485fe50d40",
+    "verify_copy_repair.py": "ac6818f34c2c86b936d85a5898449a69ff4da856eb5987fc0499725cf1b4668a"
+  },
+  "setup_repair": "Initial local label import lacked lib/macro_suite_zh_parity.py; retrieved the actual current dependency read-only, then reran. No production defect inferred from this local setup failure.",
+  "limits": [
+    "No remote process launched and no remote/workspace source modified.",
+    "Full fresh builder and hosted CI not executed by this reviewer.",
+    "Local guard used verbatim read copies of current guard, labels and committed labor HTML.",
+    "This diagnosis does not approve or replace the next candidate hosted run."
+  ],
+  "next_verification_command": "/tmp/intl-country-cockpit-ci-20261020/bin/python -m pytest tests/test_macro_command_copy_law.py::test_labor_coverage_refusal_has_plain_copy_without_changing_source tests/test_macro_command_copy_law.py::test_all_fifteen_built_pages_are_clean_outside_details tests/test_macro_command_copy_law.py::test_user_facing_numbers_have_no_machine_floats -q",
+  "patch_required": false
+}

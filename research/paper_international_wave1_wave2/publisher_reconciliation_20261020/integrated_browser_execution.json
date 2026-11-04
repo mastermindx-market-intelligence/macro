@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-10-20T08:06:13.192191+00:00",
+  "finished_at": "2026-10-20T08:07:38.500577+00:00",
+  "render_exit_code": 0,
+  "browser_exit_code": 0,
+  "render_command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+    "--source-dir",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/publisher_reconciliation_20261020/retained_source_cache",
+    "--output-dir",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/publisher_reconciliation_20261020/preview",
+    "--reuse-inputs"
+  ],
+  "browser_command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/publisher_reconciliation_20261020/verify_integrated_browser.py"
+  ]
+}

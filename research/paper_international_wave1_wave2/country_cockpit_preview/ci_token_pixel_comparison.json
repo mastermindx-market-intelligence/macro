@@ -1,0 +1,217 @@
+{
+  "before_commit": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+  "after": "working tree after canonical token move",
+  "captures": [
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_dark_en.png",
+      "before_sha256": "8c52c864e86cb33ed2ddad09e92e9979df5f299a2b59b09b0a913b811bb361c8",
+      "after_sha256": "70f9f3fe6517f3eb13d814a7b5235e0e84d3d7db60a1d805e2ad4418ae011d83",
+      "dimensions": [
+        1440,
+        3073
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        1179,
+        34,
+        1309,
+        3058
+      ],
+      "changed_pixels": 2187
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_dark_zh.png",
+      "before_sha256": "869153f84e72fa5f2235229d47d3198103458fed9da92bd978ae78c25a15e5d6",
+      "after_sha256": "8ba670779706bcb3e8da75c53781f3548747991acb9f76ec7c1277b9c83e2460",
+      "dimensions": [
+        1440,
+        3031
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        1195,
+        34,
+        1308,
+        3016
+      ],
+      "changed_pixels": 2371
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_light_en.png",
+      "before_sha256": "154fdb8e9603249be5f1514c40879641836cddefcc339b7a594b9644f3b94204",
+      "after_sha256": "3b5505fc641dd169e02f3b28994070d695307dfe278223d551fc3b34da638638",
+      "dimensions": [
+        1440,
+        3073
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        1129,
+        19,
+        1436,
+        3073
+      ],
+      "changed_pixels": 18728
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_light_zh.png",
+      "before_sha256": "ec7d2e88eab0606e95a7c270b9ffe7e305961eacfadf262062e16b5f6b07bde6",
+      "after_sha256": "3bc00d7020bd64b12d8c5821b8dc39de2ab52a1b048be947577073922c6e7c19",
+      "dimensions": [
+        1440,
+        3031
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        1157,
+        19,
+        1432,
+        3031
+      ],
+      "changed_pixels": 16417
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_dark_en.png",
+      "before_sha256": "ddfc7626f50e38782c07c083c590a446b8f87b0d389e9c5ed2a2cb226edb9a98",
+      "after_sha256": "b888c2022913ec991c91e474382ebfdd2dfe06247200fecf5f399e1ec3cfc43a",
+      "dimensions": [
+        320,
+        844
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        64,
+        81,
+        75,
+        92
+      ],
+      "changed_pixels": 57
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_dark_zh.png",
+      "before_sha256": "c86543eeb0392e063c01c7ec8f2dda84976cb5ff72712ba68253055506d4c7f6",
+      "after_sha256": "c86543eeb0392e063c01c7ec8f2dda84976cb5ff72712ba68253055506d4c7f6",
+      "dimensions": [
+        320,
+        844
+      ],
+      "same_dimensions": true,
+      "pixel_identical": true,
+      "difference_bounds": null,
+      "changed_pixels": 0
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_light_en.png",
+      "before_sha256": "d02e8bc3bc662e72caa704f17752476952a7f83f5fc68186b56de9bf250794d2",
+      "after_sha256": "7ced592eb27dfced16555d6e387911ab4cc83534f6178918aaadfdc2e0b7154b",
+      "dimensions": [
+        320,
+        844
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        16,
+        18,
+        304,
+        106
+      ],
+      "changed_pixels": 2923
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_light_zh.png",
+      "before_sha256": "e4bf91019e4dfa562204010a534062aab7a81687ab980409d5e8388c0f67c8b9",
+      "after_sha256": "b47043cb878fada094b3d14e855a7788161816ac4f049f2b61cac14f24e856ec",
+      "dimensions": [
+        320,
+        844
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        16,
+        18,
+        304,
+        106
+      ],
+      "changed_pixels": 2784
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_dark_en.png",
+      "before_sha256": "39316b31a84f6a00e63ee81d5896951b9c5aca4278a34b95f232aa3bae9febf8",
+      "after_sha256": "c98e45e9af5fc41fccc5e35e8822401d339330f4d484370078f0869ee913f610",
+      "dimensions": [
+        390,
+        844
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        64,
+        18,
+        326,
+        92
+      ],
+      "changed_pixels": 215
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_dark_zh.png",
+      "before_sha256": "21e4b38f6f620817af118848bd50132645f823d7d4be92d54bb326e053f555dc",
+      "after_sha256": "a5c405d2f65d694db4854edce0ef00dea2b0c12de3f8381f3f4e5d2cf3440833",
+      "dimensions": [
+        390,
+        844
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        72,
+        18,
+        326,
+        92
+      ],
+      "changed_pixels": 126
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_light_en.png",
+      "before_sha256": "d4a66206376d24f28d326c12e76d5dd231a0c2e557f2cec7db7cd608fabe78d5",
+      "after_sha256": "44857fa43da1b9bb39aa2ec5bfb3706da4335761df471b724f8619cbe0195faa",
+      "dimensions": [
+        390,
+        844
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        16,
+        18,
+        374,
+        106
+      ],
+      "changed_pixels": 3120
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_light_zh.png",
+      "before_sha256": "419920d8be1497c37fcce6532bc1d6d54fb863e124d3436e0cbb856b4bc7b6c2",
+      "after_sha256": "bb277f5fca44a3932cfd172bcc6113b794d629d5fd00818ca72bdf6df5a41643",
+      "dimensions": [
+        390,
+        844
+      ],
+      "same_dimensions": true,
+      "pixel_identical": false,
+      "difference_bounds": [
+        16,
+        18,
+        374,
+        106
+      ],
+      "changed_pixels": 2938
+    }
+  ]
+}

@@ -1,0 +1,335 @@
+{
+  "schema": "intl_country_paper_r11_receipt.v1",
+  "operation": "intl-country-cockpit-20261018",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-2-0",
+  "url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-2-0",
+  "boards": {
+    "dark": "DMX-0",
+    "light": "DW7-0",
+    "mobileDark": "E4D-0",
+    "mobileLight": "EC2-0"
+  },
+  "accepted_catalog": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+  "effects": [
+    {
+      "operation_id": "intl-country-r11-desktop-dark-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "create_artboard",
+      "node": "DMX-0"
+    },
+    {
+      "operation_id": "intl-r11-dark-shared-header-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-content-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-masthead-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-navigation-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-worldbrief-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-text-contrast-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "update_styles"
+    },
+    {
+      "operation_id": "intl-r11-dark-worldbrief-forecast-wording-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "set_text_content"
+    },
+    {
+      "operation_id": "intl-r11-dark-country-rail-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-rail-jp-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-rail-kr-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-rail-tw-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-rail-in-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-rail-au-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-rail-gb-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-rail-ez-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-korea-container-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-korea-header-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-korea-body-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-fit-canvas-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "update_styles"
+    },
+    {
+      "operation_id": "intl-r11-dark-korea-interpretation-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-analysis-columns-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-country-header-token-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "update_styles"
+    },
+    {
+      "operation_id": "intl-r11-dark-forecast-panel-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-conditional-heading-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-forecast-path-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-forecast-source-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-stronger-path-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-weaker-path-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-watch-evidence-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-vitals-container-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-inflation-vital-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-policy-vital-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-market-conditions-container-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-gdp-vital-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-market-observations-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-price-trend-reading-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-transmission-channel-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-source-ledger-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-other-countries-container-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-country-row-clones-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "duplicate_nodes"
+    },
+    {
+      "operation_id": "intl-r11-dark-country-row-text-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "set_text_content"
+    },
+    {
+      "operation_id": "intl-r11-dark-country-row-styles-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "update_styles"
+    },
+    {
+      "operation_id": "intl-r11-dark-country-layer-names-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "rename_nodes"
+    },
+    {
+      "operation_id": "intl-r11-dark-global-connections-container-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-global-channel-01-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-global-channel-02-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-global-channel-03-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-dark-secondary-tools-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-desktop-light-clone-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "duplicate_nodes"
+    },
+    {
+      "operation_id": "intl-r11-desktop-light-name-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "rename_nodes"
+    },
+    {
+      "operation_id": "intl-r11-desktop-light-palette-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "update_styles"
+    },
+    {
+      "operation_id": "intl-r11-mobile-dark-create-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "create_artboard"
+    },
+    {
+      "operation_id": "intl-r11-mobile-dark-statusbar-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-mobile-dark-fit-canvas-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "update_styles"
+    },
+    {
+      "operation_id": "intl-r11-mobile-dark-shared-brand-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-mobile-dark-content-clone-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "duplicate_nodes"
+    },
+    {
+      "operation_id": "intl-r11-mobile-dark-responsive-layout-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "update_styles"
+    },
+    {
+      "operation_id": "intl-r11-mobile-light-clone-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "duplicate_nodes"
+    },
+    {
+      "operation_id": "intl-r11-mobile-light-name-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "rename_nodes"
+    },
+    {
+      "operation_id": "intl-r11-mobile-light-palette-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "update_styles"
+    },
+    {
+      "operation_id": "intl-r11-mobile-light-statusbar-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html"
+    },
+    {
+      "operation_id": "intl-r11-four-board-design-complete-20261018",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes"
+    }
+  ],
+  "finish_observed": true,
+  "old_boards_preserved": true,
+  "production_published": false
+}

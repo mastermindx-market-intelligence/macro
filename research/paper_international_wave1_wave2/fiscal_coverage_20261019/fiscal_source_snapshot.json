@@ -1,0 +1,76 @@
+{
+  "schema": "mastermind.intl_fiscal_source_snapshot.v1",
+  "recorded_at": "2026-10-20T03:39:39.291084+00:00",
+  "checkpoint": "FISCAL_COVERAGE_20261020.json",
+  "checkpoint_sha256": "9dbb0e2f6bc05d052a5fa1173a38fd79f765a4e79951832c86c0a40d1d5b0064",
+  "archive": "fiscal_source_snapshot.tar.gz",
+  "archive_sha256": "c44d73d2fbfc858a08eae3e017adcd3e766078f0ffb87ca9b59411b897a255ab",
+  "sources": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "68decd270c1c7e01941604c6c72e91810073fe12413f71b4949a12a83293e415",
+      "bytes": 1747047
+    },
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "sha256": "45dd376f305c073f760bda4ab45b477fe4bc06be43683fa8deb9ab78ce0f7888",
+      "bytes": 28619
+    },
+    {
+      "path": "collectors/intl_weo.py",
+      "sha256": "18ee3594029a1d17a827de7d491a1bd29b683f840e86def00f239a1745799775",
+      "bytes": 19461
+    },
+    {
+      "path": "config/intl_country_baseline.json",
+      "sha256": "43e16a0f1dfc20aec4efc3b866437063e28da2ffadfd57465428973b92daba27",
+      "bytes": 274521
+    },
+    {
+      "path": "config/intl_country_releases.json",
+      "sha256": "c058a84efd3e776b53fd01345b764afdb0baa4c23ec4bb24e8f6443ac4f87bd5",
+      "bytes": 2199
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "sha256": "56427071385290802483cc98a5d419c3be0de33938f7ea1a8f83b0cf1448880d",
+      "bytes": 27797
+    },
+    {
+      "path": "lib/intl_country_outlook.py",
+      "sha256": "8f1afe03ef49523f2707fe7be9e5f49ba1664a36841a038cff810b58c9aea772",
+      "bytes": 20304
+    },
+    {
+      "path": "lib/intl_forecast_vintages.py",
+      "sha256": "c7119cb5dea4debca20093ae69ce148fcbf8530f7d82ca7fe9f5918459c84cbc",
+      "bytes": 22778
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "sha256": "61c397d9ac808c2aaa5a46139e10d172703f96ed2e9c927f0c14b29aac8f03bd",
+      "bytes": 26245
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "sha256": "9646d04a14eca1c88f0e1415aff4468c2feba8208aa0e37e217609acfd025fc3",
+      "bytes": 28534
+    },
+    {
+      "path": "tests/fixtures/intl_weo_october_2026_fiscal_api.json",
+      "sha256": "f457a604b7f97280c30dfb128753dc01f470dd1bb2c45d1fbe661b8e49a99e34",
+      "bytes": 3119
+    },
+    {
+      "path": "tests/test_intl_country_cockpit.py",
+      "sha256": "4ab7af9cfd91b7903cf8a213213265b955cd06539d4247f676ebcf9c948fb192",
+      "bytes": 21917
+    },
+    {
+      "path": "tests/test_intl_forecast_vintages.py",
+      "sha256": "c2f52e4a47bf35e6fbd1014ea4ebfd57c6ff2ecd4756989f4c658ff56c53d30c",
+      "bytes": 22815
+    }
+  ],
+  "purpose": "Preserve the exact accepted fiscal source bytes before the next currency increment changes shared files. No git commit or ref advance."
+}

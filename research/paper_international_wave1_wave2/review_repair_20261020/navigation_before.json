@@ -1,0 +1,197 @@
+{
+  "phase": "before",
+  "started_at": "2026-10-20T09:22:26.712716+00:00",
+  "html_sha256": "f987f45a24a3ec0463736d8cb8cfc28bc5aba507cf297553b6618f584ba67621",
+  "checks": [
+    {
+      "name": "native_summary_updates_url",
+      "actual": {
+        "hash": "#imc-country-KR",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "native_summary_back",
+      "actual": {
+        "hash": "",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-KR",
+        "open": [
+          "imc-country-KR"
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "native_summary_forward",
+      "actual": {
+        "hash": "#imc-country-KR",
+        "open": [
+          "imc-country-KR"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "native_summary_reload",
+      "actual": {
+        "hash": "#imc-country-KR",
+        "open": [
+          "imc-country-KR"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "summary_keyboard_Enter",
+      "actual": {
+        "hash": "#imc-country-KR",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "summary_keyboard_Space",
+      "actual": {
+        "hash": "#imc-country-KR",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": false
+    },
+    {
+      "name": "native_summary_can_collapse",
+      "actual": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "partial_coverage_has_no_dead_country_links",
+      "actual": 6,
+      "expected": 0,
+      "passed": false
+    },
+    {
+      "name": "stale_anchor_does_not_rewrite_url",
+      "actual": "#imc-country-KR",
+      "expected": "",
+      "passed": false
+    },
+    {
+      "name": "focus_ring_inside_scrollport_light_en",
+      "actual": false,
+      "expected": true,
+      "passed": false
+    },
+    {
+      "name": "focus_ring_inside_scrollport_light_zh",
+      "actual": false,
+      "expected": true,
+      "passed": false
+    },
+    {
+      "name": "focus_ring_inside_scrollport_dark_en",
+      "actual": false,
+      "expected": true,
+      "passed": false
+    },
+    {
+      "name": "focus_ring_inside_scrollport_dark_zh",
+      "actual": false,
+      "expected": true,
+      "passed": false
+    },
+    {
+      "name": "no_page_exceptions",
+      "actual": [
+        "Cannot read properties of null (reading 'scrollIntoView')"
+      ],
+      "expected": [],
+      "passed": false
+    }
+  ],
+  "page_errors": [
+    "Cannot read properties of null (reading 'scrollIntoView')"
+  ],
+  "focus": [
+    {
+      "theme": "light",
+      "lang": "en",
+      "outline": "solid",
+      "width": "2px",
+      "offset": "5px",
+      "vertical_ring_inside_scrollport": false,
+      "horizontal_ring_inside_scrollport": false
+    },
+    {
+      "theme": "light",
+      "lang": "zh",
+      "outline": "solid",
+      "width": "2px",
+      "offset": "5px",
+      "vertical_ring_inside_scrollport": false,
+      "horizontal_ring_inside_scrollport": false
+    },
+    {
+      "theme": "dark",
+      "lang": "en",
+      "outline": "solid",
+      "width": "2px",
+      "offset": "5px",
+      "vertical_ring_inside_scrollport": false,
+      "horizontal_ring_inside_scrollport": false
+    },
+    {
+      "theme": "dark",
+      "lang": "zh",
+      "outline": "solid",
+      "width": "2px",
+      "offset": "5px",
+      "vertical_ring_inside_scrollport": false,
+      "horizontal_ring_inside_scrollport": false
+    }
+  ],
+  "finished_at": "2026-10-20T09:22:37.795408+00:00",
+  "passed": 1,
+  "total": 14
+}

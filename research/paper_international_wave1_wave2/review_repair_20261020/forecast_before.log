@@ -1,0 +1,147 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_________ test_retained_cache_loader_preserves_actual_fiscal_admission _________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3330/test_retained_cache_loader_pre0')
+
+    def test_retained_cache_loader_preserves_actual_fiscal_admission(tmp_path):
+        from collectors.intl_country_sources import SCHEMA
+        from lib.intl_country_inputs import load_country_inputs
+        base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+        record = next(r for r in base["forecast_archive"]
+                      if r["cc"] == "KR" and r["series_id"] == "government_debt"
+                      and r["correction_sequence"] == 0)
+        source = tmp_path / "source"
+        data = tmp_path / "data"
+        (source / "config").mkdir(parents=True)
+        (data / "intl_macro").mkdir(parents=True)
+        (source / "config/intl_country_baseline.json").write_text(json.dumps({"schema":SCHEMA}))
+        cache = {"schema":SCHEMA, "forecast_archive":[record]}
+        path = data / "intl_macro/country_inputs.json"
+        path.write_text(json.dumps(cache))
+        original_bytes = path.read_bytes()
+        for _ in range(2):
+            loaded = load_country_inputs(data, source)
+>           assert loaded["forecast_archive"] == [record]
+E           AssertionError: assert [{'cc': 'KR',...026-10', ...}] == [{'cc': 'KR',...026-10', ...}]
+E             
+E             At index 0 diff: {'cc': 'KR', 'provider': 'IMF', 'family': 'WEO', 'edition': '2026-10', 'published': '2026-10-13', 'series_id': 'government_debt', 'unit': 'percent_gdp', 'period_basis': 'calendar_year', 'fiscal_start_month': 1, 'definition_id': 'GGXWDG_NGDP:general_government:CG_LG_SS:accrual:calendar_year', 'periods': [{'year': 2026, 'label': '2026', 'start': '2026-01-01', 'end': '2026-12-31', 'value': 47.3, 'status': 'projection'}, {'year': 2027, 'label': '2027', 'start': '2027-01-01', 'end': '2027-12-31', 'value': 46.2, 'status': 'projection'}], 'information_cutoff':...
+E             
+E             ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_intl_forecast_vintages.py:466: AssertionError
+_ test_retained_archive_restores_correction_and_withdrawal_without_readmission _
+
+    def test_retained_archive_restores_correction_and_withdrawal_without_readmission():
+        from collectors.intl_country_sources import SCHEMA, merge_country_inputs
+        old, corrected = corrected_cutoff_archive()
+        withdrawn = admit([{**corrected[-1], "withdrawn_at":"2026-10-19T12:30:00+00:00",
+                           "withdrawal_source_url":WEO_OCTOBER_2026["source_url"]}],
+                          corrected, now="2026-10-19T14:00:00+00:00")
+        original = admit([old])
+        # Reconstruct both an empty baseline and an older shipped baseline.
+        for previous in ([], original, corrected):
+            rebuilt = merge_country_inputs(
+                {"schema":SCHEMA,"forecast_archive":previous},
+                {"schema":SCHEMA,"forecast_archive":withdrawn}, preserve_custody=True)
+>           assert rebuilt["forecast_archive"] == withdrawn
+E           AssertionError: assert [{'cc': 'KR',...026-10', ...}] == [{'cc': 'KR',...026-10', ...}]
+E             
+E             At index 0 diff: {'cc': 'KR', 'provider': 'IMF', 'family': 'WEO', 'edition': '2026-10', 'published': '2026-10-13', 'series_id': 'real_gdp_growth', 'unit': 'percent', 'period_basis': 'calendar_year', 'fiscal_start_month': 1, 'definition_id': 'real_gdp_growth:percent:calendar_year', 'periods': [{'year': 2026, 'label': '2026', 'start': '2026-01-01', 'end': '2026-12-31', 'value': 3.3, 'status': 'projection'}, {'year': 2027, 'label': '2027', 'start': '2027-01-01', 'end': '2027-12-31', 'value': 2.8, 'status': 'projection'}], 'information_cutoff': '2026-10-01', 'actual_through...
+E             
+E             ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_intl_forecast_vintages.py:486: AssertionError
+____ test_retained_reconstruction_preserves_accepted_and_conflict_identity _____
+
+    def test_retained_reconstruction_preserves_accepted_and_conflict_identity():
+        from collectors.intl_country_sources import SCHEMA, merge_country_inputs
+        accepted = admit([raw()])
+        archive = admit([raw(values={"2026":4.0,"2027":3.0})], accepted,
+                        now="2026-10-19T12:00:00+00:00")
+        restored = merge_country_inputs({"schema":SCHEMA},
+            {"schema":SCHEMA,"forecast_archive":archive}, preserve_custody=True)
+>       assert restored["forecast_archive"] == archive
+E       AssertionError: assert [{'cc': 'KR',...026-10', ...}] == [{'cc': 'KR',...026-10', ...}]
+E         
+E         At index 0 diff: {'cc': 'KR', 'provider': 'IMF', 'family': 'WEO', 'edition': '2026-10', 'published': '2026-10-13', 'series_id': 'real_gdp_growth', 'unit': 'percent', 'period_basis': 'calendar_year', 'fiscal_start_month': 1, 'definition_id': 'real_gdp_growth:percent:calendar_year', 'periods': [{'year': 2026, 'label': '2026', 'start': '2026-01-01', 'end': '2026-12-31', 'value': 4.0, 'status': 'projection'}, {'year': 2027, 'label': '2027', 'start': '2027-01-01', 'end': '2027-12-31', 'value': 3.0, 'status': 'projection'}], 'information_cutoff': None, 'actual_through': None,...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_intl_forecast_vintages.py:503: AssertionError
+_ test_retained_cache_with_missing_custody_is_not_stamped_by_render[retrieved_at] _
+
+field = 'retrieved_at'
+
+    @pytest.mark.parametrize("field", ["retrieved_at","first_observed_at","admitted_at"])
+    def test_retained_cache_with_missing_custody_is_not_stamped_by_render(field):
+        from collectors.intl_country_sources import SCHEMA, merge_country_inputs
+        record = admit([raw()])[0]
+        record.pop(field)
+        restored = merge_country_inputs({"schema":SCHEMA},
+            {"schema":SCHEMA,"forecast_archive":[record]}, preserve_custody=True)
+>       assert restored["forecast_archive"] == []
+E       AssertionError: assert [{'cc': 'KR',...026-10', ...}] == []
+E         
+E         Left contains one more item: {'cc': 'KR', 'provider': 'IMF', 'family': 'WEO', 'edition': '2026-10', ...}
+E         Use -v to get more diff
+
+tests/test_intl_forecast_vintages.py:514: AssertionError
+_ test_retained_cache_with_missing_custody_is_not_stamped_by_render[first_observed_at] _
+
+field = 'first_observed_at'
+
+    @pytest.mark.parametrize("field", ["retrieved_at","first_observed_at","admitted_at"])
+    def test_retained_cache_with_missing_custody_is_not_stamped_by_render(field):
+        from collectors.intl_country_sources import SCHEMA, merge_country_inputs
+        record = admit([raw()])[0]
+        record.pop(field)
+        restored = merge_country_inputs({"schema":SCHEMA},
+            {"schema":SCHEMA,"forecast_archive":[record]}, preserve_custody=True)
+>       assert restored["forecast_archive"] == []
+E       AssertionError: assert [{'cc': 'KR',...026-10', ...}] == []
+E         
+E         Left contains one more item: {'cc': 'KR', 'provider': 'IMF', 'family': 'WEO', 'edition': '2026-10', ...}
+E         Use -v to get more diff
+
+tests/test_intl_forecast_vintages.py:514: AssertionError
+_ test_retained_cache_with_missing_custody_is_not_stamped_by_render[admitted_at] _
+
+field = 'admitted_at'
+
+    @pytest.mark.parametrize("field", ["retrieved_at","first_observed_at","admitted_at"])
+    def test_retained_cache_with_missing_custody_is_not_stamped_by_render(field):
+        from collectors.intl_country_sources import SCHEMA, merge_country_inputs
+        record = admit([raw()])[0]
+        record.pop(field)
+        restored = merge_country_inputs({"schema":SCHEMA},
+            {"schema":SCHEMA,"forecast_archive":[record]}, preserve_custody=True)
+>       assert restored["forecast_archive"] == []
+E       AssertionError: assert [{'cc': 'KR',...026-10', ...}] == []
+E         
+E         Left contains one more item: {'cc': 'KR', 'provider': 'IMF', 'family': 'WEO', 'edition': '2026-10', ...}
+E         Use -v to get more diff
+
+tests/test_intl_forecast_vintages.py:514: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-61319f99-ee5c-4e24-befc-0a4322f5272e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-61319f99-ee5c-4e24-befc-0a4322f5272e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-61319f99-ee5c-4e24-befc-0a4322f5272e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-61319f99-ee5c-4e24-befc-0a4322f5272e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_forecast_vintages.py::test_retained_cache_loader_preserves_actual_fiscal_admission
+FAILED tests/test_intl_forecast_vintages.py::test_retained_archive_restores_correction_and_withdrawal_without_readmission
+FAILED tests/test_intl_forecast_vintages.py::test_retained_reconstruction_preserves_accepted_and_conflict_identity
+FAILED tests/test_intl_forecast_vintages.py::test_retained_cache_with_missing_custody_is_not_stamped_by_render[retrieved_at]
+FAILED tests/test_intl_forecast_vintages.py::test_retained_cache_with_missing_custody_is_not_stamped_by_render[first_observed_at]
+FAILED tests/test_intl_forecast_vintages.py::test_retained_cache_with_missing_custody_is_not_stamped_by_render[admitted_at]
+6 failed, 73 deselected, 2 warnings in 2.47s

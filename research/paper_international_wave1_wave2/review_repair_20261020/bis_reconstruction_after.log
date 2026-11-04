@@ -1,0 +1,63 @@
+........................................................................ [ 28%]
+...............F........................................................ [ 57%]
+........................................................................ [ 85%]
+....................................                                     [100%]
+=================================== FAILURES ===================================
+_ test_policy_point_custody_survives_cache_replay_and_changes_only_with_new_content _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11155fd90>
+
+    def test_policy_point_custody_survives_cache_replay_and_changes_only_with_new_content(monkeypatch):
+        from datetime import datetime,timezone
+        from collectors import intl_country_sources as owner
+        context=bis_policy_observation()
+        class Clock(datetime):
+            instant="2026-10-18T13:00:00+00:00"
+            @classmethod
+            def now(cls,tz):
+                return datetime.fromisoformat(cls.instant)
+        monkeypatch.setattr(owner,"datetime",Clock)
+        first=merge_country_inputs({"schema":SCHEMA},
+            {"schema":SCHEMA,"official":{"GB":{"policy":context}}},today=TODAY)
+        point=first["official"]["GB"]["policy"]
+        assert point["first_observed_at"]==Clock.instant
+        Clock.instant="2026-10-18T14:00:00+00:00"
+        repeated=deepcopy(context)
+        repeated["retrieved_at"]=Clock.instant
+        repeated["source_sha256"]="d"*64
+        repeated["daily_reference"]["source_sha256"]="d"*64
+        same=merge_country_inputs(first,{"schema":SCHEMA,"official":{"GB":{"policy":repeated}}},today=TODAY)
+        assert same["official"]["GB"]["policy"]==point
+        Clock.instant="2026-10-18T15:00:00+00:00"
+        changed=bis_policy_observation(value=4.25)
+        changed["first_observed_at"]="2026-01-01T00:00:00Z"
+        latest=merge_country_inputs(first,{"schema":SCHEMA,"official":{"GB":{"policy":changed}}},today=TODAY)
+        fresh=latest["official"]["GB"]["policy"]
+        assert fresh["first_observed_at"]==Clock.instant
+        restored=merge_country_inputs({"schema":SCHEMA},latest,today=TODAY,preserve_custody=True)
+        assert restored["official"]["GB"]["policy"]==fresh
+        assert selected([raw()],monthly=fresh,operational_as_of="2026-10-18T14:30:00Z")["monthly_context"] is None
+>       assert selected([raw()],monthly=fresh,operational_as_of="2026-10-18T15:30:00Z")["state"]=="conflict"
+E       AssertionError: assert 'verified' == 'conflict'
+E         
+E         - conflict
+E         + verified
+
+tests/test_intl_policy_evidence.py:630: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-cffab84c-8366-45cf-8ba9-e3952b678eee/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-cffab84c-8366-45cf-8ba9-e3952b678eee/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-cffab84c-8366-45cf-8ba9-e3952b678eee/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-cffab84c-8366-45cf-8ba9-e3952b678eee/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_policy_evidence.py::test_policy_point_custody_survives_cache_replay_and_changes_only_with_new_content
+1 failed, 251 passed, 2 warnings in 4.25s

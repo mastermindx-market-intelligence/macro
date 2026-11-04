@@ -1,0 +1,67 @@
+{
+  "started_at": "2026-10-20T10:46:13.431298+00:00",
+  "finished_at": "2026-10-20T10:46:21.852233+00:00",
+  "source_parent": "1a292672de4bb3f14b00c88e4af1f493b854a364",
+  "main_parent": "422e121246f956834085853a49dfc6c2250d3dab",
+  "diff_sha256": "ecc3ebcd3a46550fc4f0b9b64fdb8da58dc36d116355436a8030d19df25782c5",
+  "results": {
+    "design_system": {
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/intl-review-repair-final-20261020.diff"
+      ],
+      "exit_code": 0,
+      "log": "design_system.log",
+      "log_sha256": "eaeafec1bb072628aab33ef1cc23bd74c6aeff4b4f8e4e93187b11d12527eb32",
+      "tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25370 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25370)\n"
+    },
+    "runtime_style": {
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "exit_code": 0,
+      "log": "runtime_style.log",
+      "log_sha256": "51b62ee124c81005018c3134f07bc9ce9b1a4dd3d36f6c520b02e801808c6bf9",
+      "tail": "runtime style injection guard OK (237 .js files scanned, 44 injecting, 88 total hits — all within frozen allowances)\n"
+    },
+    "visual_evidence": {
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/intl-review-repair-final-20261020.diff"
+      ],
+      "exit_code": 0,
+      "log": "visual_evidence.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tail": ""
+    },
+    "agentos": {
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/agentos.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "log": "agentos.log",
+      "log_sha256": "7239ae6c03f7795140be92fcecc6889f63cf1f242e3a5fbf9feb733bea121e80",
+      "tail": "g title=agentos-review-overdue::agentos/decisions/DEC-FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE.md: [review-overdue] review_by 2026-10-08 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED.md: [review-overdue] review_by 2026-10-08 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md: [review-overdue] review_by 2026-09-13 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-PROPHET-US-PERMANENCE-NET.md: [review-overdue] review_by 2026-09-10 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-PROPHET-V4-THEIA-SOURCE-RIGHTS.md: [review-overdue] review_by 2026-10-01 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-SI-METHOD-LAW-CHANNELS.md: [review-overdue] review_by 2026-09-15 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0B-V1-SOURCE-WINDOW-UNACHIEVABLE.md: [review-overdue] review_by 2026-08-27 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0C-V2-HYBRID-PRICE-ACTIVITY-SCOPE.md: [review-overdue] review_by 2026-08-21 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0C-V2-REST-SINGLE-TICKER-DAILY.md: [review-overdue] review_by 2026-08-21 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0D0-0400Z-SOURCE-SEAL-GO.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-WORKSPACE-SUPERVISION-EXTENDS-EXISTING-AUTONOMY.md: [review-overdue] review_by 2026-09-20 has passed\nagentos: 1907 records (101 workstreams, 513 decisions, 551 discoveries, 742 handoffs) — 0 error(s), 155 warning(s)\n"
+    },
+    "template_site_sync": {
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "exit_code": 0,
+      "log": "template_site_sync.log",
+      "log_sha256": "15b94bc406548bc737e30b451f0eb1b57df476f1de6b0fb603c67fc245e3bbc5",
+      "tail": "template↔site sync OK (132 pairs checked)\n"
+    }
+  },
+  "passed": true
+}

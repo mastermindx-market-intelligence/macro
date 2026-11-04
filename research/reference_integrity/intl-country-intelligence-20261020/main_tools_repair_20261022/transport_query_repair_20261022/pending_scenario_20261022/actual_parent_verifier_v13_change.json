@@ -1,0 +1,6 @@
+{
+  "recorded_at": "2026-10-22T19:58:17.706158+00:00",
+  "prior_sha256": "6c73d0ea15a647e7ea3e26e65d24250c0e4a1e3f103fb6810fbb67dca82160ca",
+  "sha256": "aa4f29148e418d0ceffe94e87a5fee0dc44e8eb1a748409cd52be30b91e8e53e",
+  "reason": "Independent review found late responses with unassigned matches excluded by old global population filter. After all contexts close and pending responses drain, classify every expected-origin/path asset response; require explicit valid200 or exactqualified304, reject bodyerrors, unsupportedstatus/method or unboundlate304. Product assertions unchanged."
+}
