@@ -1,6 +1,6 @@
 # F01 — Shared shell product and UX specification
 
-**Version: F01/1.0.0-candidate.4. Status: PARTIAL / REQUEST_CHANGES; RIG draft; not accepted for implementation.**
+**Version: F01/1.0.0-candidate.4. Status: PARTIAL / REQUEST_CHANGES; RIG draft; complete design not accepted.** The current user separately authorizes bounded F01 implementation; that authorization does not accept or release the complete design. [Proposed joint candidate.5](JOINT_SHELL_SYSTEM_CONTRACT_CANDIDATE5.md) precisely amends shared-evidence presentation while candidate.4 remains operative pending named owner-interface decisions and qualification.
 
 Source carrier: [Macro #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645). Sole source/canvas owner for this slice: the current F01 receiver, GitHub principal mastermidx4. F02 remains with mastermindx-2 on [#10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630). The [joint candidate](JOINT_SHELL_SYSTEM_CONTRACT.md), [source contracts](SOURCE_AND_DATA_CONTRACT.md), [retention ledger](FEATURE_RETENTION_LEDGER.md), [acceptance cases](ACCEPTANCE_TESTS.md) and [evidence record](EVIDENCE_AND_REVIEW.md) are one bounded package under the supplied programme, not a new programme or runtime owner.
 

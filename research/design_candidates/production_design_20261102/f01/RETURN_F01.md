@@ -4,7 +4,15 @@
 **Current acceptance:** PARTIAL / REQUEST_CHANGES / RIG draft. **Final joint v1: unreleased.**  
 **Existing carrier:** [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), branch `design/f01-shared-shell-v1-20261103-c4`, stacked under [programme #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The enclosing immutable Git commit binds this return and its [package inventory](evidence/PACKAGE_MANIFEST.json).
 
-## Current continuation amendment — 2026-11-04 UTC
+## Current continuation — 2026-11-04 UTC
+
+The same F01 owner has published [joint candidate.5](JOINT_SHELL_SYSTEM_CONTRACT_CANDIDATE5.md) as **PROPOSED_NOT_ADOPTED**, grounded in F02's actual response013fdd72. Candidate.4's14,315 operative policy bytes remain unchanged. The successor specifies pre-mutation focus ownership, adaptation versus dismissal, recoverable suspension, explicit current-intent reopen, visible-focus/scroll precedence and precise host/domain adoption gaps. F03's four-ID grouping/reset responsee1ac30e1 is received with exact path/tier/corpus constraints; complete290-record adoption remains held.
+
+Original Terminal#1264 is now merged asf528a219, not Draft. Its two focus findings were reproduced and a bounded correction is under the existing receiver in a new managed workspace at Terminale48170b6; the completed carrier is preserved. Intermediate correction proof is87 component/neighbor passes and25 Chromium passes/2 intentional skips, plus type/lint. Visual self-QA found the category outline clipping and a final CSS/geometry repair is being qualified. [Implementation handoff](IMPLEMENTATION_HANDOFF.md) distinguishes those intermediate results, historical proof and final publication. No release action or Paper mutation occurred in this continuation.
+
+Protected procedure is Mastermind1548ad095387838ff1a22133879d37b40fb180d8, compatible bootstrap1/skillpack1.0.1. The current Web review waiver removes optional review ceremony; this session continues source/self-QA directly. It does not fabricate formal nonauthor approval, expand old review scope, accept candidate.5, reconcile unknown effects or release the explicit merge/Ready/deploy hold. **MORE_WORK_EXISTS:** finish source-bound focus correction, publish its evidence on the same owner's Draft companion, then continue the safe F01 work available from the exact owner responses.
+
+## Historical hardening/publication checkpoint — superseded current-state wording
 
 **F02 candidate.4 policy concurrence is received**, through existing author mastermindx-2, first at e6c28413ee74e83950b8c5ff58a34b81e76c1781 and reaffirmed in current consumed freeze6b72172aec810aa7795e5a50d4be9ca2dde5cf5b. [Actual receipt and retained conditions](evidence/hardening_20261104/README.md) supersede the earlier pending-F02 routing status below. The current user now authorizes F01 specification hardening followed by scoped implementation. Existing native/review/RIG/release holds remain. The [builder plan](BUILDER_AND_MEASUREMENT_PLAN.md#current-authorized-hardening-and-implementation-slice) owns this continuation; no other assignment, source writer or Paper target is taken over.
 

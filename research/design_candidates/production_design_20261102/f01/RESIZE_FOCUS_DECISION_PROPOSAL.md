@@ -1,6 +1,6 @@
 # F01 proposal — passive resize and evidence focus
 
-**F01-RESIZE-FOCUS/0.1, 2026-11-04 UTC. Status: PROPOSED; F02/affected-owner response required.** This is a concrete decision request against joint candidate.4 §4.1 and [interaction conformance §5](INTERACTION_CONFORMANCE.md#unresolved-dock-to-modal-focus-edge). It does not replace the source-concurred joint contract or implement an inspector. The current directory implementation does not depend on adopting this proposal.
+**F01-RESIZE-FOCUS/0.1, 2026-11-04 UTC. Status: F02_PROPOSAL_CONCURRENCE_RECEIVED; NOT_ADOPTED.** F02 answered at [013fdd72](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/F01_RESIZE_FOCUS_RESPONSE.md), blob76ffd9adee60a87d74c2a2a78b72c9fcaf604eff. [Joint candidate.5](JOINT_SHELL_SYSTEM_CONTRACT_CANDIDATE5.md) carries the precise successor proposal, extra clarifications and remaining affected-owner decisions. The original decision text below is retained as the reviewed input; candidate.4 remains operative. Neither proposal implements an inspector or blocks the separate directory correction.
 
 ## Problem and proposed decision
 
@@ -36,6 +36,6 @@ F01 owns the policy/composition and visible reopen affordance. F02 qualifies com
 
 ## Exact decision requested and version treatment
 
-F02: concur with the two focus-dependent dock→modal branches above, or return a concrete alternative that satisfies inertness and intentional-focus preservation. Identify component constraints or variants that prevent the rule. Adopting domains: identify any existing selected-object/trigger contract unable to preserve/reopen the same evidence.
+The original F02 question is answered by the exact response above. The successor request is now candidate.5's bounded delta and named trigger/fallback/arbitration decisions, not a duplicate request for candidate.4 or the same two-branch position. Adopting domains must identify their existing selected-object/trigger contract and any inability to preserve/reopen the same evidence.
 
 Keep candidate.4 operative until the affected owners respond. If adopted, publish the changed transition as a new joint candidate with its exact change list and scoped responses. Neither an F01 proposal nor a coordination comment is reciprocal concurrence, independent review, implementation proof or release. The remaining Paper effects and complete-set gates are unchanged.

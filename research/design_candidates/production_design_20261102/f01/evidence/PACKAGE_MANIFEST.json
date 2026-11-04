@@ -1,13 +1,13 @@
 {
   "schema": "F01.cumulative_package_manifest.v1",
   "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
-  "kind": "Published bounded F01 implementation/proof handoff and exact current F02 owner scope; joint operative policy unchanged; independent qualification pending",
+  "kind": "Candidate.5 proposed amendment; exact F02/F03 responses; focus correction in progress with intermediate self-QA evidence",
   "containing_commit": "The enclosing immutable Git commit binds this manifest; a moving branch name is not the receipt",
-  "parent_before_package": "2d1c3e21e58dd895b2282c6d6288e0eee4693c65",
-  "files_excluding_self": 176,
-  "total_member_bytes": 6370317,
+  "parent_before_package": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
+  "files_excluding_self": 178,
+  "total_member_bytes": 6416680,
   "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline for each member",
-  "aggregate_sha256": "8a98fd98adc79430c4d75d26928d00ca7272ca2d43125b16441cb063d1e99d74",
+  "aggregate_sha256": "e1b09172cb181de23437916a09a959574300508fc3dedd1fead5b0d72e3c9064",
   "historical_review_inputs": {
     "candidate2_capture": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
     "candidate3_source_repair": "b55efe221d16ae5e64935af4c60572701b2a43a0",
@@ -42,9 +42,9 @@
   "files": [
     {
       "path": "ACCEPTANCE_TESTS.md",
-      "bytes": 35494,
-      "sha256": "bda5e9c3a1f458d6a51008e05c10f433fc42b9bf0327058425c05b2ebd0f44a9",
-      "git_blob_sha": "492edb46fba1b11f477b877e372495b83513b3cb"
+      "bytes": 36120,
+      "sha256": "a81cd1b8f6930177c609249dd74d472b46d623d748ef1472d0f11035f55cda73",
+      "git_blob_sha": "4ee74c0416f2cbf7f3ce84a67eda7c4206d83931"
     },
     {
       "path": "BUILDER_AND_MEASUREMENT_PLAN.md",
@@ -66,9 +66,9 @@
     },
     {
       "path": "DIRECTORY_PROPOSAL_NOTES.md",
-      "bytes": 10049,
-      "sha256": "4cb803ead17618b820fe3f7f39e9a6870e77dc65e6bd1a515798114807762a22",
-      "git_blob_sha": "dbdeadfb821e27e672b5d9aa9f291a42610bcc8f"
+      "bytes": 13031,
+      "sha256": "a780efdb2cfe9c579ec4337871c952f55586409ce734dcda193b61921e10f5f8",
+      "git_blob_sha": "b04dee1f579bbf2d429087921389c34b36fe1f15"
     },
     {
       "path": "EVIDENCE_AND_REVIEW.md",
@@ -84,45 +84,51 @@
     },
     {
       "path": "IMPLEMENTATION_HANDOFF.md",
-      "bytes": 10706,
-      "sha256": "20c2654d397cbaf1d9e4f2cbca7a9fb3de2f78e109bbf50190a9560433cac282",
-      "git_blob_sha": "87a4e99e4bfa024df50da21616b45f3385a00698"
+      "bytes": 12566,
+      "sha256": "2e9f8722b7489eb406c5655ce5fa4602ddf630c29811a43625d5fe8ee48c8368",
+      "git_blob_sha": "8f537115597bfa143cbf2a6fa2e08a9438db67b5"
     },
     {
       "path": "INTERACTION_CONFORMANCE.md",
-      "bytes": 19220,
-      "sha256": "d501675fa12b40d984ce9aee07d6f2a2df39668909a8e4ed6cd740ebedde4b62",
-      "git_blob_sha": "36271d036bf520e662a2723d976141003ec67dc2"
+      "bytes": 20546,
+      "sha256": "d1238361951a00c725cbdd60eeb95fd557dd9c7a8241b0f91c9b594cc6e44605",
+      "git_blob_sha": "f049556ae4f20d230eef0585c3583e970afbe37f"
     },
     {
       "path": "JOINT_SHELL_SYSTEM_CONTRACT.md",
-      "bytes": 29310,
-      "sha256": "8af997b5d9cd668ead574a4f96cd47679aca2112e506325feedf8f359bfad846",
-      "git_blob_sha": "653d93bbce70a2515d677ecdb76bb21edfab750c"
+      "bytes": 30526,
+      "sha256": "2c9be45e8f3b03ec8417d8a43ae9976370608defe3d441452f794c1f7d8df491",
+      "git_blob_sha": "7a987f6923e607d0ee49ef04eff7f1d20d728bc0"
+    },
+    {
+      "path": "JOINT_SHELL_SYSTEM_CONTRACT_CANDIDATE5.md",
+      "bytes": 19893,
+      "sha256": "f45e0b9ab9bd1e481ca0ea92623ad35562abf0569c82d463f4ba7cfb23d29875",
+      "git_blob_sha": "46c22edd8077d3f3ffda48ed51f72bf9dff4955d"
     },
     {
       "path": "PRODUCT_UX_SPEC.md",
-      "bytes": 33168,
-      "sha256": "e1ac0f64e5614390da1e4cc48caaad23c3ecf4638c2fc6305a7951dd75040263",
-      "git_blob_sha": "7e1b5a8f209a2ff1736a82d2dde4c5a0ffb57d8d"
+      "bytes": 33512,
+      "sha256": "b9555ee731547233a75d142bc0be7b967f0e6ac470ae86456b8601283f63d1ad",
+      "git_blob_sha": "5e2a90332570ddc2a341a175cc1fdd1043225600"
     },
     {
       "path": "README.md",
-      "bytes": 13102,
-      "sha256": "6ae6f72a012288b8ca228842065867121660aeee65dca707df1ca1aa095a9ef6",
-      "git_blob_sha": "ed5af249d7118cb286226eab03def70d897a241f"
+      "bytes": 14004,
+      "sha256": "65299a743b99a29ef17ff7e751da1231485e7c759a12b1c53bca70fea6b202cb",
+      "git_blob_sha": "40e8887b9e028b0337c04d0e1b6265f1ab35387e"
     },
     {
       "path": "RESIZE_FOCUS_DECISION_PROPOSAL.md",
-      "bytes": 5566,
-      "sha256": "0d5555ebc04a1fda30b3b318f48514ee542a53db428ee4a73a6200d0ff6af5ac",
-      "git_blob_sha": "c5fcb502746843d10ce422ce3c1e35fcc1112a7f"
+      "bytes": 5884,
+      "sha256": "10a0fe08dab8c6a75ea852d31c50737fc9f1a39057dba5fd443c449df79ceb5e",
+      "git_blob_sha": "47a98becb876961bb8ef9e74e7a96eb55aac811b"
     },
     {
       "path": "RETURN_F01.md",
-      "bytes": 30383,
-      "sha256": "1702045794172881e3873fe7ecbd8e61903bbc585783884075a59095c8aa6add",
-      "git_blob_sha": "a965929aa49340d61ae585c23127a54b54115d25"
+      "bytes": 32290,
+      "sha256": "5c2f1dade655e4e1c2869834e5d32ed7ce0a40030d88be17fc05d916ae53d73e",
+      "git_blob_sha": "b577efc35aa7f3d33d68f2c1675506b68ca60cdf"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
@@ -309,6 +315,12 @@
       "bytes": 5897,
       "sha256": "590be01ad7fe281ad6929e2e34036a0a3a728348d9921a345f9766653d9f6645",
       "git_blob_sha": "26a57752c4a4d9aca38a00f9548f9c7549f71ffb"
+    },
+    {
+      "path": "evidence/focus_and_candidate5_20261104/OWNER_SOURCE_RECEIPTS.json",
+      "bytes": 14989,
+      "sha256": "6aab8074220c3e0dc4ce2ee967df3a6b7cf328f2aad4459836d807f91870b5a9",
+      "git_blob_sha": "8176c0a725ed581c0f2c0f28c0c65709d1dea225"
     },
     {
       "path": "evidence/hardening_20261104/ADVISORY_AND_ADJUDICATION.md",

@@ -2,6 +2,23 @@
 
 **PROPOSED INPUT — NOT ACCEPTED.** This is a complete presentation proposal for exactly the supplied 290 IDs. F03 and the incumbent exporter/domain owners retain registry and access authority. The root remains the sole F01 source/Paper writer. No route, source input, production code or canvas was changed.
 
+## Current four-record response — 2026-11-04 UTC
+
+F03 has supplied **F03_CONCURRENCE_SCOPED_V1**, [exact response at e1ac30e1405d5fed4fa1a79d623a066505d47c52](https://github.com/mastermindx-market-intelligence/macro/blob/e1ac30e1405d5fed4fa1a79d623a066505d47c52/research/design_candidates/production_design_20261102/f03/F01_OPTIONS_TAXONOMY_RESPONSE.md), blob`e01dfc667c1b288635be7b2179c7993d1474dcf4`, and [owner comment6621915717](https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6621915717). It reviewed proposal blob`1fb186e2efc0f6270e32f95b3cca92f2971fcb7c` at F01abfecf1. The earlier pending grouping/reset question is answered. This is source/design concurrence for the four-identity grouping only; all290 complete label/alias/category proposals are not thereby accepted.
+
+| Exact existing ID | Exact href | Preserved payload tier |
+| --- | --- | --- |
+| terminal:options_futures | /options/futures | premium |
+| terminal:options | /options | unknown |
+| macro:options | /options.html | public_shell_premium_payload |
+| macro:options_screener | /options_screener.html | public_shell_premium_payload |
+
+At inspected Terminale48170b6, the actual unchanged generated projection still contains290 directory records and exactly these four ID/href/tier tuples. File SHA-256 is`2bfc0bf51e405abdd61032470d0b04cf1e1114370bd1c1f9b8e9e137d807f8cc`; its registry hash is`8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe`, Macro source73852e22, Terminal sourcee0d4cabf, Mastermind source7ab47f0b and inventory90e0644f. Those embedded source pins are separate from the Terminal commit carrying the generated file. No regeneration or edited catalog is implied.
+
+Implementation must collect the incumbent eligible All results first, then facet by these exact existing IDs. Keep the incumbent category-specific fallback for every other category; do not replace it by filtering a deduplicated All list. Derive total and facet counts from the same query/source snapshot. Show all changes category only and restores ordered full results. Four and12 describe a fixture, not constants. A new matching lesson changes the total without joining the platform facet. Zero facet/nonzero total has a category-only recovery. Preserve native/legacy paths, unknown and public-shell/premium-payload tiers, all seven learning results and the calculator, and current title/alias/localization owners. No title rename, alias expansion, market qualifier or access migration follows from this response.
+
+F03 has not executed runtime/input/access/loading/error/stale cases, released translations or approved every proposal. D08A/B/C/D are design packages, not one-to-one route IDs; equity replay retains its null-canonical boundary. The original proposal and counts below remain historical integrity evidence. Current implementation/proof, if present, must be linked separately with its exact source and cannot turn the historical integrity check into acceptance.
+
 ## Source and integrity
 
 The input is [directory-retention-audit.json](directory-retention-audit.json), SHA-256 **9198fc5664cb609dfe1436159cff102387ffe3dca84e14b483fe4b433914648d**. Its immutable source is [sharedShellRoutes.generated.json](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/sharedShellRoutes.generated.json) at Terminal **3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9**. The supplied audit metadata is copied exactly into the proposal; every original entry field is copied exactly into its baseline object.
