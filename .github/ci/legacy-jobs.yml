@@ -25976,9 +25976,7 @@ jobs:
     # (86.7% of snapshot rows, ~1475 of 1702 names).  Spec §3 says missing
     # dollar_adv_20d must PASS with liq_unknown=True.
     # Fix: adv.isna() | adv.ge(_LIQ_ADV_MIN) in _apply_liquidity().
-    # Existing Pick Lab suites plus caller-owned publication/recovery proof:
-    #   test_pick_lab_publication.py — D03 T38: explicit HTML outcome, loud
-    #                                fail-soft warning and rerender-only recovery.
+    # Four suites:
     #   test_pick_lab_liquidity.py — four required cases (null-adv pass,
     #                                below-threshold excluded, above-threshold
     #                                pass, close<5+null-adv excluded) plus
@@ -25988,7 +25986,7 @@ jobs:
     #                                (catalyst/standouts/stale-cross shapes,
     #                                _col container values, snapshot upsert).
     #   test_pick_lab_hk_render.py — HK lab page renderer suite (needs jinja2).
-    # Network-free; fixture writes are confined to private temporary roots.
+    # Network-free; no data/ writes.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25998,7 +25996,85 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: pick lab liquidity gate regression tests
-        run: python -m pytest tests/test_pick_lab_liquidity.py tests/test_pick_lab_core.py tests/test_pick_lab_hk_runner.py tests/test_pick_lab_hk_render.py tests/test_pick_lab_publication.py -q
+        run: python -m pytest tests/test_pick_lab_liquidity.py tests/test_pick_lab_core.py tests/test_pick_lab_hk_runner.py tests/test_pick_lab_hk_render.py -q
+
+  pick-lab-publication:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # D03 T38: caller-owned HTML outcome + fail-soft rerender-only recovery.
+    # Appending this suite to pick-lab-liquidity raised the index-template
+    # probe 5912 -> 5914 through the incumbent's opaque render-root fallback.
+    # Keep the incumbent's commands/coverage unchanged; this focused owner
+    # follows the adjacent pick-lab-cn-render precedent. Its complete static
+    # import closure, ancestor inits and real Jinja/shared assets are explicit.
+    # Fixture JSON/ledger/snapshot traversals are confined to tmp_path; the
+    # real US page is rendered, but unrelated index/free/Prophet pages are not.
+    # No measured-weight override, packing ceiling or release-gate change.
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/indicators.py"
+      - "engine/pick_lab/__init__.py"
+      - "engine/pick_lab/book.py"
+      - "engine/pick_lab/candidates.py"
+      - "engine/pick_lab/grade.py"
+      - "engine/pick_lab/ledger.py"
+      - "engine/pick_lab/registry.py"
+      - "engine/pick_lab/render.py"
+      - "engine/pick_lab/signals_1d.py"
+      - "engine/pick_lab/snapshot.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/forex_link.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/build_pick_lab.py"
+      - "templates/_all_tools_menu.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/data_base.js"
+      - "templates/shared_shell.css"
+      - "templates/shared_shell_bridge.js"
+      - "templates/theme.css"
+      - "templates/theme.js"
+      - "templates/us_stocks_lab.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_pick_lab_publication.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: Pick Lab publication outcome and rerender-only recovery
+        run: python -m pytest tests/test_pick_lab_publication.py -q
 
   pick-lab-cn-render:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
