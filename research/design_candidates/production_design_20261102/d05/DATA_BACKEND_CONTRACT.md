@@ -1,5 +1,14 @@
 # D05 backend and data contracts
 
+## Implemented extension — 2026-11-04
+
+The original data meanings below remain binding. [Macro1573afde source contract](https://github.com/mastermindx-market-intelligence/macro/blob/1573afdee7f6956968bded3b84e5fd4e25a8c82c/docs/verification/d05_native_cycles_20261104/SOURCE_CONTRACT.md#11-integrated-dossier-members-and-company-return--current-2026-11-04-contract) now defines the implemented Central32KiB, Members4KiB and parent64KiB flat return contract, bridge20261104.2 and qualified applied/partial/rejected outcomes.
+
+The Members1 SHA256 identifies exact serialized display data; it does not confer authorization, PIT membership or cycp1 publication. Missing/empty/thin remain distinct. Confluence price-history counts, configured rosters and native positive-volume fractions are separate; n_gateable means scored groups. Return% and excess-pp units are explicit. Rotation date comes from source asof; current configured membership, cap30 and8 native horizons are disclosed. Current return-rate acceleration has a1M fallback; held peer#8299 changes that producer, so future composition must rebind the copy.
+
+All existing scientific, correction-lineage, auth/save and regional source gaps remain separate. See [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md).
+
+
 This is a consumer/build contract over existing producers, not a new API, database, provenance service, queue, watcher or lifecycle. Field names described as **native** were read in current source. Fields described as **required presentation qualification** must be supplied or explicitly unavailable; the UI cannot manufacture them. Source references: [S03–S06 and S11](SOURCE_EVIDENCE.md).
 
 ## 1. Identity and scope

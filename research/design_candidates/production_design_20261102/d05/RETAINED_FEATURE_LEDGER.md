@@ -1,5 +1,9 @@
 # Retained-feature ledger guide
 
+## Implementation annotation — 2026-11-04
+
+The134 inherited rows and40 additions remain intact. The [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) binds current native Central/Cycles/Dossier, Members/Company return and confluence/rotation upgrades to Macro1573afde. Retention tests and local browser proof do not retire remaining regional, scientific, auth/save or source-publication obligations. No accepted Paper board or ledger row was rebuilt in this continuation.
+
 RETAINED_FEATURE_LEDGER.csv contains **174 rows**: all **134 inherited capability rows**, joined to their existing source/control contract, plus **40 D05 route-specific additions**. No inherited capability was deleted.
 
 The inherited proposal census is retained verbatim: **88 RETAIN, 37 IMPROVE, 7 RELOCATE, 2 BLOCKED_DATA**. Those are predecessor proposal dispositions, not 134 newly approved production capabilities. The inherited verifier notes and served-proof status remain visible rather than being overwritten with a D05 success claim.

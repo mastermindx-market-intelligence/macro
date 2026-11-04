@@ -1,6 +1,27 @@
 # D05 test matrix and executed evidence
 
-## Implementation execution addendum — 2026-11-04 UTC
+## Current executed scope — Macro1573afde
+
+See [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) for exact source/receiver/component identities and proof links.
+
+| Executed scope | Result | Limit |
+|---|---|---|
+| Actual composed nine-step journey |1440 dark/EN and390 light/ZH pass against exact published component749 |Local fixture auth/data; Company is native dark and original light/ZH restores |
+| Native Cycles |42 browser source/retention cases pass |Not blanket actual-theme or all-regional acceptance |
+| Members |15 browser and11 producer cases pass |Regional cases are controlled display fixtures |
+| Shared bridge / native entry |87 bridge and8 native-entry cases pass |No new router/store/access owner |
+| Confluence/rotation semantics |21 cases pass;24 existing regression passes/3 data-store skips |Counts, units, gates, dates, zero/missing, cap30, MTD and US/China listing links |
+| Consumer layout |12 actual-browser cases pass |1440 dark/EN,1440 light/ZH,390 light/ZH,320 dark/EN; fixture only |
+| Terminal |142 tests/11 suites and full TypeScript pass |14 files unpublished;486 inherited paths unchanged |
+| CI registration/readback |Two new suites have one existing job;25 source/component/CI hashes match committed bytes |Hosted CI and formal release gates are separate |
+
+The CSV retains119 original test IDs and original full-scope status, with additive
+current-evidence/qualification columns. A subset proof does not turn an all13-route,
+live-auth, save or natural-refresh case into PASS. Historical totals overlap and
+must not be added to these counts.
+
+
+## Historical implementation execution addendum — 2026-11-04 UTC
 
 Source carrier: [Macro Draft #10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703), exact head `77b6e5d4771242320198b002878d8c842f9833b9`, tree `b804be23045ff5460b6f175b9577e6883dd52d1b`. Final shared-design and release acceptance remain held.
 

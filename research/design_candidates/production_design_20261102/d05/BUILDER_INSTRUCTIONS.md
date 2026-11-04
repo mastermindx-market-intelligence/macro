@@ -1,6 +1,12 @@
 # D05 builder instructions
 
-## Implementation checkpoint — 2026-11-04 07:25 UTC
+## Current execution — source1573afde
+
+Consume the [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) before the historical checkpoints below. Macro #10703 now includes the source-qualified Dossier/Members/Company return and confluence/rotation consumer repairs. Two actual composed published749 journeys pass; Terminal's14-file implementation and the compact component remain in their original blocked publishers. Preserve all486 inherited Terminal paths. Do not repeat accepted design work or the already-present State of Themes absence repair.
+
+The exact source/contract/proof binding is [Macro1573afde](https://github.com/mastermindx-market-intelligence/macro/commit/1573afdee7f6956968bded3b84e5fd4e25a8c82c). The original no-merge/Ready/queue/relabel/deploy holds remain.
+
+## Historical source checkpoint — 2026-11-04 07:25 UTC
 
 **Incumbent source: [Macro Draft #10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703), head `77b6e5d4771242320198b002878d8c842f9833b9`, tree `b804be23045ff5460b6f175b9577e6883dd52d1b`.** Ref, source bytes and Draft/open/unmerged state were read back. Protected Mastermind law remains `b5e8a9682f72b1bf802e50cf16f77f878ce596f3` (compatible INDEX 1.0.1). Earlier heads are historical proof bindings.
 
@@ -125,7 +131,7 @@ Perform only admitted original-owner repairs. Specifically verify:
 - elapsed Retail projection cannot remain “next,” while current Cycles' existing elapsed guard is retained;
 - SC-092 remains unavailable while Central has no native correction fields; SC-066 retains its inherited acceptance hold pending publication and consumer proof;
 - for SC-066 specifically, the current engine census fields exist but are absent from the inspected committed payload; prove publication and consumer binding, and never equate scored groups with entry-eligible groups;
-- a missing State of Themes thesis/falsifier summary cannot default to a successful no-invalidation reading; repair the original producer's absence semantics;
+- retain the delivered State of Themes producer absence semantics: absent/malformed summaries are UNKNOWN; verify original result custody separately and do not dispatch a duplicate repair;
 - B12 PARITY_FAILS prevents MODEL/PASS/current probability promotion;
 - 401/403/offline/malformed cannot expose paid rows or fabricate an empty population;
 - stale/late/mixed-generation context cannot replace a later selection;
@@ -141,7 +147,7 @@ Verify source output at the build revision, then serve that exact build and capt
 
 ### Phase F — Review and later release
 
-Obtain independent product/regression and visual/taste RIG review on the frozen candidate, then exact-head implementation review and carried scientific/auth/contrast/history proofs. Keep foundation, Paper, code, CI, merge, deployment and production acceptance as separate receipts.
+Perform source-bound self-QA on the frozen candidate: diff review, focused tests, visual inspection, accessibility and actual journeys, preserving carried scientific/auth/contrast/history conditions. A separate technical/source/design reviewer is optional for this attended Web session unless binding protected law expressly requires it. Formal GitHub non-author approvals, branch protection and required CI remain binding. Keep foundation, Paper, code, CI, merge, deployment and production acceptance as separate receipts.
 
 No release action is included in D05. A later admitted release must use existing rollout/rollback and publication owners, preserve previous verified release pointers, and prove one natural data refresh without a custom watcher. Do not create a new release or observability plane.
 

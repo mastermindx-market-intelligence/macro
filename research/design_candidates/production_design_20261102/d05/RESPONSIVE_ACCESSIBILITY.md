@@ -1,5 +1,14 @@
 # Responsive, accessibility and visual requirements
 
+## Current implementation qualification — 2026-11-04
+
+The [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) records actual browser and screenshot proof. The phone Cycle sheet yields while the Dossier is open and returns with selection intact. Native Advanced opens through its existing control when needed for requested return focus. Members preserves both page and table scrolling; member targets retain44px handling. Success feedback no longer shifts restored content.
+
+The actual390 light/ZH journey crosses the Company-owned native dark chart and restores light/ZH on return without overwriting public theme intent. This is an explicit Company boundary, not Company light-mode acceptance or a waiver for D05 light rendering.
+
+12 consumer fixtures passed at1440 dark/EN,1440 light/ZH,390 light/ZH and320 dark/EN with no document overflow or page errors and screenshot inspection. Published component749 has a known stretched desktop summary beside expanded values; the tested compact repair remains unpublished in #10707. Final F02 visual/contrast/complete accessibility acceptance remains held.
+
+
 F01-F02-SHELL/1.0.0-candidate.4 and F02-SYSTEM/1.0.0-candidate.2 are consumed provisionally. Final shared design acceptance is held. Values below are the inspected candidate contracts, not a claim that the foundation has shipped. [S08](SOURCE_EVIDENCE.md#s08--shared-foundation-candidates)
 
 ## 1. Container geometry

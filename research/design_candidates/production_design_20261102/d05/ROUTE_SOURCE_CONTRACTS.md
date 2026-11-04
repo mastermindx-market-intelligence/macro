@@ -1,5 +1,9 @@
 # D05 route and source contracts
 
+## Current implementation disposition
+
+The audit and original route IDs below are retained. The [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) gives the current status of all13 routes at Macro1573afde. ROUTE_MATRIX adds current-stage/evidence/limit columns while retaining the original census and audit-stage columns. Existing implementations were upgraded; SPECIFIED_NOT_IMPLEMENTED in the historical audit is not a claim that these routes are blank.
+
 Audit pin df691495abb1c2ba8f61e5624126cb17ad14e056. Assignment route IDs are unchanged. This table resolves gaps in the assignment census; it does not modify that shared registry. Route behavior is specified against the existing builders. [Sources](SOURCE_EVIDENCE.md)
 
 ## 1. All thirteen canonical routes
@@ -9,8 +13,8 @@ Audit pin df691495abb1c2ba8f61e5624126cb17ad14e056. Assignment route IDs are unc
 | macro:allocation | /allocation.html | scripts/build_allocation.py::build_region → allocation.html.j2 → write_page | engine.narrative_rotation.compute_narrative_rotation(region); allocationdata/allocation.json; region snapshots and alerts | A07. Research lifecycle, model weights, risk, alerts and validation all retained. D22 owns allocation meaning. |
 | macro:factors | /factors.html | scripts/build_site.py factor build → factors.html.j2 | factordata/factors.json plus IC, breadth, factor series, NW state, seasonality and momentum display | A08 generic unavailable pattern. config/site_access.yml denies the route even to entitled sessions. No customer navigation promotion. |
 | macro:rotation_family | /rotation/&lt;key&gt;.html | scripts/build_subsector_rotation_pages.py → subsector_rotation_detail.html.j2 | marketdata/subsector_rotation.json; eight horizons; at most 30 members, 1M order | A12. Preserve native key, cohort, units, source dates and historical archive provenance. D19 reviews China variant separately. |
-| macro:sector_central | /sector_central.html | scripts/build_sector_central.py → sector_central.html.j2 + si_workspace.js | engine.sector_central; free data JS/JSON, publication record, own premium payload and existing research handoff | A01/A10/A11. Existing six hash views remain reachable inside task-oriented presentation. |
-| macro:sector_cycles | /sector_cycles.html | scripts/build_sector_cycles.py → sector_cycles.html.j2; sector_cycles.js/CSS | SECTOR_CYCLES core, SECTOR_CYCLES_SERIES, SECTOR_NARR, SECTOR_DNA; sectordata/sector_cycles.json | A02 plus retained R3/R4. Native in-shell integration and Dossier Cycle remain owner work, not delivered by #9917 or D05. |
+| macro:sector_central | /sector_central.html | scripts/build_sector_central.py → sector_central.html.j2 + si_workspace.js | engine.sector_central; free data JS/JSON, publication record, own premium payload and existing research handoff | A01/A10/A11. Existing six hash views remain reachable; the seventh native Cycles view and source-qualified Dossier/return seam are now implemented in1573afde. |
+| macro:sector_cycles | /sector_cycles.html | scripts/build_sector_cycles.py → sector_cycles.html.j2; sector_cycles.js/CSS | SECTOR_CYCLES core, SECTOR_CYCLES_SERIES, SECTOR_NARR, SECTOR_DNA; sectordata/sector_cycles.json | A02 plus retained R3/R4. D05 native integration and the already-published component749 are now composed in1573afde. Newer compact-layout publication and final shared acceptance remain held. |
 | macro:sectors_family | /sectors/&lt;fund&gt;.html | Four implementations; see regional matrix below | Fund or regional sector source, local constituents and original stock route | A03/A04 and A01/A11 pattern. Do not infer one universal template or ticker from the route placeholder. |
 | macro:state_of_themes | /state_of_themes.html | scripts/build_state_of_themes.py::compose, orchestrated by build_site.py → state_of_themes.html.j2 | neuralwebdata theme state/thesis/asymmetry/pathways; phase history; basketdata specialist context; existing consumer contract | A07. Dated thesis/evidence/falsifier, reading order, seven setup legs, source provenance. |
 | macro:subsector_family | /subsector/&lt;id&gt;.html | scripts/build_subsector_confluence.py::render_pages → subsector_detail.html.j2 | US subsector/basket confluence; subsectorohlc, subsector_signals, subsector detail; basket b- prefix | A06/A12. Native group gate and stock gate separate; preserve identity and coverage. |
@@ -96,5 +100,5 @@ Keep #theme-* resolution and #read-* source-trace resolution as distinct behavio
 
 These are specifications/owner gates, not claims of repaired production code.
 
-8. **Missing falsifier evidence:** State of Themes currently defaults an absent thesis/falsifier summary to false/zero and can emit NOT_DETECTED. Explicit positive missing-count becomes UNCONFIRMED, but complete absence does not. The existing research producer must distinguish absence before the UI can claim no invalidation was detected. This is recorded as a source-owner repair requirement, not a local signal override.
+8. **Missing falsifier evidence — source repair present:** Macro ef0680c1 and retained1573afde include _falsifier_summary_qualification; absent/malformed summaries produce UNKNOWN with FALSIFIER_SUMMARY_ABSENT/FALSIFIER_SUMMARY_MALFORMED. The earlier absence-default defect is historical. Do not duplicate the repair or retry the reserved worker. Source presence does not settle original result-consumption custody or current market acceptance.
 

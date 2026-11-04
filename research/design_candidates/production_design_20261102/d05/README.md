@@ -1,14 +1,14 @@
 # D05 — Sectors, Themes & Rotation
 
-**Audit, specification and editable candidate package complete. Final shared design acceptance HELD.** No product implementation or release action is included.
+**Audit, specification and editable candidate package complete; implementation and local browser proof now advanced. Final shared design acceptance HELD.** The current source is published in Macro Draft #10703 at1573afde; Terminal and compact-component publication remain gated. No release action occurred. See [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md).
 
-Frozen full-package commit: **22f6a887a621e82497ea256611835cee2ba6f079**. [Delivery receipt](DELIVERY_RECEIPT.md) records the verified source scope, evidence, limits and exact continuation.
+Original design-package freeze: **22f6a887a621e82497ea256611835cee2ba6f079**. [Delivery receipt](DELIVERY_RECEIPT.md) records the verified source scope, evidence, limits and exact continuation.
 
 D05 preserves the strongest existing sector, cycle, theme, breadth, confluence, flow and rotation intelligence and connects it through one investigation:
 
 **Market → sector → rotation/cycle evidence → theme or constituent → exact Company listing → exact return.**
 
-The package covers **all 13 assigned canonical routes**, **134 inherited capabilities plus 40 additions**, **12 editable Paper boards** and **119 defined build-test cases**. The test cases are planned, not reported as executed.
+The package covers **all 13 assigned canonical routes**, **134 inherited capabilities plus 40 additions**, **12 editable Paper boards** and **119 defined build-test cases**. The119 cases remain the complete acceptance obligation; the current implementation checkpoint and TEST_MATRIX record executed subsets and their limits without treating every case as passed.
 
 [Open the editable Paper candidates](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-3-0) · [Existing programme Draft PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617)
 
