@@ -1375,10 +1375,3 @@ pages:
     note: "Preserve the published standalone descriptive consensus surface. Shared Shell admission remains withheld; registry discovery supplies no new consumer-purpose permission."
     why: "Coverage, revision breadth, consensus movers and a per-ticker explorer form a descriptive discovery board; this classification grants no additional audience."
 
-  macro:consumer_cyclical_plnt:
-    archetype: "instrument_analyzer"
-    lifecycle: "parked"
-    known_contracts: ["site_access.v1:default_insider", "shared_shell:admission_withheld"]
-    evidence: [scripts/build_consumer_cyclical_plnt_page.py, config/site_access.yml]
-    note: "Diagnostic builder-write inventory only: the synthetic fixture card was withdrawn from the public carrier by Product Trust F-6 (#10237/#10268), and has no committed site HTML. Preserve its public-build refusal and consumer exclusion."
-    why: "The source builder explicitly refuses the public carrier while its sole input is the synthetic fixture; inventory must not relabel that withdrawal as live publication."
