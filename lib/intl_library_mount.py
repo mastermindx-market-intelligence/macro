@@ -8,6 +8,7 @@ from copy import deepcopy
 from html.parser import HTMLParser
 import logging
 import json
+import re
 
 from markupsafe import Markup
 
@@ -105,14 +106,19 @@ def attach_public_library(workspace, *, catalogue, macro_html, stocks_rendered):
     return result
 
 
-def intl_inert_json(value):
-    """Compact UTF-8 JSON for script raw text, with every '<' escaped.
+_SCRIPT_RAW_TEXT_HAZARD = re.compile(r"<(?=!--|/?script)", re.ASCII | re.IGNORECASE)
 
-    This is specific to inert JSON carriers; it is never an HTML attribute
-    encoder. Escaping every '<' prevents closing-script and comment parsing.
+
+def intl_inert_json(value):
+    """Compact JSON for script raw text, preserving every decoded character.
+
+    Escape the '<' of ASCII-case-insensitive <!--, <script and </script
+    sequences so the HTML tokenizer cannot enter escaped/double-escaped
+    states or close the carrier. This is never an HTML attribute encoder.
     """
-    return Markup(json.dumps(value, ensure_ascii=False, sort_keys=True,
-                             separators=(",", ":"), allow_nan=False).replace("<", "\\u003c"))
+    encoded = json.dumps(value, ensure_ascii=False, sort_keys=True,
+                         separators=(",", ":"), allow_nan=False)
+    return Markup(_SCRIPT_RAW_TEXT_HAZARD.sub(lambda _: r"\u003c", encoded))
 
 
 def render_international_pages(template, vm, *, catalogue=None, chart_sources=None):

@@ -73,8 +73,22 @@ def _specimen_html():
     return _PAGE["spec"]
 
 
+def _materialize_deferred(html, view):
+    """The logical page: the INERT deferred carriers of one view are replaced
+    by their already rendered canonical markup. Test-fixture inspection only
+    (nothing is rendered, nothing is executed); every other node of the
+    document is returned exactly as published."""
+    from tests.intl_deferred_fixture import materialize_deferred_view
+    return materialize_deferred_view(html, view)
+
+
 def _panel_chunks(html, view, horizon=None, basis=None):
     """Inner HTML of every panel of one view (optionally one context)."""
+    if view == "coverage":
+        # B6 deferredCoverage: the coverage view ships as an INERT carrier whose
+        # JSON payload carries the already rendered canonical markup, so the
+        # coverage panel is not visible text until it is materialized.
+        html = _materialize_deferred(html, view)
     pattern = re.compile(
         r'<section class="intl-gs__panel intl-gs__view intl-gs__view--' + view
         + r'"([^>]*)>(.*?)(?=<section class="intl-gs__panel|<p><a href="#intl-legacy-research")',
@@ -105,20 +119,40 @@ class _TextAndAttrs(HTMLParser):
         super().__init__()
         self.text = []
         self.attrs = []
+        self._raw_text_element = None
 
     def handle_starttag(self, tag, attrs):
+        if tag in {"script", "style"}:
+            self._raw_text_element = tag
         for name, value in attrs:
             if value is not None:
                 self.attrs.append((tag, name, value))
 
+    def handle_endtag(self, tag):
+        if tag == self._raw_text_element:
+            self._raw_text_element = None
+
     def handle_data(self, data):
-        self.text.append(data)
+        # JSON carriers and stylesheets are not visible text. Their ordinary
+        # element attributes remain subject to the existing attribute checks.
+        if self._raw_text_element is None:
+            self.text.append(data)
 
 
 def _scan(html):
     parser = _TextAndAttrs()
     parser.feed(html)
     return parser
+
+
+def test_visible_clock_scan_distinguishes_inert_text_and_visible_instants():
+    clock = "2026-10-21T08:00:00Z"
+    hidden = _scan('<script type="application/json">{"clock":"' + clock +
+                   '"}</script><style>/* ' + clock + ' */</style><span>Readable date</span>')
+    assert not any(RAW_ISO_TEXT.search(text) for text in hidden.text)
+    visible = _scan('<span>' + clock + '</span><time datetime="' + clock + '">Readable date</time>')
+    assert any(RAW_ISO_TEXT.search(text) for text in visible.text)
+    assert ("time", "datetime", clock) in visible.attrs
 
 
 def _visible_text(html):
@@ -773,6 +807,11 @@ def test_a13b_shell_horizon_options_carry_the_vocabulary():
 
 def test_a14_no_raw_iso_and_clean_attributes():
     for html in (_production_html(), _abstain_html()):
+        # B6 deferredCoverage: a carrier's JSON payload is inert text, not
+        # visible content. Materialize the deferred coverage so this visibility
+        # check reads the logical page (the DOM the view had before deferral);
+        # every other node stays exactly as published.
+        html = _materialize_deferred(html, "coverage")
         for view in ("scanner", "coverage"):
             for panel in _panel_chunks(html, view)[:2]:
                 leaks = [node for node in _scan(panel).text if RAW_ISO_TEXT.search(node)]
@@ -975,7 +1014,11 @@ class TestIntlTooltipLocale:
     def test_native_renderers_emit_localized_keyboard_reachable_tooltips_and_consumer(self, pages, name, selector):
         from tests.intl_gs_fixture_site import tooltip_document
         CJK = re.compile(r"[一-鿿㐀-䶿]")
-        soup = tooltip_document(pages[name])
+        # B6 deferredCoverage: the coverage view ships as an INERT carrier, so
+        # the coverage case reads the logical DOM; the scanner case is
+        # published live and stays untouched.
+        materialize_view = "coverage" if "intl-gs__view--coverage" in selector else None
+        soup = tooltip_document(pages[name], materialize_view=materialize_view)
         assert soup.select_one('script[src="theme.js"]') is not None
         nodes = soup.select(selector)
         assert nodes, (name, selector)

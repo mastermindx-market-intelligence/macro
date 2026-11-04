@@ -328,5 +328,16 @@ class _TooltipParser(_TooltipHTMLParser):
             node = node.parent
 
 
-def tooltip_document(html):
+def tooltip_document(html, materialize_view=None):
+    """Parse html into the dependency-free tooltip DOM.
+
+    ``materialize_view`` names a deferred view whose INERT carrier sections
+    are replaced by their already rendered canonical payload markup before
+    parsing, so a static test can read the logical selected-view DOM. It is
+    test-fixture inspection only: nothing is rendered, nothing is executed and
+    every other node of the document is left untouched.
+    """
+    if materialize_view is not None:
+        from tests.intl_deferred_fixture import materialize_deferred_view
+        html = materialize_deferred_view(html, materialize_view)
     return _TooltipParser(str(html)).root

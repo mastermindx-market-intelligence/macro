@@ -50,7 +50,9 @@ def test_dossier_and_coverage_contexts_are_published_as_inert_carriers():
     assert "data-im-gs-market-id" not in outside, "no jurisdiction carrier is parsed into the document"
     assert "intl-gs__covgrid" not in outside, "no Coverage board is parsed into the document"
     for match in CARRIER.findall(page):
-        assert "<" not in match, "the carrier text carries no raw markup delimiter"
+        assert not re.search(
+            r"<!--|</?script", match, re.ASCII | re.IGNORECASE
+        ), "no script-tokenizer state delimiter leaves the carrier"
 
     # The carrier publishes the identity the controller binds to.
     dossier = next(payload for payload in payloads if payload["view"] == "dossier")
@@ -100,6 +102,7 @@ def test_inert_json_roundtrips_without_script_raw_text_breakout():
     from lib.intl_library_mount import intl_inert_json
     payload = {"markup": "</script><!--<img onerror=bad()>中文😀\u2028\u2029&\"'", "literal": r"\u003c"}
     encoded = str(intl_inert_json(payload))
-    assert "<" not in encoded
+    assert not re.search(r"<!--|</?script", encoded, re.ASCII | re.IGNORECASE)
+    assert "<img" in encoded, "ordinary tags remain JSON string data"
     assert "中文" in encoded
     assert json.loads(encoded) == payload

@@ -519,9 +519,19 @@ def test_native_radio_switch_contract():
     module = _load_build_intl()
     assert module.ASSETS[-1] == "intl_workspace_surveillance.css"
     assert module.ASSETS.count("intl_workspace_surveillance.css") == 1
+    import ast
+    # Native Macro/Risk publication now also lives in this shared builder. The
+    # transmission seam remains the exact single observation handoff, alongside
+    # the unchanged surveillance asset placement/uniqueness assertions above.
+    def mount_calls(source):
+        return [ast.dump(node, include_attributes=False) for node in ast.walk(ast.parse(source))
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                and node.func.id == "attach_surveillance"]
+    current = mount_calls((ROOT / "scripts/build_intl.py").read_bytes())
+    assert len(current) == 1
     base = _git_show("scripts/build_intl.py")
     if base is not None:
-        assert base == (ROOT / "scripts/build_intl.py").read_bytes()
+        assert mount_calls(base) == current
 
 
 # --------------------------------------------------------------------------

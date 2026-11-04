@@ -11081,6 +11081,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/intl_deferred_fixture.py"
       - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
@@ -11449,6 +11450,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/intl_deferred_fixture.py"
       - "tests/test_intl_library_retained.py"
       - "tests/test_intl_library_render_ledgers.py"
       - "tests/test_intl_retained_library_continuation.py"
@@ -11875,6 +11877,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/intl_inert_json_tokenizer.test.cjs"
+      - "tests/test_intl_deferred_fixture.py"
+      - "tests/intl_deferred_fixture.py"
       - "lib/intl_library_retained.py"
       - "tests/intl_investigation_action_controller.test.cjs"
       - "lib/intl_investigation_action.py"
@@ -12327,12 +12332,12 @@ jobs:
       - name: Actual International builder and template contracts
         run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py -q
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_investigation_action_controller.test.cjs tests/intl_gs_deferred_panel.test.cjs tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_gs_foundation_browser.test.cjs
+        run: node --test tests/intl_inert_json_tokenizer.test.cjs tests/intl_investigation_action_controller.test.cjs tests/intl_gs_deferred_panel.test.cjs tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_gs_foundation_browser.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
         run: node --test tests/js/tablesort_browser.test.cjs
       # W2A (IM13) test steps: insert below this line
       - name: IM13 global scanner + coverage tests (W2A)
-        run: python -m pytest tests/test_intl_gs_scanner.py tests/test_intl_gs_coverage.py -q
+        run: python -m pytest tests/test_intl_deferred_fixture.py tests/test_intl_gs_scanner.py tests/test_intl_gs_coverage.py -q
       - name: IM13 scanner + coverage browser proof (W2A)
         run: node --test tests/intl_gs_scanner_browser.test.cjs
       # spacer: keep unchanged
@@ -23931,6 +23936,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/intl_deferred_fixture.py"
       - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
