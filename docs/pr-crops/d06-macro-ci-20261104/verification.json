@@ -1,0 +1,109 @@
+{
+  "schema": "d06.macro_ci.final_verification.v1",
+  "status": "passed",
+  "verified_at": "2026-11-04T12:22:05.826071+00:00",
+  "source_parent": "40d395a898c8c6749b4c9998a71fc9196e544c2e",
+  "classification": "Scoped source repairs and local browser/visual proof; hosted CI and production acceptance remain separate.",
+  "functional": {
+    "initial_unit_passes": 253,
+    "initial_unit_suites": 9,
+    "market_after_final_css": {
+      "unit_passes": 85,
+      "overlaps_initial_units": true,
+      "matrix": 6,
+      "edge_cases": 2,
+      "settled_help_observations": 4,
+      "phone_open_close_themes": 2
+    },
+    "unchanged_stage": {
+      "matrix": 5,
+      "edge_cases": 7
+    },
+    "unchanged_spvector": {
+      "matrix": 5,
+      "edge_cases": 5
+    },
+    "unchanged_actual_pinned_contexts": 4,
+    "current_browser_records": 34,
+    "source_receipts": [
+      "source-verification.json",
+      "market-help-fix/source-verification.json"
+    ],
+    "limits": [
+      "Synthetic edge fixtures remain labeled.",
+      "Stage advanced flows recorded only at1440 dark EN.",
+      "No live-feed, physical-device, underlying-source-completeness or quant recertification claim."
+    ]
+  },
+  "canonical_visual": {
+    "current_states": 72,
+    "per_page": 24,
+    "rest": 24,
+    "hover": 24,
+    "focus": 24,
+    "integrity_receipt": "canonical-integrity.json",
+    "console_errors": 0,
+    "failed_resource_responses": 0,
+    "historical_market_manifest": "mockups/evidence/d06-macro-ci-20261104/market_structure/manifest-before-help-fix.json",
+    "popup_acceptance": "Settled viewport before/after observations and real phone close/launcher restoration; full-page trigger-state captures alone do not establish settled popup opacity."
+  },
+  "guards": {
+    "ci_manifest_exit": 0,
+    "design_ratchet_exit": 0,
+    "visual_evidence_exit": 0,
+    "source_citation_tests": 94,
+    "packing_seam_tests": 2,
+    "packing_verdict_replay": "passed with original-limit negative control",
+    "fresh_full_contract_census_pass_claimed": false,
+    "original_full_contract_census_exit": 1,
+    "exact_planning_weight_funding_per_probe": 4,
+    "job_pack_runtime_limits_unchanged": true
+  },
+  "source_hashes": {
+    "tests/test_d06_market_structure.py": "11e6fd717650a59038ee4737f2336d7614b1cdd60ae6a699101b627a620d19f3",
+    "tests/test_build_market_structure_page.py": "c80d685a1fb398197d9cd5fa3a714590efde217d392aacd50bbc5a62c3778e8e",
+    "tests/test_market_structure_glance_copy.py": "0a4ebe82cb41063a8bdc29a245fafc53062219c45cc7f662d169fac292320951",
+    "tests/test_d06_stage_analysis.py": "8c64b425b3b81e8a029000774cda2bd3cc10663224c6e253ae83667c6c96a935",
+    "tests/test_stage_analysis_page.py": "5ecda94ba207b1a785ca6ea35f5155d6db6f3b764c29bfb1fec625c7e0ebd902",
+    "tests/test_d06_spvector.py": "ff9540af2fc68792d3a81067218104b21a29b75e139d61ce5b224de547919de4",
+    "tests/test_spvector_page.py": "4713e83987ac0f22f05027889a2191c9e85c4b3f023e62e7d1835f7a02ae16fb",
+    "tests/test_spvector_gate_chips.py": "a861d95bce948b7c49ff491a14c44dfda5171ab5b84fcc700c0ddce5180d5014",
+    "tests/test_spvector_scorecard_basis.py": "f179ddc0104f417935834bfc9ac53beafc94d17619c70d998d0a7ef5974e4f64",
+    ".github/ci/legacy-jobs.yml": "9ee648e5a30de83d2337ab7c9631b57337b158f1fcb19ec9f03e3bbb6f6bc1cc",
+    "templates/market_structure.html.j2": "75d07b074bad490b2a9ede4610b521e77d18ac9fa5c8f7c83ff55202bb14a0e8",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f",
+    "scripts/build_market_structure_page.py": "2c1567a3d40679c89b457ca4480c398d42683de13424f3b7ef3381fe87707c35",
+    "scripts/build_stage_analysis_page.py": "af4a2cde67fe3da8bbad965991a3918ee1179fccd019cd57dfc52afcf20ab751",
+    "scripts/build_spvector.py": "c803560a7836094f9c965960e16c3c3ace8b28ba89f616aa42fd5794fbf4f5f1",
+    "scripts/verify_d06_macro.py": "5855f2a79e94b30b8cd2127058b4f3fccc00dd7986ba65e2c5df9133f312ff52",
+    "scripts/d06_macro_fixtures.py": "80d440f93d4d55ff39570a47ca2c87424d0b260f0c52c065125ca0eb7b467046",
+    "site/market_structure.html": "efdfad4eb2570b9cc98d4f73a2a67c4a5cfe359de8314da1c9893f0186ffd10f",
+    "site/stage_analysis.html": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2",
+    "site/spvector.html": "84bd933deae1e913332e645954a96a15f9c2405f0d6b6047b0eb28a4351d0b28",
+    "tests/fixtures/market_structure_latest.json": "fddfa5070492aa4a58c1154f3d05a0edb12e0636399aa796d22393d1e6f3854d",
+    "docs/pr-crops/d06-macro-ci-20261104/run_browser.py": "cd6d69a5a9e4bc83eec7c1bd8e8b00494808a3daf95f0fe36c8a2857a76390b8",
+    "design_refs/sector-paper-20261021/copy_deck.json": "c286b25ba4cc7dad14cfe5a33366fa07a213062613bae24b0b6174239f1149f1",
+    "tests/test_cycle_ontology.py": "299361e9d9e1c05a2639e1e6511735eae9972c67b8995b018047e1e789bc90b0",
+    "engine/cycle_ontology.py": "b5fff75d7ccedbc1c6e51932ff229d076a30061ad93ba07cfbdc39c4c613fe20",
+    "tests/test_ci_pack.py": "58b1de61bb5ca26d410b7d2ab3df9ec747ded5e1202e95795198ca0d055a309d",
+    "tests/test_contract_delta.py": "c190955bdaf434cf7b7203cab2588deedbf5bd03079c2a1bada0c1c6c1df79cc",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/run_ci_pack.py": "c418c319391957b790e79bdd9f0bf0c1a52425a4eae73aac5c7575654f3d7e58"
+  },
+  "original_proof_unchanged": true,
+  "root_self_qa": "Actual initial/final functional screenshots, canonical hover/focus samples, settled phone help before/after, source diff, existing focused guards and browser journeys.",
+  "publication": {
+    "operation": "d06-macro-implementation-20261104-c4",
+    "branch": "sol/web-d06-macro-implementation-20261104-c4",
+    "pr": 10734,
+    "identity": "Containing immutable commit plus these file hashes",
+    "draft": true,
+    "ready": false,
+    "enqueue": false,
+    "merge": false,
+    "deploy": false
+  },
+  "reproduction": "Existing repo capture/browser/test owners; commands and exact phase results retained in the linked receipts.",
+  "artifact_inventory": "manifest.json"
+}

@@ -618,7 +618,7 @@ table.heat{border-collapse:separate;border-spacing:0;font-size:11px;font-variant
 
 /* ── research: thesis cards with model badges + expand ── */
 .reswrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px;margin-top:4px}
-.rescard{min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:15px 16px 14px;
+.rescard{min-width:0;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);padding:15px 16px 14px;
   display:flex;flex-direction:column;gap:8px;transition:border-color .16s}
 .rescard:hover{border-color:color-mix(in srgb,var(--info) 40%,var(--line))}
 .rescard-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
@@ -724,7 +724,7 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
 .read-state{min-height:220px;padding:28px;text-align:left}
 .read-state h3{margin:0 0 8px}
 .read-skeleton{display:flex;flex-direction:column;gap:12px;margin-top:22px;max-width:640px}
-.read-skeleton i{display:block;height:14px;border-radius:4px;background:var(--panel2)}
+.read-skeleton i{display:block;height:14px;border-radius:var(--r-ctl,8px);background:var(--panel2)}
 .read-skeleton i:nth-child(2){width:82%}.read-skeleton i:nth-child(3){width:94%}
 .arc-availability{font-size:13px;color:var(--muted);text-align:center;margin:0}
 .surface button,.tab,.seg button,.subseg button,.searchbox input{min-height:44px}

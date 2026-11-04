@@ -126,11 +126,11 @@ html body::before{display:none}
 .wrap .grid>*{min-width:0}
 .wrap .h1{font-size:clamp(27px,3vw,38px);line-height:1.2;margin:6px 0 12px;font-weight:650;letter-spacing:-.035em}
 .wrap .section-title{font-size:12px;margin:28px 0 12px;letter-spacing:.06em}
-.wrap .card{border-radius:12px;padding:24px;box-shadow:none;background:var(--card)}
+.wrap .card{border-radius:var(--r-card,12px);padding:24px;box-shadow:none;background:var(--card)}
 .wrap .card h2,.wrap .card h3{font-size:17px;font-weight:600;margin:0 0 12px}
 .wrap .tag{background:transparent;color:var(--muted);padding:8px 0;font-weight:400}
-.wrap .allocbar{height:12px;border-radius:4px;margin:18px 0 10px}
-.wrap .seg-spy{background:var(--blue)}.wrap .seg-cash{background:#9aa4b2}
+.wrap .allocbar{height:12px;border-radius:var(--r-ctl,8px);margin:18px 0 10px}
+.wrap .seg-spy{background:var(--blue)}.wrap .seg-cash{background:var(--muted)}
 .wrap .allocation-number{font-size:64px;font-weight:600;letter-spacing:-.05em;line-height:1.05;color:var(--ink)}
 .wrap .allocation-number small{font-size:16px;letter-spacing:0;font-weight:500}
 .wrap .allocation-split{display:flex;align-items:baseline;gap:24px;flex-wrap:wrap;margin:18px 0 8px}
@@ -139,10 +139,10 @@ html body::before{display:none}
 .wrap .dialnum{font-size:44px;font-weight:600}
 .wrap .pill{background:transparent!important;color:var(--text);padding:0;font-size:14px}
 .wrap .chips{gap:8px;margin-top:16px}
-.wrap .chip{font-size:12px;font-weight:400;padding:6px 10px;border-radius:6px}
+.wrap .chip{font-size:12px;font-weight:400;padding:6px 10px;border-radius:var(--r-ctl,8px)}
 .wrap .chip b{font-weight:600}
-.wrap .note{border:0;background:var(--bg);padding:14px 16px;border-radius:8px;line-height:1.6}
-.wrap .spv-details{margin-top:16px;border:1px solid var(--grid);border-radius:10px;padding:0 18px;background:var(--card)}
+.wrap .note{border:0;background:var(--bg);padding:14px 16px;border-radius:var(--r-ctl,8px);line-height:1.6}
+.wrap .spv-details{margin-top:16px;border:1px solid var(--grid);border-radius:var(--r-btn,10px);padding:0 18px;background:var(--card)}
 .wrap .spv-details>summary{min-height:52px;display:list-item;align-content:center;cursor:pointer;font-weight:600;padding:14px 0;color:var(--ink)}
 .wrap .spv-details[open]{padding-bottom:20px}
 .wrap .spv-details .section-title:first-of-type{margin-top:10px}
@@ -150,12 +150,12 @@ html body::before{display:none}
 .wrap .legtbl{min-width:580px}.wrap .gtable{min-width:410px}.wrap .tbl{min-width:350px}
 .wrap .legtbl th{font-weight:500;line-height:1.4}
 .wrap .range-controls{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}
-.wrap .range-controls button{min-width:52px;min-height:44px;padding:8px 12px;border:1px solid var(--grid);border-radius:6px;background:var(--card);color:var(--muted);font:inherit;font-size:13px;cursor:pointer}
+.wrap .range-controls button{min-width:52px;min-height:44px;padding:8px 12px;border:1px solid var(--grid);border-radius:var(--r-ctl,8px);background:var(--card);color:var(--muted);font:inherit;font-size:13px;cursor:pointer}
 .wrap .range-controls button[aria-pressed="true"]{background:var(--bg);color:var(--ink);border-color:var(--blue);font-weight:600}
 .wrap .range-controls button:disabled{opacity:.55;cursor:default}
 .wrap :is(button,a,summary,[tabindex]):focus-visible{outline:2px solid var(--blue);outline-offset:3px}
 .wrap .js-plotly-plot{max-width:100%}
-.wrap blockquote{margin:12px 0;padding:12px 16px;border:1px solid var(--grid);border-radius:6px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.wrap blockquote{margin:12px 0;padding:12px 16px;border:1px solid var(--grid);border-radius:var(--r-ctl,8px);font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 .wrap .shadow-state{font-weight:600;color:var(--ink)}
 .wrap .study-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
 .wrap .score .v{font-weight:600}
@@ -191,7 +191,7 @@ html body::before{display:none}
         {% if equity_w %}<div class="seg-spy" style="flex:{{ equity_w }}"></div>{% endif %}
         {% if cash_w %}<div class="seg-cash" style="flex:{{ cash_w }}"></div>{% endif %}
       </div>
-      <div class="legend"><span><i style="background:var(--blue)"></i>{{ t('S&P 500 (SPY)','标普500 (SPY)') }}</span><span><i style="background:#9aa4b2"></i>{{ t('3-month T-bills','3个月国债') }}</span></div>
+      <div class="legend"><span><i style="background:var(--blue)"></i>{{ t('S&P 500 (SPY)','标普500 (SPY)') }}</span><span><i style="background:var(--muted)"></i>{{ t('3-month T-bills','3个月国债') }}</span></div>
       <div class="source-line">{{ t('Allocation model date','仓位模型日期') }} · {{ allocation_as_of or t('Unavailable','暂无数据') }}</div>
       {% if last_switch %}<div class="sub" style="margin-top:12px">{{ t('Last model weight change','最近模型权重变化') }} · {{ last_switch.date }} · {{ last_switch.frm }}% → {{ last_switch.to }}%</div>{% endif %}
       <div class="sub faint" style="margin-top:12px">{{ t(next_note, next_note_zh) }}</div>

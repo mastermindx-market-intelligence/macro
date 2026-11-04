@@ -1,0 +1,291 @@
+{
+  "schema": "d06.macro_ci.help_viewport_observation.v1",
+  "status": "passed",
+  "source_parent": "40d395a898c8c6749b4c9998a71fc9196e544c2e",
+  "source_html_sha256": "54ad8e25432bb9162d1337fd2fbadc279f48a9acbbfb282b63d93e4a70553c9f",
+  "purpose": "Resolve apparent low-opacity tooltip in full-page capture by observing actual settled viewport state without style changes.",
+  "reduced_motion": "no-preference",
+  "rows": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "state": "hover",
+      "before": {
+        "popupExists": true,
+        "classes": "lens-pop lens-plain open",
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "triggerHover": true,
+        "triggerFocus": false,
+        "popup": {
+          "x": 219.9500274658203,
+          "y": 110.89170837402344,
+          "width": 300.0999755859375,
+          "height": 125.04164123535156
+        },
+        "trigger": {
+          "x": 362.296875,
+          "y": 245.078125,
+          "width": 15,
+          "height": 15
+        },
+        "lensLock": false,
+        "activeAnimations": [
+          {
+            "state": "running",
+            "currentTime": 199.92499997299174
+          },
+          {
+            "state": "running",
+            "currentTime": 199.92499997299174
+          }
+        ],
+        "tooltipCount": 9
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-settled-1440-dark.png",
+        "sha256": "4700dfa401587b3796ae032d4563223c6d4d5eb231153ae8818a2ceae25f290a"
+      },
+      "after": {
+        "popupExists": true,
+        "classes": "lens-pop lens-plain open",
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "triggerHover": true,
+        "triggerFocus": false,
+        "popup": {
+          "x": 220,
+          "y": 111,
+          "width": 300,
+          "height": 125
+        },
+        "trigger": {
+          "x": 362.296875,
+          "y": 245.078125,
+          "width": 15,
+          "height": 15
+        },
+        "lensLock": false,
+        "activeAnimations": [
+          {
+            "state": "running",
+            "currentTime": 316.62499997299153
+          }
+        ],
+        "tooltipCount": 9
+      },
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "state": "hover",
+      "before": {
+        "popupExists": true,
+        "classes": "lens-pop lens-plain open",
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "triggerHover": true,
+        "triggerFocus": false,
+        "popup": {
+          "x": 219.95010375976562,
+          "y": 110.89191436767578,
+          "width": 300.0998229980469,
+          "height": 125.04157257080078
+        },
+        "trigger": {
+          "x": 362.296875,
+          "y": 245.078125,
+          "width": 15,
+          "height": 15
+        },
+        "lensLock": false,
+        "activeAnimations": [
+          {
+            "state": "running",
+            "currentTime": 199.989999926649
+          },
+          {
+            "state": "running",
+            "currentTime": 199.989999926649
+          }
+        ],
+        "tooltipCount": 9
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-settled-1440-light.png",
+        "sha256": "85183fff9451ac1f7492dd3103bf782b6b8a561a5d4e8665c83e3926a44087fc"
+      },
+      "after": {
+        "popupExists": true,
+        "classes": "lens-pop lens-plain open",
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "triggerHover": true,
+        "triggerFocus": false,
+        "popup": {
+          "x": 220,
+          "y": 111,
+          "width": 300,
+          "height": 125
+        },
+        "trigger": {
+          "x": 362.296875,
+          "y": 245.078125,
+          "width": 15,
+          "height": 15
+        },
+        "lensLock": false,
+        "activeAnimations": [
+          {
+            "state": "running",
+            "currentTime": 316.689999926649
+          }
+        ],
+        "tooltipCount": 9
+      },
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "state": "focus",
+      "before": {
+        "popupExists": true,
+        "classes": "lens-pop lens-plain open",
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "triggerHover": false,
+        "triggerFocus": true,
+        "popup": {
+          "x": 0,
+          "y": 737.609375,
+          "width": 390,
+          "height": 106.390625
+        },
+        "trigger": {
+          "x": 159.3125,
+          "y": 281.421875,
+          "width": 15,
+          "height": 15
+        },
+        "lensLock": true,
+        "activeAnimations": [
+          {
+            "state": "finished",
+            "currentTime": 385
+          }
+        ],
+        "tooltipCount": 9
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-settled-390-dark.png",
+        "sha256": "08cc3532dc7eefca5a245d5d073bbc44de0cdb6a8cedf4f084eedc7b8ece0066"
+      },
+      "after": {
+        "popupExists": true,
+        "classes": "lens-pop lens-plain open",
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "triggerHover": false,
+        "triggerFocus": true,
+        "popup": {
+          "x": 0,
+          "y": 737.609375,
+          "width": 390,
+          "height": 106.390625
+        },
+        "trigger": {
+          "x": 159.3125,
+          "y": 281.421875,
+          "width": 15,
+          "height": 15
+        },
+        "lensLock": true,
+        "activeAnimations": [
+          {
+            "state": "finished",
+            "currentTime": 385
+          }
+        ],
+        "tooltipCount": 9
+      },
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "state": "focus",
+      "before": {
+        "popupExists": true,
+        "classes": "lens-pop lens-plain open",
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "triggerHover": false,
+        "triggerFocus": true,
+        "popup": {
+          "x": 0,
+          "y": 737.3206176757812,
+          "width": 390,
+          "height": 106.390625
+        },
+        "trigger": {
+          "x": 159.3125,
+          "y": 281.421875,
+          "width": 15,
+          "height": 15
+        },
+        "lensLock": true,
+        "activeAnimations": [
+          {
+            "state": "running",
+            "currentTime": 199.9270000340416
+          },
+          {
+            "state": "running",
+            "currentTime": 199.9270000340416
+          }
+        ],
+        "tooltipCount": 9
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-settled-390-light.png",
+        "sha256": "e731f3f8b73f0963a6945b3b0f6ad14555e297eb5534209864be5a4f836fe3a5"
+      },
+      "after": {
+        "popupExists": true,
+        "classes": "lens-pop lens-plain open",
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "triggerHover": false,
+        "triggerFocus": true,
+        "popup": {
+          "x": 0,
+          "y": 737.609375,
+          "width": 390,
+          "height": 106.390625
+        },
+        "trigger": {
+          "x": 159.3125,
+          "y": 281.421875,
+          "width": 15,
+          "height": 15
+        },
+        "lensLock": true,
+        "activeAnimations": [
+          {
+            "state": "running",
+            "currentTime": 266.72700003404157
+          }
+        ],
+        "tooltipCount": 9
+      },
+      "status": "passed"
+    }
+  ],
+  "finished_at": "2026-11-04T12:10:03.401673+00:00"
+}

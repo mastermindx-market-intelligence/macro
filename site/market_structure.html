@@ -338,14 +338,14 @@ html[data-theme="light"] { --green:#15764f; --amber:#8a5c00; }
 
 </style>
 <style>
-.msp-snapshot-details{margin-top:16px;border:1px solid var(--line,var(--grid));border-radius:10px;padding:0 16px}
+.msp-snapshot-details{margin-top:16px;border:1px solid var(--line,var(--grid));border-radius:var(--r-btn,10px);padding:0 16px}
 .msp-snapshot-details>summary{min-height:52px;align-content:center;padding:12px 0;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink)}
 .msp-snapshot-details[open]{padding-bottom:12px}
 .msp-reading{margin:0 0 16px;font-size:17px;font-weight:600;color:var(--ink)}
 .wrap>div:first-child h1{font-size:clamp(24px,2.6vw,34px)!important;font-weight:650!important;line-height:1.2;margin-bottom:10px!important}
 .msp-driver>.sec-head{margin-top:0}
-.msp-driver{border:1px solid var(--line,var(--grid));border-radius:12px;padding:22px;background:var(--panel,var(--card))}
-@media(max-width:640px){.msp-driver{padding:16px 12px}.msp-reading{font-size:16px}.msp-driver .sec-head{align-items:flex-start}.msp-driver .range-btns{margin-left:0!important}}
+.msp-driver{border:1px solid var(--line,var(--grid));border-radius:var(--r-card,12px);padding:22px;background:var(--panel,var(--card))}
+@media(max-width:640px){.msp-driver{padding:16px 12px}.msp-reading{font-size:16px}.msp-driver .sec-head{align-items:flex-start}.msp-driver .range-btns{margin-left:0!important}html.lens-lock #mmb-boot{visibility:hidden}}
 </style>
 </head>
 <body class="page-msp">

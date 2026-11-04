@@ -5462,9 +5462,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_916),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_931),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_672),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5472,6 +5472,18 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    D06 (2026-11-04): completed differential census against eb7ebc890073,
+    recorded in docs/pr-crops/d06-macro-ci-20261104/contract-delta-before.log:
+    index137jobs/5912->5916, free137jobs/5927->5931, Prophet131jobs/5668->5672,
+    all ten packs, no selected-job entrants or exits. Registering the D06
+    Stage and S&P page suites adds two planning-weight units to each existing
+    owner: unrun-builders-render51->53 and unrun-vector-baskets37->39. The
+    Market Structure owner options-estate-guards32->34 remains exclusive
+    and selects on none of these probes. Fund only the exact four-unit
+    coverage increase per probe. These are heuristic planner estimates,
+    not runtime evidence; job/pack ceilings, selectors, data-gate assignment,
+    coverage, estimator, timeouts and admission bounds remain unchanged.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same

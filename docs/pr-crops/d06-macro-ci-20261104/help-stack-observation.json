@@ -1,0 +1,161 @@
+{
+  "popup": {
+    "tag": "DIV",
+    "id": "lensPop",
+    "class": "lens-pop lens-plain open",
+    "z": "12600",
+    "position": "fixed",
+    "rect": {
+      "x": 0,
+      "y": 737.609375,
+      "width": 390,
+      "height": 106.390625
+    },
+    "html": "<div class=\"lens-pop lens-plain open\" id=\"lensPop\" role=\"tooltip\"><div class=\"lens-grab\"></div><button type=\"button\" class=\"lens-x\" aria-label=\"关闭\">✕</button><div class=\"lens-body\"><span class=\"l-en\">Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from 2026-06-15.</span><span class=\"l-zh\">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自2026-06-15起。</span></div></div>"
+  },
+  "topAtText": [
+    {
+      "tag": "path",
+      "id": "",
+      "class": {},
+      "z": "auto",
+      "position": "static",
+      "rect": {
+        "x": 339.6666564941406,
+        "y": 792.0833129882812,
+        "width": 13.0625,
+        "height": 12.66668701171875
+      },
+      "html": "<path d=\"M12 2l2.3 6.1L20.5 10l-6.2 1.9L12 18l-1.7-6.1L4 10l6.2-1.9z\"></path>"
+    },
+    {
+      "tag": "svg",
+      "id": "",
+      "class": {},
+      "z": "auto",
+      "position": "static",
+      "rect": {
+        "x": 336.5,
+        "y": 790.5,
+        "width": 19,
+        "height": 19
+      },
+      "html": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2l2.3 6.1L20.5 10l-6.2 1.9L12 18l-1.7-6.1L4 10l6.2-1.9z\"></path></svg>"
+    },
+    {
+      "tag": "DIV",
+      "id": "",
+      "class": "mmb-orb",
+      "z": "auto",
+      "position": "relative",
+      "rect": {
+        "x": 327,
+        "y": 781,
+        "width": 38,
+        "height": 38
+      },
+      "html": "<div class=\"mmb-orb\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2l2.3 6.1L20.5 10l-6.2 1.9L12 18l-1.7-6.1L4 10l6.2-1.9z\"></path></svg></div>"
+    },
+    {
+      "tag": "DIV",
+      "id": "mmb-boot",
+      "class": "",
+      "z": "2147483000",
+      "position": "fixed",
+      "rect": {
+        "x": 318,
+        "y": 772,
+        "width": 56,
+        "height": 56
+      },
+      "html": "<div id=\"mmb-boot\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\" aria-label=\"问操盘大脑\"><div class=\"mmb-orb\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2l2.3 6.1L20.5 10l-6.2 1.9L12 18l-1.7-6.1L4 10l6.2-1.9z\"></path></svg></div><div class=\"lt\"><span class=\"ll\">问操盘大脑</span><span class=\"lk\">大脑 · 你的桌面副驾</span></div></div>"
+    },
+    {
+      "tag": "SPAN",
+      "id": "",
+      "class": "l-zh",
+      "z": "auto",
+      "position": "static",
+      "rect": {
+        "x": 18,
+        "y": 767.609375,
+        "width": 349.015625,
+        "height": 57.59375
+      },
+      "html": "<span class=\"l-zh\">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自2026-06-15起。</span>"
+    },
+    {
+      "tag": "DIV",
+      "id": "",
+      "class": "lens-body",
+      "z": "auto",
+      "position": "static",
+      "rect": {
+        "x": 0,
+        "y": 753.609375,
+        "width": 390,
+        "height": 80.390625
+      },
+      "html": "<div class=\"lens-body\"><span class=\"l-en\">Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from 2026-06-15.</span><span class=\"l-zh\">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自2026-06-15起。</span></div>"
+    },
+    {
+      "tag": "DIV",
+      "id": "lensPop",
+      "class": "lens-pop lens-plain open",
+      "z": "12600",
+      "position": "fixed",
+      "rect": {
+        "x": 0,
+        "y": 737.609375,
+        "width": 390,
+        "height": 106.390625
+      },
+      "html": "<div class=\"lens-pop lens-plain open\" id=\"lensPop\" role=\"tooltip\"><div class=\"lens-grab\"></div><button type=\"button\" class=\"lens-x\" aria-label=\"关闭\">✕</button><div class=\"lens-body\"><span class=\"l-en\">Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from 2026-06-15.</span><span class=\"l-zh\">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自2026-06-15起。</span></div></div>"
+    }
+  ],
+  "ancestors": [
+    {
+      "tag": "path",
+      "id": "",
+      "class": {},
+      "z": "auto",
+      "position": "static",
+      "rect": {
+        "x": 339.6666564941406,
+        "y": 792.0833129882812,
+        "width": 13.0625,
+        "height": 12.66668701171875
+      },
+      "html": "<path d=\"M12 2l2.3 6.1L20.5 10l-6.2 1.9L12 18l-1.7-6.1L4 10l6.2-1.9z\"></path>"
+    },
+    {
+      "tag": "svg",
+      "id": "",
+      "class": {},
+      "z": "auto",
+      "position": "static",
+      "rect": {
+        "x": 336.5,
+        "y": 790.5,
+        "width": 19,
+        "height": 19
+      },
+      "html": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2l2.3 6.1L20.5 10l-6.2 1.9L12 18l-1.7-6.1L4 10l6.2-1.9z\"></path></svg>"
+    },
+    {
+      "tag": "DIV",
+      "id": "",
+      "class": "mmb-orb",
+      "z": "auto",
+      "position": "relative",
+      "rect": {
+        "x": 327,
+        "y": 781,
+        "width": 38,
+        "height": 38
+      },
+      "html": "<div class=\"mmb-orb\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2l2.3 6.1L20.5 10l-6.2 1.9L12 18l-1.7-6.1L4 10l6.2-1.9z\"></path></svg></div>"
+    }
+  ],
+  "rootVariables": []
+}

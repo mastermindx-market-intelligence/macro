@@ -1,0 +1,39 @@
+{
+  "schema": "d06.macro_ci.source_citation_repair.v1",
+  "verified_at": "2026-11-04T12:12:38.409086+00:00",
+  "cause": "D06 moved unchanged boardStance vocabulary90lines; existing copy-deck and ontology source coordinates were stale.",
+  "mapping": {
+    "1497": 1587,
+    "1499": 1589,
+    "1500": 1590
+  },
+  "source_before": {
+    "design_refs/sector-paper-20261021/copy_deck.json": "50c63f9dc904131468bc2ebd9a25a911b295e88c8c78f103a917f676650cebf6",
+    "tests/test_cycle_ontology.py": "23f6bb968fb916c6d10f7487102967005b7f990d1ca7dd4a40573e8eef93f1a3",
+    "engine/cycle_ontology.py": "76e5981192aa9e379869734060e71f2e80918cdf49b73b75a583ae96e73599ec"
+  },
+  "source_after": {
+    "design_refs/sector-paper-20261021/copy_deck.json": "c286b25ba4cc7dad14cfe5a33366fa07a213062613bae24b0b6174239f1149f1",
+    "tests/test_cycle_ontology.py": "299361e9d9e1c05a2639e1e6511735eae9972c67b8995b018047e1e789bc90b0",
+    "engine/cycle_ontology.py": "b5fff75d7ccedbc1c6e51932ff229d076a30061ad93ba07cfbdc39c4c613fe20"
+  },
+  "production_vocabulary_unchanged": true,
+  "exit_code": 0,
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_cycle_ontology.py",
+    "tests/test_sector_paper_components.py",
+    "tests/test_sector_paper_copy_deck.py",
+    "tests/test_sector_paper_cycles_ia.py",
+    "tests/test_sector_paper_state_matrix.py"
+  ],
+  "log": "source-citation-guards.log",
+  "original_jobs": [
+    126544517381,
+    126544517540
+  ],
+  "original_run": 41820646436
+}

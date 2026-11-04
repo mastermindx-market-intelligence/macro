@@ -1,0 +1,375 @@
+{
+  "schema": "d06.macro_ci.canonical_integrity.v1",
+  "verified_at": "2026-11-04T12:19:39.662186+00:00",
+  "state_count": 72,
+  "source_matches_composed_functional_receipts": true,
+  "source_phases": [
+    "source-verification.json",
+    "market-help-fix/source-verification.json"
+  ],
+  "history": {
+    "initial_integrity": "canonical-integrity-initial.json",
+    "original_market_manifest": "mockups/evidence/d06-macro-ci-20261104/market_structure/manifest-before-help-fix.json"
+  },
+  "pages": [
+    {
+      "route": "/market_structure.html",
+      "states": 24,
+      "rest": 8,
+      "hover": 8,
+      "focus": 8,
+      "integrity": "passed",
+      "console_errors": [],
+      "failed_responses": [],
+      "registry_gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3073,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 4308,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 3073,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 8,
+        "payload_bytes_total": 542604,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 19,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 522
+      },
+      "manifest": "mockups/evidence/d06-macro-ci-20261104/market_structure/manifest.json"
+    },
+    {
+      "route": "/stage_analysis.html",
+      "states": 24,
+      "rest": 8,
+      "hover": 8,
+      "focus": 8,
+      "integrity": "passed",
+      "console_errors": [],
+      "failed_responses": [],
+      "registry_gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1838,
+            "elements_wider_than_viewport": 606,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2751,
+            "elements_wider_than_viewport": 606,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 1838,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 606,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 1,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 2075915,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 17,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 13679
+      },
+      "manifest": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/manifest.json"
+    },
+    {
+      "route": "/spvector.html",
+      "states": 24,
+      "rest": 8,
+      "hover": 8,
+      "focus": 8,
+      "integrity": "passed",
+      "console_errors": [],
+      "failed_responses": [],
+      "registry_gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2531,
+            "elements_wider_than_viewport": 34,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2941,
+            "elements_wider_than_viewport": 51,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 2531,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 34,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 4,
+          "h3": 2,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 13,
+        "payload_bytes_total": 4033304,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 19,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 374
+      },
+      "manifest": "mockups/evidence/d06-macro-ci-20261104/spvector/manifest.json"
+    }
+  ],
+  "visual_gate": {
+    "exit_code": 0,
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/tmp/d06-macro-c4-11l44i0i/macro-ci-ui.diff"
+    ],
+    "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+    "log": "visual-gate-final-source.log",
+    "diff_sha256": "5970227b6ce3d95005470b63b96072476363b91a2853db022135dbf71a8c6010"
+  },
+  "design_gate": {
+    "exit_code": 0,
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_design_system.py",
+      "--mode",
+      "enforce-added",
+      "--diff-file",
+      "/tmp/d06-macro-c4-11l44i0i/macro-ci-design-final.diff"
+    ],
+    "log": "design-gate-final.log",
+    "diff_sha256": "c47ea5ef2197e8ca7c74e3a27672e3fd9344d54c63f9b5f4fe2c8874a4013da5"
+  },
+  "final_source_hashes": {
+    "tests/test_d06_market_structure.py": "11e6fd717650a59038ee4737f2336d7614b1cdd60ae6a699101b627a620d19f3",
+    "tests/test_build_market_structure_page.py": "c80d685a1fb398197d9cd5fa3a714590efde217d392aacd50bbc5a62c3778e8e",
+    "tests/test_market_structure_glance_copy.py": "0a4ebe82cb41063a8bdc29a245fafc53062219c45cc7f662d169fac292320951",
+    "tests/test_d06_stage_analysis.py": "8c64b425b3b81e8a029000774cda2bd3cc10663224c6e253ae83667c6c96a935",
+    "tests/test_stage_analysis_page.py": "5ecda94ba207b1a785ca6ea35f5155d6db6f3b764c29bfb1fec625c7e0ebd902",
+    "tests/test_d06_spvector.py": "ff9540af2fc68792d3a81067218104b21a29b75e139d61ce5b224de547919de4",
+    "tests/test_spvector_page.py": "4713e83987ac0f22f05027889a2191c9e85c4b3f023e62e7d1835f7a02ae16fb",
+    "tests/test_spvector_gate_chips.py": "a861d95bce948b7c49ff491a14c44dfda5171ab5b84fcc700c0ddce5180d5014",
+    "tests/test_spvector_scorecard_basis.py": "f179ddc0104f417935834bfc9ac53beafc94d17619c70d998d0a7ef5974e4f64",
+    ".github/ci/legacy-jobs.yml": "9ee648e5a30de83d2337ab7c9631b57337b158f1fcb19ec9f03e3bbb6f6bc1cc",
+    "templates/market_structure.html.j2": "75d07b074bad490b2a9ede4610b521e77d18ac9fa5c8f7c83ff55202bb14a0e8",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f",
+    "scripts/build_market_structure_page.py": "2c1567a3d40679c89b457ca4480c398d42683de13424f3b7ef3381fe87707c35",
+    "scripts/build_stage_analysis_page.py": "af4a2cde67fe3da8bbad965991a3918ee1179fccd019cd57dfc52afcf20ab751",
+    "scripts/build_spvector.py": "c803560a7836094f9c965960e16c3c3ace8b28ba89f616aa42fd5794fbf4f5f1",
+    "scripts/verify_d06_macro.py": "5855f2a79e94b30b8cd2127058b4f3fccc00dd7986ba65e2c5df9133f312ff52",
+    "scripts/d06_macro_fixtures.py": "80d440f93d4d55ff39570a47ca2c87424d0b260f0c52c065125ca0eb7b467046",
+    "site/market_structure.html": "efdfad4eb2570b9cc98d4f73a2a67c4a5cfe359de8314da1c9893f0186ffd10f",
+    "site/stage_analysis.html": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2",
+    "site/spvector.html": "84bd933deae1e913332e645954a96a15f9c2405f0d6b6047b0eb28a4351d0b28",
+    "tests/fixtures/market_structure_latest.json": "fddfa5070492aa4a58c1154f3d05a0edb12e0636399aa796d22393d1e6f3854d",
+    "docs/pr-crops/d06-macro-ci-20261104/run_browser.py": "cd6d69a5a9e4bc83eec7c1bd8e8b00494808a3daf95f0fe36c8a2857a76390b8"
+  },
+  "environment_preparation": {
+    "original_refusal_log": "visual-gate.log",
+    "materialize_command": "python scripts/worktree_sparse.py add mockups",
+    "materialize_exit_code": 0,
+    "materialize_log": "materialize-mockups.log"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "d06.macro_ci.packing_verdict_replay.v1",
+  "status": "passed",
+  "verified_at": "2026-11-04T12:09:17.370086+00:00",
+  "completed_census_exit": 1,
+  "completed_census_log": "contract-delta-before.log",
+  "completed_census_log_sha256": "a6bdc220b18f026a5140402b318c201be7ddf017797370ff5dca327d6fb10370",
+  "original_limits_reproduce_breaches": [
+    [
+      "templates/index.html",
+      "weight",
+      5916,
+      5912
+    ],
+    [
+      "scripts/build_free_content.py",
+      "weight",
+      5931,
+      5927
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      "weight",
+      5672,
+      5668
+    ]
+  ],
+  "calibrated_rows": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 137,
+      "weight": 5916,
+      "packs": 10,
+      "max_jobs": 137,
+      "max_weight": 5916,
+      "max_packs": 10
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 137,
+      "weight": 5931,
+      "packs": 10,
+      "max_jobs": 138,
+      "max_weight": 5931,
+      "max_packs": 10
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 131,
+      "weight": 5672,
+      "packs": 10,
+      "max_jobs": 131,
+      "max_weight": 5672,
+      "max_packs": 10
+    }
+  ],
+  "calibrated_breaches": [],
+  "fresh_census_performed": false,
+  "focused_existing_seam_tests": {
+    "exit_code": 0,
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-q",
+      "tests/test_contract_delta.py::test_probe_ceilings_are_read_from_the_test_that_owns_them",
+      "tests/test_contract_delta.py::test_packing_probe_functions_are_the_shared_implementation"
+    ],
+    "log": "packing-seam-tests.log"
+  },
+  "source_hashes": {
+    "tests/test_ci_pack.py": "58b1de61bb5ca26d410b7d2ab3df9ec747ded5e1202e95795198ca0d055a309d",
+    "tests/test_contract_delta.py": "c190955bdaf434cf7b7203cab2588deedbf5bd03079c2a1bada0c1c6c1df79cc",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/run_ci_pack.py": "c418c319391957b790e79bdd9f0bf0c1a52425a4eae73aac5c7575654f3d7e58",
+    ".github/ci/legacy-jobs.yml": "9ee648e5a30de83d2337ab7c9631b57337b158f1fcb19ec9f03e3bbb6f6bc1cc"
+  },
+  "claim": "Completed census measurements satisfy the exact calibrated limits; original limits reproduce all three weight breaches. This does not relabel the original failed run or claim a fresh full checker run."
+}
