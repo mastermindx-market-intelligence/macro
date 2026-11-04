@@ -16,7 +16,10 @@ Supported edit envelope (everything else refuses, fail closed):
 * adapter-generated ``group`` names matching ``group[0-9]+`` are compared
   modulo their numeric suffix and remapped onto the existing active group
   names at the same document-order occurrence, so opaque active IDs are
-  preserved exactly (no renaming, no broad string replacement).
+  preserved exactly (no renaming, no broad string replacement). Renumbered
+  groups may retain identical content or add literal paths to their own match
+  arrays, preserving all previous paths and their order; other simultaneous
+  content changes remain unsupported.
 
 Intentionally unsupported (ReconcileRefusal, never guessed around):
 
@@ -117,6 +120,51 @@ def _subtree(node, path):
     for part in path:
         node = node[part]
     return node
+
+
+def _only_literal_path_additions(previous, candidate, path=()):
+    """Conservative identity witness for a renumbered group's content.
+
+    Keep the complete group-bearing subtree fixed except for additions to
+    the group's own Caddy matcher ``path`` arrays (including negated matchers).
+    Previous paths, order, handlers and nested route structure must survive.
+    This is deliberately narrower than the ordinary, unchanged-ID edit
+    envelope: no deletion, wildcard addition, matcher replacement or reorder
+    can serve as evidence that a renumbered group stayed in place.
+    """
+    if previous == candidate:
+        return True
+    if isinstance(previous, dict) and isinstance(candidate, dict):
+        return set(previous) == set(candidate) and all(
+            _only_literal_path_additions(previous[key], candidate[key], path + (key,))
+            for key in previous
+        )
+    if isinstance(previous, list) and isinstance(candidate, list):
+        direct_matcher_path = (
+            len(path) >= 3 and len(path) % 2 == 1
+            and path[0] == "match" and path[-1] == "path"
+            and all(isinstance(path[index], int) for index in range(1, len(path), 2))
+            and all(path[index] == "not" for index in range(2, len(path) - 1, 2))
+        )
+        if direct_matcher_path:
+            if not all(isinstance(value, str) for value in previous + candidate):
+                return False
+            if (not previous or len(candidate) <= len(previous)
+                    or len(set(previous)) != len(previous)
+                    or len(set(candidate)) != len(candidate)):
+                return False
+            # A filtered subsequence proves no prior member moved or vanished.
+            old = set(previous)
+            return (
+                [value for value in candidate if value in old] == previous
+                and all(re.fullmatch(r"/[A-Za-z0-9_./-]+", value)
+                        for value in candidate if value not in old)
+            )
+        return len(previous) == len(candidate) and all(
+            _only_literal_path_additions(old, new, path + (index,))
+            for index, (old, new) in enumerate(zip(previous, candidate))
+        )
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -341,8 +389,9 @@ def _remap_candidate_groups(listen_key, host_key, prev_route, cand_route, active
             continue
         if cand_value == prev_value:
             continue
-        if _normalize(_subtree(prev_route, cand_path[:-1])) != _normalize(
-            _subtree(cand_route, cand_path[:-1])
+        if not _only_literal_path_additions(
+            _normalize(_subtree(prev_route, cand_path[:-1])),
+            _normalize(_subtree(cand_route, cand_path[:-1])),
         ):
             raise ReconcileRefusal(
                 "host route %s on listen %s: changed group topology (renumbered "

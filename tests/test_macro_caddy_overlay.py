@@ -613,3 +613,49 @@ def test_shared_group_can_be_consistently_renumbered_without_losing_active_ids(c
     inner = body['handle'][0]['routes']
     assert [route['group'] for route in inner] == ['group81', 'group81', 'group93']
     assert inner[-1]['match'][0]['not'] == [MMX_NOT]
+
+
+@pytest.mark.parametrize('mutation', [
+    'remove', 'reorder', 'duplicate', 'wildcard', 'query', 'relative',
+    'new-matcher', 'method', 'handler', 'nested-handler-path',
+])
+def test_renumbered_group_rejects_content_changes_without_literal_addition_witness(mutation):
+    previous = _previous_source()
+    candidate = copy.deepcopy(previous)
+    active = _active_config()
+    for config in (previous, candidate, active):
+        _www_inner(config, 'srv0')[1]['match'] = [{'path': ['/old.css', '/keep.js']}]
+    route = _www_inner(candidate, 'srv0')[1]
+    route['group'] = 'group30'
+    paths = route['match'][0]['path']
+    if mutation == 'remove':
+        paths.remove('/old.css')
+    elif mutation == 'reorder':
+        paths.reverse()
+        paths.append('/forex.js')
+    elif mutation == 'duplicate':
+        paths.append('/old.css')
+    elif mutation in ('wildcard', 'query', 'relative'):
+        paths.append({'wildcard': '/forex*', 'query': '/forex.js?v=1',
+                      'relative': 'forex.js'}[mutation])
+    elif mutation == 'new-matcher':
+        route['match'].append({'path': ['/forex.js']})
+    elif mutation == 'method':
+        paths.append('/forex.js')
+        route['match'][0]['method'] = ['GET']
+    elif mutation == 'handler':
+        paths.append('/forex.js')
+        route['handle'][0]['upstreams'][0]['dial'] = '127.0.0.1:9999'
+    else:
+        # Even a valid-looking match.path inside a handler is not evidence
+        # that the containing generated group retained its own matcher.
+        handler = {'handler': 'subroute', 'routes': [
+            {'match': [{'path': ['/nested.css']}], 'handle': _cache_handle()}]}
+        _www_inner(previous, 'srv0')[1]['handle'] = [copy.deepcopy(handler)]
+        _www_inner(active, 'srv0')[1]['handle'] = [copy.deepcopy(handler)]
+        route['handle'] = [copy.deepcopy(handler)]
+        route['handle'][0]['routes'][0]['match'][0]['path'].append('/forex.js')
+    snapshots = copy.deepcopy((previous, candidate, active))
+    with pytest.raises(ReconcileRefusal, match='different route content'):
+        plan_routes(previous, candidate, active)
+    assert (previous, candidate, active) == snapshots
