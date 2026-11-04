@@ -44,7 +44,10 @@
 {% macro metric_cell(metric, field, context_id, row_index, market_id) -%}
 <td class="intl-macro__metric" headers="{{ context_id|e }}-row-{{ row_index }} {{ context_id|e }}-{{ field.key|e }}">
   <div class="intl-macro__metric-slot" id="{{ context_id|e }}-row-{{ row_index }}-{{ field.key|e }}">
-    <strong><span class="l-en">{{ field.en|e }}</span><span class="l-zh" lang="zh">{{ field.zh|e }}</span></strong>
+{% set eurostat_field = market_id == 'EZ' and metric.get('instrument') is mapping and ((field.key == 'gdp_yoy' and metric.get('instrument').get('id') == 'NAMQ_10_GDP/Q/CLV_PCH_SM/SCA/B1GQ/EA21') or (field.key == 'cpi_yoy' and metric.get('instrument').get('id') == 'PRC_HICP_MINR/M/RCH_A/TOTAL/EA21')) %}
+{% set native_evidence = (field_evidence|default({})).get(market_id ~ '.' ~ field.key) if eurostat_field else none %}
+{% set eurostat_disclosed = native_evidence is mapping and native_evidence.get('instrument_id') == metric.get('instrument').get('id') and native_evidence.get('source_reference') == metric.get('source_reference') and native_evidence.get('evidence_key') == metric.get('evidence_key') and metric.get('source_reference') is string and metric.get('source_reference').startswith('https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/') %}
+    <strong>{% if eurostat_field and field.key == 'cpi_yoy' %}<span class="l-en">HICP YoY</span><span class="l-zh" lang="zh">调和消费价格同比</span>{% else %}<span class="l-en">{{ field.en|e }}</span><span class="l-zh" lang="zh">{{ field.zh|e }}</span>{% endif %}</strong>
 {% set metric_value = metric.get('value') %}
 {% set metric_unit = metric.get('unit') %}
 {% set metric_quality = metric.get('quality') %}
@@ -52,7 +55,7 @@
         {% if metric_value is not none %}
           <span class="intl-macro__value" data-im-macro-value>{{ metric_value|e }}</span>
           {% if metric_unit in unit_labels %}<small><span class="l-en">{{ unit_labels[metric_unit].en|e }}</span><span class="l-zh" lang="zh">{{ unit_labels[metric_unit].zh|e }}</span></small>{% endif %}
-          {% if metric.get('observation_at') is not none %}<small class="intl-macro__observation">{{ metric.get('observation_at')|e }}</small>{% endif %}
+          {% if eurostat_disclosed %}<small class="intl-macro__observation">{{ native_evidence.period_label|e }} · <span class="l-en">Period ended</span><span class="l-zh" lang="zh">统计期结束</span> {{ metric.get('observation_at')|e }}</small>{% elif metric.get('observation_at') is not none %}<small class="intl-macro__observation">{{ metric.get('observation_at')|e }}</small>{% endif %}
           {% if metric_quality == 'stale' %}<small class="intl-macro__quality"><span class="l-en">Stale data</span><span class="l-zh" lang="zh">数据过期</span></small>{% endif %}
         {% else %}
       {% if metric_quality in quality_labels %}
@@ -81,7 +84,15 @@
           <div><dt><span class="l-en">Instrument</span><span class="l-zh" lang="zh">工具</span></dt><dd>{{ metric_instrument.id|e }} · {{ metric_instrument.kind|e }} · {{ metric_instrument.market_id|e }}</dd></div>
           <div><dt><span class="l-en">Quality</span><span class="l-zh" lang="zh">质量</span></dt><dd>{% set evidence_quality = quality_labels.get(metric_quality, quality_labels.unknown) %}<span class="l-en">{{ evidence_quality.en|e }}</span><span class="l-zh" lang="zh">{{ evidence_quality.zh|e }}</span></dd></div>
           {% if metric_unit in unit_labels %}<div><dt><span class="l-en">Unit</span><span class="l-zh" lang="zh">单位</span></dt><dd><span class="l-en">{{ unit_labels[metric_unit].en|e }}</span><span class="l-zh" lang="zh">{{ unit_labels[metric_unit].zh|e }}</span></dd></div>{% endif %}
-          <div><dt>{% if monthly_yield %}<span class="l-en">Observation month</span><span class="l-zh" lang="zh">观测月份</span>{% else %}<span class="l-en">Observation date</span><span class="l-zh" lang="zh">观测日期</span>{% endif %}</dt><dd>{% if metric.get('observation_at') is none %}{{ not_supplied() }}{% else %}{{ metric.get('observation_at')|e }}{% endif %}</dd></div>
+          <div><dt>{% if eurostat_field %}<span class="l-en">Period ended</span><span class="l-zh" lang="zh">统计期结束</span>{% elif monthly_yield %}<span class="l-en">Observation month</span><span class="l-zh" lang="zh">观测月份</span>{% else %}<span class="l-en">Observation date</span><span class="l-zh" lang="zh">观测日期</span>{% endif %}</dt><dd>{% if metric.get('observation_at') is none %}{{ not_supplied() }}{% else %}{{ metric.get('observation_at')|e }}{% endif %}</dd></div>
+          {% if eurostat_disclosed %}
+          <div><dt><span class="l-en">Original economic period</span><span class="l-zh" lang="zh">原始统计期</span></dt><dd>{{ native_evidence.period_label|e }}</dd></div>
+          <div><dt><span class="l-en">Dataset updated</span><span class="l-zh" lang="zh">数据集更新</span></dt><dd>{{ native_evidence.dataset_updated_at|e }}</dd></div>
+          <div><dt><span class="l-en">Source status flag</span><span class="l-zh" lang="zh">来源状态标记</span></dt><dd>{% if native_evidence.observation_status is none %}{{ not_supplied() }}{% else %}{{ native_evidence.observation_status|e }}{% endif %}</dd></div>
+          <div><dt><span class="l-en">Source requested</span><span class="l-zh" lang="zh">来源请求时间</span></dt><dd>{{ native_evidence.requested_at|e }}</dd></div>
+          <div><dt><span class="l-en">Retained input verified</span><span class="l-zh" lang="zh">留存输入核验时间</span></dt><dd>{{ native_evidence.input_verified_at|e }}</dd></div>
+          <div><dt><span class="l-en">Stored successfully</span><span class="l-zh" lang="zh">成功存储时间</span></dt><dd>{{ native_evidence.committed_at|e }}</dd></div>
+          {% endif %}
           <div><dt><span class="l-en">Period / count basis</span><span class="l-zh" lang="zh">区间 / 计数口径</span></dt><dd>
             {% set metric_period = metric.get('period') %}{% if metric_period is none %}{{ not_supplied() }}{% else %}<span class="intl-macro__period">{{ metric_period.start|e }} – {{ metric_period.end|e }} · {{ metric_period.count|e }} · {{ metric_period.count_basis|e }}</span>{% endif %}
           </dd></div>
@@ -89,7 +100,14 @@
           <div><dt><span class="l-en">Source reference</span><span class="l-zh" lang="zh">来源引用</span></dt><dd class="intl-macro__source-reference intl-macro__reference" tabindex="0">{{ metric.get('source_reference')|e }}</dd></div>
           {% if metric.get('evidence_key') is not none %}<div><dt><span class="l-en">Evidence key</span><span class="l-zh" lang="zh">证据键</span></dt><dd class="intl-macro__reference" tabindex="0">{{ metric.get('evidence_key')|e }}</dd></div>{% endif %}
         </dl>
+        {% if eurostat_disclosed %}<p><span class="l-en">Period labels are normalized for display. Eurostat is not responsible for Mastermind's presentation, translations or interpretations.</span><span class="l-zh" lang="zh">统计期标签已规范化显示。Eurostat 不对 Mastermind 的呈现、翻译或解读负责。</span></p>{% endif %}
       </details>
+    {% endif %}
+    {% if eurostat_disclosed %}
+      <aside class="intl-macro__source-notice">
+        <p><span class="l-en">Source: Eurostat. Source request date: {{ native_evidence.requested_at[:10]|e }}.</span><span class="l-zh" lang="zh">来源：Eurostat（欧盟统计局）。来源请求日期：{{ native_evidence.requested_at[:10]|e }}。</span></p>
+        <a href="{{ native_evidence.source_reference|e }}" target="_blank" rel="noopener"><span class="l-en">Eurostat source data</span><span class="l-zh" lang="zh">Eurostat 来源数据</span></a>
+      </aside>
     {% endif %}
   </div>
 </td>

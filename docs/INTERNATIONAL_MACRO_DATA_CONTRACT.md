@@ -271,3 +271,72 @@ are not commercial redistribution admission. Native data access, source rights,
 scientific interpretation, protected release and authenticated beta behavior
 remain separate facts. Existing ECB admission and all unrelated fields retain
 their current contracts.
+
+## Official Eurostat EA21 GDP and HICP
+
+The native publication path admits exactly two Eurostat series. GDP uses
+`NAMQ_10_GDP / Q / CLV_PCH_SM / SCA / B1GQ / EA21`; its unit is already the
+change against the same quarter a year earlier. HICP uses the current
+`PRC_HICP_MINR / M / RCH_A / TOTAL / EA21` series under ECOICOP 2. The archived
+MANR dataset is not a current substitute. HICP is labeled as harmonized CPI,
+rather than silently changing the meaning of the generic CPI family.
+
+`IntlMacroAdapter` collects these configured official series on its ordinary
+eligible run. It stores separate `EZ_gdp_yoy_official` and
+`EZ_hicp_yoy_official` columns. In particular, the native GDP rate never enters
+the incumbent GDP-level `pct_change` calculation. The strict JSON-stat parser
+validates the returned dimension sets, selected codes and their positions;
+`TOTAL` is selected even when a retained HICP response contains other categories.
+Original time labels, source status flags and missingness remain in the capture.
+
+The optional `native_input: {response: <data-relative-path>, receipt:
+<data-relative-path>}` on either official-series entry imports a retained
+successful response instead of acquiring it again. The import requires the exact
+source URL, successful acquisition status and response digest. It uses the same
+normal collector, canonical upsert and post-store callback as a current HTTP
+response. It is not a manual bypass of the producer or disclosure boundary.
+The callback consumes pending source evidence before capture; capture failure
+leaves the successful numerical store intact and does not replay acquisition.
+Readers check the original content-addressed receipt, original response and
+current canonical parquet, including response coverage. Missing dependent blobs
+are source failures, not evidence that no source was supplied.
+
+The economic observation clock is the last civil day of the original period:
+`2026-Q3` becomes the half-open interval `2026-07-01` to `2026-10-01`, with
+`observation_at=2026-09-30`; `2026-09` becomes `2026-09-01` to `2026-10-01`,
+with the same September 30 period end. The consumer labels this clock **Period
+ended / 统计期结束** and shows the original quarter or month. These normalized
+dates are neither publication times nor an assertion that a quarterly value was
+observed at its start. Pass-through YoY values have `calculation_at=null`.
+
+The dataset's original offset-aware `updated` timestamp is a separate typed
+source clock in immutable capture and the Macro envelope's optional
+`field_evidence` projection. It is never put into the economic observation slot
+or represented as an individual release vintage. The projection binds the exact
+field, instrument, source reference and evidence digest to the permitted measure.
+Missing or denied metadata supplies no dynamic source link, update timestamp or
+attribution. Other adapters retain their existing clock labels and contracts.
+The original HTTP response receipt clock remains unknown when a retained receipt
+did not record it; an actual local input-verification clock does not replace it.
+The required ordering is dataset update ≤ original source request ≤ local input
+verification ≤ successful canonical commit ≤ evaluation. A known HTTP receipt
+must additionally fall between its request and local verification.
+
+The principal adopts application display recency tolerances of **120 days after
+the economic quarter end for GDP** and **75 days after the economic month end for
+HICP**. Values beyond those bounds are stale. These are conservative Mastermind
+display policies, not Eurostat release promises, latest-vintage claims or
+point-in-time reconstruction. Updating unrelated dataset metadata cannot renew
+an old economic period's recency.
+
+The scoped publication decision follows [Eurostat's data reuse conditions](https://ec.europa.eu/eurostat/help/copyright-notice)
+for these Eurostat-produced EA21 statistical series. Point-of-use disclosure names
+Eurostat, links the exact source data, retains the source-request/access-day
+trace, and states that Mastermind normalizes period labels and owns its
+presentation, translation and interpretation. The [HICP metadata](https://ec.europa.eu/eurostat/cache/metadata/en/prc_hicp_esms.htm)
+identify the harmonized index and current classification. This decision grants
+nothing for IMF commercial publication, refused OECD access, other datasets or
+unrelated countries. The builder adopts only the explicit source-specific policy
+in `intl.field_publication`; readable data and a successful request are not grants.
+Installation, publisher generation and authenticated Shared Shell acceptance remain
+separate from collector/store and source-composition evidence.

@@ -179,6 +179,7 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
     }
     from lib.intl_yield_publication import read_jp_yield_materialization, admit_jp_yield_field
     from lib.intl_annual_publication import read_current_account_materialization, admit_current_account_field
+    from lib.intl_eurostat_publication import FIELDS as EUROSTAT_FIELDS, read_eurostat_materialization, admit_eurostat_field
 
     adopted_policies = (config.load().get("intl") or {}).get("field_publication", {})
 
@@ -202,14 +203,22 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
     annual_field = admit_current_account_field(
         annual, evaluated_at=evaluated_at,
         publication_decision=publication_decision("JP.annual_current_account", annual))
+    eurostat = {}
+    for field in EUROSTAT_FIELDS:
+        materialized = read_eurostat_materialization(field=field, data_root=data_root)
+        eurostat[field] = admit_eurostat_field(
+            materialized, field=field, evaluated_at=evaluated_at,
+            publication_decision=publication_decision(field, materialized))
     try:
         measure = _ecb_publication_measure(
             read_ecb_deposit_materialization(data_root=data_root),
             evaluated_at=evaluated_at, generation=generation,
         )
         mounted = attach_macros(
-            workspace, registry=registry, measures={"EZ.policy_rate": measure, "JP.yield_10y": jp_measure},
+            workspace, registry=registry, measures={"EZ.policy_rate": measure, "JP.yield_10y": jp_measure,
+                                                  **{field: item["measure"] for field, item in eurostat.items()}},
             cycle_evidence={}, destinations={},
+            field_evidence={field: item["evidence"] for field, item in eurostat.items() if item["evidence"] is not None},
             source_notice={
                 "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
                 "origin_url": "https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV",

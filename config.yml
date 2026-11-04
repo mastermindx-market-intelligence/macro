@@ -7134,6 +7134,20 @@ intl:
     scope: intl-index-fx-eod-user-facing-v1
     decision_ref: chairman-user-facing-redistribution-confirmed-2026-10-09
 
+  # Exact Eurostat EA21 series only; source access, valid post-store evidence
+  # and point-of-use attribution remain independently required.
+  field_publication:
+    EZ.gdp_yoy:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
+      metadata: allowed
+      value_permission: allowed
+    EZ.cpi_yoy:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
+      metadata: allowed
+      value_permission: allowed
+
   # -- Plane A: prices (group=intl) — yfinance indices + vol + FX -------------
   yahoo:
     retries: 3
@@ -7169,6 +7183,24 @@ intl:
         timeout_s: 20
         params: {geo: EA21, s_adj: SA, age: TOTAL, unit: PC_ACT, sex: T}
         release_period_semantics: Monthly seasonally adjusted unemployment rate, current euro-area composition
+      EZ_gdp_yoy_official:
+        provider: eurostat
+        dataset: NAMQ_10_GDP
+        since: "2024-Q1"
+        unit: CLV_PCH_SM
+        retries: 1
+        timeout_s: 20
+        params: {freq: Q, unit: CLV_PCH_SM, s_adj: SCA, na_item: B1GQ, geo: EA21}
+        release_period_semantics: Native same-quarter previous-year rate; economic quarter end, not publication time
+      EZ_hicp_yoy_official:
+        provider: eurostat
+        dataset: PRC_HICP_MINR
+        since: "2026-01"
+        unit: RCH_A
+        retries: 1
+        timeout_s: 20
+        params: {freq: M, unit: RCH_A, coicop18: TOTAL, geo: EA21}
+        release_period_semantics: Native harmonized CPI annual rate; economic month end, not publication time
     extra_series:                  # stored_col: FRED id (Eurozone policy/liquidity, periphery, US anchor)
       ez_depo_rate: ECBDFR         # ECB deposit facility rate (policy)
       ez_refi_rate: ECBMRRFR       # ECB main refinancing rate

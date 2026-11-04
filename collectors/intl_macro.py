@@ -30,6 +30,7 @@ import json
 import logging
 from datetime import datetime, timezone
 from math import prod
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -58,6 +59,7 @@ class IntlMacroAdapter(Adapter):
         self.countries = icfg["countries"]
         self.source_meta: dict[str, dict[str, Any]] = {}
         self._jp_yield_response = None
+        self._eurostat_responses = {}
 
     def _fetch_fred(self, fid: str) -> pd.DataFrame:
         r = self.http_get(
@@ -83,6 +85,14 @@ class IntlMacroAdapter(Adapter):
         return pd.DataFrame({"_": s}).sort_index()
 
     def after_store_commit(self, name, returned, merged, *, committed_at):
+        pending = getattr(self, "_eurostat_responses", {}).pop(name, None)
+        if pending is not None:
+            from lib.intl_eurostat_publication import capture_eurostat_commit
+            # Consume before capture: post-store evidence failure cannot replay
+            # acquisition or certify a write that did not commit.
+            capture_eurostat_commit(data_root=config.data_dir(), returned=returned,
+                                    committed_at=committed_at, **pending)
+            return
         if name != "JP_yield_10y" or self._jp_yield_response is None:
             return
         from lib.intl_yield_publication import capture_jp_yield_commit, SOURCE_CONTRACT
@@ -96,6 +106,70 @@ class IntlMacroAdapter(Adapter):
             response_bytes=raw, received_at=received, committed_at=committed_at,
             source=dict(SOURCE_CONTRACT),
         )
+
+    def _fetch_eurostat_yoy(self, field, spec, *, requested_at, retries, timeout):
+        from lib.intl_eurostat_publication import FIELDS, _decode, _sha, _source_url, parse_native_field
+        from lib.intl_macro_publication import _read_stable_once
+
+        contract = FIELDS[field]
+        if (spec.get("provider") != "eurostat" or spec.get("dataset") != contract["dataset"]
+                or spec.get("unit") != contract["selectors"]["unit"]):
+            raise ValueError("Eurostat configured field contract mismatch")
+        native = spec.get("native_input")
+        received = None
+        if native is not None:
+            if type(native) is not dict or set(native) != {"response", "receipt"}:
+                raise ValueError("invalid retained Eurostat input configuration")
+            root = config.data_dir().resolve()
+            def retained(key):
+                value = native[key]
+                if type(value) is not str or Path(value).is_absolute() or ".." in Path(value).parts:
+                    raise ValueError("retained Eurostat input must be data relative")
+                path = (root / value).resolve()
+                path.relative_to(root)
+                return _read_stable_once(path, 8 * 1024 * 1024)
+            raw = retained("response")
+            receipt = _decode(retained("receipt"))
+            if receipt.get("status") != 200 or receipt.get("sha256") != _sha(raw):
+                raise ValueError("retained Eurostat acquisition identity mismatch")
+            url = receipt.get("response_url")
+            requested_at = receipt.get("requested_at")
+            # Original parent receipts omit this clock. Import time is never
+            # relabeled as the original HTTP response receipt.
+            received = receipt.get("response_received_at")
+        else:
+            params = {"lang": "en", **(spec.get("params") or {})}
+            if spec.get("since"):
+                params["sinceTimePeriod"] = str(spec["since"])
+            response = self.http_get(
+                "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/" + contract["dataset"].lower(),
+                params=params, retries=retries, timeout=timeout,
+            )
+            if response.status_code != 200:
+                raise ValueError("Eurostat response not successful")
+            raw, url = response.content, response.url
+            received = datetime.now(timezone.utc).isoformat()
+        _source_url(field, url)
+        parsed, frame = parse_native_field(field, raw)
+        verified = datetime.now(timezone.utc).isoformat()
+        from lib.intl_eurostat_publication import _source_time, _utc
+        if not _source_time(parsed["updated"]) <= _utc(requested_at) <= _utc(verified):
+            raise ValueError("Eurostat source chronology mismatch")
+        if received is not None and not _utc(requested_at) <= _utc(received) <= _utc(verified):
+            raise ValueError("Eurostat response chronology mismatch")
+        column = contract["column"]
+        self._eurostat_responses[column] = dict(
+            field=field, response_bytes=raw, source_url=url, requested_at=requested_at,
+            input_verified_at=verified, response_received_at=received,
+        )
+        self.source_meta[column] = {
+            "provider": "eurostat", "source_id": contract["dataset"], "source_url": url,
+            "requested_at": requested_at, "source_updated": parsed["updated"],
+            "last_observation": str(frame.index[-1].date()), "unit": contract["selectors"]["unit"],
+            "release_period_semantics": "Native YoY rate; economic period end, dataset update separately retained",
+            "status": "official_pending_store_evidence",
+        }
+        return frame
 
     @staticmethod
     def _jsonstat_series(payload: dict[str, Any]) -> pd.Series:
@@ -139,6 +213,10 @@ class IntlMacroAdapter(Adapter):
         retries = int(spec.get("retries", self.cfg.get("retries", 3)))
         timeout = int(spec.get("timeout_s", 20))
         requested_at = datetime.now(timezone.utc).isoformat()
+        native_yoy_fields = {"EZ_gdp_yoy_official": "EZ.gdp_yoy", "EZ_hicp_yoy_official": "EZ.cpi_yoy"}
+        if stored_col in native_yoy_fields:
+            return self._fetch_eurostat_yoy(native_yoy_fields[stored_col], spec,
+                                            requested_at=requested_at, retries=retries, timeout=timeout)
         if provider == "ecb":
             base = str(
                 spec.get("base_url") or "https://data-api.ecb.europa.eu/service/data"
@@ -238,6 +316,7 @@ class IntlMacroAdapter(Adapter):
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         self._jp_yield_response = None
+        self._eurostat_responses = {}
         # No cold-start branch needed: fredgraph.csv returns each series' FULL history
         # every call, so this plane self-seeds on the first run regardless of
         # `full_history` (unlike the price plane, which is 1mo-incremental).
