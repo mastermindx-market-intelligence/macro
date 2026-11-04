@@ -394,6 +394,29 @@ def test_kernel_suite_uses_two_isolated_interpreters() -> None:
     assert shared_worker_steps == []
 
 
+def test_kernel_runner_schedules_longest_first() -> None:
+    """Run 41613020910 serialized the two ~16m files; LPT starts them together."""
+    runner = _kernel_runner()
+    ordered = runner.schedule_files(
+        [
+            "tests/test_a_light.py",
+            "tests/test_fif_coverage_manifest.py",
+            "tests/test_b_light.py",
+            "tests/test_fundamental_forensics_production_publisher.py",
+            "tests/test_fif_a18_publish_fault_drill.py",
+        ]
+    )
+    assert ordered == [
+        "tests/test_fundamental_forensics_production_publisher.py",
+        "tests/test_fif_coverage_manifest.py",
+        "tests/test_fif_a18_publish_fault_drill.py",
+        "tests/test_a_light.py",
+        "tests/test_b_light.py",
+    ]
+    assert runner.FILE_WEIGHTS["tests/test_fundamental_forensics_production_publisher.py"] == 1018
+    assert runner.FILE_WEIGHTS["tests/test_fif_coverage_manifest.py"] == 959
+
+
 def test_kernel_runner_rejects_shared_workers(monkeypatch) -> None:
     runner = _kernel_runner()
     assert runner.main(["--workers", "4", "tests/test_fif_publication_workflow_shape.py"]) == 2

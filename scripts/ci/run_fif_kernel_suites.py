@@ -14,6 +14,17 @@ same 4030 tests in 22m52s, then failed two of them on gw1:
 file a clean process. Serial CI already proved the file list in one
 interpreter per file. This runner keeps that contract and runs two files at
 once. A non-zero pytest status fails the step. Nothing is retried.
+
+Hosted run 41613020910 (head 1d44a8f7bddfd) measured the isolated two-worker
+step at 46m01s. The two longest files ran back to back:
+
+- tests/test_fundamental_forensics_production_publisher.py ~1018s
+- tests/test_fif_coverage_manifest.py ~959s
+
+ThreadPoolExecutor starts the first ``--workers`` submissions immediately and
+queues the rest FIFO. Sorting by pinned hosted durations (longest first) puts
+those two on opposite workers at t=0 instead of serializing them after the
+shorter prefix drains unevenly.
 """
 
 from __future__ import annotations
@@ -23,6 +34,16 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 WORKERS = 2
+
+# Hosted seconds from run 41613020910 / job 125840711020. Unknown files keep
+# weight 1 so they fill after the measured heavies. Update only from a new
+# hosted measurement of this same runner.
+FILE_WEIGHTS: dict[str, int] = {
+    "tests/test_fundamental_forensics_production_publisher.py": 1018,
+    "tests/test_fif_coverage_manifest.py": 959,
+    "tests/test_fif_a18_publish_fault_drill.py": 426,
+    "tests/test_fif_specialist_packs.py": 366,
+}
 
 
 class UsageError(Exception):
@@ -42,6 +63,13 @@ def validate_invocation(workers: int, files: list[str]) -> None:
         parent, sep, name = path.partition("/")
         if sep != "/" or parent != "tests" or "/" in name or not name.endswith(".py"):
             raise UsageError(f"refusing non-file target {path}")
+
+
+def schedule_files(files: list[str]) -> list[str]:
+    """Longest-processing-time-first order from pinned hosted weights."""
+    indexed = list(enumerate(files))
+    indexed.sort(key=lambda item: (-FILE_WEIGHTS.get(item[1], 1), item[0]))
+    return [path for _, path in indexed]
 
 
 def _run_file(path: str) -> tuple[str, int]:
@@ -70,9 +98,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"fif kernel runner: {exc}", file=sys.stderr)
         return 2
 
+    ordered = schedule_files(files)
     failures: list[str] = []
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = [pool.submit(_run_file, path) for path in files]
+        futures = [pool.submit(_run_file, path) for path in ordered]
         for future in as_completed(futures):
             path, code = future.result()
             if code != 0:
