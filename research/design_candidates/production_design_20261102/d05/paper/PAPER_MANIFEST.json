@@ -1,0 +1,248 @@
+{
+  "schema": "d05.paper_evidence.v1",
+  "file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+  "page_id": "p-3-0",
+  "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-3-0",
+  "page_name": "D05 · Production journey · provisional",
+  "writer": "/root",
+  "native_readback": "paper/FINAL_READBACK.json",
+  "operation_journal": "paper/OPERATION_JOURNAL.json",
+  "operation_journal_sha256": "0d4d29bcfbedb87c4404a97343722e22ca5a59633b78cc19e50746728be1b5ea",
+  "operation_count": 229,
+  "d05_effect_unknown": false,
+  "shared_acceptance": "HELD",
+  "source_page_preserved": {
+    "page_id": "p-2-0",
+    "artboard_count": 24
+  },
+  "boards": [
+    {
+      "candidate": "A01",
+      "node_id": "ACW-0",
+      "name": "D05 A01 · US rotation evidence · 1440 light · provisional",
+      "purpose": "US measured sector leadership",
+      "locale": "EN",
+      "theme": "light",
+      "data_status": "observed source snapshot 2026-10-30",
+      "viewport_width": 1440,
+      "capture_pixels": [
+        1440,
+        1213
+      ],
+      "screenshot": "evidence/A01-final.jpg",
+      "screenshot_sha256": "35333ecc06e4fdd01007bb739b9feb52d3a5f6675e7efd442a8f8240f90841f4",
+      "jsx": "paper/exports/A01.jsx",
+      "jsx_sha256": "9785a870240e7d14cf5caac0a7c4b2df60ef2bc7b14681c78b60c2a762223b6e",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A02",
+      "node_id": "AKO-0",
+      "name": "D05 A02 · Cycles · 390 dark EN · provisional",
+      "purpose": "Cycle evidence",
+      "locale": "EN",
+      "theme": "dark",
+      "data_status": "illustrative all chart/position/age values",
+      "viewport_width": 390,
+      "capture_pixels": [
+        390,
+        1377
+      ],
+      "screenshot": "evidence/A02-final.jpg",
+      "screenshot_sha256": "edf712ca7c8e8edc2b988c288ffbc2be18a62a655bbb9c79b026d189cf30237f",
+      "jsx": "paper/exports/A02.jsx",
+      "jsx_sha256": "6ad656f05bbc7d7350363134a10fb9d1558789eaff7ec5ca794ff2a744f17b72",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A03",
+      "node_id": "AMY-0",
+      "name": "D05 A03 · China THS · 390 light ZH · provisional",
+      "purpose": "China THS concept",
+      "locale": "ZH",
+      "theme": "light",
+      "data_status": "illustrative membership",
+      "viewport_width": 390,
+      "capture_pixels": [
+        390,
+        1157
+      ],
+      "screenshot": "evidence/A03-final.jpg",
+      "screenshot_sha256": "38b255e83c0f0aed7c5e48f527088e2327cc2e9c5be4b94eea31e5cb0bd118c0",
+      "jsx": "paper/exports/A03.jsx",
+      "jsx_sha256": "54973ccb5d832241336b976e5f244fbd035ca2763a0283b661834acb2fdd8667",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A04",
+      "node_id": "AOT-0",
+      "name": "D05 A04 · Canada sector · 1024 light · modal evidence",
+      "purpose": "Canada sector/modal evidence",
+      "locale": "EN",
+      "theme": "light",
+      "data_status": "source-proven identities; illustrative presentation",
+      "viewport_width": 1024,
+      "capture_pixels": [
+        1024,
+        900
+      ],
+      "screenshot": "evidence/A04-final.jpg",
+      "screenshot_sha256": "23b5e080a5b100bde5aed4c5b01ba334bd68834024627a15557f280d1dad206b",
+      "jsx": "paper/exports/A04.jsx",
+      "jsx_sha256": "534080c77af36ad824031cccd9b2959f0441b1860b3ba4eae7a76deec033d18b",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A05",
+      "node_id": "ARB-0",
+      "name": "D05 A05 · Taxonomy · 768 light · no ranking",
+      "purpose": "Theme taxonomy",
+      "locale": "EN",
+      "theme": "light",
+      "data_status": "illustrative branch",
+      "viewport_width": 768,
+      "capture_pixels": [
+        768,
+        875
+      ],
+      "screenshot": "evidence/A05-final.jpg",
+      "screenshot_sha256": "7ea3ffa6144703e7f2ff200bbac742d1ae5835760fb29aad6f5eb427e48299b4",
+      "jsx": "paper/exports/A05.jsx",
+      "jsx_sha256": "e08f858ade172d851703e292821844e37332a64b2505d7e3cede05b0566627a3",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A06",
+      "node_id": "ATF-0",
+      "name": "D05 A06 · Namespaced group to Company · 1440 light",
+      "purpose": "Nasdaq configured-complex constituents",
+      "locale": "EN",
+      "theme": "light",
+      "data_status": "observed source snapshot 2026-10-30; prices latest available",
+      "viewport_width": 1440,
+      "capture_pixels": [
+        1440,
+        960
+      ],
+      "screenshot": "evidence/A06-final.jpg",
+      "screenshot_sha256": "dcdc3c766b3918c1d6da1406607921f57b8ea7454f161ddf0eb767cb9dcbb4cc",
+      "jsx": "paper/exports/A06.jsx",
+      "jsx_sha256": "1bb53afea3eda2627120ac6e3035e91b0bf1fb8ba4896c7700331d883b5eb6a5",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A07",
+      "node_id": "AXK-0",
+      "name": "D05 A07 · Narrative Rotation & dated thesis · 1440 light",
+      "purpose": "Narrative Rotation research",
+      "locale": "EN",
+      "theme": "light",
+      "data_status": "illustrative lifecycle and thesis values",
+      "viewport_width": 1440,
+      "capture_pixels": [
+        1440,
+        921
+      ],
+      "screenshot": "evidence/A07-final.jpg",
+      "screenshot_sha256": "f8ebbb69865dca58d2697da99710f2ab56a8fa7c1cb966bdd1f64399c40a3700",
+      "jsx": "paper/exports/A07.jsx",
+      "jsx_sha256": "9d2d922d15e066c2ce1f021eea54e7dec4c7538dc5b37170f0c4f1e7b0ac53ff",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A08",
+      "node_id": "B1V-0",
+      "name": "D05 A08 · 320 dark ZH · failure and save states",
+      "purpose": "Independent source/save state catalogue",
+      "locale": "ZH",
+      "theme": "dark",
+      "data_status": "illustrative states; source-bound durability limit",
+      "viewport_width": 320,
+      "capture_pixels": [
+        274,
+        2000
+      ],
+      "screenshot": "evidence/A08-final.jpg",
+      "screenshot_sha256": "564c6442cc0cd1400036a455c0c4b2f0616502ce4718eeefd818e99e1c61b931",
+      "jsx": "paper/exports/A08.jsx",
+      "jsx_sha256": "068955ffe054cfdce39a86415a75e017e06bc2f3c85f980aac50cb137c1d4291",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A09",
+      "node_id": "BML-0",
+      "name": "D05 A09 · Readme & Build Contract · acceptance held",
+      "purpose": "Readme and Build Contract",
+      "locale": "EN",
+      "theme": "light",
+      "data_status": "documentation",
+      "viewport_width": 1600,
+      "capture_pixels": [
+        1600,
+        1510
+      ],
+      "screenshot": "evidence/A09-final.jpg",
+      "screenshot_sha256": "a3cc81f2cfd03b9257ba45949e417b35865941fdc2bb08e27d9ec47876e91cd9",
+      "jsx": "paper/exports/A09.jsx",
+      "jsx_sha256": "aa315c8a34ce17f1b75ce7e788493a1be51b8ad41281a1c5a2c0a99e7802f4f8",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A10",
+      "node_id": "B4G-0",
+      "name": "D05 A10 · Breadth & fund flows · 1280 dark",
+      "purpose": "Directional breadth and ETF flow windows",
+      "locale": "EN",
+      "theme": "dark",
+      "data_status": "illustrative flow/breadth fixture",
+      "viewport_width": 1280,
+      "capture_pixels": [
+        1280,
+        1232
+      ],
+      "screenshot": "evidence/A10-final.jpg",
+      "screenshot_sha256": "0a390fbe74a1f1981b2923ab0f51effaacfe1e6799dac332b0c24d3458eafc2e",
+      "jsx": "paper/exports/A10.jsx",
+      "jsx_sha256": "1ba2badbdb2b6ff894244a9ce842234e073a9162dcdd1ce4c3296de266e41cbe",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A11",
+      "node_id": "BB2-0",
+      "name": "D05 A11 · R4 Brief retained in shared shell · 1440 light",
+      "purpose": "Retained R4 Brief in shared shell",
+      "locale": "EN",
+      "theme": "light",
+      "data_status": "native R4 illustrative fixture",
+      "viewport_width": 1440,
+      "capture_pixels": [
+        1275,
+        2000
+      ],
+      "screenshot": "evidence/A11-final.jpg",
+      "screenshot_sha256": "2c60f07a8ffe6456dc4348095c09f3dcd8453bcd4b25aafc42142cdfc84043ae",
+      "jsx": "paper/exports/A11.jsx",
+      "jsx_sha256": "9990765503b456fb26f7145b53ec05a39d08a464851aa7ef8bf83ff82033817d",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    },
+    {
+      "candidate": "A12",
+      "node_id": "BIJ-0",
+      "name": "D05 A12 · Broad rotation & entry evidence · 1440 EN light",
+      "purpose": "Broad rotation and entry evidence",
+      "locale": "EN",
+      "theme": "light",
+      "data_status": "illustrative cohort/trail/performance fixture",
+      "viewport_width": 1440,
+      "capture_pixels": [
+        1440,
+        1213
+      ],
+      "screenshot": "evidence/A12-final.jpg",
+      "screenshot_sha256": "5a9ca5e1a891f5b1451b187db40d94832161e606fe26fad1bfc3d4c906e91292",
+      "jsx": "paper/exports/A12.jsx",
+      "jsx_sha256": "528a3e3be1e0bb79b48712dc9d28e6079d2680d6f359507dbd52cc54b19d41be",
+      "visual_review": "ROOT_INSPECTED; representative still only; shared acceptance held"
+    }
+  ]
+}
