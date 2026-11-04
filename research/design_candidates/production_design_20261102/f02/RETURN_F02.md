@@ -1,6 +1,6 @@
 # F02 Design System — current return
 
-**Classification: EFFECT_UNKNOWN; all independently safe native repairs and scoped Product/Taste followups complete. Qualified joint v1 remains gated.** This is the current return for [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630). The original uncertain Paper effect remains held; all independently safe construction in the planned 32-board set has been completed. No merge, Ready, un-draft, queue, relabel or deployment is authorized or performed.
+**Classification: CHECKPOINTED_CONTINUATION; source implementation is advancing on Draft #10698. Paper gate G15 remains EFFECT_UNKNOWN, and qualified joint v1 remains gated.** All independently safe native repairs and scoped Product/Taste followups are complete. This is the current return for [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630). The original uncertain Paper effect remains held; all independently safe construction in the planned 32-board set has been completed. No merge, Ready, un-draft, queue, relabel or deployment is authorized or performed.
 
 ## Concrete delivery
 
@@ -148,3 +148,61 @@ route. Resume G15-dependent Paper construction only after a real terminal receip
 or documented canonical reconciliation on the original carrier. Keep both PRs Draft/
 HOLD and all release-effect prohibitions. Do not rebuild the repaired renderer or
 repeat the accepted unchanged 31-board review as a session-start ritual.
+
+
+## F02 compact-chart implementation — `bfb3bf32`
+
+The existing implementation PR #10698 advanced by one fast-forward commit to
+[`bfb3bf32660bd555341343fb4e977b5ee6a642b3`](https://github.com/mastermindx-market-intelligence/macro/commit/bfb3bf32660bd555341343fb4e977b5ee6a642b3)
+(tree `201f1534685cf00822ca09c0ec19ccee0380df6e`), parent `ad3c8bd3`.
+Only the same five owned renderer/test/paired-CSS/documentation paths changed.
+No Paper operation, domain-producer edit, source integration, release transition or
+deployment occurred. The compatible protected procedure pin remains Mastermind
+`87d9d4e724a48b1291940f074b859047fb831ae9`; comparison with protected
+`576b5934` found no material change to the laws governing these actions.
+
+### Actual integration finding and correction
+
+Read-only inspection of `scripts/build_crypto.py` and
+`templates/crypto.html.j2` at `ad3c8bd3` found the actual 42px line-chart caller.
+Its sparkline column can leave less than 100px for the figure after padding,
+spacing and the existing history chip. The shared gap label's 140px corner-date
+reservation could leave no caption width, and its bottom overlay overlaps the
+source coordinate range. This is source/CSS arithmetic, not a rendered incident.
+The consumer already hides `.ilx-tag` and `.ilx-d`, so its historical tag does
+**not** consume flex space; the earlier possible collapse hypothesis was rejected.
+The producer still filters invalid values before building spark arrays, so this
+change does not claim to recover missing dates or establish current crypto gaps.
+
+The shared renderer now selects `.ilx-compact` only for gapped lines below 96px.
+The plot and short bilingual status are separate layout children. With default
+spacing at 42px, the 12px status plus 4px gap leave a 26px plot. Hidden visual
+value/date labels retain their original date window, last observed value, unit
+and date in the accessible name. A missing final slot says **Latest missing /
+最新值缺失**, not current. Other gaps say **N missing / 缺失 N 条**. The compact
+caption has no 140px width reservation or residual transform. Full-height
+historical receipts remain separate, and complete-series output is unchanged.
+
+### Current-head source proof
+
+| Check | Verified result |
+| --- | --- |
+| Complete focused test file | **56/56 PASS**, no skipped functions, direct stdlib runner. All six new compact regressions were observed RED before implementation. |
+| Sparse layout/geometry matrix | **1,800 PASS**, seed `20261104`, heights 32/42/64/95/96/190, lengths 8/31/200/500, budgets 4/6/20/60/220. Preserved source slots, extrema/endpoints, missing counts, bounded samples, no cross-gap strokes and compact accessible metadata. |
+| Complete-data compatibility | **900/900 byte-identical** outputs against original main `a971b4e0`: line/area/bars/baseline/drawdown, six heights, five lengths, random/flat/descending values and two sample budgets. |
+| Published source | All five files read back byte-identical to tested contents. Renderer blob `e102d2e9971ebe2ea4faab342d34c1520387c183`; tests `342cb3a3b00ce650dca0942ef598dcc8a260c80f`; both CSS copies `9708c275eb28c6a02cbbde10d45bbdafcf840436`; docs `a6d9b670332b2ea0e589a473eb93d72b514c22c5`. GitHub comparison shows exactly five changed files, one commit ahead and none behind its immediate parent. |
+| Hosted CI | New-head [fences 41775368500](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41775368500) **queued**, [ci 41775368611](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41775368611) **pending** at readback. Parent `ad3c8bd3` fences completed **SUCCESS**; parent success does not qualify `bfb3bf32`. |
+
+Native bounded compact-layout reasoning returned and is terminal; it was not a
+formal review or release gate. The README's stale global “no product implementation”
+claim is corrected to distinguish this source candidate from deployment/acceptance.
+No additional reviewer, Fabric worker or watcher is being awaited or claimed.
+
+**Frontier:** inspect material exact-`bfb3bf32` CI returns and repair reproducible
+candidate failures on the same branch. Rendered theme/locale/responsive and real-path
+proof still requires a newly authorized preview route; do not work around the prior
+browser policy denial. G15 still requires original-carrier terminal/canonical
+reconciliation before its dependent Paper edits. Preserve line-only gap scope,
+held #8241/#8721 overlap and domain-producer ownership. Both PRs remain Draft/HOLD;
+no merge, Ready/un-draft, labels, enqueue or deploy. The completed source phase and
+this checkpoint are **not** full F02, joint F01/F02, native-set/RIG or product acceptance.
