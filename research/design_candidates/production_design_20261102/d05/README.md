@@ -2,6 +2,8 @@
 
 **Audit, specification and editable candidate package complete. Final shared design acceptance HELD.** No product implementation or release action is included.
 
+Frozen full-package commit: **22f6a887a621e82497ea256611835cee2ba6f079**. [Delivery receipt](DELIVERY_RECEIPT.md) records the verified source scope, evidence, limits and exact continuation.
+
 D05 preserves the strongest existing sector, cycle, theme, breadth, confluence, flow and rotation intelligence and connects it through one investigation:
 
 **Market → sector → rotation/cycle evidence → theme or constituent → exact Company listing → exact return.**
