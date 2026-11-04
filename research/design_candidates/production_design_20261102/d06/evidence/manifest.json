@@ -1,11 +1,11 @@
 {
-  "artifact": "D06 source specification, retained baselines and published reader, feedback, chart-time and embed-language evidence",
+  "artifact": "D06 source specification, retained baselines and published reader, feedback, chart-time, embed-language and daily-data evidence",
   "role": "SOURCE_SPEC_SOURCE_PUBLISHED_LOCAL_PROOF/PARTIAL; not approved final design or released foundation",
   "identity": "containing immutable Git commit plus member hashes",
   "pr": 10655,
-  "prior_published_head": "53af5e535a15e618e0f73ec2b5deffc88df430b9",
+  "prior_published_head": "ae52ee1a5118d5d169422bce98ac2f2c88409551",
   "member_count": 109,
-  "aggregate_sha256": "c84e3678a42b38bb8599d9c1b55a3fe5ba606c2eb38f7be9455105743f9bfac2",
+  "aggregate_sha256": "f3bf4d634f9cf4ecae7efda7a93e99876b0d87253c45e8b8b7a10404fbb10a97",
   "aggregate_rule": "SHA256 of sorted lines: member sha256 + space + relative path + LF",
   "manifest_self_excluded": true,
   "members": [
@@ -17,15 +17,15 @@
     },
     {
       "path": "BUILD_AND_TEST_PLAN.md",
-      "bytes": 28699,
-      "sha256": "2126cc828dc80d14c00ec1abd8a80cd0ab2f14e4f812c9bd15cc2c92195b4b82",
-      "git_blob_sha1": "57b8535f1f55c5587dde02a6b8fa972018a0d076"
+      "bytes": 28614,
+      "sha256": "95596d516abb390117e3c50962b9e28e298ed066e2044a0833ecc4fc8557bc6e",
+      "git_blob_sha1": "fac85149396b09c09e673c4e283379c2bf084d36"
     },
     {
       "path": "EVIDENCE_AND_RETURN.md",
-      "bytes": 28240,
-      "sha256": "936281c1acfcdf0fe34a32a8c5c7072cfe3906737f08aca8265cc9532f23cc30",
-      "git_blob_sha1": "a1802737e2a1bf3e3bbbf7d53cca2a323bbd16e5"
+      "bytes": 28781,
+      "sha256": "fc77cd32633871c2c34d5eb2322c1a01d31c491db67a307bd90af00c5d661527",
+      "git_blob_sha1": "c9d2cece8cc517f6d8a9f098648b9e85957b2cef"
     },
     {
       "path": "FEATURE_RETENTION.md",
@@ -83,9 +83,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 16962,
-      "sha256": "8cf6650b5c2a931719c8949c7b99c7893d250fab57a6537f3fb5cd1d02ff407b",
-      "git_blob_sha1": "c504555541f9206d1044566c6dbf11c243041455"
+      "bytes": 17061,
+      "sha256": "942e9045574d296ae102472ff4f5002322bc8e2cc7bdbc516d92fded794dd8cf",
+      "git_blob_sha1": "8eab0c1a4c8cc8b686628398c89f42fe75859e77"
     },
     {
       "path": "RESPONSIVE_AND_STATE_AUDIT.md",
@@ -95,9 +95,9 @@
     },
     {
       "path": "RESUMED_IMPLEMENTATION_20261104.md",
-      "bytes": 10570,
-      "sha256": "ece3ef94fd6c983d39aa57c7e47d7dc216297e65f726fa2bcbe7d9e78e6c5da7",
-      "git_blob_sha1": "57e9d13d92ea76fc4bcfceda31cafa7a7fba88ff"
+      "bytes": 12540,
+      "sha256": "1e35bf32a52c239b4025ba9c8c1659d0537dd1299ff0cc5304c75a55b43dad23",
+      "git_blob_sha1": "e4a703f55c8d1d35cade595d9d5951c6e16016c9"
     },
     {
       "path": "ROUTE_DATA_CONTRACTS.md",
@@ -509,9 +509,9 @@
     },
     {
       "path": "evidence/migration_cases.json",
-      "bytes": 29313,
-      "sha256": "7209d640e60b08d20144cd8f838b49d39023d21a5bd4b23d98a8138ee617a9ee",
-      "git_blob_sha1": "9e4b6c1894449351c8b77fd1fc6679ce39d3e8f8"
+      "bytes": 32056,
+      "sha256": "9ea8def463143cdef0db49717e3d4058704ccf93cff65cc97ec1cc0672d076ad",
+      "git_blob_sha1": "f9aa8c2ed01d21e80aea95d041cb60cfdedd9114"
     },
     {
       "path": "evidence/paper/chart_context_desktop.jpg",
@@ -641,9 +641,9 @@
     },
     {
       "path": "evidence/resumed_implementation_receipt.json",
-      "bytes": 4427,
-      "sha256": "1ad4712d779c2d3f66fa5e44e5c1a0c3cdc59bc62f59629293c3719a51172054",
-      "git_blob_sha1": "ed9ae8f7a135027256560cb3f4e8c3a287734c00"
+      "bytes": 7847,
+      "sha256": "4069ac0c31bb1dd9e0c8050f8e1a1fab397acd397eb4d65d83091e4e9f7b66eb",
+      "git_blob_sha1": "681adf9103416f10354ab08a235eb87e5bef8fbd"
     },
     {
       "path": "evidence/retained_registry.json",

@@ -1,16 +1,16 @@
 {
   "schema": "d06.resume-implementation.v1",
-  "checkpoint_time": "2026-11-04 06:51:24 UTC",
+  "checkpoint_time": "2026-11-04 07:39:09 UTC",
   "protected_source": "75a6540519cf519edfef7633e74f57b68aef9329",
   "programme_source": "6e1862867193ec6486a22001a0e4fb515da20448",
-  "macro_parent": "53af5e535a15e618e0f73ec2b5deffc88df430b9",
+  "macro_parent": "ae52ee1a5118d5d169422bce98ac2f2c88409551",
   "terminal": {
     "repository": "mastermindx-market-intelligence/mastermind-terminal",
     "pr": 1270,
     "branch": "sol/web-d06-terminal-reader-resilience-20261103-c4",
     "operation_id": "d06-terminal-reader-resilience-20261103-c4",
     "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d06-terminal-reader-resilience-20261103-c4",
-    "head": "d73e55b556c532d09ad144e69be0673db31d035c",
+    "head": "974128ee2f9527a9c8a1db2b78ae97fc239a9786",
     "clean_after_push": true,
     "feedback": {
       "commit": "fed19d1ac3aa8a716f528c8205651ff60b7b413d",
@@ -54,26 +54,122 @@
       },
       "typescript_exit": 0,
       "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d73e55b556c532d09ad144e69be0673db31d035c/terminal/docs/pr-crops/d06-embed-language/verification.json"
+    },
+    "embed_data": {
+      "commit": "974128ee2f9527a9c8a1db2b78ae97fc239a9786",
+      "parent": "d73e55b556c532d09ad144e69be0673db31d035c",
+      "commit_action": "a7ca4b32a6fe9411f2181ac743a4388925d5e820265c6d38575c6ccbfa66aab1",
+      "push_action": "31a567d5668b0895109f7a4176a34520e7a2c43c6bb24416ab71866074464d9f",
+      "published_blob_matches": 57,
+      "unit": {
+        "passed": 47,
+        "failed": 0
+      },
+      "baseline": {
+        "failed": 2,
+        "scope": "HTTP503 misclassified as absence in EN/ZH"
+      },
+      "initial_browser": {
+        "passed": 38,
+        "failed": 1,
+        "scope": "320px clean-root scrolling; same failed trace also records reduced-motion hydration mismatch"
+      },
+      "full_browser": {
+        "passed": 39,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "new_cases": 21,
+        "existing_language_cases": 18,
+        "scope": "before final two text-color changes"
+      },
+      "final_refinement": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "overlaps_full_run": true,
+        "scope": "ready and compact variants after final colors, including light clean unavailable state"
+      },
+      "computed_color_observations": 18,
+      "visible_text_contrast_observations": 15,
+      "minimum_contrast": 14.053766617886108,
+      "default_viewports": [
+        [
+          1440,
+          900
+        ],
+        [
+          820,
+          1180
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "short_viewports": [
+        [
+          900,
+          300
+        ],
+        [
+          390,
+          300
+        ],
+        [
+          320,
+          300
+        ]
+      ],
+      "minimum_short_chart_height": 137.859375,
+      "retained_success_pngs": 33,
+      "inspected_success_pngs": 29,
+      "retained_failure_pngs": 3,
+      "lint": {
+        "preexisting_component_errors": 5,
+        "offending_source_signatures_match": true,
+        "other_changed_files_findings": 0
+      },
+      "typescript_exit": 0,
+      "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/974128ee2f9527a9c8a1db2b78ae97fc239a9786/terminal/docs/pr-crops/d06-embed-data/verification.json",
+      "limits": [
+        "deterministic local fixtures",
+        "no actual native host",
+        "no actual 400% zoom or physical device",
+        "no producer freshness, exchange provenance or PIT claim",
+        "existing invalid-volume zero fallback retained",
+        "no final Paper, production or complete-case acceptance"
+      ]
     }
   },
   "ci": {
     "prior_head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
     "prior_run": 41776880568,
     "prior_successful_jobs": 17,
-    "current_head": "d73e55b556c532d09ad144e69be0673db31d035c",
-    "current_run": 41788110415,
+    "current_head": "974128ee2f9527a9c8a1db2b78ae97fc239a9786",
+    "current_run": 41793286851,
     "current_status_at_publication_readback": "pending",
-    "pr_check_run": 41788106052,
+    "pr_check_run": 41793276738,
     "pr_check_status_at_publication_readback": "queued",
-    "current_head_qualified": false
+    "current_head_qualified": false,
+    "previous_embed_head": "d73e55b556c532d09ad144e69be0673db31d035c",
+    "previous_embed_run": 41788110415,
+    "previous_embed_jobs_at_readback": {
+      "success": 5,
+      "cancelled": 2,
+      "in_progress": 9
+    }
   },
   "foundation": {
-    "observed_at": "2026-11-04 06:51:24 UTC",
+    "observed_at": "2026-11-04 07:39:09 UTC",
     "f01_head": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
-    "f02_head": "6d1f6791408fbb317daf16b647c02465e8d81266",
+    "f02_head": "2ea60216320f2294c0f66aa43d6071e6e1d0d587",
     "joint_v1_released": false,
     "operative": "candidate.4 provisional",
-    "candidate5_adopted": false
+    "candidate5_adopted": false,
+    "f02_return_blob": "ae55340e11bf77d1a8aeb1a8db0a293662d983dc",
+    "f02_original_effect": "EFFECT_UNKNOWN / original G15 target retained"
   },
   "paper": {
     "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
@@ -90,10 +186,10 @@
   },
   "migration": {
     "cases": 75,
-    "partial": 10,
-    "unexecuted": 65,
+    "partial": 12,
+    "unexecuted": 63,
     "fully_qualified": 0,
-    "new_credit": "existing partial A11Y02 only",
+    "new_credit": "new partial EMBED01–02; extended existing HIST02/A11Y02–04; no new full-case qualification",
     "retained_macro_images": 72
   },
   "release": {
@@ -107,9 +203,14 @@
   },
   "effects": {
     "new_unknown": 0,
-    "optional_native_adviser": "accepted / STOP",
+    "optional_native_adviser": "two bounded read-only reasoning returns accepted / STOP; no formal approval",
     "external_messages": 0,
     "background_observer": false
   },
-  "next_action": "Read exact d73e55b5 hosted check conclusions and repair concrete regressions on the original carrier; consume actual joint foundation release and C4 Paper admission before their dependent lanes."
+  "next_action": "Inspect exact 974128ee hosted CI run41793286851 and repair any concrete same-carrier regression. Shared-shell/Paper work remains contingent on actual joint F01/F02 release and exact C4 write admission; retain remaining owner-specific migration requirements.",
+  "protected_source_readback": {
+    "observed_master": "690e5316629815ae3e78f65ebdec2eb87f0cad16",
+    "reused_pin": "75a6540519cf519edfef7633e74f57b68aef9329",
+    "reason": "INDEX and required procedure files unchanged from the valid pin"
+  }
 }

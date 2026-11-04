@@ -1,6 +1,6 @@
 {
   "artifact": "D06 proposed migration cases",
-  "status": "SPECIFIED_WITH_PARTIAL_LOCAL_READER_AND_CLOCK_EXECUTION",
+  "status": "SPECIFIED_WITH_PARTIAL_LOCAL_READER_CLOCK_AND_EMBED_EXECUTION",
   "cases": [
     {
       "id": "NAV01",
@@ -78,8 +78,9 @@
       "expected": "Format declared time basis correctly; no universal UTC suffix or shifted daily dates.",
       "owner": "Intraday/reader",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "Published reader removes universal UTC qualifier, preserves supplied US summer/winter,CN/HK,crypto-shaped clock components,daily dates,and seconds for1s/5s/15s/30s. New browser tests cover EN/ZH numeric Previous→Latest and daily labels. This does not validate upstream timezone/DST provenance,freshness or PIT.",
-      "execution_receipt": "chart_time_receipt.json"
+      "execution_subset": "Published reader removes universal UTC qualifier, preserves supplied US summer/winter,CN/HK,crypto-shaped clock components,daily dates,and seconds for 1s/5s/15s/30s. New browser tests cover EN/ZH numeric Previous→Latest and daily labels. This does not validate upstream timezone/DST provenance,freshness or PIT. The compact embed also preserves canonical latest and hovered daily dates across Pacific/Honolulu and Pacific/Kiritimati fixtures. Date-only presentation does not validate producer timezone, session completeness, freshness or exchange provenance.",
+      "execution_receipt": "chart_time_receipt.json",
+      "continuation_receipt": "resumed_implementation_receipt.json"
     },
     {
       "id": "HIST03",
@@ -328,14 +329,18 @@
       "input": "Repeated parameters, unsupported symbol grammar and every visual/range variant; load1Y, choose6M, reload and inspect CTA",
       "expected": "Honor first-value parser and actual coverage; distinguish entry URL from local range and CTA context loss; no silent URL synchronization or broader identity promise.",
       "owner": "Embed",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Explicit local assertions preserve clean/hdr/fs/transparent variants, range selection, SMA toggling, canonical NVDA and existing CTA; desktop/tablet/mobile plus 900/390/320px short frames. This does not qualify repeated-parameter precedence, full symbol grammar, every range/visual combination, 1Y→6M→reload, full CTA context semantics or actual native-host behavior.",
+      "execution_receipt": "resumed_implementation_receipt.json"
     },
     {
       "id": "EMBED02",
       "input": "Daily as-of, empty bars, network/bad JSON and invalid OHLC/volume",
       "expected": "Show final-bar clock when implemented and distinct source outcomes; no live-quote claim.",
       "owner": "Embed/data",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Deterministic local fixtures distinguish explicit 404/empty bars from 503/network/badJSON/malformed/all-invalid/duplicate unavailability; validate daily dates, show actual latest/hovered dates, stop settled skeletons and retain localized status. Unit cases retain partial usable OHLC, sorting, leap days, single-bar quotes and the existing invalid-volume zero fallback. No live-source freshness, exchange-session validity, producer provenance, complete volume-quality semantics or production acceptance is inferred.",
+      "execution_receipt": "resumed_implementation_receipt.json"
     },
     {
       "id": "EMBED03",
@@ -442,7 +447,8 @@
       "expected": "Match document/content language and accessible labels to rendered text; measure contrast, non-color semantics,44px house targets and the separate AA minimum/spacing rule.",
       "owner": "F02/D06",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "Dark EN/ZH and measured 44px target subsets; light composition, full contrast and other route language cases remain unqualified. New clock proof adds visible and aria-describedby-associated EN/ZH qualifiers and320px date/time wrapping. New narrow target checks cover collapsed controls; full expanded-target and physical-device proof remains separate."
+      "execution_subset": "Dark EN/ZH and measured 44px target subsets; light composition, full contrast and other route language cases remain unqualified. New clock proof adds visible and aria-describedby-associated EN/ZH qualifiers and 320px date/time wrapping. New narrow target checks cover collapsed controls; full expanded-target and physical-device proof remains separate. Prior published feedback/language subsets remain retained. New embed proof adds EN/ZH empty-versus-unavailable text, scoped language, stable status during crosshair movement, visible attribution keyboard focus, 24px fine/44px coarse attribution height, and at least 14.05:1 contrast for new date/unavailable text on tested opaque backgrounds. This does not qualify all existing targets, axis palettes, host transparency, themes/states or assistive technology.",
+      "execution_receipt": "resumed_implementation_receipt.json"
     },
     {
       "id": "A11Y03",
@@ -450,7 +456,8 @@
       "expected": "Reflow surrounding content and contain essential 2D overflow; resolve root/widget zoom restrictions with the actual host owner; viewport resizing alone is not zoom or mobile-device proof.",
       "owner": "D06/Terminal/embed",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "320 CSS pixel reflow subset only; no actual 400% zoom or removal of root/embed zoom restrictions."
+      "execution_subset": "320 CSS pixel reflow subset only; no actual 400% zoom or removal of root/embed zoom restrictions. New embed assertions cover 900/390/320px wide 300px frames, local range-strip overflow rather than root scrolling, readable dates and attribution outside the canvas. Viewport resizing is not actual 400% zoom, native-host or physical-device proof.",
+      "execution_receipt": "resumed_implementation_receipt.json"
     },
     {
       "id": "A11Y04",
@@ -458,7 +465,8 @@
       "expected": "No full-pane wave; freeze/pause the edge; keep states understandable without movement.",
       "owner": "F02/D06",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "Reduced-motion reader subset only; no Refraction composition/review."
+      "execution_subset": "Reduced-motion reader subset only; no Refraction composition/review. New embed reduced-motion proof removes the observed server/client skeleton mismatch by retaining the existing CSS media owner; tests assert hidden shimmer/no ribbon animation and no captured hydration errors. No native Refraction composition or full motion qualification is inferred.",
+      "execution_receipt": "resumed_implementation_receipt.json"
     },
     {
       "id": "A11Y05",
@@ -539,10 +547,10 @@
       "status": "specified_not_executed"
     }
   ],
-  "baseline_observation_note": "Guest and signed-in-presentation before-design observations remain separate. Current published reader source has57focused unit/DOM passes and77browser passes;10broad migration cases have partial local-fixture evidence,65remain specified/unexecuted,and zero have complete-case acceptance.",
+  "baseline_observation_note": "Guest and signed-in-presentation before-design observations remain separate. Published reader/clock/feedback/language proof retains its original source. The current embed source-state/date slice has 47 unit passes, 39 full browser passes and 9overlapping final color/compact passes. Twelve broad cases have bounded local-fixture evidence, 63 remain specified/unexecuted,and zero have complete-case acceptance.",
   "complete_case_passes": 0,
-  "partial_case_count": 10,
-  "execution_receipt": "chart_time_receipt.json",
-  "specified_unexecuted_count": 65,
+  "partial_case_count": 12,
+  "execution_receipt": "resumed_implementation_receipt.json",
+  "specified_unexecuted_count": 63,
   "historical_execution_receipt": "implementation_receipt.json"
 }

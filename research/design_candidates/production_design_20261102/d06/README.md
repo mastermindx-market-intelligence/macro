@@ -1,6 +1,6 @@
 # D06 Terminal specification, evidence and implementation continuation
 
-**Current: SOURCE_PUBLISHED / LOCALLY_VERIFIED / CURRENT_HEAD_CI_PENDING / RELEASE_HOLD. Overall PARTIAL; RIG draft.** Resumption completed the unfinished reader feedback repair and a separate embed content-language correction on the original [Terminal Draft #1270](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1270), exact head `d73e55b556c532d09ad144e69be0673db31d035c`. Feedback has **65 unit/DOM passes and 12 final browser passes**; embed language has **18 browser passes across 30 state observations**. The earlier combined reader run has 46 passes/14 intentional skips before the final feedback-only margin change. [Current resumption and return](RESUMED_IMPLEMENTATION_20261104.md) and [receipt](evidence/resumed_implementation_receipt.json) bind source, publication and remaining gates. Earlier reader/clock proof remains at its original commits. Final shell composition, Paper write admission, exact-head CI/formal approval and release remain separate.
+**Current: SOURCE_PUBLISHED / LOCALLY_VERIFIED / CURRENT_HEAD_CI_PENDING / RELEASE_HOLD. Overall PARTIAL; RIG draft.** The original [Terminal Draft #1270](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1270) now contains daily-bar date and honest source-state behavior at **974128ee2f9527a9c8a1db2b78ae97fc239a9786**, after the preserved reader/clock, feedback and language corrections. New verification: **47 unit passes,39 full browser passes and nine overlapping final color/compact passes**, zero final failures/skips/flaky;29 of33 retained success captures inspected. The five existing component lint findings remain disclosed; final TypeScript passes. All 57 newly published blobs match the tested local commit. [Current resumption and return](RESUMED_IMPLEMENTATION_20261104.md) and [receipt](evidence/resumed_implementation_receipt.json) bind exact source, effects and remaining gates. Final shared-shell composition, Paper write admission, exact-head CI/formal approval and release remain separate.
 
 The current owner remains the Chairman-assigned D06 Astra Pro receiver, ChatGPT4 / `mastermidx4`. [Draft PR #10655](https://github.com/mastermindx-market-intelligence/macro/pull/10655) and branch `design/d06-terminal-phase2a-20261103-c4` remain the existing D06 research carrier under [programme Draft #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). No replacement D06 session, lifecycle system or shared return ledger was created. The original managed Terminal workspace/branch and the recovered existing Draft #1270 carry the independent implementation; no duplicate carrier was created.
 
@@ -8,7 +8,7 @@ The current owner remains the Chairman-assigned D06 Astra Pro receiver, ChatGPT4
 
 | Artifact | Purpose |
 | --- | --- |
-| [Resumed feedback and embed implementation](RESUMED_IMPLEMENTATION_20261104.md) | Current exact head, local proof, publication readback, foundation/Paper frontier and next actions |
+| [Resumed reader and embed implementation](RESUMED_IMPLEMENTATION_20261104.md) | Current exact head, local proof, publication readback, foundation/Paper frontier and next actions |
 | [Earlier reader and chart-time continuation](PUBLICATION_AND_CHART_TIME_20261104.md) | Historical reader/clock source and proof at 0cf50dc0; recovered publisher and retained boundaries |
 | [Historical first implementation](IMPLEMENTATION_CONTINUATION_20261104.md) | Initial reader implementation and exact earlier verification/refusal history |
 | [Foundation and focused-reader response](FOUNDATION_RESPONSE_20261104.md) | Candidate.4/proposed.5 boundaries, preserved Terminal ownership and exact historical source-review scope |
@@ -75,7 +75,7 @@ The current-source delta qualifies company-search context, conservative cache ac
 | F02 current source readback | Draft #10630 at `79ddabca1f94741dacc7fee1dacdce882cef4f69`; scoped candidate.4 source-policy concurrence; original G15 effect and final joint qualification remain held |
 | P00 evidence return | Draft #10626 at `3f27e859438f5ba2d8288735c4d04aa087bfc45c`; BLOCKED_RETURN/PARTIAL, with an actual evidence-only approved review |
 | Prior published D06 evidence freeze | `1f63f2c8318e7819551d5b82d47bc6e1e8700a98`; same owner/branch, historical initial implementation evidence |
-| Current Terminal implementation | Draft #1270 at `d73e55b556c532d09ad144e69be0673db31d035c`, after feedback fed19d1a and earlier reader/clock source; exact publication and proof in resumed_implementation_receipt.json |
+| Current Terminal implementation | Draft #1270 at 974128ee2f9527a9c8a1db2b78ae97fc239a9786, after preserved reader/clock/feedback/language source; exact publication and proof in resumed_implementation_receipt.json |
 
 The original assignment pin is unchanged. Later foundation, current procedure and source-delta observations are separately identified. The later DOM deployment token equals the observed Terminal SHA; that is source correspondence, not independent bundle/release attestation. The external Brain asset was not byte-attested.
 
@@ -88,10 +88,10 @@ These are editorial package states, not Executive lifecycle transitions or revie
 | D06.2A.1 Baselines and boundaries | delivered to recorded depth | All-nine-family guest evidence, later measured responsive subset and scoped current Paper correspondence; proof limits explicit |
 | D06.2A.2 Product and retention | specified | Complete source/Paper ledger and retained registries; no feature removal |
 | D06.2A.3 Interaction and data | specified with live findings | Exact identity/clocks, corrected reader/focus/fit semantics, Brain handoff and current-source delta; extensions remain proposed |
-| D06.2A.4 Builder and migration | specified | 75 unique cases; 10 have bounded local-fixture subsets, 65 remain specified/unexecuted, zero have complete-case qualification; owner-preserving sequence and rollback |
+| D06.2A.4 Builder and migration | specified | 75 unique cases; 12 have bounded local-fixture subsets, 63 remain specified/unexecuted, zero have complete-case qualification; owner-preserving sequence and rollback |
 | D06.2A.5 Evidence return | delivered | 36 beta captures,16 Paper reference captures,two structure reads,sanitized DOM measurements,pins and manifest |
 | Earlier D06 reader/clock continuation | source published and locally verified at 0cf50dc0; release held | 57 unit/DOM passes,77 browser passes,16 deliberate skips,eight captures; original publisher APPLIED, Draft #1270 |
-| Resumed feedback and embed continuation | source published and locally verified at d73e55b5; release held | 65 reader unit/DOM,12 final feedback browser,18 embed browser passes;30 new success captures retained in Terminal; current-head CI pending |
+| Resumed reader and embed continuation | source published and locally verified at 974128ee; release held | New 47 data-helper passes, 39 full browser passes and 9 overlapping final refinement passes; 33 success captures retained, 29 inspected; current-head CI pending; earlier proof remains at its own commits |
 | D06.2B Editable composition and review | blocked | Verified joint F01/F02 v1, exact D06/C4 authoring admission, frozen after-artifacts and applicable actual RIG/QA01 acceptance dispositions |
 
 Actual tablet/phone-width browser evidence is now recorded. Physical touch devices,mobile browser/software keyboard,400%zoom,screen reader/contrast,full responsive/theme/locale coverage,authenticated save/access/races,positive public snapshot,performance,model validity and after-design usability remain unproved. Paper mobile references remain a separate evidence class.
