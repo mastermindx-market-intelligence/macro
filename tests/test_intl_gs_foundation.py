@@ -1400,7 +1400,8 @@ def test_x3_snapshot_block_latest_qualified_clocks(monkeypatch):
     snapshot = result["surveillance"]["snapshot"]
     assert set(snapshot) == {"local", "usd_unhedged", "usd_hedged"}
     for basis in snapshot:
-        assert set(snapshot[basis]) == {"clocks", "clock_display", "qualified", "total"}
+        assert set(snapshot[basis]) == {"clocks", "clock_display", "clock_precisions",
+                                        "qualified", "total"}
         assert set(snapshot[basis]["clocks"]) == set(REQUIRED_CLOCKS)
         assert set(snapshot[basis]["clock_display"]) == set(REQUIRED_CLOCKS)
     assert snapshot["local"]["qualified"] == 1 and snapshot["local"]["total"] == 2

@@ -10,12 +10,16 @@ Simplified Chinese renderings, the §10.6 region groups and the display copy.
 
 An unknown token at runtime renders the raw token — it is never dropped and
 never upgraded to a guessed class.
+
+This module also owns the declared source-precision display law (exact |
+upper bound | session date) used by the X5 snapshot bar: how one clock
+instant is NAMED in the visible cells, never how the source qualifies it.
 """
 from __future__ import annotations
 
 import re
 
-from engine.intl_global_observation import ABSTAIN_REASONS
+from engine.intl_global_observation import ABSTAIN_REASONS, CLOCK_PRECISIONS
 from engine.intl_global_universe import CAPABILITIES, CAPABILITY_STATES
 
 from datetime import date as _date, datetime as _datetime, timezone as _timezone
@@ -340,6 +344,88 @@ def format_clock(value):
                                               moment.hour, moment.minute)}
 
 
+_UPPER_BOUND_PREFIX = ("Available by ", "至迟可得 ")
+
+
+def coarsest_precision(precisions):
+    """Keep a declared non-exact form over exact ties; incompatible forms
+    or a missing declaration stay unknown. A day and an upper bound are
+    different claims, not a total precision order.
+    """
+    known = set()
+    for precision in precisions:
+        if not isinstance(precision, str) or precision not in CLOCK_PRECISIONS:
+            return None
+        known.add(precision)
+    if not known or {"session_date", "upper_bound"} <= known:
+        return None
+    return ("session_date" if "session_date" in known else
+            "upper_bound" if "upper_bound" in known else "exact")
+
+
+def _calendar_date(value):
+    """The as-written calendar date of one clock instant.
+
+    The engine compares a session-date clock by its as-written date
+    (``engine.intl_global_observation.check_clocks``), so the displayed day
+    is the session's own day and never shifts into another one.
+    """
+    if isinstance(value, bool):
+        raise ValueError("clock value is not a date or datetime")
+    if isinstance(value, _datetime):
+        return value.date()
+    if isinstance(value, _date):
+        return value
+    if not isinstance(value, str):
+        raise ValueError("clock value is not a date or datetime")
+    if _DATE_ONLY.match(value):
+        return _date.fromisoformat(value)
+    try:
+        parsed = _datetime.fromisoformat(value.replace("Z", "+00:00", 1)
+                                         if value.endswith("Z") else value)
+    except ValueError:
+        raise ValueError("clock value is not an ISO-8601 date or datetime") from None
+    return parsed.date()
+
+
+def format_clock_precise(value, precision):
+    """One clock instant + its declared source precision -> the §13.3 display.
+
+    ``precision`` is one of the declared source precisions (the engine's
+    ``CLOCK_PRECISIONS``):
+
+    ``exact``
+        the instant is exact: the plain §13.3 form, unchanged.
+    ``upper_bound``
+        the instant is the bound by which the source was available: the same
+        instant, named as a bound ("Available by" / "至迟可得") instead of
+        being shown as the exact moment it is not.
+    ``session_date``
+        the instant names a calendar date: the date form only — never a
+        fictional 00:00 — while the raw machine instant stays in ``datetime``.
+
+    A precision outside the declared enum (or a missing one) is UNKNOWN: the
+    result carries no visible value, so the caller closes the cell instead of
+    presenting an instant of unknown precision as exact. ``format_clock``
+    itself is unchanged — this is its precision-aware sibling.
+    """
+    if value is None or value == "":
+        return None
+    if precision not in CLOCK_PRECISIONS:
+        return {"datetime": None, "en": None, "zh": None}
+    if precision == "session_date":
+        day = _calendar_date(value)
+        return {"datetime": value.isoformat() if isinstance(value, (_date, _datetime)) else value,
+                "en": "%d %s %d" % (day.day, _MONTHS_EN[day.month - 1], day.year),
+                "zh": "%d年%d月%d日" % (day.year, day.month, day.day)}
+    shown = format_clock(value)
+    if precision == "upper_bound":
+        return {"datetime": shown["datetime"],
+                "en": _UPPER_BOUND_PREFIX[0] + shown["en"],
+                "zh": _UPPER_BOUND_PREFIX[1] + shown["zh"]}
+    return shown
+
+
 def snapshot_display(snapshot):
     """Add the FX1 clock display to one mount snapshot block (per basis).
 
@@ -348,12 +434,26 @@ def snapshot_display(snapshot):
     (machine contract) plus ``clock_display`` mapping every clock key to
     ``format_clock(raw)`` or None. The single composition path for the mount,
     the fixture site and the snapshot macro — no caller formats a clock itself.
+
+    When the block carries the mount's ``clock_precisions`` map, every cell is
+    displayed in its DECLARED source precision — an exact instant, an
+    "Available by" bound, or a calendar date — and a cell whose precision is
+    missing or outside the declared enum is closed rather than shown as exact.
+    A block WITHOUT that map (a manually constructed fixture) keeps the legacy
+    exact display.
     """
     displayed = {}
     for basis, entry in (snapshot or {}).items():
         clocks = (entry or {}).get("clocks") or {}
-        displayed[basis] = dict(entry or {}, clock_display={
-            clock: (format_clock(raw) if raw else None) for clock, raw in clocks.items()})
+        if isinstance(entry, dict) and "clock_precisions" in entry:
+            precisions = entry.get("clock_precisions")
+            precisions = precisions if isinstance(precisions, dict) else {}
+            displayed[basis] = dict(entry, clock_display={
+                clock: (format_clock_precise(raw, precisions.get(clock)) if raw else None)
+                for clock, raw in clocks.items()})
+        else:
+            displayed[basis] = dict(entry or {}, clock_display={
+                clock: (format_clock(raw) if raw else None) for clock, raw in clocks.items()})
     return displayed
 
 
