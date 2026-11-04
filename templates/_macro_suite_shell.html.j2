@@ -166,7 +166,7 @@
           <th scope="row">{{ bl(component.label) }}</th>
           <td>{{ chip(component.presence, component.presence_tone) }}</td>
           <td>{{ chip(component.freshness, component.freshness_tone) }}</td>
-          <td>{% if component.source_asof %}<time>{{ component.source_asof }}</time>{% else %}{{ absent(component.absence, True) }}{% endif %}</td>
+          <td>{% if component.source_asof %}<time>{{ component.source_asof }}</time>{% elif view.context.get('clock_qualification') %}{{ t('Not supplied', '来源未提供') }}{% else %}{{ absent(component.absence, True) }}{% endif %}</td>
         </tr>
         {%- endfor %}
       </tbody>
@@ -261,7 +261,7 @@
         <th scope="row">{{ bl(component.label) }}</th>
         <td>{{ chip(component.presence, component.presence_tone) }}</td>
         <td>{{ chip(component.freshness, component.freshness_tone) }}</td>
-        <td>{% if component.source_asof %}<time>{{ component.source_asof }}</time>{% else %}{{ absent(component.absence, True) }}{% endif %}</td>
+        <td>{% if component.source_asof %}<time>{{ component.source_asof }}</time>{% elif view.context.get('clock_qualification') %}{{ t('Not supplied', '来源未提供') }}{% else %}{{ absent(component.absence, True) }}{% endif %}</td>
       </tr>
       {%- endfor %}
     </tbody>

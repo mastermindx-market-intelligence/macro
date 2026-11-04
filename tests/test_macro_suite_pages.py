@@ -1339,3 +1339,29 @@ def test_business_reference_period_does_not_claim_method_or_definition_publicati
     date_label = next(n for n in headline._nodes() if n.name == "dt")
     assert next(n for n in date_label._nodes() if n._class("l-en")).get_text(strip=True) == "Reference period"
     assert next(n for n in date_label._nodes() if n._class("l-zh")).get_text(strip=True) == "参考期"
+
+
+@pytest.mark.parametrize("failed", [False, True])
+def test_business_unknown_clock_is_not_a_missing_reading_but_failure_still_wins(failed):
+    from copy import deepcopy
+    from engine.market_os.macro_workspaces import contract
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+    if failed:
+        snapshot = deepcopy(snapshot)
+        snapshot["availability"]["state"] = "SOURCE_FAILED"
+        snapshot["availability"]["required"][0]["freshness"] = "SOURCE_FAILED"
+        snapshot = contract.finalize(snapshot)
+        contract.validate(snapshot)
+        artifact = {}  # synthetic failure fixture has no raw publication receipt
+    view = macro_suite_view.build_view(snapshot, page_built_at=BUILT_AT, artifact=artifact)
+    assert not any("No accepted source cut" in row["body"]["en"] for row in view["diagnostics"])
+    assert view["context"]["state"] == ("SOURCE_FAILED" if failed else snapshot["availability"]["state"])
+    if failed:
+        assert view["context"]["state_tone"] == "bad"
+        assert any(row["title"]["en"] == "Required source not current" for row in view["diagnostics"])
+    if not failed:
+        # Render the actual verified publication. The synthetic failure above
+        # checks state/diagnostic precedence without inventing a receipt.
+        html = builder.render_page(builder._environment(ROOT), page, view)
+        assert "Not supplied" in html and "来源未提供" in html

@@ -1109,6 +1109,11 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
 
     for component in context.get("required") or []:
         if component["absence"] is not None:
+            # Business's period labels carry no observation-clock receipt.
+            # Its header qualifies that absence; it is not a missing-value or
+            # source-failure diagnostic. Actual degraded states remain above.
+            if context.get("clock_qualification"):
+                continue
             out.append({
                 "tone": "warn",
                 "title": component["label"],

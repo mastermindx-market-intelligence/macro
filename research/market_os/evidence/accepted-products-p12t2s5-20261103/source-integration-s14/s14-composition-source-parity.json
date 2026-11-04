@@ -1,0 +1,37 @@
+{
+  "protected_base": "9c4e332b0a42bfb4b5ec5dd16ee145868795a090",
+  "reviewed_S13": "7b7dad387945d98de331eb68ca3cb96e8aa98b30",
+  "reviewed_c7": "c7e6a8a7e9a6d3716e72f08555395c8f8e59e330",
+  "conflicts": [],
+  "S13_exact_postimages": [
+    {
+      "path": "app/macro_command.py",
+      "blob": "a9d27313ce5b997271813bacf961b4ad9dc38337"
+    },
+    {
+      "path": "engine/market_os/macro_workspaces/business_activity.py",
+      "blob": "a0090dd1a4e9fe1c13393126c3954c13764f015a"
+    },
+    {
+      "path": "lib/macro_suite_view.py",
+      "blob": "8d19534afeedc01178fe891bf24b22b14440ff13"
+    },
+    {
+      "path": "templates/_macro_suite_shell.html.j2",
+      "blob": "e38fb9e30bcfd89d6fd43871dfae71d882ff1810"
+    },
+    {
+      "path": "tests/test_macro_command_api.py",
+      "blob": "d7da1afadc0994c15b6a462c7730519583ea63c9"
+    },
+    {
+      "path": "tests/test_macro_suite_pages.py",
+      "blob": "8af40e22899c8d91051e4a2a883507a6a40ef351"
+    },
+    {
+      "path": "tests/test_macro_workspace_business_activity.py",
+      "blob": "2d1a098cb0b6c2deeca91329150dc533638de3a8"
+    }
+  ],
+  "remote_source_updated": false
+}

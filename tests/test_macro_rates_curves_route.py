@@ -1036,6 +1036,41 @@ def test_11_registered_collapses_are_exact_and_explained() -> None:
             assert new != old, (path.name, new)
 
 
+def test_11_business_clock_collapse_is_bound_to_the_business_page_only() -> None:
+    record = json.loads((T11_COLLAPSE_DIR / "zz_business_period_clocks_p12t2s14.json").read_text())
+    assert "7b7dad38" in record["why"] and "f43b32da" in record["why"]
+    for new, old in record["pairs"]:
+        owners = [p.name for p in T11_PAGES.glob("*.html") if old in (_region(p.read_text(), p.name) or "")]
+        assert owners == ["macro_business_activity.html"]
+        assert new.startswith("<") and old.startswith("<")
+
+
+def test_11_business_clock_collapse_rejects_value_period_and_receipt_mutations(tmp_path) -> None:
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    golden = (T11_PAGES / page.output).read_text()
+    snapshot, _ = builder.read_workspace(T11_DATA, page)
+    path, ok, _ = builder.build_page(ROOT, page, data_root=T11_DATA, out_dir=tmp_path,
+        env=builder._environment(ROOT), page_built_at=_page_built_stamp(golden))
+    assert ok
+    rendered = path.read_text()
+    _assert_same_macro_suite_region(golden, rendered, page.output)
+    region = _region(rendered, page.output)
+    value = re.search(r'(<strong class="mq-metric-value">)(.*?)(</strong>)', region, re.S)
+    assert value
+    changed_value = re.sub(r'>((?:-|\+)?\d)', r'>9\1', value.group(2), count=1)
+    assert changed_value != value.group(2)
+    numeric = region[:value.start(2)] + changed_value + region[value.end(2):]
+    period = next(m["reference_period"] for m in snapshot["metrics"]["items"] if m["reference_period"])
+    dated = region.replace(period, "1900-01-01", 1)
+    digest = snapshot["generation"]["content_sha256"]
+    wrong_digest = ("0" if digest[0] != "0" else "1") + digest[1:]
+    receipt = region.replace(digest, wrong_digest, 1)
+    for mutated in (numeric, dated, receipt):
+        assert mutated != region
+        with pytest.raises(AssertionError):
+            _assert_same_macro_suite_region(golden, rendered.replace(region, mutated, 1), page.output)
+
+
 @pytest.mark.parametrize("new,old", _T11_REGISTERED_COLLAPSE)
 def test_11_registered_collapse_does_not_mask_other_edits(new: str, old: str) -> None:
     """The change itself passes T11. The same change with one more character
