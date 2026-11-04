@@ -1,5 +1,12 @@
 # Macro Dashboard — shared agent operating rules
 
+## Session-owned technical reviews (Chairman amendment, 2026-11-03)
+
+The **active assigned session** owns its review and adjudication; a different ChatGPT Web conversation, third-party account, or former reviewer chat is **not** a default prerequisite. Consult Mastermind's accepted [session-local review law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md) at its protected pin and apply actual repository risk/merge requirements. FAST and ordinary STANDARD changes can use an explicit adversarial **author self-review**, targeted tests and required CI when the zero-external-review policy is accepted. Do not dispatch independent Fabric/Dot reviewers simply because a source edit or PR exists.
+
+For genuinely review-sensitive work, **the same parent session** may spawn real distinct-context read-only technical reviewer subagents: ChatGPT Web Pro *only when its native spawn tool is actually exposed*, native Codex, native Claude, or an admitted original-root Fabric reviewer. Observe child launch, exact-head source, independent findings and parent disposition; one author's second pass is self-review, **not** a separate independent actor. No external Web chat requirement. Formal GitHub `APPROVED` by a genuinely non-author authenticated principal, current CI, recorded holds, protected merge-on-green checks, source custody and effect/denial fences remain separately enforced; never self-approve, self-merge, fake review, or bypass a required native approval. A proposed Mastermind policy PR is not an installed law or proof that ChatGPT Projects have been changed.
+
+
 ## Standing commercial data rights
 
 Chris has directly confirmed approved existing commercial licensing with full commercial rights for the Research Factory Yahoo/yfinance route (including the fixed nine sector ETFs), Massive/Polygon, Tiingo and ThetaData options. Apply [DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023](agentos/decisions/DEC-COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023.md) and the [shared source law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/COMMERCIAL_DATA_RIGHTS.md). The commercial gate is `APPROVED_BY_CHAIRMAN_ATTESTATION`; no repeated approval, contract upload or public-terms re-proof. Preserve separately evidenced historical/PIT, access, quality, budget, scientific and unresolved-effect facts.
