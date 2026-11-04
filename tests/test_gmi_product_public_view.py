@@ -277,3 +277,63 @@ def test_current_fact_attribution_changes_fail_closed(current_model, tmp_path, f
     payload = json.loads(BeautifulSoup(pages["gmi.html"], "html.parser")
                          .select_one("#gmi-topic-data").string)
     assert all(not topic["connections"] for topic in payload["topics"])
+
+
+@pytest.fixture
+def held_product_model(current_model):
+    model = deepcopy(current_model)
+    issuer = next(row for row in model["issuers"] if row["ticker"] == "MU")
+    link = next(row for row in issuer["links"]
+                if row["proposal_id"] == "actprop:287edbf7e04b8aba873b7493")
+    # Exercise the held-link tooltip without changing the cleared fact tuple.
+    model["micros"][link["micro_id"]]["admitted"] = 0
+    return model, issuer, link
+
+
+@pytest.mark.parametrize("clock_states", [
+    pytest.param(None, id="missing-clocks"),
+    pytest.param({}, id="missing-knowledge"),
+    pytest.param({"knowledge": {"state": "UNKNOWN", "value": "2026-10-11T17:09:10Z"}},
+                 id="unknown-with-value"),
+    pytest.param({"knowledge": {"state": "UNDISCLOSED", "value": None}},
+                 id="undisclosed"),
+    pytest.param({"knowledge": {"state": "KNOWN", "value": None}},
+                 id="known-without-value"),
+    pytest.param({"knowledge": {"state": "KNOWN", "value": "2026-02-30T12:00:00Z"}},
+                 id="invalid-calendar-date"),
+    pytest.param({"knowledge": {"state": "KNOWN", "value": {"unexpected": "value"}}},
+                 id="nonstring-value"),
+])
+def test_missing_knowledge_clock_never_becomes_publication_date(
+        held_product_model, tmp_path, clock_states):
+    model, issuer, link = held_product_model
+    if clock_states is None:
+        link.pop("clock_states", None)
+    else:
+        link["clock_states"] = clock_states
+    pages = {p.name: p.read_text() for p in render_site(model, tmp_path)}
+    soup = BeautifulSoup(pages["gmi.html"], "html.parser")
+    tips = soup.select("[data-tip-rc-en]")
+    expected_en = f"{issuer['display_name']} → {link['micro_en']} · first seen not recorded"
+    expected_zh = f"{issuer['display_name']} → {link['micro_zh']} · 首次收录时间未记录"
+    assert expected_en in {tip["data-tip-rc-en"] for tip in tips}
+    assert expected_zh in {tip.get("data-tip-rc-zh") for tip in tips}
+    evidence = soup.select_one(".gmi-evidence-date").get_text(" ", strip=True)
+    assert "26 Feb 2024" in evidence and "Planned" in evidence
+
+
+def test_known_knowledge_clock_stays_distinct_from_publication_date(
+        held_product_model, tmp_path):
+    model, issuer, link = held_product_model
+    link["clock_states"]["knowledge"] = {
+        "state": "KNOWN", "value": "2026-10-11T17:09:10.298093+00:00",
+    }
+    pages = {p.name: p.read_text() for p in render_site(model, tmp_path)}
+    soup = BeautifulSoup(pages["gmi.html"], "html.parser")
+    tips = soup.select("[data-tip-rc-en]")
+    expected_en = f"{issuer['display_name']} → {link['micro_en']} · first seen 11 Oct 2026"
+    expected_zh = f"{issuer['display_name']} → {link['micro_zh']} · 首次收录2026年10月11日"
+    assert expected_en in {tip["data-tip-rc-en"] for tip in tips}
+    assert expected_zh in {tip.get("data-tip-rc-zh") for tip in tips}
+    evidence = soup.select_one(".gmi-evidence-date").get_text(" ", strip=True)
+    assert "26 Feb 2024" in evidence and "Planned" in evidence

@@ -27,6 +27,7 @@ import os
 import subprocess
 import sys
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -66,6 +67,18 @@ def _field(row: object, *keys: str) -> object:
             return None
         row = row.get(key)
     return row
+
+
+def _knowledge_date(link: dict) -> str | None:
+    """Keep an unknown knowledge date distinct from source publication."""
+    value = _field(link, "clock_states", "knowledge", "value")
+    if (_field(link, "clock_states", "knowledge", "state") != "KNOWN"
+            or not isinstance(value, str)):
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).date().isoformat()
+    except ValueError:
+        return None
 
 
 def _current_public_product(issuer: dict, link: dict) -> bool:
@@ -145,12 +158,7 @@ def _public_render_model(model: dict) -> dict:
                 },
             })
             micro = model["micros"][link["micro_id"]]
-            clock = (link.get("clock_states") or {}).get("knowledge") or {}
-            first_seen = (
-                (clock.get("value") or "")[:10]
-                if clock.get("state") == "KNOWN"
-                else source["published_date"]
-            )
+            first_seen = _knowledge_date(link)
             public["theme_links"].append({
                 "kind": "adm" if micro["admitted"] > 0 else "held",
                 "ticker": issuer["ticker"],

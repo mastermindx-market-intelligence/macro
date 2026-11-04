@@ -1,0 +1,321 @@
+{
+  "schema": "gmi.public_knowledge_clock_validation.v1",
+  "source_pin": "3f420c7a8020254a45386cd1614bdec2b0c67c73",
+  "parent_head": "71d7124f6634c4080ad4d926826d4a24dd60b68b",
+  "source_inputs": {
+    "config.yml": "5be75249c98033d7ee0fbe55928713b1f50af627",
+    "AGENTS.md": "b3cce64a2a2f1568c0afc1d51ae84cc03b32d9f0",
+    "config/gmi_reason_codes.yml": "80db73d1d21a428355ae43e99d87e7abc46c5882",
+    "config/theme_graph_identity_breaks.yml": "dd3cd18ffa3be659a8cb0c758e1effcc8f029f62",
+    "config/theme_crosswalk.yml": "9630f003f158f824b26e6b9cf72fb90ba1c1f1d7",
+    "tests/conftest.py": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc",
+    "tests/test_gmi_operating_proof.py": "49388e7ecd5c1ad7b4581ab3f90726f7e8d701df",
+    "tests/test_gmi_history_integrity.py": "60b98f7f992a6869253a17e3fa8379083f1cc529",
+    "tests/test_gmi_issuer_economic_context.py": "301fa6a438ef05a60a015609ceb433f78225a6e0",
+    "tests/test_gmi_activity_proposal_ledger.py": "4f19d41a9a54c4cb36b1f68ad07236ec9685db20",
+    "tests/test_gmi_product_public_view.py": "3be390c3a57b1287e7e7fd6e1e3eb85ec93c8f47",
+    "tests/test_gmi_cte_generation_bridge.py": "a1e093545c683f2b314d3774ef1f441af460bde6",
+    "tests/test_gmi_explorer_assets.py": "5f33d9ac94c59a0fdd413493187d7f2f9c401547",
+    "tests/test_gmi_explorer_model.py": "b9bac31c301cb5e62f8e582d0cb58e75f5731b70",
+    "tests/test_gmi_native_disclosure_propagation.py": "7de24461195b854d098e4b85db40b0d4954abdf1",
+    "tests/test_gmi_activity_membership_admission.py": "d119d29615b5911a937f448d68c72645635ddb2a",
+    "tests/test_gmi_explorer_shared.py": "9a53fd3233316459e063c72d0036b3401bc1723b",
+    "tests/test_gmi_explorer_s1_s5.py": "cc8ef447accc243d7bd972d954c24885d9c91122",
+    "tests/test_gmi_issuer_economic_context_api.py": "b57f406cc6331a126d80c35999d2134087a471c4",
+    "tests/test_gmi_coverage_proof.py": "2be1fdd089454d2d6896a24c0371e6eb69818d2a",
+    "tests/test_gmi_reason_codes.py": "1910d8ceb3aabe7eca1de43225f89aec7a32b515",
+    "tests/test_gmi_explorer_s2.py": "e88f3abdca3c66167247dab8e03becb8fa4068ba",
+    "tests/test_gmi_activity_history_bridge.py": "1a7b432401eb2a50ccff7b9f0882278201be6939",
+    "tests/test_gmi_explorer_s3_s4.py": "4860c8af14d5eaf65a5ef88b4ca2e8bc4b918998",
+    "tests/test_gmi_native_economic_context.py": "ebd769d392e8a9e405088714a480ccdda356b5e7",
+    "tests/test_gmi_source_diagnostic_kernel.py": "f2a598c2d56dfb15155a06b98c0ecc5003f714e7",
+    "scripts/gmi_coverage_proof.py": "4785ffacc99d1a032feda3efb05e720b59e02547",
+    "scripts/check_ui_visual_evidence.py": "cfd1c3dd422ce8033b0f07edb2ae4302f2f1a01d",
+    "scripts/check_design_system.py": "1dfa2199a95010da14252b09a946f3f2d0506dd5",
+    "scripts/check_runtime_style_injection.py": "428de70fb5d7055d3374e3f607e378dd1e22e95f",
+    "scripts/build_gmi_explorer.py": "ca1a7ed0226271f20e63c3291e74ccec687f6b87",
+    "lib/shared_shell.py": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+    "lib/config.py": "b6fc888269876242597da354aaa726c20ed95802",
+    "lib/pages.py": "db175c463a31828263b57a3287afba661439a765",
+    "lib/site_assets.py": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+    "templates/_site_nav.html.j2": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+    "templates/gmi_relationships.html.j2": "53b8a697a17064367964b566788d553b7b27a4e0",
+    "templates/_navlinks.html.j2": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+    "templates/_gmi_theme_data.html.j2": "0520256ae0a2f61a33702070686be769d8640124",
+    "templates/theme.css": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+    "templates/gmi.css": "877285792e8e994817497745b1de6d96befa2a6b",
+    "templates/_gmi_product_header.html.j2": "c7b10dbfecc66deacfe9b8fbbb2ce72932299695",
+    "templates/_interfonts.html.j2": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+    "templates/_gmi_taxonomy.html.j2": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+    "templates/_gmi_base.html.j2": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+    "templates/_gmi_macros.html.j2": "1c926c0047dfa3d8a82b45ba0d278e5e51f6bad6",
+    "templates/shared_shell_bridge.js": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+    "templates/gmi.js": "6f5ee7dbd70c71b6dec99094b860cfaf2d6e78a3",
+    "templates/_all_tools_menu.html.j2": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+    "templates/shared_shell.css": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+    "templates/gmi_map.html.j2": "8da56912a78e4a030be4de0a5f6f4c3fdc1e8ff2",
+    "templates/gmi_states.html.j2": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+    "templates/theme.js": "21a1fb1627ac34badc6078cff486f98486e9b773",
+    "templates/_seo_head.html.j2": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+    "templates/gmi_companies.html.j2": "afb542f5740a4147c5ef0d05aaae25481d8d6851",
+    "templates/gmi_issuer.html.j2": "35b06fd42b3ef485564b504fcacecacb89383c49",
+    "templates/data_base.js": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+    "templates/gmi_coverage.html.j2": "417a1e5ad85e66796201a1879e520db53bc9fbfc",
+    "templates/_gmi_product_macros.html.j2": "88748e51a87c02ae3ae2c7ee17ee0cb0c905020f",
+    "templates/_gmi_head.html.j2": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+    "templates/gmi_index.html.j2": "ff766f3634bb8954ea29e2363eb5a14f5facfa46",
+    "engine/theme_graph/store.py": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+    "engine/theme_graph/identity_resolution.py": "e3510e69645a96872e7080efe028633ff6836324",
+    "engine/theme_graph/change_report.py": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+    "engine/theme_graph/membership_evidence.py": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+    "engine/theme_graph/rights.py": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+    "engine/theme_graph/probation.py": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+    "engine/theme_graph/identity.py": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+    "data/theme_graph/_meta.json": "cd15b1c062fee294c0294100e95fed43a69c4c96",
+    "data/theme_graph/nodes.parquet": "ce345f297a5ec83c9131760bdcf7212703af0654",
+    "data/theme_graph/identity_resolution.parquet": "6d2087d8f8749509995d75fa0fa12cfbacf8cba7",
+    "data/theme_graph/edges.parquet": "5b5c391392a6081338be164f7fe339549b06ee78",
+    "data/theme_graph/node_lifecycle.parquet": "b246f37d43ddbfed09446a0e5602da782783aea4",
+    "data/theme_graph/evidence.parquet": "c0d88139a016eca67c34a550523fb534f67a27db",
+    "data/symbol_directory/manifest.json": "4bc82c598e278eea329d92647fb52ece0b045bcb",
+    "data/reference/security_master.parquet": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+    "data/reference/vendor_aliases.parquet": "fd72967495c0dcb02120f4cb4b7a07f3baccb6b2",
+    "data/reference/_receipt.json": "ba7f5a70375b65c486bb949dc8a86fc6eeff5239",
+    "data/symbol_directory/snapshots/2026-11-03.parquet": "5f03bbbebc04277fb7148cf16427be2c51a7bdb0",
+    "data/symbol_directory/snapshots/2026-10-21.parquet": "b94f48b988f44fdf66e57ff67f4c0f6d218a30aa",
+    "data/theme_graph/probation/proposals.jsonl": "58d8d8722d7834f30df55dd8b1e571ee20f7b773",
+    "data/theme_graph/probation/activity_proposals.jsonl": "7545e05debcc221c27ffff949fd2574c50d43a29",
+    "data/company_intelligence/relationships/relationship_edges.json": "17f4a21c8016907358303b8308d5f36bff6237b2",
+    "lib/dataos/temporal.py": "094b149a8b9158f19cb99c4005568c12db96ed41",
+    "lib/dataos/registry.py": "65b0d69036da97760f20241468f2549b21d9c686",
+    "lib/dataos/__init__.py": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+    "lib/dataos/nulls.py": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+    "lib/dataos/quality.py": "967b943443d9507c5c0078f62848c38c3d2af48a",
+    "lib/dataos/identity.py": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+    "lib/dataos/price.py": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+    "scripts/gmi_explorer/variants.py": "db6ca1ccb1998d3d0f90980179988d83466e761e",
+    "scripts/gmi_explorer/present.py": "c5ae61d80a484c07d583831577db52881843061b",
+    "scripts/gmi_explorer/model.py": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+    "contracts/theme_graph/theme_structural_context.v2.schema.json": "76930ff57c65644ae855b62d84fff699daef1ca8",
+    "contracts/theme_graph/theme_state.v1.schema.json": "38d690a13f0dd5dae627fda37a578412db2dcf7b",
+    "contracts/theme_graph/probation_proposal.v1.schema.json": "3ca750f6bc4213c970eaf9689111794153c94b6c",
+    "contracts/theme_graph/curation_assertion.v1.schema.json": "ff3928f0c54aa164ef8283d9da45af67e6a0d971",
+    "contracts/theme_graph/ontology_overlap_evidence.v1.schema.json": "502fba339e2e555db202660afa9c6d15e64f0e13",
+    "contracts/theme_graph/theme_state_generation_read.v1.schema.json": "30d3882dc3b50abf533d3ff87879655ecfe6daae",
+    "contracts/theme_graph/theme_state_use_read.v1.schema.json": "67106c8308ab82037f962cf3fa087e7cc080ac76",
+    "contracts/theme_graph/theme_state_generation.v1.schema.json": "68eef480283c24d798ef5053e08aaf7dd27256dd",
+    "contracts/theme_graph/activity_membership_history.v1.schema.json": "ed8c3c9129ce20c998cce127f7868dd1c4ce429b",
+    "contracts/theme_graph/security_neighborhoods.v1.schema.json": "104d96657e334a14bd1a2388ca19a790f8932d8d",
+    "contracts/theme_graph/membership_collection.v2.schema.json": "25b32f9aa55acb65fa3c6374e15a4954eb5245eb",
+    "contracts/theme_graph/capability.v1.schema.json": "a7bf8c4f0b2769290ae4f690f4275fce552f8f62",
+    "contracts/theme_graph/theme_state_generation_read.v2.schema.json": "efb40a7362ff86967e92423ba4a54c24992d1e00",
+    "contracts/theme_graph/activity_membership_proposal.v1.schema.json": "2a4c597fcf997a2e1b2a7682557946ac49f16286",
+    "contracts/theme_graph/activity_curation_receipt.v1.schema.json": "2438e82d606110d40cf272976a1f742c599a45c9",
+    "contracts/theme_graph/theme_state.v2.schema.json": "c168464a580877148115b17050046c73c6030be7",
+    "contracts/theme_graph/probation_relation_event.v2.schema.json": "27aefe5fde94759676200d8efcc981203fdadff8",
+    "contracts/theme_graph/selection_cohort_projection.v1.schema.json": "76c34d58025ce52511f95ec0872d68939a6da45f",
+    "contracts/theme_graph/ontology_inventory.v1.schema.json": "902e22e20d69f255cf835ab5d5cbd4bd03e16eb3",
+    "contracts/theme_graph/identity_resolution.v1.schema.json": "63239b29ce376c9f2708af9e86ba772bc3a55e0f",
+    "contracts/theme_graph/cohort_us_china_delivery.v1.schema.json": "414003576073afa80d796c0e8507e7e3f590ed5d",
+    "contracts/theme_graph/ontology_neighborhood.v1.schema.json": "d091e32c70b1d13968c17ab73211e4d086215062",
+    "contracts/theme_graph/ontology_proposal_review.v1.schema.json": "48aa48a061c12bfa82ac78bbefb5a2be61b13ee6",
+    "contracts/theme_graph/selection_cohort_source.v1.schema.json": "bbe351751da1f7a645d28c9d769e9813d346f843",
+    "contracts/theme_graph/nodes.v1.schema.json": "124b9d85ba24208c703945ae78bd9d2638f74545",
+    "contracts/theme_graph/ontology_change_report.v1.schema.json": "5af896015333f2aeabb197deaaef240d03120d85",
+    "contracts/theme_graph/proposal_worklist.v1.schema.json": "e44dec77ad1d7565eb229cc0995bb637e6842ef6",
+    "contracts/theme_graph/edges.v1.schema.json": "88a78990681253404a7f84cf8c1e2678ab082c6e",
+    "contracts/theme_graph/cn_limit_rules.v1.schema.json": "49fbb234c93c72c7c57c110d02e492c5c9a45a16",
+    "contracts/theme_graph/structural_context.v1.schema.json": "b9ca33e42f28cba9348db96771d53236072defe2",
+    "contracts/theme_graph/node_lifecycle.v1.schema.json": "f6717f83d297df46fd4ac391d3b0ce99140d4593",
+    "contracts/theme_graph/selection_cohort_read.v1.schema.json": "b73323c95be609bbe3593ae96aab082805f22cb0",
+    "contracts/theme_graph/evidence.v1.schema.json": "8f909df8ee4c5858512035d2dfef21eac982a34d",
+    "research/theme_graph/micro_owner_dispositions.yml": "62c42ad9603796e929e1a70684b8fc926aebc0d8",
+    "research/theme_graph/gmi_design_20261021/verify_product_browser.py": "ff870011fa02a511599e2f77b7a9966cfe56ee5d",
+    "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json": "a86343dd954862a4538aa0a4eb18714663a45ec1",
+    "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json": "f863dc1d06dca9fa1ed3557f5433fc52907bb01d"
+  },
+  "owned_changed_paths": [
+    "scripts/build_gmi_explorer.py",
+    "templates/_gmi_macros.html.j2",
+    "tests/test_gmi_product_public_view.py"
+  ],
+  "unexpected_changes": [],
+  "red": {
+    "result": "7 failed, 1 passed, 25 deselected in 11.73s",
+    "exit_code": 1,
+    "cases": [
+      "missing-clocks",
+      "missing-knowledge",
+      "unknown-with-value",
+      "undisclosed",
+      "known-without-value",
+      "invalid-calendar-date",
+      "nonstring-value"
+    ],
+    "observed_failures": [
+      "Publication date appeared as first seen for missing/unknown/undisclosed knowledge.",
+      "Missing and nonstring KNOWN values prevented rendering.",
+      "An impossible calendar date was displayed."
+    ]
+  },
+  "green": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_gmi_explorer_model.py",
+      "tests/test_gmi_explorer_shared.py",
+      "tests/test_gmi_explorer_assets.py",
+      "tests/test_gmi_reason_codes.py",
+      "tests/test_gmi_explorer_s2.py",
+      "tests/test_gmi_explorer_s1_s5.py",
+      "tests/test_gmi_explorer_s3_s4.py",
+      "tests/test_gmi_product_public_view.py",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/knowledge-clock-71d7124f/green-tmp"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 72.287,
+    "summary": "177 passed in 71.52s (0:01:11)",
+    "environment": {
+      "TZ": "UTC",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  },
+  "same_input_render": {
+    "reference": "render-attribution-e2488ac7",
+    "saved_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+    "output_count": 9,
+    "all_identical": true,
+    "outputs": [
+      {
+        "path": "gmi-companies.html",
+        "bytes": 66139,
+        "sha256": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+        "identical": true
+      },
+      {
+        "path": "gmi-coverage.html",
+        "bytes": 71270,
+        "sha256": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+        "identical": true
+      },
+      {
+        "path": "gmi-index.html",
+        "bytes": 260073,
+        "sha256": "304086ae49f2543e143f9e39637cbdae2c2fe684572f3779edb388f0afc20e42",
+        "identical": true
+      },
+      {
+        "path": "gmi-issuer-mu.html",
+        "bytes": 65585,
+        "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "identical": true
+      },
+      {
+        "path": "gmi-relationships.html",
+        "bytes": 62545,
+        "sha256": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+        "identical": true
+      },
+      {
+        "path": "gmi-states.html",
+        "bytes": 64663,
+        "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "identical": true
+      },
+      {
+        "path": "gmi.css",
+        "bytes": 67724,
+        "sha256": "3ea13106c69e4cfb8f33e3198d15a945eed78cdc97fac43228643b82e5c64a2b",
+        "identical": true
+      },
+      {
+        "path": "gmi.html",
+        "bytes": 972129,
+        "sha256": "12f2f5aee1ded9d656878db968e3c218e7797c659c89043f12346a14f013f190",
+        "identical": true
+      },
+      {
+        "path": "gmi.js",
+        "bytes": 38132,
+        "sha256": "7f31f50bcb0408720f90ac20d5d2bfe9d12a514e30b4493a87e0a310760d7f43",
+        "identical": true
+      }
+    ]
+  },
+  "scope": {
+    "known_clock": "Preserve recorded calendar date",
+    "missing_unknown_or_invalid_clock": "Render first seen not recorded / 首次收录时间未记录",
+    "publication_clock": "Preserved independently",
+    "model_owner_paths_modified": false,
+    "paper_modified": false,
+    "browser_matrix_repeated": false,
+    "release_authorized": false
+  },
+  "recorded_at_utc": "2026-11-04T08:10:33Z",
+  "execution": {
+    "carrier": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh",
+    "red_process_pid": 46306,
+    "green_process_pid": 51097,
+    "green_process_exit_code": 0,
+    "logs": {
+      "red": "knowledge-clock-71d7124f/red.log",
+      "green": "knowledge-clock-71d7124f/green.log",
+      "reviewed_diff": "knowledge-clock-71d7124f/candidate.patch"
+    }
+  },
+  "candidate_changes": {
+    "scripts/build_gmi_explorer.py": {
+      "before": "083879691076fdf305a236aa6d66371b0f197a4a",
+      "after": "ca1a7ed0226271f20e63c3291e74ccec687f6b87"
+    },
+    "templates/_gmi_macros.html.j2": {
+      "before": "32fd90f0921acd9139a076d55c62fd487e9e2b6c",
+      "after": "1c926c0047dfa3d8a82b45ba0d278e5e51f6bad6"
+    },
+    "tests/test_gmi_product_public_view.py": {
+      "before": "76949c8ddc543f299b1ce9b2838895c9742db648",
+      "after": "3be390c3a57b1287e7e7fd6e1e3eb85ec93c8f47"
+    }
+  },
+  "accepted_browser_proof": {
+    "path": "mockups/evidence/gmi-product-20261103/browser-report.json",
+    "cases": 92,
+    "pass": true,
+    "page_errors": [],
+    "accepted_pngs": 91,
+    "committed_inputs_unchanged": true,
+    "same_input_candidate_outputs_identical": true,
+    "recaptured": false
+  },
+  "paper_readback": {
+    "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "page_id": "p-1-0",
+    "current_boards": 10,
+    "token_hash": "ac191fd9",
+    "snapshot": "3eb8340a707e6ffd1b2ef55b35f91d5894be95542a75d631662cd2ac16b44fe7",
+    "modified": false
+  },
+  "runtime_frontier": {
+    "run_id": "gmi-product-upgrade-20261103-model01",
+    "root": "gmi-paper-makeover-20261103-sol",
+    "parent": "gmi-product-upgrade-20261103-sol",
+    "controller_pid": 38742,
+    "lease": "868f3981b9bd",
+    "state": "EFFECT_UNKNOWN",
+    "root_verified": false,
+    "result_consumption_authorized": false,
+    "retry_authorized": false,
+    "dispatch_authorized": false,
+    "settlement": "Requires an eligible original installed runtime-owner action; none currently exposed."
+  },
+  "limitations": [
+    "Local source/render proof does not establish complete hosted CI for the successor head.",
+    "The original model result remains unconsumed and its ownership fence remains in force.",
+    "No broader public-fact or source-emission permission is introduced.",
+    "No merge, deployment, authenticated backend, production URL or user acceptance is claimed."
+  ]
+}

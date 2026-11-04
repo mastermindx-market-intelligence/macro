@@ -84,8 +84,8 @@
 {%- set h = held[0] -%}
 {{ tip("A proposed link waiting for a curator. Held links are not members and are left out of every count.",
        "等待审核员处理的拟议关联。待审核关联不是成员，不计入任何统计。",
-       h.name ~ " → " ~ h.micro_en ~ " · first seen " ~ (h.first_seen|de),
-       h.name ~ " → " ~ h.micro_zh ~ " · 首次收录" ~ (h.first_seen|dz)) }}
+       h.name ~ " → " ~ h.micro_en ~ (" · first seen " ~ (h.first_seen|de) if h.first_seen else " · first seen not recorded"),
+       h.name ~ " → " ~ h.micro_zh ~ (" · 首次收录" ~ (h.first_seen|dz) if h.first_seen else " · 首次收录时间未记录")) }}
 {%- else -%}
 {{ tip("A proposed link waiting for a curator. Held links are not members and are left out of every count.",
        "等待审核员处理的拟议关联。待审核关联不是成员，不计入任何统计。") }}
