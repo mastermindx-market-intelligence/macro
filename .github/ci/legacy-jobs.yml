@@ -9722,6 +9722,8 @@ jobs:
       - "site/labdata/**"
       - "site/leaderradar/**"
       - "site/master_brief.json"
+      - "site/aibrief.html"
+      - "site/btc_brief.json"
       - "site/china.html"
       - "site/china_brief.json"
       - "site/hk.html"
