@@ -23,11 +23,19 @@ def _handler(name: str) -> str:
 
 
 def _matcher_paths(name: str) -> set[str]:
-    match = re.search(
-        rf"(?ms)^\s*@{re.escape(name)} \{{\n\s*path ([^\n]+)\n\s*\}}", CADDY
+    match = re.search(rf"(?m)^(\t+)@{re.escape(name)} \{{\n", CADDY)
+    assert match, f"missing @{name} matcher"
+    tail = CADDY[match.end():]
+    closing = re.search(r"(?m)^" + re.escape(match.group(1)) + r"\}$", tail)
+    assert closing, f"unterminated @{name} matcher"
+    # The real public matcher has a comment before the path line. Match the
+    # exact owned-indentation path, not only a first-line matcher declaration.
+    lines = re.findall(
+        r"(?m)^" + re.escape(match.group(1)) + r"\tpath ([^\n]+)$",
+        tail[:closing.start()],
     )
-    assert match, f"missing @{name} path matcher"
-    return set(shlex.split(match.group(1)))
+    assert len(lines) == 1, f"expected one @{name} path declaration"
+    return set(shlex.split(lines[0]))
 
 
 def test_public_html_gate_has_bounded_loopback_wait_only() -> None:
