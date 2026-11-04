@@ -1,0 +1,3030 @@
+{
+  "fixture_only": true,
+  "browser": "Chromium 151.0.7922.34",
+  "case_count": 36,
+  "source_hashes": {
+    "templates/foresight.html.j2": "b53be28eaa62120db102c2fd4d3718691a1b6e4a152e27cd6f3573550d2545d7",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "tests/test_foresight_page_fingerprint_depth.py": "3c396a6006510487ff2ef624bae45261c686fa45a23673fbd9afc0b4fa7201bb"
+  },
+  "new_provisional_help_focus_and_bounds": "PASS",
+  "historical_disclosure_keyboard": "PASS",
+  "settings_journeys": [
+    {
+      "viewport": 390,
+      "settings_theme_locale_keyboard_escape": "PASS"
+    },
+    {
+      "viewport": 1440,
+      "settings_theme_locale_keyboard_escape": "PASS"
+    }
+  ],
+  "reduced_motion": "PASS",
+  "unrelated_requests_stubbed": [
+    "/case/live_config.js"
+  ],
+  "page_errors": [],
+  "results": [
+    {
+      "case": "limited-hot",
+      "viewport": 320,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "limited-hot-320-light-en.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 131.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · Early status unconfirmed · Supply read unconfirmed",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 34,
+          "right": 208.328125,
+          "width": 174.328125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 84,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 108,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 34,
+          "right": 117.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 320,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "limited-empty-320-light-en.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 131.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 84,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 108,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 320,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "full-hot-320-light-en.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "1 theme sit early in the cycle right now — supply is tightening before estimates have moved.",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 105.5625,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 60.75,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · still early · ✓ supply-confirmed",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.538830902305524,
+          "x": 225.109375,
+          "right": 286,
+          "width": 60.890625,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.700221504930301,
+          "x": 38,
+          "right": 115.28125,
+          "width": 77.28125,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 108,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 34,
+          "right": 117.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 320,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "limited-hot-320-light-zh.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 早期状态待确认 · 供给读数待确认",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 205,
+          "right": 286,
+          "width": 81,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 38,
+          "right": 135.40625,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 72,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 34,
+          "right": 96,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 320,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "limited-empty-320-light-zh.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 38,
+          "right": 135.40625,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 72,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 320,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "full-hot-320-light-zh.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "当前有 1 个主题处于周期早段——供给收紧、预期未动。",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 52.78125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 仍属早期 · ✓ 供给确认",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 18,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.538830902305524,
+          "x": 163.875,
+          "right": 207.078125,
+          "width": 43.203125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.700221504930301,
+          "x": 38,
+          "right": 97.96875,
+          "width": 59.96875,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 72,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 224,
+          "right": 286,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "limited-hot-320-dark-en.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 131.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · Early status unconfirmed · Supply read unconfirmed",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 34,
+          "right": 208.328125,
+          "width": 174.328125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 84,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 108,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 34,
+          "right": 117.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "limited-empty-320-dark-en.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 131.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 84,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 108,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "full-hot-320-dark-en.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "1 theme sit early in the cycle right now — supply is tightening before estimates have moved.",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 105.5625,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 60.75,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · still early · ✓ supply-confirmed",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.439255028625908,
+          "x": 225.109375,
+          "right": 286,
+          "width": 60.890625,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.578172582751998,
+          "x": 38,
+          "right": 115.28125,
+          "width": 77.28125,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 108,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 34,
+          "right": 117.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "limited-hot-320-dark-zh.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 早期状态待确认 · 供给读数待确认",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 205,
+          "right": 286,
+          "width": 81,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 38,
+          "right": 135.40625,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 72,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 34,
+          "right": 96,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "limited-empty-320-dark-zh.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 38,
+          "right": 135.40625,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 72,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "full-hot-320-dark-zh.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "当前有 1 个主题处于周期早段——供给收紧、预期未动。",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 52.78125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 仍属早期 · ✓ 供给确认",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 18,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.439255028625908,
+          "x": 163.875,
+          "right": 207.078125,
+          "width": 43.203125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.578172582751998,
+          "x": 38,
+          "right": 97.96875,
+          "width": 59.96875,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 72,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 224,
+          "right": 286,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 390,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "limited-hot-390-light-en.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · Early status unconfirmed · Supply read unconfirmed",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 356,
+          "width": 322,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 181.671875,
+          "right": 356,
+          "width": 174.328125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 90,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 34,
+          "right": 117.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 390,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "limited-empty-390-light-en.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 90,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 390,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "full-hot-390-light-en.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "1 theme sit early in the cycle right now — supply is tightening before estimates have moved.",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · still early · ✓ supply-confirmed",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 356,
+          "width": 322,
+          "height": 18,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.538830902305524,
+          "x": 181.640625,
+          "right": 242.53125,
+          "width": 60.890625,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.700221504930301,
+          "x": 229.171875,
+          "right": 306.453125,
+          "width": 77.28125,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 90,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 272.90625,
+          "right": 356,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "limited-hot-390-light-zh.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 52.78125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 早期状态待确认 · 供给读数待确认",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 356,
+          "width": 322,
+          "height": 18,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 179.96875,
+          "right": 260.96875,
+          "width": 81,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 222.390625,
+          "right": 319.796875,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 72,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 294,
+          "right": 356,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "limited-empty-390-light-zh.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 52.78125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 222.390625,
+          "right": 319.796875,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 72,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "full-hot-390-light-zh.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "当前有 1 个主题处于周期早段——供给收紧、预期未动。",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 52.78125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 仍属早期 · ✓ 供给确认",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 356,
+          "width": 322,
+          "height": 18,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.538830902305524,
+          "x": 198.875,
+          "right": 242.078125,
+          "width": 43.203125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.700221504930301,
+          "x": 222.390625,
+          "right": 282.359375,
+          "width": 59.96875,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 72,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 294,
+          "right": 356,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "limited-hot-390-dark-en.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · Early status unconfirmed · Supply read unconfirmed",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 34,
+          "right": 356,
+          "width": 322,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 181.671875,
+          "right": 356,
+          "width": 174.328125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 90,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 34,
+          "right": 117.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "limited-empty-390-dark-en.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 90,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "full-hot-390-dark-en.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "1 theme sit early in the cycle right now — supply is tightening before estimates have moved.",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 79.171875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · still early · ✓ supply-confirmed",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 34,
+          "right": 356,
+          "width": 322,
+          "height": 18,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.439255028625908,
+          "x": 181.640625,
+          "right": 242.53125,
+          "width": 60.890625,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.578172582751998,
+          "x": 229.171875,
+          "right": 306.453125,
+          "width": 77.28125,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 90,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 272.90625,
+          "right": 356,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "limited-hot-390-dark-zh.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 52.78125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 早期状态待确认 · 供给读数待确认",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 34,
+          "right": 356,
+          "width": 322,
+          "height": 18,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 179.96875,
+          "right": 260.96875,
+          "width": 81,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 222.390625,
+          "right": 319.796875,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 72,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 294,
+          "right": 356,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "limited-empty-390-dark-zh.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 52.78125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 222.390625,
+          "right": 319.796875,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 72,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "full-hot-390-dark-zh.png",
+      "pageScrollWidth": 390,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "当前有 1 个主题处于周期早段——供给收紧、预期未动。",
+          "fontSize": 20,
+          "contrast": 12.234199515598295,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 52.78125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 18,
+          "right": 372,
+          "width": 354,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 仍属早期 · ✓ 供给确认",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 34,
+          "right": 356,
+          "width": 322,
+          "height": 18,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.439255028625908,
+          "x": 198.875,
+          "right": 242.078125,
+          "width": 43.203125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.578172582751998,
+          "x": 222.390625,
+          "right": 282.359375,
+          "width": 59.96875,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 38,
+          "right": 352,
+          "width": 314,
+          "height": 72,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 294,
+          "right": 356,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "limited-hot-1440-light-en.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 28,
+          "contrast": 9.676490292333833,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 73.90625,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · Early status unconfirmed · Supply read unconfirmed",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 196,
+          "right": 425,
+          "width": 229,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 196,
+          "right": 370.328125,
+          "width": 174.328125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 406.984375,
+          "right": 596.140625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 196,
+          "right": 279.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "limited-empty-1440-light-en.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 28,
+          "contrast": 9.676490292333833,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 73.90625,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 406.984375,
+          "right": 596.140625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "full-hot-1440-light-en.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "1 theme sit early in the cycle right now — supply is tightening before estimates have moved.",
+          "fontSize": 28,
+          "contrast": 9.676490292333833,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 73.90625,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · still early · ✓ supply-confirmed",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 196,
+          "right": 425,
+          "width": 229,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.538830902305524,
+          "x": 364.109375,
+          "right": 425,
+          "width": 60.890625,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.700221504930301,
+          "x": 406.984375,
+          "right": 484.265625,
+          "width": 77.28125,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 196,
+          "right": 279.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "limited-hot-1440-light-zh.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 28,
+          "contrast": 9.676490292333833,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 36.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 早期状态待确认 · 供给读数待确认",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 196,
+          "right": 425,
+          "width": 229,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 344,
+          "right": 425,
+          "width": 81,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 401.859375,
+          "right": 499.265625,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 196,
+          "right": 258,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "limited-empty-1440-light-zh.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 28,
+          "contrast": 9.676490292333833,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 36.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 401.859375,
+          "right": 499.265625,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "full-hot-1440-light-zh.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "当前有 1 个主题处于周期早段——供给收紧、预期未动。",
+          "fontSize": 28,
+          "contrast": 9.676490292333833,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 36.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。 ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 仍属早期 · ✓ 供给确认",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 196,
+          "right": 425,
+          "width": 229,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.538830902305524,
+          "x": 381.796875,
+          "right": 425,
+          "width": 43.203125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.700221504930301,
+          "x": 401.859375,
+          "right": 461.828125,
+          "width": 59.96875,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 196,
+          "right": 258,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "limited-hot-1440-dark-en.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 28,
+          "contrast": 12.234199515598295,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 73.90625,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · Early status unconfirmed · Supply read unconfirmed",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 196,
+          "right": 425,
+          "width": 229,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 196,
+          "right": 370.328125,
+          "width": 174.328125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 406.984375,
+          "right": 596.140625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 196,
+          "right": 279.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "limited-empty-1440-dark-en.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 28,
+          "contrast": 12.234199515598295,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 73.90625,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 406.984375,
+          "right": 596.140625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "full-hot-1440-dark-en.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "1 theme sit early in the cycle right now — supply is tightening before estimates have moved.",
+          "fontSize": 28,
+          "contrast": 12.234199515598295,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 73.90625,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first. ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · still early · ✓ supply-confirmed",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 196,
+          "right": 425,
+          "width": 229,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.439255028625908,
+          "x": 364.109375,
+          "right": 425,
+          "width": 60.890625,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "EARLY",
+          "fontSize": 12,
+          "contrast": 9.578172582751998,
+          "x": 406.984375,
+          "right": 484.265625,
+          "width": 77.28125,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 196,
+          "right": 279.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-hot",
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "limited-hot-1440-dark-zh.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 28,
+          "contrast": 12.234199515598295,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 36.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 早期状态待确认 · 供给读数待确认",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 196,
+          "right": 425,
+          "width": 229,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 344,
+          "right": 425,
+          "width": 81,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 401.859375,
+          "right": 499.265625,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 196,
+          "right": 258,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "limited-empty-1440-dark-zh.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "早期状态尚未确认。领先供给输入不可用，本台当前仅显示确认信号。",
+          "fontSize": 28,
+          "contrast": 12.234199515598295,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 36.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "当前读数为确认信号，领先供给输入不可用。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "供给待确认",
+          "fontSize": 12,
+          "contrast": 10.612071246506734,
+          "x": 401.859375,
+          "right": 499.265625,
+          "width": 97.40625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "full-hot",
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "full-hot-1440-dark-zh.png",
+      "pageScrollWidth": 1440,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "当前有 1 个主题处于周期早段——供给收紧、预期未动。",
+          "fontSize": 28,
+          "contrast": 12.234199515598295,
+          "x": 180,
+          "right": 1060,
+          "width": 880,
+          "height": 36.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。 ?",
+          "fontSize": 13.5,
+          "contrast": 6.144336620235321,
+          "x": 180,
+          "right": 820,
+          "width": 640,
+          "height": 20.25,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 / 5 个数据源一致 · 仍属早期 · ✓ 供给确认",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 196,
+          "right": 425,
+          "width": 229,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.439255028625908,
+          "x": 381.796875,
+          "right": 425,
+          "width": 43.203125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "早期",
+          "fontSize": 12,
+          "contrast": 9.578172582751998,
+          "x": 401.859375,
+          "right": 461.828125,
+          "width": 59.96875,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "年报深度 ? 1 条年报腿有读数\n成员库存 — 5 家成员披露 · 财年 FY2025\n成员订单积压 — 1 家成员披露 · 财年 FY2022 · 成员过少——数值不予给出",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 200,
+          "right": 1240,
+          "width": 1040,
+          "height": 54,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "来自年报",
+          "fontSize": 12,
+          "contrast": 5.329661159549015,
+          "x": 196,
+          "right": 258,
+          "width": 62,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    }
+  ]
+}

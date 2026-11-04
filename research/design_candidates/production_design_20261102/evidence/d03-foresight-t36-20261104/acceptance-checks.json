@@ -1,0 +1,52 @@
+{
+  "template_sha256": "535091abbb3a93153ba3a653c0d0f72c6eed2315115d5b28b28a8652c7f3da46",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_foresight_page_analyst_zh.py",
+        "tests/test_foresight_page_fingerprint_depth.py",
+        "tests/test_foresight_page_flag_ledger.py",
+        "tests/test_foresight_page_score_base.py",
+        "tests/test_foresight_page_trend_state.py",
+        "-q",
+        "--tb=short"
+      ],
+      "exit_code": 0,
+      "output": ".....................................                                    [100%]\n37 passed in 14.49s\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "output": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25314 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25314)\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  ]
+}

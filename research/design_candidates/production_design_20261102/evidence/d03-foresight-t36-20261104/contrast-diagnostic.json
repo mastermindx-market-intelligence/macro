@@ -1,0 +1,176 @@
+{
+  "case": "full-hot-320-light-en",
+  "error": "('full-hot-320-light-en', {'selector': '.fx-heat-badge', 'text': 'EARLY', 'fontSize': 12, 'contrast': 4.3082101228743905, 'x': 225.109375, 'right': 286, 'width': 60.890625, 'height': 26, 'overflow': False})",
+  "source_hashes": {
+    "templates/foresight.html.j2": "7e7fc05958867728ef0bd03f3aa817367566d1fc17fb7cc9b87f4d2099de3c06",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "tests/test_foresight_page_fingerprint_depth.py": "3c396a6006510487ff2ef624bae45261c686fa45a23673fbd9afc0b4fa7201bb"
+  },
+  "completed": [
+    {
+      "case": "limited-hot",
+      "viewport": 320,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "limited-hot-320-light-en.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 131.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-meta",
+          "text": "3 of 5 sources agree · Early status unconfirmed · Supply read unconfirmed",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 34,
+          "right": 286,
+          "width": 252,
+          "height": 36,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 34,
+          "right": 208.328125,
+          "width": 174.328125,
+          "height": 26,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 84,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 108,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-heat .fx-prov",
+          "text": "from filings",
+          "fontSize": 12,
+          "contrast": 6.211118895496447,
+          "x": 34,
+          "right": 117.09375,
+          "width": 83.09375,
+          "height": 24,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "limited-empty",
+      "viewport": 320,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "limited-empty-320-light-en.png",
+      "pageScrollWidth": 320,
+      "text": [
+        {
+          "selector": ".fx-verdict",
+          "text": "Early status is unconfirmed. The desk is showing confirmations only while leading supply inputs are unavailable.",
+          "fontSize": 20,
+          "contrast": 9.676490292333833,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 131.953125,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-tag",
+          "text": "Current readings are confirmation signals. Leading supply inputs are unavailable. ?",
+          "fontSize": 13.5,
+          "contrast": 5.888431614860694,
+          "x": 18,
+          "right": 302,
+          "width": 284,
+          "height": 40.5,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-card .fx-badge",
+          "text": "SUPPLY UNCONFIRMED",
+          "fontSize": 12,
+          "contrast": 10.206763978564855,
+          "x": 38,
+          "right": 227.15625,
+          "width": 189.15625,
+          "height": 28,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-stance-line.fx-unconfirmed",
+          "text": "Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 84,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-filing-depth",
+          "text": "Filing depth ? 1 filing leg(s) reading\nmember inventory — 5 members reporting · fiscal year FY2025\nmember backlog — 1 members reporting · fiscal year FY2022 · value withheld — too few members",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 38,
+          "right": 282,
+          "width": 244,
+          "height": 108,
+          "overflow": false
+        }
+      ]
+    }
+  ],
+  "page_errors": []
+}
