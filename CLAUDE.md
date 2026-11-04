@@ -20,6 +20,10 @@ AI approver to locate. The current assigned session resolves authorized technica
 contracts through existing interfaces. Preserve actual live writers, rights,
 reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
 
+## Complete the original ship chain
+
+This Claude session does not count a Draft, PR, review request, CI wait or handoff as completion. Follow the root [finish-to-release rule](AGENTS.md#finish-to-release-no-draft-graveyard): fix failed checks, advance a qualified Ready candidate, meet real review/hold gates and use the existing protected publisher when eligible, then verify exact merge and consumer proof. Preserve no-self-merge/no-self-approval and other effect boundaries. Do not create a successor PR or stop merely because a PR was published.
+
 ## Permanent visual rule
 
 Chairman design rule (2026-10-18): never add a colored left edge or equivalent
