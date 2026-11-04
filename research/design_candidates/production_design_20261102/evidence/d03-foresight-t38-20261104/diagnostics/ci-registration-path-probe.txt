@@ -1,0 +1,1 @@
+ci-pack validation/execution failed: job 'unrun-template-chips' declares paths that do not cover 'tests/test_build_foresight_vintage.py', which its own commands read — widen the scope or drop it

@@ -1,0 +1,76 @@
+{
+  "source_pin": "124df8d533dd01400a7dc514ac98b92b2d63186e",
+  "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "branch": "claude/ssd-d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23",
+  "source_files": {
+    "scripts/build_foresight.py": {
+      "bytes": 19200,
+      "sha256": "0338cbbb3ca04fbbee63e05e4c70fc853114acbf0629695c87adf5eeb3f30d58"
+    },
+    "tests/test_build_foresight_vintage.py": {
+      "bytes": 9996,
+      "sha256": "5286f0e85a21cb3bb08e2f16ae43f17302becc23b278e2ec8190232741778925"
+    },
+    ".github/ci/legacy-jobs.yml": {
+      "bytes": 2589429,
+      "sha256": "d15215d748bf8e8ede3ecb285345ed3fd7215beac758ace6d147d214d1be3f95"
+    }
+  },
+  "evidence_files": {
+    "CONTINUATION.md": {
+      "bytes": 3954,
+      "sha256": "b9f2999872a73e572205bfbeda90bd3ac8327d758bd726ca2b9037f8250e661f"
+    },
+    "MAIN_COMPARISON.json": {
+      "bytes": 1866,
+      "sha256": "3e69eab9c443b1dfa4d7f54847c6eb0e57bd8fe34baa0687c834360a8bb8cf65"
+    },
+    "README.md": {
+      "bytes": 7600,
+      "sha256": "32afc7b1293cb296eac563dd843f0b6fb9972ceb72f8e0a22f7e4f40a49b2b5e"
+    },
+    "ci-job-scope.json": {
+      "bytes": 1762,
+      "sha256": "6e77fb1e23ce8dc594f7b212da057d45d19024c934e6699478b1411d3a216345"
+    },
+    "ci-manifest-final.txt": {
+      "bytes": 4808,
+      "sha256": "b037e78c18736e9527e2a7b49c0736cf2af4181d5340d24e199b8ee24cdb5561"
+    },
+    "diagnostics/ci-catalog-scan-interrupted.txt": {
+      "bytes": 281,
+      "sha256": "1a77e3a9a4dd457e2b670cfda33860158908418c07181ab47b50678a79ab830b"
+    },
+    "diagnostics/ci-curated-job-scope-probe.json": {
+      "bytes": 6095,
+      "sha256": "12a91a8534bdd391e42b14f290bacde9ad12d930d48c79fdacdbc87c2b07387c"
+    },
+    "diagnostics/ci-manifest-initial-placement.txt": {
+      "bytes": 4776,
+      "sha256": "85936fed5a65c5ecf6e51b24910bfd83fe5759e899ba57d16a46f004db1797ce"
+    },
+    "diagnostics/ci-package-trigger-probe.json": {
+      "bytes": 1777,
+      "sha256": "f9d562d833d899b94f8bb4a1e9484dc7c9d26d912cd41a680d69a0ec0c50f415"
+    },
+    "diagnostics/ci-registration-path-probe.txt": {
+      "bytes": 197,
+      "sha256": "b4819116cea9b4e178bf43b73967f980f00b745bf203995da88d1e693ccb5638"
+    },
+    "diagnostics/pytest-green-before-fixture-hardening.txt": {
+      "bytes": 99,
+      "sha256": "da6208654e5e7b8bd95a55c4c4eef00a453534df5b40840fcc9f3a1a04bd912f"
+    },
+    "pytest-final.txt": {
+      "bytes": 99,
+      "sha256": "3125ef599b863346cbb82f811c2cbd0111b0035ae97fc25e7e9e4dbf3c7268d6"
+    },
+    "pytest-red.txt": {
+      "bytes": 27225,
+      "sha256": "100270de3a9df4bc066e94805136d4db57ee1e799776dfd3cd9feb3505611941"
+    }
+  },
+  "red_log_normalization": "nine trailing-whitespace-only lines; assertions/outcomes unchanged",
+  "runtime_python": "3.14.7",
+  "publication_policy": "Draft/HOLD; no release effects"
+}
