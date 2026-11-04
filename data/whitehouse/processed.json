@@ -1877,6 +1877,42 @@
       "at": "2026-11-03T15:07:48.694607+00:00",
       "activated": false,
       "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=53962": {
+      "id": "wh-2026-11-03-president-trump-is-powering-an-american-manufacturing-renaissance",
+      "at": "2026-11-03T20:58:38.340331+00:00",
+      "activated": true,
+      "importance": 65
+    },
+    "https://www.whitehouse.gov/?p=54024": {
+      "id": "wh-2026-11-03-anti-communism-week-2026",
+      "at": "2026-11-04T01:19:50.841236+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54026": {
+      "id": "wh-2026-11-03-the-american-declaration-of-freedom-in-space",
+      "at": "2026-11-04T01:20:05.995132+00:00",
+      "activated": true,
+      "importance": 78
+    },
+    "https://www.whitehouse.gov/?p=54023": {
+      "id": "wh-2026-11-03-congressional-bills-h-r-1744-and-h-r-8205-signed-into-law",
+      "at": "2026-11-04T01:20:15.784054+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54017": {
+      "id": "wh-2026-11-03-icymi-drug-prices-are-falling-at-the-fastest-rate-in-over-60-years-under-preside",
+      "at": "2026-11-04T01:20:17.558772+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=54013": {
+      "id": "wh-2026-11-03-icymi-relentless-travel-schedule-puts-trump-administrations-results-front-and-ce",
+      "at": "2026-11-04T01:20:19.132740+00:00",
+      "activated": false,
+      "importance": 10
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
