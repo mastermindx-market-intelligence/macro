@@ -260,3 +260,55 @@ navigation, regional listings, account/access change, publication correction,
 late source arrival and keyboard focus. The existing local D05 entry tests do
 not establish this cross-product outcome. F01/F02 acceptance and release holds
 remain in force while incumbent source custody is reconciled.
+
+## 9. Pure export of the currently serialized entry settings
+
+`SectorWorkspaceExport()` returns either `null` or a detached projection:
+
+```js
+{
+  siWorkspace: /* existing sector_central.entry.v1 */,
+  siCyclesOrigin: /* null or { href, entry: existing entry or null } */
+}
+```
+
+This is a projection of the current native history fields, not a new transport
+schema. It performs no history write, route, render, focus, scroll, load, event
+or persistence effect. The existing persisting `SectorWorkspaceCapture()`
+remains available to its current callers. A bridge view-flush must use the pure
+export rather than that persisting hook, which could recursively re-enter the
+bridge through `replaceState`.
+
+The collector requires the exact current href, active entry ID and active view.
+A current Cycles projection additionally requires the last admitted host context
+for that entry/href plus a live verified publication receipt matching captured
+publication ID, region, family and focus. Publication status is re-read, so a
+superseded core cannot reuse its former authority. Exported settings do not
+certify that delayed series or a selected leg have rendered successfully.
+
+The result contains only the fields listed in section 6: no `originNav`, unknown
+history keys, DOM objects, source arrays or recursive origin chain. Strings,
+collections and viewport values have explicit bounds; each comparison/mobile
+list is limited to 512 IDs, and the entire projection including one origin is
+limited to **32,768 UTF-8 bytes**. An origin entry must agree with its validated
+local non-Cycles href/view. An invalid attached entry is withheld while a valid
+URL-only origin can remain. Returned nested arrays and objects share no mutable
+reference with the live entry or renderer.
+
+This interface covers the **currently serialized entry settings**. Map
+scope/horizon and other unrepresented filters are outside it. A null or partial
+source field must never be presented as complete workspace restoration.
+
+No external import/apply API is delivered in this increment. The eventual
+joint receiver must apply to an already-active matching entry, retain the
+new destination entry ID, validate source before effects and distinguish
+pending/restored/partial/rejected. Existing `SectorCyclesApply.status=applied`
+is insufficient: invalid/source-changed snapshots can use defaults, series can
+remain pending/unavailable and a leg can remain unrestored. The measured
+receiver likewise currently returns no restoration receipt. Neither READY nor
+LOCATION_ACCEPTED closes these obligations.
+
+The native viewport replay now observes later pointer, touch, wheel and keyboard
+intent through its existing generation guard. Input that caused navigation
+precedes activation; later input cancels the queued correction. It neither
+prevents input nor changes browser scroll-restoration policy.

@@ -38,7 +38,7 @@ function boot(){
   replaceState(s,_,u){shared.entries[shared.at]={url:new URL(u,context.location).href,state:s}},
   pushState(s,_,u){shared.entries.splice(shared.at+1);shared.entries.push({url:new URL(u,context.location).href,state:s});shared.at++},
   back(){shared.backCalls++;travel(-1)},forward(){travel(1)}};
- context={document:doc,history,URL,URLSearchParams,scrollY:650,scrollTo(x,y){this.scrollY=y},
+ context={document:doc,history,URL,URLSearchParams,TextEncoder,scrollY:650,scrollTo(x,y){this.scrollY=y},
   get location(){return new URL(shared.entries[shared.at].url)},
   crypto:{randomUUID:()=> 'entry-'+(++shared.seq)},
   Event:class{constructor(type){this.type=type}},CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail}},
@@ -51,7 +51,7 @@ function boot(){
    applied.push(copy(c));
    const status=c.asOf&&c.asOf!=='2026-11-02'?'source_mismatch':'applied';
    if(status==='applied'&&c.entryKey!==rendererEntry){chart=copy(c.snapshot||{mode:'osc',scale:'log',range:[2020,2027]});rendererEntry=c.entryKey;}
-   return {status,asOf:'2026-11-02',series:'ready',publication:{status:'verified'}};
+   return {status,id:c.id||null,family:c.family||'sectors',asOf:'2026-11-02',series:'ready',publication:{status:'verified'}};
   }};
  context.window=context;vm.runInNewContext(source,context);
  const api={c:context,doc,opener,nodes,applied,
@@ -105,4 +105,92 @@ assert.equal(a.c.location.hash,'#map');assert.equal(a.c.history.state.originNav.
 def test_real_host_preserves_entry_state_source_policy_and_return_custody():
     result = subprocess.run(["node", "-e", HOST, str(ROOT / "templates/si_workspace.js")],
                             text=True, capture_output=True, timeout=20)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node is required")
+@pytest.mark.parametrize("intent", ["pointerdown", "touchstart", "wheel", "keydown"])
+def test_user_intent_supersedes_exact_entry_and_fallback_viewport_replay(intent):
+    checks = r"""
+// Quiet navigation restores the entry's actual scroll and typed focus target.
+function queueExact(){
+ const entry={...a.c.history.state.siWorkspace,viewport:{scrollY:120,focus:{kind:'board-cycle-opener',id:'xle'}}};
+ a.c.history.replaceState({...a.c.history.state,siWorkspace:entry},'',a.c.location.href);
+ a.c.scrollY=900;a.doc.activeElement=a.nodes['sc-cycle-heading'];a.c.__siRoute();
+}
+queueExact();a.flush();assert.equal(a.c.scrollY,120);assert.equal(a.doc.activeElement,a.opener);
+// A later user's input/focus is not overwritten by the two delayed frames.
+queueExact();a.event(INTENT);a.flush();
+assert.equal(a.c.scrollY,900,'late exact-entry replay moved the user');
+assert.equal(a.doc.activeElement,a.nodes['sc-cycle-heading'],'late replay stole focus');
+// The old per-view fallback has the same cancellation rule.
+a.c.history.replaceState({...a.c.history.state,siWorkspace:{...a.c.history.state.siWorkspace,viewport:null}},'',a.c.location.href);
+a.c.scrollY=310;a.c.__siRoute();a.c.scrollY=777;a.event(INTENT);a.flush();
+assert.equal(a.c.scrollY,777,'late per-view fallback moved the user');
+"""
+    result = subprocess.run(
+        ["node", "-e", HOST + checks.replace("INTENT", repr(intent)), str(ROOT / "templates/si_workspace.js")],
+        text=True, capture_output=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node is required")
+def test_export_is_detached_bounded_pure_and_current_entry_publication_owned():
+    checks = r"""
+const publication='cycp1-'+'a'.repeat(64);
+let proof={status:'verified',publicationId:publication,region:'us'};
+a.c.SectorCyclesEvidence=()=>proof;
+a.c.SectorCentralOpenCycle('xle',a.opener);
+assert.equal(a.c.SectorWorkspaceExport(),null,'source-rejected chart is not current exportable state');
+a.click('sc-cycle-latest');
+const native={schema:'sector_cycles.view.v1',publicationId:publication,region:'us',family:'sectors',focus:'xle',
+ mode:'price',scale:'linear',range:[2022,2024],phases:['Expansion'],selectedIds:[],
+ mobileSelection:{mode:'leaders',ids:[]},leg:{start:'2022-01-03',end:'2024-01-03'}};
+a.state(native);
+const foreign={dom:a.doc};foreign.circular=foreign;
+a.c.history.replaceState({...a.c.history.state,ownerPrivate:foreign,
+ siWorkspace:{...a.c.history.state.siWorkspace,private:foreign},
+ siCyclesOrigin:{...a.c.history.state.siCyclesOrigin,originNav:foreign}},'',a.c.location.href);
+const priorState=a.c.history.state, priorEntry=priorState.siWorkspace;
+const exported=a.c.SectorWorkspaceExport();assert.ok(exported);
+assert.strictEqual(a.c.history.state,priorState);assert.strictEqual(priorState.siWorkspace,priorEntry);
+assert.deepEqual(Object.keys(exported).sort(),['siCyclesOrigin','siWorkspace']);
+assert.ok(!JSON.stringify(exported).includes('ownerPrivate'));assert.ok(!JSON.stringify(exported).includes('originNav'));
+assert.equal(exported.siCyclesOrigin.entry.view,'map');
+const originalMeasured=priorState.siCyclesOrigin.entry.measured.historyMode;
+exported.siWorkspace.cycles.range[0]=1900;exported.siWorkspace.cycles.phases.push('Trough');
+exported.siWorkspace.cycles.leg.start='changed';exported.siCyclesOrigin.entry.measured.historyMode='changed';
+assert.deepEqual(a.chart(),native);assert.equal(priorState.siCyclesOrigin.entry.measured.historyMode,originalMeasured);
+// A bridge flush calls only the pure export, even when existing capture persists.
+let writes=0,flushes=0;
+const replace=a.c.history.replaceState;
+a.c.history.replaceState=function(...args){assert.ok(++writes<3,'recursive history flush');flushes++;assert.ok(a.c.SectorWorkspaceExport());return replace.apply(this,args)};
+a.c.SectorWorkspaceExport();assert.equal(writes,0);
+a.c.SectorWorkspaceCapture();assert.equal(writes,1);assert.equal(flushes,1);
+a.c.history.replaceState=replace;
+// Same URL is insufficient: a newly owned history entry requires activation.
+const owned=a.c.history.state;
+a.c.history.replaceState({...owned,siWorkspace:{...owned.siWorkspace,entryId:'other-entry'}},'',a.c.location.href);
+assert.equal(a.c.SectorWorkspaceExport(),null);
+a.c.history.replaceState(owned,'',a.c.location.href);
+proof={...proof,publicationId:'cycp1-'+'b'.repeat(64)};
+assert.equal(a.c.SectorWorkspaceExport(),null,'same-date source replacement cannot export the old chart');
+proof={...proof,publicationId:publication,status:'superseded'};assert.equal(a.c.SectorWorkspaceExport(),null);
+proof={...proof,status:'verified'};
+// Malformed and oversized native snapshots cannot leak arbitrary payloads.
+a.state({...native,selectedIds:Array(513).fill('x')});assert.equal(a.c.SectorWorkspaceExport(),null);
+a.state({...native,selectedIds:Array(350).fill('界'.repeat(100))});assert.equal(a.c.SectorWorkspaceExport(),null,'32KiB bound is UTF-8, not character count');
+a.state({...native,range:[NaN,2024]});assert.equal(a.c.SectorWorkspaceExport(),null);
+a.state(native);
+const origin=a.c.history.state.siCyclesOrigin;
+a.c.history.replaceState({...a.c.history.state,siCyclesOrigin:{...origin,entry:{...origin.entry,href:'/wrong.html#map'}}},'',a.c.location.href);
+assert.equal(a.c.SectorWorkspaceExport().siCyclesOrigin.entry,null,'a valid URL does not validate its attached snapshot');
+a.c.history.replaceState({...a.c.history.state,siCyclesOrigin:{href:'https://foreign.example/'}},'',a.c.location.href);
+assert.equal(a.c.SectorWorkspaceExport().siCyclesOrigin,null);
+"""
+    result = subprocess.run(
+        ["node", "-e", HOST + checks, str(ROOT / "templates/si_workspace.js")],
+        text=True, capture_output=True, timeout=20,
+    )
     assert result.returncode == 0, result.stdout + result.stderr

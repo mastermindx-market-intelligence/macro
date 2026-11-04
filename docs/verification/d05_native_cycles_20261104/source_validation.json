@@ -11,7 +11,8 @@
     "skip_reasons": [
       "No local engine sector data (two tests)",
       "No local promises_price_v1_zz14_v0.json scorecard (one test)"
-    ]
+    ],
+    "source_commit": "a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14"
   },
   "test_command": ".venv/bin/python -m pytest -q -rs tests/test_sector_central_history.py tests/test_si_workspace_shell.py tests/test_sector_cycles.py tests/test_sector_paper_cycles_ia.py tests/test_sector_central_contract.py tests/test_xpv2_sector_r3_fixture.py tests/test_cycles_payload_split.py tests/test_cycles_publication.py tests/test_cycles_entry_state.py tests/test_sector_generation_guard.py tests/test_leadership_measured_read.py tests/test_sector_central_measured_panel.py tests/test_rekey_narratives.py tests/test_narrative_ttl.py --tb=short tests/test_sector_paper_copy_deck.py tests/test_sector_central_publication.py tests/test_rotation_relative_trend.py",
   "additional_checks": {
@@ -72,8 +73,8 @@
   ],
   "file_sha256": {
     "design_refs/sector-paper-20261021/copy_deck.json": "29013d96309b6fab83c3a364871305c206d6f97120c7d44d3d22e59200942722",
-    "docs/verification/d05_native_cycles_20261104/README.md": "acd25643bf70e51969800f36deaeed627c37dc686e9d91151789a24905be691b",
-    "docs/verification/d05_native_cycles_20261104/SOURCE_CONTRACT.md": "f4bd07c995b261bd07e2773930e0526f20c30b882675cfce15c9108ce2210236",
+    "docs/verification/d05_native_cycles_20261104/README.md": "7208b916649b1726ad05d1f81fcd7db0049799b885a604162ff1a8cceba7cd69",
+    "docs/verification/d05_native_cycles_20261104/SOURCE_CONTRACT.md": "754dba0e25249c921b7ddb0c3e9527266d0d996fb5e9842815f327a77047384e",
     "docs/verification/d05_native_cycles_20261104/prepare_preview.py": "b82914e4b8de0f1ff9d18d07a15c4d3cf3c7499e2a729017910d10529a23c762",
     "docs/verification/d05_native_cycles_20261104/verify_browser.cjs": "683dcc03134335701ebb45a628944410fb07c0a15e485735fdaeb22062d3a11b",
     "engine/leadership_rotation_context.py": "637ad1e50132086b848a1221103e19b8f530dd1b5cbc9a312ccc23015faab49c",
@@ -85,13 +86,13 @@
     "scripts/build_sector_cycles.py": "187d5d17948712260c1ac5a0861e4b43e5e1926a6af5e9ec143c4c67556804d4",
     "site/sector_cycles.css": "e255e69f2a695aca594f6cbeb3f2464cd9c8bf356050b38239f94465f95ab886",
     "site/sector_cycles.js": "34176d7d7f056b4096959b6677419a778ea2e777fc94b191c34aae73476b9dcc",
-    "site/si_workspace.js": "674a592d2d82b9b347e190727eed71bfc2abdf4a9d53ddaa8415b81c6a030bdf",
+    "site/si_workspace.js": "6cd3b26d6abb21c5e4600f78d8976f731300eaac7e10252ce64a3835e52bda5b",
     "templates/sector_central.html.j2": "fd4f75c8825d3bb4c16f537e71cb1fa14799a17b334a829ea733a9c016809241",
     "templates/sector_cycles.css": "e255e69f2a695aca594f6cbeb3f2464cd9c8bf356050b38239f94465f95ab886",
     "templates/sector_cycles.js": "34176d7d7f056b4096959b6677419a778ea2e777fc94b191c34aae73476b9dcc",
-    "templates/si_workspace.js": "674a592d2d82b9b347e190727eed71bfc2abdf4a9d53ddaa8415b81c6a030bdf",
+    "templates/si_workspace.js": "6cd3b26d6abb21c5e4600f78d8976f731300eaac7e10252ce64a3835e52bda5b",
     "tests/fixtures/leadership_rotation/measured_read_v1.json": "a468e4f0a132cedb8ebaebe0a66528446df22582b976a8e5a8c58ae44ba05c3a",
-    "tests/test_cycles_entry_state.py": "193c608abadab8e32f4a4d0abf90103160a669efaca24f617bd36f4ff9e66932",
+    "tests/test_cycles_entry_state.py": "f442b928fb27454cd60c4954288c0f2b9278a885fbe9a1587dfaeaca60be0f09",
     "tests/test_cycles_publication.py": "a8bca2922ecf77d47d9c34f68f4d69f119e014adcf16f374fb2461bf2a389015",
     "tests/test_sector_central_history.py": "b33d86358af005f2ac6fd4950487628b01fe7da122fc86c1ba2fa4a2531787ec",
     "tests/test_sector_central_measured_panel.py": "50d1084f0d3d193312ba050e934294239e97628cf3c245970c57fb417a9d505c",
@@ -103,7 +104,7 @@
     "tests/test_sector_central_publication.py": "14de9559feb3b3891ad97c1b73e27b2cfe6ddc09720cdbee2c6702cc7ba8616a",
     "docs/verification/d05_native_cycles_20261104/regional_archive_serialization.json": "ac3944195bfa170207af3bcd18fff8d9bd2469a04f10b71939bca5d0cceb7476"
   },
-  "source_parent": "2e6c45899a9aeb7f90f03f85272aaff3ca42f4eb",
+  "source_parent": "a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14",
   "ci": {
     "prior_head": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
     "run": 41773065024,
@@ -141,5 +142,52 @@
       "controller_pid": 5795
     },
     "status": "ACTIVE_OR_WAITING; lineage unverified; worker state unknown; original effects under reconciliation"
+  },
+  "entry_export_followthrough": {
+    "observed_utc": "2026-11-04T07:18:49Z",
+    "source_parent": "a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14",
+    "focused_test_result": {
+      "passed": 105,
+      "skipped": 0,
+      "failed": 0,
+      "seconds": 14.54
+    },
+    "focused_test_command": ".venv/bin/python -m pytest tests/test_cycles_entry_state.py tests/test_sector_central_history.py tests/test_cycles_publication.py tests/test_sector_central_measured_panel.py -q --tb=short",
+    "prior_source_regression": "a97b exact-entry replay overwrote later wheel intent: 120 instead of 900",
+    "source_blob": "fd0293a97792bbe038453fba472ee944ee955e79",
+    "tests_blob": "685604bfde7a33bf8870ee90518901a56b11a3aa",
+    "recovery": {
+      "cause": "local unified exec service unavailable: -32603 / no such file or directory",
+      "effect": "no command started; source patch reconstructed deterministically from exact parent and applied diff",
+      "operation_id": "d05-native-source-verification-20261104",
+      "reused": true,
+      "workspace_head": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
+      "execution": "in-memory Node VM of exact candidate; no source/branch mutation",
+      "node": "v26.5.0",
+      "passed": [
+        "existing_entry_custody",
+        "viewport_pointerdown",
+        "viewport_touchstart",
+        "viewport_wheel",
+        "viewport_keydown",
+        "pure_bounded_export"
+      ],
+      "failed": 0
+    },
+    "complete_suite_rerun": false,
+    "full_workspace_fidelity": false,
+    "external_import_implemented": false,
+    "browser_acceptance": "NOT_PROVEN",
+    "company_source_custody": {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "pr": 1244,
+      "operation_id": "beta-intelligence-integration-20261103-sol",
+      "original_base": "350a61f9bae0ae61b2ab188ec99cc73552496ad2",
+      "observed_head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
+      "same_operation_reused": true,
+      "tracked_dirty_at_observation": [],
+      "inherited_untracked_preserved": 486,
+      "implementation": "continuation admitted; receiver change not delivered in this Macro increment"
+    }
   }
 }

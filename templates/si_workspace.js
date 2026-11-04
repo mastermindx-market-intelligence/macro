@@ -313,7 +313,7 @@ var current=null;
 var SCROLL_MEM={};
 var FOCUS_MEM={};
 var cycleOpening=false;
-var entrySeq=0, activeEntryId=null, cycleApplied=false, savingEntry=false;
+var entrySeq=0, activeEntryId=null, cycleApplied=false, cycleContext=null, savingEntry=false;
 function localHref(){return location.pathname+location.search+location.hash;}
 function entryId(){return window.crypto&&window.crypto.randomUUID?window.crypto.randomUUID():Date.now().toString(36)+'-'+String(++entrySeq);}
 function currentEntry(){
@@ -337,17 +337,94 @@ function resolveFocus(f){
   for(var i=0;i<nodes.length;i++)if(nodes[i].getAttribute(attr)===f.id&&nodes[i].getBoundingClientRect().width)return nodes[i];
   return null;
 }
-function saveEntry(snapshot){
-  if(savingEntry||!current)return;
+function collectEntry(snapshot){
+  if(!current)return null;
   var old=currentEntry();
-  if(!old||old.entryId!==activeEntryId||old.view!==current)return;
-  var next=Object.assign({},old,{viewport:{scrollY:Math.max(0,Math.min(100000,window.scrollY||0)),focus:focusLocator()}});
+  if(!old||old.entryId!==activeEntryId||old.view!==current)return null;
+  var next={schema:old.schema,entryId:old.entryId,href:old.href,view:old.view,
+    measured:old.measured||null,cycles:old.cycles||null,
+    viewport:{scrollY:Math.max(0,Math.min(100000,window.scrollY||0)),focus:focusLocator()}};
   if(window.SectorMeasuredCapture)next.measured=window.SectorMeasuredCapture();
   if(current==='cycles'&&cycleApplied&&window.SectorCyclesCapture)next.cycles=snapshot||window.SectorCyclesCapture();
+  return next;
+}
+function saveEntry(snapshot){
+  if(savingEntry)return;
+  var next=collectEntry(snapshot);if(!next)return;
   savingEntry=true;
   try{history.replaceState(Object.assign({},history.state,{siWorkspace:next}),'',localHref());}finally{savingEntry=false;}
 }
 window.SectorWorkspaceCapture=function(){saveEntry();};
+/* Read-only projection of already-owned entry settings. A shell's view flush
+   must never call the persisting Capture hook: its replaceState can re-enter
+   that same flush. This export adds no wire protocol, store or apply owner. */
+function exportText(value,limit,nullable){
+  if(nullable&&value===null)return null;
+  if(typeof value!=='string'||!value.length||value.length>limit||/[\u0000-\u001f\u007f]/.test(value))throw new Error('invalid_entry_text');
+  return value;
+}
+function exportList(values,limit){
+  if(!Array.isArray(values)||values.length>limit)throw new Error('invalid_entry_list');
+  return values.map(function(value){return exportText(value,100,false);});
+}
+function exportEntry(entry){
+  if(!entry||entry.schema!=='sector_central.entry.v1'||VIEWS.indexOf(entry.view)<0)throw new Error('invalid_entry');
+  var out={schema:entry.schema,entryId:exportText(entry.entryId,80,false),href:exportText(entry.href,4096,false),
+    view:entry.view,measured:null,cycles:null,viewport:null};
+  var measured=entry.measured;
+  if(measured){
+    if(measured.schema!=='sector_central.measured_view.v1'||['obs','recon'].indexOf(measured.historyMode)<0)throw new Error('invalid_measured_entry');
+    out.measured={schema:measured.schema,groupId:exportText(measured.groupId,100,true),historyMode:measured.historyMode,generation:exportText(measured.generation,160,true)};
+  }
+  var cycles=entry.view==='cycles'&&entry.cycles;
+  if(cycles){
+    if(cycles.schema!=='sector_cycles.view.v1'||!/^cycp1-[a-f0-9]{64}$/.test(cycles.publicationId||'')||
+        ['us','china','intl'].indexOf(cycles.region)<0||['sectors','baskets','nasdaq','russell'].indexOf(cycles.family)<0||
+        ['osc','price'].indexOf(cycles.mode)<0||['log','linear'].indexOf(cycles.scale)<0||
+        !Array.isArray(cycles.range)||cycles.range.length!==2||!cycles.range.every(function(v){return typeof v==='number'&&isFinite(v);})||
+        cycles.range[0]>=cycles.range[1]||!cycles.mobileSelection||['leaders','all','explicit'].indexOf(cycles.mobileSelection.mode)<0)throw new Error('invalid_cycles_entry');
+    out.cycles={schema:cycles.schema,publicationId:cycles.publicationId,region:cycles.region,family:cycles.family,
+      focus:exportText(cycles.focus,100,true),mode:cycles.mode,scale:cycles.scale,range:cycles.range.slice(),
+      phases:exportList(cycles.phases,5),selectedIds:exportList(cycles.selectedIds,512),
+      mobileSelection:{mode:cycles.mobileSelection.mode,ids:exportList(cycles.mobileSelection.ids,512)},
+      leg:cycles.leg?{start:exportText(cycles.leg.start,32,false),end:exportText(cycles.leg.end,32,false)}:null};
+  }
+  var viewport=entry.viewport;
+  if(viewport){
+    if(typeof viewport.scrollY!=='number'||!isFinite(viewport.scrollY)||viewport.scrollY<0||viewport.scrollY>100000)throw new Error('invalid_viewport');
+    var f=viewport.focus, focus=null;
+    if(f&&['cycle-opener','board-cycle-opener','measured','family','mode','scale','entity','element'].indexOf(f.kind)>=0){
+      if(f.kind!=='element'||['mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(f.id)>=0)focus={kind:f.kind,id:exportText(f.id,100,false)};
+    }
+    out.viewport={scrollY:viewport.scrollY,focus:focus};
+  }
+  return out;
+}
+window.SectorWorkspaceExport=function(){
+  try{
+    var entry=collectEntry();if(!entry)return null;
+    if(current==='cycles'){
+      var proof=window.SectorCyclesEvidence&&window.SectorCyclesEvidence(), snapshot=entry.cycles;
+      if(!cycleApplied||!cycleContext||cycleContext.entryId!==entry.entryId||cycleContext.href!==entry.href||
+          !proof||proof.status!=='verified'||!snapshot||snapshot.publicationId!==proof.publicationId||snapshot.region!==proof.region||
+          snapshot.focus!==cycleContext.receipt.id||snapshot.family!==cycleContext.receipt.family)return null;
+    }
+    var out={siWorkspace:exportEntry(entry),siCyclesOrigin:null}, href=cycleOrigin();
+    if(href){
+      out.siCyclesOrigin={href:exportText(href,4096,false),entry:null};
+      var original=(history.state||{}).siCyclesOrigin.entry;
+      var hash=new URL(href,location.href).hash.slice(1), view=LEGACY_ANCHORS[hash]?LEGACY_ANCHORS[hash][0]:hash;
+      if(original&&original.href===href&&original.view===view){
+        try{out.siCyclesOrigin.entry=exportEntry(original);}catch(e){} // URL-only origin remains honest.
+      }
+    }
+    // Bounds apply to the complete detached projection, including one origin.
+    // Unknown history fields/DOM/source objects are never traversed or copied.
+    var json=JSON.stringify(out);
+    if(json.length>32768||typeof TextEncoder!=='function'||new TextEncoder().encode(json).length>32768)return null;
+    return out;
+  }catch(e){return null;}
+};
 function prepareEntry(view){
   var e=currentEntry();
   if(!e||e.view!==view){
@@ -383,6 +460,12 @@ window.addEventListener('pagehide',function(){saveEntry();});
 var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes any
                        still-pending replay frame from an earlier activation — a stale
                        frame must not scroll a view that is no longer on screen */
+/* User intent after navigation wins over a queued viewport replay. Input that
+   caused navigation arrives before activate() and does not cancel that entry's
+   restoration. These listeners never save, route, prevent input or take focus. */
+['pointerdown','touchstart','wheel','keydown'].forEach(function(name){
+  document.addEventListener(name,function(){++SCROLL_GEN;},{capture:true,passive:true});
+});
 function activate(view,target){
   if(VIEWS.indexOf(view)<0) view='overview';
   var gen=++SCROLL_GEN;   /* every activation invalidates pending replay frames */
@@ -505,6 +588,7 @@ function syncCycleContext(){
   // immediately afterwards, so no current detail masquerades as requested history.
   if(study) study.hidden=false;
   var receipt=window.SectorCyclesApply ? window.SectorCyclesApply({id:id,family:u.searchParams.get('cycleFamily'),asOf:id&&!useLatest?cycleSourceDate():null,requireSourceDate:!!id&&!useLatest,spine:id&&!useLatest?cycleSourceSpine():null,requirePublication:!!id&&!useLatest,entryKey:entry&&entry.entryId,snapshot:entry&&entry.cycles}) : {status:'pending'};
+  cycleContext={entryId:entry&&entry.entryId,href:localHref(),receipt:receipt};
   cycleApplied=receipt.status==='applied';
   var messages={
     pending:['Loading cycle evidence…','正在载入周期证据…'],

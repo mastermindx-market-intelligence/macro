@@ -8,6 +8,46 @@ release carrier. The original D05 design package covers all 13 canonical routes;
 this bounded source iteration completes the native Central/Cycles evidence and
 return-state contracts within the incumbent implementation.
 
+## Entry export and user-intent follow-through — 2026-11-04 UTC
+
+The current entry owner now provides **`SectorWorkspaceExport()`**, a pure,
+detached projection of its existing `siWorkspace` and single local
+`siCyclesOrigin` fields. It preserves the persisting `SectorWorkspaceCapture`
+hook for existing callers. A view-flush consumer can read the new export
+without re-entering `history.replaceState`. Foreign history fields, nested
+origins, DOM references and source payloads never enter the projection.
+
+The complete projection is limited to 32 KiB of UTF-8. Current Cycles exports
+also require the active entry/href, an admitted context and exact current
+verified publication/family/focus. A source-rejected or superseded chart cannot
+be exported as the current investigation. This exports **currently serialized
+settings**; map scope/horizon and other unrepresented controls are not covered.
+No new public import, shared-shell message or Company restoration acknowledgement
+is introduced in this increment.
+
+Queued viewport restoration now yields to subsequent pointer, touch, wheel or
+keyboard intent. Both the exact-entry two-frame replay and legacy per-view
+fallback use the existing cancellation generation. A regression executed the
+prior source and reproduced the late wheel overwrite before the fix.
+
+**105 passed / 0 skipped / 0 failed** across the four affected entry/history,
+publication-receiver and measured-panel suites. These overlap the earlier
+485-test run; the counts must not be added. After the local command service
+became unavailable, the exact deterministic patch was reconstructed against
+published parent `a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14`. The six executable
+host cases were rerun in memory through the already-owned Studio verification
+operation, with exact source/test SHA-256 and Git blob identities returned.
+That run is source proof, not browser or production proof; it changed no worker
+request, repository branch or production file.
+
+The Company source operation was separately recovered through the installed
+owner using its original operation/base. The exact #1244 workspace was reused,
+with 486 inherited untracked artifacts hashed for preservation and no tracked
+dirty source at that observation. This permits bounded continuation under the
+current assignment; it is not release of an old session or acceptance of its
+inherited artifacts. Neighboring F01 edits remain excluded. Cross-product
+Company return is still unproven.
+
 ## Authority, source and ownership
 
 - Protected Mastermind law: `b5e8a9682f72b1bf802e50cf16f77f878ce596f3`;
