@@ -108,5 +108,14 @@
     "s14-s4-scoped-postimage-delta.json": "a3686041c07382497d8a0dede9b7b3dd0112bcacb6d9aea02603ff704dac1d9c",
     "s14-s4-radar-native-seam.log": "301726226808a7f1ac42e1954c02d76b997669504cb7109194b64a05e1f31b1f",
     "s14-s4-current-commodity-dom.log": "225a6db1a3c32fd2bd0cd2e877ca0faec02e526aafd96fb4c01980a744e2e267"
-  }
+  },
+  "finite_source_applicability": {
+    "record": "S14_S4_GLT_EWP4_APPLICABILITY.json",
+    "sha256": "ec8c1c6e7ad9840ffa0c62cdc7fd14c085f582fc36e759eb60e8fd65565a9213",
+    "GLT": "Bothffda5424record modes/blobs exact845;REAL selectedself-mod-fence whole-storeinputs,notexempted by dedicatedAgentOSskip orpathfilter",
+    "EW_P4": "31/31declaredrenderinputblobs exactintegrated845 inclwholeDashboard4a890;alltopSHAfields match;17fixtures/68images match originalreceipt;reuseoriginalscopeonly",
+    "remaining_mismatches": [],
+    "no_current_whole_tree_visual_proof": true
+  },
+  "review_reuse_clarification": "Prior64d applies only unchanged implementation;accepted095 Radar/EW source applies because all31declaredrenderinputs exactlymatch andretainedimages/fixtures passidentity checks. ChangedGLTrecords need whole-storevalidation in the nextnaturalproof;no inherited518current-base claim."
 }
