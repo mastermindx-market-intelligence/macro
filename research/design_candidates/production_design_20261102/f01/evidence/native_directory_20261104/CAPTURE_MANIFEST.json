@@ -1,0 +1,44 @@
+{
+  "schema": "f01.directory-capture-freeze.v1",
+  "freeze_scope": "Original F only. The full native set and final foundation remain unqualified.",
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "pageId": "p-27-0",
+  "boardId": "6ZZV-0",
+  "operation": "F01-20261104-F-directory-filter-count-v1",
+  "source_semantic_commit": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "source_joint_contract_blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+  "members": [
+    {
+      "path": "F.jpg",
+      "bytes": 38946,
+      "sha256": "f10bd6ca5277fdc8cafc953dfc72ebc190f068fa1d678eec6565a0dbedabb0a0"
+    },
+    {
+      "path": "F.jsx",
+      "bytes": 11547,
+      "sha256": "5836918f65beb7c38e0930016db531c2adf17af37d9e15e414a5d40f010f1204"
+    },
+    {
+      "path": "REQUEST.json",
+      "bytes": 438,
+      "sha256": "c80c15a7e819f3c2b2e53323c56c30e3e4bf35105173e865595bd53a474436a7"
+    },
+    {
+      "path": "RAW_REPLY.json",
+      "bytes": 42383,
+      "sha256": "dbdea519da8bfe59a5b10e5397af9242097133e6ff550378a5c74f15a0bd3a5f"
+    },
+    {
+      "path": "PREFLIGHT.json",
+      "bytes": 2668,
+      "sha256": "d3868814b66003cd2537505b782549350fbd8aa3e43c5ed643515413c432646b"
+    },
+    {
+      "path": "PROPOSED_FACET_INPUT.json",
+      "bytes": 12561,
+      "sha256": "74c7299a4a9a4a8528763c221feccf5ee950afc29ece0dfa60f15c96999643ae"
+    }
+  ],
+  "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline",
+  "aggregate_sha256": "03bb8f96801f452714c66da70ce6b6a8410492e8f5c4ee4548f97a98ae1c4692"
+}

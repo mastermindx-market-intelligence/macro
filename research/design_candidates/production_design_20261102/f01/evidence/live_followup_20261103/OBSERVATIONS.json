@@ -1,0 +1,650 @@
+{
+  "schema": "f01.live-baseline-observations.v1",
+  "observed_at": "2026-11-03 to 2026-11-04 UTC; no per-action timestamp instrumentation",
+  "scope": "Read-only current beta journey observations, with reversible UI preferences and viewport restored. These are not execution of the candidate's 86 acceptance specifications or served-source attestation.",
+  "site": "https://beta.mastermind-x.com",
+  "before_terminal": [
+    {
+      "before": {
+        "focusedLabel": "Earlier periods",
+        "scroll": [
+          {
+            "clientHeight": 833,
+            "id": "fin-active-panel",
+            "tag": "DIV",
+            "top": 107
+          }
+        ],
+        "tableHeader": "Currency: USD201620172018201920202021",
+        "url": "https://beta.mastermind-x.com/analysis?symbol=NVDA&page=statements"
+      }
+    }
+  ],
+  "terminal": [
+    {
+      "lang": "en",
+      "returnControls": [
+        {
+          "href": null,
+          "label": "Back to Analysis",
+          "tag": "BUTTON",
+          "text": "MASTERMIND← Analysis",
+          "title": "Back to Analysis"
+        },
+        {
+          "href": null,
+          "label": "Back to Analysis",
+          "tag": "BUTTON",
+          "text": "Analysis",
+          "title": "Back to Analysis"
+        },
+        {
+          "href": null,
+          "label": null,
+          "tag": "BUTTON",
+          "text": "Back to Daily",
+          "title": null
+        }
+      ],
+      "theme": "dark",
+      "url": "https://beta.mastermind-x.com/terminal?from=macro&ret=https%3A%2F%2Fbeta.mastermind-x.com%2Fanalysis%3Fsymbol%3DNVDA%26page%3Dstatements&symbol=NVDA",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "viewportMeta": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    }
+  ],
+  "after_named_return": [
+    {
+      "focus": {
+        "label": null,
+        "tag": "BODY"
+      },
+      "lang": "en",
+      "scroll": [],
+      "selectedTabs": [
+        "Financials",
+        "Statements",
+        "Financials⌄",
+        "Statements"
+      ],
+      "tableHeader": "Currency: USD20222023202420252026",
+      "theme": "light",
+      "url": "https://beta.mastermind-x.com/analysis?symbol=NVDA&page=statements",
+      "viewportMeta": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    }
+  ],
+  "directory_shortcut": [
+    {
+      "buttons": [
+        {
+          "label": "All tools",
+          "text": "All tools⌘ K"
+        },
+        {
+          "label": "All tools",
+          "text": "All tools"
+        },
+        {
+          "label": "close",
+          "text": "×"
+        },
+        {
+          "label": null,
+          "text": "Tools"
+        },
+        {
+          "label": "Close",
+          "text": "×"
+        }
+      ],
+      "dialogs": [
+        {
+          "label": null,
+          "modal": null,
+          "open": true,
+          "tag": "DIALOG",
+          "text": "Your workspaceAll toolsExplore your workspaces, markets, research, and tools.×escAllWorkspacesMarketsResearchLearnToolsAbout↗TodayWorkspaces→↗DiscoverWorkspaces→↗AnalysisWorkspaces→↗MonitorWorkspaces→↗ResearchWorkspaces→↗PortfolioWorkspaces→◫A market research assistant grounded in the page and its sources.About→◫About MastermindXAbout→◫About the researchAbout→◫AdvancedMarkets→◫Ai DeskMarkets→◫AibriefMarkets→◫Alert CenterMarkets→↗AlertsWorkspaces→◫Allocation ChinaMarkets→◫Alternative DataMarkets→◫Alternative DataMarkets→◫AnticipationMarkets→◫BasketsMarkets→◫BioCatalyst IntelligenceMarkets→◫BlogResearch→◫BondsMarkets→◫Btc StrategyMarkets→◫CalibrationMarkets→◫CanadaMarkets→◫Canada HistoryMarkets→◫Canada StockMarkets→◫Capital Flow VelocityMarkets→◫Capital StructureMarkets→◫ChatMarkets→◫ChinaMarkets→◫China AllocationMarkets→◫China HistoryMarkets→◫China LookupMarkets→◫China News FeedMarkets→◫China Sector CyclesMarkets→◫China Sector DeskMarkets→◫China Thematic Baskets now live in China Sector IntelligenceMarkets→◫Cn Reversal SleeveMarkets→◫Coming SoonMarkets→◫CommoditiesMarkets→◫Congress TradesMarkets→◫Country CyclesMarkets→◫Country DashboardsMarkets→◫CryptoMarkets→◫Cycle IntelligenceMarkets→◫Dark Pool DeskMarkets→◫DemandMarkets→Show more290 destinationsSearch companies ↗"
+        },
+        {
+          "label": "What the Brain used",
+          "modal": "true",
+          "open": false,
+          "tag": "DIV",
+          "text": "What the Brain used×Context is resolved by fixed rules, not by the AI.No trading authority"
+        }
+      ],
+      "focus": {
+        "label": "Find a page or tool…",
+        "placeholder": "Find a page or tool…",
+        "tag": "INPUT"
+      }
+    }
+  ],
+  "directory_options_320": [
+    {
+      "dialog": [
+        {
+          "links": [
+            {
+              "href": "/options/futures",
+              "text": "↗FuturesWorkspaces→"
+            },
+            {
+              "href": "/options",
+              "text": "↗OptionsWorkspaces→"
+            },
+            {
+              "href": "/options.html",
+              "text": "◫Options & Market StructureMarkets→"
+            },
+            {
+              "href": "/options_screener.html",
+              "text": "◫Options ScreenerMarkets→"
+            },
+            {
+              "href": "/learn/options/charm-and-time-drift.html",
+              "text": "◫learn / options / charm and time driftLearn→"
+            },
+            {
+              "href": "/learn/options/dealer-hedging-mechanics.html",
+              "text": "◫learn / options / dealer hedging mechanicsLearn→"
+            },
+            {
+              "href": "/learn/options/gamma-flip-levels.html",
+              "text": "◫learn / options / gamma flip levelsLearn→"
+            },
+            {
+              "href": "/learn/options/gamma-regimes.html",
+              "text": "◫learn / options / gamma regimesLearn→"
+            },
+            {
+              "href": "/learn/options/market-makers-middleman.html",
+              "text": "◫learn / options / market makers middlemanLearn→"
+            },
+            {
+              "href": "/learn/options/open-interest-limits.html",
+              "text": "◫learn / options / open interest limitsLearn→"
+            },
+            {
+              "href": "/learn/options/zero-dte-regime.html",
+              "text": "◫learn / options / zero dte regimeLearn→"
+            },
+            {
+              "href": "/tools/calculators/options-profit.html",
+              "text": "◫tools / calculators / options profitTools→"
+            }
+          ],
+          "modal": true,
+          "text": "Your workspaceAll toolsExplore your workspaces, markets, research, and tools.×escAllWorkspacesMarketsResearchLearnToolsAbout↗FuturesWorkspaces→↗OptionsWorkspaces→◫Options & Market StructureMarkets→◫Options ScreenerMarkets→◫learn / options / charm and time driftLearn→◫learn / options / dealer hedging mechanicsLearn→◫learn / options / gamma flip levelsLearn→◫learn / options / gamma regimesLearn→◫learn / options / market makers middlemanLearn→◫learn / options / open interest limitsLearn→◫learn / options / zero dte regimeLearn→◫tools / calculators / options profitTools→12 destinationsSearch companies ↗"
+        }
+      ],
+      "focus": {
+        "label": "Find a page or tool…",
+        "tag": "INPUT"
+      }
+    },
+    {
+      "dialog": {
+        "clientWidth": 298,
+        "height": 880,
+        "scrollWidth": 298,
+        "width": 300,
+        "x": 10,
+        "y": 10
+      },
+      "focus": {
+        "label": "Find a page or tool…",
+        "tag": "INPUT"
+      },
+      "query": "options",
+      "viewport": {
+        "height": 900,
+        "width": 320
+      }
+    }
+  ],
+  "directory_keyboard": [
+    {
+      "focus": {
+        "label": "close",
+        "tag": "BUTTON",
+        "text": "×"
+      },
+      "insideOpenDialog": true,
+      "step": "backward_once"
+    },
+    {
+      "focus": {
+        "label": null,
+        "tag": "BODY",
+        "text": "Skip to contentMASTERMINDLightENAMASTERMINDTERMINALBetaSearch companiesSearch an"
+      },
+      "insideOpenDialog": false,
+      "step": "backward_twice"
+    }
+  ],
+  "directory_escape_after_resize": [
+    {
+      "focus": {
+        "label": null,
+        "tag": "BODY",
+        "text": "Skip to contentMASTERMINDLightENAMASTERMINDTERMINALBetaSearch companiesSearch an"
+      },
+      "openDialogs": 0,
+      "url": "https://beta.mastermind-x.com/analysis?symbol=NVDA&page=statements"
+    }
+  ],
+  "mobile_zh_navigation": [
+    {
+      "dialogs": [
+        {
+          "modal": false,
+          "open": false,
+          "rect": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "role": "dialog",
+          "tag": "DIV"
+        },
+        {
+          "modal": true,
+          "open": true,
+          "rect": {
+            "height": 844,
+            "width": 390,
+            "x": 0,
+            "y": 0
+          },
+          "role": null,
+          "tag": "DIALOG"
+        }
+      ],
+      "focus": {
+        "label": null,
+        "tag": "A"
+      },
+      "lang": "zh-CN",
+      "pageOverflow": false,
+      "theme": "light",
+      "url": "https://beta.mastermind-x.com/analysis?symbol=NVDA&page=statements",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    }
+  ],
+  "mobile_zh_navigation_controls": [
+    {
+      "controls": [
+        {
+          "aria": "关闭导航",
+          "href": null,
+          "rect": {
+            "height": 44,
+            "width": 44,
+            "x": 213,
+            "y": 14
+          },
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "href": "/today",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 78
+          },
+          "tag": "A",
+          "text": "今日"
+        },
+        {
+          "aria": null,
+          "href": "/discover",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 124
+          },
+          "tag": "A",
+          "text": "发现"
+        },
+        {
+          "aria": null,
+          "href": "/analysis",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 170
+          },
+          "tag": "A",
+          "text": "分析"
+        },
+        {
+          "aria": null,
+          "href": "/monitor",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 216
+          },
+          "tag": "A",
+          "text": "监测"
+        },
+        {
+          "aria": null,
+          "href": "/research",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 262
+          },
+          "tag": "A",
+          "text": "研究"
+        },
+        {
+          "aria": null,
+          "href": "/portfolio",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 308
+          },
+          "tag": "A",
+          "text": "投资组合"
+        },
+        {
+          "aria": null,
+          "href": "/us_stocks.html",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 395.5
+          },
+          "tag": "A",
+          "text": "美国"
+        },
+        {
+          "aria": null,
+          "href": "/china.html",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 441.5
+          },
+          "tag": "A",
+          "text": "中国"
+        },
+        {
+          "aria": null,
+          "href": "/hk.html",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 487.5
+          },
+          "tag": "A",
+          "text": "香港"
+        },
+        {
+          "aria": null,
+          "href": "/canada.html",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 533.5
+          },
+          "tag": "A",
+          "text": "加拿大"
+        },
+        {
+          "aria": null,
+          "href": "/intl.html",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 579.5
+          },
+          "tag": "A",
+          "text": "全球"
+        },
+        {
+          "aria": null,
+          "href": null,
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 625.5
+          },
+          "tag": "BUTTON",
+          "text": "全部工具"
+        },
+        {
+          "aria": null,
+          "href": "/terminal?from=macro&ret=https%3A%2F%2Fbeta.mastermind-x.com%2Fanalysis%3Fsymbol%3DNVDA%26page%3Dstatements&symbol=NVDA",
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 671.5
+          },
+          "tag": "A",
+          "text": "打开终端"
+        },
+        {
+          "aria": null,
+          "href": null,
+          "rect": {
+            "height": 44,
+            "width": 243,
+            "x": 14,
+            "y": 717.5
+          },
+          "tag": "BUTTON",
+          "text": "Mastermind AI"
+        },
+        {
+          "aria": "设置",
+          "href": null,
+          "rect": {
+            "height": 30,
+            "width": 30,
+            "x": 24,
+            "y": 800
+          },
+          "tag": "BUTTON",
+          "text": "A"
+        }
+      ],
+      "text": "MASTERMIND\nTERMINAL\n今日\n发现\n分析\n监测\n研究\n投资组合\n市场\n美国\n中国\n香港\n加拿大\n全球\n全部工具\n打开终端\nMastermind AI\nA"
+    }
+  ],
+  "mobile_local_picker": [
+    {
+      "focus": {
+        "aria": "打开导航",
+        "tag": "BUTTON"
+      },
+      "openDialogs": 0
+    },
+    {
+      "focus": {
+        "aria": null,
+        "tag": "BUTTON",
+        "text": "财务⌄"
+      },
+      "lang": "zh-CN",
+      "mainOverflow": false,
+      "menus": [
+        {
+          "role": "dialog",
+          "tag": "SECTION",
+          "text": "公司页面\n选择研究工作区页面\n×\n概览\n概览\n公司情报\n公司情报\n财务\n报表 · 统计 · 营收 · 股息 · 对比\n盈利\n结果 · 分析师 · 电话会\n市场\n技术面 · 季节性\n持仓\n机构 · 内部交易\n实验室\n实验室"
+        }
+      ],
+      "metaViewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+      "theme": "dark",
+      "url": "https://beta.mastermind-x.com/analysis?symbol=NVDA&page=statements"
+    }
+  ],
+  "mobile_local_picker_escape": [
+    {
+      "localDialog": [
+        {
+          "ariaModal": "true",
+          "controls": [
+            {
+              "aria": "关闭",
+              "height": 36,
+              "tag": "BUTTON",
+              "text": "×"
+            },
+            {
+              "aria": null,
+              "height": 76,
+              "tag": "BUTTON",
+              "text": "概览概览"
+            },
+            {
+              "aria": null,
+              "height": 76,
+              "tag": "BUTTON",
+              "text": "公司情报公司情报"
+            },
+            {
+              "aria": null,
+              "height": 76,
+              "tag": "BUTTON",
+              "text": "财务报表 · 统计 · 营收 · 股息 · 对比"
+            },
+            {
+              "aria": null,
+              "height": 76,
+              "tag": "BUTTON",
+              "text": "盈利结果 · 分析师 · 电话会"
+            },
+            {
+              "aria": null,
+              "height": 76,
+              "tag": "BUTTON",
+              "text": "市场技术面 · 季节性"
+            },
+            {
+              "aria": null,
+              "height": 76,
+              "tag": "BUTTON",
+              "text": "持仓机构 · 内部交易"
+            },
+            {
+              "aria": null,
+              "height": 76,
+              "tag": "BUTTON",
+              "text": "实验室实验室"
+            }
+          ],
+          "label": "公司页面",
+          "labelledBy": null
+        }
+      ],
+      "topButtons": [
+        {
+          "aria": "紧凑",
+          "text": ""
+        },
+        {
+          "aria": "搜索公司",
+          "text": "搜索公司搜索任何公司…"
+        },
+        {
+          "aria": "全部工具",
+          "text": "全部工具⌘ K"
+        },
+        {
+          "aria": "浅色主题",
+          "text": "深色"
+        },
+        {
+          "aria": "中文界面",
+          "text": "中文"
+        },
+        {
+          "aria": "设置",
+          "text": "A"
+        },
+        {
+          "aria": "关闭",
+          "text": "×"
+        }
+      ]
+    },
+    {
+      "focus": {
+        "tag": "BUTTON",
+        "text": "财务⌄"
+      },
+      "headerButtons": [
+        {
+          "aria": "紧凑",
+          "text": ""
+        },
+        {
+          "aria": "搜索公司",
+          "text": "搜索公司搜索任何公司…"
+        },
+        {
+          "aria": "全部工具",
+          "text": "全部工具⌘ K"
+        },
+        {
+          "aria": "浅色主题",
+          "text": "深色"
+        },
+        {
+          "aria": "中文界面",
+          "text": "中文"
+        },
+        {
+          "aria": "设置",
+          "text": "A"
+        }
+      ],
+      "visibleLocalDialogs": 0
+    }
+  ],
+  "restored": [
+    {
+      "lang": "en",
+      "openDialogs": 0,
+      "theme": "light",
+      "url": "https://beta.mastermind-x.com/analysis?symbol=NVDA&page=statements",
+      "viewport": {
+        "height": 1204,
+        "width": 1853
+      },
+      "visibleLocalDialogs": 0
+    }
+  ],
+  "limitations": [
+    "Full focus trap unqualified: a second reverse-Tab reported BODY and browser-level focus could not be diagnosed because document.hasFocus was unavailable in the restricted browser scope. This tool limitation is not asserted as a product defect.",
+    "No authentication-expiry, permissions, unsaved-content, save, Brain lifecycle, request dispatch or network failure was induced.",
+    "Terminal screenshot is a direct 1000x650 clip that excludes the private watchlist. Private watchlist DOM was intentionally not retained."
+  ]
+}

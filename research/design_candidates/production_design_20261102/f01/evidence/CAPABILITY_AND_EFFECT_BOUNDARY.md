@@ -2,6 +2,14 @@
 
 This record explains the remaining native/review hold. It does not claim Paper is generally unavailable, transfer a writer, or stop independent source work. The current F01 receiver retains the existing Draft #10645 and source branch.
 
+## 2026-11-04 continuation: exact F directory correction
+
+New live beta evidence found twelve destination matches for the unfiltered query `options`; F's existing four rows were incorrectly labeled **All destinations / 4 destinations**. The already-authored `presentation.options` proposal contains exactly those four rows and is labeled **Options & futures**. This continuation permits only the local text nodes `70OS-0` (facet label) and `70OU-0` (scope/count) inside original F `6ZZV-0` to express that existing proposed facet and **4 of 12 matches**. It is a filtered design fixture pending F03/exporter/domain qualification, not a production taxonomy or a four-result cap. All twelve unfiltered matches and all290 directory baseline identities remain retained. No route, shared token, component, layout, I/grid, Readme or other writer's content is changed by this correction.
+
+Fresh F JSX exactly matched the previous `8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177` capture before the correction. PR10645 remained Draft under `mastermidx4` at3e334bd3eabf1d6ecc7980845fbd7a813dd023e1. This is bounded overlap evidence; it is not a new writer grant. The operation uses the same Mastermind Paper direct app, a fresh exact-file guard, a new identity for this separately evidenced intent, retained raw request/reply, exact-target readback and screenshot. A failure with uncertain effect will be reconciled on this original target, without replay.
+
+Protected Mastermind910803421beca53ca25145392725ab2d84c7a8e9 is now pinned. The compare from9f65957e to91080342 contained one commit/twelve files and no governing-law change; the compatible INDEX remains1.0.1/bootstrap1. The unchanged laws and current tool-scoped catalog still apply. Original atlas and Readme dispositions below remain held. The later read-only RDC investigation is recorded separately; current host reachability is no longer described as unavailable.
+
 ## 2026-11-03 continuation: narrow the author-imposed pause
 
 The current Chairman instruction resumes the existing F01 owner and carrier. Protected Mastermind `9f65957e29eba92245d78609f032aaea523b7cb4` was recovered from protected `master`; INDEX schema `mastermind.sol_skillpack.v1`, version1.0.1, minimum bootstrap1 remains compatible. Its Paper workflow and connection law expressly scope an uncertain effect to the logical mutation/target, not the entire file or page. The earlier F01 statement that all native repair must wait was an overbroad author disposition. This section corrects that interpretation; it does **not** resolve or clear either original operation.

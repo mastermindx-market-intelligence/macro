@@ -1,0 +1,361 @@
+{
+  "source_commit": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "source_blob": "1fb186e2efc0f6270e32f95b3cca92f2971fcb7c",
+  "category": {
+    "id": "presentation.options",
+    "label": {
+      "en": "Options & futures",
+      "zh": "期权与期货"
+    },
+    "rationale": "The separately retained Options, Options & Market Structure, Options Screener and Futures destinations.",
+    "status": "PROPOSED_PENDING_F03_EXPORTER_AND_DOMAIN_REVIEW"
+  },
+  "entries": [
+    {
+      "id": "terminal:options_futures",
+      "baseline": {
+        "id": "terminal:options_futures",
+        "href": "/options/futures",
+        "kind": "native",
+        "title": {
+          "en": "Futures",
+          "zh": "Futures"
+        },
+        "group": "none",
+        "question": "",
+        "payloadTier": "premium",
+        "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+        "label_review": "unclassified existing group; do not delete or invent admission"
+      },
+      "proposal": {
+        "shortLabel": {
+          "en": "Futures",
+          "zh": "期货"
+        },
+        "labelDisposition": "RENAME_PROPOSED",
+        "localeDisposition": {
+          "en": "RETAIN",
+          "zh": "RENAME_PROPOSED"
+        },
+        "labelRationale": "Retain the English name and propose a literal Chinese label; this is not an accepted translation.",
+        "longLabelException": false,
+        "category": {
+          "id": "presentation.options",
+          "label": {
+            "en": "Options & futures",
+            "zh": "期权与期货"
+          },
+          "disposition": "CATEGORY_CHANGE_PROPOSED",
+          "baselineGroup": "none",
+          "basis": "title and path",
+          "rationale": "Presentation topic follows literal baseline wording; no additional product behavior is asserted."
+        },
+        "marketQualifier": null,
+        "aliases": [
+          "Futures",
+          "options futures"
+        ],
+        "aliasEvidence": [
+          {
+            "alias": "Futures",
+            "sourceField": "title.en",
+            "sourceValue": "Futures",
+            "derivation": "exact source value"
+          },
+          {
+            "alias": "options futures",
+            "sourceField": "href",
+            "sourceValue": "/options/futures",
+            "derivation": "remove extension; render only path separators as spaces"
+          }
+        ],
+        "breadcrumbLabels": [
+          {
+            "en": "Options & futures",
+            "zh": "期权与期货"
+          },
+          {
+            "en": "Futures",
+            "zh": "期货"
+          }
+        ],
+        "breadcrumbBehavior": "Unlinked presentation labels only; do not synthesize parent URLs.",
+        "routeDisambiguator": "/options/futures",
+        "showRouteDisambiguator": true,
+        "review": {
+          "status": "PROPOSED_PENDING_REVIEW",
+          "reasons": [],
+          "uncertainPurpose": false,
+          "defaultBehavior": "RETAIN_BASELINE_PRESENTATION",
+          "applyAutomatically": false,
+          "requiredReview": "F03/existing exporter plus the existing domain owner; localization/F01/F02 review where wording or shared presentation changes."
+        }
+      }
+    },
+    {
+      "id": "terminal:options",
+      "baseline": {
+        "id": "terminal:options",
+        "href": "/options",
+        "kind": "native",
+        "title": {
+          "en": "Options",
+          "zh": "Options"
+        },
+        "group": "app_nav.rail",
+        "question": "Where is the options market positioned?",
+        "payloadTier": "unknown",
+        "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+        "label_review": "retain existing group pending qualified presentation mapping"
+      },
+      "proposal": {
+        "shortLabel": {
+          "en": "Options",
+          "zh": "期权"
+        },
+        "labelDisposition": "RENAME_PROPOSED",
+        "localeDisposition": {
+          "en": "RETAIN",
+          "zh": "RENAME_PROPOSED"
+        },
+        "labelRationale": "Retain the English name and propose a literal Chinese label; this is not an accepted translation.",
+        "longLabelException": false,
+        "category": {
+          "id": "presentation.options",
+          "label": {
+            "en": "Options & futures",
+            "zh": "期权与期货"
+          },
+          "disposition": "CATEGORY_CHANGE_PROPOSED",
+          "baselineGroup": "app_nav.rail",
+          "basis": "title and path",
+          "rationale": "Presentation topic follows literal baseline wording; no additional product behavior is asserted."
+        },
+        "marketQualifier": null,
+        "aliases": [
+          "options market",
+          "Options"
+        ],
+        "aliasEvidence": [
+          {
+            "alias": "options market",
+            "sourceField": "question",
+            "sourceValue": "Where is the options market positioned?",
+            "derivation": "literal substring"
+          },
+          {
+            "alias": "Options",
+            "sourceField": "title.en",
+            "sourceValue": "Options",
+            "derivation": "exact source value"
+          }
+        ],
+        "breadcrumbLabels": [
+          {
+            "en": "Options & futures",
+            "zh": "期权与期货"
+          },
+          {
+            "en": "Options",
+            "zh": "期权"
+          }
+        ],
+        "breadcrumbBehavior": "Unlinked presentation labels only; do not synthesize parent URLs.",
+        "routeDisambiguator": "/options",
+        "showRouteDisambiguator": true,
+        "review": {
+          "status": "PROPOSED_PENDING_REVIEW",
+          "reasons": [],
+          "uncertainPurpose": false,
+          "defaultBehavior": "RETAIN_BASELINE_PRESENTATION",
+          "applyAutomatically": false,
+          "requiredReview": "F03/existing exporter plus the existing domain owner; localization/F01/F02 review where wording or shared presentation changes."
+        }
+      }
+    },
+    {
+      "id": "macro:options",
+      "baseline": {
+        "id": "macro:options",
+        "href": "/options.html",
+        "kind": "legacy",
+        "title": {
+          "en": "Options & Market Structure",
+          "zh": "期权与市场结构"
+        },
+        "group": "product_nav.united_states",
+        "question": "",
+        "payloadTier": "public_shell_premium_payload",
+        "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+        "label_review": "retain existing group pending qualified presentation mapping"
+      },
+      "proposal": {
+        "shortLabel": {
+          "en": "Options & Market Structure",
+          "zh": "期权与市场结构"
+        },
+        "labelDisposition": "RETAIN",
+        "localeDisposition": {
+          "en": "RETAIN",
+          "zh": "RETAIN"
+        },
+        "labelRationale": "Retain the existing concise bilingual/proper-name wording.",
+        "longLabelException": false,
+        "category": {
+          "id": "presentation.options",
+          "label": {
+            "en": "Options & futures",
+            "zh": "期权与期货"
+          },
+          "disposition": "CATEGORY_CHANGE_PROPOSED",
+          "baselineGroup": "product_nav.united_states",
+          "basis": "title and path",
+          "rationale": "Presentation topic follows literal baseline wording; no additional product behavior is asserted."
+        },
+        "marketQualifier": {
+          "code": "united_states",
+          "label": {
+            "en": "United States",
+            "zh": "美国"
+          },
+          "basis": {
+            "field": "group",
+            "value": "product_nav.united_states"
+          },
+          "meaning": "Source-labelled geographic context only; not listing identity, coverage, access or data availability."
+        },
+        "aliases": [
+          "Options & Market Structure",
+          "期权与市场结构",
+          "options"
+        ],
+        "aliasEvidence": [
+          {
+            "alias": "Options & Market Structure",
+            "sourceField": "title.en",
+            "sourceValue": "Options & Market Structure",
+            "derivation": "exact source value"
+          },
+          {
+            "alias": "期权与市场结构",
+            "sourceField": "title.zh",
+            "sourceValue": "期权与市场结构",
+            "derivation": "exact source value"
+          },
+          {
+            "alias": "options",
+            "sourceField": "href",
+            "sourceValue": "/options.html",
+            "derivation": "remove extension; render only path separators as spaces"
+          }
+        ],
+        "breadcrumbLabels": [
+          {
+            "en": "Options & futures",
+            "zh": "期权与期货"
+          },
+          {
+            "en": "United States",
+            "zh": "美国"
+          },
+          {
+            "en": "Options & Market Structure",
+            "zh": "期权与市场结构"
+          }
+        ],
+        "breadcrumbBehavior": "Unlinked presentation labels only; do not synthesize parent URLs.",
+        "routeDisambiguator": "/options.html",
+        "showRouteDisambiguator": true,
+        "review": {
+          "status": "PROPOSED_PENDING_REVIEW",
+          "reasons": [],
+          "uncertainPurpose": false,
+          "defaultBehavior": "RETAIN_BASELINE_PRESENTATION",
+          "applyAutomatically": false,
+          "requiredReview": "F03/existing exporter plus the existing domain owner; localization/F01/F02 review where wording or shared presentation changes."
+        }
+      }
+    },
+    {
+      "id": "macro:options_screener",
+      "baseline": {
+        "id": "macro:options_screener",
+        "href": "/options_screener.html",
+        "kind": "legacy",
+        "title": {
+          "en": "Options Screener",
+          "zh": "Options Screener"
+        },
+        "group": "none",
+        "question": "",
+        "payloadTier": "public_shell_premium_payload",
+        "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+        "label_review": "unclassified existing group; do not delete or invent admission"
+      },
+      "proposal": {
+        "shortLabel": {
+          "en": "Options Screener",
+          "zh": "期权筛选器"
+        },
+        "labelDisposition": "RENAME_PROPOSED",
+        "localeDisposition": {
+          "en": "RETAIN",
+          "zh": "RENAME_PROPOSED"
+        },
+        "labelRationale": "Retain the English name and propose a literal Chinese label; this is not an accepted translation.",
+        "longLabelException": false,
+        "category": {
+          "id": "presentation.options",
+          "label": {
+            "en": "Options & futures",
+            "zh": "期权与期货"
+          },
+          "disposition": "CATEGORY_CHANGE_PROPOSED",
+          "baselineGroup": "none",
+          "basis": "title and path",
+          "rationale": "Presentation topic follows literal baseline wording; no additional product behavior is asserted."
+        },
+        "marketQualifier": null,
+        "aliases": [
+          "Options Screener",
+          "options_screener"
+        ],
+        "aliasEvidence": [
+          {
+            "alias": "Options Screener",
+            "sourceField": "title.en",
+            "sourceValue": "Options Screener",
+            "derivation": "exact source value"
+          },
+          {
+            "alias": "options_screener",
+            "sourceField": "href",
+            "sourceValue": "/options_screener.html",
+            "derivation": "literal final path stem, extension removed"
+          }
+        ],
+        "breadcrumbLabels": [
+          {
+            "en": "Options & futures",
+            "zh": "期权与期货"
+          },
+          {
+            "en": "Options Screener",
+            "zh": "期权筛选器"
+          }
+        ],
+        "breadcrumbBehavior": "Unlinked presentation labels only; do not synthesize parent URLs.",
+        "routeDisambiguator": "/options_screener.html",
+        "showRouteDisambiguator": true,
+        "review": {
+          "status": "PROPOSED_PENDING_REVIEW",
+          "reasons": [],
+          "uncertainPurpose": false,
+          "defaultBehavior": "RETAIN_BASELINE_PRESENTATION",
+          "applyAutomatically": false,
+          "requiredReview": "F03/existing exporter plus the existing domain owner; localization/F01/F02 review where wording or shared presentation changes."
+        }
+      }
+    }
+  ]
+}

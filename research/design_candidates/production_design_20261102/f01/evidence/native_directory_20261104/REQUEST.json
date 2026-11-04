@@ -1,0 +1,18 @@
+{
+  "tool": "set_text_content",
+  "arguments": {
+    "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+    "updates": [
+      {
+        "nodeId": "70OS-0",
+        "html": "Options &amp; futures"
+      },
+      {
+        "nodeId": "70OU-0",
+        "html": "4 of 12 matches"
+      }
+    ]
+  },
+  "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+  "operation_id": "F01-20261104-F-directory-filter-count-v1"
+}
