@@ -1,0 +1,11 @@
+{
+  "vintage_utc": "2026-08-10T00:00:00Z",
+  "track": "W",
+  "window_start": "2021-07-06",
+  "window_end": "2026-07-02",
+  "fell_back_hard_drawdown_pct": 20,
+  "fell_back_hard_horizon_td": 63,
+  "thresholds": {
+    "episode_age_p90": 92.0
+  }
+}

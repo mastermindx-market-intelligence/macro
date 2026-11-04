@@ -1,0 +1,206 @@
+{
+  "n_source_files": 33,
+  "n_cache_hits": 0,
+  "n_files_read": 33,
+  "n_tickers_kept": 33,
+  "n_tickers_split": 0,
+  "n_segments": 33,
+  "n_sessions": 700,
+  "trailing_sessions": 760,
+  "scan_seconds": 1.88,
+  "readable": true,
+  "n_extended": 4,
+  "per_state": {
+    "extended_healthy": 2,
+    "extended_watch": 0,
+    "thinning": 1,
+    "breaking": 1,
+    "no_read": 0
+  },
+  "n_no_read": 0,
+  "n_extended_pre_intersection": 4,
+  "n_board_candidates_pre_intersection": 6,
+  "n_current_ext_candidates": 3,
+  "n_off_band_candidates": 2,
+  "n_off_band_on_board": 1,
+  "n_off_band_dropped": 1,
+  "n_excluded_non_stock_instruments": 1,
+  "excluded_instruments": [
+    "ZZETN"
+  ],
+  "n_episode_left_censored": 0,
+  "n_with_analog": 3,
+  "library_rows": 600,
+  "thresholds_present": true,
+  "ext_variant_stamp": null,
+  "tier_seconds": 0.35,
+  "n_themes": 1,
+  "n_us_stock_metadata": 32,
+  "n_screened_post_intersection": 32,
+  "membership_window_sessions": 21,
+  "tiers": {
+    "primary": {
+      "readable": true,
+      "n_extended": 4,
+      "per_state": {
+        "extended_healthy": 2,
+        "extended_watch": 0,
+        "thinning": 1,
+        "breaking": 1,
+        "no_read": 0
+      },
+      "n_no_read": 0,
+      "n_extended_pre_intersection": 4,
+      "n_board_candidates_pre_intersection": 6,
+      "n_current_ext_candidates": 3,
+      "n_off_band_candidates": 2,
+      "n_off_band_on_board": 1,
+      "n_off_band_dropped": 1,
+      "n_excluded_non_stock_instruments": 1,
+      "excluded_instruments": [
+        "ZZETN"
+      ],
+      "n_episode_left_censored": 0,
+      "n_with_analog": 3,
+      "library_rows": 600,
+      "thresholds_present": true,
+      "ext_variant_stamp": null,
+      "tier_seconds": 0.35,
+      "n_themes": 1
+    },
+    "r63": {
+      "readable": true,
+      "n_extended": 3,
+      "per_state": {
+        "extended_healthy": 2,
+        "extended_watch": 0,
+        "thinning": 0,
+        "breaking": 1,
+        "no_read": 0
+      },
+      "n_no_read": 0,
+      "n_extended_pre_intersection": 3,
+      "n_board_candidates_pre_intersection": 4,
+      "n_current_ext_candidates": 2,
+      "n_off_band_candidates": 1,
+      "n_off_band_on_board": 1,
+      "n_off_band_dropped": 0,
+      "n_excluded_non_stock_instruments": 1,
+      "excluded_instruments": [
+        "ZZETN"
+      ],
+      "n_episode_left_censored": 0,
+      "n_with_analog": 2,
+      "library_rows": 600,
+      "thresholds_present": true,
+      "ext_variant_stamp": "r63",
+      "tier_seconds": 0.28
+    },
+    "atrz": {
+      "readable": true,
+      "n_extended": 5,
+      "per_state": {
+        "extended_healthy": 2,
+        "extended_watch": 1,
+        "thinning": 1,
+        "breaking": 1,
+        "no_read": 0
+      },
+      "n_no_read": 0,
+      "n_extended_pre_intersection": 5,
+      "n_board_candidates_pre_intersection": 6,
+      "n_current_ext_candidates": 4,
+      "n_off_band_candidates": 1,
+      "n_off_band_on_board": 1,
+      "n_off_band_dropped": 0,
+      "n_excluded_non_stock_instruments": 1,
+      "excluded_instruments": [
+        "ZZETN"
+      ],
+      "n_episode_left_censored": 0,
+      "n_with_analog": 4,
+      "library_rows": 600,
+      "thresholds_present": true,
+      "ext_variant_stamp": "atrz",
+      "tier_seconds": 0.33
+    }
+  },
+  "total_seconds": 3.01,
+  "ledger_rows": [
+    {
+      "asof": "2026-09-04",
+      "ticker": "AAA",
+      "segment": "AAA",
+      "state": "extended_healthy",
+      "off_band": false,
+      "legs": [],
+      "fired": [],
+      "r126": 1.1249346733093262,
+      "r21": 0.13385522365570068,
+      "dd_from_high": 0.0,
+      "analog_n": 40,
+      "analog_topped": 14
+    },
+    {
+      "asof": "2026-09-04",
+      "ticker": "BBB",
+      "segment": "BBB",
+      "state": "extended_healthy",
+      "off_band": false,
+      "legs": [],
+      "fired": [],
+      "r126": 1.1249346733093262,
+      "r21": 0.13385522365570068,
+      "dd_from_high": 0.0,
+      "analog_n": 40,
+      "analog_topped": 14
+    },
+    {
+      "asof": "2026-09-04",
+      "ticker": "CCC",
+      "segment": "CCC",
+      "state": "thinning",
+      "off_band": false,
+      "legs": [
+        "rs_peak_lag",
+        "updown_volume",
+        "dip_unreclaimed"
+      ],
+      "fired": [
+        "rs_peak_lag",
+        "updown_volume",
+        "dip_unreclaimed",
+        "below_50d"
+      ],
+      "r126": 0.523094654083252,
+      "r21": -0.05568969249725342,
+      "dd_from_high": -0.09308443357573493,
+      "analog_n": 40,
+      "analog_topped": 16
+    },
+    {
+      "asof": "2026-09-04",
+      "ticker": "DBRK",
+      "segment": "DBRK",
+      "state": "breaking",
+      "off_band": true,
+      "legs": [
+        "below_50d",
+        "drawdown_from_high",
+        "rs_decel"
+      ],
+      "fired": [
+        "rs_decel",
+        "effort_result",
+        "updown_volume",
+        "below_50d",
+        "drawdown_from_high"
+      ],
+      "r126": 0.5519678592681885,
+      "r21": -0.1718772053718567,
+      "dd_from_high": null,
+      "analog_n": null,
+      "analog_topped": null
+    }
+  ]
+}

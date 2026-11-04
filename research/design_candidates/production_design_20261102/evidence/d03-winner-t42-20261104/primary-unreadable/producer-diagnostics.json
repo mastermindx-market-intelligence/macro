@@ -1,0 +1,130 @@
+{
+  "n_source_files": 33,
+  "n_cache_hits": 0,
+  "n_files_read": 33,
+  "n_tickers_kept": 33,
+  "n_tickers_split": 0,
+  "n_segments": 33,
+  "n_sessions": 700,
+  "trailing_sessions": 760,
+  "scan_seconds": 0.41,
+  "readable": true,
+  "n_extended": 3,
+  "per_state": {
+    "extended_healthy": 0,
+    "extended_watch": 0,
+    "thinning": 0,
+    "breaking": 0,
+    "no_read": 3
+  },
+  "n_no_read": 3,
+  "n_extended_pre_intersection": 4,
+  "n_board_candidates_pre_intersection": 6,
+  "n_current_ext_candidates": 3,
+  "n_off_band_candidates": 2,
+  "n_off_band_on_board": 0,
+  "n_off_band_dropped": 2,
+  "n_excluded_non_stock_instruments": 1,
+  "excluded_instruments": [
+    "ZZETN"
+  ],
+  "n_episode_left_censored": 0,
+  "n_with_analog": 0,
+  "library_rows": 600,
+  "thresholds_present": true,
+  "ext_variant_stamp": null,
+  "tier_seconds": 0.35,
+  "n_themes": 0,
+  "n_us_stock_metadata": 32,
+  "n_screened_post_intersection": 32,
+  "membership_window_sessions": 21,
+  "tiers": {
+    "primary": {
+      "readable": true,
+      "n_extended": 3,
+      "per_state": {
+        "extended_healthy": 0,
+        "extended_watch": 0,
+        "thinning": 0,
+        "breaking": 0,
+        "no_read": 3
+      },
+      "n_no_read": 3,
+      "n_extended_pre_intersection": 4,
+      "n_board_candidates_pre_intersection": 6,
+      "n_current_ext_candidates": 3,
+      "n_off_band_candidates": 2,
+      "n_off_band_on_board": 0,
+      "n_off_band_dropped": 2,
+      "n_excluded_non_stock_instruments": 1,
+      "excluded_instruments": [
+        "ZZETN"
+      ],
+      "n_episode_left_censored": 0,
+      "n_with_analog": 0,
+      "library_rows": 600,
+      "thresholds_present": true,
+      "ext_variant_stamp": null,
+      "tier_seconds": 0.35,
+      "n_themes": 0
+    },
+    "r63": {
+      "readable": true,
+      "n_extended": 3,
+      "per_state": {
+        "extended_healthy": 0,
+        "extended_watch": 2,
+        "thinning": 0,
+        "breaking": 1,
+        "no_read": 0
+      },
+      "n_no_read": 0,
+      "n_extended_pre_intersection": 3,
+      "n_board_candidates_pre_intersection": 4,
+      "n_current_ext_candidates": 2,
+      "n_off_band_candidates": 1,
+      "n_off_band_on_board": 1,
+      "n_off_band_dropped": 0,
+      "n_excluded_non_stock_instruments": 1,
+      "excluded_instruments": [
+        "ZZETN"
+      ],
+      "n_episode_left_censored": 0,
+      "n_with_analog": 2,
+      "library_rows": 600,
+      "thresholds_present": true,
+      "ext_variant_stamp": "r63",
+      "tier_seconds": 0.17
+    },
+    "atrz": {
+      "readable": true,
+      "n_extended": 5,
+      "per_state": {
+        "extended_healthy": 2,
+        "extended_watch": 1,
+        "thinning": 1,
+        "breaking": 1,
+        "no_read": 0
+      },
+      "n_no_read": 0,
+      "n_extended_pre_intersection": 5,
+      "n_board_candidates_pre_intersection": 6,
+      "n_current_ext_candidates": 4,
+      "n_off_band_candidates": 1,
+      "n_off_band_on_board": 1,
+      "n_off_band_dropped": 0,
+      "n_excluded_non_stock_instruments": 1,
+      "excluded_instruments": [
+        "ZZETN"
+      ],
+      "n_episode_left_censored": 0,
+      "n_with_analog": 4,
+      "library_rows": 600,
+      "thresholds_present": true,
+      "ext_variant_stamp": "atrz",
+      "tier_seconds": 0.33
+    }
+  },
+  "total_seconds": 1.39,
+  "ledger_rows": []
+}

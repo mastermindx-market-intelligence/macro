@@ -1,0 +1,10 @@
+panel: 33 source files · 0 cache hits · 33 to read
+panel: 33 tickers -> 33 segments x 700 sessions in 1.7s
+shared eligibility + PIT index in 0.1s
+[primary] 2255 EXT days · 7 episodes · 5 candidates (2 recently EXT)
+[primary] 4 on the board {'extended_healthy': 2, 'extended_watch': 0, 'thinning': 1, 'breaking': 1, 'no_read': 0} in 0.2s
+[r63] 2282 EXT days · 7 episodes · 3 candidates (1 recently EXT)
+[r63] 3 on the board {'extended_healthy': 0, 'extended_watch': 2, 'thinning': 0, 'breaking': 1, 'no_read': 0} in 0.2s
+[atrz] 2593 EXT days · 7 episodes · 5 candidates (1 recently EXT)
+[atrz] 5 on the board {'extended_healthy': 2, 'extended_watch': 1, 'thinning': 1, 'breaking': 1, 'no_read': 0} in 0.5s
+context built in 2.8s — primary: 4 · r63: 3 · atrz: 5
