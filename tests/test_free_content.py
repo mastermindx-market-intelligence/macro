@@ -646,6 +646,36 @@ class TestJsonLd:
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestBreadcrumbs:
+    @pytest.mark.parametrize("family", [None, "article"])
+    def test_shared_base_accepts_minimal_nonlesson_page(self, family):
+        """The incumbent earnings-wire page contract omits estate family."""
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+        page = {
+            "title": "Earnings call records",
+            "description": "Receipt-bound excerpts.",
+            "canonical": "https://www.mastermind-x.com/stocks/earnings/index.html",
+            "url_path": "/stocks/earnings/index.html",
+            "breadcrumbs": [
+                {"label": "Home", "href": "/index.html"},
+                {"label": "Earnings call records", "href": None},
+            ],
+        }
+        if family is not None:
+            page["family"] = family
+        env = Environment(
+            loader=FileSystemLoader(str(_TEMPLATES_DIR)),
+            autoescape=True,
+            undefined=StrictUndefined,
+        )
+        html = env.get_template("seo_base.html.j2").render(
+            page=page, rel="../../", site={"base": "https://www.mastermind-x.com/"},
+            jsonld_extra="",
+        )
+        crumb = html.split('<nav class="est-crumb"', 1)[1].split("</nav>", 1)[0]
+        assert '<a href="../../index.html">Home</a>' in crumb
+        assert 'class="l-zh"' not in crumb
+
     def test_article_breadcrumbs(self):
         import scripts.build_free_content as bfc
         fm = _make_valid_fm(description="A" * 120, family="article")
@@ -1948,3 +1978,45 @@ class TestGracefulEmpty:
         ET.fromstring(result)  # valid XML
         assert "<loc>https://www.mastermind-x.com/</loc>" in result
         assert "https://www.mastermind-x.com/macro.html" in result
+
+class TestLearningReaderJourney:
+    """Real authored lesson paths must return to a materialized hub section."""
+
+    @pytest.mark.parametrize("track", ["technical", "risk", "ownership", "options"])
+    def test_track_breadcrumb_resolves_to_existing_hub_section(self, tmp_path, monkeypatch, track):
+        from urllib.parse import urlsplit
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        fm = _make_valid_fm(family="lesson", track=track)
+        crumb = bfc._breadcrumbs(fm, f"/learn/{track}/lesson.html")[-2]
+        target = urlsplit(crumb["href"])
+        assert target.path == "/learn/index.html"
+        assert target.fragment == f"track-{track}"
+        hub = (out / "learn/index.html").read_text()
+        assert f'id="{target.fragment}"' in hub
+
+    def test_authored_lesson_keeps_one_native_outline_and_reading_identity(self, tmp_path, monkeypatch):
+        _, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "learn/options/dealer-hedging-mechanics.html").read_text()
+        assert len(re.findall(r'<h1\b', html)) == 1
+        assert "Dealer Hedging: How Delta Rebalancing Becomes Order Flow" in html
+        assert "2026-07-25" in html
+        assert '<article class="est-prose" lang="en">' in html
+        assert len(re.findall(r'<details\b[^>]*class="art-outline"', html)) == 1
+        assert '<summary' in html and 'aria-label="On this page"' in html
+        assert len(re.findall(r'<nav\b[^>]*id="toc"', html)) == 1
+        assert 'href="../../learn/options/gamma-regimes.html"' in html
+        assert 'href="../../learn/options/"' not in html
+
+    def test_lesson_navigation_crumbs_reuse_known_chinese_labels_without_translating_schema(self, tmp_path, monkeypatch):
+        _, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "learn/options/dealer-hedging-mechanics.html").read_text()
+        nav = re.search(r'<nav class="est-crumb"[^>]*>(.*?)</nav>', html, re.S)
+        assert nav is not None
+        crumbs = re.findall(r'<a href="([^"]+)">(.*?)</a>', nav.group(1), re.S)
+        assert len(crumbs) == 3
+        assert [re.search(r'<span class="l-zh">(.*?)</span>', label).group(1) for _, label in crumbs] == ["首页", "学习", "期权与做市商持仓"]
+        assert crumbs[-1][0] == "../../learn/index.html#track-options"
+        documents = [json.loads(raw) for raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.S)]
+        schema = next(doc for doc in documents if doc.get("@type") == "BreadcrumbList")
+        assert [i["name"] for i in schema["itemListElement"]][:3] == ["Home", "Learn", "Options & Dealer Positioning"]
+        assert schema["itemListElement"][2]["item"].endswith("/learn/index.html#track-options")
