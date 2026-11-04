@@ -1091,6 +1091,15 @@
   /* ====================================================================== */
   /*  FULL VIEW — controls + treemap (desktop) / sector list (mobile)        */
   /* ====================================================================== */
+  function navigateHeatmapTabs(e) {
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].indexOf(e.key) < 0) return;
+    var buttons = Array.prototype.filter.call(e.currentTarget.querySelectorAll('button'), function (b) { return !b.disabled; });
+    var at = buttons.indexOf(document.activeElement);
+    if (at < 0 || !buttons.length) return;
+    var next = e.key === 'Home' ? 0 : e.key === 'End' ? buttons.length - 1
+      : (at + (e.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+    e.preventDefault(); buttons[next].focus(); buttons[next].click();
+  }
   function createFullView(root, data, entry) {
     // Only the opted-in standalone US page supplies entry callbacks. Embedded
     // navigation, regional maps, overlays and scorecards retain their owners.
@@ -1109,6 +1118,7 @@
     var HAS_SAMPLE_SCOPE = data.market === 'china';
     var STOCK_URL = data.stock_url || 'stock.html#';
     root.classList.add('hm-scope', 'hm-view');
+    if (entry) root.classList.add('hm-us-access');
     if (IS_THEMES) root.classList.add('hm-themes');
     var hint = IS_THEMES
       ? L('Hover a subsector for its member tickers · hover a theme header for its subsectors · pick a timeframe above',
@@ -1118,6 +1128,8 @@
           '将鼠标悬停在板块标题上查看成员 · 悬停方块查看研判 · 点击进入分析器')
       : L('Hover a sector or subsector header for its members · hover a tile for our read · click through to the analyzer',
           '将鼠标悬停在板块或子行业标题上查看成员 · 悬停方块查看研判 · 点击进入分析器');
+    if (entry) hint = L('Use List to find every supplied company or theme member.',
+      '切换至列表，查找来源提供的全部公司或主题成员。');
     // The dashboard chrome (market pulse · breadth stats · movers board) rides on
     // the standalone full pages; the expand overlay stays a pure edge-to-edge map.
     var IN_OV = !!(root.closest && root.closest('.hm-ov'));
@@ -1137,12 +1149,14 @@
       + (SHOW_DASH ? '<div class="hx-pulse" aria-live="polite"></div><div class="hx-stats"></div>' : '')
       + '<div class="hm-bar">'
       +   '<div class="hm-tfs" role="tablist" aria-label="Timeframe"></div>'
+      +   (entry ? '<div class="hm-presentation" role="group"></div>' : '')
       +   (SHOW_DASH ? '<label class="hm-search"><span class="mag" aria-hidden="true">🔎</span><input type="text" autocomplete="off" spellcheck="false" aria-label="Filter tiles" placeholder="' + (isZh() ? '筛选个股…' : 'Filter…') + '"></label>' : '')
       +   '<div class="hm-legend"></div>'
       +   '<div class="hm-grow"></div>'
       +   '<div class="hm-read"></div>'
       + '</div>'
       + '<div class="hm-sort" role="group" aria-label="Sort"></div>'
+      + (entry ? '<p class="hm-list-status" role="status" hidden></p>' : '')
       + '<div class="hm-tm-wrap"><div class="hm-tm"></div></div>'
       + '<div class="hm-hint">' + hint + '</div>'
       + (SHOW_DASH ? '<div class="hx-boards"></div>' : '');
@@ -1157,6 +1171,11 @@
     var statsEl = root.querySelector('.hx-stats');
     var boardsEl = root.querySelector('.hx-boards');
     var searchEl = root.querySelector('.hm-search input');
+    var presentationEl = root.querySelector('.hm-presentation');
+    var listStatus = root.querySelector('.hm-list-status');
+    var PRESENTATION = initial.presentation === 'list' ? 'list' : 'map';
+    var openThemes = Object.create(null);
+    (initial.expanded || []).forEach(function (key) { openThemes[key] = true; });
     var _q = (initial.query || '').trim().toLowerCase();
     if (searchEl) searchEl.value = initial.query || '';
     if (entry && searchEl) searchEl.maxLength = 160;
@@ -1183,12 +1202,29 @@
       return !entry || (data.timeframes || []).some(function (tf) { return tf.key === TF && tf.available; });
     }
     function viewState() {
+      if (entry) Array.prototype.forEach.call(tm.querySelectorAll('details[data-hm-disclosure]'), function (el) {
+        if (el.open) openThemes[el.getAttribute('data-hm-disclosure')] = true;
+        else delete openThemes[el.getAttribute('data-hm-disclosure')];
+      });
       return { tf: TF, sort: SORT, query: searchEl ? searchEl.value : '',
+        presentation: PRESENTATION, expanded: Object.keys(openThemes).slice(0, 512),
         observation: [data.source || '', data.asof || '', data.updated_utc || '', data.generated_utc || ''].join('|').slice(0, 400) };
     }
     function changed() { if (entry && !retired) entry.change(viewState()); }
     function positioned() {
       if (!entry || retired) return;
+      root.classList.toggle('hm-list', mode === 'list');
+      if (presentationEl) Array.prototype.forEach.call(presentationEl.querySelectorAll('button'), function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-hm-presentation') === PRESENTATION ? 'true' : 'false');
+        b.disabled = !timeframeReady();
+      });
+      if (listStatus) {
+        listStatus.hidden = mode !== 'list' || !timeframeReady();
+        var count = data.tiles.filter(matchesRow).length;
+        listStatus.textContent = lz(count + ' of ' + data.tiles.length + ' supplied ' + (IS_THEMES ? 'subsectors' : 'companies'),
+          '来源提供 ' + data.tiles.length + ' 个' + (IS_THEMES ? '子板块' : '公司') + '，显示 ' + count + ' 个')
+          + (_q ? lz(' · Search narrows this list; market summary is unchanged.', ' · 搜索仅筛选列表，市场汇总保持不变。') : '');
+      }
       Array.prototype.forEach.call(tm.querySelectorAll('.hm-tile'), function (el) {
         var rec = tileEls[+el.getAttribute('data-i')];
         if (rec) { el.setAttribute('data-hm-key', String(rec.t.t)); el.setAttribute('data-hm-group', rec.t.sector || ''); }
@@ -1209,7 +1245,47 @@
 
     function isMobile() { return window.matchMedia('(max-width: 560px)').matches; }
 
+    function matchesOwn(t) {
+      return !_q || (String(t.t) + ' ' + (t.name || '') + ' ' + (t.name_zh || '')).toLowerCase().indexOf(_q) >= 0;
+    }
+    function matchesRow(t) {
+      return matchesOwn(t) || !!(entry && IS_THEMES && (t.members || []).some(matchesOwn));
+    }
+    function withFocus(render) {
+      var before = document.activeElement, attrs = ['data-hm-key', 'data-tf', 'data-s', 'data-hm-presentation'];
+      var attr = null, key = null;
+      if (entry && before && root.contains(before)) attrs.some(function (a) {
+        if (!before.hasAttribute(a)) return false; attr = a; key = before.getAttribute(a); return true;
+      });
+      render();
+      if (!attr || retired || before.isConnected || document.activeElement !== document.body) return;
+      if (window.MDXTerminalOverlay && window.MDXTerminalOverlay.isOpen()) return;
+      var next = Array.prototype.filter.call(root.querySelectorAll('[' + attr + ']'), function (el) { return el.getAttribute(attr) === key; })[0];
+      if (!next && attr === 'data-hm-key') next = searchEl;
+      if (next && !next.disabled && next.getClientRects().length) next.focus({ preventScroll: true });
+    }
+    function buildPresentation() {
+      if (!presentationEl) return;
+      presentationEl.setAttribute('aria-label', lz('View', '视图'));
+      presentationEl.innerHTML = '';
+      [['map', 'Map', '热力图'], ['list', 'List', '列表']].forEach(function (o) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'segbtn hm-pb';
+        b.setAttribute('data-hm-presentation', o[0]); b.innerHTML = L(o[1], o[2]);
+        b.addEventListener('click', function () {
+          if (!timeframeReady() || PRESENTATION === o[0]) return;
+          PRESENTATION = o[0]; hideCard(); hideMembers(); layout(); changed();
+        });
+        presentationEl.appendChild(b);
+      });
+    }
     function buildTabs() {
+      if (entry) {
+        tfsEl.setAttribute('aria-label', lz('Timeframe', '周期'));
+        if (searchEl) {
+          searchEl.setAttribute('aria-label', lz('Find a company or theme member', '查找公司或主题成员'));
+          searchEl.placeholder = lz('Ticker or name…', '代码或名称…');
+        }
+      }
       tfsEl.innerHTML = '';
       (data.timeframes || []).forEach(function (tf) {
         var b = document.createElement('button');
@@ -1227,17 +1303,22 @@
       });
     }
     function buildSort() {
-      var opts = [['cap', 'Market cap', '市值'], ['move', 'Biggest move', '涨跌幅'], ['az', 'A–Z', '字母']];
+      var opts = [['cap', entry && IS_THEMES ? 'Members' : 'Market cap', entry && IS_THEMES ? '成员数' : '市值'], ['move', 'Biggest move', '涨跌幅'], ['az', 'A–Z', '字母']];
+      if (entry) sortEl.setAttribute('aria-label', lz('Sort', '排序'));
       sortEl.innerHTML = '<span class="hm-sort-lab">' + L('Sort', '排序') + '</span>';
       opts.forEach(function (o) {
         var b = document.createElement('button'); b.type = 'button';
         b.className = 'hm-sortb' + (o[0] === SORT ? ' on' : '');
         b.innerHTML = L(o[1], o[2]); b.setAttribute('data-s', o[0]);
+        if (entry) b.setAttribute('aria-pressed', o[0] === SORT ? 'true' : 'false');
         b.addEventListener('click', function () {
           if (!timeframeReady()) return;
           if (SORT === o[0]) return; SORT = o[0];
           Array.prototype.forEach.call(sortEl.querySelectorAll('.hm-sortb'),
-            function (x) { x.classList.toggle('on', x.getAttribute('data-s') === SORT); });
+            function (x) {
+              x.classList.toggle('on', x.getAttribute('data-s') === SORT);
+              if (entry) x.setAttribute('aria-pressed', x.getAttribute('data-s') === SORT ? 'true' : 'false');
+            });
           layoutList();
           changed();
         });
@@ -1642,10 +1723,10 @@
       applyFilter();
     }
 
-    /* ----- mobile list ----- */
+    /* ----- supplied-row list: mobile, plus the opted-in US alternative ----- */
     function layoutList() {
       if (retired) return;
-      mode = 'list'; root.classList.add('hm-mobile');
+      mode = 'list'; root.classList.toggle('hm-mobile', !entry || isMobile());
       wrap.style.height = 'auto'; tm.style.height = 'auto';
       var edges = edgesFor(TF), pal = binPalette();
       var sectors = groupHierarchy(data);
@@ -1653,14 +1734,7 @@
       var html = [];
       secKeys.forEach(function (k) {
         var s = sectors[k], lab = labs[k] || { en: k, zh: k };
-        var agg = sectorAgg(data, s.tiles, TF);
-        var br = breadth(s.tiles, TF), tot = Math.max(1, br.adv + br.dec);
-        html.push('<div class="hm-mgrp">'
-          + '<div class="hm-mhd" data-sec-name="' + esc(k) + '"><span class="nm">' + L(esc(lab.en), esc(lab.zh)) + '</span>'
-          + '<span class="pc ' + (agg == null ? '' : agg >= 0 ? 'up' : 'dn') + '">' + fmtPc(agg) + '</span>'
-          + '<span class="hm-mbr"><i class="up" style="width:' + (100 * br.adv / tot) + '%"></i>'
-          + '<i class="dn" style="width:' + (100 * br.dec / tot) + '%"></i></span></div>');
-        var rows = s.tiles.slice().sort(function (a, b) {
+        var rows = s.tiles.filter(function (t) { return !entry || matchesRow(t); }).sort(function (a, b) {
           if (SORT === 'az') return a.t < b.t ? -1 : a.t > b.t ? 1 : 0;
           if (SORT === 'move') {
             var av = a.perf[TF], bv = b.perf[TF];
@@ -1668,28 +1742,57 @@
           }
           return (b.size || 0) - (a.size || 0);
         });
+        if (entry && !rows.length) return;
+        var agg = sectorAgg(data, s.tiles, TF);
+        var br = breadth(s.tiles, TF), tot = Math.max(1, br.adv + br.dec);
+        html.push('<div class="hm-mgrp">'
+          + '<div class="hm-mhd" data-sec-name="' + esc(k) + '"><span class="nm">' + L(esc(lab.en), esc(lab.zh)) + '</span>'
+          + (entry && _q ? '<span class="hm-group-count">' + rows.length + ' / ' + s.tiles.length + '</span>'
+            : '<span class="pc ' + (agg == null ? '' : agg >= 0 ? 'up' : 'dn') + '">' + fmtPc(agg) + '</span>'
+              + '<span class="hm-mbr"><i class="up" style="width:' + (100 * br.adv / tot) + '%"></i>'
+              + '<i class="dn" style="width:' + (100 * br.dec / tot) + '%"></i></span>')
+          + '</div>');
         rows.forEach(function (t) {
           var pc = t.perf[TF], c = pal[binIndex(pc, edges)];
           if (IS_THEMES) {
-            // subsector row: name + a member count / description (no per-stock page)
-            var det = t.members && t.members.length
-              ? t.members.length + ' ' + lz('members', '成员')
-              : esc(t.desc || '');
-            html.push('<div class="hm-mrow hm-mrow-th"' + (entry ? ' data-hm-key="' + esc(t.t) + '" data-hm-group="' + esc(k) + '"' : '') + '>'
+            var members = t.members || [];
+            if (entry) {
+              var visible = members.filter(function (m) { return matchesOwn(t) || matchesOwn(m); }).slice().sort(function (a, b) {
+                var av = (a.perf || {})[TF], bv = (b.perf || {})[TF];
+                return (bv == null ? -1e9 : bv) - (av == null ? -1e9 : av);
+              });
+              var expanded = openThemes[t.t] || (_q && !matchesOwn(t));
+              html.push('<details class="mx-disc hm-members" data-hm-disclosure="' + esc(t.t) + '"' + (expanded ? ' open' : '') + '>'
+                + '<summary class="hm-mrow hm-mrow-th" data-hm-key="' + esc(t.t) + '" data-hm-group="' + esc(k) + '">'
+                + '<span class="hm-mpc ' + (pc == null ? '' : pc >= 0 ? 'up' : 'dn') + '">' + (pc == null ? lz('No data', '暂无数据') : fmtPc(pc)) + '</span>'
+                + '<span class="hm-mid"><b>' + esc(isZh() && t.name_zh ? t.name_zh : t.name || t.t) + '</b><span>'
+                + visible.length + (visible.length !== members.length ? ' / ' + members.length : '') + ' ' + lz('supplied members', '来源成员')
+                + '</span></span><span class="hm-disclosure-mark" aria-hidden="true">⌄</span></summary><div class="hm-member-list">');
+              visible.forEach(function (m) {
+                var move = (m.perf || {})[TF];
+                var key = JSON.stringify([t.t, m.t]);
+                html.push('<a class="hm-mrow hm-member-row" data-hm-key="' + esc(key) + '" data-hm-group="' + esc(k) + '" href="' + STOCK_URL + encodeURIComponent(m.t) + '">'
+                  + '<span class="hm-mpc ' + (move == null ? '' : move >= 0 ? 'up' : 'dn') + '">'
+                  + (move == null ? lz('No data', '暂无数据') : fmtPc(move)) + '</span>'
+                  + '<span class="hm-mid"><b>' + esc(dispT(m.t)) + '</b><span>'
+                  + esc(isZh() && m.name_zh ? m.name_zh : m.name || '') + '</span></span><span class="hm-mgo" aria-hidden="true">›</span></a>');
+              });
+              if (!visible.length) html.push('<p class="hm-member-empty">' + L('No member observations supplied.', '未提供成员观测数据。') + '</p>');
+              html.push('</div></details>');
+              return;
+            }
+            var det = members.length ? members.length + ' ' + lz('members', '成员') : esc(t.desc || '');
+            html.push('<div class="hm-mrow hm-mrow-th">'
               + '<span class="hm-mpc' + inkCls(c) + '" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
               + '<span class="hm-mid"><b>' + esc(t.name) + '</b><span>' + det + '</span></span></div>');
             return;
           }
-          // CN/HK (tile_label==='name'): lead the row with the company name and
-          // drop the ticker to the sub-line. US/CA keep the ticker as the
-          // headline with the name / sub-industry beneath (unchanged).
           var byName = data.tile_label === 'name';
           var nm = t.name_zh || t.name || '';
           var primary = (byName && nm) ? nm : dispT(t.t);
-          var sub = (byName && nm)
-            ? dispT(t.t)
-            : (t.industry && t.industry !== t.sector ? t.industry
-               : ((isZh() && t.name_zh) ? t.name_zh : t.name));
+          var sub = (byName && nm) ? dispT(t.t)
+            : (entry ? ((isZh() && t.name_zh) ? t.name_zh : t.name)
+              : (t.industry && t.industry !== t.sector ? t.industry : ((isZh() && t.name_zh) ? t.name_zh : t.name)));
           html.push('<a class="hm-mrow"' + (entry ? ' data-hm-key="' + esc(t.t) + '" data-hm-group="' + esc(k) + '"' : '') + ' href="' + STOCK_URL + encodeURIComponent(t.t) + '">'
             + '<span class="hm-mpc' + inkCls(c) + '" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
             + '<span class="hm-mid"><b>' + esc(primary) + '</b><span>' + esc(sub) + '</span></span>'
@@ -1697,8 +1800,10 @@
         });
         html.push('</div>');
       });
-      tm.innerHTML = html.join('');
-      positioned();
+      withFocus(function () {
+        tm.innerHTML = html.join('') || '<p class="hm-empty">' + L('No matches. Change or clear the search.', '没有匹配项，请修改或清空搜索。') + '</p>';
+        positioned();
+      });
     }
 
     /* ----- hover / click on the treemap ----- */
@@ -1749,6 +1854,16 @@
     tm.addEventListener('mousemove', onMove);
     tm.addEventListener('mouseleave', onLeave);
     tm.addEventListener('click', onClick);
+    function onDisclosure(e) {
+      if (!entry || !tm.contains(e.target) || !e.target.matches('details[data-hm-disclosure]')) return;
+      if (e.target.open) openThemes[e.target.getAttribute('data-hm-disclosure')] = true;
+      else delete openThemes[e.target.getAttribute('data-hm-disclosure')];
+      changed();
+    }
+    if (entry) {
+      tm.addEventListener('toggle', onDisclosure, true);
+      tfsEl.addEventListener('keydown', navigateHeatmapTabs);
+    }
 
     function layout() {
       if (retired) return;
@@ -1760,13 +1875,27 @@
         tm.innerHTML = ''; wrap.style.height = 'auto'; tm.style.height = 'auto';
         positioned(); return;
       }
-      if (isMobile()) layoutList(); else if (IS_THEMES) layoutThemes(); else if (IS_STOCKS) layoutStocksFlat(); else layoutTree();
+      if (isMobile() || (entry && PRESENTATION === 'list')) layoutList(); else if (IS_THEMES) layoutThemes(); else if (IS_STOCKS) layoutStocksFlat(); else layoutTree();
     }
 
     var rt;
-    function onResize() { clearTimeout(rt); rt = setTimeout(function () { if (retired) return; layoutRetries = 0; hideCard(); hideMembers(); layout(); }, 150); }
+    function onResize() {
+      clearTimeout(rt); rt = setTimeout(function () {
+        if (retired) return;
+        if (entry && mode === 'list' && (isMobile() || PRESENTATION === 'list')) {
+          root.classList.toggle('hm-mobile', isMobile()); positioned(); return;
+        }
+        layoutRetries = 0; hideCard(); hideMembers(); layout();
+      }, 150);
+    }
     function onTheme() { hideCard(); hideMembers(); if (mode === 'tree') recolor(); else layoutList(); updateLegend(); updateRead(); }
-    function onLang() { buildTabs(); buildSort(); updateLegend(); updateRead(); if (searchEl) searchEl.placeholder = isZh() ? '筛选个股…' : 'Filter…'; hideCard(); hideMembers(); layout(); renderDash(); }
+    function onLang() {
+      withFocus(function () {
+        buildTabs(); buildSort(); buildPresentation(); updateLegend(); updateRead();
+        if (searchEl && !entry) searchEl.placeholder = isZh() ? '筛选个股…' : 'Filter…';
+        hideCard(); hideMembers(); layout(); renderDash();
+      });
+    }
     function onRefresh(e) {
       if (e.detail && e.detail.url !== (data._url || JSON_URL)) return;
       hideCard(); hideMembers();
@@ -1776,7 +1905,7 @@
         var first = (data.timeframes || []).filter(function (tf) { return tf.available; })[0];
         if (first) { TF = first.key; data._tf = TF; }
       }
-      buildTabs(); updateLegend(); updateRead(); layout(); renderDash();
+      withFocus(function () { buildTabs(); updateLegend(); updateRead(); layout(); renderDash(); });
       changed();
     }
     window.addEventListener('resize', onResize);
@@ -2001,20 +2130,19 @@
       tm.classList.add('hm-filtering');
       tileEls.forEach(function (rec) {
         if (!rec.el) return;
-        var hay = (String(rec.t.t) + ' ' + (rec.t.name || '') + ' ' + (rec.t.name_zh || '')).toLowerCase();
-        rec.el.classList.toggle('hm-match', hay.indexOf(_q) >= 0);
+        rec.el.classList.toggle('hm-match', matchesRow(rec.t));
       });
     }
     if (searchEl) {
       searchEl.addEventListener('input', function () {
         _q = (searchEl.value || '').trim().toLowerCase();
-        applyFilter();
+        if (entry && mode === 'list') layoutList(); else applyFilter();
         positioned(); changed();
       });
     }
 
     data._tf = TF;
-    buildTabs(); buildSort(); updateLegend(); updateRead(); layout(); renderDash();
+    buildTabs(); buildSort(); buildPresentation(); updateLegend(); updateRead(); layout(); renderDash();
     startAutoRefresh(data._url || JSON_URL);
 
     return {
@@ -2029,6 +2157,8 @@
         tm.removeEventListener('mousemove', onMove);
         tm.removeEventListener('mouseleave', onLeave);
         tm.removeEventListener('click', onClick);
+        tm.removeEventListener('toggle', onDisclosure, true);
+        tfsEl.removeEventListener('keydown', navigateHeatmapTabs);
         _stopLiveObserver();
         hideCard(); hideMembers();
       }
@@ -2618,6 +2748,7 @@
   // No URL parser, storage, payload cache or shared-shell transport is added.
   function standaloneEntry(full, maps) {
     if (full.getAttribute('data-hm-history') !== 'us-v1' || window.top !== window.self || window.MMXSharedShell) return null;
+    full.classList.add('hm-us-page');
     var KEY = 'mmx.usHeatmap.v1', path = window.location.pathname;
     var keys = maps.map(function (m) { return m.key; });
     var note = document.createElement('p'); note.className = 'hm-return-note';
@@ -2652,19 +2783,23 @@
       keys.forEach(function (key) {
         var s = v.views[key];
         if (record(s) && textValue(s.tf, 32) && s.tf && ['cap', 'move', 'az'].indexOf(s.sort) >= 0 && textValue(s.query, 160) && textValue(s.observation, 400))
-          clean.views[key] = { tf: s.tf, sort: s.sort, query: s.query, observation: s.observation };
+          clean.views[key] = { tf: s.tf, sort: s.sort, query: s.query, observation: s.observation,
+            presentation: s.presentation === 'list' ? 'list' : 'map',
+            expanded: Array.isArray(s.expanded) && s.expanded.length <= 512 ? s.expanded.filter(function (v) { return textValue(v, 160); }) : [] };
       });
       var p = v.position;
       if (record(p) && p.map === v.map && textValue(p.key, 160) && textValue(p.group, 160) && coordinate(p.offset) && coordinate(p.y) && coordinate(p.x)) {
         clean.position = { map: p.map, key: p.key, group: p.group, offset: p.offset, y: p.y, x: p.x, focus: null };
         var f = p.focus;
-        if (record(f) && ['map', 'tf', 'sort', 'query', 'item'].indexOf(f.kind) >= 0 && textValue(f.key, 160))
+        if (record(f) && ['map', 'tf', 'sort', 'query', 'item', 'presentation'].indexOf(f.kind) >= 0 && textValue(f.key, 160))
           clean.position.focus = { kind: f.kind, key: f.key };
       }
       return clean;
     }
     var state = read();
     function announce() {
+      var mapBar = full.querySelector('.hm-maptype');
+      if (mapBar) mapBar.setAttribute('aria-label', lz('Universe', '范围'));
       var parts = [];
       if (!writable) parts.push(lz('This browser entry cannot retain the view.', '此浏览器历史记录无法保留视图。'));
       if (latest && !latestReady) {
@@ -2673,7 +2808,6 @@
       }
       else if (restored) parts.push(lz('View settings restored. Observations use the current feed.', '视图设置已恢复，数据使用当前可用来源。'));
       if (observationChanged) parts.push(lz('The source or observation time has changed since your last visit.', '数据来源或观测时间与上次访问相比已改变。'));
-      if (latestMode === 'list' && latest && latest.query.trim()) parts.push(lz('Your tile search is retained but is inactive in the mobile list.', '方块搜索已保留，但不应用于移动端列表。'));
       if (missing === 'group') parts.push(lz('The previous item is no longer in this view. Returned to its group.', '先前项目已不在此视图中，已返回其所在分组。'));
       if (missing === 'position') parts.push(lz('Returned to the same view; the previous position could not be restored.', '已返回同一视图，但无法恢复先前位置。'));
       if (moved) parts.push(lz('Position was left where you moved after returning.', '已保留返回后您主动移动到的位置。'));
@@ -2701,7 +2835,7 @@
     function focusDescription(el) {
       if (!el || !full.contains(el)) return null;
       if (el.matches('.hm-search input')) return { kind: 'query', key: '' };
-      var attrs = [['map', 'data-hm-map'], ['tf', 'data-tf'], ['sort', 'data-s'], ['item', 'data-hm-key']];
+      var attrs = [['map', 'data-hm-map'], ['tf', 'data-tf'], ['sort', 'data-s'], ['item', 'data-hm-key'], ['presentation', 'data-hm-presentation']];
       for (var i = 0; i < attrs.length; i++) if (el.hasAttribute(attrs[i][1])) return { kind: attrs[i][0], key: el.getAttribute(attrs[i][1]) };
       return null;
     }
@@ -2775,11 +2909,15 @@
               if (activity !== stamp || (ae !== document.body && ae !== document.documentElement && !sameFocus)) { moved = true; announce(); return; }
               var el = p.key ? byAttribute('data-hm-key', p.key) : full;
               if (!el) { el = p.group ? byAttribute('data-sec-name', p.group) : null; missing = el ? 'group' : 'position'; }
-              if (el) window.scrollTo(p.x, Math.max(0, window.scrollY + el.getBoundingClientRect().top - p.offset));
+              if (el) {
+                var disclosure = el.matches && el.matches('a.hm-member-row') && el.closest('details.hm-members');
+                if (disclosure) disclosure.open = true;
+                window.scrollTo(p.x, Math.max(0, window.scrollY + el.getBoundingClientRect().top - p.offset));
+              }
               else window.scrollTo(p.x, Math.max(0, window.scrollY + full.getBoundingClientRect().top - 90));
               var f = p.focus, focusEl = null;
               if (f && (ae === document.body || ae === document.documentElement || ae === focusAtStart)) {
-                var attrs = { map: 'data-hm-map', tf: 'data-tf', sort: 'data-s', item: 'data-hm-key' };
+                var attrs = { map: 'data-hm-map', tf: 'data-tf', sort: 'data-s', item: 'data-hm-key', presentation: 'data-hm-presentation' };
                 focusEl = f.kind === 'query' ? full.querySelector('.hm-search input') : byAttribute(attrs[f.kind], f.key);
                 // Pointer-only tiles do not manufacture a keyboard focus origin.
                 if (focusEl && focusEl.getClientRects().length && !focusEl.disabled) focusEl.focus({ preventScroll: true });
@@ -2853,6 +2991,7 @@
       });
     }
     if (historyEntry) {
+      if (bar) bar.addEventListener('keydown', navigateHeatmapTabs);
       var entryURL = window.location.href;
       window.addEventListener('popstate', function () {
         // Same-URL dismissible states belong to their incumbent UI owner. The

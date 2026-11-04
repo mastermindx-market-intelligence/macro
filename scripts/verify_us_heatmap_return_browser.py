@@ -4,7 +4,9 @@
 Serves the generated page/assets, synthetic populated feeds, and a labelled
 detail destination on loopback. It never uses production credentials or data.
 The detail fixture proves the incumbent click URL and native Back boundary;
-it does not establish D07 detail-page or cross-origin integration acceptance.
+Access cases additionally serve an explicitly labelled Terminal message fixture
+at the existing local Terminal origin to verify symbol transport and overlay return.
+Neither fixture establishes D07 content, production authentication or acceptance.
 """
 from __future__ import annotations
 
@@ -92,7 +94,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/regional-fixture.html":
                 text = text.replace('data-hm-history="us-v1"', '')
             if self.server.canonical:
-                initial = json.dumps({KEY: saved()}).replace("<", "\\u003c")
+                prior = saved()
+                prior["views"]["sp500"]["presentation"] = "list"
+                initial = json.dumps({KEY: prior}).replace("<", "\\u003c")
                 text = text.replace("<head>", "<head><script>history.replaceState(" + initial + ",'');</script>", 1)
             label = "committed feed snapshot" if self.server.snapshot else "simulated market data"
             text = text.replace("</body>", '<aside style="position:fixed;bottom:8px;right:8px;z-index:2147483647;padding:6px 10px;border-radius:5px;background:#242332;color:#fff;font:11px sans-serif">D04 local proof · ' + label + '</aside></body>')
@@ -134,13 +138,42 @@ def main():
         browser = pw.chromium.launch(headless=True, args=["--disable-features=BackForwardCache"])
         version = browser.version
 
-        def context(width=1365, lang="en", theme="dark", seed=None, extra=""):
-            ctx = browser.new_context(viewport={"width": width, "height": 900 if width > 560 else 844}, reduced_motion="reduce", locale="zh-CN" if lang == "zh" else "en-US")
-            ctx.route("**/*", lambda route: route.continue_() if urlsplit(route.request.url).netloc == urlsplit(origin).netloc else route.abort())
+        def context(width=1365, lang="en", theme="dark", seed=None, extra="", touch=False, terminal_fixture=False):
+            ctx = browser.new_context(viewport={"width": width, "height": 900 if width > 560 else 844}, reduced_motion="reduce", locale="zh-CN" if lang == "zh" else "en-US", has_touch=touch, is_mobile=touch and width <= 560)
+            fixture = """<!doctype html><html><title>D04 Terminal message fixture</title><body>
+              <h1>Controlled Terminal destination</h1><p>Symbol transport only; no account or market data.</p>
+              <p id="fixture-symbol"></p><button id="fixture-close">Return to heatmap</button>
+              <script>
+              const parentOrigin = PARENT_ORIGIN;
+              let symbol = new URLSearchParams(location.search).get('sym') || '';
+              window.__receivedSymbols = [];
+              function paint() {
+                document.getElementById('fixture-symbol').textContent = symbol;
+                parent.postMessage({source:'mastermind-terminal',type:'terminal:visual-ready',symbol,path:'/terminal'},parentOrigin);
+              }
+              addEventListener('message',event=>{
+                if(event.source!==parent || event.origin!==parentOrigin || event.data?.source!=='mastermind-dashboard' || event.data.type!=='terminal:set-symbol')return;
+                symbol=String(event.data.symbol);window.__receivedSymbols.push(symbol);paint();
+              });
+              function closeFixture(){parent.postMessage({source:'mastermind-terminal',type:'terminal:close'},parentOrigin)}
+              document.getElementById('fixture-close').onclick=closeFixture;
+              addEventListener('keydown',event=>{if(event.key==='Escape')closeFixture()});
+              paint();
+              </script></body></html>""".replace("PARENT_ORIGIN", json.dumps(origin))
+            def route_local(route):
+                url = urlsplit(route.request.url)
+                if url.netloc == urlsplit(origin).netloc:
+                    route.continue_()
+                elif terminal_fixture and url.netloc == "127.0.0.1:3100" and url.path == "/terminal":
+                    route.fulfill(status=200, content_type="text/html", body=fixture)
+                else:
+                    route.abort()
+            ctx.route("**/*", route_local)
             init = f"try{{localStorage.setItem('theme',{json.dumps(theme)});localStorage.setItem('lang',{json.dumps(lang)});}}catch(e){{}}"
             if seed is not None:
                 init += f"if(location.pathname==='/sector_heatmap.html') history.replaceState({json.dumps(seed)},'');"
             init += "window.__hmAdds=0;window.__hmRemoves=0;const add=document.addEventListener.bind(document),remove=document.removeEventListener.bind(document);document.addEventListener=function(n,...a){if(n==='hm-refresh')window.__hmAdds++;return add(n,...a)};document.removeEventListener=function(n,...a){if(n==='hm-refresh')window.__hmRemoves++;return remove(n,...a)};"
+            init += "window.__d04HistoryPushes=[];const push=history.pushState.bind(history);history.pushState=function(s,...a){window.__d04HistoryPushes.push({overlay:!!s?.__mdxTerminalOverlay,d04:!!s?.['mmx.usHeatmap.v1']});return push(s,...a)};"
             ctx.add_init_script(init + extra)
             page = ctx.new_page()
             page.on("pageerror", lambda e: errors.append(str(e)))
@@ -151,6 +184,73 @@ def main():
 
         def remember(name, detail=None):
             cases.append({"name": name, "status": "PASS", "detail": detail})
+
+        def access_feeds():
+            server.reset()
+            tiny = copy.deepcopy(server.payloads["sp500"]["tiles"][0])
+            tiny.update(t="TINY", name="Small supplied company", name_zh="微型来源公司", size=0.000000001)
+            tiny["perf"] = {"1D": None, "5D": 7.25, "1M": 10.0}
+            server.payloads["sp500"]["tiles"].append(tiny)
+            server.payloads["sp500"]["n_tiles"] = len(server.payloads["sp500"]["tiles"])
+            tile = server.payloads["themes"]["tiles"][0]
+            tile["members"] = [{"t": f"MEM{i:02d}", "name": f"Complete supplied member {i}", "name_zh": f"完整来源成员 {i}",
+                                "perf": {"1D": None if i == 39 else i / 10, "5D": i / 5, "1M": i / 3}} for i in range(40)]
+            for theme in server.payloads["themes"]["tiles"]:
+                theme["size"] = len(theme["members"])
+            return tiny, tile
+
+        def overlay_round_trip(page, link, ticker, width, touch=False):
+            exact = page.url
+            link.evaluate("el=>window.__accessOrigin=el")
+            page.evaluate("window.__accessPriorFrame=document.querySelector('#mm-terminal-overlay .mmto-frame')")
+            before_length = page.evaluate("history.length")
+            before_pushes = page.evaluate("window.__d04HistoryPushes.length")
+            before_y = page.evaluate("scrollY")
+            if touch:
+                link.tap()
+            else:
+                link.focus()
+                link.press("Enter")
+            page.wait_for_function("window.MDXTerminalOverlay.isOpen()")
+            frame = page.frame_locator('#mm-terminal-overlay .mmto-frame')
+            expect(frame.locator('#fixture-symbol')).to_have_text(ticker)
+            target = page.locator('#mm-terminal-overlay .mmto-newtab').get_attribute("href")
+            assert f"sym={ticker}" in target, target
+            if page.evaluate("!!window.__accessPriorFrame"):
+                assert page.evaluate("window.__accessPriorFrame===document.querySelector('#mm-terminal-overlay .mmto-frame')") == (width > 700)
+            page.wait_for_function("document.querySelector('#mm-terminal-overlay').classList.contains('is-ready')")
+            page.wait_for_timeout(220)  # Normal return follows the incumbent 180ms focus callback.
+            guard = page.evaluate("history.state")
+            assert "__mdxTerminalOverlay" in guard and KEY in guard["dashboardState"]
+            pushes = page.evaluate("window.__d04HistoryPushes")
+            assert len(pushes) == before_pushes + 1 and pushes[-1] == {"overlay":True,"d04":False}, pushes
+            assert page.url == exact
+            page.evaluate("history.back()")
+            page.wait_for_function("!window.MDXTerminalOverlay.isOpen() && !history.state?.__mdxTerminalOverlay")
+            assert link.evaluate("el=>el===window.__accessOrigin && el.isConnected")
+            assert page.url == exact
+            # A second open after Back replaces the native forward slot.
+            assert page.evaluate("history.length") <= before_length + 1
+            assert page.evaluate("window.__d04HistoryPushes.length") == before_pushes + 1
+            if width > 700:
+                expect(link).to_be_focused()
+            # The incumbent phone owner intentionally does not refocus the row.
+            # It owns close, guard traversal and delayed scroll restoration.
+            assert page.evaluate("!document.documentElement.classList.contains('mm-terminal-lock')")
+            return {"symbol": ticker, "same_origin_node": True, "desktop_focus": width > 700,
+                    "history_owner": "MDXTerminalOverlay", "scroll_before_activation": before_y}
+
+        def assert_access_geometry(page):
+            result = page.evaluate("""() => ({
+              viewport:innerWidth, width:document.documentElement.scrollWidth,
+              targets:[...document.querySelectorAll('#heatmap-full button,#heatmap-full input,#heatmap-full summary,#heatmap-full a.hm-mrow')]
+                .filter(e=>e.getClientRects().length && !e.closest('details:not([open]) .hm-member-list'))
+                .map(e=>({label:e.getAttribute('aria-label')||e.textContent.trim().slice(0,80),
+                  width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}))
+            })""")
+            assert result["width"] <= result["viewport"], result
+            assert all(t["width"] >= 44 and t["height"] >= 44 for t in result["targets"]), result
+            return result
 
         try:
             for width in (1365, 390):
@@ -285,10 +385,12 @@ def main():
             server.reset()
             ctx, page = context(390, "zh", "light", seed={KEY: saved(query="AAPL")})
             page.goto(origin + "/sector_heatmap.html", wait_until="domcontentloaded"); ready(page)
-            expect(page.locator('.hm-return-note')).to_contain_text("不应用于移动端列表")
-            assert page.locator('.hm-mrow').count() == 36
+            expect(page.locator('.hm-search input')).to_be_visible()
+            expect(page.locator('.hm-search input')).to_have_value("AAPL")
+            assert page.locator('.hm-mrow').count() == 1
+            expect(page.locator('.hm-list-status')).to_contain_text("显示 1 个")
             page.screenshot(path=str(out / "mobile-retained-query.png")); shots.append("mobile-retained-query.png")
-            remember("mobile-retained-query-limitation-visible"); ctx.close()
+            remember("mobile-retained-query-applied"); ctx.close()
 
             for label, seed in [("primitive", "other-owner"), ("array", [1, 2]), ("malformed", {KEY: {"version": 999}, "foreign": 7})]:
                 server.reset(); ctx, page = context(seed=seed)
@@ -311,6 +413,8 @@ def main():
                 target.locator('.hm-tf').first.wait_for()
                 target.locator('[data-tf="5D"]').click()
                 assert target.locator('.hm-return-note').count() == 0
+                assert target.locator('.hm-presentation').count() == 0
+                assert target.locator('.hm-us-access').count() == 0
                 state = page.frames[1].evaluate("history.state") if name == "embedded" else page.evaluate("history.state")
                 assert state is None
                 remember("return-owner-opt-out-" + name); ctx.close()
@@ -336,8 +440,9 @@ def main():
             page.set_viewport_size({"width": 390, "height": 844})
             page.go_back(wait_until="domcontentloaded"); ready(page)
             expect(page.locator('[data-tf="5D"]')).to_have_class("hm-tf on")
-            expect(page.locator('.hm-return-note')).to_contain_text("inactive in the mobile list")
-            assert page.locator('.hm-mrow').count() == 36
+            expect(page.locator('.hm-search input')).to_have_value("AAPL")
+            assert page.locator('.hm-mrow').count() == 1
+            expect(page.locator('.hm-list-status')).to_contain_text("1 of 36")
             remember("document-return-across-responsive-layout"); ctx.close()
 
             for state_name in ("empty", "error"):
@@ -367,6 +472,144 @@ def main():
             remember("committed-feed-renderer-compatibility", {key: {"tiles": len(value["tiles"]), "asof": value.get("asof"), "source": value.get("source")} for key,value in server.payloads.items()})
             ctx.close()
 
+
+            tiny, theme_tile = access_feeds()
+            ctx, page = context(1440, terminal_fixture=True)
+            page.goto(origin + "/sector_heatmap.html", wait_until="domcontentloaded"); ready(page)
+            assert page.locator('.hm-tile[data-hm-key="TINY"]').count() == 0
+            # Start at the heatmap's first native control and traverse to List.
+            page.locator('[data-hm-map="sp500"]').focus()
+            for _ in range(12):
+                if page.evaluate("document.activeElement.getAttribute('data-hm-presentation')==='list'"):
+                    break
+                page.keyboard.press("Tab")
+            assert page.evaluate("document.activeElement.getAttribute('data-hm-presentation')==='list'")
+            page.keyboard.press("Enter")
+            supplied = sorted(x["t"] for x in server.payloads["sp500"]["tiles"])
+            assert sorted(page.locator('.hm-tm a.hm-mrow').evaluate_all("els=>els.map(e=>e.dataset.hmKey)")) == supplied
+            summary_before = page.locator('.hx-stats').inner_text()
+            page.keyboard.press("Tab")
+            expect(page.locator('.hm-search input')).to_be_focused()
+            page.keyboard.type("TINY")
+            expect(page.locator('.hm-tm a.hm-mrow')).to_have_count(1)
+            expect(page.locator('.hm-list-status')).to_contain_text("1 of 37")
+            assert page.locator('.hx-stats').inner_text() == summary_before
+            row = page.locator('.hm-tm a[href="stock.html#TINY"]')
+            row.scroll_into_view_if_needed()
+            detail = overlay_round_trip(page, row, "TINY", 1440)
+            expect(page.locator('.hm-search input')).to_have_value("TINY")
+            expect(page.locator('[data-hm-presentation="list"]')).to_have_attribute("aria-pressed", "true")
+            page.locator('.hm-search input').fill("微型来源公司")
+            expect(page.locator('.hm-tm a.hm-mrow')).to_have_count(1)
+            page.locator('.hm-search input').fill("NO-SUCH-COMPANY")
+            expect(page.locator('.hm-empty')).to_contain_text("No matches")
+            expect(page.locator('.hm-list-status')).to_contain_text("0 of 37")
+            page.locator('.hm-search input').fill("")
+            assert sorted(page.locator('.hm-tm a.hm-mrow').evaluate_all("els=>els.map(e=>e.dataset.hmKey)")) == supplied
+            page.locator('[data-tf="1D"]').focus(); page.keyboard.press("ArrowRight")
+            expect(page.locator('[data-tf="5D"]')).to_have_attribute("aria-selected", "true")
+            expect(page.locator('[data-tf="5D"]')).to_be_focused()
+            page.evaluate("window.scrollTo(0,document.querySelector('.hm-bar').getBoundingClientRect().top+scrollY-90)")
+            page.screenshot(path=str(out / "accessible-dense-list-desktop.png"), animations="disabled"); shots.append("accessible-dense-list-desktop.png")
+            remember("culled-company-keyboard-list-query-detail-return", {**detail, "supplied_rows": len(supplied), "matched_rows_and_full_scope": True})
+            ctx.close()
+
+            access_feeds(); ctx, page = context(1440, terminal_fixture=True)
+            page.goto(origin + "/sector_heatmap.html", wait_until="domcontentloaded"); ready(page)
+            page.locator('[data-hm-map="themes"]').focus(); page.keyboard.press("Enter")
+            page.locator('.hm-thtile').first.wait_for()
+            page.locator('[data-hm-presentation="list"]').focus(); page.keyboard.press("Enter")
+            disclosure = page.locator('details[data-hm-disclosure="theme-0"]')
+            disclosure.locator('summary').focus(); page.keyboard.press("Enter")
+            expect(disclosure).to_have_attribute("open", "")
+            expect(disclosure.locator('.hm-member-row')).to_have_count(40)
+            assert set(disclosure.locator('.hm-member-row').evaluate_all("els=>els.map(e=>e.getAttribute('href'))")) == {f"stock.html#MEM{i:02d}" for i in range(40)}
+            expect(disclosure.locator('a[href="stock.html#MEM39"] .hm-mpc')).to_have_text("No data")
+            expect(disclosure.locator('a[href="stock.html#MEM00"] .hm-mpc')).to_contain_text("0.00%")
+            page.locator('.hm-search input').fill("MEM39")
+            expect(page.locator('details.hm-members')).to_have_count(1)
+            expect(disclosure.locator('.hm-member-row')).to_have_count(1)
+            member = disclosure.locator('a[href="stock.html#MEM39"]')
+            member.scroll_into_view_if_needed()
+            detail = overlay_round_trip(page, member, "MEM39", 1440)
+            assert page.evaluate(f"history.state[{json.dumps(KEY)}].views.themes.presentation") == "list"
+            page.locator('[data-hm-map="sp500"]').click(); ready(page)
+            page.locator('[data-hm-map="themes"]').click()
+            expect(page.locator('.hm-search input')).to_have_value("MEM39")
+            expect(disclosure).to_have_attribute("open", "")
+            page.locator('.hm-search input').fill("")
+            expect(disclosure.locator('.hm-member-row')).to_have_count(40)
+            page.evaluate("window.scrollTo(0,document.querySelector('.hm-bar').getBoundingClientRect().top+scrollY-90)")
+            page.screenshot(path=str(out / "accessible-theme-members-desktop.png"), animations="disabled"); shots.append("accessible-theme-members-desktop.png")
+            remember("complete-theme-members-keyboard-search-overlay-return", {**detail, "supplied_members": 40, "missing_not_zero": True})
+            ctx.close()
+
+            for width, lang, theme in [(w,l,t) for w in (320,390,1440) for l in ("en","zh") for t in ("dark","light")] + [(900,"en","light"),(900,"zh","dark")]:
+                access_feeds(); ctx, page = context(width, lang, theme, touch=True, terminal_fixture=True)
+                page.goto(origin + "/sector_heatmap.html", wait_until="domcontentloaded"); ready(page)
+                assert page.evaluate("navigator.maxTouchPoints>0 && matchMedia('(pointer:coarse)').matches")
+                if width > 560:
+                    page.locator('[data-hm-presentation="list"]').tap()
+                page.locator('.hm-search input').tap()
+                page.locator('.hm-search input').fill("TINY")
+                expect(page.locator('.hm-tm a.hm-mrow')).to_have_count(1)
+                page.locator('[data-tf="5D"]').tap()
+                page.locator('[data-s="move"]').tap()
+                row = page.locator('.hm-tm a[href="stock.html#TINY"]'); row.scroll_into_view_if_needed()
+                stock_detail = overlay_round_trip(page, row, "TINY", width, touch=True)
+                expect(page.locator('.hm-search input')).to_have_value("TINY")
+                page.locator('[data-hm-map="themes"]').tap()
+                if width > 560:
+                    page.locator('.hm-thtile').first.wait_for(); page.locator('[data-hm-presentation="list"]').tap()
+                disclosure = page.locator('details[data-hm-disclosure="theme-0"]')
+                disclosure.locator('summary').tap()
+                expect(disclosure.locator('.hm-member-row')).to_have_count(40)
+                page.locator('.hm-search input').fill("MEM39")
+                member = disclosure.locator('a[href="stock.html#MEM39"]'); member.scroll_into_view_if_needed()
+                member_detail = overlay_round_trip(page, member, "MEM39", width, touch=True)
+                expect(disclosure).to_have_attribute("open", "")
+                expect(page.locator('.hm-search input')).to_have_value("MEM39")
+                geometry = assert_access_geometry(page)
+                page.evaluate("window.scrollTo(0,document.querySelector('.hm-bar').getBoundingClientRect().top+scrollY-90)")
+                name = f"accessible-touch-{width}-{lang}-{theme}"
+                page.screenshot(path=str(out / (name + ".png")), animations="disabled"); shots.append(name + ".png")
+                remember(name, {"stock":stock_detail,"theme_member":member_detail,"geometry":geometry,"physical_device":False})
+                ctx.close()
+
+            access_feeds(); ctx, page = context(1440, terminal_fixture=True)
+            page.goto(origin + "/sector_heatmap.html", wait_until="domcontentloaded"); ready(page)
+            page.locator('[data-hm-presentation="list"]').click()
+            row = page.locator('.hm-tm a[href="stock.html#NVDA"]')
+            row.focus()
+            page.evaluate("document.documentElement.dataset.theme='light';document.dispatchEvent(new Event('themechange'))")
+            expect(row).to_be_focused()
+            page.evaluate("document.documentElement.dataset.lang='zh';document.dispatchEvent(new Event('langchange'))")
+            expect(row).to_be_focused()
+            expect(page.locator('.hm-search input')).to_have_attribute("aria-label","查找公司或主题成员")
+            expect(page.locator('[data-hm-presentation="list"]')).to_have_attribute("aria-pressed","true")
+            row.evaluate("el=>window.__stableListRow=el")
+            page.set_viewport_size({"width":900,"height":900})
+            page.wait_for_timeout(220)  # Exercise the existing 150ms resize callback.
+            page.wait_for_function("document.querySelector('.hm-tm a[href=\"stock.html#NVDA\"]')===window.__stableListRow")
+            expect(row).to_be_focused()
+            # A true document reload restores the same logical row and List choice.
+            page.reload(wait_until="domcontentloaded"); ready(page)
+            expect(page.locator('[data-hm-presentation="list"]')).to_have_attribute("aria-pressed","true")
+            expect(page.locator('.hm-tm a[href="stock.html#NVDA"]')).to_be_focused()
+            remember("list-live-theme-language-resize-and-native-reload-focus")
+            ctx.close()
+
+            access_feeds()
+            invalid = saved()
+            invalid["views"]["sp500"].update(presentation={"invalid":True},expanded=[None,{},7,"theme-0"])
+            ctx, page = context(seed={KEY:invalid})
+            page.goto(origin + "/sector_heatmap.html", wait_until="domcontentloaded"); ready(page)
+            expect(page.locator('[data-hm-presentation="map"]')).to_have_attribute("aria-pressed","true")
+            page.locator('[data-hm-presentation="list"]').click()
+            assert page.evaluate(f"history.state[{json.dumps(KEY)}].views.sp500.expanded") == ["theme-0"]
+            remember("optional-presentation-and-disclosure-state-validation")
+            ctx.close()
+
         finally:
             import sys
             if sys.exc_info()[0] and not page.is_closed():
@@ -381,7 +624,7 @@ def main():
                 server.shutdown(); server.server_close()
             paths = ["templates/heatmap.js", "site/heatmap.js", "templates/sector_heatmap.html.j2", "site/sector_heatmap.html", "scripts/verify_us_heatmap_return_browser.py"]
             report = {"observed_at_utc": datetime.now(timezone.utc).isoformat(), "browser": version,
-                      "scope": "Local generated page with synthetic feeds and labelled same-origin detail fixture; bfcache disabled",
+                      "scope": "Local generated page with synthetic feeds; labelled same-origin detail and cross-origin local Terminal message fixtures; bfcache disabled",
                       "passed": len(cases), "cases": cases, "screenshots": shots, "page_errors": errors,
                       "sha256": {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in paths}}
             (out / "browser-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
@@ -399,13 +642,14 @@ def main():
                 base_url=origin, output_dir=canonical / "evidence", manifest_dir=canonical,
                 viewports=["desktop", "mobile"], locales=["en", "zh"], themes=["dark", "light"],
                 delay_ms=0, timeout_s=20, generated_at=datetime.now(timezone.utc).isoformat(),
-                target=cap.site_dir_target(SITE), selection={"routes": ["/sector_heatmap.html"], "scene": "Explicit synthetic public feed and prior native-history entry; no account data or CSS forcing"})
+                target=cap.site_dir_target(SITE), selection={"routes": ["/sector_heatmap.html"], "scene": "Explicit synthetic public feed and prior native-history List entry; real focus/hover interactions, no account data or CSS forcing"},
+                force_states=cap.parse_force_states(["list-focus:focus(.hm-tm a.hm-mrow)", "list-hover:hover(.hm-tm a.hm-mrow)"]))
         finally:
             driver.close()
             server.shutdown(); server.server_close()
         (canonical / "manifest.json").write_text(json.dumps(result["manifest"], ensure_ascii=False, indent=2) + "\n")
         (canonical / "smells.json").write_text(json.dumps(result["smells"], ensure_ascii=False, indent=2) + "\n")
-        assert result["manifest"]["totals"]["states_captured"] == 8, result["manifest"]["totals"]
+        assert result["manifest"]["totals"]["states_captured"] == 24, result["manifest"]["totals"]
         report["canonical_visual_matrix"] = result["manifest"]["totals"]
         (out / "browser-report.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
         print(json.dumps({"canonical":result["manifest"]["totals"]}))

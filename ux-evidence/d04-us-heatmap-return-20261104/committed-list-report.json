@@ -1,0 +1,35 @@
+{
+  "observed_at_utc": "2026-11-04T12:10:05.466705+00:00",
+  "scope": "Actual unmodified committed public feed snapshots, existing generated page, local Chromium; source relationship counts, not unique company counts or current freshness",
+  "source_sha256": {
+    "templates/heatmap.js": "4d8611faf74ab7c54b3c920380e7b8ed885c5ec5de62d8c8a6f60cfa02a8b5c8",
+    "site/heatmap.js": "4d8611faf74ab7c54b3c920380e7b8ed885c5ec5de62d8c8a6f60cfa02a8b5c8",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "fc7b84f01b45c5e57380be4befe2f3e2a45ff71540598f91a310c9c5a1cbf1ce",
+    "scripts/verify_us_heatmap_return_browser.py": "9dab50fa37e46cb7c980e1924956fa880c4dad655bb64fb2f109cc074ebfcc3f"
+  },
+  "maps": {
+    "sp500": {
+      "source_tiles": 503,
+      "source": "daily-close",
+      "asof": "2026-11-02",
+      "all_supplied_ids_present": true
+    },
+    "themes": {
+      "source_tiles": 268,
+      "source": "finviz-themes",
+      "asof": "2026-11-03",
+      "all_supplied_ids_present": true,
+      "member_contexts": 2339,
+      "unique_member_contexts": 2339,
+      "maximum_members_per_subsector": 16,
+      "all_supplied_member_contexts_present": true
+    }
+  },
+  "screenshots": [
+    "committed-list-sp500.png",
+    "committed-list-themes.png"
+  ],
+  "page_errors": [],
+  "all_checks_passed": true
+}

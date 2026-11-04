@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.ux_smell_report.v1",
-  "generated_at": "2026-11-04T08:23:23.937935+00:00",
+  "generated_at": "2026-11-04T12:19:00.381319+00:00",
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
     "version": "1.4.0"
@@ -9,7 +9,7 @@
     "kind": "site_dir",
     "base_url": null,
     "site_dir": "/Volumes/Mastermind/agent-workspaces/macro/web/d04-us-heatmap-return-20261104/site",
-    "resolved_sha_or_none": "bb3b7273f1e9ccb869b6500c97871093eb22005a",
+    "resolved_sha_or_none": "a538aa35e3cb5268fe834ff4da1098b68cbe9fa9",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/d04-us-heatmap-return-20261104",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/d04-us-heatmap-return-20261104 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)"
   },
@@ -31,7 +31,7 @@
       "page_id": "sector_heatmap.html",
       "route": "/sector_heatmap.html",
       "metrics": {
-        "document_height_px": 2001,
+        "document_height_px": 2099,
         "section_count": 0,
         "heading_counts": {
           "h1": 1,
@@ -43,7 +43,7 @@
         },
         "duplicate_heading_texts": [],
         "panel_count": 0,
-        "visible_word_count": 383,
+        "visible_word_count": 505,
         "long_paragraph_count": 0,
         "raw_slug_hits": [],
         "raw_slug_hit_count": 0,
@@ -51,9 +51,9 @@
         "todo_placeholder_hit_count": 0,
         "horizontal_overflow": false,
         "elements_wider_than_viewport": 0,
-        "console_error_count": 0,
+        "console_error_count": 1,
         "request_count": 23,
-        "payload_bytes_total": 1005326,
+        "payload_bytes_total": 1063874,
         "asof_present": false,
         "source_present": false,
         "screenshot_completion": 1.0,
@@ -65,12 +65,12 @@
         },
         "by_viewport": {
           "desktop": {
-            "document_height_px": 2001,
+            "document_height_px": 2099,
             "horizontal_overflow": false,
             "elements_wider_than_viewport": 0
           },
           "mobile": {
-            "document_height_px": 4433,
+            "document_height_px": 4585,
             "horizontal_overflow": false,
             "elements_wider_than_viewport": 0
           }
