@@ -41,6 +41,10 @@ _DOSSIER_PANEL_RE = re.compile(
     r'<section class="intl-gs__panel intl-gs__view intl-gs__view--dossier"'
     r'[^>]*data-horizon="([^"]+)" data-basis="([^"]+)"[^>]*>')
 _ARTICLE_RE = re.compile(r'<article class="intl-gs__mkt"[^>]*>')
+_MARKET_CARRIER_RE = re.compile(
+    r'<script type="application/json" data-im-gs-market-id="([^"]+)"[^>]*>(.*?)</script>', re.S)
+_CONTEXT_CARRIER_RE = re.compile(
+    r'<script type="application/json" data-im-deferred-payload>(.*?)</script>', re.S)
 ISO_TEXT_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}")
 
 
@@ -77,6 +81,9 @@ def _obs_index(observation_set):
 
 def _panels(html):
     """[(horizon, basis, chunk)] one chunk per dossier panel section."""
+    carriers = [json.loads(m.group(1)) for m in _CONTEXT_CARRIER_RE.finditer(html)]
+    if carriers:
+        return [(p["horizon"], p["basis"], p["markup"]) for p in carriers if p["view"] == "dossier"]
     starts = [(m.start(), m.group(1), m.group(2))
               for m in _DOSSIER_PANEL_RE.finditer(html)]
     panels = []
@@ -87,7 +94,19 @@ def _panels(html):
 
 
 def _articles(panel_html):
-    """{market_id: article html} for one panel."""
+    """{market_id: article html} for one panel.
+
+    The Dossier publishes every context as an inert JSON carrier and every
+    jurisdiction article inside it as a second inert carrier (the inert
+    producer), so the canonical article markup is read from the carrier
+    payloads. A panel that still carries live articles is read as before."""
+    context = _CONTEXT_CARRIER_RE.search(panel_html)
+    if context:
+        panel_html = json.loads(context.group(1)).get("markup", "")
+    carriers = {market: json.loads(payload).get("markup", "")
+                for market, payload in _MARKET_CARRIER_RE.findall(panel_html)}
+    if carriers:
+        return carriers
     starts = [m.start() for m in _ARTICLE_RE.finditer(panel_html)]
     articles = {}
     for position, start in enumerate(starts):
@@ -371,7 +390,10 @@ def test_b7_peers_same_region_group_select_links(obs_set, page):
     rows = __import__("lib.intl_gs_display", fromlist=["jurisdiction_rows"]).jurisdiction_rows(UNIVERSE)
     expected = [row["id"] for row in rows
                 if row["region_group"] == "asia" and row["id"] != "AU"][:5]
-    assert [m for m, _href in links] == expected
+    assert [m for m, _href in links] == [m for m in expected if m in {"JP", "KR", "TW", "IN", "AU", "GB", "EZ"}]
+    for unsupported in set(expected) - {"JP", "KR", "TW", "IN", "AU", "GB", "EZ"}:
+        assert f'data-gs-select-market="{unsupported}"' not in peers_html
+    assert "Selection unavailable in this workspace" in peers_html
     for market, href in links:
         assert href == f"?view=dossier&amp;market={market}"
     index = _obs_index(obs_set)
@@ -449,13 +471,16 @@ def test_b8_no_specimen_true_in_production_sources():
 
 def test_b8_specimen_page_board11(specimen_page):
     assert "Specimen values" in specimen_page and "示例数值" in specimen_page
+    # The jurisdiction article is published as an inert carrier, so the
+    # canonical article markup is read from the carrier payload.
+    articles = _articles(_panel(specimen_page, "1m", "usd_unhedged"))
     assert re.search(r'<span class="intl-gs__hero__num[^"]*"[^>]*>\+3\.40%</span>',
-                     specimen_page)
+                     articles["BR"])
     assert "Chile" in specimen_page and "Peru" in specimen_page
-    br = _articles(_panel(specimen_page, "1m", "usd_unhedged"))["BR"]
-    chile = re.search(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="CL".*?(?=<a class="intl-gs__peer"|</div>)',
+    br = articles["BR"]
+    chile = re.search(r'<div class="intl-gs__peer"[^>]*aria-disabled="true".*?Chile.*?(?=</div>)',
                       br, re.S).group(0)
-    peru = re.search(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="PE".*?(?=<a class="intl-gs__peer"|</div>)',
+    peru = re.search(r'<div class="intl-gs__peer"[^>]*aria-disabled="true".*?Peru.*?(?=</div>)',
                      br, re.S).group(0)
     assert "intl-gs__chip--warn-dashed" in chile, "Chile Qualified dashed warn"
     assert "intl-gs__chip--muted-dashed" in peru, "Peru Abstain dashed muted"
@@ -534,7 +559,7 @@ def test_b10_zh_vocabulary(page):
         assert re.search(rf'data-gs-select-market="{market}"[^>]*>.*?<span class="l-zh">{zh}</span>',
                          chunk), market
     assert "全球发生了什么变化？" in chunk  # question labels ZH
-    identity = re.search(r"<p class=\"intl-gs__identity\">.*?</p>", chunk, re.S)
+    identity = re.search(r"<p class=\"intl-gs__identity\">.*?</p>", _article(chunk, "JP"), re.S)
     assert identity and "恒等式" in identity.group(0)
     # signed numerals use the semantic ink classes only
     article = _article(chunk, "JP")

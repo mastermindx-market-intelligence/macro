@@ -7,6 +7,9 @@ from collections import Counter
 from copy import deepcopy
 from html.parser import HTMLParser
 import logging
+import json
+
+from markupsafe import Markup
 
 from lib.intl_library_view import build_public_intl_library_view
 from lib.intl_inspector_mount import attach_inspectors
@@ -102,8 +105,19 @@ def attach_public_library(workspace, *, catalogue, macro_html, stocks_rendered):
     return result
 
 
+def intl_inert_json(value):
+    """Compact UTF-8 JSON for script raw text, with every '<' escaped.
+
+    This is specific to inert JSON carriers; it is never an HTML attribute
+    encoder. Escaping every '<' prevents closing-script and comment parsing.
+    """
+    return Markup(json.dumps(value, ensure_ascii=False, sort_keys=True,
+                             separators=(",", ":"), allow_nan=False).replace("<", "\\u003c"))
+
+
 def render_international_pages(template, vm, *, catalogue=None, chart_sources=None):
     """Render the incumbent destinations before advertising any Library link."""
+    template.environment.filters["intl_inert_json"] = intl_inert_json
     stocks = template.render(**vm, mode="stocks")
     macro = template.render(**vm, mode="macro")
     current = vm.get("intl_workspace")

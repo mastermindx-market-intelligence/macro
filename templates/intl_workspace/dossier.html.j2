@@ -9,12 +9,12 @@
 {% set specimen = payload.specimen|default(false) %}
 {% set abstain = payload.abstain_copy %}
 {% set actionable_markets = (intl_workspace|default({})).get('config', {}).get('markets', []) %}
-{% call gs.gs_panel_root(view='dossier', panel=gs_panel) %}
+{% call gs.gs_panel_root(view='dossier', panel=gs_panel, extra_attrs=' data-im-deferrable="v1"') %}
 {{ gs.gs_page_header(
      t('Global surveillance · dossier', '全球监控 · 市场档案'),
      t('Market dossier', '市场档案'),
-     t('Per-jurisdiction qualified observations under the four-clock contract; every element without an admitted source renders its honest state.',
-       '基于四时钟合同的各辖区合格观测；无已准入来源的元素呈现其真实状态。'),
+     t('Market observations with their source dates and data status; missing or restricted information is labeled where it appears.',
+       '市场观测附有来源日期及数据状态；缺失或受限信息会在相应位置标明。'),
      specimen=specimen) }}
 {{ gs.gs_questions() }}
 {{ gs.gs_snapshot(payload.snapshot, payload.basis, payload.horizon_label) }}
@@ -38,7 +38,7 @@
 
 <div class="intl-gs__marketscope" data-gs-market-scope>
   {% for market in payload.markets %}
-  <article class="intl-gs__mkt" data-gs-market="{{ market.id|e }}" id="{{ gs_panel.context_id|e }}-{{ market.id|e }}"{% if market.id != payload.default_market %} hidden{% else %} data-gs-market-default{% endif %}>
+  {% set market_markup %}<article class="intl-gs__mkt" data-gs-market="{{ market.id|e }}" id="{{ gs_panel.context_id|e }}-{{ market.id|e }}"{% if market.id != payload.default_market %} hidden{% else %} data-gs-market-default{% endif %}>
     <h3 class="intl-gs__mkt__title">{{ t(market.name_en, market.name_zh) }}{% if market.kind == 'aggregate' %} <span class="intl-gs__chip">{{ t('Aggregate', '聚合') }}</span>{% endif %}</h3>
     <div class="intl-gs__dossier-grid">
       <div class="intl-gs__dossier-main">
@@ -236,7 +236,8 @@
       {% endfor %}
       {% if not market.peers %}<p class="intl-gs__footnote">{{ t('An aggregate has no same-region peers.', '聚合无同区同伴。') }}</p>{% endif %}
     </div>
-  </article>
+  </article>{% endset %}
+  <script type="application/json" data-im-gs-market-id="{{ market.id|e }}"{% if market.id == payload.default_market %} data-im-gs-market-default{% endif %}>{{ {'schema': 'intl-gs-market.v1', 'market_id': market.id, 'default': market.id == payload.default_market, 'markup': market_markup}|intl_inert_json if 'intl_inert_json' is filter else {'schema': 'intl-gs-market.v1', 'market_id': market.id, 'default': market.id == payload.default_market, 'markup': market_markup}|tojson }}</script>
   {% endfor %}
 </div>
 {% endcall %}
