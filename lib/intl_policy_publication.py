@@ -262,7 +262,7 @@ def preview_published_policy_points(*,feed_base,source_generation,artifact_sha25
             return envelope
         for side in ('a','b'):
             economy=settings['economy_'+side]
-            if settings['instrument_'+side+'_ref']!=economy+'.policy_rate':return envelope
+            if settings['instrument_'+side+'_ref'] is not None and settings['instrument_'+side+'_ref']!=economy+'.policy_rate':return envelope
         for slot in observations:
             economy=settings['economy_'+slot[0]];source=series[economy]
             if source['instrument_ref']!=economy+'.policy_rate' or source['instrument_id']!=INSTRUMENTS[economy] or source['unit']!='percent':return envelope

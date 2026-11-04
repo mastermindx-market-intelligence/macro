@@ -183,8 +183,10 @@ def _is_settings(value: Any) -> bool:
         return False
     if type(value["revision_policy"]) is not str or value["revision_policy"] not in _REVISION_POLICIES:
         return False
-    for key in ("method_version", "instrument_a_ref", "instrument_b_ref"):
-        if not _is_text(value[key]):
+    if not _is_text(value["method_version"]):
+        return False
+    for key in ("instrument_a_ref", "instrument_b_ref"):
+        if value[key] is not None and not _is_text(value[key]):
             return False
     return _is_period(value["period"])
 

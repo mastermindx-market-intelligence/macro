@@ -610,3 +610,23 @@ def test_main_source_mounts_the_policy_route_without_a_second_service():
     assert any(isinstance(n,ast.ImportFrom) and n.module=='app.macro_policy_preview'for n in ast.walk(tree))
     assert any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)and n.func.attr=='include_router'
         and any(isinstance(a,ast.Name)and a.id=='macro_policy_preview_router'for a in n.args)for n in ast.walk(tree))
+
+
+@pytest.mark.parametrize('refs',[
+    {'instrument_a_ref':None},{'instrument_b_ref':None},
+    {'instrument_a_ref':None,'instrument_b_ref':None},
+])
+def test_nullable_native_instrument_refs_are_forwarded_without_invention(preview,refs):
+    response=_post(preview,_payload(settings=_settings(**refs)))
+    assert response.status_code==200
+    for key,value in refs.items():assert preview.calls[0]['settings'][key] is value
+
+
+@pytest.mark.parametrize('refs',[
+    {'instrument_a_ref':True},{'instrument_b_ref':17},
+    {'instrument_a_ref':[]},{'instrument_b_ref':{}},
+    {'instrument_a_ref':''},{'instrument_b_ref':' '},
+])
+def test_nullable_refs_still_reject_nontext_and_blank_values(preview,refs):
+    response=_post(preview,_payload(settings=_settings(**refs)))
+    assert response.status_code==400 and preview.calls==[]
