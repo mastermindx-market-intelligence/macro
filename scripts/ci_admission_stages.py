@@ -468,15 +468,22 @@ class AnchorIndexer:
 def conserve_age_witnesses(old_demands, replacement, pulls, admissions):
     """A replacement may retire only known closed or admitted generations.
 
-    Inputs are complete provider/receipt reads owned by the controller. This
+    Inputs are exact resolved prior identities and authenticated receipt reads. This
     check grants no deletion or selection; the caller still reconciles custody.
     """
-    live={p['number']:p for p in pulls if p.get('state')=='open'}
+    observed_prs={p['number']:p for p in pulls}
     expected=[]
-    for number in sorted({d.pr_number for d in old_demands} & set(live)):
-        head=live[number]['head']['sha']
-        pending=contract.pending_demand_for_pr(old_demands,admissions,number,head)
-        if pending is not None:expected.append(pending)
+    for number in sorted({d.pr_number for d in old_demands}):
+        originals=[d for d in old_demands if d.pr_number==number]
+        # Exact authenticated admission consumes a generation even when its PR
+        # cannot be observed. Absence from mutable discovery never does.
+        pending=contract.pending_demand_for_pr(originals,admissions,number,originals[-1].head_sha)
+        if pending is None:continue
+        row=observed_prs.get(number)
+        if row is None or row.get('state') not in {'open','closed'}:
+            raise ValueError('unresolved prior pending witness')
+        if row['state']=='closed':continue
+        expected.append(contract.replace_pending_head(pending,row['head']['sha']))
     observed={d.pr_number:d for d in contract.ordered_demands(replacement)}
     if any(observed.get(d.pr_number)!=d for d in expected):
         raise ValueError('replacement lost or rewrote an unserved original age witness')
@@ -664,13 +671,45 @@ class Stages:
         if not budget.preflight()[0]:
             raise ValueError('insufficient original budget for complete demand census')
         pulls = mog.open_pulls(self.repo, self.read)
-        facts=BulkReader(mog,self.repo,self.read,deadline=time.monotonic()+300).facts(pulls)
+        deadline=time.monotonic()+300
+        reader=BulkReader(mog,self.repo,self.read,deadline=deadline)
+        facts=reader.facts(pulls)
         ages=self.age_witnesses(inventory,facts)
         workload = mog.shared_proof_workload(self.repo, self.read,
             repository_id=self.context['repository_id'],
             protected_controller_sha=self.context['protected_controller_sha'],age_snapshot=self._age_snapshot)
         if not workload.complete:
             raise ValueError('incomplete shared workload')
+        # The state=all association inventory is controlled by this serialized
+        # writer, independently of mutable state=open discovery. Include pending
+        # checkpoint/history witnesses already authenticated by the workload read.
+        ages=[*ages,*workload.demands]
+        resolved={p['number']:p for p in pulls}
+        prior_numbers={d.pr_number for d in ages}
+        if len(set(resolved)|prior_numbers)>mog.OPEN_PULL_PAGE_CAP*100:
+            raise ValueError('prior witness/discovery union exceeds existing bound')
+        recovered=[]
+        for index,number in enumerate(sorted(prior_numbers-set(resolved))):
+            originals=[d for d in ages if d.pr_number==number]
+            pending=contract.pending_demand_for_pr(originals,workload.admissions,number,originals[-1].head_sha)
+            if pending is None:continue
+            if time.monotonic()>=deadline or not budget.may_continue(index)[0]:
+                raise ValueError('unresolved prior witness at budget/deadline boundary')
+            code,row=mog._request('GET',f'{mog.GITHUB_API}/repos/{self.repo}/pulls/{number}',self.read)
+            if (code!=200 or not isinstance(row,dict) or type(row.get('number')) is not int
+                    or row['number']!=number or row.get('state') not in {'open','closed'}
+                    or type(((row.get('base') or {}).get('repo') or {}).get('id')) is not int
+                    or ((row.get('base') or {}).get('repo') or {}).get('id')!=self.context['repository_id']
+                    or not isinstance((row.get('head') or {}).get('sha'),str)
+                    or not re.fullmatch('[0-9a-f]{40}',row['head']['sha'])
+                    or time.monotonic()>=deadline):
+                raise ValueError('unresolved prior witness identity or state')
+            resolved[number]=row
+            if row['state']=='open':recovered.append(row)
+        # Recovered open subjects get the same current source/merge/comment
+        # validation as listed subjects, within the original reader deadline.
+        facts.update(reader.facts(recovered))
+        pulls=[*pulls,*recovered]
         # Complete age/history custody precedes any bounded eligibility window.
         # Ages order evaluation; they never supply a cached freshness verdict.
         subjects = {}
@@ -724,7 +763,8 @@ class Stages:
                 changed.append(demand)
             return state, demand
 
-        # Cheap authored-only censuses retain their complete legacy behavior.
+        # Every new same-original demand is learning-only: mutable discovery
+        # cannot certify an exhaustive population, even when all observed rows pass.
         # Existing-proof prefixes need not reread every later original before
         # learning previously unregistered candidates within the SAME budget.
         costly = any(facts[d.pr_number]['ci_present'] for d in pending)
@@ -752,19 +792,19 @@ class Stages:
             state, _current = evaluate(number)
             evaluated.append(dict(pr_number=number, disposition=state))
             unknown = unknown or state == 'unknown'
-        complete = len(evaluated) == len(subjects) and not stopped and not unknown
+        observed_complete = len(evaluated) == len(subjects) and not stopped and not unknown
+        complete = False  # Offset traversal never establishes global completeness.
         # A prior-original rank is before every possible as-yet-unregistered
         # demand only under a STRICT clock comparison. No clock repair or new rank.
         earlier_unknown = any(row['disposition'] == 'unknown' for row in evaluated[:
             next((i for i, row in enumerate(evaluated) if prefix is not None and row['pr_number'] == prefix.pr_number), len(evaluated))])
         prefix_complete = (prefix is not None and not earlier_unknown
             and contract._demand_time(prefix) < datetime.fromisoformat(now))
-        # Preserve provider order for the historical complete-census handoff;
-        # reserve still applies the canonical age ordering before any effect.
-        learned_by_pr = {d.pr_number: d for d in learned}
-        demands = ([learned_by_pr[n] for n in subjects if n in learned_by_pr]
-            if complete else ([prefix] if prefix_complete else []))
-        eligibility = dict(complete=complete, prefix_complete=prefix_complete,
+        # Only this prior-original prefix can authorize the next reservation.
+        # The rest of the learned ages belong solely to the conserved receipt.
+        demands = [prefix] if prefix_complete else []
+        eligibility = dict(complete=complete, discovery_complete=False,
+            observed_complete=observed_complete, prior_witnesses_resolved=True, prefix_complete=prefix_complete,
             evaluated=evaluated, unresolved_pr_numbers=sorted((set(subjects)-{r['pr_number'] for r in evaluated})
                 | {r['pr_number'] for r in evaluated if r['disposition']=='unknown'}),
             new_demand_time=now, selected_rank=(dict(requested_at=prefix.requested_at,
@@ -777,7 +817,7 @@ class Stages:
             for demand in pending:
                 witnesses.setdefault(demand.pr_number, demand)
             carried = contract.ordered_demands(witnesses.values())
-            conserve_age_witnesses(ages, carried, pulls, workload.admissions)
+            conserve_age_witnesses(ages, carried, list(resolved.values()), workload.admissions)
             if carried:
                 self.receipt('demands', [asdict(d) for d in carried], 'demands', covered_comments=self._age_coverage)
                 publish_demands = True
@@ -837,7 +877,7 @@ class Stages:
             if demands:
                 raise ValueError('incomplete eligibility has no selectable prefix')
         self.emit_decision('ordered_demands', census_complete=eligibility['complete'],
-            discovery_complete=True, eligibility_prefix_complete=eligibility['prefix_complete'],
+            discovery_complete=False, eligibility_prefix_complete=eligibility['prefix_complete'],
             eligibility=eligibility,
             eligibility_phase='prepare', live_eligibility_recheck_required=True,
             ordered_demands=[asdict(d) for d in demands])

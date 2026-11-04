@@ -3339,11 +3339,12 @@ class ProofFreshness:
 
 
 def open_pulls(repo: str, token: str) -> list[dict[str, Any]]:
-    """One complete bounded open-PR census for source admission and merging.
+    """One bounded mutable open-PR traversal for source discovery and merging.
 
     Discovery is paginated independently of the evaluation cap.  Otherwise an
     older armed pull request beyond the first 100 open pulls is invisible forever;
-    wall-clock rotation cannot rotate something it never discovered.
+    wall-clock rotation cannot rotate something it never discovered. Offset pages
+    are not an atomic population snapshot: absence never proves closure.
     """
     pulls: list[dict[str, Any]] = []
     seen = set()
@@ -3378,7 +3379,11 @@ def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
 
 
 def current_shared_census() -> list[dict[str, Any]] | None:
-    """Reuse only the complete protected same-job discovery, never a PR file."""
+    """Reuse protected same-job observed candidates, never claim global coverage.
+
+    The legacy merger independently checks each candidate; this handoff is not
+    authority to retire missing demand witnesses or certify admission fairness.
+    """
     directory = os.environ.get("CI_ADMISSION_STAGE_DIR", "")
     if not directory:
         return None
@@ -3419,6 +3424,7 @@ class SharedProofWorkload:
     complete: bool
     runs: tuple[proof_admission.Run, ...] = ()
     admissions: tuple[proof_admission.Admission, ...] = ()
+    demands: tuple[proof_admission.Demand, ...] = ()
 
 
 def _read_admitted_run(repo, token, admitted, repository_id):
@@ -3494,6 +3500,7 @@ def shared_proof_workload(repo: str, token: str, *, repository_id: int,
     if runs is None:
         return SharedProofWorkload(False)
     records = []
+    demands = []
     try:
         if age_snapshot is None:
             age_snapshot,_=read_age_frontier(repo,token,repository_id=repository_id,protected_controller_sha=protected_controller_sha,inventory=inventory)
@@ -3505,6 +3512,7 @@ def shared_proof_workload(repo: str, token: str, *, repository_id: int,
                 repository_id=repository_id, protected_controller_sha=protected_controller_sha,age_snapshot=age_snapshot,
                 allow_empty=issue["number"] in dict(age_snapshot.covered_comments))
             records.extend(current)
+            demands.extend(_demands)
         records = proof_admission.merge_records(records)
         if inventory.launch and not any(
                 a.pr_number == inventory.launch[0] and a.generation == inventory.launch[1]
@@ -3517,7 +3525,7 @@ def shared_proof_workload(repo: str, token: str, *, repository_id: int,
             runs.append(observed)
             if observed.status == "completed":
                 records[index] = proof_admission.settle_run(admitted, observed)
-        return SharedProofWorkload(True, tuple(runs), tuple(records))
+        return SharedProofWorkload(True, tuple(runs), tuple(records), tuple(demands))
     except RateLimited:
         raise
     except Exception:

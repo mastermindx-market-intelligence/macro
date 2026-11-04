@@ -42,6 +42,10 @@ def controller(monkeypatch, tmp_path):
     return s
 
 
+
+def learned_demands(s):
+    return sorted(json.loads((s.directory/'demands/ci-proof-admission.json').read_text())['demands'],key=lambda d:d['pr_number'])
+
 def test_real_isolated_entry_uses_controller_canonical_contract():
     root=Path(__file__).resolve().parents[1]
     code=f"import runpy;d=runpy.run_path({str(root/'scripts/ci_admission_stages.py')!r});assert d['contract'] is d['mog'].proof_admission"
@@ -51,8 +55,8 @@ def test_real_isolated_entry_uses_controller_canonical_contract():
 
 def test_installed_bridge_accepts_cutover_candidate_despite_main_native(controller):
     result=controller.prepare(native_pr_enabled=True,freshness=None)
-    assert result=={'ready':True,'changed':True,'count':1}
-    d=controller.load('census')['demands'][0]
+    assert result=={'ready':True,'changed':True,'count':0}
+    d=learned_demands(controller)[0]
     assert d['purpose']=='authored' and d['head_sha']=='1'*40
     pa.ordered_demands([pa.Demand(**d)])
 
@@ -177,6 +181,7 @@ class OriginalServer:
         self.control=dict(id=70,run_attempt=1,status='in_progress',head_sha='4'*40,
             repository={'id':17,'full_name':'acme/widgets'},head_branch='main',event='schedule',
             path='.github/workflows/merge-on-green.yml')
+        self.controllers={70:self.control}
 
     def upload(self,s,suffix,name):
         import io,zipfile,hashlib
@@ -187,7 +192,7 @@ class OriginalServer:
         self.archives[ident]=out.getvalue()
         self.artifacts[ident]=dict(id=ident,name=name,expired=False,expires_at='2099-01-01T00:00:00Z',
             digest='sha256:'+hashlib.sha256(out.getvalue()).hexdigest(),
-            workflow_run={'id':70,'repository_id':17,'head_sha':'4'*40})
+            workflow_run={'id':int(s.context['current_run_id']),'repository_id':17,'head_sha':'4'*40})
         return ident
 
     def request(self,method,url,token,payload=None):
@@ -195,7 +200,8 @@ class OriginalServer:
         path=urlparse(url).path.removeprefix('/repos/acme/widgets')
         query=parse_qs(urlparse(url).query)
         if method!='GET':self.writes.append((method,path,payload))
-        if path in {'/actions/runs/70','/actions/runs/70/attempts/1'}:return 200,self.control
+        if path.startswith('/actions/runs/') and int(path.split('/')[3]) in self.controllers:
+            return 200,self.controllers[int(path.split('/')[3])]
         if path.startswith('/actions/artifacts/'):
             return 200,self.artifacts[int(path.split('/')[3])]
         if path.startswith('/labels/'):
@@ -246,30 +252,35 @@ def original_server(monkeypatch,tmp_path):
     monkeypatch.setattr(stages,'BulkReader',lambda *a,**k:SimpleNamespace(facts=lambda pulls:{p['number']:dict(comments=server.comments,ci_present=False,native=False) for p in pulls}))
     clock=[1800000000]
     def sleep(seconds):clock[0]+=seconds
-    monkeypatch.setattr(s,'anchor_indexer',lambda:stages.AnchorIndexer(mog,s.repo,s.read,CTX,deadline=clock[0]+240,clock=lambda:clock[0],sleep=sleep))
+    monkeypatch.setattr(s,'anchor_indexer',lambda:stages.AnchorIndexer(mog,s.repo,s.read,s.context,deadline=clock[0]+240,clock=lambda:clock[0],sleep=sleep))
     return s,server
 
 
 def test_real_controller_upload_dispatch_binding_chain_with_seven_active(monkeypatch,tmp_path):
     s,server=original_server(monkeypatch,tmp_path)
     for n in range(201,208):server.runs[n]=dict(id=n,run_attempt=1,status='queued',event='pull_request')
-    assert s.prepare(native_pr_enabled=True,freshness=None)['count']==1
+    assert s.prepare(native_pr_enabled=True,freshness=None)['count']==0
     demands=server.upload(s,'demands','ci-proof-demands-70-1')
-    result=s.reserve(demands);assert result['prepared'] is True
+    assert s.reserve(demands)=={'prepared':False}
+    s.directory=tmp_path/'next-original'
+    s.context={**CTX,'current_run_id':'71'}
+    server.controllers[71]={**server.control,'id':71}
+    assert s.prepare(native_pr_enabled=True,freshness=None)['count']==1
+    result=s.reserve();assert result['prepared'] is True
     generation=result['generation']
     # One labeled anchor now retains the whole immutable age batch, but no
     # demand row is counted as an admission/reservation.
     assert mog.REFRESH_LEASE_LABEL in {row['name'] for row in server.labels}
     records,pending=s.history(pull())
-    assert records == [] and len(pending) == 1
-    assert pending[0].demand_id == generation
-    prepared=server.upload(s,'prepared',f'ci-proof-admission-70-1-{generation}-prepared')
-    checkpoint=server.upload(s,'checkpoint','ci-proof-checkpoint-70-1-7')
+    assert records == [] and len(pa.ordered_demands(pending)) == 1
+    assert pa.ordered_demands(pending)[0].demand_id == generation
+    prepared=server.upload(s,'prepared',f'ci-proof-admission-71-1-{generation}-prepared')
+    checkpoint=server.upload(s,'checkpoint','ci-proof-checkpoint-71-1-7')
     assert s.dispatch(prepared,checkpoint)==dict(bound=True,generation=generation)
     # Once the protected admission is actually indexed, the original lease
     # association remains present for outstanding capacity and recovery.
     assert mog.REFRESH_LEASE_LABEL in {row['name'] for row in server.labels}
-    bound=server.upload(s,'bound',f'ci-proof-admission-70-1-{generation}-bound')
+    bound=server.upload(s,'bound',f'ci-proof-admission-71-1-{generation}-bound')
     assert s.finalize(bound)==dict(finalized=True)
     assert server.description=='a2 idle'
     workload=mog.shared_proof_workload('acme/widgets','read',repository_id=17,protected_controller_sha='4'*40)
@@ -285,10 +296,15 @@ def test_real_controller_upload_dispatch_binding_chain_with_seven_active(monkeyp
 def test_eighth_arrival_between_upload_and_dispatch_closes_actual_stage(monkeypatch,tmp_path):
     s,server=original_server(monkeypatch,tmp_path)
     s.prepare(native_pr_enabled=True,freshness=None)
-    result=s.reserve(server.upload(s,'demands','ci-proof-demands-70-1'))
+    assert s.reserve(server.upload(s,'demands','ci-proof-demands-70-1'))=={'prepared':False}
+    s.directory=tmp_path/'next-original'
+    s.context={**CTX,'current_run_id':'71'}
+    server.controllers[71]={**server.control,'id':71}
+    assert s.prepare(native_pr_enabled=True,freshness=None)['count']==1
+    result=s.reserve()
     g=result['generation']
-    prepared=server.upload(s,'prepared',f'ci-proof-admission-70-1-{g}-prepared')
-    checkpoint=server.upload(s,'checkpoint','ci-proof-checkpoint-70-1-7')
+    prepared=server.upload(s,'prepared',f'ci-proof-admission-71-1-{g}-prepared')
+    checkpoint=server.upload(s,'checkpoint','ci-proof-checkpoint-71-1-7')
     for n in range(201,209):server.runs[n]=dict(id=n,run_attempt=1,status='queued',event='pull_request')
     with pytest.raises(RuntimeError,match='did not bind: held'):s.dispatch(prepared,checkpoint)
     assert not any(path.endswith('/dispatches') for _,path,_ in server.writes)
@@ -390,7 +406,7 @@ def test_untrusted_comment_namespace_cannot_poison_complete_census(controller,mo
     monkeypatch.setattr(mog,'fetch_issue_comments',lambda *a,**k:[comment])
     monkeypatch.setattr(controller,'history',lambda p,*_:stages.Stages.history(controller,p))
     monkeypatch.setattr(mog,'_request',lambda *a:pytest.fail('outsider requires no artifact/permission GET'))
-    assert controller.prepare(native_pr_enabled=False,freshness=None)['count']==1
+    assert controller.prepare(native_pr_enabled=False,freshness=None)['count']==0
 
 
 
@@ -813,7 +829,8 @@ def bulk_stage(monkeypatch,tmp_path,count=900):
 def test_bulk_900_complete_prepare_one_anchor_preserves_every_age(monkeypatch,tmp_path):
     s,p,indexer=bulk_stage(monkeypatch,tmp_path)
     result=s.prepare(native_pr_enabled=True,freshness=None)
-    assert result['count']==900 and result['changed'] is True
+    assert result['count']==0 and result['changed'] is True
+    assert len(learned_demands(s))==900
     assert len(p.queries)==36 and p.points==928 and p.core>950
     before=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())['demands']
     artifact=p.upload(s);i=indexer();i.start(artifact,1);assert i.advance()['disposition']=='indexed'
@@ -823,8 +840,9 @@ def test_bulk_900_complete_prepare_one_anchor_preserves_every_age(monkeypatch,tm
     p.pulls[900]['head']['sha']='e'*40
     s.directory=tmp_path/'second'
     again=s.prepare(native_pr_enabled=True,freshness=None)
-    assert again['count']==899
-    after=json.loads((s.directory/'census.json').read_text())['demands']
+    assert again['count']==1
+    after=learned_demands(s)
+    assert len(after)==899
     old={d['pr_number']:d for d in before}
     for d in after:
         assert (d['requested_at'],d['demand_id'],d['purpose'])==(old[d['pr_number']]['requested_at'],old[d['pr_number']]['demand_id'],old[d['pr_number']]['purpose'])
@@ -989,8 +1007,9 @@ def test_bulk_mixed_native_refresh_uses_actual_freshness_budget(monkeypatch,tmp_
         assert 0<len(learned)<count and all(d['purpose']=='refresh' for d in learned)
     else:
         result=s.prepare(native_pr_enabled=False,freshness=freshness)
-        assert result['count']==expected
-        assert all(d['purpose']=='refresh' for d in s.load('census')['demands'])
+        assert result['count']==0
+        assert len(learned_demands(s))==expected
+        assert all(d['purpose']=='refresh' for d in learned_demands(s))
         assert p.core>700 and p.points>900
     # One main commit classification is shared across every actual stale_for.
     assert freshness.commit_file_reads==1
@@ -999,7 +1018,7 @@ def test_bulk_mixed_native_refresh_uses_actual_freshness_budget(monkeypatch,tmp_
 def test_bulk_v2_successor_covers_expired_original_without_resetting_age(monkeypatch,tmp_path):
     s,p,indexer=bulk_stage(monkeypatch,tmp_path,3)
     s.prepare(native_pr_enabled=False,freshness=None);first=p.upload(s);i=indexer();i.start(first,1);i.advance()
-    original=s.load('census')['demands']
+    original=learned_demands(s)
     p.pulls[3]['head']['sha']='e'*40;s.directory=tmp_path/'successor'
     s.prepare(native_pr_enabled=False,freshness=None)
     data=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())
@@ -1007,8 +1026,8 @@ def test_bulk_v2_successor_covers_expired_original_without_resetting_age(monkeyp
     assert data['covered_comments']==[{'pr_number':1,'through_comment_id':10000}]
     second=p.upload(s);i=indexer();i.start(second,1);assert i.advance()['disposition']=='indexed'
     p.artifacts[first]['expired']=True;s.directory=tmp_path/'after-expiry'
-    assert s.prepare(native_pr_enabled=False,freshness=None)['count']==3
-    current=s.load('census')['demands']
+    assert s.prepare(native_pr_enabled=False,freshness=None)['count']==1
+    current=sorted((asdict(d) for d in s._age_snapshot.demands),key=lambda d:d['pr_number'])
     assert [d['requested_at'] for d in current]==[d['requested_at'] for d in original]
     assert [d['demand_id'] for d in current]==[d['demand_id'] for d in original]
     assert not (s.directory/'demands-digest.json').exists()
@@ -1100,7 +1119,7 @@ def test_bulk_closed_anchor_retirement_requires_exact_successor_and_readback(mon
     assert p.description=='a2 idle' and p.labels[1]==[] and p.labels[2]
     assert len([c for c in p.calls if c[0]=='DELETE'])==1
     p.artifacts[first]['expired']=True;s.directory=tmp_path/'after-retirement'
-    assert s.prepare(native_pr_enabled=False,freshness=None)['count']==2
+    assert s.prepare(native_pr_enabled=False,freshness=None)['count']==1
 
 
 def test_bulk_compaction_never_waives_an_uncovered_original_admission(monkeypatch,tmp_path):
@@ -1110,7 +1129,7 @@ def test_bulk_compaction_never_waives_an_uncovered_original_admission(monkeypatc
     # original admission comment's numeric ID is beneath its age cutoff.
     ref,_=i.authenticate(stages.IndexState(aid,1))
     p.comments[1].append(dict(id=9999,body=mog.ADMISSION_COMMENT_PREFIX+json.dumps(ref),user={'id':41898282,'login':'github-actions[bot]','type':'Bot'}))
-    snapshot=pa.AgeSnapshot(tuple(pa.Demand(**d) for d in s.load('census')['demands']),((1,10000),),2)
+    snapshot=pa.AgeSnapshot(tuple(pa.Demand(**d) for d in learned_demands(s)),((1,10000),),2)
     with pytest.raises(ValueError):
         mog.pr_admission_history(s.repo,s.read,1,p.comments[1],repository_id=17,protected_controller_sha='4'*40,age_snapshot=snapshot)
 
@@ -1208,8 +1227,8 @@ def test_hosted_bridge_source_gate_proves_cutover_candidate_before_trigger_remov
     monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',
         lambda repo,sha:mog.admitted_dispatch_source_ready(repo,ci,executor))
     assert 'pull_request' in ci.get('on',ci.get(True))
-    assert controller.prepare(native_pr_enabled=True,freshness=None)=={'ready':True,'changed':True,'count':1}
-    assert controller.load('census')['demands'][0]['purpose']=='authored'
+    assert controller.prepare(native_pr_enabled=True,freshness=None)=={'ready':True,'changed':True,'count':0}
+    assert learned_demands(controller)[0]['purpose']=='authored'
 
 
 def test_hosted_bridge_still_defers_native_candidate_first_proof(controller,monkeypatch):
@@ -1231,8 +1250,8 @@ def test_hosted_bridge_preserves_refresh_purpose_across_native_transition(contro
     monkeypatch.setattr(mog,'head_check_runs',lambda *a:[{'id':91,'name':'ci-gate','status':'completed','conclusion':'success','app':{'slug':'github-actions'}}])
     monkeypatch.setattr(controller,'candidate_native_entrypoint',lambda p:candidate_native)
     result=controller.prepare(native_pr_enabled=True,freshness=SimpleNamespace(stale_for=lambda *a:(True,'exact input change')))
-    assert result=={'ready':True,'changed':True,'count':1}
-    assert controller.load('census')['demands'][0]['purpose']=='refresh'
+    assert result=={'ready':True,'changed':True,'count':0}
+    assert learned_demands(controller)[0]['purpose']=='refresh'
 
 
 def later_original_controller(s,p,run_id):
@@ -1247,7 +1266,7 @@ def indexed_ages_near_expiry(monkeypatch,tmp_path,*,count=3):
     s,p,indexer=bulk_stage(monkeypatch,tmp_path,count)
     s.prepare(native_pr_enabled=False,freshness=None)
     aid=p.upload(s);i=indexer();i.start(aid,1);assert i.advance()['disposition']=='indexed'
-    ages=s.load('census')['demands']
+    ages=learned_demands(s)
     p.artifacts[aid]['expires_at']=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat()
     s.directory=tmp_path/'renewal'
     later_original_controller(s,p,71)
@@ -1257,7 +1276,7 @@ def indexed_ages_near_expiry(monkeypatch,tmp_path,*,count=3):
 def test_unchanged_pending_age_renews_before_actual_expiry(monkeypatch,tmp_path):
     s,p,indexer,aid,ages=indexed_ages_near_expiry(monkeypatch,tmp_path)
     result=s.prepare(native_pr_enabled=False,freshness=None)
-    assert result=={'ready':True,'changed':True,'count':3}
+    assert result=={'ready':True,'changed':True,'count':1}
     payload=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())
     assert sorted(payload['demands'],key=lambda d:d['pr_number'])==ages
     assert payload['covered_comments']==[{'pr_number':1,'through_comment_id':10000}]
@@ -1265,8 +1284,9 @@ def test_unchanged_pending_age_renews_before_actual_expiry(monkeypatch,tmp_path)
     p.artifacts[aid]['expired']=True
     s.directory=tmp_path/'after-renewal'
     later_original_controller(s,p,72)
-    assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':3}
-    assert s.load('census')['demands']==ages
+    assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':1}
+    assert s.load('census')['demands']==[asdict(pa.ordered_demands(pa.Demand(**d) for d in ages)[0])]
+    assert sorted((asdict(d) for d in s._age_snapshot.demands),key=lambda d:d['pr_number'])==ages
     assert not (s.directory/'demands-digest.json').exists()
 
 
@@ -1359,8 +1379,9 @@ def test_age_renewal_uses_server_artifact_expiry_not_pr_or_comment_clock(monkeyp
     p.artifacts[aid]['expires_at']='2099-01-01T00:00:00Z'
     p.comments[1][0]['created_at']='2000-01-01T00:00:00Z'
     for pr in p.pulls.values():pr['updated_at']='2000-01-01T00:00:00Z'
-    assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':3}
-    assert s.load('census')['demands']==ages
+    assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':1}
+    assert s.load('census')['demands']==[asdict(pa.ordered_demands(pa.Demand(**d) for d in ages)[0])]
+    assert sorted((asdict(d) for d in s._age_snapshot.demands),key=lambda d:d['pr_number'])==ages
     assert not (s.directory/'demands-digest.json').exists()
 
 
@@ -1460,7 +1481,9 @@ def test_ranked_earlier_refresh_last_in_provider_order_never_overtaken(controlle
         payload=json.loads((controller.directory/'demands/ci-proof-admission.json').read_text())
         assert asdict(old) in payload['demands']
     elif old_state=='eligible':assert pa.ordered_demands(pa.Demand(**d) for d in census['demands'])[0]==old
-    else:assert [d['pr_number'] for d in census['demands']]==[7]
+    else:
+        assert census['demands']==[]  # New age is learning-only, even after older ineligibility.
+        assert 7 in {d['pr_number'] for d in learned_demands(controller)}
 
 
 def test_ranked_partial_same_clock_random_generation_cannot_select_new(controller,monkeypatch):
@@ -1531,7 +1554,7 @@ def test_ranked_prefix_output_does_not_claim_complete_eligibility(controller,mon
     monkeypatch.setattr(mog,'reserve_shared_admission',held)
     assert controller.reserve()['disposition']=='held' and calls==[prior]
     row=json.loads(capsys.readouterr().out.splitlines()[0])
-    assert row['census_complete'] is False and row['discovery_complete'] is True
+    assert row['census_complete'] is False and row['discovery_complete'] is False
     assert row['eligibility_prefix_complete'] is True
 
 
@@ -1686,3 +1709,167 @@ def test_ranked_advertised_original_missing_check_or_status_blocks_earlier_prefi
     c=controller.load('census')
     assert c['demands']==[] and not c['eligibility']['prefix_complete']
     assert c['eligibility']['evaluated'][0]==dict(pr_number=8,disposition='unknown')
+
+
+def test_mutable_offset_discovery_cannot_retire_absent_pending_witness():
+    old=pa.Demand(19,f'{19:040x}','authored','2026-11-01T00:00:00Z','000000000019')
+    with pytest.raises(ValueError,match='unresolved prior'):
+        stages.conserve_age_witnesses([old],[],[pull(18)],[])
+
+
+def test_mutable_offset_close_reopen_real_prepare_renewal_conserves_oldest(monkeypatch,tmp_path):
+    from copy import deepcopy
+    from datetime import datetime,timezone,timedelta
+    from urllib.parse import urlparse,parse_qs
+    s,p,indexer=bulk_stage(monkeypatch,tmp_path,119)
+    # First original learns ages; its immutable indexed artifact is the only
+    # historical authority. The next original renews that same age frontier.
+    s.prepare(native_pr_enabled=False,freshness=None)
+    payload_path=s.directory/'demands/ci-proof-admission.json'
+    payload=json.loads(payload_path.read_text())
+    for d in payload['demands']:
+        d['requested_at']='2026-11-01T00:00:00Z' if d['pr_number']==19 else '2026-11-02T00:00:00Z'
+    # Seed the original test-owned historical receipt before any upload/index.
+    s.directory=tmp_path/'indexed-original'
+    s.receipt('demands',payload['demands'],'demands',covered_comments={})
+    aid=p.upload(s);i=indexer();i.start(aid,1);assert i.advance()['disposition']=='indexed'
+    old={d['pr_number']:d for d in payload['demands']}
+    p.artifacts[aid]['expires_at']=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat()
+    s.directory=tmp_path/'renewal-offset';later_original_controller(s,p,71)
+    original=p.request;pages=[]
+    def shifted(method,url,token,payload=None):
+        parsed=urlparse(url)
+        if parsed.path.endswith('/pulls'):
+            page=int(parse_qs(parsed.query)['page'][0]);pages.append(page)
+            rows=[deepcopy(p.pulls[n]) for n in sorted(p.pulls,reverse=True) if p.pulls[n]['state']=='open']
+            result=rows[(page-1)*100:page*100]
+            p.pulls[119]['state']='closed' if page==1 else 'open'
+            return 200,result
+        return original(method,url,token,payload)
+    monkeypatch.setattr(mog,'_request',shifted)
+    result=s.prepare(native_pr_enabled=False,freshness=None)
+    assert pages==[1,2] and all(row['state']=='open' for row in p.pulls.values())
+    c=s.load('census')
+    assert c['eligibility']['complete'] is False
+    assert result['count']==1 and c['demands']==[old[19]]
+    renewed=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())
+    assert {d['pr_number']:d for d in renewed['demands']}==old
+    assert renewed['covered_comments']==[{'pr_number':1,'through_comment_id':10000}]
+    assert any(path=='/pulls/19' for _,path,_,_ in p.calls)
+    successor=p.upload(s);i=indexer();i.start(successor,1);assert i.advance()['disposition']=='indexed'
+    p.artifacts[aid]['expired']=True
+    s.directory=tmp_path/'covered';later_original_controller(s,p,72)
+    monkeypatch.setattr(mog,'_request',original)
+    assert s.prepare(native_pr_enabled=False,freshness=None)['count']==1
+    assert s.load('census')['demands']==[old[19]]
+
+
+def test_mutable_discovery_first_learning_cannot_select_new(controller):
+    assert controller.prepare(native_pr_enabled=False,freshness=None)==dict(ready=True,changed=True,count=0)
+    c=controller.load('census')
+    assert c['eligibility']['complete'] is False
+    assert c['eligibility']['prefix_complete'] is False
+    assert c['demands']==[]
+    assert len(json.loads((controller.directory/'demands/ci-proof-admission.json').read_text())['demands'])==1
+
+
+@pytest.mark.parametrize('bad',['404','state','repository','number','head','timeout','budget'])
+def test_missing_prior_witness_unknown_blocks_renewal_and_selection(monkeypatch,tmp_path,bad):
+    s,p,_,aid,_=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    monkeypatch.setattr(mog,'open_pulls',lambda *a:[p.pulls[1],p.pulls[3]])
+    request=p.request
+    def read(method,url,token,payload=None):
+        if url.endswith('/pulls/2'):
+            if bad=='404':return 404,{'message':'unavailable'}
+            if bad=='timeout':raise TimeoutError('original point read unavailable')
+            row={**p.pulls[2]}
+            if bad=='state':row['state']='unknown'
+            if bad=='repository':row['base']={**row['base'],'repo':{'id':18}}
+            if bad=='number':row['number']=3
+            if bad=='head':row['head']={'sha':'missing'}
+            return 200,row
+        return request(method,url,token,payload)
+    monkeypatch.setattr(mog,'_request',read)
+    if bad=='budget':
+        workload=mog.shared_proof_workload
+        def spent(*a,**kw):
+            result=workload(*a,**kw);p.core=0;return result
+        monkeypatch.setattr(mog,'shared_proof_workload',spent)
+    comments=list(p.comments[1]);description=p.description
+    with pytest.raises((ValueError,TimeoutError),match='prior witness|point read'):
+        s.prepare(native_pr_enabled=False,freshness=None)
+    assert p.comments[1]==comments and p.description==description
+    assert not (s.directory/'census.json').exists()
+    assert not (s.directory/'demands-digest.json').exists()
+    assert not p.artifacts[aid]['expired']
+
+
+@pytest.mark.parametrize('state',['closed','open'])
+def test_missing_prior_witness_exact_read_resolves_state_and_preserves_head_age(monkeypatch,tmp_path,state):
+    s,p,_,aid,ages=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    monkeypatch.setattr(mog,'open_pulls',lambda *a:[p.pulls[1],p.pulls[3]])
+    p.pulls[2]['state']=state;p.pulls[2]['head']['sha']='e'*40
+    result=s.prepare(native_pr_enabled=False,freshness=None)
+    replacement={d['pr_number']:d for d in learned_demands(s)}
+    assert result['count']==1 and s.load('census')['eligibility']['complete'] is False
+    assert any(path=='/pulls/2' for _,path,_,_ in p.calls)
+    if state=='closed':assert set(replacement)=={1,3}
+    else:
+        assert replacement[2]=={**ages[1],'head_sha':'e'*40}
+        assert set(replacement)=={1,2,3}
+    assert json.loads((s.directory/'demands/ci-proof-admission.json').read_text())['covered_comments']==[{'pr_number':1,'through_comment_id':10000}]
+
+
+def test_exact_admitted_generation_consumes_missing_witness_without_false_closure():
+    old=pa.Demand(19,f'{19:040x}','authored','2026-11-01T00:00:00Z','000000000019')
+    admitted=pa.Admission(old.demand_id,19,old.head_sha,'4'*40,'3'*40,'4'*40,None,1,False)
+    stages.conserve_age_witnesses([old],[],[],[admitted])
+    with pytest.raises(ValueError,match='unresolved prior'):
+        stages.conserve_age_witnesses([old],[],[],[replace(admitted,generation='a'*12)])
+
+
+def test_history_only_associated_pending_witness_joins_global_prefix(controller,monkeypatch):
+    old=pa.Demand(19,'2'*40,'refresh','2026-01-01T00:00:00Z','000000000019')
+    monkeypatch.setattr(mog,'shared_proof_workload',lambda *a,**k:mog.SharedProofWorkload(True,(),(),(old,)))
+    calls=[]
+    def request(method,url,token,*unused):
+        calls.append(url);assert url.endswith('/pulls/19')
+        return 200,pull(19,head='2'*40)
+    monkeypatch.setattr(mog,'_request',request)
+    assert controller.prepare(native_pr_enabled=False,freshness=None)['count']==1
+    assert controller.load('census')['demands']==[asdict(old)]
+    assert asdict(old) in learned_demands(controller)
+    assert len(calls)==1
+
+
+def test_mutable_discovery_prior_union_keeps_existing_bound(controller,monkeypatch):
+    old=tuple(pa.Demand(n,f'{n:040x}','authored','2026-01-01T00:00:00Z',f'{n:012x}') for n in range(100,1100))
+    monkeypatch.setattr(mog,'shared_proof_workload',lambda *a,**k:mog.SharedProofWorkload(True,(),(),old))
+    with pytest.raises(ValueError,match='existing bound'):
+        controller.prepare(native_pr_enabled=False,freshness=None)
+    assert not (controller.directory/'census.json').exists()
+
+
+def test_shared_workload_returns_authenticated_history_only_pending(monkeypatch):
+    old=pa.Demand(19,'2'*40,'refresh','2026-01-01T00:00:00Z','000000000019')
+    inventory=mog.SharedAdmissionInventory('shared',True,({'number':19,'state':'closed'},))
+    monkeypatch.setattr(mog,'shared_admission_inventory',lambda *a:inventory)
+    monkeypatch.setattr(mog,'indexed_active_ci_runs',lambda *a:[])
+    monkeypatch.setattr(mog,'fetch_issue_comments',lambda *a,**kw:[])
+    seen=[]
+    def authenticated(*args,**kw):
+        seen.append(args[2]);return [],[old]
+    monkeypatch.setattr(mog,'pr_admission_history',authenticated)
+    observed=mog.shared_proof_workload('acme/widgets','read',repository_id=17,
+        protected_controller_sha='4'*40,age_snapshot=pa.AgeSnapshot((),(),2))
+    assert observed.complete and observed.demands==(old,) and seen==[19]
+
+
+def test_missing_prior_deadline_cannot_retire_or_select(controller,monkeypatch):
+    old=pa.Demand(19,'2'*40,'refresh','2026-01-01T00:00:00Z','000000000019')
+    monkeypatch.setattr(mog,'shared_proof_workload',lambda *a,**k:mog.SharedProofWorkload(True,(),(),(old,)))
+    clock=iter([0,301])
+    monkeypatch.setattr(stages.time,'monotonic',lambda:next(clock))
+    with pytest.raises(ValueError,match='deadline'):
+        controller.prepare(native_pr_enabled=False,freshness=None)
+    assert not (controller.directory/'census.json').exists()
