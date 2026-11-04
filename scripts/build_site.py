@@ -6448,6 +6448,7 @@ def main() -> int:
                   # ONLY as committed templates/->site/ pairs; copying them here too means
                   # a render self-heals them like every other page asset.
                   "portfolio_import.css", "portfolio_import.js", "watchstore.js", "portfolio.js",
+                  "prophet_save.js", "prophet_save.css",
                   "portfolio_import_ui.js",
                   "market_books.js",
                   "tablesort.js", "charts.js",

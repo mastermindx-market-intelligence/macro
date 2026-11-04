@@ -18541,6 +18541,12 @@ window.__CHART_SWAP__ = {
 };
 </script>
 <script src="theme.js"></script>
+{% if mode == 'stocks' %}
+<div data-watchstore-checked-save hidden></div>
+<link rel="stylesheet" href="prophet_save.css">
+<script src="watchstore.js"></script>
+<script src="prophet_save.js"></script>
+{% endif %}
 <script src="tier_preview.js"></script>
 {# The macro shell has no Plotly graphs or Time Machine panel. Avoid three
    do-nothing JS downloads on its mobile critical path; retain the existing

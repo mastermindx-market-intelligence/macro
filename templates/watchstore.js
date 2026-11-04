@@ -75,6 +75,18 @@
   // — a strict superset of the uid check (a uid change is always an epoch change,
   // but a same-uid cycle is an epoch change the uid check alone cannot see).
   var authEpoch = 0;
+  // Prophet opts into account-backed checked saves, not the legacy sync/fold host.
+  var checkedOnlyHost = false;
+  var checkedHostUnavailable = false;
+  function accountScope() {
+    var epoch = authEpoch, uid = user && user.id, client = sb;
+    return { uid: uid, client: client, current: function () {
+      return epoch === authEpoch && uid === (user && user.id) && client === sb;
+    } };
+  }
+  function guardAccount(scope) {
+    if (!scope.current()) throw new Error('stale-session');
+  }
   var listsCache = [];     // [{id,name,position}] — last server read of the user's lists
   var wlId = null;         // ACTIVE (bound) list id — see resolveBoundList()
   var foldTargetId = null; // id of the list NAMED 'Watchlist' — resolved ON DEMAND by the fold
@@ -520,14 +532,17 @@
     return '';
   }
 
-  function listsFetch() {
+  function listsFetch(scope) {
+    scope = scope || accountScope();
     return _listsGuard().then(function () {
-      return sb.from('watchlists')
+      guardAccount(scope);
+      return scope.client.from('watchlists')
         .select('id, name, position, created_at')
-        .eq('user_id', user.id)
+        .eq('user_id', scope.uid)
         .order('position')
         .order('created_at', { ascending: true });
     }).then(function (res) {
+      guardAccount(scope);
       if (res.error) throw res.error;
       listsCache = (res.data || []).filter(function (r) { return r && r.id; })
         .map(_row).sort(_byPositionThenCreated);
@@ -710,14 +725,17 @@
 
   /* Read one list's rows from the server. This is the ONLY writer of cloud[listId],
      and therefore the only thing that can ever authorize a delete against that list. */
-  function symbolsFetch(listId) {
+  function symbolsFetch(listId, scope) {
+    scope = scope || accountScope();
     return _listsGuard().then(function () {
+      guardAccount(scope);
       if (!listId) throw new Error('no-list');
-      return sb.from('watchlist_symbols')
+      return scope.client.from('watchlist_symbols')
         .select('symbol, position, created_at')
         .eq('watchlist_id', listId)
         .order('position');
     }).then(function (res) {
+      guardAccount(scope);
       if (res.error) throw res.error;
       var rows = (res.data || []).filter(function (r) { return r && r.symbol; });
       var set = {}, order = [], mx = -1;
@@ -954,17 +972,21 @@
          _isRefusalErr can tell a 4xx answer from a lost exchange (status 0)
          or a gateway 5xx.
      `onAttempt` fires immediately before the insert request leaves. */
-  function _checkedInsert(listId, t, onAttempt) {
+  function _checkedInsert(listId, t, onAttempt, scope) {
+    scope = scope || accountScope();
     return _listsGuard().then(function () {
-      return _cloudOf(listId) ? null : symbolsFetch(listId);
+      guardAccount(scope);
+      return _cloudOf(listId) ? null : symbolsFetch(listId, scope);
     }).then(function () {
+      guardAccount(scope);
       var c = _cloudOf(listId);
       if (!c || c.set[t]) return { symbol: t, skipped: true };
       setPill('syncing');
       if (onAttempt) onAttempt();
-      return sb.from('watchlist_symbols')
+      return scope.client.from('watchlist_symbols')
         .insert({ watchlist_id: listId, symbol: t, section: SECTION, position: _nextPos(listId) })
         .then(function (res) {
+          guardAccount(scope);
           if (res && res.error) {
             var e = res.error;
             if (e instanceof Error) throw e;
@@ -1028,13 +1050,19 @@
   /* The save must land in a list the account actually knows. listsCache is
      only a cache — an id absent from it may be a list created elsewhere since
      our last refresh, so absence alone never answers; ask once, then decide. */
-  function ensureList(listId) {
+  function ensureList(listId, scope) {
+    if (scope) guardAccount(scope);
     if (_listKnown(listId)) return Promise.resolve(true);
-    return _withDeadline(listsFetch).then(function () { return _listKnown(listId); });
+    return _withDeadline(function () { return listsFetch(scope); }).then(function () {
+      if (scope) guardAccount(scope);
+      return _listKnown(listId);
+    });
   }
 
   function saveChecked(listId, tickers, opts) {
     var o = opts || {};
+    // Capture at enqueue, not when a previous list operation finally settles.
+    var scope = accountScope(), anyAttempt = false;
     // normalize + de-dupe the request, preserving order (fif's uppercase rule)
     var want = [], seenReq = {};
     (Array.isArray(tickers) ? tickers : [tickers]).forEach(function (t) {
@@ -1054,6 +1082,7 @@
     return run;
 
     function _doSaveChecked() {
+      if (!scope.current()) return Promise.resolve(_finish(null));
       // synchronous guards: no attempt, no waiting event, zero network
       if (!user || !sb) {
         return Promise.resolve({
@@ -1080,12 +1109,14 @@
                  names: want.slice(), returnFocus: rf };
       };
 
-      return ensureList(listId)
+      return ensureList(listId, scope)
         .then(function (known) {
+          guardAccount(scope);
           if (!known) return rejected('no-list');
           // check FIRST: tickers already on the server are never written again
-          return _withDeadline(function () { return symbolsFetch(listId); })
+          return _withDeadline(function () { return symbolsFetch(listId, scope); })
             .then(function (rows) {
+              guardAccount(scope);
               var present = {};
               (rows || []).forEach(function (r) {
                 if (r && r.symbol) present[String(r.symbol).toUpperCase()] = true;
@@ -1096,7 +1127,7 @@
               missing.forEach(function (t) {
                 chain = chain.then(function () {
                   return _withDeadline(function () {
-                    return _checkedInsert(listId, t, function () { attempted[t] = true; });
+                    return _checkedInsert(listId, t, function () { attempted[t] = true; anyAttempt = true; }, scope);
                   }).then(function () { wroteAnything = true; });
                 });
               });
@@ -1107,6 +1138,7 @@
               });
             })
             .then(function (stage) {
+              guardAccount(scope);
               if (stage.state) return stage;
               // A refusal with NOTHING landed is the account answering no. Any
               // other write failure — a lost response (status 0, "Failed to
@@ -1117,8 +1149,9 @@
                 return rejected(String((stage.err && stage.err.message) ||
                                        (stage.err && stage.err.code) || 'refused'));
               }
-              return _withDeadline(function () { return symbolsFetch(listId); })
+              return _withDeadline(function () { return symbolsFetch(listId, scope); })
                 .then(function (rows) {
+                  guardAccount(scope);
                   var onList = {};
                   (rows || []).forEach(function (r) {
                     if (r && r.symbol) onList[String(r.symbol).toUpperCase()] = true;
@@ -1152,6 +1185,10 @@
         });
     }
     function _finish(result) {
+      if (!scope.current()) result = {
+        state: anyAttempt ? 'uncertain' : 'rejected', reason: 'stale-session',
+        askedAt: anyAttempt ? askedAt : null, names: [], listName: '', returnFocus: null
+      };
       if (result && result.state !== 'waiting') _saveEmit(result);
       return result;
     }
@@ -1159,6 +1196,7 @@
 
   // ---- pull: fetch cloud symbols and merge into WL --------------------------
   function pull() {
+    if (checkedOnlyHost) return Promise.resolve();
     if (!user || !sb) return Promise.resolve();
     if (pullPending) return Promise.resolve();
     pullPending = true;
@@ -1656,6 +1694,7 @@
     return pushList(listId, tickers).then(done, function (e) { done(); throw e; });
   }
   function pullWhenSettled(tries) {
+    if (checkedOnlyHost) return;
     if (!user || !sb) return;
     if (pushPending()) {
       if (tries <= 0) return;    // still busy after ~5s: the next focus/edit will pull
@@ -2722,6 +2761,13 @@
 
   // ---- public API ------------------------------------------------------------
   window.WatchStore = {
+    // Readiness for explicit checked-save consumers; status() retains its legacy
+    // bound-list meaning. This read neither pulls/folds nor creates a list.
+    checkedSession: function () {
+      return { state: checkedHostUnavailable ? 'unavailable' : !user ? 'signed_out' :
+        sbInitFailed ? 'unavailable' : !sb ? 'loading' : 'ready',
+        userId: user && user.id || null, generation: authEpoch };
+    },
     status: status,
     pull: pull,
     user: function () { return user; },
@@ -2787,6 +2833,7 @@
     if (uid === lastAuthUid) return;
     lastAuthUid = uid;
     authEpoch++;
+    if (checkedOnlyHost) { listsCache = []; cloud = {}; wlId = null; foldTargetId = null; }
 
     /* A1A (review finding B1 — cross-user private-holdings leak): the cached
        last-good cloud rows and read-state are PER-USER private data. Reset them on
@@ -2839,7 +2886,7 @@
     // event cannot re-run <script> tags, so their signal lanes would stay dark
     // until a manual refresh. Reload ONCE with the session cookie in place;
     // the latch keeps a still-gated asset from ever looping the page.
-    if (!window.SD) {
+    if (!checkedOnlyHost && !window.SD) {
       try {
         if (!sessionStorage.getItem('wl_auth_reloaded')) {
           sessionStorage.setItem('wl_auth_reloaded', '1');
@@ -2866,7 +2913,7 @@
       if (sb === c) return;
       sb = c;
       sbInitFailed = false;
-      pull();
+      if (!checkedOnlyHost) pull();
       /* A1A (review finding S6): the FIRST 'wl-auth' above fired before `sb`
          resolved, so portfolio.js's onAuth() ran during the cloud-loading window
          (`user` set, `sb` not yet) and could read nothing but the loading
@@ -2960,6 +3007,7 @@
     wireConnectivity.__done = true;
     window.addEventListener('offline', function () { if (user && sb) setPill('offline'); });
     window.addEventListener('online', function () {
+      if (checkedOnlyHost) return;
       if (!user || !sb) return;
       // D05 W1-honesty (2)(3) trigger (a): flush the per-list outbox (pending
       // pushes + tombstones) BEFORE pulling. A pending push that lands now is
@@ -2976,6 +3024,8 @@
     var enabled = CFG && CFG.url && CFG.anonKey;
     var chip = el('ws_savechip');      // the W2 workspace host
     var box  = el('wl_auth');          // the PRE-W2 Account Sync panel
+    var checkedHost = document.querySelector('[data-watchstore-checked-save]');
+    checkedOnlyHost = !!checkedHost && !chip && !box;
 
     /* THREE pages, one file — and only two of them want a cloud session.
 
@@ -2986,12 +3036,15 @@
        reload it never asked for, and a reachable list-creation path. The guard is
        restored in its general form: no sync host of EITHER generation -> do nothing at
        all. No onChange, no reload, no pull, no fold. */
-    if (!chip && !box) return;
+    if (!checkedHost) {
+      if (!chip && !box) return;
+    }
 
     // Local-only unless BOTH the config is baked AND the shared client exists. The
     // chip still has to say so — a page that silently shows nothing about where the
     // list lives is exactly the husk this wave removed.
     if (!enabled || !window.MDXAuth || !window.MDXAuth.onChange) {
+      checkedHostUnavailable = checkedOnlyHost;
       if (box) box.style.display = 'none';
       setPill('local');
       return;
@@ -3038,7 +3091,13 @@
     window.MDXAuth.onChange(function (u, evt) {
       // SDK blocked/failed to load (e.g. behind the GFW): settle to offline, not
       // a forever "Finishing sign-in…" pill.
-      if (!u && evt === 'SDK_FAILED') { setPill('offline'); return; }
+      if (!u && evt === 'SDK_FAILED') {
+        checkedHostUnavailable = checkedOnlyHost;
+        setPill('offline');
+        document.dispatchEvent(new CustomEvent('wl-auth', { detail: { user: null } }));
+        return;
+      }
+      checkedHostUnavailable = false;
       onAuthUser(u);
     });
   }
@@ -3066,7 +3125,7 @@
       cacheKey: cacheKey, cacheRead: cacheRead, cacheWrite: cacheWrite,
       tickersOf: _tickersOf,
       _setTestSession: function (u, client, initFailed) {
-        user = u; sb = client; sbInitFailed = !!initFailed;
+        authEpoch++; user = u; sb = client; sbInitFailed = !!initFailed;
       },
       // F6 test seam: shortens the client/read deadline so a test does not have to
       // wait the real 12s default. Returns the previous value.
