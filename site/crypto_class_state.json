@@ -57,14 +57,6 @@
         "reason": "OLDER_SNAPSHOT"
       },
       {
-        "file": "market_ondo.parquet",
-        "symbol": "ONDO",
-        "id": "ondo-finance",
-        "source": "CoinGecko",
-        "as_of": "2026-11-03",
-        "reason": "OLDER_SNAPSHOT"
-      },
-      {
         "file": "market_paxg.parquet",
         "symbol": "PAXG",
         "id": "paxg-pax-gold",
@@ -496,7 +488,7 @@
         "to_label_zh": "直接总量",
         "support_before": 3,
         "support_after": 2,
-        "level_ratio": 1.0011556162478077,
+        "level_ratio": 1.001155616247808,
         "regime_treatment": "continuity_adjusted"
       },
       {
