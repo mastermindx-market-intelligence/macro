@@ -40,7 +40,8 @@ def _qualified_row(metric, economy, date, qualification):
 
 
 def compare_native_policy_points(intent, *, ecb_materialized, ecb_decision,
-                                 boe_materialized, boe_decision, evaluated_at, mapping_decision=None):
+                                 boe_materialized, boe_decision, evaluated_at, mapping_decision=None,
+                                 ecb_policy_materialized=None):
     """Invoke the unchanged engine on four exact admitted native endpoints.
 
     Historical dates are explicit latest-vintage reads. The same materialization
@@ -85,6 +86,7 @@ def compare_native_policy_points(intent, *, ecb_materialized, ecb_decision,
             or ecb_decision.get('decision_ref') != generation + ':EZ.policy_rate'
             or boe_decision.get('decision_ref') != generation + ':GB.policy_rate'):
         return compare_policy_points(intent, observations, mapping)
+    evaluated = None
     try:
         evaluated = datetime.fromisoformat(evaluated_at.replace('Z', '+00:00'))
         requested = datetime.fromisoformat(ecb_materialized['provenance']['requested_at'].replace('Z', '+00:00'))
@@ -97,6 +99,24 @@ def compare_native_policy_points(intent, *, ecb_materialized, ecb_decision,
             evaluated_at=evaluated_at, publication_decision=ecb_decision)
     except (KeyError, TypeError, ValueError, OverflowError):
         current_ecb = None
+    original_ecb_rows = {}
+    try:
+        from lib.intl_ecb_policy_publication import _receipt as validate_ecb_receipt, _json, _sha, _parse
+        evidence = ecb_policy_materialized
+        if type(evidence) is not dict or evidence.get('status') != 'ready':
+            raise ValueError('original ECB row evidence unavailable')
+        receipt = evidence['receipt']; validate_ecb_receipt(receipt)
+        raw = evidence.get('source_bytes')
+        if (type(raw) is not bytes or _sha(raw) != receipt['source_sha256']
+                or _sha(_json(receipt)) != evidence['receipt_sha256']
+                or receipt['artifact_sha256'] != ecb_materialized['materialized_identity']['artifact_sha256']
+                or datetime.fromisoformat(receipt['committed_at'].replace('Z','+00:00')) > evaluated):
+            raise ValueError('ECB original source/store binding differs')
+        original_ecb_rows = {row['date']: row for row in _parse(raw)['observations']}
+    except (KeyError,TypeError,ValueError,OverflowError):
+        # Historical dates need their original observed status, never merely
+        # a cached numeric row or the current display's stale/qualified state.
+        original_ecb_rows = {}
     for slot in observations:
         economy = intent['economy_' + slot[0]]
         date = intent['period'][slot.split('_')[1]]
@@ -112,15 +132,21 @@ def compare_native_policy_points(intent, *, ecb_materialized, ecb_decision,
                 if (type(current_ecb) is not dict or current_ecb.get('quality') not in {'qualified', 'stale'}
                         or current_ecb.get('metadata') != 'allowed' or current_ecb.get('value_permission') != 'allowed'):
                     continue
+                original = original_ecb_rows.get(date)
+                if original is None or original['status'] != 'observed':
+                    continue
                 series = ecb_materialized['series']
                 selected = series.loc[date]
                 if hasattr(selected, 'item'):
                     selected = selected.item()
+                if type(selected) not in {int,float} or selected != original['value']:
+                    continue
                 metric = {**current_ecb, 'value': selected, 'observation_at': date}
             qualification = 'intl-policy-endpoint:sha256:' + _digest({
                 'method': METHOD, 'mapping': mapping_decision, 'date': date, 'economy': economy,
                 'decision': {k: v for k, v in decision.items() if k != 'decision_ref'},
-                'value': metric.get('value'), 'unit': metric.get('unit')})
+                'value': metric.get('value'), 'unit': metric.get('unit'),
+                'source_receipt': evidence['receipt_sha256'] if economy == 'EZ' and original_ecb_rows else boe_materialized.get('receipt_sha256')})
             observations[slot] = _qualified_row(metric, economy, date, qualification)
         except (KeyError, TypeError, ValueError, OverflowError, AttributeError):
             # The engine withholds every comparison number/reference when any

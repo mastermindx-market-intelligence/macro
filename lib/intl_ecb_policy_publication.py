@@ -105,6 +105,6 @@ def read_ecb_policy_materialization(*,data_root):
         if (len(rows)!=receipt['rows']or rows[0]['date']!=receipt['first_observation']
                 or rows[-1]['date']!=receipt['last_observation']):raise ValueError('ECB capture row domain changed')
         _coverage(parsed,_series(pd.read_parquet(BytesIO(artifact))))
-        return {'status':'ready','receipt':receipt,'receipt_sha256':digest,'parsed':parsed}
+        return {'status':'ready','receipt':receipt,'receipt_sha256':digest,'parsed':parsed,'source_bytes':source}
     except (OSError,ValueError,TypeError,KeyError,OverflowError):
         return {'status':'failed','receipt':None,'receipt_sha256':digest,'parsed':None}
