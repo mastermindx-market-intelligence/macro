@@ -67,7 +67,7 @@ A legacy URL, a `#theme-*` basket link, a selected heatmap company or an ETF row
 
 ## 4. Interaction rules
 
-All rows below are intended behavior unless the route/data contract marks them as observed incumbent behavior. “No write” means no account/domain mutation; transient URL/history state can change as specified.
+All rows below are intended behavior unless the route/data contract marks them as observed incumbent behavior. Following the refreshed F01/F02 concurrence, every focus-return instruction is conditional on the retiring surface legitimately owning focus; preserve deliberate later focus elsewhere and let the active owner handle nested Escape. “No write” means no account/domain mutation; transient URL/history state can change as specified.
 
 | Control / event | Preconditions and resulting state | URL/history / write owner | Feedback, focus, touch and recovery |
 | --- | --- | --- | --- |
@@ -101,7 +101,7 @@ This is a **proposed extension of the existing F01/domain navigation seam**, not
 
 `ReturnContext` needs: origin route/host, canonical route ID, active view; qualified universe and membership revision; committed filter definition; primary/reference observation IDs and date range; metric definition including neutral threshold; sort key/direction/tie rule; selected group/listing and comparison order; map zoom/viewport or table row identity and offset; disclosure state where meaningful; logical focus trigger; owner-approved history entry identifier; saved-view ID/version if applicable. Scroll is an enhancement to the logical row/cell anchor, not the identity itself.
 
-Restore in order: validate authorization and route → parse configuration → restore membership/observation receipt if available → render stable rows/tiles → restore selection → restore logical anchor/scroll → restore focus without additional scrolling → announce updates. A missing row returns to its nearest surviving group header with “The previously selected company is not in this result.” Browser back/forward must not create a second history entry during restoration. Direct external entry without an origin uses a named canonical parent and makes no exact-return claim.
+Restore in order: validate authorization and route → parse configuration → restore membership/observation receipt if available → render stable rows/tiles → restore selection → restore logical anchor/scroll → restore focus without additional scrolling only while the retiring transition legitimately owns it → announce updates. Preserve deliberate later focus elsewhere, including after delayed callbacks or a dock/overlay placement change. A missing row returns to its nearest surviving group header with “The previously selected company is not in this result.” Browser back/forward must not create a second history entry during restoration. Direct external entry without an origin uses a named canonical parent and makes no exact-return claim.
 
 Cross-origin context must not contain private saved-view contents, protected tickers, credentials or arbitrary redirect URLs. Do not assume session storage can be read across hosts. Preserve existing source links until F01/D07 have qualified the handoff. If the complete state cannot be carried, disclose “Returned to the same view; position could not be restored” rather than claiming exact restoration.
 

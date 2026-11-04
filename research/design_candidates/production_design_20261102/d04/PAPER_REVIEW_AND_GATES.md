@@ -35,7 +35,7 @@ The proposed file name “MM · Discover & Heatmaps” and destination “10 Wor
 
 ### Geometry input — candidate only
 
-Source analysis consumes **F01-F02-SHELL/1.0.0-candidate.4**, semantic source `8926b16af4e0c3e5310cdb4cf057390ec04d18ff`, and **F02-SYSTEM/1.0.0-candidate.2**, source return `f7c25c4b9870cff260c2a4b998be18d6c04d36d0`. Neither is released. Recompute and recompose if the released contract changes.
+Source analysis consumes **F01-F02-SHELL/1.0.0-candidate.4**, semantic source `8926b16af4e0c3e5310cdb4cf057390ec04d18ff`, and **F02-SYSTEM/1.0.0-candidate.2**, source return `f7c25c4b9870cff260c2a4b998be18d6c04d36d0`. The later [foundation refresh](FOUNDATION_DELTA_20261104.md) consumes F01 `99df25ee` and F02 `e6c28413`: geometry remains unchanged; scoped candidate.4 source concurrence is now recorded, conditional focus is explicit, and F02 disjoint native work has resumed. The original F02 unknown effect remains target-scoped. Neither foundation is finally released. Recompute and recompose if the released contract changes.
 
 | Viewport | Default nav | Gutters total | Useful content | Inspector mode / primary remaining |
 | ---: | ---: | ---: | ---: | --- |

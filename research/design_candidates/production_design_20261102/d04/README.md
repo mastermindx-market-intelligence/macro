@@ -4,6 +4,8 @@
 
 The proposed experience leads a researcher from a dense universe scan to a source-qualified comparison and shortlist, through detail and back to the same context. It preserves advanced analytical work: technical combinations, stock screening, market/theme heatmaps, curated basket detail, Top Picks, fund holdings, Quant Lab and dislocation episodes. Saved intent, current observations and historical evidence have separate meanings.
 
+**Latest dependency amendment:** [FOUNDATION_DELTA_20261104.md](FOUNDATION_DELTA_20261104.md) consumes F01 head `99df25ee` and F02 head `e6c28413`, including scoped source concurrence and conditional focus. Final joint v1 remains unreleased. F02 disjoint native work has resumed; its original unknown effect is target-scoped.
+
 ## Delivered in this candidate
 
 | Deliverable | Complete source artifact | Evidence / qualification |
@@ -41,11 +43,11 @@ Current Chairman assignment is design/specification only; no product code, DB ap
 | Existing domain carrier | [Macro draft#7727](https://github.com/mastermindx-market-intelligence/macro/pull/7727), `sol/confluence-screener-paper-rig-20260922` |
 | Pre-D04 carrier head | `eab3e1dc98ad50bbe6ed479439631fd3cc385446` |
 | Durable task tree published before construction | `966a5b79aeb8bf932eb7c128e08f189002492466`; exact README readback matched |
-| F01 inspected semantic input | F01-F02-SHELL/1.0.0-candidate.4 at `8926b16af4e0c3e5310cdb4cf057390ec04d18ff`; draft#10645 |
-| F02 inspected input | F02-SYSTEM/1.0.0-candidate.2; draft#10630 at `f7c25c4b9870cff260c2a4b998be18d6c04d36d0` |
+| F01 semantic/current input | F01-F02-SHELL/1.0.0-candidate.4 semantic `8926b16af4e0c3e5310cdb4cf057390ec04d18ff`; current metadata `99df25eec943be94ffdfa46019dee7f510c93b3d`; draft#10645 |
+| F02 current input | F02-SYSTEM/1.0.0-candidate.2; draft#10630 at `e6c28413ee74e83950b8c5ff58a34b81e76c1781`; initial `f7c25c4` checkpoint retained as history |
 | Typed heatmap save dependency | Terminal draft#778 at `88f2919a5c2222bcf05f452f2549b9af180dcae6` |
 
-The commit containing this README and manifest is the immutable source/specification artifact set. It is **not** an immutable native after-design freeze. A later final composition needs its own exact artifacts and existing RIG binding.
+The commit containing this README and manifest is the immutable source/specification artifact set. The first30-file commit `b49118e18a7446f47634a1d5611d1f807d5d5ce5` and its exact-byte readback are preserved in [publication_receipt.json](evidence/publication_receipt.json); the later foundation amendment adds three files and updates affected source clauses. It is **not** an immutable native after-design freeze. A later final composition needs its own exact artifacts and existing RIG binding.
 
 ## Before-write ownership and effect check
 

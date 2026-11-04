@@ -1,0 +1,92 @@
+{
+  "schema": "d04.foundation_refresh.v1",
+  "observed_utc": "2026-11-04 01:16:01 UTC",
+  "reason": "Final material-dependency recheck found newer foundation heads after first D04 publication.",
+  "f01": {
+    "prior_head": "c1fc69b3452b92dff0f1863c1689e18b049cb56f",
+    "current_head": "99df25eec943be94ffdfa46019dee7f510c93b3d",
+    "version": "F01-F02-SHELL/1.0.0-candidate.4",
+    "semantic_pin": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+    "operative_sections_2_onward_equal": true,
+    "operative_suffix_sha256": "6a59b4ed58bd659baff51ff24f15313a9f6b218789a7b6da55f8ea430d850b62",
+    "status": "PARTIAL / REQUEST_CHANGES / RIG draft; final joint v1 unreleased",
+    "source_handoff_review": "5760649569; scoped source approval only; not native/design/RIG/implementation/release acceptance",
+    "source_policy_concurrence": "F02 ownership/change table and4.1–4.3 received",
+    "d04_authority": "Unchanged design/specification only; broader instructions reported by F01 do not authorize D04 implementation."
+  },
+  "f02": {
+    "prior_head": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+    "current_head": "e6c28413ee74e83950b8c5ff58a34b81e76c1781",
+    "version": "F02-SYSTEM/1.0.0-candidate.2",
+    "status": "Mission incomplete / Draft/HOLD / formal RIG draft; disjoint native work resumed",
+    "owner_report_at": "2026-11-04T00:31:18.877159+00:00",
+    "owner_report_counts": {
+      "boards": 23,
+      "dispatches": 545,
+      "observed_applied": 544,
+      "unresolved": 1
+    },
+    "unknown": {
+      "operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "board_id": "7IS-0",
+      "target_node_id": "7J4-0",
+      "state": "EFFECT_UNKNOWN",
+      "scope": "Original operation and Chinese comparison target; not a file-wide prohibition."
+    },
+    "operative_changes": [
+      "Conditional legitimate-owner focus restoration and active-owner Escape",
+      "Focused Terminal reader exception360px/300–520 clamp/mm.railW",
+      "Geometry source concurrence; no final release"
+    ]
+  },
+  "typed_heatmap_save": {
+    "head": "88f2919a5c2222bcf05f452f2549b9af180dcae6",
+    "unchanged": true,
+    "draft": true,
+    "merged": false
+  },
+  "sources": [
+    {
+      "key": "F01_joint_new",
+      "blob_sha": "ff096fbde114fa14f218f48b8e3dc54a6646ee04",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/99df25eec943be94ffdfa46019dee7f510c93b3d/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md"
+    },
+    {
+      "key": "F01_return_new",
+      "blob_sha": "e06d3a7a98787bb15de00776e99527ea417d75c2",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/99df25eec943be94ffdfa46019dee7f510c93b3d/research/design_candidates/production_design_20261102/f01/RETURN_F01.md"
+    },
+    {
+      "key": "F01_review_new",
+      "blob_sha": "71d0ddc37a3112487e940e1d1771ce78ef0de478",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/99df25eec943be94ffdfa46019dee7f510c93b3d/research/design_candidates/production_design_20261102/f01/EVIDENCE_AND_REVIEW.md"
+    },
+    {
+      "key": "F02_system_new",
+      "blob_sha": "1310877964805e6e356a6e050472754dae6deb8b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/SYSTEM_CONTRACT.md"
+    },
+    {
+      "key": "F02_return_new",
+      "blob_sha": "fd9144ec1ffda04d8ceb8c7a4c4c567ba2dcc21e",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/RETURN_F02.md"
+    },
+    {
+      "key": "F02_native_new",
+      "blob_sha": "af3f0d97e34cf37bd4874c3521cc4fbc98f31c55",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/paper/NATIVE_CONTINUATION_20261104.md"
+    },
+    {
+      "key": "F02_reconcile_new",
+      "blob_sha": "5383280ef3e703425ebe845e5f263a89ec327a72",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/paper/repairs/zh390-reconciliation-20261104.json"
+    },
+    {
+      "key": "F02_handshake_new",
+      "blob_sha": "4f627da25a8bfe318467eb13e0524adf2d7eef32",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md"
+    }
+  ],
+  "result": "D04 source clauses updated; useful-width arithmetic unchanged; final composition/review still require qualified foundations and exact Paper admission."
+}

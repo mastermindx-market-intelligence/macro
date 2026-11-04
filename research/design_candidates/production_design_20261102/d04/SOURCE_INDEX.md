@@ -110,7 +110,7 @@ Read facts at the listed revisions; do not mix a current branch URL into an asse
 - [Browser observations and limitations](evidence/browser_observations.json)
 ## S14
 
-**Foundation candidates.** PARTIAL / REQUEST_CHANGES / RIG draft. Accepted source geometry analysis does not release final foundations. Their original unknown effects are not D04 effects.
+**Foundation candidates and subsequent refresh.** PARTIAL / REQUEST_CHANGES / RIG draft. Accepted source geometry analysis does not release final foundations. Their original unknown effects are not D04 effects.
 
 - [F01 candidate.4 joint contract](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md)
 - [F02 candidate.2 return](https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/RETURN_F02.md)
@@ -162,3 +162,13 @@ Source-only inspection does not establish DB migration application, exchange-cal
 
 The handoff's23 count and older/out-of-sample tooltip are corrected in this specification based on executable source. No calculation or route code was changed.
 
+
+## S20
+
+**Final material foundation delta.** [FOUNDATION_DELTA_20261104.md](FOUNDATION_DELTA_20261104.md) records exact source/blob receipts, unchanged operative geometry, current scoped concurrence, conditional focus, focused-reader exception and original target-scoped holds. No final foundation release or D04 implementation authority was inferred.
+
+- [F01 current joint contract](https://github.com/mastermindx-market-intelligence/macro/blob/99df25eec943be94ffdfa46019dee7f510c93b3d/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md)
+- [F01 current return](https://github.com/mastermindx-market-intelligence/macro/blob/99df25eec943be94ffdfa46019dee7f510c93b3d/research/design_candidates/production_design_20261102/f01/RETURN_F01.md)
+- [F02 current system contract](https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/SYSTEM_CONTRACT.md)
+- [F02 exact policy concurrence](https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md)
+- [F02 current native continuation](https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/paper/NATIVE_CONTINUATION_20261104.md)

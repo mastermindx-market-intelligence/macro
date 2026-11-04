@@ -51,6 +51,8 @@ The primary object is the dense map/table or three comparable Confluence ranks. 
 
 At candidate geometry, useful widths are288/358/728/788/1008/1168/1328px for320/390/768/1024/1280/1440/1600 viewports. A320px dock plus24px gap leaves664/824/984 at1280/1440/1600. These are calculations, not measured accepted compositions. Recalculate against released foundations and the domain's true minimum. Below a useful dock threshold, inspection uses an accessible overlay/full-screen surface. Never silently collapse global navigation just to fit a screenshot.
 
+The [foundation refresh](FOUNDATION_DELTA_20261104.md) preserves conditional focus ownership and active-owner Escape. Shared320+24 evidence geometry does not replace the focused Terminal reader: D06/host retain its360px initial width, requested300–520px clamp and incumbent `mm.railW`. Qualified effective fitting must not overwrite the preference. Brain lifecycle remains with its existing widget/host owner; close/resize does not cancel an answer or resolve a save.
+
 The logical scenes C01–C13 in the Paper brief cover normal scan, complete comparison, Confluence evidence/locks, basket depth, saved-state recovery and phone return. They are composition instructions, not actual newly created artboard IDs. Validate light/dark, EN/ZH, long labels, dense rows, all read/write outcomes, focus/keyboard/touch and reduced motion. A reference count or screenshot cannot substitute for an actual task.
 
 ## 5. Data adaptation, validation and failure handling
