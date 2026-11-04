@@ -46,7 +46,7 @@ try:
     with sync_playwright() as tool:
         browser = tool.chromium.launch(headless=True, chromium_sandbox=True)
         try:
-            for scenario in ['verified', 'mixed_sector_series', 'mixed_basket_series', 'tampered_core']:
+            for scenario in ['verified', 'mixed_sector_series', 'mixed_basket_series', 'tampered_core', 'view_restore', 'view_without_history', 'view_series_invalidation']:
                 page = browser.new_page(viewport={'width': 768, 'height': 1000}, reduced_motion='reduce')
                 errors = []; page.on('pageerror', lambda error: errors.append(str(error)))
                 def route(request):
@@ -64,7 +64,14 @@ try:
                 page.add_style_tag(content=(ROOT/'templates/theme.css').read_text())
                 page.add_style_tag(content=(ROOT/'templates/sector_dossier_cycle.css').read_text())
                 page.add_script_tag(content=chart); page.add_script_tag(content=component)
-                page.add_script_tag(content=parts['core']); page.add_script_tag(content=parts['series'])
+                active_parts = parts
+                if scenario in ['view_restore', 'view_without_history']:
+                    view_fixture = copy.deepcopy(fixture)
+                    view_fixture['sectors'][0]['osc'] = ([{'x': 2024+i/48, 'v': i%101} for i in range(122)]
+                        if scenario == 'view_restore' else [])
+                    active_parts = json.loads(subprocess.check_output([sys.executable, '-c', code], input=json.dumps(view_fixture),
+                        text=True, env=env, cwd=snapshot))
+                page.add_script_tag(content=active_parts['core']); page.add_script_tag(content=active_parts['series'])
                 page.evaluate("window.SC_LAZY_EXTRAS=true;window.SectorCyclesHost={};window.actionCalls=[];")
                 if scenario.startswith('mixed_'):
                     page.evaluate("SECTOR_CYCLES_SERIES_PUBLICATION.publication_id='cycp1-'+'f'.repeat(64)")
@@ -76,9 +83,12 @@ try:
                     expectedAsOf:'2026-10-30',expectedPublicationId:SECTOR_CYCLES_PUBLICATION.id,
                     expectedSpine:SECTOR_CYCLES_PUBLICATION.sector_spine,
                     onMembers:selection=>actionCalls.push(selection),
-                    renderChart:(root,ctx)=>(window.testNativeChart=MMChart.create(root,{xDomain:[2026,2026.3],yDomain:[0,100],yTicks:[{v:0,label:'0'},{v:50,label:'50'},{v:100,label:'100'}],zoom:true,
+                    renderChart:(root,ctx)=>(window.testNativeChart=MMChart.create(root,{xDomain:scenario==='view_restore'?[2024,2026.6]:[2026,2026.3],yDomain:[0,100],yTicks:[{v:0,label:'0'},{v:50,label:'50'},{v:100,label:'100'}],zoom:true,
                       animate:false,series:[{id:ctx.record.id,color:'var(--link)',hist:ctx.record.osc.map(p=>({x:p.x,y:p.v})),proj:[],markers:[]}]}))};
-                  if(scenario==='mixed_basket_series'){hostOptions.family='baskets';hostOptions.id='energy-basket';delete hostOptions.expectedSpine;}
+                  if(scenario==='mixed_basket_series'||scenario==='view_series_invalidation'){hostOptions.family='baskets';hostOptions.id='energy-basket';delete hostOptions.expectedSpine;}
+                  if(scenario==='view_series_invalidation') document.addEventListener('sc:series-error',()=>{
+                    window.earlyCapture=adapter.captureView();window.earlyApply=adapter.applyView(window.savedBasketView);
+                  });
                   window.adapter=SectorDossierCycle.mountFromNative(document.querySelector('#dossier'),window,hostOptions);
                 }''',scenario)
                 page.wait_for_function("SectorCyclesEvidence().status!=='pending'")
@@ -91,7 +101,147 @@ try:
                     page.evaluate('SectorCyclesHydrateSeries()')
                     page.wait_for_function("SectorCyclesEvidence().parts.series!=='pending'")
                     assert page.locator('.sdc').get_attribute('data-state') == 'ready'
-                    if scenario.startswith('mixed_'):
+                    if scenario == 'view_restore':
+                        page.locator('.sdc-chart svg').wait_for()
+                        page.evaluate("""()=>{
+                          const original=hostOptions.renderChart;
+                          window.chartDisposals=0;
+                          hostOptions.renderChart=(root,ctx)=>{
+                            const chart=original(root,ctx), destroy=chart.destroy.bind(chart);
+                            chart.destroy=()=>{chartDisposals++;destroy();};
+                            return chart;
+                          };
+                          adapter.update(hostOptions);
+                          testNativeChart.setView([2024.4,2025.6],false);
+                        }""")
+                        page.locator('.sdc-values > summary').click()
+                        page.locator('.sdc-page').last.click(); page.locator('.sdc-page').last.click()
+                        page.locator('.sdc-sources > summary').click()
+                        page.locator('.sdc-action').first.focus()
+                        saved = page.evaluate('JSON.parse(JSON.stringify(adapter.captureView()))')
+                        assert saved['schema'] == 'sector_dossier.view.v1'
+                        assert saved['range'] == [2024.4, 2025.6] and saved['valuesOffset'] == 100
+                        assert saved['valuesOpen'] and saved['sourcesOpen']
+                        assert len(saved) == 9, saved
+                        # The export is detached; it is the projection, not a chart handle.
+                        page.evaluate("()=>{const p=adapter.captureView();p.range[0]=1;p.valuesOffset=0;}")
+                        assert page.evaluate('adapter.captureView().range') == saved['range']
+                        page.evaluate("""()=>{
+                          testNativeChart.setView([2025,2026],false);
+                          document.querySelector('.sdc-values').open=false;
+                          document.querySelector('.sdc-sources').open=false;
+                        }""")
+                        disposals = page.evaluate('chartDisposals')
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',saved) == {'status':'applied','reason':None}
+                        assert page.evaluate('adapter.captureView()') == saved
+                        assert page.evaluate('chartDisposals') == disposals+1
+                        assert page.locator('.sdc-values tbody tr').count() == 22
+                        assert page.evaluate('document.activeElement.dataset.sdcFocus') == 'action-members'
+                        # Closing a disclosure cannot strand focus in its hidden pager.
+                        page.locator('.sdc-page').first.focus()
+                        # Keep the old position inside both document heights; the host
+                        # owns clamped viewport restoration after disclosure layout changes.
+                        page.evaluate('scrollTo(0,0)')
+                        scroll_before = page.evaluate('scrollY')
+                        assert page.evaluate('(saved)=>adapter.applyView({...saved,valuesOpen:false})',saved)['status'] == 'applied'
+                        assert page.evaluate('document.activeElement.dataset.sdcFocus') == 'values'
+                        assert page.evaluate('scrollY') == scroll_before
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',saved)['status'] == 'applied'
+                        # Invalid/source-mismatched views reject before recomposition.
+                        invalids = [
+                            {**saved,'extra':True}, {**saved,'schema':'other'},
+                            {**saved,'publicationId':'cycp1-'+'f'*64}, {**saved,'id':'other'},
+                            {**saved,'family':'baskets'}, {**saved,'asOf':'2026-10-29'},
+                            {**saved,'valuesOffset':1}, {**saved,'valuesOffset':150},
+                            {**saved,'range':[2025,2024]}, {**saved,'range':['2024',2025]},
+                            {**saved,'valuesOpen':'true'}]
+                        for invalid in invalids:
+                            before = page.evaluate('chartDisposals')
+                            assert page.evaluate('(saved)=>adapter.applyView(saved)',invalid)['status'] == 'rejected'
+                            assert page.evaluate('chartDisposals') == before
+                            assert page.evaluate('adapter.captureView()') == saved
+                        # Real MMChart clamps an unsupported request; never report applied.
+                        clamped = page.evaluate('(saved)=>adapter.applyView({...saved,range:[-100,100]})',saved)
+                        assert clamped['status'] == 'partial', clamped
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',saved)['status'] == 'applied'
+                        # Restoring state must not steal focus from another task.
+                        page.evaluate("""()=>{
+                          const b=document.createElement('button');b.id='outside-view';b.textContent='Other task';
+                          document.body.append(b);b.focus();
+                        }""")
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',saved)['status'] == 'applied'
+                        assert page.evaluate('document.activeElement.id') == 'outside-view'
+                        page.evaluate('adapter.update({...hostOptions,dataState:"stale"})')
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',saved)['status'] == 'applied'
+                        page.screenshot(path=str(args.out/'restored-view.png'),full_page=True)
+                        # MMChart calls onZoom synchronously after installing the
+                        # range. Exceptions and reentrant disposal must release ownership.
+                        page.evaluate("""()=>{
+                          const render=hostOptions.renderChart;window.throwZoom=false;
+                          window.throwingOptions={...hostOptions,renderChart:(root,ctx)=>{
+                            const chart=render(root,ctx);chart.spec.onZoom=()=>{if(throwZoom)throw Error('zoom fixture');};return chart;}};
+                          adapter.update(throwingOptions);throwZoom=true;
+                        }""")
+                        before_failure = page.evaluate('chartDisposals')
+                        failed_chart = page.evaluate('(saved)=>adapter.applyView(saved)',saved)
+                        assert failed_chart['status'] == 'partial', failed_chart
+                        assert page.locator('.sdc-chart svg').count() == 0
+                        assert page.evaluate('adapter.captureView()') is None
+                        assert page.evaluate('chartDisposals') == before_failure+2
+                        page.evaluate('throwZoom=false;adapter.update(hostOptions)')
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',saved)['status'] == 'applied'
+                        page.evaluate("""()=>{
+                          const render=hostOptions.renderChart;window.disposeZoom=false;
+                          adapter.update({...hostOptions,renderChart:(root,ctx)=>{
+                            const chart=render(root,ctx);chart.spec.onZoom=()=>{if(disposeZoom){disposeZoom=false;adapter.destroy();}};
+                            return chart;}});
+                          disposeZoom=true;
+                        }""")
+                        before_dispose = page.evaluate('chartDisposals')
+                        disposed_restore = page.evaluate('(saved)=>adapter.applyView(saved)',saved)
+                        assert disposed_restore['status'] != 'applied', disposed_restore
+                        assert page.evaluate('chartDisposals') == before_dispose+2
+                        assert page.locator('#dossier').inner_html() == ''
+                        page.evaluate('adapter=SectorDossierCycle.mountFromNative(document.querySelector("#dossier"),window,hostOptions)')
+                        page.evaluate('adapter.update({...hostOptions,accessState:"forbidden"})')
+                        assert page.evaluate('adapter.captureView()') is None
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',saved)['status'] == 'rejected'
+                        page.evaluate('adapter.update(hostOptions)')
+                        # A publication replacement during the render invalidates the
+                        # postcondition and the adapter withholds the replaced evidence.
+                        page.evaluate("""()=>{
+                          const render=hostOptions.renderChart;let armed=false;
+                          hostOptions.renderChart=(root,ctx)=>{const c=render(root,ctx);
+                            if(armed){armed=false;window.SECTOR_CYCLES=structuredClone(SECTOR_CYCLES);}
+                            return c;};
+                          adapter.update(hostOptions);window.armReplacement=()=>{armed=true;};
+                        }""")
+                        page.evaluate('armReplacement()')
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',saved) == {'status':'partial','reason':'source_changed'}
+                        assert page.locator('.sdc').get_attribute('data-state') == 'incompatible_generation'
+                        assert page.evaluate('adapter.captureView()') is None
+                    elif scenario == 'view_without_history':
+                        assert page.locator('.sdc').get_attribute('data-state') == 'ready'
+                        assert page.locator('.sdc-chart svg').count() == 0
+                        empty_view = page.evaluate('adapter.captureView()')
+                        assert empty_view['range'] is None and empty_view['valuesOffset'] == 0
+                        assert not empty_view['valuesOpen']
+                        opened = {**empty_view,'sourcesOpen':True}
+                        assert page.evaluate('(saved)=>adapter.applyView(saved)',opened)['status'] == 'applied'
+                        assert page.locator('.sdc-sources').get_attribute('open') is not None
+                        for invalid in [{**opened,'valuesOpen':True},{**opened,'range':[2024,2025]},{**opened,'valuesOffset':50}]:
+                            assert page.evaluate('(saved)=>adapter.applyView(saved)',invalid)['status'] == 'rejected'
+                            assert page.evaluate('adapter.captureView()') == opened
+                    elif scenario == 'view_series_invalidation':
+                        page.locator('.sdc-chart svg').wait_for()
+                        page.evaluate('window.savedBasketView=adapter.captureView()')
+                        assert page.evaluate('savedBasketView.range') is not None
+                        page.evaluate("SECTOR_CYCLES_SERIES_PUBLICATION.publication_id='cycp1-'+'f'.repeat(64);SectorCyclesHydrateSeries()")
+                        page.wait_for_function("SectorCyclesEvidence().parts.series==='incompatible_publication'")
+                        assert page.evaluate('earlyCapture') is None
+                        assert page.evaluate('earlyApply.status') == 'rejected'
+                        assert page.locator('.sdc-chart svg').count() == 0
+                    elif scenario.startswith('mixed_'):
                         assert page.evaluate('SectorCyclesEvidence().parts.series') == 'incompatible_publication'
                         if scenario=='mixed_sector_series': page.locator('.sdc-chart svg').wait_for()
                         else: assert page.locator('.sdc-chart svg').count() == 0
@@ -139,13 +289,16 @@ try:
                         page.locator('.sdc-action').first.click()
                         assert page.evaluate('actionCalls.length') == before, 'action must revalidate the core-part receipt'
                         assert page.locator('.sdc').get_attribute('data-state') == 'unavailable'
-                page.evaluate('adapter.destroy();document.dispatchEvent(new CustomEvent("sc:series-ready"))')
+                page.evaluate('window.disposedView=adapter.captureView();adapter.destroy();document.dispatchEvent(new CustomEvent("sc:series-ready"))')
+                assert page.evaluate('adapter.captureView()') is None
+                assert page.evaluate('adapter.applyView(disposedView).status') == 'rejected'
                 assert page.locator('#dossier').inner_html() == ''
                 assert not errors, errors
                 results.append({'scenario':scenario,'status':'passed','receipt':page.evaluate('SectorCyclesEvidence()')})
                 page.close()
         finally: browser.close()
-    result={'status':'passed','source_ref':UPSTREAM,'dependency_sha256':digests,'scenarios':results,
+    result={'status':'passed','source_ref':UPSTREAM,'dependency_sha256':digests,
+            'component_sha256':hashlib.sha256(component.encode()).hexdigest(),'scenarios':results,
             'scope':'Dossier component consumes real producer/verifier; not full native route or production proof'}
     (args.out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({'status':'passed','scenarios':len(results),'upstream':UPSTREAM}))

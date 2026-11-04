@@ -1,0 +1,41 @@
+{
+  "schema": "d05.component_view_api.validation.v1",
+  "base": "2c4edf26d351865c013f971190535bad38b46619",
+  "law_pin": "b5e8a9682f72b1bf802e50cf16f77f878ce596f3",
+  "source_sha256": {
+    "templates/sector_dossier_cycle.js": "85673d809ec0cbd207aa3ddc14a3bf066ccdf39cbf7ad8a808b51beb28331208",
+    "templates/sector_dossier_cycle.css": "41cc2ceb9cf9ae03eb9d9f16c9c864fa4d5c379564c537ec8795c523686fdd8c",
+    "docs/verification/sector_r41_20261104/verify_native_receiver.py": "a03b5278fe45f3e81cd5be3c0eb231ef08015ec58f683560611cfc5989547f80"
+  },
+  "tests": {
+    "source": {
+      "passed": 146,
+      "skipped": 3,
+      "commands": [
+        "python3 -m pytest -q -rs tests/test_sector_dossier_cycle_js.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py"
+      ],
+      "skips": [
+        "no sector data: tests/test_sector_cycles.py:150",
+        "no sector data: tests/test_sector_cycles.py:172",
+        "scorecard promises_price_v1_zz14_v0.json absent"
+      ]
+    },
+    "native": {
+      "passed": 7,
+      "result": "native_view_api/result.json"
+    },
+    "responsive": {
+      "passed": 16,
+      "result": "view_api_visual/result.json"
+    }
+  },
+  "scope": "Component view API and native verifier seam. No full host/Company, production, Paper or user acceptance.",
+  "holds": [
+    "draft",
+    "no_merge",
+    "no_ready",
+    "no_queue",
+    "no_deploy",
+    "shared_design_acceptance_held"
+  ]
+}

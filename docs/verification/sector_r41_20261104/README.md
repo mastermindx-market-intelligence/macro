@@ -6,6 +6,58 @@ Programme: macro#7646 / `sector-central-redesign-20260921-sol-001` / `WS:SECTOR-
 Protected procedure: Mastermind `93c8c3c01f9226d1ea267e21c548f047458654dc` (compatible Skillpack1.0.1).
 Owned workspace operation: `sector-r41-dossier-cycle-impl-20261104-sol-001`, base `4a2291747fd2d8d364a3838e1ed2263636bc64a6`.
 
+
+## D05 view-state continuation — principal pickup, 2026-11-04
+
+The current Chairman-assigned D05 ChatGPT1 principal resumes this **same** managed
+operation and Draft #10707 from `2c4edf26d351865c013f971190535bad38b46619`,
+original acquisition base `4a2291747fd2d8d364a3838e1ed2263636bc64a6`.
+The installed owner returned reuse with no new allocation and the exact head.
+The prior Secretary solicitation was explicitly superseded in its original
+thread (1793781167.178929; pickup 1793782168.348909). That solicitation produced
+a completed read-only admission check and no source-worker START. This does not
+declare an earlier session expired, release an unknown effect, or infer authority
+from a clean worktree.
+
+Scope: a closed component-owned capture/apply view API, focused source and browser
+checks, and its existing documentation. The native #10703 host remains a separate
+consumer and owns access, source receipt, navigation and browser-entry persistence.
+No Paper effect, merge, Ready, queue, held label or production deployment is included.
+The continuation follows protected Mastermind pin `b5e8a9682f72b1bf802e50cf16f77f878ce596f3`.
+It adds `captureView()` and `applyView()` to the component and native adapter.
+The API carries only `sector_dossier.view.v1`: exact publication, subject/family/date,
+chart range, Exact values and Sources disclosure state, and the bounded values-page
+offset. The host continues to own focus locators, viewport, account and history.
+
+Capture is detached and withheld without current source qualification. Apply rejects
+closed-schema, subject, publication, history and pagination mismatches before changing
+controls; it verifies the actual chart/disclosure readback and reports
+`applied`, `partial` or `rejected`. A clamped or failed chart is not reported as applied.
+Updates and disposal fence reentrant chart callbacks. Cleanup is registered before
+`setView`, failures destroy the created handle, and closing a focused pager restores
+focus to its visible summary. Basket/Nasdaq/Russell history APIs recheck the current
+series receipt even before the adapter's ordinary refresh listener runs.
+
+### View API verification
+
+| Proof on this source | Result | Scope |
+|---|---|---|
+| Existing component/Cycles/rhythm Python suites | **146 passed, 3 skipped** | Includes 49 component boundary cases; these counts overlap, not additive. The skips remain absent sector fixture data (2) and absent historical scorecard (1). |
+| `verify_component.py` | **16/16** | Real Chromium 151.0.7922.34, 1440/768/390/320 × dark/light × EN/ZH; real MMChart, keyboard, contrast, overflow, denied/stale/failure states. |
+| `verify_native_receiver.py` | **7/7** | Exact existing producer/verifier at `a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14`, with real WebCrypto and MMChart; original 4 plus view restoration, absent history and early series invalidation. |
+| Focus regression | Reproduced, repaired, passed | Closing Exact values while its pager had focus initially left focus on body. The test now proves summary focus with feasible window position; unavoidable document-height clamping remains the host's viewport responsibility. |
+| Exception/reentrancy regression | Passed | Actual MMChart `onZoom` throws or destroys the adapter during apply; no false applied result or leaked owned handle. |
+
+Final component SHA-256:
+`85673d809ec0cbd207aa3ddc14a3bf066ccdf39cbf7ad8a808b51beb28331208`.
+The CSS is unchanged, SHA-256
+`41cc2ceb9cf9ae03eb9d9f16c9c864fa4d5c379564c537ec8795c523686fdd8c`.
+Results and actual screenshots are retained in `native_view_api/` and
+`view_api_visual/`; the 320px dark EN, 390px light ZH and restored-values captures
+were directly inspected for clipping, readable hierarchy and visible focus.
+These are labelled synthetic component fixtures, not full host/Company or production
+acceptance. Consume this exact successor through #10703; final shared design remains held.
+
 ## What changed
 
 Before: the R4 design lacked a dedicated Dossier Cycle journey and 768px transition; this session's missing component had no executable source/data-bound proof.

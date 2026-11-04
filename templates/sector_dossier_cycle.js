@@ -212,6 +212,7 @@
   function mount(root, payload, options) {
     if (!root || !root.ownerDocument || typeof root.replaceChildren !== "function") throw new TypeError("A DOM element is required");
     var doc = root.ownerDocument, disposed = false, chartCleanup = null, chartHandle = null, previousKey = null, previousPayload = null;
+    var currentPayload = null, currentOptions = null, currentView = null, pendingView = null, renderGeneration = 0;
     function node(tag, cls, value) {
       var e = doc.createElement(tag); if (cls) e.className = cls;
       if (value != null) e.textContent = String(value); return e;
@@ -222,7 +223,11 @@
     }
     function render(p, opts) {
       if (disposed) return null;
+      var generation = ++renderGeneration;
+      function activeRender() { return !disposed && generation === renderGeneration; }
       var o = obj(opts) ? opts : {}, v = buildView(p, o), lang = v.locale;
+      if (!activeRender()) return null;
+      currentPayload = p; currentOptions = o; currentView = v;
       var key = v.subject ? [v.subject.family, v.subject.id, v.asOf, v.publication.id || 'unverified'].join('/') : null;
       var hadFocus = !!doc.activeElement && root.contains(doc.activeElement);
       var held = {}, same = key && key === previousKey && (v.publication.id || p === previousPayload);
@@ -233,7 +238,14 @@
         held.focus = root.contains(doc.activeElement) ? doc.activeElement.getAttribute('data-sdc-focus') : null;
         try { if (chartHandle && typeof chartHandle.getView === 'function') held.zoom = chartHandle.getView(); } catch (_) {}
       }
-      cleanChart(); root.replaceChildren(); previousKey = key; previousPayload = key ? p : null;
+      if (pendingView) {
+        held.values = pendingView.valuesOpen; held.sources = pendingView.sourcesOpen;
+        held.offset = pendingView.valuesOffset; held.zoom = pendingView.range;
+        pendingView = null;
+      }
+      cleanChart();
+      if (!activeRender()) return null;
+      root.replaceChildren(); previousKey = key; previousPayload = key ? p : null;
       function L(key) { return label(key, lang); }
       var card = node("section", "sdc"); card.lang = lang === "zh" ? "zh-Hans" : "en";
       card.dataset.state = v.state; card.setAttribute("aria-label", L("title"));
@@ -279,16 +291,31 @@
       history.appendChild(node("p", "sdc-muted", L("chartNote")));
       var chart = node("div", "sdc-chart"); history.appendChild(chart); card.appendChild(history);
       if (v.chart.hasHistory && typeof o.renderChart === "function") {
+        var releaseOwned = null, handle = null;
         try {
-          var handle = o.renderChart(chart, {record: recordFor(p, o), meta: p.meta, semanticFamily: "legacy", asOf: v.asOf, locale: lang});
-          chartHandle = handle;
+          handle = o.renderChart(chart, {record: recordFor(p, o), meta: p.meta, semanticFamily: "legacy", asOf: v.asOf, locale: lang});
+          var released = false, stopLabelLayout = null;
+          releaseOwned = function () {
+            if (released) return; released = true;
+            if (stopLabelLayout) { try { stopLabelLayout(); } catch (_) {} }
+            if (typeof handle === 'function') handle();
+            else if (handle && typeof handle.destroy === 'function') handle.destroy();
+          };
+          if (!activeRender()) { releaseOwned(); return null; }
+          // Own the handle before any host call can throw or reenter update/destroy.
+          chartHandle = handle; chartCleanup = releaseOwned;
           if (held.zoom && Array.isArray(held.zoom) && held.zoom.length === 2 && held.zoom.every(function (n) { return finite(n) != null; }) && held.zoom[0] < held.zoom[1] && handle && typeof handle.setView === 'function') handle.setView(held.zoom, false);
-          if (typeof handle === "function") chartCleanup = handle;
-          else if (handle && typeof handle.destroy === "function") chartCleanup = function () { handle.destroy(); };
-          var hostCleanup = chartCleanup, stopLabelLayout = fitAxisLabels(chart);
-          chartCleanup = function () { stopLabelLayout(); if (hostCleanup) hostCleanup(); };
-        } catch (_) { chart.replaceChildren(node("p", "sdc-muted", L("chartFailed"))); }
+          if (!activeRender()) { releaseOwned(); return null; }
+          stopLabelLayout = fitAxisLabels(chart);
+        } catch (_) {
+          if (releaseOwned) { try { releaseOwned(); } catch (_) {} }
+          if (!activeRender()) return null;
+          if (chartHandle === handle) chartHandle = null;
+          if (chartCleanup === releaseOwned) chartCleanup = null;
+          chart.replaceChildren(node("p", "sdc-muted", L("chartFailed")));
+        }
       } else chart.appendChild(node("p", "sdc-muted", L(v.history.state === "invalid" ? "chartInvalid" : v.history.state === "unverified" ? "chartUnverified" : "chartMissing")));
+      if (!activeRender()) return null;
       if (v.history.state === 'ready') {
         var values = node('details', 'sdc-values'), valueSummary = node('summary', '', L('exact'));
         valueSummary.dataset.sdcFocus = 'values'; values.appendChild(valueSummary); values.open = !!held.values;
@@ -343,22 +370,66 @@
       card.appendChild(actions); card.appendChild(sources); card.appendChild(node("p", "sdc-muted sdc-footer", L("footer")));
       if (hadFocus) {
         var focusTarget = held.focus && Array.from(root.querySelectorAll('[data-sdc-focus]')).find(function (n) { return n.dataset.sdcFocus === held.focus; });
-        if (!focusTarget || focusTarget.disabled) focusTarget = subjectHeading;
+        var closedDetails = focusTarget && focusTarget.closest('details:not([open])');
+        if (closedDetails && focusTarget !== closedDetails.querySelector('summary')) focusTarget = closedDetails.querySelector('summary');
+        if (!focusTarget || focusTarget.disabled || !focusTarget.getClientRects().length) focusTarget = subjectHeading;
         focusTarget.focus({preventScroll: true});
+        if (activeRender() && doc.activeElement !== focusTarget) subjectHeading.focus({preventScroll: true});
       }
       return v;
     }
+    function captureView() {
+      var v = currentView;
+      if (disposed || !v || (v.state !== 'ready' && v.state !== 'stale') || !v.subject ||
+          v.publication.status !== 'verified' || !/^cycp1-[0-9a-f]{64}$/.test(v.publication.id || '')) return null;
+      var values = root.querySelector('.sdc-values'), sources = root.querySelector('.sdc-sources'), range = null;
+      if (v.chart.hasHistory) {
+        try { range = chartHandle && typeof chartHandle.getView === 'function' ? chartHandle.getView() : null; } catch (_) { return null; }
+        if (!Array.isArray(range) || range.length !== 2 || !range.every(function (n) { return finite(n) != null; }) || range[0] >= range[1]) return null;
+      }
+      return {schema: 'sector_dossier.view.v1', publicationId: v.publication.id,
+        id: v.subject.id, family: v.subject.family, asOf: v.asOf, range: range && range.slice(),
+        valuesOpen: !!values && values.open, sourcesOpen: !!sources && sources.open,
+        valuesOffset: values ? Number(values.dataset.offset) || 0 : 0};
+    }
+    function applyView(raw) {
+      var before = captureView();
+      if (!before) return {status: 'rejected', reason: 'view_unavailable'};
+      var fields = ['schema','publicationId','id','family','asOf','range','valuesOpen','sourcesOpen','valuesOffset'];
+      if (!obj(raw) || Object.keys(raw).length !== fields.length || !fields.every(function (k) { return own(raw, k); }) ||
+          raw.schema !== before.schema || typeof raw.valuesOpen !== 'boolean' || typeof raw.sourcesOpen !== 'boolean' ||
+          !Number.isSafeInteger(raw.valuesOffset) || raw.valuesOffset < 0 || raw.valuesOffset > 1000000 || raw.valuesOffset % 50 !== 0 ||
+          (raw.range !== null && (!Array.isArray(raw.range) || raw.range.length !== 2 ||
+            !raw.range.every(function (n) { return finite(n) != null; }) || raw.range[0] >= raw.range[1]))) return {status: 'rejected', reason: 'invalid_view'};
+      if (['publicationId','id','family','asOf'].some(function (k) { return raw[k] !== before[k]; })) return {status: 'rejected', reason: 'source_changed'};
+      var history = currentView.history, lastPage = history.state === 'ready' ? Math.floor((history.rows.length - 1) / 50) * 50 : 0;
+      if (raw.valuesOffset > lastPage || (raw.valuesOpen && history.state !== 'ready')) return {status: 'rejected', reason: 'values_unavailable'};
+      if (raw.range !== null && (!chartHandle || typeof chartHandle.setView !== 'function')) return {status: 'rejected', reason: 'chart_unavailable'};
+      // Recomposition destroys the prior owned chart (including its tween).
+      // The new handle receives the desired range through the nonanimated path.
+      pendingView = {valuesOpen:raw.valuesOpen,sourcesOpen:raw.sourcesOpen,valuesOffset:raw.valuesOffset,range:raw.range && raw.range.slice()};
+      render(currentPayload, currentOptions);
+      var actual = captureView();
+      if (!actual) return {status: 'partial', reason: 'view_unavailable'};
+      if (['publicationId','id','family','asOf'].some(function (k) { return actual[k] !== before[k]; })) return {status: 'partial', reason: 'source_changed'};
+      var equalRange = raw.range === null ? actual.range === null : Array.isArray(actual.range) &&
+        raw.range.every(function (n, i) { return Math.abs(n - actual.range[i]) <= 1e-7; });
+      if (!equalRange || actual.valuesOpen !== raw.valuesOpen || actual.sourcesOpen !== raw.sourcesOpen || actual.valuesOffset !== raw.valuesOffset)
+        return {status: 'partial', reason: 'view_not_restored'};
+      return {status: 'applied', reason: null};
+    }
     render(payload, options);
     return {
+      captureView: captureView, applyView: applyView,
       update: function (nextPayload, nextOptions) { return render(nextPayload, nextOptions); },
-      destroy: function () { if (!disposed) { disposed = true; cleanChart(); root.replaceChildren(); } }
+      destroy: function () { if (!disposed) { disposed = true; renderGeneration++; cleanChart(); root.replaceChildren(); } }
     };
   }
   // Explicit host integration. The original Cycles verifier is the sole source
   // of publication acceptance; this adapter neither fetches nor re-hashes data.
   function mountFromNative(root, owner, options) {
     if (!root || !root.ownerDocument) throw new TypeError('A DOM element is required');
-    var current = Object.assign({}, options || {}), component = null, disposed = false;
+    var current = Object.assign({}, options || {}), component = null, disposed = false, generation = 0;
     var doc = root.ownerDocument;
     var events = ['sc:publication-ready', 'sc:cycles-ready', 'sc:series-ready', 'sc:series-error', 'sc:extras-ready'];
     function receipt() {
@@ -372,6 +443,7 @@
     }
     function refresh() {
       if (disposed) return;
+      generation++;
       var next = Object.assign({}, current, {requirePublication: true, evidence: null}), payload = null;
       if (next.accessState === 'allowed' && (next.dataState === 'ready' || next.dataState === 'stale')) {
         next.evidence = receipt();
@@ -396,12 +468,50 @@
       if (component) component.update(payload, next);
       else component = mount(root, payload, next);
     }
+    function admittedReceipt() {
+      if (disposed || current.accessState !== 'allowed' || ['ready','stale'].indexOf(current.dataState) < 0) return null;
+      var value = receipt();
+      return value && currentReceipt(value) ? value : null;
+    }
+    function viewStillBound(bound, value, stamp) {
+      if (!value || disposed || generation !== stamp || current.accessState !== 'allowed' ||
+          ['ready','stale'].indexOf(current.dataState) < 0 || value.id !== current.id || value.family !== current.family ||
+          value.publicationId !== bound.publicationId || value.asOf !== bound.asOf || !currentReceipt(bound)) return false;
+      var now = receipt();
+      return current.family === 'sectors' || value.range === null || (now && now.parts && now.parts.series === 'verified');
+    }
+    function captureNativeView() {
+      var bound = admittedReceipt(), stamp = generation;
+      if (!bound || !component) return null;
+      var value = component.captureView();
+      if (viewStillBound(bound, value, stamp)) return value;
+      // The part receipt may change before this adapter's event listener runs.
+      // Retire the old chart now; a later read may export the core-only view.
+      if (value && !disposed && generation === stamp) refresh();
+      return null;
+    }
+    function applyNativeView(value) {
+      var bound = admittedReceipt(), stamp = generation;
+      if (!bound || !component) return {status:'rejected',reason:'source_unavailable'};
+      if (value && value.range !== null && current.family !== 'sectors' && (!bound.parts || bound.parts.series !== 'verified')) {
+        refresh(); return {status:'rejected',reason:'history_unavailable'};
+      }
+      var result = component.applyView(value);
+      if (!currentReceipt(bound) || disposed || stamp !== generation ||
+          current.accessState !== 'allowed' || ['ready','stale'].indexOf(current.dataState) < 0 ||
+          (result.status !== 'rejected' && !viewStillBound(bound, value, stamp))) {
+        if (!disposed && stamp === generation) refresh();
+        return {status:'partial',reason:'source_changed'};
+      }
+      return result;
+    }
     events.forEach(function (name) { doc.addEventListener(name, refresh); });
     refresh();
     return {
+      captureView: captureNativeView, applyView: applyNativeView,
       update: function (nextOptions) { if (!disposed) { current = Object.assign({}, nextOptions || {}); refresh(); } },
       destroy: function () {
-        if (disposed) return; disposed = true;
+        if (disposed) return; disposed = true; generation++;
         events.forEach(function (name) { doc.removeEventListener(name, refresh); });
         if (component) component.destroy();
       }
