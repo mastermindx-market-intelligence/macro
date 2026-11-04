@@ -5463,7 +5463,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_913),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_668),
 )
@@ -5473,6 +5473,18 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-04 Net Worth invalid-amount coverage composes base 8b78baf69777
+    with candidate dde01b337d4c. The existing calculator-input-integrity job
+    gains one run block for the complete controller on source and generated
+    page. Canonical packing_probe_measurements paired manifests, unchanged
+    planner/tree inputs: index 137 jobs / 5,912 -> 5,913; free-content 137 /
+    5,927 unchanged; plan-book 131 / 5,668 unchanged; all ten packs. Selected
+    job IDs are identical on all probes. Evidence SHA256:
+    dfeff50d0e583fe2e73d19be372ff53b6b903e83b51908f50648a576b8e0e409.
+    Fund only the demonstrated one-unit index estimate, retaining every
+    other weight, job-count, pack/runtime limit, selector and existing suite.
+    These are planner estimates, not execution timings.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
