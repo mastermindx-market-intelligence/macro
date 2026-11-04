@@ -1,14 +1,16 @@
 # D06 Terminal specification, evidence and implementation continuation
 
-**Current: source specification delivered; reader implementation BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED. Overall PARTIAL; RIG draft.** The Chairman authorized building before F01 completion. The independent reader slice now passes 22 focused DOM tests and 57 browser tests (12 intentional viewport skips), with 12 hash-verified local screenshots. [Read the implementation continuation](IMPLEMENTATION_CONTINUATION_20261104.md) and [exact receipt](evidence/implementation_receipt.json). The implementation remains in its original managed Terminal workspace because the publisher preflight refused before effect; no implementation commit, Terminal PR, formal approval or deployment is claimed. Final shell composition and Paper write admission remain separate gates.
+**Current: SOURCE_PUBLISHED / LOCALLY_VERIFIED / HOSTED_CI_PENDING / RELEASE_HOLD. Overall PARTIAL; RIG draft.** The recovered original publisher has published the reader resilience implementation and the new truthful chart-time/second-precision correction in [Terminal Draft #1270](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1270), exact head `0cf50dc0c7db259b284b48632df3f05fcb0fb7b7`. Current proof: **57 focused unit/DOM passes, 77 browser passes, 16 intentional viewport skips, zero failures/flaky results, eight new inspected captures**. [Current implementation and publication return](PUBLICATION_AND_CHART_TIME_20261104.md) and [receipt](evidence/chart_time_receipt.json) replace the historical publisher blocker. Final shell composition, Paper write admission, required hosted CI/formal approval and release remain separate gates.
 
-The current owner remains the Chairman-assigned D06 Astra Pro receiver, ChatGPT4 / `mastermidx4`. [Draft PR #10655](https://github.com/mastermindx-market-intelligence/macro/pull/10655) and branch `design/d06-terminal-phase2a-20261103-c4` remain the existing D06 research carrier under [programme Draft #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). No replacement D06 session, lifecycle system or shared return ledger was created. One managed Terminal implementation workspace/branch was acquired for the newly authorized independent slice; its source publication remains blocked.
+The current owner remains the Chairman-assigned D06 Astra Pro receiver, ChatGPT4 / `mastermidx4`. [Draft PR #10655](https://github.com/mastermindx-market-intelligence/macro/pull/10655) and branch `design/d06-terminal-phase2a-20261103-c4` remain the existing D06 research carrier under [programme Draft #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). No replacement D06 session, lifecycle system or shared return ledger was created. The original managed Terminal workspace/branch and the recovered existing Draft #1270 carry the independent implementation; no duplicate carrier was created.
 
 ## Read the complete package
 
 | Artifact | Purpose |
 | --- | --- |
-| [Implementation continuation](IMPLEMENTATION_CONTINUATION_20261104.md) | Actual reader changes, contracts, tests, screenshots, original workspace and exact publication blocker |
+| [Published reader and chart-time continuation](PUBLICATION_AND_CHART_TIME_20261104.md) | Current code, recovered publisher, exact source/test proof, clock behavior and remaining acceptance boundaries |
+| [Historical first implementation](IMPLEMENTATION_CONTINUATION_20261104.md) | Initial reader implementation and exact earlier verification/refusal history |
+| [Current foundation and focused-reader response](FOUNDATION_RESPONSE_20261104.md) | Candidate.4/proposed.5 boundaries, preserved Terminal ownership and exact historical source-review scope |
 | [Product and UX specification](PRODUCT_UX_SPEC.md) | Normal journeys, keep/change decisions, chart-first/focused layout, measured available-width rules, responsive/accessibility requirements and Paper reuse |
 | [Feature retention ledger](FEATURE_RETENTION.md) | 76 existing capability groups: 40 RETAIN, 35 IMPROVE, one BLOCKED_DATA; zero removals/relocations; six separate proposed extensions |
 | [Route and backend contracts](ROUTE_DATA_CONTRACTS.md) | Nine canonical families, URL/entity/access/state owners, real producers/APIs, clocks, units, cache and write/readback |
@@ -39,7 +41,7 @@ Material changes now specified from that evidence:
 - Distinguish generic Open Terminal from a named current-company action, avoiding stale shared cursor entry and false current navigation.
 - Correct embed content-language/zoom/source-clock requirements and Stage's unconditional claims that failed sibling views are unaffected.
 
-The prior BRAIN01, LAY06, NAV10 and COMP01 extension produced71 specified cases. This continuation adds LAY07, NAV11, DATA09 and SCRIPT06, giving **75 specified, not executed** migration cases. Existing focus/resize/zoom/data cases were strengthened. Successful before-design observations remain separate from migration passes.
+The prior BRAIN01, LAY06, NAV10 and COMP01 extension produced71 specified cases. This continuation adds LAY07, NAV11, DATA09 and SCRIPT06, giving **75 specified migration cases**; the later implementation evidence partially covers 10, with zero complete-case passes. Existing focus/resize/zoom/data cases were strengthened. Successful before-design observations remain separate from migration passes.
 
 ## Phase 2A responsive and source baseline
 
@@ -61,17 +63,17 @@ The current-source delta qualifies company-search context, conservative cache ac
 | Input | Exact identity |
 | --- | --- |
 | All five required programme inputs and scoped census | Macro `6e1862867193ec6486a22001a0e4fb515da20448` |
-| Current protected procedure | Mastermind `910803421beca53ca25145392725ab2d84c7a8e9`; compatible skillpack1.0.1/bootstrap major1; required laws loaded and unchanged companions verified/reused from the prior9f65957e pin |
+| Current protected procedure | Mastermind `576b59341edc9c871cb9d950833678fcf65078e4`; compatible skillpack1.0.1/bootstrap major1; material delivery/account changes read and unchanged required companions verified/reused from valid91080342 pin |
 | Earlier INDEX-only compatibility check (historical) | Mastermind `d47cdb5652096e038a8bfb24e431ebe48ccf7ff2`; same compatibility and mission-pin reuse rule; not a claim of reloading all companions at that later pin |
 | Original Terminal source | `3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9` |
 | Later Terminal source delta | `2ded360882b9c721e690907ff363b553781fb920`; ten core chart/reader/Brain/origin blobs unchanged |
 | Macro implementation source | `fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9` |
 | Brain-relevant later source drift checks | Terminal `c8a1d0e23255c2d5374258b52197bdf1aed85b27`; Macro `00438de71e1d67e051d5e2f3938ef49762ecbe97`; relevant inspected lifecycle blobs unchanged |
-| F01 latest consumed continuation | Draft #10645 at `2d008bf91ccff696a3490e5d45eb9bc8d721ec9a`; F01/1.0.0-candidate.3 and joint candidate.3; PARTIAL / REQUEST_CHANGES / RIG draft |
-| F02 consumed candidate | Draft #10630 at `f7c25c4b9870cff260c2a4b998be18d6c04d36d0`; F02-SYSTEM/1.0.0-candidate.2; partial native writes paused |
+| F01 current source readback | Draft #10645 at `dcba5d618051a1de05dbc5db08254a0fb31dfc15`; operative joint candidate.4, candidate.5 PROPOSED_NOT_ADOPTED; final v1 unreleased |
+| F02 current source readback | Draft #10630 at `79ddabca1f94741dacc7fee1dacdce882cef4f69`; scoped candidate.4 source-policy concurrence; original G15 effect and final joint qualification remain held |
 | P00 evidence return | Draft #10626 at `3f27e859438f5ba2d8288735c4d04aa087bfc45c`; BLOCKED_RETURN/PARTIAL, with an actual evidence-only approved review |
-| Prior published D06 evidence freeze | `d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf`; extends61d6762 history on the same branch |
-| Current Terminal implementation | Base2ded3608; exact working-file hashes in the implementation receipt; no implementation commit yet |
+| Prior published D06 evidence freeze | `1f63f2c8318e7819551d5b82d47bc6e1e8700a98`; same owner/branch, historical initial implementation evidence |
+| Current Terminal implementation | Draft #1270 at `0cf50dc0c7db259b284b48632df3f05fcb0fb7b7`, extending initial2d29878; source hashes and APPLIED receipts in chart_time_receipt.json |
 
 The original assignment pin is unchanged. Later foundation, current procedure and source-delta observations are separately identified. The later DOM deployment token equals the observed Terminal SHA; that is source correspondence, not independent bundle/release attestation. The external Brain asset was not byte-attested.
 
@@ -84,10 +86,10 @@ These are editorial package states, not Executive lifecycle transitions or revie
 | D06.2A.1 Baselines and boundaries | delivered to recorded depth | All-nine-family guest evidence, later measured responsive subset and scoped current Paper correspondence; proof limits explicit |
 | D06.2A.2 Product and retention | specified | Complete source/Paper ledger and retained registries; no feature removal |
 | D06.2A.3 Interaction and data | specified with live findings | Exact identity/clocks, corrected reader/focus/fit semantics, Brain handoff and current-source delta; extensions remain proposed |
-| D06.2A.4 Builder and migration | specified | 75 unique cases; nine have bounded local-fixture subsets, zero have complete-case qualification; owner-preserving sequence and rollback |
+| D06.2A.4 Builder and migration | specified | 75 unique cases; 10 have bounded local-fixture subsets, 65 remain specified/unexecuted, zero have complete-case qualification; owner-preserving sequence and rollback |
 | D06.2A.5 Evidence return | delivered | 36 beta captures,16 Paper reference captures,two structure reads,sanitized DOM measurements,pins and manifest |
-| D06 reader implementation continuation | built and locally verified; publication blocked | 22 DOM tests,57 browser passes,12 deliberate skips,12 raw PNGs; typed publisher preflight refused before effect |
-| D06.2B Editable composition and review | blocked | Verified joint F01/F02 v1, exact D06/C4 authoring admission, frozen after-artifacts and actual independent RIG/QA01 qualification |
+| D06 reader implementation continuation | source published and locally verified; release held | 57 unit/DOM passes,77 browser passes,16 deliberate skips,eight new captures; original publisher APPLIED, Draft #1270 |
+| D06.2B Editable composition and review | blocked | Verified joint F01/F02 v1, exact D06/C4 authoring admission, frozen after-artifacts and applicable actual RIG/QA01 acceptance dispositions |
 
 Actual tablet/phone-width browser evidence is now recorded. Physical touch devices,mobile browser/software keyboard,400%zoom,screen reader/contrast,full responsive/theme/locale coverage,authenticated save/access/races,positive public snapshot,performance,model validity and after-design usability remain unproved. Paper mobile references remain a separate evidence class.
 
@@ -105,10 +107,8 @@ Fresh depth3 summaries for1K9F-0 and19IC-1 match the frozen parsed exports,token
 
 ## Current gates and exact continuation
 
-F01's `F01-20261103-c4-state-8-v1` and F02's `f02-c2-macro-light-zh-390-chart-footer-20261103-01` still require original-owner terminal/canonical reconciliation, repairs, a frozen native set and review. D06 must not replay either operation or take either target. F01's latest action-scope correction permits its own independent A/C/D/E/F/H repairs; the atlas I/grid, Readme operation and dependent/shared effects remain held. This is not a file-wide pause and transfers no D06 admission. Candidate geometry concurrence is not release.
+The original Terminal publisher blocker is resolved. The same carrier now contains the reader state-preservation and chart-time implementation with exact published proof. Follow [the current return](PUBLICATION_AND_CHART_TIME_20261104.md) and [current gate evidence](evidence/continuation_gates.json), preserving earlier records as history.
 
-P00 corrected the old catalog mismatch: 16 native write schemas qualify. That is not D06/C4 account/app/target admission. The [10:25UTC original rollout hold](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6601121419) and [later P00 record](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6604289465), updated19:23UTC, still carry original C1/per-seat conditions and do not establish D06/C4 exact admission. Its separate installed Studio host enrollment/activation records do not identify this connected direct app’s runtime or grant admission. Another account’s accepted write and source review are not transferable. [Current gate evidence](EVIDENCE_AND_RETURN.md) records the narrow distinction.
+The [current foundation response](FOUNDATION_RESPONSE_20261104.md) qualifies candidate.4, the unadopted candidate.5 proposal and original-operation holds. D06 confirms the requirement for explicit future adoption and preserves its separate reader geometry/cursor/Ask boundary; candidate.5 remains unadopted. No joint v1 release or Paper grant is inferred. Historical D06 source approval5760898375 applies only to exactd7d6b7d; it does not approve this implementation or successor package. Shared shell composition remains gated, while the Chairman-authorized independent implementation is complete for this slice. Existing Chart AI, Intelligence, Options, startup and foundation writers retain their paths and carriers. Rejected full-pane Refraction remains excluded.
 
-After those exact gates clear, the **same D06 owner** rechecks target writers, composes the held editable variants using this package, freezes the after-artifacts and enters genuine independent review. The Chairman has now authorized independent implementation before F01 completion; the reader slice is built and locally verified. Other product-owner contracts retain their explicit custody and acceptance boundaries.
-
-**FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED for remaining Terminal publication, composition and qualification. MISSION_COMPLETE: false.** The independent reader implementation and local proof are complete. The same D06 receiver can publish its original Terminal branch after a material same-carrier publisher repair and successful typed preflight; see the exact successor action in the implementation continuation. No merge, un-draft, Ready, enqueue, held-PR relabel or deployment occurred. Shared `SESSION_RETURNS.md` and other writers remain untouched; no background watcher or automatic continuation is armed.
+**FINALIZATION: PROVEN_OUTCOME for bounded source publication/local proof; CHECKPOINTED_CONTINUATION for broader D06. MISSION_COMPLETE:false.** Next: qualify hosted CI on the actual Terminal head and repair concrete failures on this same carrier; then consume released foundation contracts and exact authoring admission when available. Self-QA does not invent formal non-author approval. Ready/un-draft, merge, enqueue, held-PR relabel and deployment holds remain. No watcher or future execution is armed.

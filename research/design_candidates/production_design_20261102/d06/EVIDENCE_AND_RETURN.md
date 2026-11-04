@@ -1,14 +1,20 @@
 # D06 evidence, findings and ownership return
 
-## Current implementation return — 2026-11-04 UTC
+## Current published implementation return — 2026-11-04 UTC
 
-**BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED; overall PARTIAL; RIG draft.** The latest Chairman message authorizes building before F01 completion. D06 implemented the reader-local disclosure/scroll/focus and 44px target repairs in one managed Terminal workspace. Final verification:22 DOM passes,57 browser passes,12 deliberate viewport skips,TypeScript/lint/diff checks passed,12 raw PNGs inspected and hash-verified. [Complete current return](IMPLEMENTATION_CONTINUATION_20261104.md) and [machine-readable receipt](evidence/implementation_receipt.json) bind exact files, tests and gates.
+**SOURCE_PUBLISHED / LOCALLY_VERIFIED / HOSTED_CI_PENDING / RELEASE_HOLD; overall PARTIAL; RIG draft.** The original publisher is recovered. [Terminal Draft #1270](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1270) now holds the reader resilience changes plus the chart-time/second-precision correction at `0cf50dc0c7db259b284b48632df3f05fcb0fb7b7`. Same owner, workspace, operation and branch; no duplicate publication carrier.
 
-The original typed publisher refused its read-only preflight with REFUSED/NOT_APPLIED/TYPED_GIT_PRECHECK_REFUSED. No code commit or push was attempted after that refusal. Code remains in operation `d06-terminal-reader-resilience-20261103-c4`; no replacement publisher or GitHub code-write bypass was used. The current protected pin is910803421beca53ca25145392725ab2d84c7a8e9. Paper, shell composition, formal review and release remain separate gates.
+Current verification: **57 focused unit/DOM passes,77 browser passes,16 deliberate viewport skips,zero failures/flaky results**, TypeScript/lint/diff checks passed, all nine tested file hashes matched, eight new raw PNGs inspected. All17 new commit file blobs match GitHub readback. [Current complete return](PUBLICATION_AND_CHART_TIME_20261104.md) and [canonical receipt](evidence/chart_time_receipt.json) bind source, tests and publication effects. The75-case plan now has10partial local-fixture cases,65specified/unexecuted,zero complete-case passes.
+
+Current protected procedure: `576b59341edc9c871cb9d950833678fcf65078e4`. The Chairman permits this build before F01 and waives blanket extra Web-review ceremony. Binding CI, branch protection and formal non-author approval where required remain, as do final shell composition, exact Paper admission and release holds. Current source/foundation readback is in [continuation_gates.json](evidence/continuation_gates.json).
+
+The [first implementation return](IMPLEMENTATION_CONTINUATION_20261104.md) preserves its original proof and preflight refusal as history. It no longer describes current publication status. All64 earlier raw images are unchanged; eight new clock captures are added. No Paper mutation, deployment, production acceptance or background observer is claimed.
+
+The [foundation response](FOUNDATION_RESPONSE_20261104.md) preserves the actual older D06 source approval5760898375 at exactd7d6b7d, with no extension to current source, browser, RIG or release. Current F01/F02 source was independently reread at exactdcba5d61/79ddabca; jointv1 remains unreleased.
 
 ## Historical Phase 2A return
 
-The remaining sections preserve the prior `d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf` research freeze. Statements below about unchanged implementation or its9f65957e procedure pin describe that historical phase; the current implementation return above controls the new work.
+The remaining sections preserve the prior `d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf` research freeze. Statements below about unchanged implementation or its9f65957e procedure pin describe that historical phase; the current published implementation return above controls the new work. Historical review-ceremony language below is not a new gate; current protected law and the Chairman’s waiver govern.
 
 ## Outcome and authority
 

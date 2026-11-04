@@ -1,5 +1,7 @@
 # D06 implementation continuation — reader resilience
 
+**Historical record at Macro `1f63f2c8318e7819551d5b82d47bc6e1e8700a98`.** The original publisher is now recovered and the code is published in Terminal Draft #1270. [Current publication and chart-time continuation](PUBLICATION_AND_CHART_TIME_20261104.md) supersedes the publication blocker and current-review wording below. The following records the original implementation phase and its exact tests; it is not the current gate disposition.
+
 **Current outcome: BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED. Overall D06 remains PARTIAL; RIG draft.**
 
 The Chairman's latest continuation explicitly authorizes implementation before F01 completion. D06 used that authorization to implement the independently owned Chart Context reader repairs identified in the live audit. The complete Phase 2A specification remains in this same [D06 carrier](https://github.com/mastermindx-market-intelligence/macro/pull/10655). This continuation publishes factual research and verification evidence here; it does not turn Macro into an alternative publisher for Terminal code.

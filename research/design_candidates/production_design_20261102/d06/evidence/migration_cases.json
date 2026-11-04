@@ -1,6 +1,6 @@
 {
   "artifact": "D06 proposed migration cases",
-  "status": "SPECIFIED_WITH_PARTIAL_LOCAL_READER_EXECUTION",
+  "status": "SPECIFIED_WITH_PARTIAL_LOCAL_READER_AND_CLOCK_EXECUTION",
   "cases": [
     {
       "id": "NAV01",
@@ -77,7 +77,9 @@
       "input": "ET daylight-saving boundary, CN/HK wall time, crypto UTC and daily dates",
       "expected": "Format declared time basis correctly; no universal UTC suffix or shifted daily dates.",
       "owner": "Intraday/reader",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Published reader removes universal UTC qualifier, preserves supplied US summer/winter,CN/HK,crypto-shaped clock components,daily dates,and seconds for1s/5s/15s/30s. New browser tests cover EN/ZH numeric Previous→Latest and daily labels. This does not validate upstream timezone/DST provenance,freshness or PIT.",
+      "execution_receipt": "chart_time_receipt.json"
     },
     {
       "id": "HIST03",
@@ -440,7 +442,7 @@
       "expected": "Match document/content language and accessible labels to rendered text; measure contrast, non-color semantics,44px house targets and the separate AA minimum/spacing rule.",
       "owner": "F02/D06",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "Dark EN/ZH and measured 44px target subsets; light composition, full contrast and other route language cases remain unqualified."
+      "execution_subset": "Dark EN/ZH and measured 44px target subsets; light composition, full contrast and other route language cases remain unqualified. New clock proof adds visible and aria-describedby-associated EN/ZH qualifiers and320px date/time wrapping. New narrow target checks cover collapsed controls; full expanded-target and physical-device proof remains separate."
     },
     {
       "id": "A11Y03",
@@ -537,8 +539,10 @@
       "status": "specified_not_executed"
     }
   ],
-  "baseline_observation_note": "Actual guest and later signed-in-presentation current-product subsets are recorded separately in live_coverage.json and responsive_observations.json. None is a complete proposed migration execution or acceptance. The later implementation receipt separately records22 focused DOM passes and57 browser passes; nine broad cases have partial local-fixture execution, zero full-case passes.",
+  "baseline_observation_note": "Guest and signed-in-presentation before-design observations remain separate. Current published reader source has57focused unit/DOM passes and77browser passes;10broad migration cases have partial local-fixture evidence,65remain specified/unexecuted,and zero have complete-case acceptance.",
   "complete_case_passes": 0,
-  "partial_case_count": 9,
-  "execution_receipt": "implementation_receipt.json"
+  "partial_case_count": 10,
+  "execution_receipt": "chart_time_receipt.json",
+  "specified_unexecuted_count": 65,
+  "historical_execution_receipt": "implementation_receipt.json"
 }

@@ -1,0 +1,135 @@
+{
+  "artifact": "D06 exact-head F01/F02 foundation readback",
+  "state": "JOINT_V1_UNRELEASED; CANDIDATE4_OPERATIVE_PROVISIONALLY; CANDIDATE5_PROPOSED_NOT_ADOPTED",
+  "f01_head": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+  "f02_head": "79ddabca1f94741dacc7fee1dacdce882cef4f69",
+  "files": [
+    {
+      "name": "f01_return",
+      "commit": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+      "path": "research/design_candidates/production_design_20261102/f01/RETURN_F01.md",
+      "git_blob_sha1": "b577efc35aa7f3d33d68f2c1675506b68ca60cdf",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/dcba5d618051a1de05dbc5db08254a0fb31dfc15/research/design_candidates/production_design_20261102/f01/RETURN_F01.md"
+    },
+    {
+      "name": "f01_joint",
+      "commit": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+      "path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+      "git_blob_sha1": "7a987f6923e607d0ee49ef04eff7f1d20d728bc0",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/dcba5d618051a1de05dbc5db08254a0fb31dfc15/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md"
+    },
+    {
+      "name": "f01_candidate5",
+      "commit": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+      "path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT_CANDIDATE5.md",
+      "git_blob_sha1": "46c22edd8077d3f3ffda48ed51f72bf9dff4955d",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/dcba5d618051a1de05dbc5db08254a0fb31dfc15/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT_CANDIDATE5.md"
+    },
+    {
+      "name": "f02_return",
+      "commit": "79ddabca1f94741dacc7fee1dacdce882cef4f69",
+      "path": "research/design_candidates/production_design_20261102/f02/RETURN_F02.md",
+      "git_blob_sha1": "e30b889419ec98974e34d81c03df46c8286694bb",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/79ddabca1f94741dacc7fee1dacdce882cef4f69/research/design_candidates/production_design_20261102/f02/RETURN_F02.md"
+    },
+    {
+      "name": "f02_handshake",
+      "commit": "79ddabca1f94741dacc7fee1dacdce882cef4f69",
+      "path": "research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md",
+      "git_blob_sha1": "1831159c5f1885f8ad4957e56e18edcd3e65f0eb",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/79ddabca1f94741dacc7fee1dacdce882cef4f69/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md"
+    }
+  ],
+  "preserved_policy": {
+    "section": "F01 candidate.4 §§2–5",
+    "bytes": 14315,
+    "sha256": "c887ab7c2ab9055410ee57fb5a30763b35f509ce3f3a86b6c7a8c1356c982c6e",
+    "method": "Computed from current fetched file; matches source-declared semantic freeze digest"
+  },
+  "versions": {
+    "f01": "F01/1.0.0-candidate.4",
+    "operative_joint": "F01-F02-SHELL/1.0.0-candidate.4",
+    "successor": "F01-F02-SHELL/1.0.0-candidate.5",
+    "f02_system": "F02-SYSTEM/1.0.0-candidate.2",
+    "f02_source_data": "F02-SOURCE-DATA/1.0.0-candidate.2"
+  },
+  "concurrence": {
+    "candidate4": "F02 source-policy concurrence recorded for ownership/change table and §§4.1–4.3, with conditions; not native/runtime/release acceptance.",
+    "candidate5": "F02 concurred with F01-RESIZE-FOCUS/0.1 two focus branches as a proposal. Full candidate.5 added clarifications and affected-owner bindings remain pending; no adoption inferred."
+  },
+  "holds": [
+    {
+      "owner": "F01",
+      "operation_id": "F01-20261103-c4-state-8-v1",
+      "state": "EFFECT_UNKNOWN",
+      "target": {
+        "board": "710Z-0",
+        "append_parent": "711X-0"
+      },
+      "action": "Original-carrier terminal receipt or documented canonical reconciliation; no replay/rekey/replacement."
+    },
+    {
+      "owner": "F01",
+      "operation_id": "F01-20261103-c4-readme-concurrence-v2",
+      "state": "DOCUMENT_CHANGED",
+      "retry_allowed": false,
+      "target": {
+        "readme": "6ZZX-0"
+      },
+      "action": "Original disposition and lawful same-target metadata successor; source concurrence is not applied native update."
+    },
+    {
+      "owner": "F02",
+      "operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+      "state": "EFFECT_UNKNOWN",
+      "target": {
+        "file": "01M312VSDSZFVT45674GDVJVZN",
+        "board": "7IS-0",
+        "body": "7J4-0"
+      },
+      "action": "Original-carrier terminal/canonical reconciliation before footer/build-note, 33 numeric-frame corrections and strict 32-board freeze."
+    },
+    {
+      "owner": "F01/F02",
+      "state": "FINAL_JOINT_V1_NOT_RELEASED",
+      "action": "Finish actual native references, bind exact source/slot/preferences/navigation/lifecycle contracts, qualify affected runtime paths and applicable final design/QA/RIG gates."
+    },
+    {
+      "owner": "D06",
+      "state": "NO_PAPER_WRITE_ADMISSION_INFERRED",
+      "action": "These source reads and other-owner concurrence do not establish D06/C4 exact target admission."
+    }
+  ],
+  "d06_implications": [
+    "Explicit Chairman build authorization remains the independent reader implementation authority; no F01/F02 release is needed to publish the scoped reader correction.",
+    "Keep actual reader width default360/requested300–520/mm.railW separate from shared320+24 inspector geometry and the shared640px primary minimum.",
+    "D06 price-plot640px proposal, cursor/historical Ask, Brain/host arbitration and final shell composition retain separate qualification.",
+    "Candidate.5 asks D06 only for explicit adoption/boundary response; it does not automatically replace the existing reader.",
+    "Root may record scoped source-conformance decisions in D06's own package; no external owner message or Paper operation was sent by this readback."
+  ],
+  "historical_d06_source_review": {
+    "id": 5760898375,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10655#pullrequestreview-5760898375",
+    "reviewer": "mastermindxryan",
+    "commit_id": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+    "state": "APPROVED",
+    "submitted_at": "2026-11-03T23:22:09Z",
+    "scope": "Bounded Phase2A source/evidence-contract delta only; excludes current implementation, final design/browser/RIG and release."
+  },
+  "effects": {
+    "remote_read_only": true,
+    "paper_calls": 0,
+    "canonical_mutations": 0,
+    "external_messages": 0,
+    "local_readback_artifacts_only": true
+  },
+  "parent_readback": "Root independently fetched the same five files at both exact commits and the historical D06 review; source/effect states confirmed.",
+  "observed_at_utc": "2026-11-04T05:10:04.765008+00:00",
+  "d06_candidate5_response": {
+    "disposition": "FOCUSED_READER_BOUNDARY_CONFIRMED / NO_AUTOMATIC_ADOPTION",
+    "source": "../FOUNDATION_RESPONSE_20261104.md",
+    "shared_modal_or_suspension_policy_implemented": false,
+    "shared_candidate5_released": false,
+    "no_new_global_coordinator": true
+  }
+}

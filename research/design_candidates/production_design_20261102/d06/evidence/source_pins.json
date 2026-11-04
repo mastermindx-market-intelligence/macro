@@ -13,15 +13,15 @@
   },
   "procedure": {
     "repository": "mastermindx-market-intelligence/Mastermind",
-    "loaded_sha": "910803421beca53ca25145392725ab2d84c7a8e9",
+    "loaded_sha": "576b59341edc9c871cb9d950833678fcf65078e4",
     "schema": "mastermind.sol_skillpack.v1",
     "version": "1.0.1",
     "minimum_bootstrap_major": 1,
     "late_index_only_check_sha": "d47cdb5652096e038a8bfb24e431ebe48ccf7ff2",
     "mission_pin_retained": false,
     "prior_index_only_check_sha": "e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c",
-    "prior_loaded_sha": "9f65957e29eba92245d78609f032aaea523b7cb4",
-    "refresh_method": "Required current law loaded at910803421beca53ca25145392725ab2d84c7a8e9; unchanged companions verified against9f65957e; changed review-risk/delivery provisions read.",
+    "prior_loaded_sha": "910803421beca53ca25145392725ab2d84c7a8e9",
+    "refresh_method": "INDEX unchanged; current protected commit compared against valid91080342 pin; changed DELIVERY_WORKFLOW and SOL_CEO_ACCOUNT_INSTRUCTIONS read, unchanged required companions verified/reused.",
     "index_blob": "95b36446601250ccaf298dfb1c9b51fa9823e042",
     "current_material_constraints_loaded": true,
     "assignment_pin_unchanged": true
@@ -47,30 +47,74 @@
       "ten_core_blobs_unchanged": true,
       "evidence": "responsive_observations.json",
       "contracts": "../SOURCE_DELTA_20261103.md"
+    },
+    "chart_time_source_comparison": {
+      "terminal_master": "e48170b609dddf3b5b4eba1c047620d5d017290f",
+      "owned_reader_and_direct_helper_blobs_unchanged_from_base": true,
+      "claim": "path-disjoint current-master comparison before editing; not a deployed or merged candidate claim"
     }
   },
   "later_foundations": {
     "f01": {
       "pr": 10645,
-      "sha": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+      "sha": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
       "draft": true,
-      "version": "F01-F02-SHELL/1.0.0-candidate.3",
+      "merged": false,
+      "version": "F01-F02-SHELL/1.0.0-candidate.4",
       "state": "PARTIAL / REQUEST_CHANGES / RIG draft",
-      "joint_v1_verified": false,
-      "prior_consumed_candidate3_sha": "3ec131bb4b515c5ede76f51e9d8e65f128bc19ae",
-      "prior_consumed_head": "d6ebeefcba90387b42817f8e87792e630d5862eb",
-      "active_continuation": "Original atlas I/grid, Readme operation and dependent/shared effects remain held; independently safe corrections on F01-owned A/C/D/E/F/H may proceed through its original direct app under exact guards. This does not grant D06 admission or release jointv1.",
-      "effect_scope_commit": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
-      "return_blob": "44e5d73c5ddd990acc852bc4b25ad137cf4fd8c1",
-      "effect_boundary_blob": "144ba3cc3069cd7940d2f41e224b2436035571f2",
-      "joint_contract_unchanged_from_prior": true
+      "joint_v1_released": false,
+      "successor_version": "F01-F02-SHELL/1.0.0-candidate.5",
+      "successor_state": "PROPOSED_NOT_ADOPTED",
+      "joint_contract_blob": "7a987f6923e607d0ee49ef04eff7f1d20d728bc0",
+      "holds": [
+        {
+          "owner": "F01",
+          "operation_id": "F01-20261103-c4-state-8-v1",
+          "state": "EFFECT_UNKNOWN",
+          "target": {
+            "board": "710Z-0",
+            "append_parent": "711X-0"
+          },
+          "action": "Original-carrier terminal receipt or documented canonical reconciliation; no replay/rekey/replacement."
+        },
+        {
+          "owner": "F01",
+          "operation_id": "F01-20261103-c4-readme-concurrence-v2",
+          "state": "DOCUMENT_CHANGED",
+          "retry_allowed": false,
+          "target": {
+            "readme": "6ZZX-0"
+          },
+          "action": "Original disposition and lawful same-target metadata successor; source concurrence is not applied native update."
+        }
+      ]
     },
     "f02": {
       "pr": 10630,
-      "sha": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
-      "version": "F02-SYSTEM/1.0.0-candidate.2",
+      "sha": "79ddabca1f94741dacc7fee1dacdce882cef4f69",
       "draft": true,
-      "joint_v1_verified": false
+      "merged": false,
+      "system_version": "F02-SYSTEM/1.0.0-candidate.2",
+      "source_data_version": "F02-SOURCE-DATA/1.0.0-candidate.2",
+      "joint_v1_released": false,
+      "handshake_blob": "1831159c5f1885f8ad4957e56e18edcd3e65f0eb",
+      "concurrence": {
+        "candidate4": "F02 source-policy concurrence recorded for ownership/change table and §§4.1–4.3, with conditions; not native/runtime/release acceptance.",
+        "candidate5": "F02 concurred with F01-RESIZE-FOCUS/0.1 two focus branches as a proposal. Full candidate.5 added clarifications and affected-owner bindings remain pending; no adoption inferred."
+      },
+      "holds": [
+        {
+          "owner": "F02",
+          "operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+          "state": "EFFECT_UNKNOWN",
+          "target": {
+            "file": "01M312VSDSZFVT45674GDVJVZN",
+            "board": "7IS-0",
+            "body": "7J4-0"
+          },
+          "action": "Original-carrier terminal/canonical reconciliation before footer/build-note, 33 numeric-frame corrections and strict 32-board freeze."
+        }
+      ]
     }
   },
   "carrier": {
@@ -81,11 +125,12 @@
     "parent_pr": 10617,
     "parent_later_head": "4c0e54e378dc0b3a447e05372d95f8707259f076",
     "final_identity": "containing immutable Git commit plus evidence/manifest.json",
-    "prior_evidence_freeze": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+    "prior_evidence_freeze": "1f63f2c8318e7819551d5b82d47bc6e1e8700a98",
     "prior_evidence_freezes": [
       "217477f80a405af56778563535e5314813897b49",
       "61d6762cdd417b00aae879bd411a8bb20c50ff63",
-      "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf"
+      "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+      "1f63f2c8318e7819551d5b82d47bc6e1e8700a98"
     ]
   },
   "later_p00": {
@@ -109,10 +154,46 @@
     "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d06-terminal-reader-resilience-20261103-c4",
     "branch": "sol/web-d06-terminal-reader-resilience-20261103-c4",
     "base_sha": "2ded360882b9c721e690907ff363b553781fb920",
-    "local_head": "2ded360882b9c721e690907ff363b553781fb920",
-    "implementation_commit": null,
-    "terminal_pr": null,
-    "state": "BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED",
-    "evidence": "implementation_receipt.json"
+    "local_head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+    "implementation_commit": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+    "terminal_pr": 1270,
+    "state": "SOURCE_PUBLISHED / LOCALLY_VERIFIED / HOSTED_CI_PENDING / RELEASE_HOLD",
+    "evidence": "chart_time_receipt.json",
+    "remote_head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+    "initial_published_commit": "2d29878cf52b6a8ac950b93ea9a78ec0fae60aff",
+    "historical_evidence": "implementation_receipt.json"
+  },
+  "prior_consumed_foundations": {
+    "f01": {
+      "pr": 10645,
+      "sha": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+      "draft": true,
+      "version": "F01-F02-SHELL/1.0.0-candidate.3",
+      "state": "PARTIAL / REQUEST_CHANGES / RIG draft",
+      "joint_v1_verified": false,
+      "prior_consumed_candidate3_sha": "3ec131bb4b515c5ede76f51e9d8e65f128bc19ae",
+      "prior_consumed_head": "d6ebeefcba90387b42817f8e87792e630d5862eb",
+      "active_continuation": "Original atlas I/grid, Readme operation and dependent/shared effects remain held; independently safe corrections on F01-owned A/C/D/E/F/H may proceed through its original direct app under exact guards. This does not grant D06 admission or release jointv1.",
+      "effect_scope_commit": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+      "return_blob": "44e5d73c5ddd990acc852bc4b25ad137cf4fd8c1",
+      "effect_boundary_blob": "144ba3cc3069cd7940d2f41e224b2436035571f2",
+      "joint_contract_unchanged_from_prior": true
+    },
+    "f02": {
+      "pr": 10630,
+      "sha": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+      "version": "F02-SYSTEM/1.0.0-candidate.2",
+      "draft": true,
+      "joint_v1_verified": false
+    }
+  },
+  "historical_d06_source_review": {
+    "id": 5760898375,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10655#pullrequestreview-5760898375",
+    "reviewer": "mastermindxryan",
+    "commit_id": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+    "state": "APPROVED",
+    "submitted_at": "2026-11-03T23:22:09Z",
+    "scope": "Bounded Phase2A source/evidence-contract delta only; excludes current implementation, final design/browser/RIG and release."
   }
 }

@@ -1,34 +1,66 @@
 {
   "artifact": "D06 separately observed foundation and authoring gates",
-  "assembled_at_utc": "2026-11-04T01:23:04.275006+00:00",
+  "assembled_at_utc": "2026-11-04T05:07:22.669788+00:00",
   "f01": {
     "pr": 10645,
-    "sha": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+    "sha": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
     "draft": true,
     "merged": false,
-    "version": "F01-F02-SHELL/1.0.0-candidate.3",
+    "version": "F01-F02-SHELL/1.0.0-candidate.4",
     "state": "PARTIAL / REQUEST_CHANGES / RIG draft",
     "joint_v1_released": false,
-    "unresolved_operation": "F01-20261103-c4-state-8-v1",
-    "joint_contract_blob": "01456cb2193e71a080611e4b7e26b3fcfb3456c5",
-    "product_spec_blob": "63418f0ec69d02c8c3a1a8d55caa58688a85a4f5",
-    "return_blob": "44e5d73c5ddd990acc852bc4b25ad137cf4fd8c1",
-    "prior_consumed_head": "d6ebeefcba90387b42817f8e87792e630d5862eb",
-    "active_continuation": "Original atlas I/grid, Readme operation and dependent/shared effects remain held; independently safe corrections on F01-owned A/C/D/E/F/H may proceed through its original direct app under exact guards. This does not grant D06 admission or release jointv1.",
-    "effect_scope_commit": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
-    "effect_boundary_blob": "144ba3cc3069cd7940d2f41e224b2436035571f2",
-    "joint_contract_unchanged_from_prior": true
+    "successor_version": "F01-F02-SHELL/1.0.0-candidate.5",
+    "successor_state": "PROPOSED_NOT_ADOPTED",
+    "joint_contract_blob": "7a987f6923e607d0ee49ef04eff7f1d20d728bc0",
+    "holds": [
+      {
+        "owner": "F01",
+        "operation_id": "F01-20261103-c4-state-8-v1",
+        "state": "EFFECT_UNKNOWN",
+        "target": {
+          "board": "710Z-0",
+          "append_parent": "711X-0"
+        },
+        "action": "Original-carrier terminal receipt or documented canonical reconciliation; no replay/rekey/replacement."
+      },
+      {
+        "owner": "F01",
+        "operation_id": "F01-20261103-c4-readme-concurrence-v2",
+        "state": "DOCUMENT_CHANGED",
+        "retry_allowed": false,
+        "target": {
+          "readme": "6ZZX-0"
+        },
+        "action": "Original disposition and lawful same-target metadata successor; source concurrence is not applied native update."
+      }
+    ]
   },
   "f02": {
     "pr": 10630,
-    "sha": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+    "sha": "79ddabca1f94741dacc7fee1dacdce882cef4f69",
     "draft": true,
     "merged": false,
-    "state": "PARTIAL / NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED / RIG draft",
-    "unresolved_operation": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
-    "native_product": "BLOCK",
-    "native_taste": "BLOCK",
-    "complete_repaired_freeze": false
+    "system_version": "F02-SYSTEM/1.0.0-candidate.2",
+    "source_data_version": "F02-SOURCE-DATA/1.0.0-candidate.2",
+    "joint_v1_released": false,
+    "handshake_blob": "1831159c5f1885f8ad4957e56e18edcd3e65f0eb",
+    "concurrence": {
+      "candidate4": "F02 source-policy concurrence recorded for ownership/change table and §§4.1–4.3, with conditions; not native/runtime/release acceptance.",
+      "candidate5": "F02 concurred with F01-RESIZE-FOCUS/0.1 two focus branches as a proposal. Full candidate.5 added clarifications and affected-owner bindings remain pending; no adoption inferred."
+    },
+    "holds": [
+      {
+        "owner": "F02",
+        "operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+        "state": "EFFECT_UNKNOWN",
+        "target": {
+          "file": "01M312VSDSZFVT45674GDVJVZN",
+          "board": "7IS-0",
+          "body": "7J4-0"
+        },
+        "action": "Original-carrier terminal/canonical reconciliation before footer/build-note, 33 numeric-frame corrections and strict 32-board freeze."
+      }
+    ]
   },
   "p00": {
     "pr": 10626,
@@ -43,7 +75,7 @@
   },
   "authoring": {
     "d06_c4_account_app_target_write_admission": "NOT_ESTABLISHED",
-    "current_native_reads": "Fresh exact-file get_basic_info and depth3 summaries of1K9F-0/19IC-1; parsed summaries equal frozen exports, token hash55dd37b7; no foreground change or mutation",
+    "current_native_reads": "Last direct-Paper read-only correspondence remains responsive_observations.json; no new Paper calls in this publication continuation.",
     "file_wide_exclusive_lock_required": false,
     "original_c4_sequence_comment": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6596509579",
     "later_hold_comment": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6601121419",
@@ -66,7 +98,7 @@
   "d06": {
     "pr": 10655,
     "branch": "design/d06-terminal-phase2a-20261103-c4",
-    "prepublication_head": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+    "prepublication_head": "1f63f2c8318e7819551d5b82d47bc6e1e8700a98",
     "draft": true,
     "formal_rig": "draft",
     "editable_after_designs": 0,
@@ -76,16 +108,20 @@
     "raw_beta_captures": 36,
     "raw_paper_captures": 16,
     "phase2a_production_changes": 0,
-    "production_code_files_modified": 3,
-    "implementation_test_files": 2,
+    "production_code_files_modified": 5,
+    "implementation_test_files": 4,
     "production_deployments": 0,
-    "local_browser_passes": 57,
-    "local_browser_skips": 12,
-    "local_unit_passes": 22,
-    "local_raw_captures": 12,
-    "partial_proposed_cases": 9,
-    "implementation_state": "BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED",
-    "implementation_receipt": "implementation_receipt.json"
+    "local_browser_passes": 77,
+    "local_browser_skips": 16,
+    "local_unit_passes": 57,
+    "local_raw_captures": 20,
+    "partial_proposed_cases": 10,
+    "implementation_state": "SOURCE_PUBLISHED / LOCALLY_VERIFIED / HOSTED_CI_PENDING / RELEASE_HOLD",
+    "implementation_receipt": "chart_time_receipt.json",
+    "new_chart_time_raw_captures": 8,
+    "specified_unexecuted_cases": 65,
+    "terminal_pr": 1270,
+    "terminal_head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7"
   },
   "prior_foundation_observation_at_utc": "2026-11-03T22:06:54.270963+00:00",
   "build_authority": {
@@ -94,9 +130,12 @@
     "f01_completion_is_build_prerequisite": false,
     "final_shell_contract_released": false,
     "paper_write_admission_granted": false,
-    "ready_merge_enqueue_relabel_deploy_hold_retained": true
+    "ready_merge_enqueue_relabel_deploy_hold_retained": true,
+    "web_blanket_independent_review_waived": true,
+    "binding_non_author_approval_preserved": true
   },
-  "terminal_publication": {
+  "foundation_scope_note": "Foundation records are explicit consumed source identities. New implementation permission does not release final joint v1 or transfer Paper admission.",
+  "terminal_publication_history": {
     "tool": "studio_git_publish_status",
     "status": "REFUSED",
     "effect_state": "NOT_APPLIED",
@@ -108,5 +147,126 @@
     "push_attempted": false,
     "uncertain_effect": false
   },
-  "foundation_scope_note": "F01/F02 entries remain the last consumed evidence, not a newly invented release or admission. Their completion does not block this independently authorized reader build."
+  "terminal_publication": {
+    "status": "APPLIED",
+    "effect_state": "APPLIED",
+    "repository": "terminal",
+    "commit_attempted": true,
+    "push_attempted": true,
+    "uncertain_effect": false,
+    "head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+    "pr": 1270,
+    "draft": true,
+    "merged": false,
+    "receipt": "chart_time_receipt.json",
+    "initial_implementation_publication_reconciled": true,
+    "hosted_ci_readback": {
+      "checked_at_utc": "2026-11-04T05:08:17.924Z",
+      "head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+      "total": 4,
+      "checks": [
+        {
+          "id": 126399940765,
+          "name": "CodeQL",
+          "status": "completed",
+          "conclusion": "neutral",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/126399940765",
+          "started_at": "2026-11-04T05:05:44Z",
+          "completed_at": "2026-11-04T05:05:47Z"
+        },
+        {
+          "id": 126399179056,
+          "name": "Analyze (javascript-typescript)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41776876176/job/126399179056",
+          "started_at": "2026-11-04T05:03:25Z",
+          "completed_at": null
+        },
+        {
+          "id": 126399178720,
+          "name": "Analyze (python)",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41776876176/job/126399178720",
+          "started_at": "2026-11-04T05:05:33Z",
+          "completed_at": "2026-11-04T05:06:48Z"
+        },
+        {
+          "id": 126399178384,
+          "name": "Analyze (actions)",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41776876176/job/126399178384",
+          "started_at": "2026-11-04T05:04:50Z",
+          "completed_at": "2026-11-04T05:05:55Z"
+        }
+      ],
+      "workflow_runs": [
+        {
+          "id": 41776880568,
+          "name": "CI",
+          "event": "pull_request",
+          "status": "queued",
+          "conclusion": null,
+          "head_sha": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41776880568",
+          "created_at": "2026-11-04T05:03:26Z"
+        },
+        {
+          "id": 41776876176,
+          "name": "PR #1270",
+          "event": "dynamic",
+          "status": "queued",
+          "conclusion": null,
+          "head_sha": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41776876176",
+          "created_at": "2026-11-04T05:03:24Z"
+        }
+      ]
+    }
+  },
+  "current_procedure_sha": "576b59341edc9c871cb9d950833678fcf65078e4",
+  "prior_foundation_records": {
+    "f01": {
+      "pr": 10645,
+      "sha": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+      "draft": true,
+      "merged": false,
+      "version": "F01-F02-SHELL/1.0.0-candidate.3",
+      "state": "PARTIAL / REQUEST_CHANGES / RIG draft",
+      "joint_v1_released": false,
+      "unresolved_operation": "F01-20261103-c4-state-8-v1",
+      "joint_contract_blob": "01456cb2193e71a080611e4b7e26b3fcfb3456c5",
+      "product_spec_blob": "63418f0ec69d02c8c3a1a8d55caa58688a85a4f5",
+      "return_blob": "44e5d73c5ddd990acc852bc4b25ad137cf4fd8c1",
+      "prior_consumed_head": "d6ebeefcba90387b42817f8e87792e630d5862eb",
+      "active_continuation": "Original atlas I/grid, Readme operation and dependent/shared effects remain held; independently safe corrections on F01-owned A/C/D/E/F/H may proceed through its original direct app under exact guards. This does not grant D06 admission or release jointv1.",
+      "effect_scope_commit": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+      "effect_boundary_blob": "144ba3cc3069cd7940d2f41e224b2436035571f2",
+      "joint_contract_unchanged_from_prior": true
+    },
+    "f02": {
+      "pr": 10630,
+      "sha": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+      "draft": true,
+      "merged": false,
+      "state": "PARTIAL / NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED / RIG draft",
+      "unresolved_operation": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+      "native_product": "BLOCK",
+      "native_taste": "BLOCK",
+      "complete_repaired_freeze": false
+    }
+  },
+  "foundation_readback": "foundation_readback_20261104.json",
+  "foundation_observed_at_utc": "2026-11-04T05:10:04.765008+00:00",
+  "historical_d06_source_review": {
+    "id": 5760898375,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10655#pullrequestreview-5760898375",
+    "reviewer": "mastermindxryan",
+    "commit_id": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+    "state": "APPROVED",
+    "submitted_at": "2026-11-03T23:22:09Z",
+    "scope": "Bounded Phase2A source/evidence-contract delta only; excludes current implementation, final design/browser/RIG and release."
+  }
 }
