@@ -1264,6 +1264,20 @@ def _title_fold_suffix_arms(folded_title: str, suffix: str) -> bool:
     return _TITLE_FOLD_QUALIFIER_RE.match(suffix) is not None
 
 
+def _title_heads_longer_title(tail: str) -> bool:
+    """Whether the text printed after a title occurrence heads a longer
+    statement title: the "and" or the "&" joining the declared title to
+    another statement ("... of Operations and Comprehensive Income").
+
+    The conjunction is a word of its own: a word beginning with "and"
+    ("Anderson Corporation") qualifies the title instead of heading a longer
+    one, and the title is then repeated."""
+    tail = tail.lstrip()
+    if tail.startswith("&"):
+        return True
+    return tail[:3].lower() == "and" and not tail[3:4].isalnum()
+
+
 # Title-block carry (``carry=True``): the most rows a factless heading table
 # may print and still hand its title to the table after it, and the page
 # reference ("45", "F-12", "Page 45", in any case) whose presence marks a
@@ -1292,6 +1306,16 @@ _TITLE_BLOCK_PAGE_REF_RE = re.compile(
 _TITLE_BLOCK_OTHER_STATEMENT_RE = re.compile(
     r"balancesheets?|statements?of|incomestatements?|cashflowstatements?|notesto|reportof"
     r"|auditors?['\u2019]?s?['\u2019]?report|independentauditor",
+    re.IGNORECASE,
+)
+# The statements a line naming the declared title beside another statement's
+# heading may name: the vocabulary of ``_TITLE_BLOCK_OTHER_STATEMENT_RE`` and
+# the short cash flow heading ("Cash Flows"), which that vocabulary only
+# knows in its long forms ("Statements of Cash Flows", "Cash Flow
+# Statements").  A mixed line is read with the declared title removed, so
+# the declared title's own words are not taken for another statement.
+_TITLE_BLOCK_MIXED_STATEMENT_RE = re.compile(
+    _TITLE_BLOCK_OTHER_STATEMENT_RE.pattern + r"|cashflows?",
     re.IGNORECASE,
 )
 _TITLE_BLOCK_ENTITY_RE = re.compile(
@@ -1481,24 +1505,47 @@ class _StatementTableParser(HTMLParser):
         """``_title_named`` except where the title only heads a longer
         statement title ("... of Operations and Comprehensive Income"): the
         carry follower's split test, so a qualified, recased or
-        entity-prefixed repeat of the heading still marks a split."""
+        entity-prefixed repeat of the heading still marks a split.
+
+        The text after an occurrence is read with its spacing, so the
+        conjunction joining a longer title ("and Comprehensive Income") is
+        told from a word beginning with the conjunction ("Anderson
+        Corporation"), which qualifies the title and repeats it."""
         haystack, needles = self._title_needles(text)
+        if not needles:
+            return False
+        folded_text = self._folded_text(text)
+        # The place in the folded text of every character the whitespace-free
+        # haystack kept, so the text after an occurrence is read whole.
+        kept = [match.start() for match in re.finditer(r"\S", folded_text)]
         for needle in needles:
             start = haystack.find(needle)
             while start >= 0:
-                if not re.match(r"(?:and|&)", haystack[start + len(needle):]):
+                end = start + len(needle)
+                tail = folded_text[kept[end] :] if end < len(kept) else ""
+                if not _title_heads_longer_title(tail):
                     return True
                 start = haystack.find(needle, start + 1)
         return False
 
-    def _title_needles(self, text: str) -> tuple[str, list[str]]:
+    def _folded_candidates(self) -> tuple[str, ...]:
+        """The declared titles in the form this parser searches them in."""
         if self._folded_titles is None:
-            haystack = re.sub(r"\s+", "", _title_fold(text))
-            folded = [_title_fold(candidate) for candidate in self._titles]
-        else:
-            haystack = re.sub(r"\s+", "", _search_normalize(text))
-            folded = list(self._folded_titles)
-        return haystack, [needle for needle in (re.sub(r"\s+", "", item) for item in folded) if needle]
+            return tuple(_title_fold(candidate) for candidate in self._titles)
+        return tuple(self._folded_titles)
+
+    def _folded_text(self, text: str) -> str:
+        """``text`` in the form this parser searches titles in."""
+        if self._folded_titles is None:
+            return _title_fold(text)
+        return _search_normalize(text)
+
+    def _title_needles(self, text: str) -> tuple[str, list[str]]:
+        haystack = re.sub(r"\s+", "", self._folded_text(text))
+        folded = list(self._folded_candidates())
+        return haystack, [
+            needle for needle in (re.sub(r"\s+", "", item) for item in folded) if needle
+        ]
 
     def _note_title_block_row(self, cells: list[dict[str, Any]], hit: str | None) -> None:
         # Carry pass only: what the current outermost table has printed so far,
@@ -1523,7 +1570,7 @@ class _StatementTableParser(HTMLParser):
             self._tb_companion = True
         if named and not prior_facts:
             self._tb_title_named = True
-        if nonblank and not prior_facts and self._names_other_table(joined, named):
+        if nonblank and not prior_facts and self._names_other_statement(joined, named):
             self._tb_other_table = True
         if (
             nonblank
@@ -1549,7 +1596,7 @@ class _StatementTableParser(HTMLParser):
         named = self._title_named(text)
         if named:
             self._tb_title_named = True
-        if self._names_other_table(text, named):
+        if self._names_other_statement(text, named):
             self._tb_other_table = True
         if self._continued(text) or self._continuation_tail(text):
             self._tb_continued = True
@@ -1621,6 +1668,30 @@ class _StatementTableParser(HTMLParser):
         return (
             not named and _TITLE_BLOCK_OTHER_STATEMENT_RE.search(compact) is not None
         ) or _TITLE_BLOCK_ENTITY_RE.search(compact) is not None
+
+    def _names_other_statement(self, text: str, named: bool) -> bool:
+        # Another statement than the declared one.  A line naming the
+        # declared title beside another statement's heading ("Consolidated
+        # Statements of Operations; Consolidated Balance Sheets") names that
+        # other statement too, so the declared title is removed before the
+        # rest of the line is read; naming the declared title never
+        # suppresses the check for a different statement in the same line,
+        # row or cell.
+        if self._names_other_table(text, named):
+            return True
+        if not named:
+            return False
+        rest = self._without_declared_title(text)
+        return _TITLE_BLOCK_MIXED_STATEMENT_RE.search(rest) is not None
+
+    def _without_declared_title(self, text: str) -> str:
+        # ``text`` with every occurrence of a declared title removed, so what
+        # is left is what else the line names.
+        haystack, needles = self._title_needles(text)
+        rest = haystack
+        for needle in sorted(needles, key=len, reverse=True):
+            rest = rest.replace(needle, "")
+        return rest
 
     def _carries_title_block(self) -> bool:
         # A filing may print the statement title in a small heading table of

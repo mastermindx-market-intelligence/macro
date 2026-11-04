@@ -1133,3 +1133,122 @@ def test_tbc4_a_longer_statement_title_in_one_row_is_no_split() -> None:
 
 def test_tbc4_split_heading_cells_left_open_at_the_end_are_a_split() -> None:
     _absent(_title_block(_COMPANY, _TITLE) + _fact_table() + f"<table><tr>{_SPLIT_CELLS}")
+
+
+# --- R5: the conjunction after a title, and a title beside another one ---
+
+
+@pytest.mark.parametrize(
+    "qualifier",
+    [
+        pytest.param("Anderson Corporation", id="anderson-corporation"),
+        pytest.param("Anderson", id="anderson"),
+        pytest.param("Andrew Holdings", id="andrew-holdings"),
+    ],
+)
+def test_tbc5_follower_title_qualified_by_a_word_beginning_and_is_a_split(
+    qualifier: str,
+) -> None:
+    # A follower title qualified by an ordinary word beginning "and" repeats
+    # the title: the "and" starts the qualifier's word and is not the
+    # conjunction joining a longer statement title, so the statement is split
+    # and the second part is not served (review 5775248473).
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + _fact_table()
+        + _title_block(_COMPANY, f"{_TITLE} {qualifier}")
+        + _fact_table(ids=("p2-0", "p2-1"))
+    )
+    _absent(html)
+
+
+@pytest.mark.parametrize(
+    "qualifier",
+    [
+        pytest.param("Smith Corporation", id="smith-corporation"),
+        pytest.param("Holdings", id="holdings"),
+    ],
+)
+def test_tbc5_follower_title_qualified_by_an_ordinary_word_is_a_split(qualifier: str) -> None:
+    # The rule is about the conjunction, not about qualification: a follower
+    # title qualified by any other word repeats the title as well.
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + _fact_table()
+        + _title_block(_COMPANY, f"{_TITLE} {qualifier}")
+        + _fact_table(ids=("p2-0", "p2-1"))
+    )
+    _absent(html)
+
+
+@pytest.mark.parametrize(
+    "longer",
+    [
+        pytest.param(f"{_TITLE} and Comprehensive Income", id="and"),
+        pytest.param(f"{_TITLE} &amp; Comprehensive Income", id="ampersand"),
+        pytest.param(f"{_TITLE} and&nbsp;Comprehensive Income", id="and-nbsp"),
+    ],
+)
+def test_tbc5_the_conjunction_word_still_heads_a_longer_statement_title(longer: str) -> None:
+    # The conjunction is a word of its own: the longer statement title it
+    # heads is not a repeat of the declared title, so the statement is not
+    # split.
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + _fact_table()
+        + _title_block(longer)
+        + _fact_table(ids=("ci-0", "ci-1"))
+    )
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+@pytest.mark.parametrize(
+    "other",
+    [
+        pytest.param("Consolidated Balance Sheets", id="balance-sheets"),
+        pytest.param("Consolidated Statements of Cash Flows", id="cash-flows"),
+        pytest.param("Consolidated Cash Flows", id="cash-flows-short"),
+    ],
+)
+def test_tbc5_a_title_beside_another_statement_in_one_cell_does_not_carry(other: str) -> None:
+    # A block naming the declared title and another statement names both: it
+    # is not an unambiguous title block, so the carry is declined (review
+    # 5775248473).
+    _absent(_title_block(_COMPANY, _TITLE, f"{_TITLE}; {other}") + _fact_table())
+
+
+@pytest.mark.parametrize(
+    "other",
+    [
+        pytest.param("Consolidated Balance Sheets", id="balance-sheets"),
+        pytest.param("Consolidated Statements of Cash Flows", id="cash-flows"),
+    ],
+)
+def test_tbc5_a_title_beside_another_statement_in_two_cells_does_not_carry(other: str) -> None:
+    # The same block with the two statements in two cells of one row.
+    block = (
+        f"<table>\n<tr><td>{_COMPANY}</td></tr>\n"
+        f"<tr><td>{_TITLE}</td></tr>\n"
+        f"<tr><td>{_TITLE}</td><td>{other}</td></tr>\n</table>\n"
+    )
+    _absent(block + _fact_table())
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        pytest.param("(In millions)", id="units"),
+        pytest.param(", selected data", id="annotation"),
+        pytest.param(" (Unaudited)", id="unaudited"),
+    ],
+)
+def test_tbc5_a_complete_title_with_a_benign_annotation_still_carries(annotation: str) -> None:
+    # Naming the declared title is not naming another statement: a complete
+    # title with a units caption or an annotation beside it still carries.
+    parsed = parse_displayed_primary_table(
+        _title_block(_COMPANY, _TITLE, f"{_TITLE}{annotation}") + _fact_table(), title=_TITLE
+    )
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
