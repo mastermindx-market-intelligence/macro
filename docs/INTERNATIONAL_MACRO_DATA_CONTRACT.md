@@ -538,9 +538,9 @@ source points can qualify this source mapping; missing dates, owner horizons and
 original-known requests remain unavailable. The service computes no client-side
 or alternate arithmetic, stores no Saved record, and returns no credential.
 
-The service reads the existing deployment-owned R2 origin resolved by
-`app.main._flow_r2_base`: `R2_PUBLIC_BASE` when present, otherwise the committed
-`r2_data_plane.public_base`. It appends only fixed flat feed names beneath
+The service reads the existing deployment-owned R2 origin with the same
+precedence as the incumbent feed plane: `R2_PUBLIC_BASE` when present, otherwise
+`r2_data_plane.public_base` through the existing narrow `lib.config.load` reader. It appends only fixed flat feed names beneath
 `/feeds/`. Reads are bounded, HTTPS-only and request-local, with no redirects,
 retry, stale cache, arbitrary request URL or Git/filesystem fallback. It verifies
 the exact pinned generation and referenced points, checks the fresh current

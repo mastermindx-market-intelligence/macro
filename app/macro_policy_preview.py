@@ -269,9 +269,17 @@ def _envelope(raw: Any, generation: str, fingerprint: str) -> dict:
 
 
 def _feed_base():
-    # Existing deployment-owned R2 origin; request selectors cannot choose it.
-    from app.main import _flow_r2_base
-    return _flow_r2_base()
+    # Same deployment-owned env/config precedence as the incumbent feed
+    # plane, through its narrow config reader rather than an app.main cycle.
+    import os
+    base = os.environ.get("R2_PUBLIC_BASE", "")
+    if base:
+        return base.rstrip("/")
+    try:
+        from lib import config
+        return (config.load().get("r2_data_plane", {}).get("public_base") or "").rstrip("/")
+    except (OSError, ValueError, TypeError, AttributeError):
+        return ""
 
 
 @router.post("/api/macro/policy-preview")

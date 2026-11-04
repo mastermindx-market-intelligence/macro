@@ -630,3 +630,24 @@ def test_nullable_native_instrument_refs_are_forwarded_without_invention(preview
 def test_nullable_refs_still_reject_nontext_and_blank_values(preview,refs):
     response=_post(preview,_payload(settings=_settings(**refs)))
     assert response.status_code==400 and preview.calls==[]
+
+
+def test_fixed_feed_origin_uses_existing_deployment_env_before_config(monkeypatch):
+    from lib import config
+    monkeypatch.setenv('R2_PUBLIC_BASE','https://configured.example.invalid/prefix/')
+    monkeypatch.setattr(config,'load',lambda:(_ for _ in ()).throw(AssertionError('env takes precedence')))
+    assert macro_policy_preview._feed_base()=='https://configured.example.invalid/prefix'
+
+
+def test_fixed_feed_origin_uses_existing_config_without_request_input(monkeypatch):
+    from lib import config
+    monkeypatch.delenv('R2_PUBLIC_BASE',raising=False)
+    monkeypatch.setattr(config,'load',lambda:{'r2_data_plane':{'public_base':'https://configured.example.invalid/'}})
+    assert macro_policy_preview._feed_base()=='https://configured.example.invalid'
+
+
+def test_missing_fixed_feed_origin_stays_unavailable(monkeypatch):
+    from lib import config
+    monkeypatch.delenv('R2_PUBLIC_BASE',raising=False)
+    monkeypatch.setattr(config,'load',lambda:{})
+    assert macro_policy_preview._feed_base()==''
