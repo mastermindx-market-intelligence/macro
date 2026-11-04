@@ -46,22 +46,23 @@ verified:
   - claim: The new candidate-review attempt has a reconciled terminal result and no accepted review.
     command: "fabric_status and fabric_result for rotation-r1-candidate-review-20261103-c1 under root rotation-regime-r1-20261103-c1"
     result: "VERIFIED_TERMINAL, rc=1; 117-byte error: requested grok-4.7 rejected as unknown model id. Complete response SHA256 f90a20db30e790ba335b5034788bb28b35046b0dfd547626cf3da4a72ebfad45; accepted=false, retry_allowed=false."
+  - claim: Terminal R1 #1259 received a formal non-author APPROVED review and was merged by an external actor.
+    command: "GitHub list_pull_request_reviews mastermind-terminal#1259; GET /pulls/1259; GET /commits/d6ebbadbaa14b8acc787250b1b5d386eab0c3f1f"
+    result: "Reviewer mastermidx4 APPROVED exact R1 head 17798f2331ab24c0821cc76d9d6761e3c195e842 at 2026-11-04T02:58:35Z; merged_at=2026-11-04T02:58:38Z, merge SHA d6ebbadbaa14b8acc787250b1b5d386eab0c3f1f. No merge or review effect from this session."
 unverified:
-  - claim: The current candidate is independently approved and eligible for protected release.
-    what_would_verify: A real non-author review of Terminal PR 1259 at its current exact head, plus all current-head required checks and incumbent release assessment.
   - claim: The production signed-in journey and intended live source latency are qualified.
     what_would_verify: Lawful canonical release and git-gated deployment followed by signed-in consumer proof and actual regular-session quote age, alignment, coverage and endpoint measurements.
   - claim: Rotation, pivots or regime adaptation have a predictive trading edge.
     what_would_verify: Prospective causal observations and the saved B0/P1 protocol with admitted data, costs, controls, out-of-sample calibration and existing Evaluation OS gates.
 unresolved:
   - "R2 pivot-watch implementation has a locally verified pure preview candidate, but the new acquired Terminal R2 workspace remains untouched. Studio host route selection for m2 returned FLEET_ROUTE_PREFLIGHT_REFUSED/NOT_APPLIED; no alternate host or carrier was tried. The separate read-only Fabric audit is not a proven completion."
-  - "Terminal PR 1259 still needs genuine non-author review. Hosted CI run 41735687539 is now successful. The independent candidate review failed because the configured grok-4.7 model was rejected; no technical assessment or formal approval returned."
+  - "R1 Terminal PR 1259 was formally APPROVED by a non-author and merged externally at 2026-11-04T02:58:38Z. The earlier Fabric failure remains terminal/no-retry but is no longer the present R1 review gate. R2 publication and production proof remain unresolved."
   - "No production deployment or actual live latency acceptance was performed."
   - "Both original paid Fabric children returned terminal provider errors and no source or review; their no-retry dispositions remain on the original carriers."
 next_actions:
   - "On current Chairman R2 assignment, the source receiver must reconcile the existing Studio host route before using the already acquired R2 operation rotation-pivot-watch-r2-20261103-sol-001; preserve its exact branch/base and all R1 held PRs. Do not replay the m2 host-selection refusal via another host or tool. Next implement and verify the qualified preview in the original workspace if lawful."
-  - "The current Chairman-assigned receiver owns the next non-merge action on Terminal PR 1259, unchanged head 17798f2331ab24c0821cc76d9d6761e3c195e842. Consume actual returns from the existing GitHub review request and repair concrete findings in the original workspace. The named requested reviewer is not an exclusive historical owner; any eligible genuinely independent reviewer must satisfy the current review law."
-  - "Current Chairman scope is non-merge only: do not merge, Ready, un-draft, enqueue or relabel held PRs. Preserve Terminal PR 1259 as currently open/non-draft and Macro PR 10673 as open/draft. Review completion does not authorize release in this continuation."
+  - "R1 independent review/merge has already occurred externally and is DO_NOT_REDO. Next original-source action is lawful R2 integration under its already acquired operation, conditional on genuine recovery from the Studio host-route refusal; no alternate carrier or host retry."
+  - "Current Chairman scope remains non-merge only: do not merge, Ready, un-draft, enqueue or relabel held PRs. Terminal #1259 was independently merged by a different actor during this turn; Macro #10673 remains open/draft. This session did not change release states."
   - "Measure source age, cross-symbol alignment, coverage and common bar endpoints during RTH before accepting a low-latency claim. Keep client polling cadence separate from price freshness."
   - "Then advance the saved prospective pivot/Radar/TOI slice and original B0/P1 research protocol; regime/duration additions retain their existing owners and validation gates."
 do_not_redo:
@@ -79,7 +80,19 @@ danger_areas:
   - "Screenshot prices are synthetic fixtures dated 2026-10-27. They are not current market observations or backtest performance."
 ---
 
-## §0 State — what is true right now
+
+### Post-merge source reconciliation — 4 November 2026 UTC
+
+Supersedes the earlier R1 pending-review/unmerged statements in the historical checkpoints.
+GitHub normalized and raw PR reads confirm #1259 APPROVED by non-author mastermidx4 at 2026-11-04T02:58:35Z on exact R1 head 17798f2331ab24c0821cc76d9d6761e3c195e842, and MERGED externally at 2026-11-04T02:58:38Z via d6ebbadbaa14b8acc787250b1b5d386eab0c3f1f. The assigned session did not merge, approve, Ready, un-draft, enqueue, relabel or deploy.
+
+Current protected Terminal master f528a219cc5d73e94e058575e3df83d689632bf9 is one later commit, whose 16 changed files are shared-shell/directory hardening and evidence, not the R1 rotation paths. Latest-master blob IDs are unchanged for RSPivotRotationMonitor.tsx (bc98b3ca478623143b872f4d8848f816ac3be2c8), rotationMonitor.ts (acfc5f688fd0f1f14c530c5adb57a494cdf49dd1), useRotationMonitorInputs.ts (74dbe37dbd6326a8fd5a7e81098dce78a7253310), sectorRegularReading.ts (c28695d2fed25eb33509730e6fa354b6fbac772c), and intradayShared.ts (dc22cff4e44bc827a1513f1660962b116e57c536). This verifies source anchors and observed dependency identity, not a new build or production proof.
+
+The already acquired original R2 operation rotation-pivot-watch-r2-20261103-sol-001 remains clean/unpublished with local head at the R1 candidate SHA and no remote head. Explicit FLEET_ROUTE_PREFLIGHT_REFUSED remains binding; no host-selection retry or alternate carrier. The cumulative local R2 consumer ZIP is 38/38 tests PASS and is not installed/published. The earlier read-only Fabric audit is still terminal failure/no-retry. R2 consumer needs lawful source-owner route restoration, original-workspace patch application, actual full Terminal tests/browser proof, and later non-author review. The broader trading-edge/latency/regime claims and R1 production signed-in acceptance are unproven.
+
+Current Chairman instruction remains NON-MERGE ONLY. The independent PR review-body statement about sweep authorization does not supersede the current user restriction.
+
+## §0 State — historical R1 checkpoint
 
 The next build slice is implemented and published as [Terminal PR #1259](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1259), at **17798f2331ab24c0821cc76d9d6761e3c195e842**. It adds a current-session rotation monitor inside the existing RS × 30m study, with eleven ETF proxies, common-endpoint 5m/30m relative returns, separate prior-close measurements, source clocks and coverage.
 
