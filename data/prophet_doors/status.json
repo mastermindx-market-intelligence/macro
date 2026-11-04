@@ -1,5 +1,5 @@
 {
-  "appended": 4,
+  "appended": 0,
   "asof": "2026-11-03",
   "candidates": {
     "R": 0,
@@ -8,50 +8,26 @@
   },
   "deduped": {
     "R": 0,
-    "T": 12,
+    "T": 16,
     "W": 39
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-11-04",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 24
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Aging Population & Longevity": {
-          "theme_thrust_frac": 0.12,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Real Estate & REITs": {
-          "theme_thrust_frac": 0.0857,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Smart Home": {
-          "theme_thrust_frac": 0.0,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 79,
-      "tickers_read": 103
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -69,21 +45,10 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 157,
-      "n_covered": 134,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-11-03",
-      "n_tickers": 1549,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
@@ -112,12 +77,7 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [
-      "CHTR",
-      "ENPH",
-      "BMY",
-      "DOC"
-    ],
+    "T": [],
     "W": []
   },
   "n_universe": 1491,
@@ -126,8 +86,8 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-11-04 15:26:32",
-  "runtime_s": 130.7,
+  "run_utc": "2026-11-04 17:47:53",
+  "runtime_s": 108.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
@@ -178,7 +138,7 @@
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 26.2,
+    "runtime_s": 20.4,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 56,
