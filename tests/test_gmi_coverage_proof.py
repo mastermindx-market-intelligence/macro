@@ -891,9 +891,66 @@ def _without_owner_keys(report: dict) -> dict:
     return trimmed
 
 
-def test_shipped_owner_contract_has_zero_rows_and_a_null_owner():
+SHIPPED_OWNER = ("GMI taxonomy owner \u2014 seat 6f14c2da (Chairman-delegated 2026-11-02, "
+                 "DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)")
+SHIPPED_OWNER_DOSSIER = "research/theme_graph/micro_owner_review_2026-11-02.md"
+FROZEN_IDS_SHA256 = "5feff3276eda4a07791a872208dc4c2cdd5fa06e7e99553ada1e01fd8f7ed878"
+
+
+def _real_taxonomy() -> dict:
+    """The taxonomy over the REAL crosswalk and the committed contract, with an empty
+    graph: the owner review reads only the hierarchy and the contract, never the store."""
+    empty = pd.DataFrame()
+    return gcp._taxonomy(REPO / "config/theme_crosswalk.yml", [],
+                         {"ratified": [], "kept": []}, gcp._GraphContext(empty, empty, empty),
+                         REPO)
+
+
+def test_shipped_owner_contract_records_every_frozen_micro():
+    """The delegated owner (DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT) reviewed exactly
+    the frozen 68: one valid row each, nothing rejected, nothing from the expansion tier."""
     doc = yaml.safe_load(SHIPPED_OWNER_CONTRACT.read_text(encoding="utf-8"))
-    assert doc == {"schema": gcp.OWNER_DISPOSITIONS_SCHEMA, "owner": None, "rows": []}
+    assert set(doc) == {"schema", "owner", "rows"}
+    assert doc["schema"] == gcp.OWNER_DISPOSITIONS_SCHEMA
+    assert doc["owner"] == SHIPPED_OWNER
+    hierarchy = gcp._hierarchy(REPO / "config/theme_crosswalk.yml")
+    tiers = {micro_id: gcp._micro_tier(entry) for micro_id, entry in hierarchy["micros"].items()}
+    frozen = {micro_id for micro_id, tier in tiers.items() if tier == gcp.FROZEN_TIER}
+    expansion = set(tiers) - frozen
+    assert len(frozen) == gcp.DECLARED_MICRO_COUNT == 68
+    assert hashlib.sha256("\n".join(sorted(frozen)).encode()).hexdigest() == FROZEN_IDS_SHA256
+    row_ids = [row["micro_id"] for row in doc["rows"]]
+    assert row_ids == sorted(frozen)  # exactly the frozen set, once each, sorted
+    for row in doc["rows"]:
+        assert row["reviewer"] == SHIPPED_OWNER
+        assert row["evidence"] == (f"{SHIPPED_OWNER_DOSSIER}#micro-"
+                                   f"{row['micro_id'].split(':', 1)[1]}")
+    contract = gcp._owner_dispositions(SHIPPED_OWNER_CONTRACT, REPO, frozen, expansion)
+    assert contract["source"] == gcp.OWNER_DISPOSITIONS_DEFAULT
+    assert contract["owner"] == SHIPPED_OWNER
+    assert contract["rejected_rows"] == []
+    assert set(contract["applied"]) == frozen
+    taxonomy = _real_taxonomy()
+    assert taxonomy["owner_review"] == {
+        "source": gcp.OWNER_DISPOSITIONS_DEFAULT, "owner": SHIPPED_OWNER,
+        "reviewed": 68, "unreviewed": 0, "gap": None, "rejected_rows": []}
+    assert {micro["id"] for micro in taxonomy["micros"]} == frozen
+    assert all(micro["owner_reviewed"] for micro in taxonomy["micros"])
+    assert not any(micro["owner_reviewed"] for micro in taxonomy["expansion_micros"])
+    gate = gcp._taxonomy_gate(taxonomy)
+    assert gate["measured"]["owner_reviewed"] is True
+    assert gate["measured"]["owner_reviewed_count"] == 68
+    assert gate["measured"]["owner_review_gap"] is None
+    assert gate["measured"]["owner_review_rejected_rows"] == 0
+
+
+def test_shipped_owner_contract_evidence_anchors_resolve():
+    """Every row's evidence anchor names a heading that exists in the owner dossier."""
+    doc = yaml.safe_load(SHIPPED_OWNER_CONTRACT.read_text(encoding="utf-8"))
+    dossier = (REPO / SHIPPED_OWNER_DOSSIER).read_text(encoding="utf-8")
+    headings = {line[4:].strip() for line in dossier.splitlines() if line.startswith("### micro-")}
+    anchors = [row["evidence"].split("#", 1)[1] for row in doc["rows"]]
+    assert len(anchors) == 68 and set(anchors) <= headings
 
 
 def test_absent_owner_contract_is_byte_identical_to_reading_none(tmp_path):
@@ -918,13 +975,11 @@ def test_absent_owner_contract_is_byte_identical_to_reading_none(tmp_path):
             (tmp_path / "out_none" / name).read_bytes()
 
 
-def test_zero_row_shipped_contract_reviews_nothing_and_the_gate_fails(tmp_path):
+def test_zero_row_contract_reviews_nothing_and_the_gate_fails(tmp_path):
     fixture = _build_68(tmp_path)
     absent, absent_manifest, _ = _run(fixture, out=tmp_path / "out_absent")
-    target = fixture.root / gcp.OWNER_DISPOSITIONS_DEFAULT
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(SHIPPED_OWNER_CONTRACT.read_bytes())
-    report, manifest, markdown = _run(fixture, out=tmp_path / "out_shipped")
+    _write_owner_contract(fixture, [], owner=None)
+    report, manifest, markdown = _run(fixture, out=tmp_path / "out_zero_rows")
     review = report["taxonomy"]["owner_review"]
     assert review == {"source": gcp.OWNER_DISPOSITIONS_DEFAULT, "owner": None,
                       "reviewed": 0, "unreviewed": 68, "gap": "68_OF_68_UNREVIEWED",

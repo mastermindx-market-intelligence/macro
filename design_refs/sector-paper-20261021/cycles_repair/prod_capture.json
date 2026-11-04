@@ -1,0 +1,12 @@
+{
+ "_note": "SIC-V3-C09: provenance of the production chart capture drawn on the composite desk (board 40). Captured by headless Chrome 1x from the render-tree site (sic-render-9917 worktree at the sha below), window 1440x1800, virtual-time-budget 8000, crop (56,404)-(1386,1222) of the Sector rotation overview panel. The page stamp #sc-asof read 2026-10-20 in the captured DOM.",
+ "file": "prod_chart_capture_20261020.png",
+ "page": "site/sector_cycles.html",
+ "sha": "d86344b93a0b",
+ "asof_prod": "2026-10-20",
+ "captured_at": "2026-11-01",
+ "px": [1330, 818],
+ "theme": "dark",
+ "locale": "en",
+ "locale_note": "SIC-V5-C03/C10 (wave 5): the captured page ran with its default EN interface (html[data-lang=en], no ?lang query); boards 40/41 declare it on the desk face with the EN-interface capture chip"
+}

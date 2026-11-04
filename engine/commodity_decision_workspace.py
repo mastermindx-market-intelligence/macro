@@ -531,8 +531,8 @@ def _gold_physical_view(publication: dict, cutoff: str | None, parent: dict) -> 
 
 def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
                     chain_state: Any = None, commodity_latest: Any = None, source_identities: Any = None,
-                    physical_context: Any = None) -> dict:
-    """Project immutable publisher artifacts. Missing context degrades only its own panel."""
+                    physical_context: Any = None, gold_publication: Any = None) -> dict:
+    """Project publisher artifacts and same-render Gold; missing context stays local."""
     snapshot, transmission, fx, chain_state = map(_dict, (snapshot, transmission, fx, chain_state))
     commodity_latest = _dict(commodity_latest)
     physical_context = _dict(physical_context)
@@ -587,7 +587,12 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
     for asset in assets:
         asset["read"] = _interpret_asset(asset, chains, rates, sources)
     physical = _physical_view(physical_context, cutoff, chains, by_id.get("oil", {}).get("change_1m_pct"))
-    gold_physical = _gold_physical_view(commodity_latest, cutoff, sources["ratios"])
+    # A rendering producer may supply its same-render display projection. Retained
+    # readers keep the existing publication contract; the ratio receipt is never
+    # relabeled with the current Gold clock or an unrelated immutable identity.
+    gold_doc = commodity_latest if gold_publication is None else _dict(gold_publication)
+    gold_parent = sources["ratios"] if gold_publication is None else source_receipt("ratios", gold_doc, cutoff)
+    gold_physical = _gold_physical_view(gold_doc, cutoff, gold_parent)
     sources["gold_physical"] = gold_physical["source_receipt"]
     ratios = []
     for key, label in (("gold_silver", ("Gold / silver", "黄金 / 白银")), ("copper_gold", ("Copper / gold", "铜 / 黄金"))):
@@ -650,7 +655,9 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
             "research": {"effect": "export_only", "monitoring_active": False, "schema": CONDITION_SCHEMA},
             "projection_revision": PROJECTION_REVISION,
             "fingerprint": fingerprint({"snapshot": snapshot, "transmission": transmission, "fx": fx, "chains": chain_state,
-                                        "ratios": commodity_latest, "physical": physical_context, "projection_revision": PROJECTION_REVISION, "hypotheses": HYPOTHESES})}
+                                        "ratios": commodity_latest, "physical": physical_context,
+                                        **({"gold_publication": gold_publication} if gold_publication is not None else {}),
+                                        "projection_revision": PROJECTION_REVISION, "hypotheses": HYPOTHESES})}
 
 
 def condition_semantics(workspace: dict, asset: str, window: int, hypothesis: str) -> dict:
