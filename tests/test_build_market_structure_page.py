@@ -414,7 +414,8 @@ def test_p5_hero_has_one_merged_footnote(tmp_path):
     assert "Dealer-exposure (GEX) series from" in hero
     assert "做市商敞口（GEX）数据自" in hero
     assert "2026-06-15" in hero
-    assert "as of" in hero
+    assert "Artifact date" in hero
+    assert "Gamma snapshot observation date not supplied" in hero
     assert "2026-09-09" in hero
     null_at = hero.find("Everything above skips those days.")
     prov_at = hero.find("Dealer-exposure (GEX) series from")
@@ -583,8 +584,9 @@ def test_p3_vol_weather_stance_map(tmp_path):
 
 def test_p3_weekly_range_stance_both_lanes():
     html = _render_with_fixture()
-    assert "Watch — don't chase moves inside the expected band." in html
-    assert "观望——预期区间内的波动不必追。" in html
+    assert "Model estimate · supplied bands only" in html
+    assert "模型估算 · 仅显示已有区间" in html
+    assert "The coverage assumptions are not observed probabilities or price boundaries." in html
 
 
 def test_p6_six_warmups_market_facing_both_lanes():
@@ -671,9 +673,9 @@ def test_p10_vocabulary_glossed_in_place():
     assert "1个月隐含相关性" in html
     assert "later months cost more than the front (contango)" in html
     assert "远月贵于近月（升水）" in html
-    assert "typical range (about 68% of weeks)" in html
-    assert "wide range (about 95% of weeks)" in html
-    assert "flip level (dealer hedging switch)" in html
+    assert "Inner range (1σ)" in html
+    assert "Outer range (2σ)" in html
+    assert "Flip reference supplied with this week map" in html
     assert "M1 = front month" in html
     assert "M1=近月" in html
     # leftover English 'vs' must not sit inside a ZH span on THIS page
@@ -931,8 +933,8 @@ def test_m1_zero_window_uses_unavailable_form_both_lanes(tmp_path):
     assert "over 0 days" not in html
     assert "0日加仓中" not in html
     assert "5日加仓中" not in html
-    assert "window is being updated" in html
-    assert "窗口更新中" in html
+    assert "window change unavailable" in html
+    assert "窗口变化暂无数据" in html
 
 
 # UIUX continuation: chart windows are preferences, never unchecked render inputs.
@@ -1011,7 +1013,8 @@ def test_msp_range_controller_keeps_one_click_owner_and_static_touch_style():
     assert "addEventListener('keydown'" not in controller
     assert "document.addEventListener('langchange',syncChartLanguage)" in source
     block=source[source.index('<style data-market-range-controls>'):source.index('</style>',source.index('<style data-market-range-controls>'))+8]
-    assert 'min-height:40px' in block and 'min-width:44px' in block
+    assert 'min-height:44px' in block and 'min-width:44px' in block
+    assert 'min-height:40px' not in block
     assert '.rbtn:focus-visible' in block
     html=(REPO/'site/market_structure.html').read_text()
     assert block in html

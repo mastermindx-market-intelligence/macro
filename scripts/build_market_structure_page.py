@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -62,6 +63,51 @@ def _load_msp(root: Path, fixture: Path | None = None) -> dict | None:
         return None
 
 
+def _finite_number(value: object) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def _weekly_display(msp: dict | None) -> dict:
+    """Project supplied prices into display geometry; never synthesize a band."""
+    wm = (msp or {}).get("week_map")
+    gamma = (msp or {}).get("gamma") or {}
+    if not isinstance(wm, dict):
+        return {"present": False}
+    bands = []
+    values = []
+    for sigma in (1, 2):
+        lo, hi = wm.get(f"band_{sigma}sigma_lo"), wm.get(f"band_{sigma}sigma_hi")
+        valid = _finite_number(lo) and _finite_number(hi) and lo <= hi
+        band = {"sigma": sigma, "available": valid, "lo": lo if valid else None, "hi": hi if valid else None}
+        if valid:
+            values.extend([lo, hi])
+        bands.append(band)
+    close = wm.get("locked_close")
+    close = close if _finite_number(close) else None
+    spot = gamma.get("spot") if isinstance(gamma, dict) else None
+    spot_live = _finite_number(spot)
+    spot = spot if spot_live else close
+    flip = wm.get("gamma_flip")
+    flip = flip if _finite_number(flip) else None
+    values.extend(v for v in (close, spot, flip) if v is not None)
+    if values:
+        low, high = min(values), max(values)
+        padding = max(abs(low) * .01, .5) if high == low else (high - low) * .08
+        low, high = low - padding, high + padding
+        def x(value: float) -> float:
+            return round(18 + (value - low) / (high - low) * 564, 3)
+        for band in bands:
+            if band["available"]:
+                band.update(x=x(band["lo"]), width=x(band["hi"]) - x(band["lo"]))
+        spot_x = x(spot) if spot is not None else None
+        flip_x = x(flip) if flip is not None else None
+    else:
+        spot_x = flip_x = None
+    return {"present": True, "bands": bands, "has_band": any(b["available"] for b in bands),
+            "close": close, "spot": spot, "spot_live": spot_live, "flip": flip,
+            "spot_x": spot_x, "flip_x": flip_x}
+
+
 def render(root: Path, fixture: Path | None = None) -> str:
     """Render market_structure.html.j2 and return the HTML string."""
     msp = _load_msp(root, fixture)
@@ -81,8 +127,9 @@ def render(root: Path, fixture: Path | None = None) -> str:
     except Exception:  # noqa: BLE001
         pass  # template defines t() as a local macro; td() only used in footer
 
+    env.globals["finite_number"] = _finite_number
     tpl = env.get_template("market_structure.html.j2")
-    return tpl.render(msp=msp)
+    return tpl.render(msp=msp, wm_view=_weekly_display(msp))
 
 
 def main(argv: list[str] | None = None) -> int:

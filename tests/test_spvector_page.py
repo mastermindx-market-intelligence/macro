@@ -58,10 +58,14 @@ def _spvector_vm() -> dict:
     ]
     return dict(
         as_of="Jun 12, 2026", built="2026-06-14", price=741.75, score=9,
+        score_as_of="2026-06-11", score_aligned_as_of="2026-06-12", score_current_available=True,
+        allocation_as_of="2026-06-12", legs_as_of="2026-06-13", legs_score=5.4,
         band_label="LOW — fully invested", band_label_zh="低", band_key="low", band_color="#1FA971",
         equity_w=100, cash_w=0, last_switch={"date": "2026-05-22", "frm": 66, "to": 100},
         next_note="next note", next_note_zh="x", legs=legs,
-        disloc={"verdict": "calm", "verdict_zh": "平静", "put_absent": False, "capitulation": 1},
+        disloc={"verdict": "calm", "verdict_zh": "平静", "put_absent": False, "capitulation": 1,
+                "put_available": True, "cap_available": True, "gate_model_available": True,
+                "put_as_of": "2026-06-10", "cap_as_of": "2026-06-11", "put_legs_as_of": "2026-06-10"},
         sc=sc, at=at, bands=bands,
         episodes=[{"peak": "2007-10-09", "trough": "2009-03-09", "drawdown_pct": -55.2}],
         charts={"strategy": "<div>c</div>", "growth": "<div>c</div>", "dd": "<div>c</div>"})
@@ -72,8 +76,8 @@ def test_spvector_renders():
     html = _env().get_template("spvector.html.j2").render(**_spvector_vm(), C=C)
     assert len(html) > 2000, f"spvector rendered suspiciously small: len={len(html)}"
     assert "&amp;amp;" not in html, "double-escaped entities in spvector"
-    for s in ["Allocation Strategy", "drawdown / Sharpe engine", "Taxable-account",
-              "Macro-stress drawdown gauge", "rule-book", "permutation null", "after-tax"]:
+    for s in ["Mechanical strategy allocation", "Tax scenario", "Underlying input freshness",
+              "Macro-stress drawdown gauge", "rule-book", "recorded only", "after-tax"]:
         assert s.lower() in html.lower(), f"spvector missing mandated copy: {s!r}"
 
 

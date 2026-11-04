@@ -257,9 +257,43 @@ html[data-theme="light"] :is(
 {% include "_state_inks.html.j2" %}
 <style data-market-range-controls>
 .msp-range-dates{display:inline-block}
-.range-btns .rbtn{min-width:44px;min-height:32px;padding:5px 10px;line-height:1.2}
+.range-btns .rbtn{min-width:44px;min-height:44px;padding:5px 10px;line-height:1.2}
 .range-btns .rbtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-@media(max-width:720px){ .range-btns .rbtn{min-height:40px} }
+
+/* D06: quiet hierarchy, complete phone flow and independent supplied bands. */
+.aurora{display:none}
+.hero-state.tone-long,.hero-state.tone-short{text-shadow:none}
+.glass{background:transparent;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+.watch-band{background:var(--panel);border:1px solid var(--line)}
+.msp-drivers{display:flex;flex-direction:column;gap:0;overflow:visible}
+.msp-driver{min-width:0}
+.msp-driver[data-driver="gex"]{order:0}
+.msp-driver[data-driver="week"]{order:1}
+.msp-driver[data-driver="flows"]{order:2}
+.msp-driver[data-driver="dispersion"]{order:3}
+.msp-driver[data-driver="vol"]{order:4}
+.msp-band-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
+.wm-band{height:88px;margin:12px 0}
+.msp-assumptions summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.msp-assumptions summary:focus-visible,.help:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.help:focus-within .tip{display:block}
+@media(max-width:640px){
+ .msp-drivers{display:flex;overflow:visible;scroll-snap-type:none}
+ .msp-driver{flex:none;width:100%;padding:0;border:0;background:transparent;scroll-snap-align:none}
+ .range-btns{flex-wrap:wrap}
+ .range-btns .rbtn{min-height:44px}
+}
+
+</style>
+<style>
+.msp-snapshot-details{margin-top:16px;border:1px solid var(--line,var(--grid));border-radius:10px;padding:0 16px}
+.msp-snapshot-details>summary{min-height:52px;align-content:center;padding:12px 0;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink)}
+.msp-snapshot-details[open]{padding-bottom:12px}
+.msp-reading{margin:0 0 16px;font-size:17px;font-weight:600;color:var(--ink)}
+.wrap>div:first-child h1{font-size:clamp(24px,2.6vw,34px)!important;font-weight:650!important;line-height:1.2;margin-bottom:10px!important}
+.msp-driver>.sec-head{margin-top:0}
+.msp-driver{border:1px solid var(--line,var(--grid));border-radius:12px;padding:22px;background:var(--panel,var(--card))}
+@media(max-width:640px){.msp-driver{padding:16px 12px}.msp-reading{font-size:16px}.msp-driver .sec-head{align-items:flex-start}.msp-driver .range-btns{margin-left:0!important}}
 </style>
 </head>
 <body class="page-msp">
@@ -275,10 +309,13 @@ html[data-theme="light"] :is(
 {% set vol = (msp.vol) if (msp is defined and msp is not none and msp.vol is not none) else none %}
 {% set wm = (msp.week_map) if (msp is defined and msp is not none and msp.week_map is defined and msp.week_map is not none) else none %}
 {% set sc = (msp.state_changes) if (msp is defined and msp is not none and msp.state_changes is not none) else none %}
-{% set _wn = (sys.flow_window_n|int) if (sys is not none and sys.flow_window_n is defined and sys.flow_window_n is not none) else 5 %}
+{% set _wn = (sys.flow_window_n|int) if (sys is not none and sys.flow_window_n is defined and sys.flow_window_n is not none) else 0 %}
 {% set _vc_wn = (vc.flow_window_n|int) if (vc is not none and vc.flow_window_n is defined and vc.flow_window_n is not none) else _wn %}
 {% set _cta_wn = (cta.flow_window_n|int) if (cta is not none and cta.flow_window_n is defined and cta.flow_window_n is not none) else _wn %}
 {% set _cta_near = (cta.cta_near_flat) if (cta is not none and cta.cta_near_flat is defined and cta.cta_near_flat) else false %}
+{% set _vc_flow_known = vc is not none and finite_number(vc.flow_5d_bn) %}
+{% set _cta_flow_known = cta is not none and finite_number(cta.flow_5d) %}
+{% set _flow_known = _vc_flow_known and _cta_flow_known %}
 {% set _gex_n = (gamma.history|length) if (gamma is not none and gamma.history is defined and gamma.history is not none) else 0 %}
 
 <div class="aurora{% if gamma_regime == 'long' %} au-long{% elif gamma_regime == 'short' %} au-short{% endif %}">
@@ -293,13 +330,50 @@ html[data-theme="light"] :is(
 <div style="margin:4px 0 18px">
   <div class="kick">{{ t('Market Structure', '市场结构') }}</div>
   <h1 style="margin:0;font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em">
-    {{ t('How the market is built right now', '当前市场的底层结构') }}
+    {{ t('How positioning could shape market moves', '持仓结构如何影响市场波动') }}
   </h1>
   <p style="margin:4px 0 0;font-size:13px;color:var(--mut)">
     {{ t('Dealer hedging · systematic fund flows · stock-picking conditions · options-implied weekly range', '做市商对冲 · 系统化资金流 · 选股环境 · 期权隐含周度区间') }}
   </p>
 </div>
 
+<div class="msp-drivers" id="msp-drivers">
+{# ────────────────────── PANEL 2 — GEX HISTORY ────────────────────── #}
+<section class="msp-driver" data-driver="gex">
+{% if gamma is not none and gamma.history is not none and gamma.history | length > 0 %}
+<div class="sec-head">
+  <span class="eyebrow">2</span>
+  <h2 id="gex-history-title">{{ t('Dealer exposure history', '做市商敞口历史') }}</h2>
+  <span class="help" tabindex="0">?<span class="tip">
+    <span class="l-en">Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from {{ gamma.series_start if gamma.series_start is not none else 'inception' }}.</span>
+    <span class="l-zh">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自{{ gamma.series_start if gamma.series_start is not none else '首日' }}起。</span>
+  </span></span>
+  <div class="range-btns" id="gex-range-btns" style="margin-left:auto" role="group" aria-labelledby="gex-history-title">
+    <button class="rbtn" data-range="21" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('1M', '1月') }}</button>
+    <button class="rbtn" data-range="63" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('3M', '3月') }}</button>
+    <button class="rbtn on" data-range="126" type="button" aria-pressed="true" aria-controls="gex-chart spx-flip-chart">{{ t('6M', '6月') }}</button>
+    <button class="rbtn" data-range="252" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('1Y', '1年') }}</button>
+    <button class="rbtn" data-range="9999" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('All', '全部') }}</button>
+  </div>
+</div>
+<div class="panel">
+  <p class="msp-reading">{{ t('Modeled dealer hedging','做市商对冲模型') }} · {% if gamma_regime == 'long' %}{{ t('Absorbing moves','吸收波动') }}{% elif gamma_regime == 'short' %}{{ t('Amplifying moves','放大波动') }}{% else %}{{ t('Direction unavailable','方向暂无数据') }}{% endif %}</p>
+  <div class="chart-wrap" style="height:220px"><svg id="gex-chart" role="img" aria-label="Dealer options exposure history" data-chart-label-en="Dealer options exposure history" data-chart-label-zh="做市商期权敞口历史" aria-describedby="gex-range-status" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="chart-wrap" style="height:110px;margin-top:6px"><svg id="spx-flip-chart" role="img" aria-label="S&amp;P 500 and dealer flip level" data-chart-label-en="S&amp;P 500 and dealer flip level" data-chart-label-zh="标普500与做市商翻转点" aria-describedby="gex-range-status" viewBox="0 0 800 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="sec-foot" id="gex-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="sec-foot">{{ t('GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed)', 'GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线）') }}{% if gamma.series_start is not none %} · {{ t('series from', '数据自') }} {{ gamma.series_start }}{% endif %}</div>
+</div>
+{% else %}
+<div class="warmup">
+  <b><span class="l-en">Dealer-exposure history isn't on this page yet.</span><span class="l-zh">做市商敞口历史尚未出现在本页。</span></b>
+  <span class="empty-why">
+    <span class="l-en">The dealer-exposure history is unavailable. Snapshot details below retain any separately supplied model reading.</span>
+    <span class="l-zh">做市商敞口历史暂无数据。下方快照详情保留单独提供的模型读数。</span>
+  </span>
+</div>
+{% endif %}
+<details class="msp-snapshot-details" id="msp-snapshot-details">
+  <summary>{{ t('Snapshot details, recent changes and source coverage','快照详情、近期变化与数据覆盖') }}</summary>
 {# ── State changes strip ── #}
 {% set sc_items = sc['items'] if (sc is not none and 'items' in sc) else none %}
 {% if sc is not none and sc_items is not none and sc_items | length > 0 %}
@@ -396,9 +470,9 @@ html[data-theme="light"] :is(
     {% endif %}
   </div>
 
-  <span class="help">?<span class="tip">
-    <span class="l-en"><b>How shock absorbers work</b><br>When dealer net GEX (gamma exposure — the options-book hedge that absorbs or amplifies moves) is positive (long gamma), they sold options and hedge by buying dips / selling rips — damping moves. When negative (short gamma), hedging requires buying rallies and selling dips — amplifying moves.<br><br>{% if gamma.net_gex_pctile is not none %}Net GEX today: {{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B ({{ ord_n(gamma.net_gex_pctile) }} pctile since {{ gamma.series_start if gamma.series_start is not none else 'inception' }}{% if _gex_n > 0 %}, {{ _gex_n }} sessions{% endif %}).{% if _gex_n > 0 and _gex_n < 100 %} This is a short series — that percentile is a rank among {{ _gex_n }} readings, not years of history.{% endif %}{% else %}Net GEX today: {{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B. The percentile rank isn't available for this snapshot — the exposure figure is the latest reading, without a rank against history.{% endif %}<br><br><em>Model estimate only — actual dealer books are unobservable. Reconstructed from the SPX options chain.</em></span>
-    <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX（伽马敞口——吸收或放大波动的期权账簿对冲）为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>{% if gamma.net_gex_pctile is not none %}当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B（自{{ gamma.series_start if gamma.series_start is not none else '首日' }}以来{{ (gamma.net_gex_pctile|float|round|int) }}百分位{% if _gex_n > 0 %}，共 {{ _gex_n }} 个交易日{% endif %}）。{% if _gex_n > 0 and _gex_n < 100 %} 本序列较短——该百分位是 {{ _gex_n }} 次读数中的排名，并非多年历史。{% endif %}{% else %}当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B。本次快照没有百分位读数——上方敞口是最新值，尚未对照历史排名。{% endif %}<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
+  <span class="help" tabindex="0">?<span class="tip">
+    <span class="l-en"><b>How shock absorbers work</b><br>When dealer net GEX (gamma exposure — the options-book hedge that absorbs or amplifies moves) is positive (long gamma), they sold options and hedge by buying dips / selling rips — damping moves. When negative (short gamma), hedging requires buying rallies and selling dips — amplifying moves.<br><br>{% if gamma.net_gex_pctile is not none %}Net GEX in this snapshot: {% if finite_number(gamma.net_gex_bn) %}{{ '%.1f'|format(gamma.net_gex_bn) }}B{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %} ({{ ord_n(gamma.net_gex_pctile) }} pctile since {{ gamma.series_start if gamma.series_start is not none else 'inception' }}{% if _gex_n > 0 %}, {{ _gex_n }} sessions{% endif %}).{% if _gex_n > 0 and _gex_n < 100 %} This is a short series — that percentile is a rank among {{ _gex_n }} readings, not years of history.{% endif %}{% else %}Net GEX in this snapshot: {% if finite_number(gamma.net_gex_bn) %}{{ '%.1f'|format(gamma.net_gex_bn) }}B{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}. The percentile rank isn't available for this snapshot — the exposure figure is the latest reading, without a rank against history.{% endif %}<br><br><em>Model estimate only — actual dealer books are unobservable. Reconstructed from the SPX options chain.</em></span>
+    <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX（伽马敞口——吸收或放大波动的期权账簿对冲）为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>{% if gamma.net_gex_pctile is not none %}当前净GEX：{% if finite_number(gamma.net_gex_bn) %}{{ '%.1f'|format(gamma.net_gex_bn) }}B{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}（自{{ gamma.series_start if gamma.series_start is not none else '首日' }}以来{{ (gamma.net_gex_pctile|float|round|int) }}百分位{% if _gex_n > 0 %}，共 {{ _gex_n }} 个交易日{% endif %}）。{% if _gex_n > 0 and _gex_n < 100 %} 本序列较短——该百分位是 {{ _gex_n }} 次读数中的排名，并非多年历史。{% endif %}{% else %}当前净GEX：{% if finite_number(gamma.net_gex_bn) %}{{ '%.1f'|format(gamma.net_gex_bn) }}B{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}。本次快照没有百分位读数——上方敞口是最新值，尚未对照历史排名。{% endif %}<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
   </span></span>
 
   {# P8 — Archetype-D watching band, folded into the hero (L1 stays 6).
@@ -412,7 +486,7 @@ html[data-theme="light"] :is(
   {% set _watch_pct = disp.cor1m_pctile_2y if (disp is not none and disp.cor1m_pctile_2y is defined and disp.cor1m_pctile_2y is not none) else none %}
   {% set _cor1m_avail = (disp.cor1m_available) if (disp is not none and disp.cor1m_available is defined and disp.cor1m_available) else false %}
   {% if _watch_flip is not none or disp is not none %}
-  <div class="watch-band" id="watch-band">
+  <details class="watch-band msp-assumptions" id="watch-band"><summary>{{ t("What we’re watching", "我们在看什么") }}</summary>
     <div class="watch-k">{{ t("What we're watching", '我们在看什么') }}</div>
     <p class="watch-kicker">{{ t('Windows, not certainties — re-drawn nightly.', '窗口，并非定论 — 每晚重算。') }}</p>
     <ul class="watch-list">
@@ -446,11 +520,11 @@ html[data-theme="light"] :is(
       </li>
       {% endif %}
     </ul>
-    <span class="help">?<span class="tip">
+    <span class="help" tabindex="0">?<span class="tip">
       <span class="l-en">The flip is the reconstructed SPX level where dealer net gamma changes sign — hedging switches from absorbing dips to amplifying them. The stock-picker windows are the two-year percentiles the producer uses to classify 1-month implied correlation (a stock-picker's market vs stocks moving together). Neither is a forecast; both re-draw when the nightly snapshot lands.</span>
       <span class="l-zh">翻转点是重建出的标普500水平，做市商净伽马在此变号——对冲从吸收回档转为放大波动。选股窗口是生产者用来划分1个月隐含相关性的两年百分位（选股行情对比个股同涨同跌）。两者都不是预测；夜间快照到达时重算。</span>
     </span></span>
-  </div>
+  </details>
   {% endif %}
 
   {# Missing-session disclosure. The options chain we rebuild this from is a live
@@ -473,7 +547,8 @@ html[data-theme="light"] :is(
     {% if _has_null and _has_prov %} · {% endif %}
     {% if _has_prov %}
     {% if gamma.series_start is not none %}{{ t('Dealer-exposure (GEX) series from', '做市商敞口（GEX）数据自') }} {{ gamma.series_start }}{% endif %}
-    {% if msp is defined and msp is not none and msp.asof is not none %} · {{ t('as of', '截至') }} {{ msp.asof }}{% endif %}
+    {% if msp is defined and msp is not none and msp.asof is not none %} · {{ t('Artifact date', '数据文件日期') }} {{ msp.asof }}{% endif %}
+    · {{ t('Gamma snapshot observation date not supplied', '未提供伽马快照观测日期') }}
     {% endif %}
   </div>
   {% endif %}
@@ -488,40 +563,7 @@ html[data-theme="light"] :is(
 </div>
 {% endif %}
 
-<div class="msp-drivers" id="msp-drivers">
-{# ────────────────────── PANEL 2 — GEX HISTORY ────────────────────── #}
-<section class="msp-driver" data-driver="gex">
-{% if gamma is not none and gamma.history is not none and gamma.history | length > 0 %}
-<div class="sec-head">
-  <span class="eyebrow">2</span>
-  <h2 id="gex-history-title">{{ t('Dealer exposure history', '做市商敞口历史') }}</h2>
-  <span class="help">?<span class="tip">
-    <span class="l-en">Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from {{ gamma.series_start if gamma.series_start is not none else 'inception' }}.</span>
-    <span class="l-zh">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自{{ gamma.series_start if gamma.series_start is not none else '首日' }}起。</span>
-  </span></span>
-  <div class="range-btns" id="gex-range-btns" style="margin-left:auto" role="group" aria-labelledby="gex-history-title">
-    <button class="rbtn" data-range="21" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('1M', '1月') }}</button>
-    <button class="rbtn" data-range="63" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('3M', '3月') }}</button>
-    <button class="rbtn on" data-range="126" type="button" aria-pressed="true" aria-controls="gex-chart spx-flip-chart">{{ t('6M', '6月') }}</button>
-    <button class="rbtn" data-range="252" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('1Y', '1年') }}</button>
-    <button class="rbtn" data-range="9999" type="button" aria-pressed="false" aria-controls="gex-chart spx-flip-chart">{{ t('All', '全部') }}</button>
-  </div>
-</div>
-<div class="panel">
-  <div class="chart-wrap" style="height:160px"><svg id="gex-chart" role="img" aria-label="Dealer options exposure history" data-chart-label-en="Dealer options exposure history" data-chart-label-zh="做市商期权敞口历史" aria-describedby="gex-range-status" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
-  <div class="chart-wrap" style="height:110px;margin-top:6px"><svg id="spx-flip-chart" role="img" aria-label="S&amp;P 500 and dealer flip level" data-chart-label-en="S&amp;P 500 and dealer flip level" data-chart-label-zh="标普500与做市商翻转点" aria-describedby="gex-range-status" viewBox="0 0 800 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
-  <div class="sec-foot" id="gex-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
-  <div class="sec-foot">{{ t('GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed)', 'GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线）') }}{% if gamma.series_start is not none %} · {{ t('series from', '数据自') }} {{ gamma.series_start }}{% endif %}</div>
-</div>
-{% else %}
-<div class="warmup">
-  <b><span class="l-en">Dealer-exposure history isn't on this page yet.</span><span class="l-zh">做市商敞口历史尚未出现在本页。</span></b>
-  <span class="empty-why">
-    <span class="l-en">The GEX (dealer options exposure) history series is missing. The hero above still shows today's shock-absorber read when the latest snapshot is present.</span>
-    <span class="l-zh">GEX（做市商期权敞口）历史序列缺失。当最新快照到位时，上方主卡仍会显示当日缓冲机制读数。</span>
-  </span>
-</div>
-{% endif %}
+</details>
 </section>
 
 {# ────────────────────── PANEL 3 — SYSTEMATIC FLOWS ────────────────────── #}
@@ -533,7 +575,7 @@ html[data-theme="light"] :is(
      vol target), not observed fund flow — say so where the numbers are, not only
      in a hover. #}
   <span class="badge est">{{ t('model estimate', '模型估算') }}</span>
-  <span class="help">?<span class="tip">
+  <span class="help" tabindex="0">?<span class="tip">
     <span class="l-en"><b>What these are</b><br>Volatility-control funds adjust exposure as realized volatility rises or falls. Trend-following funds adjust exposure with medium- and long-term price trends.<br><br><em>These are model estimates of systematic fund behavior, not observed fund positions. Dollar figures show approximate direction and scale.</em></span>
     <span class="l-zh"><b>说明</b><br>波动率控制基金会随已实现波动率上升或下降调整敞口。趋势跟踪基金会根据中长期价格趋势调整敞口。<br><br><em>这些是系统化基金行为的模型估算，并非观测到的实际持仓；金额用于表示大致方向和量级。</em></span>
   </span></span>
@@ -547,28 +589,23 @@ html[data-theme="light"] :is(
 </div>
 
 {% if sys is not none %}
-<div class="agree {{ agree if agree is not none else '' }}">
-  {% if _wn > 0 %}
-  {% if agree == 'aligned_adding' %}<span class="l-en">Systematic funds: aligned · both adding over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步加仓</span>
-  {% elif agree == 'aligned_cutting' %}<span class="l-en">Systematic funds: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步减仓</span>
-  {% elif agree == 'split' %}<span class="l-en">Systematic funds: split — signals disagree over {{ _wn }} days</span><span class="l-zh">系统化资金：分歧 — {{ _wn }}日信号不一致</span>
-  {% elif agree == 'paused' %}<span class="l-en">Systematic funds: both paused over the last {{ _wn }} days</span><span class="l-zh">系统化资金：两路近{{ _wn }}日均暂停</span>
-  {% else %}<span class="l-en">Agreement: {{ agree if agree is not none else 'unknown' }}</span><span class="l-zh">共识：{{ agree if agree is not none else '未知' }}</span>
-  {% endif %}
-  {% else %}
-  <span class="l-en">Systematic funds: window is being updated.</span><span class="l-zh">系统化资金：窗口更新中。</span>
-  {% endif %}
+<div class="agree {{ agree if _flow_known and agree is not none else '' }}">
+  {% if _wn > 0 and _flow_known %}
+    {% if agree == 'aligned_adding' %}<span class="l-en">Systematic funds: aligned · both adding over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步加仓</span>
+    {% elif agree == 'aligned_cutting' %}<span class="l-en">Systematic funds: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步减仓</span>
+    {% elif agree == 'split' %}<span class="l-en">Systematic funds: split — signals disagree over {{ _wn }} days</span><span class="l-zh">系统化资金：分歧 — {{ _wn }}日信号不一致</span>
+    {% elif agree == 'paused' %}<span class="l-en">Systematic funds: both paused over the last {{ _wn }} days</span><span class="l-zh">系统化资金：两路近{{ _wn }}日均暂停</span>
+    {% else %}<span class="l-en">Agreement: {{ agree if agree is not none else 'unknown' }}</span><span class="l-zh">共识：{{ agree if agree is not none else '未知' }}</span>{% endif %}
+  {% else %}<span class="l-en">Systematic funds: window change unavailable.</span><span class="l-zh">系统化资金：窗口变化暂无数据。</span>{% endif %}
 </div>
-{% if agree == 'aligned_adding' %}
-<span class="stance-chip watch"><span class="l-en">Watch — don't chase: systematic buying is already in the price.</span><span class="l-zh">观望——勿追涨：系统化买盘已反映在价格中。</span></span>
-{% elif agree == 'aligned_cutting' %}
-<span class="stance-chip watch"><span class="l-en">Watch — systematic funds are stepping back; don't lean against it.</span><span class="l-zh">观望——系统化资金正在撤减，勿逆势加仓。</span></span>
-{% elif agree == 'paused' or agree == 'split' %}
-<span class="stance-chip neutral"><span class="l-en">Stand aside — systematic flows aren't pushing either way.</span><span class="l-zh">暂不行动——系统化资金没有明确方向。</span></span>
+{% if _flow_known %}
+  {% if agree == 'aligned_adding' %}<span class="stance-chip watch"><span class="l-en">Watch — don't chase: systematic buying is already in the price.</span><span class="l-zh">观望——勿追涨：系统化买盘已反映在价格中。</span></span>
+  {% elif agree == 'aligned_cutting' %}<span class="stance-chip watch"><span class="l-en">Watch — systematic funds are stepping back; don't lean against it.</span><span class="l-zh">观望——系统化资金正在撤减，勿逆势加仓。</span></span>
+  {% elif agree == 'paused' or agree == 'split' %}<span class="stance-chip neutral"><span class="l-en">Stand aside — systematic flows aren't pushing either way.</span><span class="l-zh">暂不行动——系统化资金没有明确方向。</span></span>
+  {% else %}<span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>{% endif %}
 {% else %}
-<span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>
+<p class="sec-foot">{{ t('Modeled window changes are unavailable; adding, cutting or a pause cannot be inferred.','模型窗口变化暂无数据；不能据此推断加仓、减仓或暂停。') }}</p>
 {% endif %}
-
 <div class="grid-2" style="margin-bottom:16px">
   {# VC block #}
   <div class="panel">
@@ -576,11 +613,11 @@ html[data-theme="light"] :is(
     {% if vc is not none %}
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
       {% if vc.alloc_bn is not none %}<div style="font-size:17px;font-weight:800;color:var(--ink)">${{ '%.0f'|format(vc.alloc_bn|float) }}B</div>{% endif %}
-      {% if vc.state is not none %}<span class="rc {{ vc.state }}">{% if _vc_wn > 0 %}{% if vc.state=='adding' %}<span class="l-en">Adding over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日加仓中</span>{% elif vc.state=='cutting' %}<span class="l-en">Cutting over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日减仓中</span>{% else %}<span class="l-en">Pausing over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日暂停</span>{% endif %}{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
+      {% if vc.state is not none %}<span class="rc {{ vc.state if _vc_flow_known else 'unknown' }}">{% if _vc_wn > 0 and _vc_flow_known %}{% if vc.state=='adding' %}<span class="l-en">Adding over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日加仓中</span>{% elif vc.state=='cutting' %}<span class="l-en">Cutting over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日减仓中</span>{% else %}<span class="l-en">Pausing over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日暂停</span>{% endif %}{% else %}<span class="l-en">window change unavailable</span><span class="l-zh">窗口变化暂无数据</span>{% endif %}</span>{% endif %}
     </div>
     <div class="badge-stack">
       {% if vc.flow_1d_bn is not none %}<span class="badge {{ 'up' if vc.flow_1d_bn|float >= 0 else 'dn' }}">{% if vc.flow_1d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_1d_bn|float|abs) }}B {{ t('today', '今日') }}</span>{% endif %}
-      {% if vc.flow_5d_bn is not none %}<span class="badge {{ 'up' if vc.flow_5d_bn|float >= 0 else 'dn' }}">{% if vc.flow_5d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_5d_bn|float|abs) }}B {% if _vc_wn > 0 %}<span class="l-en">over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日累计</span>{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
+      {% if vc.flow_5d_bn is not none %}<span class="badge {{ 'up' if vc.flow_5d_bn|float >= 0 else 'dn' }}">{% if vc.flow_5d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_5d_bn|float|abs) }}B {% if _vc_wn > 0 %}<span class="l-en">over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日累计</span>{% else %}<span class="l-en">window change unavailable</span><span class="l-zh">窗口变化暂无数据</span>{% endif %}</span>{% endif %}
     </div>
     {% if vc.alloc_frac is not none %}<div class="kpi-row" style="margin-top:10px"><div class="kpi"><b>{{ '%.0f'|format(vc.alloc_frac|float * 100) }}%</b>{{ t('of target allocation deployed', '目标仓位已部署') }}</div></div>{% endif %}
     {% else %}<span class="faint">{{ t('No data', '暂无数据') }}</span>{% endif %}
@@ -594,12 +631,12 @@ html[data-theme="light"] :is(
       {% if cta.score is not none %}<div style="font-size:17px;font-weight:800;color:var(--ink)">{% if cta.score|float >= 0 %}+{% endif %}{{ '%.2f'|format(cta.score|float) }} <small style="font-size:12px;font-weight:500;color:var(--faint)">{{ t('trend score', '趋势分数') }}</small></div>{% endif %}
       {% if cta.score is not none %}{% set _cs = cta.score|float %}<span class="rc {{ 'adding' if _cs > 0.15 else ('cutting' if _cs < -0.15 else 'pausing') }}">{% if _cs > 0.15 %}<span class="l-en">Positioned long</span><span class="l-zh">持多仓</span>{% elif _cs < -0.15 %}<span class="l-en">Positioned short</span><span class="l-zh">持空仓</span>{% else %}<span class="l-en">Near flat</span><span class="l-zh">接近空仓</span>{% endif %}</span>{% endif %}
       {% if cta.state is not none %}
-      <span class="rc {{ cta.state }}{% if _cta_near %} near-flat{% endif %}">{% if _cta_wn > 0 %}{% if cta.state=='adding' %}<span class="l-en">adding exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日加仓中</span>{% elif cta.state=='cutting' %}<span class="l-en">trimming exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日减仓中</span>{% else %}<span class="l-en">holding steady over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日持稳</span>{% endif %}{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
+      <span class="rc {{ cta.state if _cta_flow_known else 'unknown' }}{% if _cta_near %} near-flat{% endif %}">{% if _cta_wn > 0 and _cta_flow_known %}{% if cta.state=='adding' %}<span class="l-en">adding exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日加仓中</span>{% elif cta.state=='cutting' %}<span class="l-en">trimming exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日减仓中</span>{% else %}<span class="l-en">holding steady over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日持稳</span>{% endif %}{% else %}<span class="l-en">window change unavailable</span><span class="l-zh">窗口变化暂无数据</span>{% endif %}</span>{% endif %}
     </div>
     {% if cta.z is not none %}{% set _cz = cta.z|float %}<div style="font-size:12px;color:var(--mut);margin-bottom:6px">{% if _cz <= -0.3 %}<span class="l-en">Lighter than their 1-year norm ({{ '%.1f'|format(_cz) }})</span><span class="l-zh">仓位低于近一年常态（{{ '%.1f'|format(_cz) }}）</span>{% elif _cz >= 0.3 %}<span class="l-en">Heavier than their 1-year norm (+{{ '%.1f'|format(_cz) }})</span><span class="l-zh">仓位高于近一年常态（+{{ '%.1f'|format(_cz) }}）</span>{% else %}<span class="l-en">Near their 1-year norm</span><span class="l-zh">接近近一年常态</span>{% endif %}</div>{% endif %}
     <div class="badge-stack">
       {% if cta.flow_1d is not none %}<span class="badge {{ 'up' if cta.flow_1d|float >= 0 else 'dn' }}">{% if cta.flow_1d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_1d|float|abs) }} {{ t('today', '今日') }}</span>{% endif %}
-      {% if cta.flow_5d is not none %}<span class="badge {{ 'up' if cta.flow_5d|float >= 0 else 'dn' }}">{% if cta.flow_5d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_5d|float|abs) }} {% if _cta_wn > 0 %}<span class="l-en">over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日累计</span>{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
+      {% if cta.flow_5d is not none %}<span class="badge {{ 'up' if cta.flow_5d|float >= 0 else 'dn' }}">{% if cta.flow_5d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_5d|float|abs) }} {% if _cta_wn > 0 %}<span class="l-en">over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日累计</span>{% else %}<span class="l-en">window change unavailable</span><span class="l-zh">窗口变化暂无数据</span>{% endif %}</span>{% endif %}
     </div>
     {% else %}<span class="faint">{{ t('No data', '暂无数据') }}</span>{% endif %}
   </div>
@@ -630,7 +667,7 @@ html[data-theme="light"] :is(
 <div class="sec-head">
   <span class="eyebrow">4</span>
   <h2 id="cor-history-title">{{ t('Stock-picker conditions', '选股行情') }}</h2>
-  <span class="help">?<span class="tip">
+  <span class="help" tabindex="0">?<span class="tip">
     <span class="l-en"><b>What this measures</b><br>1-month implied correlation (COR1M): average pairwise correlation implied by SPX options against single-stock options. Low = stocks moving on their own stories (stock-picker's market). High = one-market tape (macro dominates). Series from 2006.{% if disp is not none %}<br><br>{% if disp.cor1m_pctile_2y is not none %}2-year percentile: {{ ord_n(disp.cor1m_pctile_2y) }}. {% endif %}{% if disp.cor3m is not none %}3-month implied correlation: {{ '%.2f'|format(disp.cor3m|float) }}. {% endif %}{% if disp.dspx is not none %}CBOE dispersion index: {{ '%.1f'|format(disp.dspx|float) }}.{% endif %}{% endif %}</span>
     <span class="l-zh"><b>指标说明</b><br>1个月隐含相关性（COR1M）：标普指数期权与个股期权隐含的平均两两相关系数。低值=个股独立走势（选股行情）；高值=一体化走势（宏观主导）。数据自2006年。{% if disp is not none %}<br><br>{% if disp.cor1m_pctile_2y is not none %}2年百分位：{{ ord_n(disp.cor1m_pctile_2y) }}。{% endif %}{% if disp.cor3m is not none %}3个月隐含相关性：{{ '%.2f'|format(disp.cor3m|float) }}。{% endif %}{% if disp.dspx is not none %}CBOE离散度指数：{{ '%.1f'|format(disp.dspx|float) }}。{% endif %}{% endif %}</span>
   </span></span>
@@ -688,7 +725,7 @@ html[data-theme="light"] :is(
   <div class="chart-wrap" style="height:130px;margin-top:12px"><svg id="cor-chart" role="img" aria-label="Implied stock correlation history" data-chart-label-en="Implied stock correlation history" data-chart-label-zh="股票隐含相关性历史" aria-describedby="cor-range-status" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="sec-foot" id="cor-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
   {% endif %}
-  <div class="sec-foot">{{ t('1-month implied correlation (COR1M) area chart — dashed line = the dispersion threshold, the 20th percentile of the last two years · source: CBOE, series from 2006', '1个月隐含相关性（COR1M）面积图 — 虚线=离散阈值，即近两年第20百分位 · 来源：CBOE，数据自2006年起') }}</div>
+  <div class="sec-foot">{{ t('1-month implied correlation (COR1M) history; gaps are unavailable observations. Regime and percentile use the published producer reading · source: CBOE, series from 2006', '1个月隐含相关性（COR1M）历史；缺口为缺失观测。状态与百分位采用数据源已发布的读数 · 来源：CBOE，数据自2006年起') }}</div>
 </div>
 {% else %}
 <div class="warmup">
@@ -706,7 +743,7 @@ html[data-theme="light"] :is(
 <div class="sec-head">
   <span class="eyebrow">5</span>
   <h2>{{ t('Vol weather', '波动率天气') }}</h2>
-  <span class="help">?<span class="tip">
+  <span class="help" tabindex="0">?<span class="tip">
     <span class="l-en">RV21: 1-month realized vol. RV63: 3-month. When RV21 &gt; RV63, fast vol above slow baseline = "stress building". VIX curve slope = six-month minus front-month future (M6 − M1; positive = later months cost more than the front / contango; negative = front costs more / backwardation, a stress tell). The whole-market vol read lives in the Options workspace's console — this panel is context only.</span>
     <span class="l-zh">RV21：1个月已实现波动率。RV63：3个月版本。RV21&gt;RV63时，短期超长期=压力积累。VIX曲线斜率=六个月减近月期货（M6−M1；正值=远月贵于近月/升水；负值=近月更贵/现货升水，压力信号）。整体波动率读数在期权工作台的控制台，本面板仅为参考。</span>
   </span></span>
@@ -759,6 +796,7 @@ html[data-theme="light"] :is(
       </div>
     </div>
     {% endif %}
+    <div class="sec-foot">{{ t('Volatility snapshot observation date not supplied', '未提供波动率快照观测日期') }}</div>
     {% if vol.series_start_curve is not none %}<div class="sec-foot">{{ t('Young curve feed — limited history from', '曲线数据较新，自') }} {{ vol.series_start_curve }}</div>{% endif %}
     {% else %}<span class="faint">{{ t('No curve data', '暂无曲线数据') }}</span>{% endif %}
   </div>
@@ -779,85 +817,56 @@ html[data-theme="light"] :is(
 <div class="sec-head">
   <span class="eyebrow">6</span>
   <h2>{{ t('Weekly range', '本周区间') }}</h2>
-  <span class="help">?<span class="tip">
-    <span class="l-en">Where the week could reasonably land, measured from Friday's close and the volatility priced in at that close. The typical range (±1σ) covers about 68% of outcomes, the wide range (±2σ) about 95% — if vol behaves as priced. Flip line: the level where dealer hedging switches from absorbing to amplifying. Locked at Friday's close, fixed through the week, resets each weekend. A model estimate, not a forecast or a boundary the market must respect.</span>
-    <span class="l-zh">从周五收盘价及当时定价的波动率推算，本周价格可能落在的区间。典型区间（±1σ）约覆盖68%的情形，宽区间（±2σ）约95% — 前提是波动率按定价兑现。翻转线：做市商对冲从吸收转为放大的位置。周五收盘锁定，本周内保持不变，每周末重置。这是模型估算，既非预测，也非市场必须遵守的边界。</span>
+  <span class="help" tabindex="0">?<span class="tip">
+    <span class="l-en">Where the week could reasonably land, measured from Friday's close and the volatility priced in at that close. The supplied inner (±1σ) and outer (±2σ) ranges depend on volatility and distribution assumptions. Their names are not a verified coverage rate. Flip line: the level where dealer hedging switches from absorbing to amplifying. Locked at Friday's close, fixed through the week, resets each weekend. A model estimate, not a forecast or a boundary the market must respect.</span>
+    <span class="l-zh">从周五收盘价及当时定价的波动率推算，本周价格可能落在的区间。已有内层（±1σ）与外层（±2σ）区间依赖波动率及分布假设，名称不代表经验证的覆盖率。翻转线：做市商对冲从吸收转为放大的位置。周五收盘锁定，本周内保持不变，每周末重置。这是模型估算，既非预测，也非市场必须遵守的边界。</span>
   </span></span>
 </div>
 
-{% if wm is not none and wm.locked_close is not none and wm.band_1sigma_lo is not none and wm.band_1sigma_hi is not none %}
-<div class="panel">
-  <span class="stance-chip watch"><span class="l-en">Watch — don't chase moves inside the expected band.</span><span class="l-zh">观望——预期区间内的波动不必追。</span></span>
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-    <div><div class="kick">{{ t('Locked Friday close', '锁定周五收盘价') }}</div>
-    <div style="font-size:22px;font-weight:800;color:var(--ink)">{{ '%.1f'|format(wm.locked_close|float) }}</div></div>
-    {% if wm.implied_weekly_pct is not none %}<div class="kpi" style="margin-left:8px"><b>±{{ '%.2f'|format(wm.implied_weekly_pct|float) }}%</b>{{ t('weekly implied move', '隐含周度涨跌幅') }}</div>{% endif %}
-    {% if wm.locked_at is not none %}<div class="sec-foot" style="margin:0 0 0 auto">{{ t('Locked', '锁定于') }} {{ wm.locked_at[:10] }}{% if wm.week_start is not none and wm.week_end is not none %} · {{ t('covers', '覆盖') }} {{ wm.week_start }}→{{ wm.week_end }}{% endif %} · {{ t('held through week', '持有至本周') }}</div>{% endif %}
+{% if wm_view.present %}
+<div class="panel" data-weekly-range>
+  <div class="kick">{{ t('Model estimate · supplied bands only', '模型估算 · 仅显示已有区间') }}</div>
+  <div class="kpi-row">
+    <div class="kpi"><b>{% if wm_view.close is not none %}{{ '%.1f'|format(wm_view.close) }}{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}</b>{{ t('Locked Friday close', '锁定周五收盘价') }}</div>
+    {% if finite_number(wm.implied_weekly_pct) %}<div class="kpi"><b>±{{ '%.2f'|format(wm.implied_weekly_pct) }}%</b>{{ t('weekly implied move', '隐含周度涨跌幅') }}</div>{% endif %}
   </div>
-
-  {# SVG band visual — build price range from 2sigma or expand from 1sigma #}
-  {% set lo2 = wm.band_2sigma_lo if (wm.band_2sigma_lo is not none) else (wm.band_1sigma_lo|float * 0.975) %}
-  {% set hi2 = wm.band_2sigma_hi if (wm.band_2sigma_hi is not none) else (wm.band_1sigma_hi|float * 1.025) %}
-  {% set lo1 = wm.band_1sigma_lo|float %}
-  {% set hi1 = wm.band_1sigma_hi|float %}
-  {% set wm_spot = gamma.spot if (gamma is not none and gamma.spot is not none) else wm.locked_close|float %}
-  {% set wm_flip = wm.gamma_flip if wm.gamma_flip is not none else none %}
-  {% set pr_lo = lo2|float %}
-  {% set pr_hi = hi2|float %}
-  {% set pr_r = pr_hi - pr_lo %}
-  {% if pr_r > 0 %}
-  {% set p_lo1 = ((lo1 - pr_lo) / pr_r * 100)|round(1) %}
-  {% set p_hi1 = ((hi1 - pr_lo) / pr_r * 100)|round(1) %}
-  {% set p_spot = ((wm_spot|float - pr_lo) / pr_r * 100)|round(1) %}
-  {% set p_flip = ((wm_flip|float - pr_lo) / pr_r * 100)|round(1) if wm_flip is not none else none %}
-  {% set wm_spot_live = (gamma is not none and gamma.spot is not none) %}
-  <div class="wm-wrap">
-    <svg class="wm-band" viewBox="0 0 600 56" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      {# 2σ background #}
-      <rect x="0" y="18" width="600" height="20" rx="5" fill="var(--blue)" opacity=".09"/>
-      {# 1σ band #}
-      <rect x="{{ p_lo1 * 6 }}" y="20" width="{{ (p_hi1 - p_lo1) * 6 }}" height="16" rx="4" fill="var(--blue)" opacity=".21"/>
-      {# Flip line #}
-      {% if p_flip is not none and p_flip >= 0 and p_flip <= 100 %}
-      <line x1="{{ p_flip * 6 }}" y1="12" x2="{{ p_flip * 6 }}" y2="44" stroke="var(--amb)" stroke-width="2" stroke-dasharray="3,2"/>
+  <div class="sec-foot">
+    {% if wm.locked_at is defined and wm.locked_at %}{{ t('Locked', '锁定于') }} {{ wm.locked_at[:10] }}{% else %}{{ t('Lock date unavailable', '锁定日期暂缺') }}{% endif %}
+    {% if wm.week_start is defined and wm.week_end is defined and wm.week_start and wm.week_end %} · {{ t('covers', '覆盖') }} {{ wm.week_start }} → {{ wm.week_end }}{% endif %}
+  </div>
+  {% for band in wm_view.bands %}
+  <div class="msp-band-row" data-sigma="{{ band.sigma }}" data-available="{{ 'true' if band.available else 'false' }}">
+    <b>{{ t('Inner range (1σ)', '内层区间（1σ）') if band.sigma == 1 else t('Outer range (2σ)', '外层区间（2σ）') }}</b>
+    <span class="tnum">{% if band.available %}{{ '%.0f'|format(band.lo) }} – {{ '%.0f'|format(band.hi) }}{% else %}{{ t('Unavailable — no supplied band', '暂无数据 — 未提供此区间') }}{% endif %}</span>
+  </div>
+  {% endfor %}
+  {% if wm_view.has_band %}
+  <svg class="wm-band" viewBox="0 0 600 88" preserveAspectRatio="none" role="img" aria-label="Supplied weekly bands and price references" data-chart-label-en="Supplied weekly bands and price references" data-chart-label-zh="已有周度区间与价格参考" xmlns="http://www.w3.org/2000/svg">
+    {% for band in wm_view.bands %}{% if band.available %}
+      {% set y = 20 if band.sigma == 1 else 52 %}
+      {% if band.lo == band.hi %}
+      <line data-band="{{ band.sigma }}" x1="{{ band.x }}" x2="{{ band.x }}" y1="{{ y-4 }}" y2="{{ y+16 }}" stroke="var(--blue)" stroke-width="3"/>
+      {% else %}
+      <rect data-band="{{ band.sigma }}" x="{{ band.x }}" y="{{ y }}" width="{{ band.width }}" height="12" rx="6" fill="var(--blue)" opacity="{{ '.7' if band.sigma == 1 else '.35' }}"/>
       {% endif %}
-      {# Spot #}
-      <line x1="{{ p_spot * 6 }}" y1="10" x2="{{ p_spot * 6 }}" y2="46" stroke="var(--blue)" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-    {# HTML labels over SVG (avoids svg-span-breakout trap) #}
-    <div class="wm-lbls">
-      <span class="wm-edge" style="left:0">{{ '%.0f'|format(pr_lo) }}</span>
-      <span class="wm-edge" style="left:{{ p_lo1 }}%">{{ '%.0f'|format(lo1) }}</span>
-      <span class="wm-edge" style="left:{{ p_hi1 }}%;transform:translateX(-100%)">{{ '%.0f'|format(hi1) }}</span>
-      <span class="wm-edge" style="right:0">{{ '%.0f'|format(pr_hi) }}</span>
-      {% if p_flip is not none and p_flip >= 5 and p_flip <= 95 %}
-      <span class="wm-chip wm-flip" style="left:{{ p_flip }}%;transform:translateX(-50%)">
-        <span class="wm-k">{{ t('Flip', '翻转') }}</span><span class="wm-n">{{ '%.0f'|format(wm_flip|float) }}</span>
-      </span>
-      {% endif %}
-      <span class="wm-chip wm-spot" style="left:{{ p_spot }}%;transform:translateX(-50%)">
-        <span class="wm-k">{% if wm_spot_live %}{{ t('Spot', '现价') }}{% else %}{{ t('Close', '收盘') }}{% endif %}</span><span class="wm-n">{{ '%.0f'|format(wm_spot|float) }}</span>
-      </span>
-    </div>
-  </div>
-  <div class="kpi-row" style="margin-top:8px">
-    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('typical range (about 68% of weeks)', '典型区间（约68%的周）') }}</div>
-    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('wide range (about 95% of weeks)', '宽区间（约95%的周）') }}</div>
-    {% if wm_flip is not none %}<div class="kpi"><b class="amb">{{ '%.0f'|format(wm_flip|float) }}</b>{{ t('flip level (dealer hedging switch)', '翻转点（做市商对冲切换）') }}</div>{% endif %}
-  </div>
+    {% endif %}{% endfor %}
+    {% if wm_view.flip_x is not none %}<line x1="{{ wm_view.flip_x }}" x2="{{ wm_view.flip_x }}" y1="8" y2="80" stroke="var(--amb)" stroke-width="2" stroke-dasharray="3,2"/>{% endif %}
+    {% if wm_view.spot_x is not none %}<line x1="{{ wm_view.spot_x }}" x2="{{ wm_view.spot_x }}" y1="8" y2="80" stroke="var(--blue)" stroke-width="2"/>{% endif %}
+  </svg>
   {% endif %}
-  <div class="sec-foot" style="margin-top:10px">
-    <span class="l-en">Model estimate. Locked at Friday's close and held through the week; resets each weekend. Width comes from SPX 30-day implied volatility rescaled to five trading days, which assumes vol is priced the same at one week as at one month.</span>
-    <span class="l-zh">模型估算。于周五收盘锁定并持有至本周末，每周末重置。区间宽度由标普500 30天隐含波动率折算至5个交易日，前提是一周与一个月的波动率定价相同。</span>
+  <div class="kpi-row">
+    {% if wm_view.spot is not none %}<div class="kpi"><b>{{ '%.1f'|format(wm_view.spot) }}</b>{{ t('Supplied gamma spot', '伽马数据附带现价') if wm_view.spot_live else t('Friday close reference', '周五收盘参考') }}{% if wm_view.spot_live %}<small>{{ t('Observation date not supplied', '未提供观测日期') }}</small>{% endif %}</div>{% endif %}
+    {% if wm_view.flip is not none %}<div class="kpi"><b>{{ '%.1f'|format(wm_view.flip) }}</b>{{ t('Flip reference supplied with this week map', '本周区间附带的翻转参考') }}</div>{% endif %}
+  </div>
+  <div class="sec-foot">
+    {{ t('A missing band remains unavailable. Price references do not establish a new weekly range.', '缺少的区间保持暂无数据；价格参考不会据此生成新的周度区间。') }}
+    {{ t('Model estimate locked on Friday: 30-day implied volatility scaled to five sessions. The coverage assumptions are not observed probabilities or price boundaries.', '模型于周五锁定，以30天隐含波动率折算至5个交易日。覆盖假设不是实测概率，也不是价格边界。') }}
   </div>
 </div>
 {% else %}
 <div class="warmup">
   <b><span class="l-en">This week's expected range isn't on this page yet.</span><span class="l-zh">本周预期区间尚未出现在本页。</span></b>
-  <span class="empty-why">
-    <span class="l-en">The Friday-locked implied-move band hasn't been computed. Shock-absorber, systematic-fund, stock-picker, and vol-weather panels still render from their own datasets.</span>
-    <span class="l-zh">周五锁定的隐含波动区间尚未计算。缓冲机制、系统化资金流、选股行情与波动率天气在各自数据到位时仍会显示。</span>
-  </span>
+  <span class="empty-why">{{ t('No weekly-range record is available in this artifact. Other sections keep their own data states.', '本份数据没有周度区间记录，其他板块保留各自的数据状态。') }}</span>
 </div>
 {% endif %}
 </section>
@@ -867,7 +876,7 @@ html[data-theme="light"] :is(
 <div style="margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)">
   <span class="l-en">Market context, not buy or sell signals. Systematic-fund figures are model estimates, not observed positions. Read them as direction and scale, not as cash that actually moved. Dealer-exposure estimates are reconstructed from options data. Shock-absorber series from {{ gamma.series_start if gamma is not none and gamma.series_start is not none else 'inception' }}; correlation series from 2006.</span>
   <span class="l-zh">仅供市场环境参考，并非买卖信号。系统化资金数据为模型估算，并非观测到的实际持仓；请将其视为方向和量级参考，而非真实成交资金。做市商敞口根据期权数据重建。缓冲机制数据自{{ gamma.series_start if gamma is not none and gamma.series_start is not none else '首日' }}起，相关性数据自2006年起。</span>
-  {% if msp is defined and msp is not none and msp.built_at is not none %} · {{ t('Built', '构建于') }} {{ msp.built_at[:10] }}{% endif %}
+  {% if msp is defined and msp is not none and msp.built_at is not none %} · {{ t('Built', '构建于') }} {{ msp.built_at }}{% endif %}
 </div>
 
 </div>{# /wrap #}
@@ -918,100 +927,87 @@ function line(x1,y1,x2,y2,s,sw,da){
 function sliceTail(arr,n){if(!arr||!arr.length)return [];return n>=9000?arr:arr.slice(-n)}
 function clearSVG(el){while(el&&el.firstChild)el.removeChild(el.firstChild)}
 
-function drawGex(n){
-  if(typeof MSP_GAMMA_HIST==='undefined'||!MSP_GAMMA_HIST.length)return;
-  var data=sliceTail(MSP_GAMMA_HIST,n);
-  var g=qs('#gex-chart'),s=qs('#spx-flip-chart');
-  if(!g||!s)return;
-  clearSVG(g);clearSVG(s);
-  var W=800,H=160,P=6;
-  var gv=data.map(function(d){return d.net_gex_bn||0});
-  var ma=Math.max(Math.abs(Math.min.apply(null,gv)),Math.abs(Math.max.apply(null,gv)),0.1);
-  var bw=Math.max(0.5,(W-2*P)/data.length);
+function finiteNumber(value){return typeof value==='number'&&Number.isFinite(value)}
+function seriesValues(data,key){return data.map(function(row){return row&&finiteNumber(row[key])?row[key]:null})}
+function chartDomain(values){
+  var observed=values.filter(finiteNumber);if(!observed.length)return null;
+  var lo=Math.min.apply(null,observed),hi=Math.max.apply(null,observed);
+  var pad=hi===lo?Math.max(Math.abs(lo)*0.01,0.5):(hi-lo)*0.08;
+  return [lo-pad,hi+pad];
+}
+function chartX(i,count,width,pad){return count===1?width/2:pad+i/(count-1)*(width-2*pad)}
+function chartY(value,domain,height,pad){return finiteNumber(value)&&domain?height-pad-(value-domain[0])/(domain[1]-domain[0])*(height-2*pad):null}
+function seriesRuns(data,key,domain,width,height,pad){
+  var runs=[],run=[];
   data.forEach(function(row,i){
-    var gx=row.net_gex_bn||0;var x=P+i*bw;var midY=H/2;
-    var h=Math.abs(gx)/ma*(H/2-8);var y=gx>=0?midY-h:midY;
-    var r=rect(x,y,Math.max(0.3,bw-0.4),Math.max(0.3,h),row.regime==='long'?UP:DN,0);
-    r.setAttribute('opacity','0.75');g.appendChild(r);
+    var value=row&&row[key];
+    if(!finiteNumber(value)){if(run.length)runs.push(run);run=[];return}
+    run.push([chartX(i,data.length,width,pad),chartY(value,domain,height,pad)]);
   });
-  g.appendChild(line(P,H/2,W-P,H/2,LINE,1));
-  var W2=800,H2=110,P2=6;
-  var sp=data.map(function(d){return d.spot||0}),fl=data.map(function(d){return d.flip||0});
-  var all=sp.concat(fl),mn=Math.min.apply(null,all),mx=Math.max.apply(null,all);
-  var pr=mx-mn||1;
-  function ty2(v){return H2-P2-(v-mn)/pr*(H2-P2*2)}
-  function tx2(i){return P2+i/(data.length-1||1)*(W2-P2*2)}
-  var spts=data.map(function(d,i){return[tx2(i),ty2(d.spot||0)]});
-  var fpts=data.map(function(d,i){return[tx2(i),ty2(d.flip||0)]});
-  if(spts.length>1)s.appendChild(polyline(spts,BLUE,'1.5'));
-  if(fpts.length>1){
-    /* The section footer calls this line "amber dashed" — make the drawing
-       match the caption, and keep one flip idiom across the page (the week-map
-       flip line is dashed too). */
-    var fp=polyline(fpts,AMB,'1',null,'.55');fp.setAttribute('stroke-dasharray','4,3');
-    s.appendChild(fp);
-  }
+  if(run.length)runs.push(run);return runs;
 }
-
+function drawSeries(svg,data,key,domain,width,height,pad,color,options){
+  if(!domain)return;options=options||{};
+  seriesRuns(data,key,domain,width,height,pad).forEach(function(pts){
+    if(pts.length===1){
+      var dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',pts[0][0]);dot.setAttribute('cy',pts[0][1]);dot.setAttribute('r','2.5');dot.setAttribute('fill',color);
+      dot.setAttribute('data-series',key);svg.appendChild(dot);return;
+    }
+    if(options.area){
+      var area=polyline([[pts[0][0],height-pad]].concat(pts,[[pts[pts.length-1][0],height-pad],[pts[0][0],height-pad]]),color,'0',color,'.10');
+      area.setAttribute('data-series',key+'-area');svg.appendChild(area);
+    }
+    var trace=polyline(pts,color,options.width||'1.5',null,options.opacity);
+    trace.setAttribute('data-series',key);if(options.dash)trace.setAttribute('stroke-dasharray',options.dash);
+    svg.appendChild(trace);
+  });
+}
+function seriesAvailability(data,definitions){
+  var en=[],zh=[];
+  definitions.forEach(function(d){
+    var count=seriesValues(data,d[0]).filter(finiteNumber).length;
+    if(!count){en.push(d[1]+' unavailable');zh.push(d[2]+'暂无数据')}
+    else if(count<data.length){en.push(d[1]+': '+count+'/'+data.length+' values; gaps are unavailable');zh.push(d[2]+'：'+count+'/'+data.length+'个有效值；缺口为数据暂缺')}
+  });
+  return {en:en.join(' · '),zh:zh.join(' · ')};
+}
+function drawGex(n){
+  var data=sliceTail(typeof MSP_GAMMA_HIST==='undefined'?[]:MSP_GAMMA_HIST,n);
+  var availability=seriesAvailability(data,[['net_gex_bn','GEX','净伽马敞口'],['spot','SPX','标普'],['flip','Flip level','翻转点']]);
+  var g=qs('#gex-chart'),s=qs('#spx-flip-chart');if(!g||!s)return availability;
+  clearSVG(g);clearSVG(s);
+  var W=800,H=160,P=6,gv=seriesValues(data,'net_gex_bn').filter(finiteNumber);
+  if(gv.length){
+    var ma=Math.max.apply(null,gv.map(Math.abs).concat([0.1]));
+    var bw=(W-2*P)/Math.max(data.length,1);
+    data.forEach(function(row,i){
+      var gx=row&&row.net_gex_bn;if(!finiteNumber(gx))return;
+      var h=Math.abs(gx)/ma*(H/2-8),x=P+i*bw,y=gx>=0?H/2-h:H/2;
+      var r=rect(x,y,Math.max(0.3,bw-0.4),Math.max(0.5,h),gx===0?MUT:row.regime==='long'?UP:DN,0);
+      r.setAttribute('data-series','net_gex_bn');r.setAttribute('data-value',gx);r.setAttribute('opacity','0.75');g.appendChild(r);
+    });
+    g.appendChild(line(P,H/2,W-P,H/2,LINE,1));
+  }
+  var domain=chartDomain(seriesValues(data,'spot').concat(seriesValues(data,'flip')));
+  drawSeries(s,data,'spot',domain,800,110,6,BLUE);
+  drawSeries(s,data,'flip',domain,800,110,6,AMB,{dash:'4,3',opacity:'.75'});
+  return availability;
+}
 function drawSys(n){
-  if(typeof MSP_SYS_HIST==='undefined'||!MSP_SYS_HIST.length)return;
-  var data=sliceTail(MSP_SYS_HIST,n);
-  var sv=qs('#sys-chart');if(!sv)return;clearSVG(sv);
-  var W=800,H=160,P=6;
-  var vc=data.map(function(d){return d.vc_alloc_bn||0}),sp=data.map(function(d){return d.spx_close||0});
-  var mvc=Math.min.apply(null,vc),xvc=Math.max.apply(null,vc);
-  var msp2=Math.min.apply(null,sp),xsp=Math.max.apply(null,sp);
-  var vcr=xvc-mvc||1,spr=xsp-msp2||1;
-  function tyvc(v){return H-P-(v-mvc)/vcr*(H-P*2)}
-  function tysp(v){return H-P-(v-msp2)/spr*(H-P*2)}
-  function tx(i){return P+i/(data.length-1||1)*(W-P*2)}
-  var sppts=data.map(function(d,i){return[tx(i),tysp(d.spx_close||0)]});
-  var vcpts=data.map(function(d,i){return[tx(i),tyvc(d.vc_alloc_bn||0)]});
-  if(sppts.length>1)sv.appendChild(polyline(sppts,MUT,'1.5',null,'.45'));
-  if(vcpts.length>1)sv.appendChild(polyline(vcpts,BLUE,'2'));
+  var data=sliceTail(typeof MSP_SYS_HIST==='undefined'?[]:MSP_SYS_HIST,n);
+  var availability=seriesAvailability(data,[['vc_alloc_bn','Vol-control allocation','波控仓位'],['spx_close','SPX','标普']]);
+  var sv=qs('#sys-chart');if(!sv)return availability;clearSVG(sv);
+  drawSeries(sv,data,'spx_close',chartDomain(seriesValues(data,'spx_close')),800,160,6,MUT,{opacity:'.65'});
+  drawSeries(sv,data,'vc_alloc_bn',chartDomain(seriesValues(data,'vc_alloc_bn')),800,160,6,BLUE,{width:'2'});
+  return availability;
 }
-
-/* The engine calls "dispersion" at the 20th percentile of the trailing 2-year
-   COR1M window (_COR1M_PCTILE_LO, scripts/build_market_structure.py) — there is
-   no fixed level anywhere in the pipeline. The old hardcoded DT=0.35 was wrong
-   twice over: wrong concept, and wrong units (COR1M ships in percentage points,
-   ~3–45), so it mapped far below the floor and the "dashed line = dispersion
-   threshold" the footer promises was never actually on screen. Read it off the
-   full embedded series so the line holds still when the window toggles. */
-var COR_PCTILE_LO=20;
-function dispThreshold(){
-  var all=MSP_COR_HIST.slice(-504).map(function(d){return d.cor1m})
-    .filter(function(v){return typeof v==='number'&&isFinite(v)});
-  if(all.length<20)return null;
-  all.sort(function(a,b){return a-b});
-  var i=(COR_PCTILE_LO/100)*(all.length-1),lo=Math.floor(i),hi=Math.ceil(i);
-  return lo===hi?all[lo]:all[lo]+(all[hi]-all[lo])*(i-lo);
-}
-
 function drawCor(n){
-  if(typeof MSP_COR_HIST==='undefined'||!MSP_COR_HIST.length)return;
-  var data=sliceTail(MSP_COR_HIST,n);
-  var sv=qs('#cor-chart');if(!sv)return;clearSVG(sv);
-  var W=800,H=130,P=6;
-  var vals=data.map(function(d){return d.cor1m||0});
-  var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);
-  var DT=dispThreshold();
-  /* A reference line the footer names by hand has to be inside the drawn
-     domain, or the chart quietly contradicts its own caption. */
-  if(DT!==null){mn=Math.min(mn,DT);mx=Math.max(mx,DT)}
-  var pad=(mx-mn)*0.08||0.5;mn-=pad;mx+=pad;
-  var vr2=mx-mn||0.01;
-  function ty(v){return H-P-(v-mn)/vr2*(H-P*2)}
-  function tx(i){return P+i/(data.length-1||1)*(W-P*2)}
-  var pts=data.map(function(d,i){return[tx(i),ty(d.cor1m||0)]});
-  if(pts.length>1){
-    var ad='M '+pts[0][0]+','+(H-P)+' L '+pts.map(function(p){return p[0]+','+p[1]}).join(' L ')+' L '+pts[pts.length-1][0]+','+(H-P)+' Z';
-    var area=document.createElementNS('http://www.w3.org/2000/svg','path');
-    area.setAttribute('d',ad);area.setAttribute('fill',UP);area.setAttribute('opacity','0.10');
-    sv.appendChild(area);
-    if(DT!==null)sv.appendChild(line(P,ty(DT),W-P,ty(DT),UP,1,'4,3'));
-    sv.appendChild(polyline(pts,BLUE,'1.5'));
-  }
+  var data=sliceTail(typeof MSP_COR_HIST==='undefined'?[]:MSP_COR_HIST,n);
+  var availability=seriesAvailability(data,[['cor1m','Implied correlation','隐含相关性']]);
+  var sv=qs('#cor-chart');if(!sv)return availability;clearSVG(sv);
+  drawSeries(sv,data,'cor1m',chartDomain(seriesValues(data,'cor1m')),800,130,6,BLUE,{area:true});
+  return availability;
 }
 
 // Describe only the observations actually embedded, never the nominal window.
@@ -1029,18 +1025,20 @@ function rangeSummary(history,n){
   return {en:count+(count===1?' observation':' observations')+' · '+(dates||'dates unavailable'),
           zh:count+'个观测 · '+(dates||'日期暂缺')};
 }
-function paintRangeSummary(id,history,n){
+function paintRangeSummary(id,history,n,availability){
   var status=document.getElementById(id);if(!status)return;
   var summary=rangeSummary(history,n);status.textContent='';
   ['en','zh'].forEach(function(lang){
     var span=document.createElement('span');span.className='l-'+lang;
     var parts=summary[lang].split(' · ');span.textContent=parts.shift()+(parts.length?' · ':'');
     if(parts.length){var dates=document.createElement('span');dates.className='msp-range-dates';dates.textContent=parts.join(' · ');span.appendChild(dates);}
+    if(availability&&availability[lang])span.appendChild(document.createTextNode(' · '+availability[lang]));
     status.appendChild(span);
   });
 }
 function syncChartLanguage(){
   var zh=document.documentElement.getAttribute('data-lang')==='zh';
+  document.querySelectorAll('.help').forEach(function(help,i){var tip=help.querySelector('.tip');if(!tip)return;tip.id='msp-help-'+i;tip.setAttribute('role','tooltip');help.setAttribute('aria-describedby',tip.id);help.setAttribute('aria-label',zh?'查看说明':'Read context');});
   var names={21:['1 month','1个月'],63:['3 months','3个月'],126:['6 months','6个月'],252:['1 year','1年'],9999:['All available history','全部可用历史']};
   document.querySelectorAll('.range-btns .rbtn').forEach(function(button){
     var label=names[Number(button.dataset.range)];if(label)button.setAttribute('aria-label',label[zh?1:0]);
@@ -1059,7 +1057,7 @@ function wireRange(sel,key,def,fn,history,statusId){
   function select(value,persist){
     buttons.forEach(function(b){var active=Number(b.dataset.range)===value;b.classList.toggle('on',active);b.setAttribute('aria-pressed',String(active));});
     if(persist)setRange(key,value);
-    fn(value);paintRangeSummary(statusId,history,value);
+    var availability=fn(value);paintRangeSummary(statusId,history,value,availability);
   }
   buttons.forEach(function(b){
     // Native buttons own Enter, Space and taps; no second keyboard activation.

@@ -46,8 +46,8 @@
 @font-face{font-family:Inter;font-style:normal;font-weight:900;font-display:swap;src:url("fonts/Inter-900.woff2") format("woff2");}
 </style>
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<script defer src="theme.js?v=3c193891"></script>
+<link rel="stylesheet" href="theme.css">
+<script defer src="theme.js"></script>
 <title>Market Structure</title>
 
 
@@ -67,18 +67,291 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="assets/css/4698fece.css?v=4698fece">
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
-<link rel="stylesheet" href="assets/css/080bfc12.css?v=080bfc12">
+<style>
+:root{--bg:#0a0e16;--panel:#111826;--panel2:#0e1420;--line:#1d2740;--line2:#27324e;--tx:#e3e9f2;--mut:#8a97ac;--faint:#828b9c;--up:#37d07f;--dn:#ff6a6a;--amb:#f2b24d;--gold:#d6ab5c;--blue:#5d8bff;--pur:#9b8cff;--ink:#e3e9f2;--font-ui:Inter,-apple-system,'Segoe UI',Roboto,sans-serif;--glass-bg:rgba(16,22,30,.55);--glass-border:rgba(255,255,255,.10);--glass-hi:rgba(255,255,255,.06)}
+[data-theme='light']:root,[data-theme='light']{--bg:#f7f8fa;--panel:#ffffff;--panel2:#f0f2f5;--line:#e1e7ef;--line2:#c8d0dc;--tx:#1a2133;--mut:#5c6b80;--faint:#5f6a7a;--up:#1a7f43;--dn:#c0392b;--amb:#9a6800;--gold:#a07820;--blue:#285fff;--pur:#6c5ce7;--ink:#1a2133;--glass-bg:rgba(255,255,255,.75);--glass-border:rgba(0,0,0,.10);--glass-hi:rgba(255,255,255,.90)}
+html[data-lang="zh"] .zh-flip.up{color:var(--ink-down, var(--dn))!important}
+html[data-lang="zh"] .zh-flip.dn{color:var(--ink-up, var(--up))!important}
+*,*::before,*::after{box-sizing:border-box}
+html:not([data-lang="zh"]) .l-zh{display:none}
+html[data-lang="zh"] .l-en{display:none}
+html[data-lang="zh"] body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",Inter,sans-serif}
+body{margin:0;padding-top:22px;background:var(--bg);color:var(--tx);font:14px/1.45 var(--font-ui);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:var(--ink-link, var(--blue));text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 72px;position:relative;z-index:1}
+.kick{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
+.mut{color:var(--mut)}.faint{color:var(--faint)}.up{color:var(--ink-up, var(--up))}.dn{color:var(--ink-down, var(--dn))}.amb{color:var(--ink-warn, var(--amb))}
+/* ── aurora ── */
+.aurora{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.aurora::before{content:"";position:absolute;top:-160px;left:6%;width:760px;height:520px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(93,139,255,.09) 0%,transparent 70%);animation:au-drift-a 30s ease-in-out infinite alternate}
+.aurora::after{content:"";position:absolute;bottom:-60px;right:-40px;width:640px;height:520px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(93,139,255,.06) 0%,transparent 70%);animation:au-drift-b 38s ease-in-out infinite alternate}
+.aurora .au-a3{position:absolute;top:42%;left:54%;transform:translate(-50%,-50%);width:560px;height:460px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(55,208,127,.05) 0%,transparent 70%);animation:au-breathe 24s ease-in-out infinite}
+.aurora.au-long::before{background:radial-gradient(ellipse,rgba(55,208,127,.10) 0%,transparent 70%)}
+.aurora.au-long .au-a3{background:radial-gradient(ellipse,rgba(55,208,127,.06) 0%,transparent 70%)}
+.aurora.au-short::before{background:radial-gradient(ellipse,rgba(255,106,106,.10) 0%,transparent 70%)}
+.aurora.au-short .au-a3{background:radial-gradient(ellipse,rgba(255,106,106,.06) 0%,transparent 70%)}
+[data-theme='light'] .aurora::before{background:radial-gradient(ellipse,rgba(93,139,255,.04) 0%,transparent 70%)}
+[data-theme='light'] .aurora.au-long::before{background:radial-gradient(ellipse,rgba(55,208,127,.04) 0%,transparent 70%)}
+[data-theme='light'] .aurora.au-short::before{background:radial-gradient(ellipse,rgba(192,57,43,.04) 0%,transparent 70%)}
+@keyframes au-drift-a{from{transform:translate(0,0)}to{transform:translate(38px,26px)}}
+@keyframes au-drift-b{from{transform:translate(0,0)}to{transform:translate(-30px,-22px)}}
+@keyframes au-breathe{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+@media(prefers-reduced-motion:reduce){.aurora::before,.aurora::after,.aurora .au-a3{animation:none}}
+/* ── glass / panel ── */
+.glass{background:var(--glass-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:18px;padding:24px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:16px}
+.panel-sm{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+/* ── hero ── */
+.hero-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);margin-bottom:8px}
+.hero-state{font-size:28px;font-weight:800;letter-spacing:-.025em;line-height:1.1;margin:0 0 6px}
+.hero-state.tone-long{color:var(--ink-up, var(--up));text-shadow:0 0 28px color-mix(in srgb,var(--up) 30%,transparent)}
+.hero-state.tone-short{color:var(--ink-down, var(--dn));text-shadow:0 0 28px color-mix(in srgb,var(--dn) 30%,transparent)}
+.hero-state.tone-null{color:var(--mut)}
+.hero-sub{font-size:14px;color:var(--mut);margin:4px 0 12px;line-height:1.55}
+.hero-meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px}
+.hmeta{font-size:12px;color:var(--mut)}.hmeta b{display:block;font-size:16px;color:var(--ink);font-weight:700;line-height:1.2}
+.hmeta small{font-size:11px;color:var(--faint)}
+.stance-chip{display:inline-block;padding:4px 14px;border-radius:999px;font-size:12.5px;font-weight:700;margin-top:10px;margin-right:6px}
+.stance-chip.watch{background:rgba(242,178,77,.16);color:var(--ink-warn, var(--amb))}
+.stance-chip.act{background:rgba(55,208,127,.16);color:var(--ink-up, var(--up))}
+.stance-chip.caution{background:rgba(255,106,106,.14);color:var(--ink-down, var(--dn))}
+/* zh 红涨绿跌 (operator ruling 2026-07-21): act = risk-on/bullish → red in zh; caution =
+   bearish → green in zh. Text: theme.css's html[data-lang="zh"] --up swap outranks this
+   page's :root literal, so var(--up) already reads red in zh — only the wash needs a
+   mirror. --red is NOT defined on this page (never reference it); the caution text uses
+   var(--down), which the zh swap resolves to green (the local --dn literal never flips). */
+html[data-lang="zh"] .stance-chip.act{background:rgba(211,11,11,.13)}
+html[data-lang="zh"] .stance-chip.caution{background:rgba(26,127,67,.14);color:var(--ink-down, var(--down))}
+.stance-chip.neutral{background:var(--panel2);color:var(--mut);border:1px solid var(--line)}
+/* ── help tooltip ── */
+.help{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--faint);color:var(--faint);font-size:9.5px;font-weight:700;cursor:help;position:relative;vertical-align:middle;margin-left:5px}
+.help:hover{color:var(--tx);border-color:var(--tx)}
+.help .tip{display:none;position:absolute;top:130%;left:50%;transform:translateX(-50%);min-width:240px;max-width:300px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 13px;z-index:80;font-size:12px;line-height:1.5;color:var(--tx);font-weight:400;box-shadow:0 8px 28px rgba(0,0,0,.28);pointer-events:auto;cursor:auto;white-space:normal}
+.help:hover .tip{display:block}
+.help:hover::before{content:'';position:absolute;top:100%;left:-20px;right:-20px;height:10px}
+/* ── section head ── */
+.sec-head{display:flex;align-items:center;gap:8px;margin:28px 0 12px;flex-wrap:wrap}
+.sec-head h2{margin:0;font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.sec-head .eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-link, var(--blue))}
+.sec-foot{font-size:11px;color:var(--faint);margin-top:8px}
+/* ── range buttons ── */
+.range-btns{display:flex;gap:5px;flex-wrap:wrap}
+.rbtn{padding:3px 11px;border-radius:999px;font-size:11.5px;font-weight:600;color:var(--mut);background:var(--panel2);border:1px solid var(--line);cursor:pointer}
+.rbtn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+/* ── state change strip ── */
+.sc-strip{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
+.sc-chip{padding:5px 13px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--panel2);color:var(--tx)}
+.sc-chip.changed{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 12%,transparent)}
+/* .sc-chip.empty — designed hole, never a wordless highlight (MPDS §9.12).
+   DARK: dashed hairline on graphite, no blue wash, no glow.
+   LIGHT: dashed hairline on the canvas (--bg, not the white card), no wash,
+   no shadow-as-emphasis. Shared: sentence + .empty-why; the .changed blue
+   is withheld. */
+.sc-chip.empty{display:flex;flex-direction:column;align-items:flex-start;gap:4px;border-style:dashed;background:transparent;color:var(--mut);font-weight:500;white-space:normal;max-width:42ch;line-height:1.45}
+.sc-chip.empty .empty-why{font-size:11px;color:var(--faint);font-weight:400;margin:0}
+html[data-theme="light"] .sc-chip.empty{background:var(--bg);box-shadow:none}
+/* ── regime chips ── */
+.rc{display:inline-block;padding:3px 10px;border-radius:7px;font-size:11.5px;font-weight:700;border:1px solid var(--line)}
+.rc.long{color:var(--ink-up, var(--up));border-color:var(--up);background:color-mix(in srgb,var(--up) 12%,transparent)}
+.rc.short{color:var(--ink-down, var(--dn));border-color:var(--dn);background:color-mix(in srgb,var(--dn) 12%,transparent)}
+.rc.dispersion,.rc.adding,.rc.calm{color:var(--ink-up, var(--up));border-color:var(--up);background:color-mix(in srgb,var(--up) 12%,transparent)}
+.rc.elevated,.rc.cutting{color:var(--ink-down, var(--dn));border-color:var(--dn);background:color-mix(in srgb,var(--dn) 12%,transparent)}
+.rc.normal,.rc.pausing{color:var(--mut)}
+.rc.stress{color:var(--ink-warn, var(--amb));border-color:var(--amb);background:color-mix(in srgb,var(--amb) 12%,transparent)}
+/* post-stack: consolidate */
+/* CTA 5-day flow grazing _CTA_NEAR_FLAT must not carry the same green/red
+   weight as a real add/cut (VC +16.5B).
+   DARK: muted wash on graphite, faded up/dn hairline, no glow.
+   LIGHT: paper chip on the canvas, cool hairline, muted ink, shadow-not-glow
+   so a grazing add never reads as a full call on white. */
+.rc.adding.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--up) 28%,var(--line));background:color-mix(in srgb,var(--up) 5%,transparent)}
+.rc.cutting.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--dn) 28%,var(--line));background:color-mix(in srgb,var(--dn) 5%,transparent)}
+html[data-theme="light"] .rc.adding.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--up) 22%,var(--line));background:var(--bg);box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+html[data-theme="light"] .rc.cutting.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--dn) 22%,var(--line));background:var(--bg);box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+/* ── agreement banner ── */
+.agree{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);font-size:13px;font-weight:700;margin:12px 0}
+.agree.aligned_adding{border-color:var(--up);background:color-mix(in srgb,var(--up) 10%,transparent);color:var(--ink-up, var(--up))}
+.agree.aligned_cutting{border-color:var(--dn);background:color-mix(in srgb,var(--dn) 10%,transparent);color:var(--ink-down, var(--dn))}
+.agree.split{border-color:var(--amb);color:var(--ink-warn, var(--amb))}
+/* ── badge stack ── */
+.badge-stack{display:flex;flex-direction:column;gap:4px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--line);background:var(--panel2);color:var(--tx)}
+.badge.up{border-color:var(--up);background:color-mix(in srgb,var(--up) 12%,transparent);color:var(--ink-up, var(--up))}
+.badge.dn{border-color:var(--dn);background:color-mix(in srgb,var(--dn) 12%,transparent);color:var(--ink-down, var(--dn))}
+/* compact neutral badge: marks a figure as a model estimate, not an observation.
+   flex:none + nowrap — .sec-head is a flex row and would otherwise shrink the
+   badge until the label wrapped onto two lines. */
+.badge.est{flex:none;white-space:nowrap;padding:2px 8px;font-size:10px;font-weight:600;letter-spacing:.02em;border-style:dashed;color:var(--mut)}
+/* ── kpi row ── */
+.kpi-row{display:flex;gap:14px 22px;flex-wrap:wrap;margin:12px 0}
+.kpi{font-size:12px;color:var(--mut)}.kpi b{display:block;font-size:18px;color:var(--ink);font-weight:700;line-height:1.2}
+.kpi small{font-size:11px;color:var(--faint)}
+/* ── chart wrappers ──
+   height:100% is load-bearing, not cosmetic. An inline <svg> that carries a
+   viewBox but no resolved height is sized by its INTRINSIC aspect ratio
+   (wrapperWidth x viewBoxH/viewBoxW), not by its parent's height — so at a
+   1100px-wide panel a `viewBox="0 0 800 160"` chart renders 220px tall inside
+   a 160px wrapper and overflow:hidden silently eats the bottom 27%. Nothing
+   errors: the JS runs, the paths are valid, the data is complete, and the
+   chart just looks half-drawn. Every chart here sets preserveAspectRatio="none"
+   precisely so the viewBox may stretch to fill the wrapper — which it can only
+   do once the height resolves. Guarded by tests/test_svg_wrapper_clipping.py. */
+.chart-wrap{position:relative;width:100%;margin:12px 0 4px;overflow:hidden}
+.chart-wrap svg{display:block;width:100%;height:100%}
+/* ── VIX curve nodes ── */
+.vix-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.vix-node{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);min-width:52px;text-align:center}
+.vix-node .vt{font-size:10px;color:var(--faint);font-weight:700;text-transform:uppercase}
+.vix-node .vv{font-size:17px;font-weight:700;color:var(--ink)}
+/* ── week map ──
+   The band SVG is pinned to a literal 56px so its viewBox units map 1:1 to
+   page px; every label offset below is stated in that same coordinate space.
+   Leave the height to intrinsic sizing and the band grows with panel width
+   while the hardcoded label offsets stay put — which is how the spot label
+   ended up sitting ON the spot line and the flip label a full band-height
+   above its own dashes. */
+.wm-wrap{position:relative;padding:42px 0 44px;margin:12px 0}
+.wm-band{display:block;width:100%;height:56px}
+.wm-lbls{position:absolute;top:0;left:0;right:0;pointer-events:none}
+.wm-edge{position:absolute;top:0;font-size:10.5px;line-height:1.35;color:var(--faint);font-variant-numeric:tabular-nums}
+.wm-chip{position:absolute;display:inline-flex;align-items:baseline;gap:5px;padding:2px 9px;
+  border-radius:999px;border:1px solid transparent;white-space:nowrap;line-height:1.45}
+.wm-chip .wm-k{font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.78}
+.wm-chip .wm-n{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+/* Flip chip rides just above the band; spot chip just below it. Different rows
+   means the two can never collide no matter how close the prices sit. */
+.wm-flip{top:17px;color:var(--ink-warn, var(--amb));border-color:color-mix(in srgb,var(--amb) 34%,transparent);background:color-mix(in srgb,var(--amb) 12%,transparent)}
+.wm-spot{top:103px;color:var(--ink-link, var(--blue));border-color:color-mix(in srgb,var(--blue) 38%,transparent);background:color-mix(in srgb,var(--blue) 14%,transparent)}
+/* ── grid ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:760px){.grid-2,.grid-3{grid-template-columns:1fr}}
+/* ── warm-up ── */
+.warmup{padding:40px 24px;text-align:center;color:var(--faint);font-size:14px;border:1px dashed var(--line);border-radius:14px;margin:20px 0}
+.warmup b{display:block;font-size:17px;color:var(--mut);font-weight:700;margin-bottom:8px}
+.warmup .empty-why{display:block;font-size:12px;color:var(--faint);margin:8px auto 0;font-weight:400;max-width:52ch;line-height:1.5}
+/* ── watching band (folded into the hero — not a 7th L1) ──
+   DARK: inset instrument plate, 7% blue wash on graphite, hairline, no glow.
+   LIGHT: recessed well inside the white .glass card (var(--bg) ground + 8%
+   ink shadow), cool hairline — not a paper plate raised on the page canvas.
+   Shared: kicker + two conditions; mechanics live in the `?` tip. */
+.watch-band{margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card);background:color-mix(in srgb,var(--blue) 7%,transparent)}
+html[data-theme="light"] .watch-band{background:var(--bg);box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+.watch-k{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 4px}
+html[data-lang="zh"] .watch-k{letter-spacing:0;text-transform:none}
+.watch-kicker{font-size:12px;color:var(--mut);margin:0 0 8px;line-height:1.45}
+.watch-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.watch-list li{font-size:13px;line-height:1.45;color:var(--tx)}
+.watch-list li b{display:block;font-size:12px;color:var(--ink);margin-bottom:2px}
+/* ── responsive ── */
+@media(max-width:760px){.hero-state{font-size:22px}.glass{padding:18px}.panel{padding:16px}}
+/* post-stack: consolidate */
+/* §10-D mobile reduction: hero + chips + first driver panel in the first
+   swipe; remaining drivers collapse to a swipe strip with next-card peek
+   (86%). Cards share the tallest card's height (align-items:stretch); card
+   content stays top-anchored inside (.msp-driver justify-content:flex-start).
+   Strip scroll is the only horizontal motion; the page itself must not
+   scroll sideways in either language (§15).
+   .kpi-row / .vix-row already wrap — restated here so the reduction cannot
+   silently undo them. */
+@media(max-width:640px){
+  html,body{overflow-x:hidden}
+  .wrap{overflow-x:hidden;max-width:100%}
+  .msp-drivers{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;gap:12px;align-items:stretch;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;padding-bottom:10px}
+  .msp-driver{flex:0 0 86%;scroll-snap-align:start;min-width:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:4px 12px 12px}
+  .msp-driver .sec-head{margin-top:8px}
+  .kpi-row,.vix-row{flex-wrap:wrap}
+  .watch-band{padding:8px 10px;margin-top:10px}
+  .watch-list li{font-size:12px}
+  html[data-theme="light"] .msp-driver .panel{box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+}
+
+/* light: bloom off (DESIGN_DOCTRINE §5.8) — a coloured glow behind text is a jewel on graphite
+     and a stain on white; dark keeps every one of these). */
+html[data-theme="light"] :is(
+  .hero-state.tone-long,
+  .hero-state.tone-short
+) { text-shadow:none; }
+</style>
+<style>
+:root {
+  --ink-mix-up: 100%; --ink-mix-down: 100%; --ink-mix-warn: 100%; --ink-mix-ok: 100%;
+  --ink-mix-act: 100%; --ink-mix-orange: 100%; --ink-mix-link: 100%; --ink-mix-info: 100%;
+}
+html[data-theme="light"] {
+  --ink-mix-up: 62%; --ink-mix-down: 84%; --ink-mix-warn: 62%; --ink-mix-ok: 70%;
+  --ink-mix-act: 88%; --ink-mix-orange: 58%; --ink-mix-link: 88%; --ink-mix-info: 88%;
+}
+html[data-theme="light"][data-lang="zh"] {
+  --ink-mix-up: 84%;   /* red under 红涨绿跌 */
+  --ink-mix-down: 62%; /* green */
+}
+/* ── the family's own fill hues, split by theme ────────────────────────────────
+   These templates are LIGHT-FIRST: their :root IS the light palette and only a
+   `html[data-theme="dark"]` block overrides it. --green and --amber were never in
+   that block, so ONE value served both planes — bright enough for dark (5.3–9.9:1)
+   and far too bright for light (--green #1FA971 measured 2.52:1 and --amber
+   #F5AD42 1.61:1 as text on the light canvas; both are printed as text on every
+   strategy card, velocity state and flag on these pages).
+   The override is scoped to LIGHT only, so dark keeps whatever the host page
+   declares (bonds ships its own dark #45b873) and this repaints nothing there. */
+html[data-theme="light"] { --green:#15764f; --amber:#8a5c00; }
+:root {
+  --ink-up:     color-mix(in srgb, var(--up, var(--green))                     var(--ink-mix-up),     var(--text));
+  --ink-down:   color-mix(in srgb, var(--down, var(--dn, var(--red)))          var(--ink-mix-down),   var(--text));
+  --ink-warn:   color-mix(in srgb, var(--warn, var(--amb, var(--amber)))       var(--ink-mix-warn),   var(--text));
+  --ink-ok:     color-mix(in srgb, var(--ok, var(--up, var(--green)))          var(--ink-mix-ok),     var(--text));
+  --ink-act:    color-mix(in srgb, var(--act, var(--red))                      var(--ink-mix-act),    var(--text));
+  --ink-orange: color-mix(in srgb, var(--orange, var(--amb, var(--amber)))     var(--ink-mix-orange), var(--text));
+  --ink-link:   color-mix(in srgb, var(--link, var(--blue))                    var(--ink-mix-link),   var(--text));
+  --ink-info:   color-mix(in srgb, var(--info, var(--blue))                    var(--ink-mix-info),   var(--text));
+}
+</style>
 <style data-market-range-controls>
 .msp-range-dates{display:inline-block}
-.range-btns .rbtn{min-width:44px;min-height:32px;padding:5px 10px;line-height:1.2}
+.range-btns .rbtn{min-width:44px;min-height:44px;padding:5px 10px;line-height:1.2}
 .range-btns .rbtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-@media(max-width:720px){ .range-btns .rbtn{min-height:40px} }
+
+/* D06: quiet hierarchy, complete phone flow and independent supplied bands. */
+.aurora{display:none}
+.hero-state.tone-long,.hero-state.tone-short{text-shadow:none}
+.glass{background:transparent;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+.watch-band{background:var(--panel);border:1px solid var(--line)}
+.msp-drivers{display:flex;flex-direction:column;gap:0;overflow:visible}
+.msp-driver{min-width:0}
+.msp-driver[data-driver="gex"]{order:0}
+.msp-driver[data-driver="week"]{order:1}
+.msp-driver[data-driver="flows"]{order:2}
+.msp-driver[data-driver="dispersion"]{order:3}
+.msp-driver[data-driver="vol"]{order:4}
+.msp-band-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
+.wm-band{height:88px;margin:12px 0}
+.msp-assumptions summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.msp-assumptions summary:focus-visible,.help:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.help:focus-within .tip{display:block}
+@media(max-width:640px){
+ .msp-drivers{display:flex;overflow:visible;scroll-snap-type:none}
+ .msp-driver{flex:none;width:100%;padding:0;border:0;background:transparent;scroll-snap-align:none}
+ .range-btns{flex-wrap:wrap}
+ .range-btns .rbtn{min-height:44px}
+}
+
+</style>
+<style>
+.msp-snapshot-details{margin-top:16px;border:1px solid var(--line,var(--grid));border-radius:10px;padding:0 16px}
+.msp-snapshot-details>summary{min-height:52px;align-content:center;padding:12px 0;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink)}
+.msp-snapshot-details[open]{padding-bottom:12px}
+.msp-reading{margin:0 0 16px;font-size:17px;font-weight:600;color:var(--ink)}
+.wrap>div:first-child h1{font-size:clamp(24px,2.6vw,34px)!important;font-weight:650!important;line-height:1.2;margin-bottom:10px!important}
+.msp-driver>.sec-head{margin-top:0}
+.msp-driver{border:1px solid var(--line,var(--grid));border-radius:12px;padding:22px;background:var(--panel,var(--card))}
+@media(max-width:640px){.msp-driver{padding:16px 12px}.msp-reading{font-size:16px}.msp-driver .sec-head{align-items:flex-start}.msp-driver .range-btns{margin-left:0!important}}
 </style>
 </head>
 <body class="page-msp">
+
+
+
 
 
 
@@ -107,9 +380,9 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
-    
+
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
       <svg class="brand-glyph" width="29" height="29" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
@@ -134,24 +407,24 @@
       </svg>
       <span class="brand-word">MASTERMINDX</span>
     </a>
-    
+
     <div class="nav-dd">
       <a class="nav-link" href="macro.html"><span class="menu-icon menu-icon-flag menu-icon-us" aria-hidden="true"></span><span class="l-en">United States</span><span class="l-zh">美国</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="macro.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">Regime · growth · inflation · nowcast</span><span class="l-zh">市况 · 增长 · 通胀 · 实时测算</span></span></a>
         <a href="us_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · sectors · flows</span><span class="l-zh">Prophet · 板块 · 资金</span></span></a>
-        
+
         <a href="intraday_flow.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Intraday Flow Tracker</span><span class="l-zh">盘中资金流追踪</span><span class="d"><span class="l-en">Live session board — volume, tape and stance lanes · ≈15-min delayed</span><span class="l-zh">盘中实时看板 — 量能、盘面与操作分级 · 约延迟15分钟</span></span></a>
         <a href="stage_analysis.html"><span class="submenu-icon submenu-icon-stage" aria-hidden="true"></span><span class="l-en">Stage Analysis</span><span class="l-zh">阶段分析</span><span class="d"><span class="l-en">Stage 1-4 cycle · fresh breakouts · earnings tone</span><span class="l-zh">阶段1-4周期 · 新突破 · 财报语气</span></span></a>
-        
+
         <a href="winner_health.html"><span class="submenu-icon submenu-icon-leader" aria-hidden="true"></span><span class="l-en">Winner Health</span><span class="l-zh">持仓健康度</span><span class="d"><span class="l-en">Big gains near their highs · how the move is aging · what similar past runs did</span><span class="l-zh">涨幅可观且仍在高位 · 行情老化到什么程度 · 相似历史行情走过的路</span></span></a>
-        
+
         <a href="sector_central.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Sectors, themes & rotation in one read · lanes · cycle map · graded</span><span class="l-zh">板块·主题·轮动一页读 · 操作清单 · 周期图谱 · 自评分</span></span></a>
         <a href="sector_central.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now S&P 500 subsectors · T1-T4 tiers · two-way confirmed stocks · basket charts</span><span class="l-zh">S&P 500 现可入场子行业 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="strategies.html"><span class="submenu-icon submenu-icon-strategy" aria-hidden="true"></span><span class="l-en">Strategies</span><span class="l-zh">策略</span><span class="d"><span class="l-en">Tactical strategy scorecards</span><span class="l-zh">战术策略记分卡</span></span></a>
         <a href="news.html"><span class="submenu-icon submenu-icon-news" aria-hidden="true"></span><span class="l-en">News Feed</span><span class="l-zh">新闻流</span><span class="d"><span class="l-en">Macro headlines · catalysts · sentiment</span><span class="l-zh">宏观头条 · 日程 · 情绪</span></span></a>
         <a href="alerts.html"><span class="submenu-icon submenu-icon-alert" aria-hidden="true"></span><span class="l-en">Alert Center</span><span class="l-zh">警报中心</span><span class="d"><span class="l-en">Ranked & triaged alerts</span><span class="l-zh">分级分诊的警报</span></span></a>
-        
+
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="options.html"><span class="nav-sub-text"><span class="submenu-icon submenu-icon-options" aria-hidden="true"></span><span class="l-en">Options & Market Structure</span><span class="l-zh">期权与市场结构</span><span class="d"><span class="l-en">Workspace · dark pool · index regime</span><span class="l-zh">工作台 · 暗池 · 指数结构</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -168,7 +441,7 @@
       <div class="nav-dd-menu" role="menu">
         <a href="china.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">A-share regime · sectors · flows</span><span class="l-zh">A股周期 · 板块 · 资金</span></span></a>
         <a href="china_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · alpha · setups</span><span class="l-zh">Prophet · 超额收益 · 买点</span></span></a>
-        
+
         <a href="sector_central_china.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Gated board · cycle map · whole-market rotation · theme baskets — one page</span><span class="l-zh">门控研判 · 周期图谱 · 全市场轮动 · 主题篮子 — 一页尽览</span></span></a>
         <a href="sector_central_china.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now 同花顺 concepts · T1-T4 tiers · two-way confirmed A-shares · basket charts</span><span class="l-zh">同花顺现可入场概念 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="china_heatmap.html"><span class="submenu-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap</span><span class="l-zh">市场热力图</span><span class="d"><span class="l-en">Every A-share · sector treemap · market-cap</span><span class="l-zh">全部A股 · 板块树图 · 按市值</span></span></a>
@@ -215,7 +488,7 @@
       <a class="nav-link" href="intl.html"><span class="menu-icon menu-icon-intl" aria-hidden="true"></span><span class="l-en">International</span><span class="l-zh">国际</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="intl.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">JP · KR · TW · UK · EU compared</span><span class="l-zh">日 · 韩 · 台 · 英 · 欧 对比</span></span></a>
-        
+
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="japan.html"><span class="nav-sub-text"><span aria-hidden="true">🌐</span> <span class="l-en">Country Dashboards</span><span class="l-zh">国家看板</span><span class="d"><span class="l-en">Japan · Korea · Euro Area · UK · India</span><span class="l-zh">日本 · 韩国 · 欧元区 · 英国 · 印度</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -246,7 +519,7 @@
         <a href="bonds.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Bonds</span><span class="l-zh">债券</span><span class="d"><span class="l-en">Curve · credit · duration compass</span><span class="l-zh">曲线 · 信用 · 久期罗盘</span></span></a>
       </div>
     </div>
-    
+
     <div class="nav-dd nav-mega-dd">
       <a class="nav-link" href="intelligence_hub.html"><span class="menu-icon menu-icon-research" aria-hidden="true"></span><span class="l-en">Research</span><span class="l-zh">研究</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu nav-mega mega-menu" role="menu">
@@ -255,9 +528,9 @@
             <h2 class="section-label nav-mega-h"><span class="l-en">Core Research</span><span class="l-zh">核心研究</span></h2>
             <div class="item-grid nav-mega-item-grid">
               <a class="mega-item nm-feat" href="intelligence_hub.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 12 24 3l18 9v23l-18 10L6 35Z"/><path d="m24 9 12 7v15l-12 7-12-7V16Z"/><circle class="soft-fill" cx="24" cy="24" r="4"/><path class="accent" d="M24 20V9M28 24h8M24 28v10M20 24h-8M21 21l-6-5M27 21l6-5M21 27l-6 5M27 27l6 5"/><circle cx="24" cy="9" r="1.5"/><circle cx="36" cy="24" r="1.5"/><circle cx="24" cy="38" r="1.5"/><circle cx="12" cy="24" r="1.5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Intelligence Hub</span><span class="l-zh">情报中心</span></span><span class="item-desc d"><span class="l-en">Your complete market command center</span><span class="l-zh">你的完整市场指挥中心</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="watchlist.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M25 7a17 17 0 0 1 16 16"/><circle cx="21" cy="26" r="14"/><circle class="ghost" cx="21" cy="26" r="6"/><path class="accent" d="M21 12a14 14 0 0 1 12.1 7L21 26Z"/><path d="M21 12v14l12.1-7"/><circle class="soft-fill" cx="21" cy="26" r="3.2"/><path class="accent" d="M39 41v-9M44 41v-15"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Portfolio</span><span class="l-zh">Mastermind 组合</span></span><span class="item-desc d"><span class="l-en">Your holdings with tonight’s signals</span><span class="l-zh">你的持仓与今晚信号</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="https://bot.mastermind-x.com" target="_blank" rel="noopener"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M17 11V6M24 11V6M31 11V6M17 37v5M24 37v5M31 37v5M11 17H6M11 24H6M11 31H6M37 17h5M37 24h5M37 31h5"/><rect x="11" y="11" width="26" height="26" rx="5"/><path class="accent" d="m15 29 4-4 3.5 2.5 3.5-5.5"/><circle class="soft-fill" cx="26" cy="22" r="2.4"/><path class="ghost" d="m28 20.5 6-5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Bot</span><span class="l-zh">Mastermind 交易机器人</span><span class="nm-tier">PRO</span></span><span class="item-desc d"><span class="l-en">The AI’s own paper account — every trade explained</span><span class="l-zh">AI 自己的模拟账户，每笔交易都附理由</span></span></span></a>
               <a class="mega-item nm-feat" href="reports.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M13 7h22l6 6v28H13z"/><path d="M9 4h22l6 6v28H9z"/><path d="M31 4v7h6"/><path class="accent" d="M15 29h16M15 33h12M15 16h16"/><path d="m15 25 4-4 4 2 6-7 3 3"/><circle class="soft-fill" cx="29" cy="16" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Reports</span><span class="l-zh">研究报告</span></span><span class="item-desc d"><span class="l-en">Deep dives and market calls</span><span class="l-zh">深度研究与市场判断</span></span></span></a>
               <a class="mega-item nm-feat" href="research_vault.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="m7 14 17-9 17 9v23l-17 8-17-8Z"/><path d="m10 16 14-7 14 7v19l-14 7-14-7Z"/><path d="M10 16l14 7 14-7M24 23v19"/><circle class="soft-fill" cx="24" cy="27" r="6"/><path class="accent" d="M24 24v6M21 27h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Vault</span><span class="l-zh">研报库</span></span><span class="item-desc d"><span class="l-en">Search every published research note</span><span class="l-zh">搜索所有已发布研究</span></span></span></a>
@@ -266,7 +539,7 @@
               <a class="mega-item nm-feat" href="neural_web.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 24h36M24 6v36"/><circle class="soft-fill" cx="24" cy="24" r="5"/><circle cx="11" cy="12" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="9" cy="34" r="3"/><circle cx="39" cy="34" r="3"/><path class="accent" d="M20 21 13 14M28 21l7-7M20 27l-8 5M28 27l8 5M14 12h20M11 15l-2 16M37 15l2 16M12 34h24"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Neural Web</span><span class="l-zh">智脑</span></span><span class="item-desc d"><span class="l-en">See how every signal votes</span><span class="l-zh">查看每个信号如何投票</span></span></span></a>
               <a class="mega-item nm-feat" href="market_memory.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 10h32v28H8z"/><path d="M7 8h14c5 0 8 3 8 8v24c0-5-3-8-8-8H7zM41 8H27v32c0-5 3-8 8-8h6z"/><path class="accent" d="M13 16h9M13 21h7M33 15h4M33 20h4"/><circle class="soft-fill" cx="27" cy="29" r="4"/><path d="M24 29h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></span><span class="item-desc d"><span class="l-en">Put today beside comparable episodes</span><span class="l-zh">将今天与可比历史片段并排</span></span></span></a>
               <a class="mega-item nm-feat" href="reference.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h28v26H10z"/><path d="M7 12h28a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3Z"/><path class="accent" d="M16 12V8h12v4"/><path d="M11 22h18M11 28h13"/><circle class="soft-fill" cx="33" cy="28" r="3"/><path class="accent" d="M11 34h9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span></span><span class="item-desc d"><span class="l-en">Look up any indicator or term</span><span class="l-zh">查询任意指标与术语</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="am_edition.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 32h36M9 26h30"/><path class="accent" d="M24 22V8M24 8l-7 7M24 8l7 7"/><circle class="soft-fill" cx="24" cy="28" r="6"/><path d="M14 32v3M34 32v3M9 35v3M39 35v3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></span><span class="item-desc d"><span class="l-en">Tape, session clock, regime and watch — before the open</span><span class="l-zh">开盘前 — 盘面、交易时段、周期与观察</span></span></span></a>
             </div>
           </section>
@@ -326,11 +599,11 @@
       </div>
     </div>
   </div>
-  
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -339,7 +612,7 @@
     <div class="nav-sugg"></div>
   </div>
   <div class="nav-ctrls">
-    
+
     <a class="ai-brief-link terminal-link" href="https://app.mastermind-x.com" target="_blank" rel="noopener"><span class="product-icon product-icon-terminal" aria-hidden="true"></span><span class="l-en">Terminal</span><span class="l-zh">终端</span></a>
     <button class="theme-switch" aria-label="Toggle dark / light mode">
       <span class="ic sun">☀️</span><span class="ic moon">🌙</span><span class="knob"></span>
@@ -360,152 +633,12 @@
 <div style="margin:4px 0 18px">
   <div class="kick"><span class="l-en">Market Structure</span><span class="l-zh">市场结构</span></div>
   <h1 style="margin:0;font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em">
-    <span class="l-en">How the market is built right now</span><span class="l-zh">当前市场的底层结构</span>
+    <span class="l-en">How positioning could shape market moves</span><span class="l-zh">持仓结构如何影响市场波动</span>
   </h1>
   <p style="margin:4px 0 0;font-size:13px;color:var(--mut)">
     <span class="l-en">Dealer hedging · systematic fund flows · stock-picking conditions · options-implied weekly range</span><span class="l-zh">做市商对冲 · 系统化资金流 · 选股环境 · 期权隐含周度区间</span>
   </p>
 </div>
-
-
-
-
-<div class="sc-strip">
-  
-  
-  
-  
-  
-  <span class="sc-chip changed">
-    <span class="l-en">CTA funds: adding → cutting</span>
-    <span class="l-zh">CTA基金：加仓 → 减仓</span>
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="sc-chip changed">
-    <span class="l-en">Systematic agreement: Split → Aligned cutting</span>
-    <span class="l-zh">系统化机构一致性：分歧 → 一致减仓</span>
-  </span>
-  
-  
-  <span class="sc-chip" style="color:var(--faint)"><span class="l-en">vs</span><span class="l-zh">对比</span> 2026-10-30</span>
-</div>
-
-
-
-
-<div class="glass" style="margin:18px 0 20px">
-  <div class="hero-eyebrow"><span class="l-en">Shock Absorbers</span><span class="l-zh">缓冲机制</span></div>
-
-  
-  <div class="hero-state tone-short">
-    <span class="l-en">Dealers amplifying moves</span>
-    <span class="l-zh">做市商正在放大波动</span>
-  </div>
-  <p class="hero-sub">
-    <span class="l-en">Swings can run further than usual — hedging flows add fuel, not brakes</span>
-    <span class="l-zh">波动可能超出正常幅度 — 对冲资金火上浇油而非降速</span>
-  </p>
-  <span class="stance-chip caution"><span class="l-en">Protect gains — wider swings expected</span><span class="l-zh">保护利润 — 波动幅度可能放大</span></span>
-  
-
-  <div class="hero-meta">
-    
-    <div class="hmeta">
-      <b>
-        <span class="l-en">about</span><span class="l-zh">约</span> 1.6%
-        <span class="l-en">below</span><span class="l-zh">低于</span>
-        <span class="l-en">the flip level (where dealer hedging switches from absorbing to amplifying)</span><span class="l-zh">翻转点（做市商对冲从吸收转为放大的位置）</span>
-      </b>
-      <small>SPX 7541 · <span class="l-en">flip</span><span class="l-zh">翻转点</span> 7660</small>
-    </div>
-    
-    
-    <div class="hmeta"><b>9 <span class="l-en">days in this state</span><span class="l-zh">天处于此状态</span></b>
-      
-      <span class="l-en">6 of them read</span><span class="l-zh">其中 6 天有读数</span>
-      
-    </div>
-    
-    
-    <div class="hmeta">
-      <b>-60.8B</b>
-      <span class="l-en">net dealer exposure — a lower-than-usual reading for this series</span>
-      <span class="l-zh">做市商净敞口 — 为本序列偏低的读数</span>
-    </div>
-    
-  </div>
-
-  <span class="help">?<span class="tip">
-    <span class="l-en"><b>How shock absorbers work</b><br>When dealer net GEX (gamma exposure — the options-book hedge that absorbs or amplifies moves) is positive (long gamma), they sold options and hedge by buying dips / selling rips — damping moves. When negative (short gamma), hedging requires buying rallies and selling dips — amplifying moves.<br><br>Net GEX today: -60.8B (1st pctile since 2026-06-15, 75 sessions). This is a short series — that percentile is a rank among 75 readings, not years of history.<br><br><em>Model estimate only — actual dealer books are unobservable. Reconstructed from the SPX options chain.</em></span>
-    <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX（伽马敞口——吸收或放大波动的期权账簿对冲）为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>当前净GEX：-60.8B（自2026-06-15以来1百分位，共 75 个交易日）。 本序列较短——该百分位是 75 次读数中的排名，并非多年历史。<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
-  </span></span>
-
-  
-  
-  
-  
-  
-  
-  
-  <div class="watch-band" id="watch-band">
-    <div class="watch-k"><span class="l-en">What we&#39;re watching</span><span class="l-zh">我们在看什么</span></div>
-    <p class="watch-kicker"><span class="l-en">Windows, not certainties — re-drawn nightly.</span><span class="l-zh">窗口，并非定论 — 每晚重算。</span></p>
-    <ul class="watch-list">
-      
-      <li>
-        <b><span class="l-en">Flip level</span><span class="l-zh">翻转点</span> <span class="tnum">7660</span></b>
-        
-        <span class="l-en">This shock-absorber read holds while SPX stays below 7660. A close through that level is the window where dealer hedging would switch.</span>
-        <span class="l-zh">标普500保持在 7660 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。</span>
-        
-      </li>
-      
-      
-      <li>
-        <b><span class="l-en">Stock-picker window</span><span class="l-zh">选股窗口</span></b>
-        
-          
-        <span class="l-en">Stock-picker conditions would open if 1-month implied correlation falls to the 20th percentile of the last two years — it is at the 65th now; at the 80th and above, stocks move together.</span>
-        <span class="l-zh">若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第65百分位；升至80百分位及以上则个股同涨同跌。</span>
-          
-        
-      </li>
-      
-    </ul>
-    <span class="help">?<span class="tip">
-      <span class="l-en">The flip is the reconstructed SPX level where dealer net gamma changes sign — hedging switches from absorbing dips to amplifying them. The stock-picker windows are the two-year percentiles the producer uses to classify 1-month implied correlation (a stock-picker's market vs stocks moving together). Neither is a forecast; both re-draw when the nightly snapshot lands.</span>
-      <span class="l-zh">翻转点是重建出的标普500水平，做市商净伽马在此变号——对冲从吸收回档转为放大波动。选股窗口是生产者用来划分1个月隐含相关性的两年百分位（选股行情对比个股同涨同跌）。两者都不是预测；夜间快照到达时重算。</span>
-    </span></span>
-  </div>
-  
-
-  
-  
-  
-  
-  
-  
-  
-  
-  <div class="sec-foot" style="margin-top:14px">
-    
-    <span class="l-en"><b>No chain reading for 8 recent sessions</b> (2026-10-16, 2026-10-19, 2026-10-27, 2026-10-28, 2026-10-29 and 3 earlier) — the options chain is a live snapshot, so a session we miss cannot be filled in later. Everything above skips those days.</span>
-    <span class="l-zh"><b>近期有 8 个交易日无期权链读数</b>（2026-10-16、2026-10-19、2026-10-27、2026-10-28、2026-10-29 及更早 3 日）— 期权链为实时快照，当日未采集便无法补录。以上所有读数均跳过这些日期。</span>
-    
-     · 
-    
-    <span class="l-en">Dealer-exposure (GEX) series from</span><span class="l-zh">做市商敞口（GEX）数据自</span> 2026-06-15
-     · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-11-02
-    
-  </div>
-  
-</div>
-
 
 <div class="msp-drivers" id="msp-drivers">
 
@@ -514,7 +647,7 @@
 <div class="sec-head">
   <span class="eyebrow">2</span>
   <h2 id="gex-history-title"><span class="l-en">Dealer exposure history</span><span class="l-zh">做市商敞口历史</span></h2>
-  <span class="help">?<span class="tip">
+  <span class="help" tabindex="0">?<span class="tip">
     <span class="l-en">Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from 2026-06-15.</span>
     <span class="l-zh">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自2026-06-15起。</span>
   </span></span>
@@ -527,12 +660,157 @@
   </div>
 </div>
 <div class="panel">
-  <div class="chart-wrap" style="height:160px"><svg id="gex-chart" role="img" aria-label="Dealer options exposure history" data-chart-label-en="Dealer options exposure history" data-chart-label-zh="做市商期权敞口历史" aria-describedby="gex-range-status" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <p class="msp-reading"><span class="l-en">Modeled dealer hedging</span><span class="l-zh">做市商对冲模型</span> · <span class="l-en">Amplifying moves</span><span class="l-zh">放大波动</span></p>
+  <div class="chart-wrap" style="height:220px"><svg id="gex-chart" role="img" aria-label="Dealer options exposure history" data-chart-label-en="Dealer options exposure history" data-chart-label-zh="做市商期权敞口历史" aria-describedby="gex-range-status" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="chart-wrap" style="height:110px;margin-top:6px"><svg id="spx-flip-chart" role="img" aria-label="S&amp;P 500 and dealer flip level" data-chart-label-en="S&amp;P 500 and dealer flip level" data-chart-label-zh="标普500与做市商翻转点" aria-describedby="gex-range-status" viewBox="0 0 800 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="sec-foot" id="gex-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
   <div class="sec-foot"><span class="l-en">GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed)</span><span class="l-zh">GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线）</span> · <span class="l-en">series from</span><span class="l-zh">数据自</span> 2026-06-15</div>
 </div>
 
+<details class="msp-snapshot-details" id="msp-snapshot-details">
+  <summary><span class="l-en">Snapshot details, recent changes and source coverage</span><span class="l-zh">快照详情、近期变化与数据覆盖</span></summary>
+
+
+
+<div class="sc-strip">
+
+
+
+
+
+  <span class="sc-chip changed">
+    <span class="l-en">CTA funds: adding → cutting</span>
+    <span class="l-zh">CTA基金：加仓 → 减仓</span>
+  </span>
+
+
+
+
+
+
+  <span class="sc-chip changed">
+    <span class="l-en">Systematic agreement: Split → Aligned cutting</span>
+    <span class="l-zh">系统化机构一致性：分歧 → 一致减仓</span>
+  </span>
+
+
+  <span class="sc-chip" style="color:var(--faint)"><span class="l-en">vs</span><span class="l-zh">对比</span> 2026-10-30</span>
+</div>
+
+
+
+
+<div class="glass" style="margin:18px 0 20px">
+  <div class="hero-eyebrow"><span class="l-en">Shock Absorbers</span><span class="l-zh">缓冲机制</span></div>
+
+
+  <div class="hero-state tone-short">
+    <span class="l-en">Dealers amplifying moves</span>
+    <span class="l-zh">做市商正在放大波动</span>
+  </div>
+  <p class="hero-sub">
+    <span class="l-en">Swings can run further than usual — hedging flows add fuel, not brakes</span>
+    <span class="l-zh">波动可能超出正常幅度 — 对冲资金火上浇油而非降速</span>
+  </p>
+  <span class="stance-chip caution"><span class="l-en">Protect gains — wider swings expected</span><span class="l-zh">保护利润 — 波动幅度可能放大</span></span>
+
+
+  <div class="hero-meta">
+
+    <div class="hmeta">
+      <b>
+        <span class="l-en">about</span><span class="l-zh">约</span> 1.6%
+        <span class="l-en">below</span><span class="l-zh">低于</span>
+        <span class="l-en">the flip level (where dealer hedging switches from absorbing to amplifying)</span><span class="l-zh">翻转点（做市商对冲从吸收转为放大的位置）</span>
+      </b>
+      <small>SPX 7541 · <span class="l-en">flip</span><span class="l-zh">翻转点</span> 7660</small>
+    </div>
+
+
+    <div class="hmeta"><b>9 <span class="l-en">days in this state</span><span class="l-zh">天处于此状态</span></b>
+
+      <span class="l-en">6 of them read</span><span class="l-zh">其中 6 天有读数</span>
+
+    </div>
+
+
+    <div class="hmeta">
+      <b>-60.8B</b>
+      <span class="l-en">net dealer exposure — a lower-than-usual reading for this series</span>
+      <span class="l-zh">做市商净敞口 — 为本序列偏低的读数</span>
+    </div>
+
+  </div>
+
+  <span class="help" tabindex="0">?<span class="tip">
+    <span class="l-en"><b>How shock absorbers work</b><br>When dealer net GEX (gamma exposure — the options-book hedge that absorbs or amplifies moves) is positive (long gamma), they sold options and hedge by buying dips / selling rips — damping moves. When negative (short gamma), hedging requires buying rallies and selling dips — amplifying moves.<br><br>Net GEX in this snapshot: -60.8B (1st pctile since 2026-06-15, 75 sessions). This is a short series — that percentile is a rank among 75 readings, not years of history.<br><br><em>Model estimate only — actual dealer books are unobservable. Reconstructed from the SPX options chain.</em></span>
+    <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX（伽马敞口——吸收或放大波动的期权账簿对冲）为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>当前净GEX：-60.8B（自2026-06-15以来1百分位，共 75 个交易日）。 本序列较短——该百分位是 75 次读数中的排名，并非多年历史。<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
+  </span></span>
+
+
+
+
+
+
+
+
+  <details class="watch-band msp-assumptions" id="watch-band"><summary><span class="l-en">What we’re watching</span><span class="l-zh">我们在看什么</span></summary>
+    <div class="watch-k"><span class="l-en">What we&#39;re watching</span><span class="l-zh">我们在看什么</span></div>
+    <p class="watch-kicker"><span class="l-en">Windows, not certainties — re-drawn nightly.</span><span class="l-zh">窗口，并非定论 — 每晚重算。</span></p>
+    <ul class="watch-list">
+
+      <li>
+        <b><span class="l-en">Flip level</span><span class="l-zh">翻转点</span> <span class="tnum">7660</span></b>
+
+        <span class="l-en">This shock-absorber read holds while SPX stays below 7660. A close through that level is the window where dealer hedging would switch.</span>
+        <span class="l-zh">标普500保持在 7660 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。</span>
+
+      </li>
+
+
+      <li>
+        <b><span class="l-en">Stock-picker window</span><span class="l-zh">选股窗口</span></b>
+
+
+        <span class="l-en">Stock-picker conditions would open if 1-month implied correlation falls to the 20th percentile of the last two years — it is at the 65th now; at the 80th and above, stocks move together.</span>
+        <span class="l-zh">若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第65百分位；升至80百分位及以上则个股同涨同跌。</span>
+
+
+      </li>
+
+    </ul>
+    <span class="help" tabindex="0">?<span class="tip">
+      <span class="l-en">The flip is the reconstructed SPX level where dealer net gamma changes sign — hedging switches from absorbing dips to amplifying them. The stock-picker windows are the two-year percentiles the producer uses to classify 1-month implied correlation (a stock-picker's market vs stocks moving together). Neither is a forecast; both re-draw when the nightly snapshot lands.</span>
+      <span class="l-zh">翻转点是重建出的标普500水平，做市商净伽马在此变号——对冲从吸收回档转为放大波动。选股窗口是生产者用来划分1个月隐含相关性的两年百分位（选股行情对比个股同涨同跌）。两者都不是预测；夜间快照到达时重算。</span>
+    </span></span>
+  </details>
+
+
+
+
+
+
+
+
+
+
+  <div class="sec-foot" style="margin-top:14px">
+
+    <span class="l-en"><b>No chain reading for 8 recent sessions</b> (2026-10-16, 2026-10-19, 2026-10-27, 2026-10-28, 2026-10-29 and 3 earlier) — the options chain is a live snapshot, so a session we miss cannot be filled in later. Everything above skips those days.</span>
+    <span class="l-zh"><b>近期有 8 个交易日无期权链读数</b>（2026-10-16、2026-10-19、2026-10-27、2026-10-28、2026-10-29 及更早 3 日）— 期权链为实时快照，当日未采集便无法补录。以上所有读数均跳过这些日期。</span>
+
+     ·
+
+    <span class="l-en">Dealer-exposure (GEX) series from</span><span class="l-zh">做市商敞口（GEX）数据自</span> 2026-06-15
+     · <span class="l-en">Artifact date</span><span class="l-zh">数据文件日期</span> 2026-11-02
+    · <span class="l-en">Gamma snapshot observation date not supplied</span><span class="l-zh">未提供伽马快照观测日期</span>
+
+  </div>
+
+</div>
+
+
+</details>
 </section>
 
 
@@ -540,37 +818,37 @@
 <div class="sec-head">
   <span class="eyebrow">3</span>
   <h2 id="sys-history-title"><span class="l-en">Systematic fund flows</span><span class="l-zh">系统化资金流</span></h2>
-  
+
   <span class="badge est"><span class="l-en">model estimate</span><span class="l-zh">模型估算</span></span>
-  <span class="help">?<span class="tip">
+  <span class="help" tabindex="0">?<span class="tip">
     <span class="l-en"><b>What these are</b><br>Volatility-control funds adjust exposure as realized volatility rises or falls. Trend-following funds adjust exposure with medium- and long-term price trends.<br><br><em>These are model estimates of systematic fund behavior, not observed fund positions. Dollar figures show approximate direction and scale.</em></span>
     <span class="l-zh"><b>说明</b><br>波动率控制基金会随已实现波动率上升或下降调整敞口。趋势跟踪基金会根据中长期价格趋势调整敞口。<br><br><em>这些是系统化基金行为的模型估算，并非观测到的实际持仓；金额用于表示大致方向和量级。</em></span>
   </span></span>
-  
+
   <div class="range-btns" id="sys-range-btns" style="margin-left:auto" role="group" aria-labelledby="sys-history-title">
     <button class="rbtn" data-range="63" type="button" aria-pressed="false" aria-controls="sys-chart"><span class="l-en">3M</span><span class="l-zh">3月</span></button>
     <button class="rbtn on" data-range="252" type="button" aria-pressed="true" aria-controls="sys-chart"><span class="l-en">1Y</span><span class="l-zh">1年</span></button>
     <button class="rbtn" data-range="9999" type="button" aria-pressed="false" aria-controls="sys-chart"><span class="l-en">All</span><span class="l-zh">全部</span></button>
   </div>
-  
+
 </div>
 
 
 <div class="agree aligned_cutting">
-  
-  <span class="l-en">Systematic funds: aligned · both cutting over 5 days</span><span class="l-zh">系统化资金：一致 · 两路5日同步减仓</span>
-  
-  
+
+    <span class="l-en">Systematic funds: aligned · both cutting over 5 days</span><span class="l-zh">系统化资金：一致 · 两路5日同步减仓</span>
+
+
 </div>
 
-<span class="stance-chip watch"><span class="l-en">Watch — systematic funds are stepping back; don't lean against it.</span><span class="l-zh">观望——系统化资金正在撤减，勿逆势加仓。</span></span>
+  <span class="stance-chip watch"><span class="l-en">Watch — systematic funds are stepping back; don't lean against it.</span><span class="l-zh">观望——系统化资金正在撤减，勿逆势加仓。</span></span>
 
 
 <div class="grid-2" style="margin-bottom:16px">
-  
+
   <div class="panel">
     <div class="kick"><span class="l-en">Volatility-control funds</span><span class="l-zh">波动率控制基金</span></div>
-    
+
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
       <div style="font-size:17px;font-weight:800;color:var(--ink)">$267B</div>
       <span class="rc cutting"><span class="l-en">Cutting over 5 days</span><span class="l-zh">5日减仓中</span></span>
@@ -580,17 +858,17 @@
       <span class="badge dn">▼ $2.6B <span class="l-en">over 5 days</span><span class="l-zh">5日累计</span></span>
     </div>
     <div class="kpi-row" style="margin-top:10px"><div class="kpi"><b>89%</b><span class="l-en">of target allocation deployed</span><span class="l-zh">目标仓位已部署</span></div></div>
-    
+
   </div>
 
-  
+
   <div class="panel">
     <div class="kick"><span class="l-en">Trend-following funds</span><span class="l-zh">趋势跟踪基金</span></div>
-    
+
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
       <div style="font-size:17px;font-weight:800;color:var(--ink)">+0.03 <small style="font-size:12px;font-weight:500;color:var(--faint)"><span class="l-en">trend score</span><span class="l-zh">趋势分数</span></small></div>
       <span class="rc pausing"><span class="l-en">Near flat</span><span class="l-zh">接近空仓</span></span>
-      
+
       <span class="rc cutting"><span class="l-en">trimming exposure over 5 days</span><span class="l-zh">5日减仓中</span></span>
     </div>
     <div style="font-size:12px;color:var(--mut);margin-bottom:6px"><span class="l-en">Lighter than their 1-year norm (-1.5)</span><span class="l-zh">仓位低于近一年常态（-1.5）</span></div>
@@ -598,7 +876,7 @@
       <span class="badge dn">▼ 0.1 <span class="l-en">today</span><span class="l-zh">今日</span></span>
       <span class="badge dn">▼ 0.3 <span class="l-en">over 5 days</span><span class="l-zh">5日累计</span></span>
     </div>
-    
+
   </div>
 </div>
 
@@ -619,52 +897,52 @@
 <div class="sec-head">
   <span class="eyebrow">4</span>
   <h2 id="cor-history-title"><span class="l-en">Stock-picker conditions</span><span class="l-zh">选股行情</span></h2>
-  <span class="help">?<span class="tip">
+  <span class="help" tabindex="0">?<span class="tip">
     <span class="l-en"><b>What this measures</b><br>1-month implied correlation (COR1M): average pairwise correlation implied by SPX options against single-stock options. Low = stocks moving on their own stories (stock-picker's market). High = one-market tape (macro dominates). Series from 2006.<br><br>2-year percentile: 65th. 3-month implied correlation: 15.74. CBOE dispersion index: 39.1.</span>
     <span class="l-zh"><b>指标说明</b><br>1个月隐含相关性（COR1M）：标普指数期权与个股期权隐含的平均两两相关系数。低值=个股独立走势（选股行情）；高值=一体化走势（宏观主导）。数据自2006年。<br><br>2年百分位：65th。3个月隐含相关性：15.74。CBOE离散度指数：39.1。</span>
   </span></span>
-  
+
   <div class="range-btns" id="cor-range-btns" style="margin-left:auto" role="group" aria-labelledby="cor-history-title">
     <button class="rbtn" data-range="63" type="button" aria-pressed="false" aria-controls="cor-chart"><span class="l-en">3M</span><span class="l-zh">3月</span></button>
     <button class="rbtn on" data-range="252" type="button" aria-pressed="true" aria-controls="cor-chart"><span class="l-en">1Y</span><span class="l-zh">1年</span></button>
     <button class="rbtn" data-range="9999" type="button" aria-pressed="false" aria-controls="cor-chart"><span class="l-en">All</span><span class="l-zh">全部</span></button>
   </div>
-  
+
 </div>
 
 
 <div class="panel">
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
-    
+
     <span class="rc normal">
       <span class="l-en">Normal</span><span class="l-zh">正常</span>
     </span>
-    
+
     <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--tx);flex:1;min-width:200px">
       <span class="l-en">Normal correlation — mix of macro and stock-specific moves</span><span class="l-zh">正常相关性 — 宏观与个股因素交织</span>
-      
+
     </p>
   </div>
-  
+
   <span class="stance-chip watch"><span class="l-en">Watch — don't chase; conditions are middling.</span><span class="l-zh">观望——不追单，环境中性。</span></span>
-  
+
   <div class="kpi-row">
     <div class="kpi"><b>14.52</b>
       <span class="l-en">1-month implied correlation — a mix of shared and stock-specific moves</span>
       <span class="l-zh">1个月隐含相关性 — 共性与个股因素交织</span>
     </div>
     <div class="kpi"><b class="dn">+1.99</b>
-      
+
       <span class="l-en">against a year ago — higher, so stocks are moving more together</span>
       <span class="l-zh">较一年前 — 更高，个股更同步</span>
-      
+
     </div>
   </div>
-  
+
   <div class="chart-wrap" style="height:130px;margin-top:12px"><svg id="cor-chart" role="img" aria-label="Implied stock correlation history" data-chart-label-en="Implied stock correlation history" data-chart-label-zh="股票隐含相关性历史" aria-describedby="cor-range-status" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="sec-foot" id="cor-range-status" role="status" aria-live="polite" aria-atomic="true"></div>
-  
-  <div class="sec-foot"><span class="l-en">1-month implied correlation (COR1M) area chart — dashed line = the dispersion threshold, the 20th percentile of the last two years · source: CBOE, series from 2006</span><span class="l-zh">1个月隐含相关性（COR1M）面积图 — 虚线=离散阈值，即近两年第20百分位 · 来源：CBOE，数据自2006年起</span></div>
+
+  <div class="sec-foot"><span class="l-en">1-month implied correlation (COR1M) history; gaps are unavailable observations. Regime and percentile use the published producer reading · source: CBOE, series from 2006</span><span class="l-zh">1个月隐含相关性（COR1M）历史；缺口为缺失观测。状态与百分位采用数据源已发布的读数 · 来源：CBOE，数据自2006年起</span></div>
 </div>
 
 </section>
@@ -674,7 +952,7 @@
 <div class="sec-head">
   <span class="eyebrow">5</span>
   <h2><span class="l-en">Vol weather</span><span class="l-zh">波动率天气</span></h2>
-  <span class="help">?<span class="tip">
+  <span class="help" tabindex="0">?<span class="tip">
     <span class="l-en">RV21: 1-month realized vol. RV63: 3-month. When RV21 &gt; RV63, fast vol above slow baseline = "stress building". VIX curve slope = six-month minus front-month future (M6 − M1; positive = later months cost more than the front / contango; negative = front costs more / backwardation, a stress tell). The whole-market vol read lives in the Options workspace's console — this panel is context only.</span>
     <span class="l-zh">RV21：1个月已实现波动率。RV63：3个月版本。RV21&gt;RV63时，短期超长期=压力积累。VIX曲线斜率=六个月减近月期货（M6−M1；正值=远月贵于近月/升水；负值=近月更贵/现货升水，压力信号）。整体波动率读数在期权工作台的控制台，本面板仅为参考。</span>
   </span></span>
@@ -687,12 +965,12 @@
 <div class="grid-2">
   <div class="panel">
     <div class="kick"><span class="l-en">Realized vol crossover</span><span class="l-zh">已实现波动率交叉</span></div>
-    
+
     <span class="rc stress" style="margin-bottom:8px;display:inline-block">
       <span class="l-en">Fast vol above slow — stress building</span><span class="l-zh">短期波动率超越长期 — 压力积累</span>
-      
+
     </span>
-    
+
     <div class="kpi-row">
       <div class="kpi"><b>11.3%</b><span class="l-en">1-month vol</span><span class="l-zh">1个月波动率</span></div>
       <div class="kpi"><b>9.9%</b><span class="l-en">3-month vol</span><span class="l-zh">3个月波动率</span></div>
@@ -702,53 +980,53 @@
 
   <div class="panel">
     <div class="kick"><span class="l-en">VIX futures curve (M1 = front month … M6 = six-month)</span><span class="l-zh">VIX期货曲线（M1=近月 … M6=六个月）</span> <span style="font-size:10px;color:var(--faint)">· <span class="l-en">from</span><span class="l-zh">自</span> 2026-04-16</span></div>
-    
+
     <div class="vix-row">
-      
-      
+
+
       <div class="vix-node">
         <span class="vt">M1</span>
         <span class="vv">20.4</span>
         <span style="font-size:9px;color:var(--faint)">16d</span>
       </div>
-      
-      
+
+
       <div class="vix-node">
         <span class="vt">M2</span>
         <span class="vv">19.8</span>
         <span style="font-size:9px;color:var(--faint)">44d</span>
       </div>
-      
-      
+
+
       <div class="vix-node">
         <span class="vt">M3</span>
         <span class="vv">20.4</span>
         <span style="font-size:9px;color:var(--faint)">79d</span>
       </div>
-      
-      
+
+
       <div class="vix-node">
         <span class="vt">M4</span>
         <span class="vv">20.6</span>
         <span style="font-size:9px;color:var(--faint)">107d</span>
       </div>
-      
-      
+
+
       <div class="vix-node">
         <span class="vt">M5</span>
         <span class="vv">20.7</span>
         <span style="font-size:9px;color:var(--faint)">135d</span>
       </div>
-      
-      
+
+
       <div class="vix-node">
         <span class="vt">M6</span>
         <span class="vv">21.0</span>
         <span style="font-size:9px;color:var(--faint)">170d</span>
       </div>
-      
+
     </div>
-    
+
     <div class="kpi-row" style="margin-top:10px">
       <div class="kpi">
         <b class="up">+0.6</b>
@@ -756,9 +1034,10 @@
         (<span class="l-en">later months cost more than the front (contango)</span><span class="l-zh">远月贵于近月（升水）</span>)
       </div>
     </div>
-    
+
+    <div class="sec-foot"><span class="l-en">Volatility snapshot observation date not supplied</span><span class="l-zh">未提供波动率快照观测日期</span></div>
     <div class="sec-foot"><span class="l-en">Young curve feed — limited history from</span><span class="l-zh">曲线数据较新，自</span> 2026-04-16</div>
-    
+
   </div>
 </div>
 
@@ -769,76 +1048,58 @@
 <div class="sec-head">
   <span class="eyebrow">6</span>
   <h2><span class="l-en">Weekly range</span><span class="l-zh">本周区间</span></h2>
-  <span class="help">?<span class="tip">
-    <span class="l-en">Where the week could reasonably land, measured from Friday's close and the volatility priced in at that close. The typical range (±1σ) covers about 68% of outcomes, the wide range (±2σ) about 95% — if vol behaves as priced. Flip line: the level where dealer hedging switches from absorbing to amplifying. Locked at Friday's close, fixed through the week, resets each weekend. A model estimate, not a forecast or a boundary the market must respect.</span>
-    <span class="l-zh">从周五收盘价及当时定价的波动率推算，本周价格可能落在的区间。典型区间（±1σ）约覆盖68%的情形，宽区间（±2σ）约95% — 前提是波动率按定价兑现。翻转线：做市商对冲从吸收转为放大的位置。周五收盘锁定，本周内保持不变，每周末重置。这是模型估算，既非预测，也非市场必须遵守的边界。</span>
+  <span class="help" tabindex="0">?<span class="tip">
+    <span class="l-en">Where the week could reasonably land, measured from Friday's close and the volatility priced in at that close. The supplied inner (±1σ) and outer (±2σ) ranges depend on volatility and distribution assumptions. Their names are not a verified coverage rate. Flip line: the level where dealer hedging switches from absorbing to amplifying. Locked at Friday's close, fixed through the week, resets each weekend. A model estimate, not a forecast or a boundary the market must respect.</span>
+    <span class="l-zh">从周五收盘价及当时定价的波动率推算，本周价格可能落在的区间。已有内层（±1σ）与外层（±2σ）区间依赖波动率及分布假设，名称不代表经验证的覆盖率。翻转线：做市商对冲从吸收转为放大的位置。周五收盘锁定，本周内保持不变，每周末重置。这是模型估算，既非预测，也非市场必须遵守的边界。</span>
   </span></span>
 </div>
 
 
-<div class="panel">
-  <span class="stance-chip watch"><span class="l-en">Watch — don't chase moves inside the expected band.</span><span class="l-zh">观望——预期区间内的波动不必追。</span></span>
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-    <div><div class="kick"><span class="l-en">Locked Friday close</span><span class="l-zh">锁定周五收盘价</span></div>
-    <div style="font-size:22px;font-weight:800;color:var(--ink)">7580.1</div></div>
-    <div class="kpi" style="margin-left:8px"><b>±2.17%</b><span class="l-en">weekly implied move</span><span class="l-zh">隐含周度涨跌幅</span></div>
-    <div class="sec-foot" style="margin:0 0 0 auto"><span class="l-en">Locked</span><span class="l-zh">锁定于</span> 2026-10-30 · <span class="l-en">covers</span><span class="l-zh">覆盖</span> 2026-11-02→2026-11-06 · <span class="l-en">held through week</span><span class="l-zh">持有至本周</span></div>
+<div class="panel" data-weekly-range>
+  <div class="kick"><span class="l-en">Model estimate · supplied bands only</span><span class="l-zh">模型估算 · 仅显示已有区间</span></div>
+  <div class="kpi-row">
+    <div class="kpi"><b>7580.1</b><span class="l-en">Locked Friday close</span><span class="l-zh">锁定周五收盘价</span></div>
+    <div class="kpi"><b>±2.17%</b><span class="l-en">weekly implied move</span><span class="l-zh">隐含周度涨跌幅</span></div>
+  </div>
+  <div class="sec-foot">
+    <span class="l-en">Locked</span><span class="l-zh">锁定于</span> 2026-10-30
+     · <span class="l-en">covers</span><span class="l-zh">覆盖</span> 2026-11-02 → 2026-11-06
   </div>
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <div class="wm-wrap">
-    <svg class="wm-band" viewBox="0 0 600 56" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      
-      <rect x="0" y="18" width="600" height="20" rx="5" fill="var(--blue)" opacity=".09"/>
-      
-      <rect x="150.0" y="20" width="300.0" height="16" rx="4" fill="var(--blue)" opacity=".21"/>
-      
-      
-      <line x1="373.20000000000005" y1="12" x2="373.20000000000005" y2="44" stroke="var(--amb)" stroke-width="2" stroke-dasharray="3,2"/>
-      
-      
-      <line x1="264.6" y1="10" x2="264.6" y2="46" stroke="var(--blue)" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-    
-    <div class="wm-lbls">
-      <span class="wm-edge" style="left:0">7251</span>
-      <span class="wm-edge" style="left:25.0%">7416</span>
-      <span class="wm-edge" style="left:75.0%;transform:translateX(-100%)">7744</span>
-      <span class="wm-edge" style="right:0">7909</span>
-      
-      <span class="wm-chip wm-flip" style="left:62.2%;transform:translateX(-50%)">
-        <span class="wm-k"><span class="l-en">Flip</span><span class="l-zh">翻转</span></span><span class="wm-n">7660</span>
-      </span>
-      
-      <span class="wm-chip wm-spot" style="left:44.1%;transform:translateX(-50%)">
-        <span class="wm-k"><span class="l-en">Spot</span><span class="l-zh">现价</span></span><span class="wm-n">7541</span>
-      </span>
-    </div>
+  <div class="msp-band-row" data-sigma="1" data-available="true">
+    <b><span class="l-en">Inner range (1σ)</span><span class="l-zh">内层区间（1σ）</span></b>
+    <span class="tnum">7416 – 7744</span>
   </div>
-  <div class="kpi-row" style="margin-top:8px">
-    <div class="kpi"><b>7416 – 7744</b><span class="l-en">typical range (about 68% of weeks)</span><span class="l-zh">典型区间（约68%的周）</span></div>
-    <div class="kpi"><b>7251 – 7909</b><span class="l-en">wide range (about 95% of weeks)</span><span class="l-zh">宽区间（约95%的周）</span></div>
-    <div class="kpi"><b class="amb">7660</b><span class="l-en">flip level (dealer hedging switch)</span><span class="l-zh">翻转点（做市商对冲切换）</span></div>
+
+  <div class="msp-band-row" data-sigma="2" data-available="true">
+    <b><span class="l-en">Outer range (2σ)</span><span class="l-zh">外层区间（2σ）</span></b>
+    <span class="tnum">7251 – 7909</span>
   </div>
-  
-  <div class="sec-foot" style="margin-top:10px">
-    <span class="l-en">Model estimate. Locked at Friday's close and held through the week; resets each weekend. Width comes from SPX 30-day implied volatility rescaled to five trading days, which assumes vol is priced the same at one week as at one month.</span>
-    <span class="l-zh">模型估算。于周五收盘锁定并持有至本周末，每周末重置。区间宽度由标普500 30天隐含波动率折算至5个交易日，前提是一周与一个月的波动率定价相同。</span>
+
+
+  <svg class="wm-band" viewBox="0 0 600 88" preserveAspectRatio="none" role="img" aria-label="Supplied weekly bands and price references" data-chart-label-en="Supplied weekly bands and price references" data-chart-label-zh="已有周度区间与价格参考" xmlns="http://www.w3.org/2000/svg">
+
+
+
+      <rect data-band="1" x="178.448" y="20" width="243.104" height="12" rx="6" fill="var(--blue)" opacity=".7"/>
+
+
+
+
+      <rect data-band="2" x="56.897" y="52" width="486.20599999999996" height="12" rx="6" fill="var(--blue)" opacity=".35"/>
+
+
+    <line x1="359.23" x2="359.23" y1="8" y2="80" stroke="var(--amb)" stroke-width="2" stroke-dasharray="3,2"/>
+    <line x1="271.402" x2="271.402" y1="8" y2="80" stroke="var(--blue)" stroke-width="2"/>
+  </svg>
+
+  <div class="kpi-row">
+    <div class="kpi"><b>7541.4</b><span class="l-en">Supplied gamma spot</span><span class="l-zh">伽马数据附带现价</span><small><span class="l-en">Observation date not supplied</span><span class="l-zh">未提供观测日期</span></small></div>
+    <div class="kpi"><b>7660.2</b><span class="l-en">Flip reference supplied with this week map</span><span class="l-zh">本周区间附带的翻转参考</span></div>
+  </div>
+  <div class="sec-foot">
+    <span class="l-en">A missing band remains unavailable. Price references do not establish a new weekly range.</span><span class="l-zh">缺少的区间保持暂无数据；价格参考不会据此生成新的周度区间。</span>
+    <span class="l-en">Model estimate locked on Friday: 30-day implied volatility scaled to five sessions. The coverage assumptions are not observed probabilities or price boundaries.</span><span class="l-zh">模型于周五锁定，以30天隐含波动率折算至5个交易日。覆盖假设不是实测概率，也不是价格边界。</span>
   </div>
 </div>
 
@@ -849,7 +1110,7 @@
 <div style="margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)">
   <span class="l-en">Market context, not buy or sell signals. Systematic-fund figures are model estimates, not observed positions. Read them as direction and scale, not as cash that actually moved. Dealer-exposure estimates are reconstructed from options data. Shock-absorber series from 2026-06-15; correlation series from 2006.</span>
   <span class="l-zh">仅供市场环境参考，并非买卖信号。系统化资金数据为模型估算，并非观测到的实际持仓；请将其视为方向和量级参考，而非真实成交资金。做市商敞口根据期权数据重建。缓冲机制数据自2026-06-15起，相关性数据自2006年起。</span>
-   · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-11-03
+   · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-11-03T17:25:18.254634+00:00
 </div>
 
 </div>
@@ -900,100 +1161,87 @@ function line(x1,y1,x2,y2,s,sw,da){
 function sliceTail(arr,n){if(!arr||!arr.length)return [];return n>=9000?arr:arr.slice(-n)}
 function clearSVG(el){while(el&&el.firstChild)el.removeChild(el.firstChild)}
 
-function drawGex(n){
-  if(typeof MSP_GAMMA_HIST==='undefined'||!MSP_GAMMA_HIST.length)return;
-  var data=sliceTail(MSP_GAMMA_HIST,n);
-  var g=qs('#gex-chart'),s=qs('#spx-flip-chart');
-  if(!g||!s)return;
-  clearSVG(g);clearSVG(s);
-  var W=800,H=160,P=6;
-  var gv=data.map(function(d){return d.net_gex_bn||0});
-  var ma=Math.max(Math.abs(Math.min.apply(null,gv)),Math.abs(Math.max.apply(null,gv)),0.1);
-  var bw=Math.max(0.5,(W-2*P)/data.length);
+function finiteNumber(value){return typeof value==='number'&&Number.isFinite(value)}
+function seriesValues(data,key){return data.map(function(row){return row&&finiteNumber(row[key])?row[key]:null})}
+function chartDomain(values){
+  var observed=values.filter(finiteNumber);if(!observed.length)return null;
+  var lo=Math.min.apply(null,observed),hi=Math.max.apply(null,observed);
+  var pad=hi===lo?Math.max(Math.abs(lo)*0.01,0.5):(hi-lo)*0.08;
+  return [lo-pad,hi+pad];
+}
+function chartX(i,count,width,pad){return count===1?width/2:pad+i/(count-1)*(width-2*pad)}
+function chartY(value,domain,height,pad){return finiteNumber(value)&&domain?height-pad-(value-domain[0])/(domain[1]-domain[0])*(height-2*pad):null}
+function seriesRuns(data,key,domain,width,height,pad){
+  var runs=[],run=[];
   data.forEach(function(row,i){
-    var gx=row.net_gex_bn||0;var x=P+i*bw;var midY=H/2;
-    var h=Math.abs(gx)/ma*(H/2-8);var y=gx>=0?midY-h:midY;
-    var r=rect(x,y,Math.max(0.3,bw-0.4),Math.max(0.3,h),row.regime==='long'?UP:DN,0);
-    r.setAttribute('opacity','0.75');g.appendChild(r);
+    var value=row&&row[key];
+    if(!finiteNumber(value)){if(run.length)runs.push(run);run=[];return}
+    run.push([chartX(i,data.length,width,pad),chartY(value,domain,height,pad)]);
   });
-  g.appendChild(line(P,H/2,W-P,H/2,LINE,1));
-  var W2=800,H2=110,P2=6;
-  var sp=data.map(function(d){return d.spot||0}),fl=data.map(function(d){return d.flip||0});
-  var all=sp.concat(fl),mn=Math.min.apply(null,all),mx=Math.max.apply(null,all);
-  var pr=mx-mn||1;
-  function ty2(v){return H2-P2-(v-mn)/pr*(H2-P2*2)}
-  function tx2(i){return P2+i/(data.length-1||1)*(W2-P2*2)}
-  var spts=data.map(function(d,i){return[tx2(i),ty2(d.spot||0)]});
-  var fpts=data.map(function(d,i){return[tx2(i),ty2(d.flip||0)]});
-  if(spts.length>1)s.appendChild(polyline(spts,BLUE,'1.5'));
-  if(fpts.length>1){
-    /* The section footer calls this line "amber dashed" — make the drawing
-       match the caption, and keep one flip idiom across the page (the week-map
-       flip line is dashed too). */
-    var fp=polyline(fpts,AMB,'1',null,'.55');fp.setAttribute('stroke-dasharray','4,3');
-    s.appendChild(fp);
-  }
+  if(run.length)runs.push(run);return runs;
 }
-
+function drawSeries(svg,data,key,domain,width,height,pad,color,options){
+  if(!domain)return;options=options||{};
+  seriesRuns(data,key,domain,width,height,pad).forEach(function(pts){
+    if(pts.length===1){
+      var dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',pts[0][0]);dot.setAttribute('cy',pts[0][1]);dot.setAttribute('r','2.5');dot.setAttribute('fill',color);
+      dot.setAttribute('data-series',key);svg.appendChild(dot);return;
+    }
+    if(options.area){
+      var area=polyline([[pts[0][0],height-pad]].concat(pts,[[pts[pts.length-1][0],height-pad],[pts[0][0],height-pad]]),color,'0',color,'.10');
+      area.setAttribute('data-series',key+'-area');svg.appendChild(area);
+    }
+    var trace=polyline(pts,color,options.width||'1.5',null,options.opacity);
+    trace.setAttribute('data-series',key);if(options.dash)trace.setAttribute('stroke-dasharray',options.dash);
+    svg.appendChild(trace);
+  });
+}
+function seriesAvailability(data,definitions){
+  var en=[],zh=[];
+  definitions.forEach(function(d){
+    var count=seriesValues(data,d[0]).filter(finiteNumber).length;
+    if(!count){en.push(d[1]+' unavailable');zh.push(d[2]+'暂无数据')}
+    else if(count<data.length){en.push(d[1]+': '+count+'/'+data.length+' values; gaps are unavailable');zh.push(d[2]+'：'+count+'/'+data.length+'个有效值；缺口为数据暂缺')}
+  });
+  return {en:en.join(' · '),zh:zh.join(' · ')};
+}
+function drawGex(n){
+  var data=sliceTail(typeof MSP_GAMMA_HIST==='undefined'?[]:MSP_GAMMA_HIST,n);
+  var availability=seriesAvailability(data,[['net_gex_bn','GEX','净伽马敞口'],['spot','SPX','标普'],['flip','Flip level','翻转点']]);
+  var g=qs('#gex-chart'),s=qs('#spx-flip-chart');if(!g||!s)return availability;
+  clearSVG(g);clearSVG(s);
+  var W=800,H=160,P=6,gv=seriesValues(data,'net_gex_bn').filter(finiteNumber);
+  if(gv.length){
+    var ma=Math.max.apply(null,gv.map(Math.abs).concat([0.1]));
+    var bw=(W-2*P)/Math.max(data.length,1);
+    data.forEach(function(row,i){
+      var gx=row&&row.net_gex_bn;if(!finiteNumber(gx))return;
+      var h=Math.abs(gx)/ma*(H/2-8),x=P+i*bw,y=gx>=0?H/2-h:H/2;
+      var r=rect(x,y,Math.max(0.3,bw-0.4),Math.max(0.5,h),gx===0?MUT:row.regime==='long'?UP:DN,0);
+      r.setAttribute('data-series','net_gex_bn');r.setAttribute('data-value',gx);r.setAttribute('opacity','0.75');g.appendChild(r);
+    });
+    g.appendChild(line(P,H/2,W-P,H/2,LINE,1));
+  }
+  var domain=chartDomain(seriesValues(data,'spot').concat(seriesValues(data,'flip')));
+  drawSeries(s,data,'spot',domain,800,110,6,BLUE);
+  drawSeries(s,data,'flip',domain,800,110,6,AMB,{dash:'4,3',opacity:'.75'});
+  return availability;
+}
 function drawSys(n){
-  if(typeof MSP_SYS_HIST==='undefined'||!MSP_SYS_HIST.length)return;
-  var data=sliceTail(MSP_SYS_HIST,n);
-  var sv=qs('#sys-chart');if(!sv)return;clearSVG(sv);
-  var W=800,H=160,P=6;
-  var vc=data.map(function(d){return d.vc_alloc_bn||0}),sp=data.map(function(d){return d.spx_close||0});
-  var mvc=Math.min.apply(null,vc),xvc=Math.max.apply(null,vc);
-  var msp2=Math.min.apply(null,sp),xsp=Math.max.apply(null,sp);
-  var vcr=xvc-mvc||1,spr=xsp-msp2||1;
-  function tyvc(v){return H-P-(v-mvc)/vcr*(H-P*2)}
-  function tysp(v){return H-P-(v-msp2)/spr*(H-P*2)}
-  function tx(i){return P+i/(data.length-1||1)*(W-P*2)}
-  var sppts=data.map(function(d,i){return[tx(i),tysp(d.spx_close||0)]});
-  var vcpts=data.map(function(d,i){return[tx(i),tyvc(d.vc_alloc_bn||0)]});
-  if(sppts.length>1)sv.appendChild(polyline(sppts,MUT,'1.5',null,'.45'));
-  if(vcpts.length>1)sv.appendChild(polyline(vcpts,BLUE,'2'));
+  var data=sliceTail(typeof MSP_SYS_HIST==='undefined'?[]:MSP_SYS_HIST,n);
+  var availability=seriesAvailability(data,[['vc_alloc_bn','Vol-control allocation','波控仓位'],['spx_close','SPX','标普']]);
+  var sv=qs('#sys-chart');if(!sv)return availability;clearSVG(sv);
+  drawSeries(sv,data,'spx_close',chartDomain(seriesValues(data,'spx_close')),800,160,6,MUT,{opacity:'.65'});
+  drawSeries(sv,data,'vc_alloc_bn',chartDomain(seriesValues(data,'vc_alloc_bn')),800,160,6,BLUE,{width:'2'});
+  return availability;
 }
-
-/* The engine calls "dispersion" at the 20th percentile of the trailing 2-year
-   COR1M window (_COR1M_PCTILE_LO, scripts/build_market_structure.py) — there is
-   no fixed level anywhere in the pipeline. The old hardcoded DT=0.35 was wrong
-   twice over: wrong concept, and wrong units (COR1M ships in percentage points,
-   ~3–45), so it mapped far below the floor and the "dashed line = dispersion
-   threshold" the footer promises was never actually on screen. Read it off the
-   full embedded series so the line holds still when the window toggles. */
-var COR_PCTILE_LO=20;
-function dispThreshold(){
-  var all=MSP_COR_HIST.slice(-504).map(function(d){return d.cor1m})
-    .filter(function(v){return typeof v==='number'&&isFinite(v)});
-  if(all.length<20)return null;
-  all.sort(function(a,b){return a-b});
-  var i=(COR_PCTILE_LO/100)*(all.length-1),lo=Math.floor(i),hi=Math.ceil(i);
-  return lo===hi?all[lo]:all[lo]+(all[hi]-all[lo])*(i-lo);
-}
-
 function drawCor(n){
-  if(typeof MSP_COR_HIST==='undefined'||!MSP_COR_HIST.length)return;
-  var data=sliceTail(MSP_COR_HIST,n);
-  var sv=qs('#cor-chart');if(!sv)return;clearSVG(sv);
-  var W=800,H=130,P=6;
-  var vals=data.map(function(d){return d.cor1m||0});
-  var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);
-  var DT=dispThreshold();
-  /* A reference line the footer names by hand has to be inside the drawn
-     domain, or the chart quietly contradicts its own caption. */
-  if(DT!==null){mn=Math.min(mn,DT);mx=Math.max(mx,DT)}
-  var pad=(mx-mn)*0.08||0.5;mn-=pad;mx+=pad;
-  var vr2=mx-mn||0.01;
-  function ty(v){return H-P-(v-mn)/vr2*(H-P*2)}
-  function tx(i){return P+i/(data.length-1||1)*(W-P*2)}
-  var pts=data.map(function(d,i){return[tx(i),ty(d.cor1m||0)]});
-  if(pts.length>1){
-    var ad='M '+pts[0][0]+','+(H-P)+' L '+pts.map(function(p){return p[0]+','+p[1]}).join(' L ')+' L '+pts[pts.length-1][0]+','+(H-P)+' Z';
-    var area=document.createElementNS('http://www.w3.org/2000/svg','path');
-    area.setAttribute('d',ad);area.setAttribute('fill',UP);area.setAttribute('opacity','0.10');
-    sv.appendChild(area);
-    if(DT!==null)sv.appendChild(line(P,ty(DT),W-P,ty(DT),UP,1,'4,3'));
-    sv.appendChild(polyline(pts,BLUE,'1.5'));
-  }
+  var data=sliceTail(typeof MSP_COR_HIST==='undefined'?[]:MSP_COR_HIST,n);
+  var availability=seriesAvailability(data,[['cor1m','Implied correlation','隐含相关性']]);
+  var sv=qs('#cor-chart');if(!sv)return availability;clearSVG(sv);
+  drawSeries(sv,data,'cor1m',chartDomain(seriesValues(data,'cor1m')),800,130,6,BLUE,{area:true});
+  return availability;
 }
 
 // Describe only the observations actually embedded, never the nominal window.
@@ -1011,18 +1259,20 @@ function rangeSummary(history,n){
   return {en:count+(count===1?' observation':' observations')+' · '+(dates||'dates unavailable'),
           zh:count+'个观测 · '+(dates||'日期暂缺')};
 }
-function paintRangeSummary(id,history,n){
+function paintRangeSummary(id,history,n,availability){
   var status=document.getElementById(id);if(!status)return;
   var summary=rangeSummary(history,n);status.textContent='';
   ['en','zh'].forEach(function(lang){
     var span=document.createElement('span');span.className='l-'+lang;
     var parts=summary[lang].split(' · ');span.textContent=parts.shift()+(parts.length?' · ':'');
     if(parts.length){var dates=document.createElement('span');dates.className='msp-range-dates';dates.textContent=parts.join(' · ');span.appendChild(dates);}
+    if(availability&&availability[lang])span.appendChild(document.createTextNode(' · '+availability[lang]));
     status.appendChild(span);
   });
 }
 function syncChartLanguage(){
   var zh=document.documentElement.getAttribute('data-lang')==='zh';
+  document.querySelectorAll('.help').forEach(function(help,i){var tip=help.querySelector('.tip');if(!tip)return;tip.id='msp-help-'+i;tip.setAttribute('role','tooltip');help.setAttribute('aria-describedby',tip.id);help.setAttribute('aria-label',zh?'查看说明':'Read context');});
   var names={21:['1 month','1个月'],63:['3 months','3个月'],126:['6 months','6个月'],252:['1 year','1年'],9999:['All available history','全部可用历史']};
   document.querySelectorAll('.range-btns .rbtn').forEach(function(button){
     var label=names[Number(button.dataset.range)];if(label)button.setAttribute('aria-label',label[zh?1:0]);
@@ -1041,7 +1291,7 @@ function wireRange(sel,key,def,fn,history,statusId){
   function select(value,persist){
     buttons.forEach(function(b){var active=Number(b.dataset.range)===value;b.classList.toggle('on',active);b.setAttribute('aria-pressed',String(active));});
     if(persist)setRange(key,value);
-    fn(value);paintRangeSummary(statusId,history,value);
+    var availability=fn(value);paintRangeSummary(statusId,history,value,availability);
   }
   buttons.forEach(function(b){
     // Native buttons own Enter, Space and taps; no second keyboard activation.
