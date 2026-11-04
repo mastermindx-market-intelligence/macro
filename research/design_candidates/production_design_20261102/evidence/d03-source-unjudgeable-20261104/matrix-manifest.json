@@ -1,0 +1,234 @@
+{
+  "schema": "d03.paper_evidence.v1",
+  "scope": "Source-unjudgeable mobile composition; provisional Draft/HOLD",
+  "date": "2026-11-04",
+  "law_pin": "690e5316629815ae3e78f65ebdec2eb87f0cad16",
+  "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+  "page_id": "p-D-0",
+  "carrier": "Studio Direct C2 Personal / m2studio / guarded Paper adapter",
+  "file_guard": "989079ab7271f971a2886d4d7cbe3968ce15a3050d6385cba3fa00dd8510100b",
+  "guard_is_not_revision": true,
+  "token_content_hash": "640746f9",
+  "boards": [
+    {
+      "nodeId": "115T-0",
+      "width": 320,
+      "theme": "dark",
+      "locale": "en",
+      "source": "110D-0"
+    },
+    {
+      "nodeId": "110D-0",
+      "width": 320,
+      "theme": "dark",
+      "locale": "zh"
+    },
+    {
+      "nodeId": "10WD-0",
+      "width": 320,
+      "theme": "light",
+      "locale": "en"
+    },
+    {
+      "nodeId": "11B9-0",
+      "width": 320,
+      "theme": "light",
+      "locale": "zh",
+      "source": "10WD-0"
+    },
+    {
+      "nodeId": "118J-0",
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "source": "1133-0"
+    },
+    {
+      "nodeId": "1133-0",
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh"
+    },
+    {
+      "nodeId": "10TD-0",
+      "width": 390,
+      "theme": "light",
+      "locale": "en"
+    },
+    {
+      "nodeId": "11DZ-0",
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "source": "10TD-0"
+    }
+  ],
+  "operation_receipts": [
+    {
+      "operation_id": "d03-source-unjudgeable-four-missing-variants-20261104-c2-01",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "d03-source-unjudgeable-variant-copy-20261104-c2-02",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "d03-source-unjudgeable-variant-fonts-20261104-c2-03",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "d03-source-unjudgeable-variant-names-20261104-c2-04",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "d03-source-unjudgeable-cross-product-finish-20261104-c2-05",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    }
+  ],
+  "files": [
+    {
+      "name": "source-unjudgeable-320-dark-zh.jpg",
+      "sha": "748e6cf8dbc9369f433874be5c4aa41fe4138acc",
+      "provenance": "accepted predecessor"
+    },
+    {
+      "name": "source-unjudgeable-320-dark-zh.paper.jsx",
+      "sha": "16ff976422c33f32f4c0ef91aede559d45999a75",
+      "provenance": "accepted predecessor"
+    },
+    {
+      "name": "source-unjudgeable-320-light-en.jpg",
+      "sha": "c11d4b9bef8c0836788e3ea862109a62311db568",
+      "provenance": "accepted predecessor"
+    },
+    {
+      "name": "source-unjudgeable-320-light-en.paper.jsx",
+      "sha": "49f6c88cf554983260388a72d79486489c2fa0bf",
+      "provenance": "accepted predecessor"
+    },
+    {
+      "name": "source-unjudgeable-390-dark-zh.jpg",
+      "sha": "05ab6fbc4ed6ba755dc0157ac6cf359eeaf825a4",
+      "provenance": "accepted predecessor"
+    },
+    {
+      "name": "source-unjudgeable-390-dark-zh.paper.jsx",
+      "sha": "04f4aca00da538d383afbf33da7f127970f18df2",
+      "provenance": "accepted predecessor"
+    },
+    {
+      "name": "source-unjudgeable-390-light-en.jpg",
+      "sha": "fddc82e698d89222bdb55f20c60cede3c94014e4",
+      "provenance": "accepted predecessor"
+    },
+    {
+      "name": "source-unjudgeable-390-light-en.paper.jsx",
+      "sha": "24ec3612eaa052a6ba6cf27d84379ff05c8b00a3",
+      "provenance": "accepted predecessor"
+    },
+    {
+      "name": "source-unjudgeable-320-dark-en.jpg",
+      "sha": "ee808fa24c470999551b791c41fd8990b21c35e0",
+      "nodeId": "115T-0",
+      "provenance": "new native screenshot or post-QA JSX"
+    },
+    {
+      "name": "source-unjudgeable-320-dark-en.paper.jsx",
+      "sha": "8a82c5ae27da8e69906ba60e81de56462db9e389",
+      "nodeId": "115T-0",
+      "provenance": "new native screenshot or post-QA JSX"
+    },
+    {
+      "name": "source-unjudgeable-390-dark-en.jpg",
+      "sha": "8fd452585e947ec92390a6a5385bb057d939b31e",
+      "nodeId": "118J-0",
+      "provenance": "new native screenshot or post-QA JSX"
+    },
+    {
+      "name": "source-unjudgeable-390-dark-en.paper.jsx",
+      "sha": "8d03214b4f553fd8146d403ff27d726d5eb6ed12",
+      "nodeId": "118J-0",
+      "provenance": "new native screenshot or post-QA JSX"
+    },
+    {
+      "name": "source-unjudgeable-320-light-zh.jpg",
+      "sha": "d6e7f40c1b34d91018dceb40d20efe019ff74c40",
+      "nodeId": "11B9-0",
+      "provenance": "new native screenshot or post-QA JSX"
+    },
+    {
+      "name": "source-unjudgeable-320-light-zh.paper.jsx",
+      "sha": "40e4431ebb6682cc599dcb077b6828f6f8108edd",
+      "nodeId": "11B9-0",
+      "provenance": "new native screenshot or post-QA JSX"
+    },
+    {
+      "name": "source-unjudgeable-390-light-zh.jpg",
+      "sha": "d85817a94f7562c2d7092332be554741dadec2dc",
+      "nodeId": "11DZ-0",
+      "provenance": "new native screenshot or post-QA JSX"
+    },
+    {
+      "name": "source-unjudgeable-390-light-zh.paper.jsx",
+      "sha": "6621f12df2a0272f0aa538ba92fde9ea026891f2",
+      "nodeId": "11DZ-0",
+      "provenance": "new native screenshot or post-QA JSX"
+    }
+  ],
+  "focused_contrast_checks": [
+    {
+      "pair": "dark muted/canvas",
+      "fg": "#8B93A1",
+      "bg": "#0F1115",
+      "ratio": 6.106
+    },
+    {
+      "pair": "dark muted/panel",
+      "fg": "#8B93A1",
+      "bg": "#181B21",
+      "ratio": 5.573
+    },
+    {
+      "pair": "dark muted/panel2",
+      "fg": "#8B93A1",
+      "bg": "#1E222A",
+      "ratio": 5.151
+    },
+    {
+      "pair": "dark warning/panel2",
+      "fg": "#E0A030",
+      "bg": "#1E222A",
+      "ratio": 7.014
+    },
+    {
+      "pair": "dark link/panel2",
+      "fg": "#7AA7E0",
+      "bg": "#1E222A",
+      "ratio": 6.4
+    },
+    {
+      "pair": "dark primary/panel",
+      "fg": "#D7DCE3",
+      "bg": "#181B21",
+      "ratio": 12.513
+    },
+    {
+      "pair": "white/primary action",
+      "fg": "#FFFFFF",
+      "bg": "#285FFF",
+      "ratio": 5.035
+    },
+    {
+      "pair": "light muted/canvas",
+      "fg": "#5D6B7E",
+      "bg": "#F7F8FA",
+      "ratio": 5.107
+    }
+  ],
+  "limits": [
+    "Static native Paper compositions; no wired control, live-market or production acceptance claim.",
+    "Retained domain palette and 30px decision title; not exact final F02 token conformance.",
+    "F01/F02 candidate.4 operative; candidate.5 proposed, final joint release unproven.",
+    "Original #9495 T004, R8 ZE5-0 operation and UX Fabric held effects untouched."
+  ]
+}
