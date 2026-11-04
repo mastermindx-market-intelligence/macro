@@ -565,11 +565,13 @@ def render_page(vm: dict, site: Path | None = None) -> None:
 #  Convenience entry point                                                     #
 # --------------------------------------------------------------------------- #
 
-def build_and_render(site: Path | None = None) -> None:
-    """Load committed site artifacts and render the lab page.
+def build_and_render(site: Path | None = None) -> bool:
+    """Rerender committed artifacts without firing, grading or rewriting JSON.
 
-    Called from scripts/build_pick_lab.py after it writes the JSON artifacts.
-    Never raises — a render failure must not break the nightly flow.
+    The nightly builder calls build_vm/render_page directly. This recovery path
+    returns True only after HTML publication completes; False means unconfirmed,
+    not that the previous page is necessarily intact. View-model/render failures
+    remain non-fatal and never raise into the caller.
     """
     site = site or (config.ROOT / "site")
     labdata = site / "labdata"
@@ -602,8 +604,13 @@ def build_and_render(site: Path | None = None) -> None:
         except Exception as exc:  # noqa: BLE001
             log.warning("pick_lab render: could not load t0_indicator.json (%s)", exc)
 
-    vm = build_vm(pick_lab_dict, longhold_dict, t0_dict=t0_dict, fires_dict=fires_dict)
     try:
+        vm = build_vm(pick_lab_dict, longhold_dict, t0_dict=t0_dict, fires_dict=fires_dict)
         render_page(vm, site)
+        return True
     except Exception as exc:  # noqa: BLE001
         log.warning("pick_lab render: page render failed (%s)", exc)
+        print("::warning title=pick_lab::HTML publication failed (non-fatal); "
+              "site/us_stocks_lab.html is not confirmed refreshed from the "
+              "supplied artifact inputs.", flush=True)
+        return False
