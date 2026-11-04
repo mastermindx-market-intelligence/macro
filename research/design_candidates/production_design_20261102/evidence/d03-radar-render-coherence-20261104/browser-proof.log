@@ -1,0 +1,105 @@
+{
+  "fixture": "synthetic stale market inputs; not production market data",
+  "states": [
+    {
+      "name": "01-before-failure-desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "title": "Leader Radar \u00b7 Early-entry desk",
+      "heading": "LEADER RADAR \u00b7 EARLY-ENTRY DESK",
+      "freshness_text": "1 names tracked\n1 with revision data\nData through Jul 12 close \u00b7 updates nightly\nRegime through Jul 11\nRevisions through Jul 10\n?",
+      "visible_price_token": "Data through Jul 12 close",
+      "json_as_of": "2024-07-12",
+      "language": "en",
+      "theme": "light",
+      "json_built_at": "2026-11-04T08:36:52.095901+00:00",
+      "html_sha256": "67c38c31c24718886dbf90c9295d3701e620cb1f72b4e92f366686d0b4eaff1b",
+      "json_sha256": "5e7582225992abacbdf7d671736c6e9940062a7c315ce962e5018e6fffb3e1f2",
+      "page_errors": []
+    },
+    {
+      "name": "02-after-failure-desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "title": "Leader Radar \u00b7 Early-entry desk",
+      "heading": "LEADER RADAR \u00b7 EARLY-ENTRY DESK",
+      "freshness_text": "1 names tracked\n1 with revision data\nData through Jul 12 close \u00b7 updates nightly\nRegime through Jul 11\nRevisions through Jul 10\n?",
+      "visible_price_token": "Data through Jul 12 close",
+      "json_as_of": "2024-07-12",
+      "language": "en",
+      "theme": "light",
+      "json_built_at": "2026-11-04T08:36:52.095901+00:00",
+      "html_sha256": "67c38c31c24718886dbf90c9295d3701e620cb1f72b4e92f366686d0b4eaff1b",
+      "json_sha256": "5e7582225992abacbdf7d671736c6e9940062a7c315ce962e5018e6fffb3e1f2",
+      "page_errors": []
+    },
+    {
+      "name": "03-after-recovery-desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "title": "Leader Radar \u00b7 Early-entry desk",
+      "heading": "LEADER RADAR \u00b7 EARLY-ENTRY DESK",
+      "freshness_text": "1 names tracked\n1 with revision data\nData through Jul 15 close \u00b7 updates nightly\nRegime through Jul 11\nRevisions through Jul 10\n?",
+      "visible_price_token": "Data through Jul 15 close",
+      "json_as_of": "2024-07-15",
+      "language": "en",
+      "theme": "light",
+      "json_built_at": "2026-11-04T08:36:54.690734+00:00",
+      "html_sha256": "619fbe18218ddf89ea0afd5ab34643ef591c42ad84468a5014c81a58f8f4afad",
+      "json_sha256": "f0fa80e5aaf7d38f1dc21b207ffa54b28e72f712c6e1618e044d7a949fed4a7e",
+      "page_errors": []
+    },
+    {
+      "name": "04-after-recovery-mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Leader Radar \u00b7 Early-entry desk",
+      "heading": "\u9f99\u5934\u96f7\u8fbe \u00b7 \u65e9\u671f\u5165\u573a",
+      "freshness_text": "1 \u4e2a\u6807\u7684\u8ffd\u8e2a\u4e2d\n1 \u6709\u9884\u6d4b\u4fee\u8ba2\u6570\u636e\n\u6570\u636e\u622a\u81f37\u670815\u65e5\u6536\u76d8 \u00b7 \u6bcf\u665a\u66f4\u65b0\n\u683c\u5c40\u622a\u81f37\u670811\u65e5\n\u4fee\u8ba2\u622a\u81f37\u670810\u65e5\n?",
+      "visible_price_token": "\u6570\u636e\u622a\u81f37\u670815\u65e5\u6536\u76d8",
+      "json_as_of": "2024-07-15",
+      "language": "zh",
+      "theme": "dark",
+      "json_built_at": "2026-11-04T08:36:54.690734+00:00",
+      "html_sha256": "619fbe18218ddf89ea0afd5ab34643ef591c42ad84468a5014c81a58f8f4afad",
+      "json_sha256": "f0fa80e5aaf7d38f1dc21b207ffa54b28e72f712c6e1618e044d7a949fed4a7e",
+      "page_errors": []
+    }
+  ],
+  "failed_candidate_as_of": "2024-07-15",
+  "failure_warning": [
+    "::warning title=leader_radar::output preparation failed (non-fatal) \u2014 published radar.json and leader_radar.html unchanged; exit 0 does not prove a current page: TemplateSyntaxError: Expected an expression, got 'end of statement block'"
+  ],
+  "result": "PASS: failed rendering preserves the served pair; repaired render advances both"
+}
+build_leader_radar: stale (latest=2024-07-12) — state frozen
+build_leader_radar: stale (latest=2024-07-15) — state frozen
+build_leader_radar: output preparation failed: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/scripts/build_leader_radar.py", line 3272, in build
+    rendered = env.get_template("leader_radar.html.j2").render(leader_radar=payload)
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/tmp/d03-radar-browser-p6vy1qem/templates/leader_radar.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+build_leader_radar: stale (latest=2024-07-15) — state frozen

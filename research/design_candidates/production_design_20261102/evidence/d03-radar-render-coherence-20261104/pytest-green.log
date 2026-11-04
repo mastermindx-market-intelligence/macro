@@ -1,0 +1,30 @@
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 64%]
+........................................................................ [ 85%]
+......................................FF.........                        [100%]
+=================================== FAILURES ===================================
+______ test_committed_representative_pages_reinject_within_prescan_window ______
+tests/test_site_shim.py:298: in test_committed_representative_pages_reinject_within_prescan_window
+    assert p.is_file(), f"representative page missing from checkout: site/{rel}"
+E   AssertionError: representative page missing from checkout: site/us_stocks.html
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/site/us_stocks.html').is_file
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+___________ test_hand_authored_pages_carry_charset_in_prescan_window ___________
+tests/test_site_shim.py:323: in test_hand_authored_pages_carry_charset_in_prescan_window
+    assert p.is_file(), f"hand-authored page missing: {p}"
+E   AssertionError: hand-authored page missing: /Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/site/index.html
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/site/index.html').is_file
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_site_shim.py::test_committed_representative_pages_reinject_within_prescan_window
+FAILED tests/test_site_shim.py::test_hand_authored_pages_carry_charset_in_prescan_window
+2 failed, 335 passed in 114.13s (0:01:54)

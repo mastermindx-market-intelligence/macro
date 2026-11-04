@@ -1,0 +1,43 @@
+{
+  "verified_at": "2026-11-04T08:40:18.377511+00:00",
+  "base_sha": "5a2439d7a99548f6373893980e1952c495abfa48",
+  "fresh_main_sha": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "fresh_main_owned_path_delta": "none",
+  "operation_id": "d03-radar-render-coherence-20261104-c2",
+  "tests": {
+    "build_leader_radar": 172,
+    "leader_lifecycle": 141,
+    "site_shim": 20,
+    "gh_annotation_line_start": 4,
+    "total_distinct_passing": 337,
+    "new_cases": 10,
+    "original_builder_new_cases_failed": 8,
+    "original_builder_new_cases_passed": 2,
+    "sparse_fixture_rerun_passed": 2
+  },
+  "browser": {
+    "states": 4,
+    "result": "PASS: failed rendering preserves the served pair; repaired render advances both",
+    "page_errors": 0
+  },
+  "sha256": {
+    "scripts/build_leader_radar.py": "707a638dd98796258922f0c59bf27110e1c72d6ad1525f9dd8ceafddf08a62d7",
+    "tests/test_build_leader_radar.py": "b56a1b61f1565c20bd10262f9ca0d46573abcf24c327a93fa1b7949d650b2a82"
+  },
+  "holds": [
+    "DRAFT",
+    "no Ready/un-draft",
+    "no label changes",
+    "no enqueue",
+    "no auto-merge",
+    "no merge",
+    "no deploy"
+  ],
+  "release_authority": "Chairman/Sol explicit release of exact change",
+  "limitations": [
+    "pair of file replacements is not a filesystem transaction",
+    "nightly state/data advancement not rolled back",
+    "Foresight and Pick Lab T38 portions remain separate",
+    "no production deployment or user acceptance claimed"
+  ]
+}
