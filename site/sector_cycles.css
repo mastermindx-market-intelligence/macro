@@ -553,3 +553,27 @@ html[data-theme="light"] .sc-openpage { color: #fff; }
 .cc-hz b { font-weight: 700; }
 .cc-hz.hz-muted { color: var(--muted); opacity: .8; }
 .sc-page .sc-hazard { margin-top: 12px; margin-bottom: 0; }
+
+/* Native Central investigation — shared tokens, one chart instance. */
+.sc-native-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; margin:12px 0 20px; }
+.sc-native-heading h2 { margin:4px 0 10px; font-size:clamp(28px,3vw,40px); letter-spacing:-.025em; }
+.sc-native-heading p { margin:0; color:var(--muted); line-height:1.6; }
+.sc-native-kicker { font-size:11px; font-weight:700; letter-spacing:.12em; }
+.sc-native-heading a { display:inline-flex; align-items:center; min-height:44px; flex-shrink:0; }
+.sc-native-status, .sc-native-fallback { font-size:13px; color:var(--muted); line-height:1.6; overflow-wrap:anywhere; }
+.sc-native-context { padding:16px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); line-height:1.65; font-size:14px; }
+.sc-native-context p { margin:0 0 8px; }
+.sc-native-context summary { cursor:pointer; min-height:44px; display:list-item; align-content:center; color:var(--muted); }
+.si-view[data-view="cycles"] #sc-tabs { display:flex; flex-wrap:wrap; width:fit-content; margin:18px 0; }
+.si-view[data-view="cycles"] #sc-tabs button { min-height:44px; }
+.si-view[data-view="cycles"] :is(a,button,summary):focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+.si-view[data-view="cycles"] .cyc-card { cursor:pointer; }
+@media (max-width:767px) {
+  .sc-native-heading { flex-direction:column; gap:8px; }
+  .si-view[data-view="cycles"] .scc-cycle .cyc-stage { padding:10px; }
+  .si-view[data-view="cycles"] .sc-tab { padding:8px 12px; }
+}
+
+.sc-native-provenance { margin-top:12px; color:var(--muted); font-size:12px; line-height:1.6; }
+.sc-native-provenance summary { cursor:pointer; min-height:44px; align-content:center; }
+.sc-hazard-qualification { flex-basis:100%; margin:8px 0 0; color:var(--muted); font-size:12px; line-height:1.6; }

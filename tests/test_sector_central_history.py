@@ -46,7 +46,10 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 TPL = ROOT / "templates"
@@ -82,6 +85,72 @@ def _china_router() -> str:
 
 def _cycles() -> str:
     return CYCLES.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("host", ["shell", "lazy", "explicit", "standalone"])
+def test_public_cycle_focus_respects_navigation_owner(host: str) -> None:
+    """Execute the real public receiver, including its private setFocus writer.
+
+    Listener-only checks missed the in-app writer: opening a card and changing
+    language could erase Central's view hash and its enclosing history state.
+    """
+    script = r"""
+const fs = require('fs'), vm = require('vm'), assert = require('assert');
+const host = process.argv[1], writes = [], received = [];
+const saved = {originNav: {route: '/discover'}, mr: 'XLE'};
+const document = {
+  readyState: 'loading', documentElement: {getAttribute: () => 'en'},
+  getElementById: () => null, querySelectorAll: () => [],
+  querySelector: s => s === '.si-view' && host === 'shell' ? {} : null,
+  addEventListener: () => {}, dispatchEvent: () => {}
+};
+const context = {
+  document, location: {pathname:'/sector_central.html', search:'?g=XLE', hash:'#map'},
+  history: {state: saved, replaceState: (...args) => writes.push(args)},
+  setTimeout: () => 1, clearTimeout: () => {}, CustomEvent: function() {},
+  SECTOR_CYCLES: {meta:{xDomain:[2020,2027]}, phases:[],
+    sectors:[{id:'xle', kind:'sector', now:{}}]},
+  SC_LAZY_EXTRAS: host === 'lazy', innerWidth:1440,
+  addEventListener: () => {}, matchMedia: () => ({matches:false})
+};
+if (host === 'explicit') context.SectorCyclesHost = {onFocus: id => received.push(id)};
+context.window = context;
+vm.runInNewContext(fs.readFileSync(process.argv[2], 'utf8'), context);
+assert.strictEqual(context.SectorCyclesFocus('missing'), false);
+assert.strictEqual(context.SectorCyclesFocus('xle'), true);
+assert.strictEqual(context.SectorCyclesApply({id:'xle'}).status, 'source_unavailable');
+context.SECTOR_CYCLES.meta.asOf='2026-02-31';
+assert.strictEqual(context.SectorCyclesApply({id:'xle',asOf:'2026-02-31'}).status,'source_unavailable');
+context.SECTOR_CYCLES.meta.asOf='2026-11-02';
+assert.strictEqual(context.SectorCyclesApply({id:'xle',asOf:'not-a-date'}).status,'source_unavailable');
+assert.strictEqual(context.SectorCyclesApply({id:'xle',requireSourceDate:true}).status, 'source_unavailable');
+assert.strictEqual(context.SectorCyclesApply({id:'xle',asOf:'2026-10-30'}).status, 'source_mismatch');
+assert.strictEqual(context.SectorCyclesApply({id:'missing'}).status, 'unsupported');
+assert.strictEqual(context.SectorCyclesApply({id:'xle',asOf:'2026-11-02'}).status, 'pending'); // hidden is not applied
+const record=context.SECTOR_CYCLES.sectors[0];
+context.SECTOR_CYCLES_SERIES={xle:{now:{phase:'injected'}}};
+context.SectorCyclesHydrateSeries();
+assert.strictEqual(record.now.phase,undefined,'series cannot replace core facts');
+assert.strictEqual(context.SectorCyclesApply({id:'xle'}).series,'unavailable');
+context.SECTOR_CYCLES_SERIES={};context.SectorCyclesHydrateSeries();
+assert.strictEqual(context.SectorCyclesApply({id:'xle'}).series,'unavailable');
+context.SECTOR_CYCLES_SERIES={xle:{price:[[2026,100]]}};
+context.SectorCyclesHydrateSeries();
+assert.strictEqual(context.SECTOR_CYCLES.sectors[0],record,'hydrate in place for Central mini charts');
+assert.strictEqual(record.price.length,1);
+assert.strictEqual(context.SectorCyclesApply({id:'xle'}).series,'ready');
+if (host === 'standalone') {
+  assert.strictEqual(writes.length, 1);
+  assert.strictEqual(writes[0][0], saved, 'must preserve foreign history state');
+  assert.strictEqual(writes[0][2], '#xle');
+} else {
+  assert.strictEqual(writes.length, 0, 'embedded renderer cannot write the URL');
+  if (host === 'explicit') assert.deepStrictEqual(received, ['xle']);
+}
+"""
+    result = subprocess.run(["node", "-e", script, host, str(CYCLES)],
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
 
 
 # ────────────────────────────────────────────────────── gap 1: the bindings exist
@@ -134,13 +203,13 @@ def test_scroll_memory_restored_only_when_no_explicit_target() -> None:
     native restoration that already settled at the remembered origin is not
     raced — and returns when its activation was superseded."""
     code = _code(_router())
-    assert "else if(typeof SCROLL_MEM[view]==='number'){" in code, (
+    assert "else if(typeof SCROLL_MEM[view]==='number' && !cycleOpening){" in code, (
         "restore lost its no-entry guard or moved out of the no-target branch"
     )
     m = re.search(r"requestAnimationFrame\(function\(\)\{\s*"
                   r"if\(gen!==SCROLL_GEN\) return;\s*"
                   r"if\(window\.scrollY!==SCROLL_MEM\[view\]\) "
-                  r"window\.scrollTo\(0,SCROLL_MEM\[view\]\|\|0\);\s*\}\)", code)
+                  r"window\.scrollTo\(0,SCROLL_MEM\[view\]\|\|0\);", code)
     assert m, (
         "restore must be a generation-guarded frame that compares before it writes"
     )
@@ -201,7 +270,7 @@ def test_cycles_binds_popstate_and_hashchange_to_one_shared_reader() -> None:
         "boot() must keep applying the landing deep link after first paint"
     )
     pat = re.compile(
-        r'if \(!window\.SC_LAZY_EXTRAS && !document\.querySelector\("\.si-view"\)\) \{\s*'
+        r'if \(!window\.SectorCyclesHost && !window\.SC_LAZY_EXTRAS && !document\.querySelector\("\.si-view"\)\) \{\s*'
         r"var lastNavHref = null;\s*"
         r"var syncFocusHash = function \(\) \{\s*"
         r"if \(location\.href === lastNavHref\) return;\s*"
@@ -241,7 +310,7 @@ def test_cycles_traversal_never_rewrites_the_entry_url() -> None:
     assert "function setFocus(id, fromHistory) {" in code, (
         "setFocus must take the fromHistory traversal flag"
     )
-    assert re.search(r"if \(!fromHistory\) try \{ history\.replaceState", code), (
+    assert re.search(r"if \(!fromHistory\) \{\s*if \(embedded\(\)\) notifyHostFocus\(id\);\s*else try \{ history\.replaceState\(history.state", code), (
         "the closing replaceState must be skipped on the traversal path"
     )
 
@@ -325,7 +394,7 @@ def test_cycles_in_app_focus_write_resets_the_traversal_dedupe() -> None:
     code = _code(_cycles())
     assert "var _navDedupeReset = null;" in code, "the dedupe reset hook must be declared"
     assert re.search(
-        r"if \(!fromHistory\) try \{ history\.replaceState\([^\n]*\); "
+        r"else try \{ history\.replaceState\([^\n]*\); "
         r"if \(_navDedupeReset\) _navDedupeReset\(\); \} catch",
         code,
     ), "the in-app replaceState must reset the traversal dedupe inside the same try"
@@ -338,3 +407,58 @@ def test_cycles_in_app_focus_write_resets_the_traversal_dedupe() -> None:
         "applyFocusHash must reach setFocus on the traversal path (fromHistory=true)"
     )
     assert "setFocus(h);" not in block.group(1), "no traversal-path write may remain"
+
+
+def test_native_cycle_host_keeps_origin_and_requires_explicit_newer_snapshot():
+    """Run the host's real routing/URL/state code against the receiver contract.
+
+    This is executable navigation proof, not browser layout or visual proof.
+    The renderer's public receiver is exercised separately above.
+    """
+    js = r"""
+const vm=require('vm'), fs=require('fs'), assert=require('assert');
+let url=new URL('https://fixture.test/sector_central.html?g=XLE&universe=us#map');
+const dl={}, wl={}, frames=[], applied=[];
+let doc, context;
+function node(id) {return {id,hidden:false,dataset:{},isConnected:true,textContent:'',
+  classList:{toggle(){}},getAttribute:()=>null,setAttribute(){},removeAttribute(){},
+  addEventListener(){},getBoundingClientRect:()=>({width:900}),
+  focus(){doc.activeElement=this;},closest:s=>s==='.si-view'?{}:null};}
+const nodes={};['sc-cycle-status','sc-native-study','sc-cycle-return','sc-cycle-latest','sc-cycle-heading'].forEach(id=>nodes[id]=node(id));
+const views=['overview','map','cycles','moving','money','explore','confluence'].map(v=>{const n=node(v);n.getAttribute=()=>v;return n;});
+doc={title:'Sector Intelligence',documentElement:{getAttribute:()=> 'en'},activeElement:node('unrelated'),
+  getElementById:id=>nodes[id]||null,querySelectorAll:s=>s==='.si-view'?views:[],
+  querySelector:s=>s.includes('si-view[data-view')?views.find(v=>s.includes(v.id)):null,
+  createElement:()=>node('script'),head:{appendChild(){}},
+  addEventListener:(e,f)=>(dl[e]||=[]).push(f),dispatchEvent:e=>(dl[e.type]||[]).forEach(f=>f(e))};
+const entries=[{url:url.href,state:{originNav:{source:'market'},mr:'XLE'}}]; let at=0;
+const history={get state(){return entries[at].state},get length(){return entries.length},
+ replaceState(s,_,u){url=new URL(u,url);entries[at]={url:url.href,state:s}},
+ pushState(s,_,u){url=new URL(u,url);entries.splice(++at);entries.push({url:url.href,state:s})},
+ back(){at--;url=new URL(entries[at].url);(wl.popstate||[]).forEach(f=>f({}));(wl.hashchange||[]).forEach(f=>f({}));}};
+context={document:doc,history,URL,URLSearchParams,scrollY:650,scrollTo(){},
+ get location(){return url},Event:class{constructor(type){this.type=type}},CustomEvent:class{constructor(type,options={}){this.type=type;this.detail=options.detail}},
+ addEventListener:(e,f)=>(wl[e]||=[]).push(f),dispatchEvent(){},
+ requestAnimationFrame:f=>frames.push(f),
+ SECTOR_CENTRAL:{measured_read:{generation:{session_end:'2026-10-30'}}},
+ SectorCyclesApply:c=>{applied.push(c);return {status:c.asOf&&c.asOf!=='2026-11-02'?'source_mismatch':'applied',asOf:'2026-11-02',series:'ready'}}};
+context.window=context;vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),context);
+const opener=node('mr-cycle-link');context.SectorCentralOpenCycle('xle',opener);
+assert.strictEqual(url.hash,'#cycles');assert.strictEqual(url.searchParams.get('g'),'XLE');
+assert.strictEqual(url.searchParams.get('universe'),'us');assert.strictEqual(history.state.originNav.source,'market');
+assert.strictEqual(nodes['sc-cycle-status'].dataset.state,'source_mismatch');assert.strictEqual(nodes['sc-native-study'].hidden,true);
+assert.strictEqual(doc.activeElement.id,'sc-cycle-heading');assert.strictEqual(frames.length,0);
+function click(id){const target={closest:s=>s==='#'+id?nodes[id]:null};(dl.click||[]).forEach(f=>f({target,button:0,preventDefault(){}}));}
+click('sc-cycle-latest');assert.strictEqual(url.searchParams.get('cycleSource'),'latest');
+assert.strictEqual(nodes['sc-native-study'].hidden,false);assert.strictEqual(applied.at(-1).asOf,null);
+context.SectorCyclesHost.onFocus(null,'baskets');assert.strictEqual(url.searchParams.get('cycleFamily'),'baskets');assert.strictEqual(url.searchParams.has('cycle'),false);
+context.__siRoute();assert.strictEqual(applied.at(-1).family,'baskets');
+click('sc-cycle-return');assert.strictEqual(url.href,entries[0].url);assert.strictEqual(url.hash,'#map');
+frames.splice(0).forEach(f=>f());assert.strictEqual(doc.activeElement.id,'mr-cycle-link');
+context.SectorCentralOpenCycle('xlk',opener);assert.strictEqual(url.searchParams.has('cycleSource'),false);
+assert.strictEqual(url.searchParams.has('cycleFamily'),false);
+history.replaceState({...history.state,siCyclesOrigin:{href:'https://unrelated.example/'}},'',url.href);
+context.__siRoute();assert.strictEqual(nodes['sc-cycle-return'].href,'#map');
+"""
+    result = subprocess.run(["node", "-e", js, str(ROUTER)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr

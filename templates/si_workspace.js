@@ -9,13 +9,14 @@
    ══════════════════════════════════════════════════════════════════════════════ */
 (function(){
 'use strict';
-/* Six views. The sixth, 'confluence', is the subsector-confluence board brought in from
+/* Native Cycles joins the existing views. 'confluence' is the subsector-confluence board brought in from
    the standalone subsectors page (US parity with the China desk's 5th view, #4637, which
    deferred this side). It ships its own hero and its own payload (subsectors.js,
    lazy-mounted below), so it is a promise the data can keep. It has no si-read slot — its
    hero is its read. */
-var VIEWS=['overview','map','moving','money','explore','confluence'];
+var VIEWS=['overview','map','cycles','moving','money','explore','confluence'];
 var TITLES={overview:['Brief','简报'],map:['Market map','市场图谱'],
+  cycles:['Cycles','周期'],
   moving:['Rotation','轮动'],money:['Breadth & money','广度与资金'],
   explore:['Themes & compare','主题与比较'],confluence:['Entry evidence','入场证据']};
 /* View glyphs = the estate's hand-drawn masked-icon family (product-nav-icons /
@@ -24,6 +25,7 @@ var TITLES={overview:['Brief','简报'],map:['Market map','市场图谱'],
 var GLYPH={
   overview:'dash-icon submenu-icon-intelligence',
   map:'dash-icon dash-icon-compass',
+  cycles:'dash-icon dash-icon-compass',
   moving:'dash-icon submenu-icon-rotation',
   money:'dash-icon submenu-icon-flow',
   explore:'dash-icon dash-icon-search',
@@ -39,8 +41,7 @@ var GLYPH={
    navigates away to the basket page, so the router must not touch that hash.
    ── 21 / 23 split (Meta-CEO B W7A_7056_HEAL) ──
    The parsed LEGACY_ANCHORS literal below (introduced by the var keyword on
-   the next non-comment line) stays EXACTLY 21 keys, byte-identical to
-   origin/main, so tests/test_xpv2_sector_r3_fixture.py::TestLegacyAnchors
+   the next non-comment line) stays EXACTLY 21 keys (D05 moves sc-cyclemap to its native Cycles view), so tests/test_xpv2_sector_r3_fixture.py::TestLegacyAnchors
    (real parser reads that literal) continues to assert 21. The S2 constant
    (defined just below) merges two non-theme keys at runtime — one routing
    the accumulation anchor to moving, and one routing a new si-heat-section
@@ -55,7 +56,7 @@ var LEGACY_ANCHORS={
   'grader':['overview','grader'],
   'si-map':['map','si-map'],
   'rotmap-section':['map','rotmap-section'],
-  'sc-cyclemap':['map','sc-cyclemap'],
+  'sc-cyclemap':['cycles','sc-cyclemap'],
   'board':['map','board'],
   'si-movement':['moving','si-movement'],
   'rc-events-mount':['moving','rc-events-mount'],
@@ -99,6 +100,7 @@ for(var _k in LEGACY_ANCHORS_S2){LEGACY_ANCHORS[_k]=LEGACY_ANCHORS_S2[_k];}
    dependency explicitly — `loaded` is global, so it is fetched at most once. */
 var LAZY={
   map:['@cycles'],
+  cycles:['@cycles'],
   moving:['subsector_rotation.js','rotation_events.js','desk_watch.js'],
   money:['heatmap.js'],
   explore:['subsector_rotation.js','time_machine.js'],
@@ -309,6 +311,8 @@ var current=null;
    no entry and keeps native behaviour; history.scrollRestoration is never touched —
    this is additive memory on top of the browser's, not a replacement for it. */
 var SCROLL_MEM={};
+var FOCUS_MEM={};
+var cycleOpening=false;
 var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes any
                        still-pending replay frame from an earlier activation — a stale
                        frame must not scroll a view that is no longer on screen */
@@ -317,6 +321,8 @@ function activate(view,target){
   var gen=++SCROLL_GEN;   /* every activation invalidates pending replay frames */
   /* capture BEFORE the .on swap: the section about to be hidden still owns the viewport */
   if(current) SCROLL_MEM[current]=window.scrollY;
+  var active=document.activeElement;
+  if(!cycleOpening && current!==view && active && active.closest && active.closest('.si-view')) FOCUS_MEM[current]=active;
   var i, secs=document.querySelectorAll('.si-view'), btns=document.querySelectorAll('.si-view-btn');
   for(i=0;i<secs.length;i++) secs[i].classList.toggle('on',secs[i].getAttribute('data-view')===view);
   for(i=0;i<btns.length;i++){
@@ -359,12 +365,13 @@ function activate(view,target){
      display:none — lightweight-charts binds autoSize at creation and a chart born
      zero-wide never recovers — so they wait for this event to draw with a real box. */
   try{ document.dispatchEvent(new CustomEvent('si:view',{detail:view})); }catch(e){}
+  if(view==='cycles') syncCycleContext();
   reads();
   if(target){
     var el=document.getElementById(target);
     if(el){ try{ el.scrollIntoView({block:'start'}); }catch(e){ el.scrollIntoView(); } }
-    else if(history.replaceState) history.replaceState(null,'','#'+view);
-  }else if(typeof SCROLL_MEM[view]==='number'){
+    else if(history.replaceState) history.replaceState(history.state,'','#'+view);
+  }else if(typeof SCROLL_MEM[view]==='number' && !cycleOpening){
     /* hashchange path with no explicit target (Back/Forward between views): replay where
        this view was last left, one frame after the section swap so the layout has settled.
        First visit (no entry) never reaches here and native behaviour stands. RI09: the
@@ -376,6 +383,8 @@ function activate(view,target){
     requestAnimationFrame(function(){
       if(gen!==SCROLL_GEN) return;
       if(window.scrollY!==SCROLL_MEM[view]) window.scrollTo(0,SCROLL_MEM[view]||0);
+      var focus=FOCUS_MEM[view];
+      if(focus && focus.isConnected && focus.getBoundingClientRect().width) focus.focus({preventScroll:true});
     });
   }
 }
@@ -387,8 +396,107 @@ function route(){
   if(VIEWS.indexOf(h)>=0){ activate(h,null); return; }
   if(LEGACY_ANCHORS[h]){ activate(LEGACY_ANCHORS[h][0],LEGACY_ANCHORS[h][1]); return; }
   activate('overview',null);                                        // unknown → overview
-  if(!h&&history.replaceState) history.replaceState(null,'','#overview');
+  if(!h&&history.replaceState) history.replaceState(history.state,'','#overview');
 }
+
+/* Cycles is a view of this router, not an entity-hash router inside it. The
+   query preserves the measured selection (?g), shell origin and every other
+   existing parameter. No receiver applies an older cutoff to latest evidence. */
+var cycleEntrySeq=0, cycleEntries={};
+function cycleMessage(en,zh){ return isZh()?zh:en; }
+function cycleOrigin(){
+  var origin=(history.state||{}).siCyclesOrigin;
+  if(!origin || !origin.href) return null;
+  try{
+    var u=new URL(origin.href,location.href), h=u.hash.slice(1);
+    if(u.origin!==location.origin || u.pathname!==location.pathname) return null;
+    if(VIEWS.indexOf(h)<0 && !LEGACY_ANCHORS[h]) return null;
+    return u.pathname+u.search+u.hash;
+  }catch(e){ return null; }
+}
+function cycleSourceDate(){
+  var m=(window.SECTOR_CENTRAL||{}).measured_read||{};
+  return (m.generation||{}).session_end||null;
+}
+function syncCycleContext(){
+  if(current!=='cycles') return;
+  var u=new URL(location.href), id=u.searchParams.get('cycle');
+  var note=document.getElementById('sc-cycle-status');
+  var study=document.getElementById('sc-native-study');
+  var back=document.getElementById('sc-cycle-return');
+  var latest=document.getElementById('sc-cycle-latest');
+  var useLatest=u.searchParams.get('cycleSource')==='latest';
+  var origin=cycleOrigin();
+  if(back) back.href=origin||'#map';
+  // Allow layout before asking the receiver. A rejected context is hidden
+  // immediately afterwards, so no current detail masquerades as requested history.
+  if(study) study.hidden=false;
+  var receipt=window.SectorCyclesApply ? window.SectorCyclesApply({id:id,family:u.searchParams.get('cycleFamily'),asOf:id&&!useLatest?cycleSourceDate():null,requireSourceDate:!!id&&!useLatest}) : {status:'pending'};
+  var messages={
+    pending:['Loading cycle evidence…','正在载入周期证据…'],
+    unsupported:['This instrument has no cycle record in this source. Return to the market map.','该数据源没有此标的的周期记录。请返回市场图谱。'],
+    source_unavailable:['The cycle source date is unavailable. This selection cannot be verified.','周期数据日期不可用，无法核对此选择。'],
+    source_mismatch:['Cycle and sector evidence have different dates. This selection is withheld until the sources align.','周期与板块证据日期不同。来源对齐前暂不显示该选择。']
+  };
+  var message=messages[receipt.status];
+  if(receipt.status==='applied') {
+    message=receipt.series==='unavailable' ? ['Detailed price history could not load. The core cycle view remains available.','详细价格历史载入失败，基础周期视图仍可使用。'] :
+      receipt.series==='pending' ? ['Cycle evidence loaded; detailed price history is loading.','周期证据已载入，详细价格历史正在载入。'] :
+      ['Cycle evidence through '+receipt.asOf+'. Current reconstruction.','周期证据截至 '+receipt.asOf+'。当前重建结果。'];
+  }
+  if(note){ note.dataset.state=receipt.status; note.textContent=cycleMessage.apply(null,message||messages.source_unavailable); }
+  if(note && receipt.status==='applied' && useLatest && cycleSourceDate()!==receipt.asOf) note.textContent+=cycleMessage(' Sector origin: '+(cycleSourceDate()||'date unavailable')+'.',' 板块原始日期：'+(cycleSourceDate()||'日期不可用')+'。');
+  if(latest) latest.hidden=!(receipt.asOf && (receipt.status==='source_mismatch'||receipt.status==='source_unavailable'));
+  if(study) study.hidden=receipt.status!=='applied' && receipt.status!=='pending';
+}
+window.SectorCyclesHost={onFocus:function(id,family){
+  if(current!=='cycles') return;
+  var u=new URL(location.href);
+  if(id) u.searchParams.set('cycle',id); else u.searchParams.delete('cycle');
+  u.searchParams.set('cycleFamily',family||'sectors');
+  history.replaceState(history.state,'',u.pathname+u.search+u.hash);
+}};
+window.SectorCentralOpenCycle=function(id,trigger){
+  if(!id) return false;
+  var u=new URL(location.href), origin=u.pathname+u.search+u.hash;
+  u.searchParams.delete('cycleSource');
+  u.searchParams.delete('cycleFamily');
+  u.searchParams.set('cycle',id); u.hash='cycles';
+  if(current!=='cycles') {
+    if(trigger) FOCUS_MEM[current]=trigger;
+    var token=String(++cycleEntrySeq);
+    history.pushState(Object.assign({},history.state,{siCyclesOrigin:{href:origin},siCyclesEntry:token}),'',u.pathname+u.search+u.hash);
+    cycleEntries[token]={origin:origin,length:history.length};
+  } else history.replaceState(history.state,'',u.pathname+u.search+u.hash);
+  cycleOpening=true;
+  activate('cycles',null);
+  cycleOpening=false;
+  var heading=document.getElementById('sc-cycle-heading');
+  if(heading) heading.focus({preventScroll:true});
+  return true;
+};
+document.addEventListener('click',function(e){
+  if(e.defaultPrevented || e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  var a=e.target.closest('a[data-cycle-id]');
+  if(a && window.SectorCentralOpenCycle(a.getAttribute('data-cycle-id'),a)) e.preventDefault();
+  var back=e.target.closest('#sc-cycle-return');
+  var token=(history.state||{}).siCyclesEntry;
+  var owned=token&&cycleEntries[token];
+  // A later push can copy history.state. Conservatively use the local origin
+  // link instead of assuming the previous entry is still our opener.
+  if(back && owned && owned.origin===cycleOrigin() && owned.length===history.length) { e.preventDefault(); history.back(); }
+  if(e.target.closest('#sc-cycle-latest')) {
+    var u=new URL(location.href);u.searchParams.set('cycleSource','latest');
+    history.replaceState(history.state,'',u.pathname+u.search+u.hash);
+    syncCycleContext();
+    var heading=document.getElementById('sc-cycle-heading');
+    if(heading) heading.focus({preventScroll:true});
+  }
+});
+['sc:cycles-ready','sc:series-ready','sc:series-error'].forEach(function(name){ document.addEventListener(name,syncCycleContext); });
+window.addEventListener('popstate',function(){
+  if(current==='cycles' && location.hash==='#cycles') syncCycleContext();
+});
 
 window.__siViewReads=reads;
 window.__siRoute=route;
@@ -396,6 +504,7 @@ window.addEventListener('hashchange',route);
 window.addEventListener('mmx:shell-location',route);
 document.addEventListener('langchange',function(){
   try{ document.title=BASE_TITLE+' · '+TITLES[current||'overview'][isZh()?1:0]; }catch(e){}
+  syncCycleContext();
 });
 route();
 })();

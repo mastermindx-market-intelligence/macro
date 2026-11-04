@@ -522,7 +522,7 @@ EXPECTED_LEGACY_ANCHORS = {
     "grader": ["overview", "grader"],
     "si-map": ["map", "si-map"],
     "rotmap-section": ["map", "rotmap-section"],
-    "sc-cyclemap": ["map", "sc-cyclemap"],
+    "sc-cyclemap": ["cycles", "sc-cyclemap"],
     "board": ["map", "board"],
     "si-movement": ["moving", "si-movement"],
     "rc-events-mount": ["moving", "rc-events-mount"],

@@ -49,9 +49,9 @@
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   // Rotation Command RC-R3: active rotation events + fragmentation flags for THIS page's
-  // cards, fetched client-side from the same two artifacts the subsector_rotation rail
-  // reads. Keyed by lowercase sector id (== s.id == event.sector == fragRow.key). Empty
-  // until loadRotation() resolves; a missing/404 file degrades to no chips (never throws).
+  // cards, supplied by the producer's aligned rotation_context snapshot. Keyed by
+  // lowercase sector id (== s.id == event.sector == fragRow.key). Missing or
+  // incompatible context stays unavailable; a later raw fetch cannot replace it.
   var ROT_BY_SEC = {};   // 'xlk' -> [event, ...]
   var FRAG_BY_KEY = {};  // 'xlk' -> fragmentation row (only when .fragmented)
 
@@ -71,6 +71,15 @@
   // family = which independent SECTION is active: the 11 sector ETFs (clean default)
   // or the 34 thematic baskets (their own space). Only one family is ever on screen.
   var state = { mode: "osc", scale: "log", focus: null, family: "sectors" };
+  // A host owns navigation explicitly. The two older embedding signals remain
+  // defensive guards for hosts (including China) that predate this contract.
+  function embedded() {
+    return !!(window.SectorCyclesHost || window.SC_LAZY_EXTRAS || document.querySelector(".si-view"));
+  }
+  function notifyHostFocus(id) {
+    var host = window.SectorCyclesHost;
+    if (host && typeof host.onFocus === "function") host.onFocus(id, state.family);
+  }
   function activeList() { return FAM[state.family] ? FAM[state.family].list() : SECTORS; }
   function isActive(s) { return s.kind === (FAM[state.family] || FAM.sectors).kind; }
   // helpers to distinguish "basket-like" families (all non-sectors) from the sectors family
@@ -187,26 +196,15 @@
   };
   function tiltOf(s) { return TILT[(s.proj || {}).tilt] || TILT.mixed; }
 
-  /* ---- W3.6: ontology STANCE + DIVERGENCE rendering ----------------------
-     The kernel (engine/cycle_ontology.resolve_state) stamps the resolved action
-     into now.stance / now.stance_zh / now.tone and the "clocks disagree" flag into
-     now.divergence / now.divergence_note{,_zh}.  JS renders those stamped outputs —
-     it never recomputes a stance (D1 doctrine).  tone → an existing root color token
-     so the zh up/down flip keeps working with zero new color logic (A18):
-       bullish → --up  (flips red/green in zh)   bearish → --down (flips in zh)
-       caution → --warn (no flip)   anticipatory → accent (no flip)   neutral → --muted (no flip)
-     Only the bullish/bearish tones ride flip-sensitive tokens; the direction-less
-     stances (WAIT / GET READY / TRIM / COUNTERTREND ONLY / HIGH-RISK BOUNCE) do not. */
-  var TONE_CLS = {
-    bullish: "st-bull", bearish: "st-bear", caution: "st-caut",
-    anticipatory: "st-antic", neutral: "st-neu"
-  };
-  function stanceLabel(nw) { return curLang() === "zh" ? (nw.stance_zh || nw.stance) : nw.stance; }
+  /* Producer doctrine fields own the visible research stance. The original
+     engine classification stays in the provenance drawer; no browser-side
+     stance-to-doctrine mapping or model recomputation occurs. */
+  function stanceLabel(nw) { return L(nw.doctrine_stance_en, nw.doctrine_stance_zh); }
   function stanceHTML(nw) {
-    if (!nw || !nw.stance) return "";
-    var cls = TONE_CLS[nw.tone] || "st-neu";
-    return '<span class="cc-stance ' + cls + '" title="' +
-      L("Resolved stance · engine", "综合策略 · 引擎") + '">' + stanceLabel(nw) + '</span>';
+    if (!nw || !stanceLabel(nw)) return "";
+    var ink = ['ok','warn','muted'].indexOf(nw.doctrine_ink) >= 0 ? nw.doctrine_ink : 'muted';
+    return '<span class="cc-stance st-neu" style="color:var(--' + ink + ')" title="' +
+      L("Research stance · source", "研究立场 · 数据源") + '">' + esc(stanceLabel(nw)) + '</span>';
   }
   // amber "clocks disagree" chip — rendered ONLY when the cycle read and the timing
   // ladder disagree (D1 §2.3).  Replaces two contradictory action badges with one honest chip.
@@ -222,6 +220,52 @@
       (note ? '<span class="cc-diverge-note">' + esc(note) + '</span>' : "") + '</div>';
   }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function phaseAgeText(age) {
+    if (age && (age.status === "measured" || age.status === "lower_bound") &&
+        Number.isInteger(age.sessions) && age.sessions > 0) {
+      return (age.status === "lower_bound" ? L("At least ", "至少 ") : "") +
+        age.sessions + L(age.sessions === 1 ? " trading session" : " trading sessions", " 个交易日");
+    }
+    var reasons = {
+      not_logged: ["Not recorded for this family", "该类别尚未记录"],
+      insufficient_history: ["Not enough recorded history", "记录历史不足"],
+      unknown_phase: ["Phase unavailable", "阶段不可用"],
+      source_unavailable: ["Recorded history unavailable", "历史记录不可用"]
+    };
+    var reason = reasons[age && age.status] || reasons.source_unavailable;
+    return L(reason[0], reason[1]);
+  }
+  function recordedPhaseLabel(nw) {
+    var zh={Peak:'高位',Expansion:'扩张',Downturn:'回落',Recovery:'修复',Trough:'低谷'};
+    return nw.phase_v2 ? L(nw.phase_v2,zh[nw.phase_v2]||nw.phase_v2) : L('unavailable','不可用');
+  }
+  function renderContext() {
+    var node = document.getElementById("sc-native-context");
+    if (!node) return;
+    var s = byId[state.focus], nw = s && s.now || {}, age = nw.phase_v2_age;
+    var facts = [L("Cycle source through ", "周期数据截至 ") + (META.asOf || L("unavailable", "不可用"))];
+    if (s) {
+      facts.push(nm(s) + " · " + (s.ticker || s.id));
+      facts.push(L("Recorded phase: ", "已记录阶段：") + recordedPhaseLabel(nw));
+      facts.push(L("Current phase age: ", "当前阶段时长：") + phaseAgeText(age));
+      // Doctrine is producer-owned. Never infer it from the old engine stance.
+      facts.push(L("Research stance: ", "研究立场：") +
+        (L(nw.doctrine_stance_en, nw.doctrine_stance_zh) || L("not published", "尚未发布")));
+    }
+    node.innerHTML = '<p>' + facts.map(esc).join(' · ') + '</p>' +
+      '<p>' + L("Current reconstruction. Chart history is not a record of what was known then.",
+        "当前重建结果。图中历史不等同于当时已知的记录。") + '</p>' +
+      '<details><summary>' + L("Method & source", "方法与来源") + '</summary><p>' +
+      esc(L("Benchmark: ", "基准：") + (META.benchmark || "—")) + ' · ' +
+      esc(L("Phase-age method: ", "阶段时长方法：") + (age && age.method || "—")) + ' · ' +
+      esc(L("Phase definition: ", "阶段定义：") + (nw.phase_v2 || "—")) + ' · ' +
+      esc(L("Phase observed from: ", "阶段观测起点：") + (age && age.observed_from || "—")) +
+      ' · ' + esc(L("Engine stance (provenance): ", "引擎立场（来源）：") + (L(nw.stance,nw.stance_zh) || "—")) +
+      '</p><p>' + L("Historical calibration does not establish current model validity. Live feature parity: ",
+        "历史校准不代表当前模型有效。实时特征一致性：") +
+      esc((META.live_hazard_parity || {}).verdict || L("not supplied", "未提供")) +
+      '</p></details>';
+  }
 
   /* ---- W3.9: FX-decomposition UX (INTL/country page only) ----------------
      The country card's PRIMARY chart/position is now the LOCAL-currency equity
@@ -476,13 +520,16 @@
 
   function mountHero() {
     var node = document.getElementById("sc-chart");
-    if (!node) return;
+    // Central also loads cycle data for its map. Never create a zero-width
+    // chart while the separate Cycles view is hidden; mount it on si:view.
+    if (!node || heroChart || !node.getBoundingClientRect().width) return;
     heroChart = window.MMChart.create(node, heroSpec());
     heroChart.setHidden(chartHidden);
     if (META.xDomainDefault) heroChart.setView(DEFAULT_VIEW.slice(), false);   // open on the ~7y home view
     buildZoom();
     // chart-click → if a sector is focused, open the leg under the cursor
     node.addEventListener("click", onChartClick);
+    if (state.focus) heroChart.focus(state.focus);
   }
 
   function onChartClick(ev) {
@@ -776,7 +823,7 @@
       if (isBasketLike()) { mountBaskets(); bask.style.display = ""; bask.classList.remove("open"); }
       else { bask.style.display = "none"; bask.classList.remove("open"); }
     }
-    document.querySelectorAll("#sc-tabs .sc-tab").forEach(function (t) { var on = t.getAttribute("data-fam") === state.family; t.classList.toggle("on", on); t.setAttribute("aria-selected", on ? "true" : "false"); });
+    document.querySelectorAll("#sc-tabs .sc-tab").forEach(function (t) { var on = t.getAttribute("data-fam") === state.family; t.classList.toggle("on", on); t.setAttribute(t.getAttribute("role") === "tab" ? "aria-selected" : "aria-pressed", on ? "true" : "false"); });
     var ttl = document.getElementById("sc-hero-title");
     if (ttl) {
       if (state.family === "baskets") {
@@ -792,7 +839,7 @@
     }
   }
   function switchFamily(fam) {
-    if (fam === state.family) return;
+    if (!FAM[fam] || fam === state.family) return;
     state.family = fam; state.focus = null;
     mobileSel = null; mobileShowAll = false;   // each family opens on its own leaders default
     if (heroChart) heroChart.focus(null);
@@ -813,7 +860,10 @@
   }
   function wireFamily() {
     document.querySelectorAll("#sc-tabs .sc-tab").forEach(function (t) {
-      t.addEventListener("click", function () { switchFamily(t.getAttribute("data-fam")); });
+      t.addEventListener("click", function () {
+        switchFamily(t.getAttribute("data-fam"));
+        setFocus(null);  // also clear the host's entity query, without changing its view
+      });
     });
     var ns = document.getElementById("sc-tab-n-sec"), nb = document.getElementById("sc-tab-n-bsk");
     var nn = document.getElementById("sc-tab-n-ndx"), nr = document.getElementById("sc-tab-n-rut");
@@ -1037,7 +1087,7 @@
   }
   function mountCards() {
     var grid = document.getElementById("sc-cards");
-    if (!grid) return;
+    if (!grid || !grid.getBoundingClientRect().width) return;
     Object.keys(sparks).forEach(function (k) { try { sparks[k].destroy(); } catch (e) {} });
     sparks = {};
     grid.innerHTML = "";
@@ -1046,6 +1096,9 @@
       var nw = s.now, tilt = tiltOf(s);
       var card = el("article", "cyc-card");
       card.setAttribute("data-id", s.id);
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      keyActivate(card);
       card.style.setProperty("--c", s.accent);           // ETF identity dot
       card.style.setProperty("--ph", phaseHue(nw.phase)); // card chrome reads by CYCLE PHASE
       if (isBasketRec(s) && basketShown[s.id]) card.classList.add("sel");
@@ -1119,7 +1172,11 @@
       if (isCnMobile()) { if (id) openSheet("half"); else closeSheet(); }   // hidden-at-rest detent sheet
       else if (id) expandSheet(true);                                       // US legacy peek sheet
     }
-    if (!fromHistory) try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); if (_navDedupeReset) _navDedupeReset(); } catch (e) {}
+    renderContext();
+    if (!fromHistory) {
+      if (embedded()) notifyHostFocus(id);
+      else try { history.replaceState(history.state, "", id ? "#" + id : location.pathname + location.search); if (_navDedupeReset) _navDedupeReset(); } catch (e) {}
+    }
   }
 
   /* ---- detail panel ------------------------------------------------------ */
@@ -1172,7 +1229,7 @@
       : "";
     var cell = dir + "/" + key;
     var en = pass
-      ? ("Calibrated model probability — the " + cell + " cell PASSED the W4.2 gate " +
+      ? ("Historical calibration result — the " + cell + " cell PASSED the W4.2 gate " +
          "vs the family-stratified KM baseline (OOS Brier + month-block bootstrap CI + BH-FDR). " +
          "Epoch: " + epoch + revOpt + ". Cohort still accruing. " +
          "Not checked against later outcomes.")
@@ -1190,7 +1247,7 @@
     return L(en, zh);
   }
   function _hzBadge(pass) {
-    return pass ? '<span class="hz-badge hz-pass">' + L("PASS", "通过") + '</span>'
+    return pass ? '<span class="hz-badge hz-pass">' + L("HISTORICAL PASS", "历史通过") + '</span>'
                 : '<span class="hz-badge hz-prior">' + L("PRIOR", "先验") + '</span>';
   }
   // Full 1m/3m/6m row set for the detail sidebar (mirrors cycle.html's hazardLine).
@@ -1220,8 +1277,9 @@
         "PASS cells: isotonic-calibrated hazard model (calibration-gated vs KM, W4.2 gate). " +
         "PRIOR cells: KM base rate, shown muted. Display-only context — never a signal.",
         "开放周期段在各时间窗内出现下一个已确认拐点的概率。PASS=经W4.2门槛校准的模型输出；PRIOR=KM基准率（弱化显示）。仅供展示，绝非信号。")) + '">' +
-      L("Turn hazard (calibrated)", "转折风险（校准）") + '</span>' +
+      L("Turn timing · historical calibration", "转折时间 · 历史校准") + '</span>' +
       cells.join('<span class="hz-sep"> · </span>') +
+      '<p class="sc-hazard-qualification">' + L("Historical calibration does not validate current live inputs.", "历史校准不代表当前实时输入已验证。") + '</p>' +
       '</div>';
   }
   // Compact card chip: the horizon/direction-appropriate probability. Prefer 3m when
@@ -1593,6 +1651,10 @@
           fact(L(WIN_Y + "y change", WIN_Y + "年涨跌"), (nw.ret_win_pct >= 0 ? "+" : "") + nw.ret_win_pct + "%") +
         '</div>' +
         hazardLineHTML(s) +
+        '<details class="sc-native-provenance"><summary>' + L("Engine provenance", "引擎来源") + '</summary><p>' +
+          esc(L("Engine stance: ", "引擎立场：") + (L(nw.stance,nw.stance_zh) || L("unavailable", "不可用"))) + ' · ' +
+          esc(L("Recorded phase: ", "已记录阶段：") + recordedPhaseLabel(nw)) + ' · ' +
+          esc(phaseAgeText(nw.phase_v2_age)) + '</p></details>' +
       '</div>' +
       '<div class="cyc-grp cyc-grp-3">' +
         readHTML +
@@ -2043,7 +2105,8 @@
     PHASE_FILTER.forEach(function (p) { phaseState[p.key] = savedPhase[p.key]; });
     syncGroups(); syncHeroControls();              // re-localize the mode-aware legend on language flip
     if (heroChart) rebuildHero(false);
-    if (savedFocus) setFocus(savedFocus); else renderPanel(null);
+    if (savedFocus) setFocus(savedFocus, true); else renderPanel(null);
+    renderContext(); loadRotation();
   }
 
   /* ---- guided first-load: highlight ONE line + a tap hint (novice entry) --- */
@@ -2153,9 +2216,23 @@
      No-ops (backward-compat) when SC_SERIES_DATA is unset or the arrays are already present
      (the pre-split monolith still ships everything inline). */
   var _seriesInjected = false;
+  var seriesState = window.SC_SERIES_DATA ? "pending" : "ready";
   function hydrateSeries() {
     var series = window.SECTOR_CYCLES_SERIES;
-    if (!series) return;
+    var heavyKeys = ['price','osc','turns','fx','usd_record','rs_history'];
+    var ids = series && typeof series === 'object' && !Array.isArray(series) ? Object.keys(series) : [];
+    var valid = ids.length && ids.every(function(id) {
+      var part=series[id];
+      return byId[id] && part && typeof part==='object' && !Array.isArray(part) &&
+        Object.keys(part).length>0 && Object.keys(part).every(function(key){
+          return heavyKeys.indexOf(key)>=0 && (['price','osc','turns'].indexOf(key)<0 || part[key]==null || Array.isArray(part[key]));
+        });
+    });
+    if (!valid) {
+      seriesState='unavailable';
+      document.dispatchEvent(new CustomEvent('sc:series-error'));
+      return;
+    }
     // Merge in place onto the SAME entity objects DATA/ALL/byId reference — sector_central's
     // inline mini-cyc board holds references into window.SECTOR_CYCLES and must see the arrays
     // appear. No deepStrip here: series are numeric arrays + date strings only (no equal-weight
@@ -2163,6 +2240,7 @@
     Object.keys(series).forEach(function (id) {
       if (byId[id]) { Object.assign(byId[id], series[id]); }
     });
+    seriesState = "ready";
     // Re-render whatever the heavy arrays now unlock: a non-sectors family (its chart+cards were
     // empty), or price mode (all families' price arrays were absent). mountCards()+rebuildHero()
     // is the same idempotent redraw path rerender()/loadRotation() use.
@@ -2187,7 +2265,10 @@
     s.async = false;
     s.src = vUrl(name);       // reuse the preloaded/prefetched, ?v=-stamped, immutable-cached URL
     s.onload = hydrateSeries;
-    s.onerror = function () { /* tolerated: the pre-hydration guards keep the page usable */ };
+    s.onerror = function () {
+      seriesState = "unavailable";
+      document.dispatchEvent(new CustomEvent('sc:series-error'));
+    };
     document.head.appendChild(s);
   }
 
@@ -2237,8 +2318,8 @@
     // si_workspace_china.js loadCycles — the China hub once shipped without it), and the
     // shell root itself is detectable — activate() in both routers owns the .si-view
     // sections, so when one is present the hash is that router's, flag or no flag. The
-    // in-shell Cycles contract is SIC-I03/I09B's to build.
-    if (!window.SC_LAZY_EXTRAS && !document.querySelector(".si-view")) {
+    // native host additionally supplies SectorCyclesHost for explicit ownership.
+    if (!window.SectorCyclesHost && !window.SC_LAZY_EXTRAS && !document.querySelector(".si-view")) {
       // one traversal fires BOTH popstate and hashchange — the second arrival is the same
       // navigation and must not run the reader twice. Last-handled href dedupe; starts
       // null, never the bind-time href, or the first Back onto it would be eaten.
@@ -2257,36 +2338,40 @@
     if (!window.SC_LAZY_EXTRAS) _scheduleExtras();  // eager unless the host page defers to first focus
     _scheduleSeries();   // hydrate the heavy per-entity arrays after first paint (no-op if unsplit)
     loadRotation();
-  }
-  // Rotation Command RC-R3: fetch the two rotation artifacts, index them by lowercase
-  // sector id, and re-mount the cards once they land (mountCards is idempotent — it's the
-  // same re-render hydrateExtras uses). Null-safe: a 404/missing file leaves the maps empty
-  // and no chips render. No MutationObserver — this page re-renders on 'langchange' via
-  // rerender()→mountCards(), so the chips pick up the language flip for free.
-  function loadRotation() {
-    if (typeof fetch !== "function") return;
-    Promise.all([
-      fetch("marketdata/rotation_events.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-      fetch("marketdata/sector_fragmentation.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
-    ]).then(function (res) {
-      var ev = res[0], fr = res[1];
-      ROT_BY_SEC = {};
-      ((ev && ev.active) || []).forEach(function (e) {
-        // Index by donor sector (v1 path — always present)
-        (ROT_BY_SEC[e.sector] = ROT_BY_SEC[e.sector] || []).push(e);
-        // v2: also index by to_sector when present and different from donor sector,
-        // so cross-sector events chip the receiving card too (e.g. xlk->xlv chips XLV).
-        if (e.to_sector && e.to_sector !== e.sector) {
-          var _recv = ROT_BY_SEC[e.to_sector] = ROT_BY_SEC[e.to_sector] || [];
-          // Tag a copy with _is_receiver=true so the chip builder can vary the copy.
-          var _copy = Object.assign({}, e, { _is_receiver: true });
-          _recv.push(_copy);
-        }
-      });
-      FRAG_BY_KEY = {};
-      ((fr && fr.sectors) || []).forEach(function (r) { if (r.fragmented) FRAG_BY_KEY[r.key] = r; });
-      if (Object.keys(ROT_BY_SEC).length || Object.keys(FRAG_BY_KEY).length) mountCards();
+    renderContext();
+    document.addEventListener('si:view', function (e) {
+      if (e.detail !== 'cycles') return;
+      mountHero(); mountCards();
+      if (heroChart) rebuildHero(false);
     });
+    document.dispatchEvent(new CustomEvent('sc:cycles-ready'));
+  }
+  // Consume the producer's aligned snapshot. A later raw marketdata fetch
+  // cannot replace evidence from the cycle source session.
+  function loadRotation() {
+    var ctx = DATA.rotation_context || {};
+    function aligned(part, key) {
+      return ctx.schema === "sector_cycles.rotation_context.v1" && part &&
+        part.status === "aligned" && part.artifact_session === META.asOf &&
+        part.consumer_session === META.asOf && Array.isArray(part[key]);
+    }
+    var ev = aligned(ctx.events,'active') ? ctx.events : null;
+    var fr = aligned(ctx.fragmentation,'sectors') ? ctx.fragmentation : null;
+    ROT_BY_SEC = {}; FRAG_BY_KEY = {};
+    ((ev && ev.active) || []).forEach(function (e) {
+      (ROT_BY_SEC[e.sector] = ROT_BY_SEC[e.sector] || []).push(e);
+      if (e.to_sector && e.to_sector !== e.sector) {
+        var recv = ROT_BY_SEC[e.to_sector] = ROT_BY_SEC[e.to_sector] || [];
+        recv.push(Object.assign({}, e, { _is_receiver: true }));
+      }
+    });
+    ((fr && fr.sectors) || []).forEach(function (r) { if (r.fragmented) FRAG_BY_KEY[r.key] = r; });
+    var note = document.getElementById("sc-rotation-state");
+    if (note) note.textContent = L("Rotation events: ", "轮动事件：") +
+      (ev ? L(ev.active.length + " active in this snapshot", "本次快照中有 " + ev.active.length + " 项进行中") :
+        L("unavailable for this cycle date", "该周期日期的数据不可用")) + " · " +
+      L("Fragmentation: ", "内部分化：") + (fr ? L("same-session evidence", "同一交易日证据") : L("unavailable", "不可用"));
+    if (Object.keys(ROT_BY_SEC).length || Object.keys(FRAG_BY_KEY).length) mountCards();
   }
   // public hook: let a host page (e.g. Sector Central) focus the embedded overlay on a
   // sector/basket by id, switching family + scrolling the chart into view. Returns false
@@ -2297,8 +2382,37 @@
     switchFamily(isBasketRec(s) ? (FAM[s.kind] ? s.kind : "baskets") : "sectors");
     setFocus(id);
     var ch = document.getElementById("sc-chart");
-    if (ch && ch.scrollIntoView) ch.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (!embedded() && ch && ch.scrollIntoView) ch.scrollIntoView({ behavior: REDUCE ? "auto" : "smooth", block: "center" });
     return true;
+  };
+  // Typed host receiver. Acknowledging an id is not proof of visible/dated
+  // evidence. This applies no historical lens and never writes navigation.
+  function cycleSession(value) {
+    if (typeof value!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+    var date=new Date(value+'T00:00:00Z');
+    return isFinite(date.getTime()) && date.toISOString().slice(0,10)===value ? value : null;
+  }
+  window.SectorCyclesApply = function (context) {
+    context = context || {};
+    var id = context.id || null, node = document.getElementById("sc-chart");
+    var sourceDate=cycleSession(META.asOf);
+    var receipt = {status:"pending", id:id, asOf:sourceDate, series:seriesState};
+    if (id && !byId[id]) { receipt.status="unsupported"; return receipt; }
+    if (!sourceDate || (context.requireSourceDate && !context.asOf) || (context.asOf && !cycleSession(context.asOf))) { receipt.status="source_unavailable"; return receipt; }
+    if (context.asOf && context.asOf !== sourceDate) { receipt.status="source_mismatch"; return receipt; }
+    if (!node || !node.getBoundingClientRect().width) return receipt;
+    mountHero();
+    if (!heroChart) return receipt;
+    if (id) {
+      var s = byId[id];
+      switchFamily(isBasketRec(s) ? (FAM[s.kind] ? s.kind : "baskets") : "sectors");
+    } else switchFamily(FAM[context.family] ? context.family : 'sectors');
+    if (id !== state.focus) setFocus(id, true);
+    receipt.status = "applied";
+    receipt.family = state.family;
+    var selected = id && byId[id];
+    if (seriesState === 'ready' && selected && (!Array.isArray(selected.price) || !selected.price.length)) receipt.series='unavailable';
+    return receipt;
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();

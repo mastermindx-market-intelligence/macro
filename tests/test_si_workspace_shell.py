@@ -36,7 +36,7 @@ VIEWS = ["overview", "map", "moving", "money", "explore"]
 # It is deliberately NOT in VIEWS: it ships no si-view-read slot, because it renders its own
 # hero and its own payload — its hero IS its read. Keeping the two lists apart is what makes
 # "every view has a read slot" still mean something rather than quietly counting to six.
-NAV_VIEWS = VIEWS + ["confluence"]
+NAV_VIEWS = ["overview", "map", "cycles", "moving", "money", "explore", "confluence"]
 
 
 def _page() -> str:
@@ -69,7 +69,7 @@ def _view_body(src: str, view: str) -> str:
 
 # ────────────────────────────────────────────────────────────── sidebar + views
 
-def test_sidebar_present_with_six_view_buttons() -> None:
+def test_sidebar_present_with_seven_view_buttons() -> None:
     s = _page()
     assert '<nav class="si-side"' in s, "the persistent rail is gone"
     assert '<nav class="si-side" aria-label="Sector Intelligence views" hidden>' in s, \
@@ -81,10 +81,10 @@ def test_sidebar_present_with_six_view_buttons() -> None:
     assert 'aria-current="page"' in s
 
 
-def test_six_views_in_partition_order() -> None:
+def test_seven_views_in_partition_order() -> None:
     s = _page()
     assert re.findall(r'<section class="si-view[^"]*" data-view="([a-z]+)"', s) == NAV_VIEWS
-    assert s.count("{# /si-view") == 6, "a view wrapper is unclosed"
+    assert s.count("{# /si-view") == 7, "a view wrapper is unclosed"
     # exactly one view ships pre-activated, so the correct panel is visible before
     # the router runs (no flash, and no blank page if the script fails to load)
     assert s.count('<section class="si-view on"') == 1
@@ -139,7 +139,8 @@ def test_mobile_switcher_keeps_the_workflow_and_labels() -> None:
 
 VIEW_ORGANS = {
     "overview": ('id="ftr-tape-strip"', 'id="regime"', 'id="actnow-section"', 'id="grader"'),
-    "map": ('id="rotmap-section"', 'id="si-map"', 'id="sc-cyclemap"', 'id="board"'),
+    "map": ('id="rotmap-section"', 'id="si-map"', 'id="board"'),
+    "cycles": ('id="sc-cyclemap"', 'id="sc-tabs"', 'id="sc-cards"', 'id="sc-chart"'),
     "moving": ('id="si-movement"', 'id="rc-events-mount"', 'id="rotation-app"',
                'id="desk-watch-mount"', 'id="accumulation-section"'),
     "money": ('id="si-money"', 'id="internals-section"', 'id="heatmap-scorecard"',
@@ -179,7 +180,7 @@ LEGACY_ANCHORS = {
     "grader": "overview",
     "si-map": "map",
     "rotmap-section": "map",
-    "sc-cyclemap": "map",
+    "sc-cyclemap": "cycles",
     "board": "map",
     "si-movement": "moving",
     "rc-events-mount": "moving",
@@ -240,7 +241,7 @@ def test_theme_hash_is_left_to_its_own_resolver() -> None:
     src = _router()
     assert "h.indexOf('theme-')===0" in src, "router does not exempt #theme- hashes"
     idx_theme = src.index("h.indexOf('theme-')===0")
-    idx_replace = src.index("history.replaceState(null,'','#overview')")
+    idx_replace = src.index("history.replaceState(history.state,'','#overview')")
     assert idx_theme < idx_replace, "the #theme- guard must run before any hash rewrite"
 
 
