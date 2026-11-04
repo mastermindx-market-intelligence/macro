@@ -1,0 +1,48 @@
+{
+  "kind": "F03_original_only_read_only_Paper_resource_capability_preflight",
+  "observed_at_utc": "2026-11-04T11:08:30.152Z",
+  "source_head_prior_to_this_record": "0dcfd9af6d4907bb9f31f7b87cd0b724dd0ba51c",
+  "paper_server_version": "0.5.18",
+  "paper_catalog_tool_count": 33,
+  "paper_list_resources_scope": "active team; limit 200; includeArchived false",
+  "team_id": "team_01M2VVZT0Y25MV1STVB69SXZT9",
+  "resource_count": 34,
+  "resource_type_counts": {
+    "files": 32,
+    "folders": 2
+  },
+  "original": {
+    "id": "01M2WGNCX9475G79JRKJTCM08P",
+    "name": "MASTERMIND PAGES",
+    "type": "file",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+  },
+  "historical_copy": {
+    "id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+    "name": "MASTERMIND PAGES (copy)",
+    "type": "file",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+  },
+  "original_and_copy_share_parent": true,
+  "parent_folder": {
+    "id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "name": "Projects"
+  },
+  "catalog_operations": {
+    "list_resources": true,
+    "get_tree_summary": true,
+    "get_jsx": true,
+    "get_screenshot": true,
+    "rename_resource": true,
+    "create_file": true,
+    "create_file_can_accept_cloneFileId": true,
+    "move_resources": false,
+    "create_folder": false,
+    "archive_resources": false,
+    "unarchive_resources": false
+  },
+  "adapter_authorization_boundary": "Current Mastermind Paper paper_edit wrapper explicitly forbids file creation/open transitions, native exports, node deletion and token deletion; upstream catalog visibility is not mutation permission. No qualified F03 folder move/create/archive carrier exposed.",
+  "source_safety_boundary": "The original MASTERMIND PAGES file explicitly warns further changes may cause data loss. Original is READ ONLY. A new create_file(cloneFileId) operation was not authorized or attempted; no claim it would safely clone the oversized file.",
+  "physical_plan_status": "All 301 proposed move/archive resource actions remain NOT_DISPATCHED. No Paper mutation, clone, archive, resource move or folder creation occurred.",
+  "needed_to_unblock": "First obtain genuine Paper upstream support for required folder/resource operations and corresponding authorized adapter scope, or an explicitly authorized physical UI pathway that respects current file warning; qualify a native complete copy/partition and verify it before any disposal."
+}

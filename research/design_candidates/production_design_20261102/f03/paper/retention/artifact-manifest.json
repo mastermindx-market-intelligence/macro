@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 19235,
-      "sha256": "563a53704b14bae6c1bd87d5cd87615c6349ce7c93e7c92cd62684411a8e3e07",
-      "git_blob_sha": "57f02c79102eb2b673519f08b846edfc74091814"
+      "bytes": 20862,
+      "sha256": "606c37253b782ee10e04d68dedf7b6448cb06be576aa5dd9f02bbeab22aa3c66",
+      "git_blob_sha": "675ffd20a4b037c955b06690d0b2826bd687d8f3"
     },
     {
       "path": "CONTRACT.md",
@@ -41,9 +41,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 21903,
-      "sha256": "657373ecb90a9d45e961729657d11000fd8a3b6decf2a38705106a59382ee9ee",
-      "git_blob_sha": "69f6cd22047dc39781e793067909a20c16344636"
+      "bytes": 23656,
+      "sha256": "f97ff37711403b92e112a4dad10e6fae54949df1a99ce48b057c7f63f06b3e31",
+      "git_blob_sha": "8793f0ca39b4f0912541e3e74f0f075e78e67797"
     },
     {
       "path": "REPRODUCE.md",
@@ -1414,6 +1414,18 @@
       "git_blob_sha": "f926b7fb41d9abec6dbba5e9fd4e1f1c5accbfde"
     },
     {
+      "path": "paper/retention/resource-capability-preflight-20261104.json",
+      "bytes": 2386,
+      "sha256": "dd4d027ebb8d22b439b47ddf2247c58c7d5440c6efe4965060c9ee5d890b3887",
+      "git_blob_sha": "beeecb610ea5266804f3530f21e59856143ab169"
+    },
+    {
+      "path": "paper/retention/svg-asset-preflight-20261104.json",
+      "bytes": 24072,
+      "sha256": "f392ed0820ec470533eb9fd9893216c5210bf9a960c0e0227fa4153641b1ca57",
+      "git_blob_sha": "cd69128b21e046d85cb9195e3a646311505f6bf7"
+    },
+    {
       "path": "paper/reviews/bundle-consistency-20261104.md",
       "bytes": 2767,
       "sha256": "a024da6b9434ea43e966c975140f708f1b2d6f29328cd98bca1384f2cc5e03f8",
@@ -1574,5 +1586,7 @@
     "all_non_svg_native_node_ids_matched": true,
     "native_retention_proven": false
   },
-  "current_native_tree_reconciliation": "paper/retention/native-tree-vs-jsx-reconciliation-20261104.json"
+  "current_native_tree_reconciliation": "paper/retention/native-tree-vs-jsx-reconciliation-20261104.json",
+  "current_svg_asset_preflight": "paper/retention/svg-asset-preflight-20261104.json",
+  "current_resource_capability_preflight": "paper/retention/resource-capability-preflight-20261104.json"
 }
