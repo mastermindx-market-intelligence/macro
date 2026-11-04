@@ -1,0 +1,15 @@
+.prophet-save-dialog{box-sizing:border-box;width:min(100% - 32px,520px);max-height:calc(100dvh - 32px);padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text)}
+.prophet-save-dialog::backdrop{background:var(--pv-dialog-backdrop)}
+.prophet-save-head{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3,12px)}
+.prophet-save-head h2{font-size:var(--fs-h2);margin:0}
+.prophet-save-content{display:flex;flex-direction:column;align-items:stretch;gap:var(--sp-3,12px)}
+.prophet-save-status{margin:var(--sp-4,16px) 0;line-height:1.5;overflow-wrap:anywhere}
+.prophet-save-note{font-size:var(--fs-sm);line-height:1.5;color:var(--muted)}
+.prophet-save-dialog select{min-height:44px;padding:var(--sp-2,8px);background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:var(--r-ctl,8px);font:inherit}
+.prophet-save-dialog .gbtn,.pvs-save-pick,.pvs-save-setup{min-height:44px;min-width:44px}
+/* Legacy cards have a z4 full-card stock link; rich cards use a static ticker
+   link. Keep the visible Save button above either link without hiding it in
+   the content of a closed native details element. */
+.pvs-save-pick{position:relative;z-index:6}
+.prophet-save-dialog :is(button,a,select):focus-visible{outline:2px solid var(--link);outline-offset:3px}
+html[data-theme="light"] .prophet-save-dialog{background:var(--panel);box-shadow:var(--card-shadow)}

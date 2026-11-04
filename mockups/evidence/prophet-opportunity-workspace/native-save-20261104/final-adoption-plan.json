@@ -1,0 +1,79 @@
+{
+  "source_head": "5e27058f43bb4dbdbc5e54ff4ecbbba70ef81930",
+  "pages": [
+    "us_stocks.html",
+    "watchlist.html",
+    "chat.html"
+  ],
+  "referenced_assets": 61,
+  "missing": [],
+  "changed": [
+    {
+      "path": "site/us_stocks.html",
+      "old": "12da851f12dea2570ec24291cbc59a513bd1fcb32ee82c964875dfbd9c5447af",
+      "new": "653326c306ecc1adc9687eb664765301e1ab94151ed6ed51d01a2d2b6e2f093b",
+      "bytes": 813656
+    },
+    {
+      "path": "site/premiumdata/us_stocks.json",
+      "old": "421ab3f966d02b9cc6ee77ac67c6daa19ed5a00a768386ea8920c59ffdc3856e",
+      "new": "03cb5dee7aea9cd923f5861584277f100f522ce3e478bb1f763bc3c124e847ea",
+      "bytes": 10353005
+    },
+    {
+      "path": "site/factordata/us_standouts.json",
+      "old": "3004ae4d024c3023e4ed38037753349d5b06ba28728353765cc8a1d285333bb9",
+      "new": "dfb34687cdbf32ea6faff946d00a56fb997a89892d2a51a9d4e15f8882fd70c5",
+      "bytes": 2103290
+    },
+    {
+      "path": "site/watchlist.html",
+      "old": "70826597d0e794cf5394ec7ef84964b23744498d7186cd772436eb0d8ffe2b91",
+      "new": "89659bb5f5300a3ae11c65253b3c0adc0bffbf16a9d2fec902e4909919d97c81",
+      "bytes": 84341
+    },
+    {
+      "path": "templates/chat.html",
+      "old": "d902fef319104ab56fc020128235cd8b478d9a69daffbd0b01c605f1cfa62015",
+      "new": "b869056995c79d5a043baf1bd70015100a13617929b0eb3b07433b833a352e2a",
+      "bytes": 97532
+    },
+    {
+      "path": "site/chat.html",
+      "old": "bb755ece46f49c9c0331383a2b46fe1177a9c7e793c847d4a53dffa7c61fb506",
+      "new": "b869056995c79d5a043baf1bd70015100a13617929b0eb3b07433b833a352e2a",
+      "bytes": 97532
+    },
+    {
+      "path": "site/assets/css/1546f0cb.css",
+      "old": null,
+      "new": "1546f0cbc01680cb30234e0b55d2e2081dcc30f73305864a12cc627fdf3e572c",
+      "bytes": 27410
+    },
+    {
+      "path": "site/assets/css/e44dd63f.css",
+      "old": null,
+      "new": "e44dd63f4e44222696c2e2a9192232ee82ba0d1481c616f654884338b7e2dcc0",
+      "bytes": 16035
+    },
+    {
+      "path": "site/prophet_save.css",
+      "old": null,
+      "new": "a9aaca1ce94ac018d38233b34bfe143dac63f86051375ce474d00ddcb689a642",
+      "bytes": 1460
+    },
+    {
+      "path": "site/prophet_save.js",
+      "old": null,
+      "new": "8bce9f8c3a4cda47de753e81eac6b0b270ea1207171da61237f4a7a7c36cd202",
+      "bytes": 18135
+    },
+    {
+      "path": "site/watchstore.js",
+      "old": "f43cba98458d70aca01eda5823b44a98b2aede71b89cdab5db55ec3148fb70ed",
+      "new": "31ed104376ccd90c02903214d59782a512bacbcfa4dcc59f852b1504d06e544d",
+      "bytes": 172358
+    }
+  ],
+  "scope": "Native Prophet public/private pair plus owned Save and linked Watchlists/Chat asset closure. No broad site or data adoption."
+}
