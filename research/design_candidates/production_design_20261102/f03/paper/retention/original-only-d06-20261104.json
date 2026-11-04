@@ -1,0 +1,166 @@
+{
+  "kind": "F03_original_only_D06_metadata_exposure_not_native_retention",
+  "observed_at_utc": "2026-11-04T11:28:50.976Z",
+  "source_head_before_this_record": "331acb5d51e89254325556d13ab43d9fdc44d2f0",
+  "protected_procedure_pin": "7aefe3fa3917faecf9b074a3033d37f6a4e7838a",
+  "carrier": "Mastermind Paper direct read-only adapter",
+  "paper_version": "0.5.18",
+  "read_operation": "get_basic_info exact original and copy file IDs; get_basic_info exact original fileId/pageId p-29-0; no mutation",
+  "original_file": {
+    "id": "01M2WGNCX9475G79JRKJTCM08P",
+    "name": "MASTERMIND PAGES",
+    "page_count": 62,
+    "warning": "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+  },
+  "historical_copy": {
+    "id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+    "name": "MASTERMIND PAGES (copy)",
+    "page_count": 57,
+    "not_equivalent": true
+  },
+  "current_original_only_pages": [
+    {
+      "id": "p-27-0",
+      "name": "F01 · Shell system · v1 candidate · Review pending",
+      "icon": "blueprint"
+    },
+    {
+      "id": "p-26-1",
+      "name": "Intraday Flow · R1 · Discovery workspace · DRAFT",
+      "icon": "line-chart"
+    },
+    {
+      "id": "p-25-0",
+      "name": "Options · Research Desk · R1 · 2026-11-02",
+      "icon": "line-chart"
+    },
+    {
+      "id": "p-29-0",
+      "name": "D06 · Market structure, stages and model allocation · R1",
+      "icon": "line-chart"
+    },
+    {
+      "id": "p-28-0",
+      "name": "DRAFT · T47 · Ranked snapshot search · 2026-11-04",
+      "icon": "design"
+    }
+  ],
+  "missing_copy_page_count": 5,
+  "prior_four_page_coverage": {
+    "page_ids": [
+      "p-27-0",
+      "p-26-1",
+      "p-25-0",
+      "p-28-0"
+    ],
+    "boards_with_visible_jsx_captures": 40,
+    "reported_page_nodes": 6163,
+    "native_tree_reconciled_boards": 40
+  },
+  "new_page": {
+    "id": "p-29-0",
+    "name": "D06 · Market structure, stages and model allocation · R1",
+    "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-29-0",
+    "reported_page_nodes": 592,
+    "reported_artboards": 6,
+    "source_owner": "D06 separate candidate / macro Draft PR #10655, not F03 canvas custody",
+    "artboards": [
+      {
+        "id": "743I-0",
+        "name": "01 · Market structure · Light EN · 1440",
+        "child_count": 7,
+        "width": 1440,
+        "height": null,
+        "world_x": 0,
+        "world_y": 0,
+        "visible_jsx_captured": false,
+        "native_hierarchy_captured": false
+      },
+      {
+        "id": "743J-0",
+        "name": "02 · 市场结构 · Dark ZH · 390",
+        "child_count": 8,
+        "width": 390,
+        "height": null,
+        "world_x": 1520,
+        "world_y": 0,
+        "visible_jsx_captured": false,
+        "native_hierarchy_captured": false
+      },
+      {
+        "id": "743K-0",
+        "name": "03 · Stage analysis · Dark EN · 1440",
+        "child_count": 5,
+        "width": 1440,
+        "height": null,
+        "world_x": 1990,
+        "world_y": 0,
+        "visible_jsx_captured": false,
+        "native_hierarchy_captured": false
+      },
+      {
+        "id": "743L-0",
+        "name": "04 · 阶段分析 · Light ZH · 390",
+        "child_count": 7,
+        "width": 390,
+        "height": null,
+        "world_x": 3510,
+        "world_y": 0,
+        "visible_jsx_captured": false,
+        "native_hierarchy_captured": false
+      },
+      {
+        "id": "743M-0",
+        "name": "05 · S&P model allocation · Light EN · 1440",
+        "child_count": 1,
+        "width": 1440,
+        "height": 900,
+        "world_x": 3980,
+        "world_y": 0,
+        "visible_jsx_captured": false,
+        "native_hierarchy_captured": false
+      },
+      {
+        "id": "743N-0",
+        "name": "06 · 标普模型配置 · Dark ZH · 390",
+        "child_count": 2,
+        "width": 390,
+        "height": 900,
+        "world_x": 5500,
+        "world_y": 0,
+        "visible_jsx_captured": false,
+        "native_hierarchy_captured": false
+      }
+    ]
+  },
+  "current_original_only_exposure": {
+    "pages": 5,
+    "artboard_placements": 46,
+    "reported_page_nodes": 6755,
+    "visible_jsx_artboard_captures": 40,
+    "metadata_only_artboards": 6
+  },
+  "additional_new_F03_directory_artboard_placements_absent_historical_copy": {
+    "page_id": "p-1P-0",
+    "board_ids": [
+      "72CI-0",
+      "72EW-0",
+      "72EX-0",
+      "72EY-0",
+      "72K0-0",
+      "72K1-0",
+      "72K2-0"
+    ],
+    "count": 7
+  },
+  "total_new_original_artboard_placements_absent_historical_copy": 53,
+  "not_proven": [
+    "D06 board JSX/native-tree or visual/content fidelity",
+    "Complete Paper-native backup of any original-only page",
+    "Copy equivalence, assets/fonts/vector paths/prototype links/comments/permissions/history",
+    "Native restore, parent-folder movement, safe large-file clone, physical reorganization"
+  ],
+  "effect": "READ_ONLY_OBSERVED; 0 Paper writes; no clone, folder operation or 301 planned resource actions",
+  "custody": "Metadata-only F03 retention tracking of independently owned D06; neither F03 nor F03 successor edits D06 canvas",
+  "fence": "Preserve BOTH source and historical copy. Oversize original NO MODIFY; do not infer retention from code exports. PR #10631 Draft/HOLD. No merge/enqueue/un-draft/label/deploy/purchase."
+}

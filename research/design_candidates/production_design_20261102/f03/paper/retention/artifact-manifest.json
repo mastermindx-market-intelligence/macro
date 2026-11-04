@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 20862,
-      "sha256": "606c37253b782ee10e04d68dedf7b6448cb06be576aa5dd9f02bbeab22aa3c66",
-      "git_blob_sha": "675ffd20a4b037c955b06690d0b2826bd687d8f3"
+      "bytes": 23463,
+      "sha256": "7827e32dee78cc0025c03bad31b42b91d3f377d5ecf3e9b84024c6d310ee5dfa",
+      "git_blob_sha": "f4eeff0b5ee91ef4dc9caf19fdb2d442bfadf63c"
     },
     {
       "path": "CONTRACT.md",
@@ -41,9 +41,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 23656,
-      "sha256": "f97ff37711403b92e112a4dad10e6fae54949df1a99ce48b057c7f63f06b3e31",
-      "git_blob_sha": "8793f0ca39b4f0912541e3e74f0f075e78e67797"
+      "bytes": 25850,
+      "sha256": "5db5720593cf80ce871ef9bf76124acb71e4bc9a81fe5962bb3664164bb0ed45",
+      "git_blob_sha": "cef77fecc135705fb73ece20977dab26cc0500b7"
     },
     {
       "path": "REPRODUCE.md",
@@ -1360,6 +1360,12 @@
       "git_blob_sha": "34ff8b099195c36117b8eebe5a8a03728f265833"
     },
     {
+      "path": "paper/retention/native-backup-method-qualification-20261104.json",
+      "bytes": 5710,
+      "sha256": "f8d19c528fd0bb36a9ec891a5fbc43b38ae9751df2ce13f692f00778ca5149a4",
+      "git_blob_sha": "84cf6f658d7fac628797ee05371f8a8dbb5b6b39"
+    },
+    {
       "path": "paper/retention/native-tree-summary-f01-20261104.json",
       "bytes": 118659,
       "sha256": "acf027f1eef4e812fa1c02820a07bc8a942260f87113798a00e58f0b681f2a35",
@@ -1388,6 +1394,12 @@
       "bytes": 32272,
       "sha256": "baee5fa077f3478149e6149cef6bb7127b6654327a9cdc5f6aebd778de85ec84",
       "git_blob_sha": "0efa090ec574b12c0f2729adc3df23f5306aec29"
+    },
+    {
+      "path": "paper/retention/original-only-d06-20261104.json",
+      "bytes": 5344,
+      "sha256": "b3e8e948fadcf8ed06b412a1418d9caf6a56b5a3b2a6b868a08c8f1c84e90826",
+      "git_blob_sha": "a8465de5de0858cc18c3b42ebb91f3169c807615"
     },
     {
       "path": "paper/retention/original-only-f01-20261104.json",
@@ -1574,9 +1586,9 @@
   "current_original_only_options_capture_set": "paper/retention/original-only-options-20261104.json",
   "original_only_coverage": {
     "baseline_missing_copy_page_count": 4,
-    "exact_original_only_board_count": 40,
+    "exact_original_only_board_count": 46,
     "visible_jsx_board_captures": 40,
-    "reported_page_nodes": 6163,
+    "reported_page_nodes": 6755,
     "board_native_nodes_in_tree": 6159,
     "jsx_native_paper_ids": 5362,
     "svg_visual_elements_without_jsx_paper_ids": 797,
@@ -1584,9 +1596,27 @@
     "naive_jsx_id_occurrences": 5386,
     "naive_gap_explained": 777,
     "all_non_svg_native_node_ids_matched": true,
-    "native_retention_proven": false
+    "native_retention_proven": false,
+    "prior_four_page_missing_copy_page_count": 4,
+    "current_missing_copy_page_count": 5,
+    "current_original_only_page_ids": [
+      "p-27-0",
+      "p-26-1",
+      "p-25-0",
+      "p-29-0",
+      "p-28-0"
+    ],
+    "metadata_only_D06_board_count": 6,
+    "reported_page_nodes_scoped_to": "Five original-only pages: prior four 6163, D06 592",
+    "board_native_nodes_in_tree_scoped_to": "Prior four pages/40 boards only; D06 native tree not yet captured",
+    "jsx_reconciliation_fields_scoped_to": "Prior four pages/40 boards only; excludes six D06 metadata-only boards",
+    "additional_F03_directory_artboards_missing_copy": 7,
+    "current_total_original_artboard_placements_missing_copy": 53,
+    "native_backup_qualification": "NOT_QUALIFIED_DO_NOT_EXECUTE"
   },
   "current_native_tree_reconciliation": "paper/retention/native-tree-vs-jsx-reconciliation-20261104.json",
   "current_svg_asset_preflight": "paper/retention/svg-asset-preflight-20261104.json",
-  "current_resource_capability_preflight": "paper/retention/resource-capability-preflight-20261104.json"
+  "current_resource_capability_preflight": "paper/retention/resource-capability-preflight-20261104.json",
+  "current_original_only_d06_exposure": "paper/retention/original-only-d06-20261104.json",
+  "current_native_backup_method_qualification": "paper/retention/native-backup-method-qualification-20261104.json"
 }
