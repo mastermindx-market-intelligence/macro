@@ -1,0 +1,24 @@
+# SOURCE CANDIDATE ONLY — not imported into the production Caddyfile.
+# The owner of app/deploy/Caddyfile must serially admit this after reconciling
+# in-flight Caddy PRs and verifying DNS, EdgeOne origin transport and TLS.
+#
+# Mastermind Vercel frontend migration: independent read-only live-data origin.
+# Preserve the incumbent terminal_public_data snippet and host-owned publisher.
+# No /api/*, account actions, direct backend runtime or frontend is exposed.
+data.mastermind-x.com {
+  encode zstd gzip
+
+  import terminal_public_data
+
+  handle {
+    header Cache-Control "private, no-store"
+    respond "Not Found" 404
+  }
+
+  header {
+    X-Content-Type-Options "nosniff"
+    X-Robots-Tag "noindex, nofollow, noarchive"
+    -Server
+  }
+  tls internal
+}
