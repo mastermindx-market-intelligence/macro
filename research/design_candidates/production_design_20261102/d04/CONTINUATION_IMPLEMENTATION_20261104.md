@@ -1,5 +1,7 @@
 # D04 — resumed design and implementation, 2026-11-04 UTC
 
+**Latest: Confluence #10705 CI is closed; standalone US heatmap return is published and locally verified in held Draft #10719 at `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`. Fences passed; exact-head CI remains in progress.**
+
 ## Current authority and bounded outcome
 
 The Chairman's current instruction is **“Resume design and implementation.”** It expands the earlier specification-only assignment. The explicit no-merge, no-Ready/un-draft, no-enqueue, no-held-relabel, no-unauthorized-Paper-write and no-production-deployment fences remain. The current Web review waiver removes additional independent-review ceremony; branch protection, formal non-author approvals and actual reference-admission requirements remain distinct.
@@ -67,12 +69,60 @@ Root performs the tightly coupled integration and real-path proof under LOWER_TO
 
 DONE_WHEN for this slice: code and focused checks demonstrate supported control preservation, safe return after delayed loads, logical position recovery or truthful limitation, preservation of unrelated history/query/hash, and no behavior change on non-opted surfaces. Browser proof must cover desktop/phone, EN/ZH, dark/light and changed/unavailable data. Publish only a held draft with exact source/evidence readback; do not promote the seventy-five whole-programme cases from this bounded result. Preserve all Chairman release holds.
 
-### Active heatmap implementation checkpoint
+### Delivered standalone heatmap slice — held Draft #10719
 
-The original acquisition returned EFFECT_UNKNOWN; the exact same operation was reconciled through installed `mmx-workspace status` and then source diff/index reads. The managed checkout completed at `bb3b7273f1e9ccb869b6500c97871093eb22005a` with no pre-existing tracked/untracked source changes. Root's sole source workspace is `/Volumes/Mastermind/agent-workspaces/macro/web/d04-us-heatmap-return-20261104`, branch `sol/web-d04-us-heatmap-return-20261104`. Source edits are local and not yet published at this checkpoint. The official sparse owner materialized `site`; template copies and one page render use `lib.site_assets`, `lib.pages` and the existing asset optimizer.
+The bounded implementation is published in [Macro #10719](https://github.com/mastermindx-market-intelligence/macro/pull/10719) at **`5c3195cfb8b9644ce20526e94617ac1cb2268ecc`**. Its original managed operation/workspace/branch remains `d04-us-heatmap-return-20261104` / `/Volumes/Mastermind/agent-workspaces/macro/web/d04-us-heatmap-return-20261104` / `sol/web-d04-us-heatmap-return-20261104`. Root remained the sole source writer.
 
-Current implementation adds a US-only history-entry adapter, validated bounded configuration, pre-render per-map restoration, unavailable-timeframe explicit choice, logical item/group recovery and user-activity guards. Actual browser proof found and repaired a native Back timing issue: logical restoration must follow pageshow/native pixel restoration. A second real-path finding established that mobile row links use the incumbent `MDXTerminalOverlay`. Its public isOpen API and original same-URL guard retain ownership: D04 captures the origin before overlay launch, never writes the overlay guard, and does not remount the retained view on overlay Back/close. This is not a new overlay or cross-origin handoff.
+The initial acquisition was reconciled at the original operation before editing. The official sparse owner materialized `site` and `mockups`; only `data` and `verify_shots` remain omitted. Source assets were generated through existing `lib.site_assets`, `lib.pages` and the asset optimizer. No full site/data rebuild was performed.
 
-After those repairs the finite local Chromium harness passed **22 cases with twelve screenshots and zero page errors**. Four desktop document-return combinations and four phone overlay-return combinations cover EN/ZH and dark/light; the remaining cases cover per-map state, A→B→A late-load exclusion, disabled/removed/no available timeframes, changed observations/missing items, later user focus, retained mobile query disclosure, foreign history types and regional/embedded/shared-shell opt-out. This is an interim test result, not final visual acceptance or production proof. Existing shared-renderer suites passed 89 Node cases and 52 Python cases. Root is completing visual inspection, focused remaining history/real-data checks, source composition and held-draft publication.
+- Prepared source/evidence tree: `9f53ed16bd0334ebd2bea929e98dc0ae1c247d1b`, thirty-two scoped files.
+- Installed commit receipt: APPLIED; previous head `bb3b7273f1e9ccb869b6500c97871093eb22005a`, current head `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`, clean/index synced.
+- Installed push receipt: APPLIED_AFTER_AMBIGUOUS_PUSH_RETURN. Its own original-operation reconciliation observed local and remote at the same expected head; no caller retry occurred. Later publisher status independently returned APPLIED / clean / local=remote / not ready to push.
+- GitHub readback: both heatmap JS files are blob `67e89d208aa711f0cd04c267fad00ff9fd63ffee`; README `cb1ae26ec1590eef4b5e7a327236b62876efc721` exactly matches the written text; browser report `685fd03460168bf6ff85978f5728b8e536c0ff0a`; canonical manifest `f6094888c41c58fc229cefb33d73dbe31f42d226`.
+- Actual GitHub state: Draft, open, MERGEABLE, no auto-merge. UNSTABLE at the read reflects checks still running; no merge/Ready/queue/relabel/deploy action was sent.
 
-One useful bounded Fabric test-authoring commission was submitted after the initial plan: `d04-us-heatmap-return-20261104-state-tests`, original root/parent `d04-us-heatmap-return-20261104`, original controller PID `72554`. It was restricted to worker-local test artifacts; it cannot mutate the D04 source workspace or external targets. Controller output recorded a MiniMax lease and launch attempt, but worker START/root lineage/result were not proven. A later Fabric transport error and CONTROLLER_NOT_BOUND observation were reconciled with the same run's status; it remains ACTIVE_OR_WAITING / root unverified / controller return unconfirmed. **EFFECT_UNKNOWN for that original test commission; no retry, replacement, carrier change, result consumption or acceptance.** The root continues independent browser/source lanes. Native reasoning advice was consumed and ACCEPTED/STOP; it is not an implementation worker or formal approval.
+#### Product and proof
+
+The US-only native-history entry adapter validates bounded configuration, restores per-map controls before rendering and uses current observations. It retains unavailable timeframe intent, reports changed source/observation receipts, restores logical item/group position after pageshow, and yields to later user intent. It adds no URL mutation, history entry, account save, storage registry, router, auth or producer.
+
+Actual browser work established the mobile links' incumbent `MDXTerminalOverlay` owner. D04 records origin before launch, never overwrites its guard and does not remount the retained view on same-URL overlay Back/close/Forward. The overlay's existing Forward traversal does not reopen it; that behavior is unchanged and no full symmetry is claimed. Iframe/shared-shell/regional contexts remain opted out.
+
+Final source-bound proof:
+
+| Evidence | Result |
+| --- | --- |
+| Chromium functional cases | **27 passed**, zero page errors |
+| Functional captures | **13 PNGs**, retained with the browser report |
+| Canonical capture owner | **8/8 rest cells**, desktop/mobile × EN/ZH × dark/light |
+| Existing shared renderer Node suites | **89 passed** |
+| Existing heatmap/overlay Python suites | **69 passed** |
+| Design-system added-line / runtime-style / UI evidence / JS syntax / diff gates | All passed |
+| Generated JS equality and browser/source hashes | Exact match |
+
+The final browser suite covers document and overlay return, per-map state, A→B→A response races, unavailable timeframes, changed data/missing anchors, later user focus, mobile query disclosure, foreign history, opt-outs, native fragment traversal, responsive return and empty/failed feeds. Visual inspection repaired the all-unavailable copy and prevented a snapshot from catching the selector mid-transition. All eight final canonical cells and the corrected problem-state captures were inspected. Existing dense maps/lists and advanced panels remain intact.
+
+Functional proof uses synthetic public-shaped feeds and a labelled same-origin detail fixture with bfcache disabled; it is not production entitlement, live-feed, D07 destination, Safari/iOS or bfcache proof. Separate compatibility checks load the unchanged committed snapshots: S&P 503 source tiles, 2026-11-02, daily-close; Themes 268 source tiles, 2026-11-03, finviz-themes.
+
+[Implementation, limitations, source overlap and reproduction](https://github.com/mastermindx-market-intelligence/macro/blob/5c3195cfb8b9644ce20526e94617ac1cb2268ecc/mockups/evidence/d04-us-heatmap-return-20261104/README.md) · [browser report](https://github.com/mastermindx-market-intelligence/macro/blob/5c3195cfb8b9644ce20526e94617ac1cb2268ecc/ux-evidence/d04-us-heatmap-return-20261104/browser-report.json) · [canonical manifest](https://github.com/mastermindx-market-intelligence/macro/blob/5c3195cfb8b9644ce20526e94617ac1cb2268ecc/mockups/evidence/d04-us-heatmap-return-20261104/manifest.json) · [final validation](https://github.com/mastermindx-market-intelligence/macro/blob/5c3195cfb8b9644ce20526e94617ac1cb2268ecc/mockups/evidence/d04-us-heatmap-return-20261104/final-validation.json).
+
+#### Exact-head hosted verification
+
+For `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`, [fences 41800565272](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41800565272) has completed successfully. [CI 41800565111](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41800565111) is in progress at this checkpoint: ci-plan and contract-delta running, no failed step observed. The authority job is queued. Hosted CI success is not yet claimed.
+
+#### Material dependency refresh and next safe action
+
+- F01 #10645 has advanced to `ec99a1e6affe902efcdd79582ee72e15f90c87b9`; Terminal source #1276 is `b14436dd7b9c1296d17455c89f63960c774ab9be`. Its current return remains PARTIAL / REQUEST_CHANGES / RIG draft. Candidate.4 is operative; candidate.5 is proposed. Original Paper effects remain held. D04 has not adopted the proposal or taken over the F01 receiver.
+- F02's readback at `2ea60216320f2294c0f66aa43d6071e6e1d0d587` points to source #10698 `2b1593acd1b1d4e36014f20363ef11cfc71e8634`. Its original G15 Paper effect remains unknown and qualified joint v1 remains gated. Its source improvement is not a final foundation release.
+- The source-pinned D23 brief `handoffs/D23-monitor.md`, blob `82589295e820d9f0b2f8238a23b9d5348b739fcc` at package `6e1862867193ec6486a22001a0e4fb515da20448`, confirms D23 ownership of shared object/mutation/recovery and snapshot-vs-live contracts. Targeted consumer discovery did not produce a qualified D04 mutation binding; absence of search results is not a claim that no D23 work exists. D04 will not invent a parallel saved-object store.
+- Adjacent #7967 `a7d07473b030b2b981dedadac3d6ceafa381c34c` and #8144 `537513f60aec40a360c31ea65220de11c0da2e0c` retain their owners. Exact overlapping mount/layout/live-refresh seams are documented in the source evidence README. Future composition must keep access/auth checks, distinguish forced reselection from return intent, and retain one selection guard and proper retirement. No combined-branch acceptance is claimed.
+- The earlier exact D04 Paper read/catalog refusal remains the current D04 runtime evidence. No new canvas write was attempted; another session's source/native progress does not change this adapter's write qualification.
+
+**Next action:** consume exact-head CI #41800565111 and its actual failures, if any, on original source #10719. After that bounded proof closes, retain the two held source deliveries and this domain carrier; proceed to shared-shell/cross-origin/persistence/final Paper composition only against the corresponding qualified owner binding. No previously accepted package, Confluence slice, heatmap tests or visual states need repeating without a relevant change.
+
+#### Separate uncertain Fabric commission
+
+One useful bounded Fabric test-authoring commission was submitted: `d04-us-heatmap-return-20261104-state-tests`, original requested root/parent `d04-us-heatmap-return-20261104`, original controller PID `72554`. It was restricted to worker-local test artifacts, without source/Paper/publication access. Controller output recorded a MiniMax lease and launch attempt; actual worker START/root/result were never proven. The controller later returned CONTROLLER_NOT_BOUND.
+
+A final same-run read still reports ACTIVE_OR_WAITING, root null/unverified, controller return UNCONFIRMED, worker UNKNOWN, result_available false, EXECUTION_NOT_ELIGIBLE and retry/dispatch/result-consumption unauthorized. **EFFECT_UNKNOWN remains confined to that original commission.** No retry, replacement, carrier change, result consumption, acceptance or background-running claim occurred. It did not block root's independent source/browser work. Native reasoning advice was consumed and ACCEPTED/STOP; it is not an implementation worker or formal approval.
+
+**Bounded source delivery: PROVEN_OUTCOME. Hosted-check closeout at this checkpoint: CHECKPOINTED_CONTINUATION.** Whole-D04 acceptance, original external effects and all Chairman release holds remain distinct.
