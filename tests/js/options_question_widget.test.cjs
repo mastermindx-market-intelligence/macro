@@ -514,12 +514,12 @@ test('settleQuestionResponse unit cases', () => {
 });
 
 
-test('withdrawal fences late paint while settling its own busy flight', async () => {
+test('consumed request settles without falsely claiming withdrawal', async () => {
   let finish; const env=makeEnv({transport:()=>new Promise(r=>finish=r)}), c=createOptionsQuestion(env), r=validReference();
   c.stage(r); c.send('q'); await settle();
-  assert.equal(c.clear(r),true); const nextGen=c.generation();
+  assert.equal(c.clear(r),false); const nextGen=c.generation();
   finish({ok:true,status:200,bodyText:'data: {"type":"done","ok":true}\n\n'}); await settle();
-  assert.equal(c.busy(),false); assert.ok(env.__calls.outcomes[0].generation<nextGen);
+  assert.equal(c.busy(),false); assert.equal(env.__calls.outcomes[0].generation,nextGen);
   assert.equal(c.active(),true); assert.equal(c.send('no generic retry'),false);
 });
 test('an old principal completion cannot unlock a newer flight', async () => {
@@ -533,4 +533,61 @@ test('an old principal completion cannot unlock a newer flight', async () => {
 test('actual gateway unknown and quota refusal cannot become successful answers',()=>{
   assert.equal(settleQuestionResponse({ok:true,bodyText:'data: {"type":"done","error":"options_question_dispatch_effect_unknown","dispatch_state":"EFFECT_UNKNOWN","retry_allowed":false}\n\n'}).kind,'unknown');
   assert.equal(settleQuestionResponse({ok:true,bodyText:'data: {"type":"done","quota_exhausted":true}\n\n'}).kind,'refused');
+});
+
+/* Independent review7292 counterexamples: exact source, inert transport only. */
+test('review: a consumed selector cannot be reported as withdrawn', async () => {
+  let finish; const env=makeEnv({transport:()=>new Promise(r=>finish=r)}), c=createOptionsQuestion(env), ref=validReference();
+  c.stage(ref); c.send('q'); await settle(); const gen=c.generation();
+  assert.equal(c.clear(ref),false); assert.equal(c.generation(),gen);
+  finish({ok:true,bodyText:'data: {"type":"delta","text":"committed answer"}\n\ndata: {"type":"done"}\n\n'});
+  await settle(); assert.equal(env.__calls.transport.length,1);
+  assert.equal(env.__calls.outcomes[0].generation,c.generation());
+});
+test('review: snapshot is copied once before validation and identity', async () => {
+  const ref=validReference(), good=ref.evidence; let reads=0;
+  Object.defineProperty(ref,'evidence',{enumerable:true,get(){ reads++; return reads<4?good:{nested:{admin:true},object_id:'other-account'}; }});
+  const env=makeEnv(), c=createOptionsQuestion(env); assert.equal(c.stage(ref),true); c.send('q'); await settle();
+  assert.deepEqual(JSON.parse(env.__calls.transport[0].body).options_question_reference.evidence,good);
+  assert.equal(reads,1);
+});
+test('review: pending withdrawal has a visible current-generation outcome and zero POST', async () => {
+  let finish; const env=makeEnv({authorize:()=>new Promise(r=>finish=r)}), c=createOptionsQuestion(env), ref=validReference();
+  c.stage(ref);c.send('q');assert.equal(c.clear(ref),true);finish({});await settle();
+  assert.equal(env.__calls.transport.length,0);
+  assert.equal(env.__calls.outcomes[0].kind,'withdrawn');
+  assert.equal(env.__calls.outcomes[0].generation,c.generation());
+});
+function actualQuestionAuth(session, rejects=false) {
+  const a=source.indexOf('  function withAuth(h)'), b=source.indexOf('  /* ── quota / me',a);
+  const ctx={window:{MDXAuth:{client:()=>Promise.resolve({auth:{getSession:()=>rejects?Promise.reject(Error('unavailable')):Promise.resolve({data:{session}})}})}}};
+  vm.createContext(ctx);vm.runInContext(source.slice(a,b),ctx);
+  return owner=>typeof ctx.authorizeOptionsQuestion==='function'?ctx.authorizeOptionsQuestion(owner):ctx.withAuth({});
+}
+for(const [label,session,rejects] of [
+ ['different account',{access_token:'inert-B',user:{id:'user-B'}},false],
+ ['missing session',null,false], ['missing token',{user:{id:'user-A'}},false], ['rejected session',null,true]
+]) test('review: question auth refuses '+label,async()=>{
+  await assert.rejects(actualQuestionAuth(session,rejects)('user-A'));
+});
+test('review: question auth binds same returned user and bearer',async()=>{
+ const h=await actualQuestionAuth({access_token:'inert-A',user:{id:'user-A'}})('user-A');assert.equal(h.Authorization,'Bearer inert-A');
+});
+function actualResume(activeAtStart) {
+ const a=source.indexOf('  var resuming = false;'),b=source.indexOf('  /* Build a fresh turn',a);
+ const calls={fetch:0,open:0,attach:0};let finish;
+ const ctx={streaming:false,panel:{classList:{contains:()=>true}},historyEpoch:0,historyOpenGeneration:0,
+  optionsQuestion:{active:()=>activeAtStart,busy:()=>false,generation:()=>0},loadRun:()=>({id:'old',ts:Date.now(),q:'ordinary'}),
+  RUN_MAX_AGE_MS:99999,clearRun:()=>{},withAuth:()=>Promise.resolve({}),API:'',
+  fetch:()=>{calls.fetch++;return new Promise(r=>finish=r)},threadId:null,
+  openThread:()=>calls.open++,attachFresh:()=>calls.attach++,appendMsg:()=>{}};
+ vm.createContext(ctx);vm.runInContext(source.slice(a,b),ctx);
+ return {ctx,calls,finish:()=>finish({ok:true,json:()=>Promise.resolve({thread_id:'old-thread',done:false})})};
+}
+test('review: active question prevents ordinary stored-run status reads',async()=>{
+ const r=actualResume(true);r.ctx.resumeStoredRun();await settle();assert.equal(r.calls.fetch,0);
+});
+test('review: a newly staged question fences an already pending ordinary resume',async()=>{
+ const r=actualResume(false);r.ctx.resumeStoredRun();await settle();r.ctx.historyOpenGeneration++;
+ r.ctx.optionsQuestion.active=()=>true;r.finish();await settle();assert.equal(r.calls.open,0);assert.equal(r.calls.attach,0);
 });

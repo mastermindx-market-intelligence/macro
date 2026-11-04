@@ -2205,6 +2205,27 @@
       .catch(function () { return h; });
   }
 
+  // The request selector's principal must equal the actual token session.
+  function authorizeOptionsQuestion(owner) {
+    if (!owner) return Promise.reject(new Error('question session unavailable'));
+    // Terminal's same-origin BFF owns its cookie session; never export its token.
+    // The BFF independently compares this expected principal with its verified user.
+    if (!(window.MDXAuth && window.MDXAuth.client)) {
+      if (API || typeof CFG.authorizeOptionsQuestion !== 'function') return Promise.reject(new Error('question session unavailable'));
+      return Promise.resolve(CFG.authorizeOptionsQuestion(owner)).then(function (matches) {
+        if (matches !== true) throw new Error('question principal mismatch');
+        return { 'Content-Type': 'application/json', 'X-MM-Options-Principal': owner };
+      });
+    }
+    return window.MDXAuth.client().then(function (sb) { return sb.auth.getSession(); })
+      .then(function (r) {
+        var session = r && r.data && r.data.session;
+        if (!session || !session.user || session.user.id !== owner ||
+            typeof session.access_token !== 'string' || !session.access_token.trim()) throw new Error('question principal mismatch');
+        return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token };
+      });
+  }
+
   /* ── quota / me ── */
   /* Always called on boot, even signed-out: /api/brain/me returns tier 'guest' (200) when the
      operator has enabled free guest access, or 401 when it is off. A 'guest' tier flips the
@@ -2994,6 +3015,7 @@
     endTurn(T);
   }
   function attachRun(T) {
+    if (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) return;
     if (T.stopped || T.epoch !== historyEpoch) return;
     var url = API + '/api/brain/runs/' + encodeURIComponent(T.runId) + '/stream?cursor=' + (T.cursor || 0);
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
@@ -3209,14 +3231,20 @@
   var resuming = false;   /* open() and visibilitychange can both fire before the status
                              fetch lands; without this the turn attaches twice */
   function resumeStoredRun() {
-    if (streaming || resuming || !panel.classList.contains('open')) return;
+    if (streaming || resuming || (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) || !panel.classList.contains('open')) return;
     var epoch = historyEpoch, st = loadRun(); if (!st || !st.id) return;
     if (!st.ts || (Date.now() - st.ts) > RUN_MAX_AGE_MS) { clearRun(); return; }
+    var openGeneration = historyOpenGeneration;
+    var questionGeneration = optionsQuestion ? optionsQuestion.generation() : 0;
+    function resumeCurrent(expectedOpen) {
+      return epoch === historyEpoch && historyOpenGeneration === expectedOpen &&
+        (!optionsQuestion || (!optionsQuestion.active() && !optionsQuestion.busy() && optionsQuestion.generation() === questionGeneration));
+    }
     resuming = true;
-    withAuth().then(function (h) { return fetch(API + '/api/brain/runs/' + encodeURIComponent(st.id), { headers: h, credentials: 'include' }); })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    withAuth().then(function (h) { if (!resumeCurrent(openGeneration)) return null; return fetch(API + '/api/brain/runs/' + encodeURIComponent(st.id), { headers: h, credentials: 'include' }); })
+      .then(function (r) { return r && r.ok ? r.json() : null; })
       .then(function (s) {
-        if (epoch !== historyEpoch) return;
+        if (!resumeCurrent(openGeneration)) return;
         if (!s) { clearRun(); return; }        /* gone — the thread store is the record now */
         if (s.cancelled) { clearRun(); return; }
         if (s.thread_id) {
@@ -3228,7 +3256,7 @@
                assistant turn at the tail means the answer already landed and painting
                the replay too would double it. */
             openThread(s.thread_id, function (msgs) {
-              if (epoch !== historyEpoch) return;
+              if (!resumeCurrent(openGeneration + 1)) return;
               var tail = (msgs && msgs.length) ? msgs[msgs.length - 1] : null;
               if (tail && tail.role === 'assistant') { clearRun(); return; }
               attachFresh(s, 0, st.q);
@@ -3249,6 +3277,7 @@
   /* Build a fresh turn around an existing server run and attach to it. `question` is
      carried so a Retry on the error card can still replay the real turn. */
   function attachFresh(status, cursor, question) {
+    if (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) return;
     root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
     var typing = el('div', 'mmb-msg assistant');
     typing.innerHTML = '<div class="mmb-bub"><span class="mmb-orbmark"><svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg></span></div>';
@@ -3269,7 +3298,7 @@
   /* Coming back to the tab is the moment to act: a phone that froze the page never ran
      a single line of JS while it was away, and a parked turn has been waiting for this. */
   DOC.addEventListener('visibilitychange', function () {
-    if (DOC.hidden) return;
+    if (DOC.hidden || (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy()))) return;
     if (parked) { var p = parked; parked = null; p.tries = 0; if (!p.doneSeen && !p.stopped) attachRun(p); return; }
     resumeStoredRun();
   });
@@ -3881,6 +3910,7 @@
   }
   /* send is enabled when there's text OR at least one attached image (and not mid-stream) */
   function syncSend() {
+    syncOptionsExit();
     sendBtn.disabled = (!ta.value.trim() && !pendingImages.length) || streaming ||
       !!(optionsQuestion && optionsQuestion.active() && (!optionsQuestion.staged() || optionsQuestion.busy() || pendingImages.length || researchMode));
     /* the ⌘↵ hint shows exactly while there is something to send — which is also the
@@ -4437,7 +4467,7 @@
      cannot change what is serialized and sent. */
   function freezeCopy(value) {
     if (isPlainObject(value)) {
-      var out = {}, keys = Object.keys(value).sort();
+      var out = Object.create(null), keys = Object.keys(value).sort();
       for (var i = 0; i < keys.length; i++) out[keys[i]] = freezeCopy(value[keys[i]]);
       return Object.freeze(out);
     }
@@ -4510,10 +4540,12 @@
       stage: function (reference) {
         if (env.streaming() || busy) return false;
         if (!ownerNow()) return false;
-        if (!validateOptionsQuestionReference(reference)) return false;
         var frozen, identity;
-        try { identity = canonicalEnvelope(reference); frozen = freezeCopy(reference); }
+        // Snapshot once: validation, identity and transport must see the same values.
+        try { frozen = freezeCopy(reference); }
         catch (e) { return false; }
+        if (!validateOptionsQuestionReference(frozen)) return false;
+        identity = canonicalEnvelope(frozen);
         active = true; activeIdentity = identity; generation++;
         staged = { reference: frozen, identity: identity, owner: ownerNow() };
         if (typeof env.onStagedChange === 'function') env.onStagedChange(staged);
@@ -4523,11 +4555,13 @@
          current principal clears. An older holder's cleanup cannot clear a
          newer staged reference, and a principal change already cleared it. */
       clear: function (reference) {
-        if (!active || !ownerNow() || (staged && staged.owner !== ownerNow())) return false;
+        if (!active || !staged || !ownerNow() || staged.owner !== ownerNow()) return false;
         var identity;
         try { identity = canonicalEnvelope(reference); } catch (e) { return false; }
         if (identity !== activeIdentity) return false;
-        generation++; pending = null; activeIdentity = null;
+        generation++;
+        if (pending) pending.withdrawnGeneration = generation;
+        pending = null; activeIdentity = null;
         dropStaged();
         return true;
       },
@@ -4584,7 +4618,12 @@
             if (flight === reservation) { flight = null; busy = false; }
           }
         };
-        function emit(outcome) { outcome.generation = gen; env.onOutcome(outcome); }
+        function emit(outcome) {
+          outcome.generation = outcome.kind === 'withdrawn' &&
+            reservation.withdrawnGeneration === generation && ownerNow() === owner
+            ? generation : gen;
+          env.onOutcome(outcome);
+        }
         function authorizeFailed() {
           /* No POST. The staged reference stays staged for an explicit retry
              by the user; nothing automatic happens. */
@@ -4592,7 +4631,7 @@
           emit({ kind: 'network' });
         }
         var awaited;
-        try { awaited = env.authorize(); } catch (e) { authorizeFailed(); return true; }
+        try { awaited = env.authorize(owner); } catch (e) { authorizeFailed(); return true; }
         Promise.resolve(awaited).then(function (headers) {
           if (!claim.stillValid()) { claim.release(); emit({ kind: 'withdrawn' }); return; }
           claim.consume();
@@ -4620,7 +4659,28 @@
   optqChip.setAttribute('role', 'status');
   optqChip.style.display = 'none';
   root.querySelector('.mmb-comp').insertBefore(optqChip, root.querySelector('.mmb-box'));
+  var optqExit = el('button', 'mmb-meta mmb-l');
+  optqExit.id = 'mmb-optq-exit'; optqExit.type = 'button';
+  optqExit.setAttribute('data-en', 'Back to ordinary chat');
+  optqExit.setAttribute('data-zh', '返回普通聊天');
+  optqExit.textContent = L('Back to ordinary chat', '返回普通聊天');
+  optqExit.style.display = 'none';
+  root.querySelector('.mmb-comp').insertBefore(optqExit, optqChip);
+  function syncOptionsExit() {
+    if (!optionsQuestion) return;
+    optqExit.style.display = optionsQuestion.active() ? '' : 'none';
+    optqExit.disabled = optionsQuestion.busy();
+  }
+  optqExit.addEventListener('click', function () {
+    if (optionsQuestion.busy()) return;
+    optionsQuestion.reset(); historyOpenGeneration++; threadId = null;
+    lastTurn = null; priorTurn = null; ta.value = ''; pendingImages = []; renderThumbs();
+    autosize(); syncSend(); updateCounter(); syncOptionsExit();
+    // Keep the displayed answer, but never send it as ordinary history.
+    try { ta.focus(); } catch (e) {}
+  });
   function paintOptionsStaged(staged) {
+    syncOptionsExit();
     if (!staged) { optqChip.style.display = 'none'; optqChip.textContent = ''; optqChip.removeAttribute('data-en'); optqChip.removeAttribute('data-zh'); return; }
     var en = 'Options selection attached — selected contracts only; no metric or valuation proof is included. Type your question and send.';
     var cn = '已附加期权选择 — 仅包含所选合约，不含指标或估值证明。输入问题后发送。';
@@ -4658,10 +4718,11 @@
       var regenerateButton = answer.querySelector('.mmb-regen'); if (regenerateButton) regenerateButton.remove();
     }   /* incumbent safe renderer */
     else paintOptionsNote(outcome.kind === 'reply' ? 'empty' : (outcome.kind || 'unknown'));
-    stickAfter();
+    stickAfter(); syncSend(); syncOptionsExit();
   }
   function sendOptionsQuestionTurn(text) {
     if (!optionsQuestion.send(text)) { paintOptionsNote('refused'); return; }
+    syncOptionsExit();
     /* Display only: no thread, no run record, no regenerate/retry state, no
        ordinary-payload bookkeeping. */
     root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
@@ -4675,11 +4736,11 @@
       if (!principalKnown || !authed) return null;
       return historyOwner || null;
     },
-    streaming: function () { return streaming; },
+    streaming: function () { return streaming || !!parked; },
     maxMessage: MAXLEN,
     lane: function () { return lane === 'pro' ? 'pro' : 'fast'; },
     lang: function () { return zh() ? 'zh' : 'en'; },
-    authorize: function () { return withAuth({ 'Content-Type': 'application/json' }); },
+    authorize: authorizeOptionsQuestion,
     /* Same-origin authenticated gateway, one distinct stateless path. The
        terminal proxy forwards the exact body with its server-verified bearer. */
     transport: function (init) {
@@ -4716,16 +4777,16 @@
     submitOptionsQuestion: function (reference) {
       if (!optionsQuestion.stage(reference)) return false;
       if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
-      historyOpenGeneration++; lastTurn = null; priorTurn = null;
+      historyOpenGeneration++; threadId = null; lastTurn = null; priorTurn = null;
       ta.value = ""; pendingImages = []; renderThumbs(); clearMsgs();
-      autosize(); syncSend(); updateCounter();
+      syncOptionsExit(); autosize(); syncSend(); updateCounter();
       if (!panel.classList.contains('open')) open();
       try { ta.focus(); } catch (e) {}
       return true;
     },
     clearOptionsQuestion: function (reference) {
       if (!optionsQuestion.clear(reference)) return false;
-      ta.value = ""; autosize(); syncSend(); updateCounter(); return true;
+      ta.value = ""; autosize(); syncSend(); updateCounter(); syncOptionsExit(); return true;
     },
     mounted: true };
   window.dispatchEvent(new Event('mm-brain-ready'));
