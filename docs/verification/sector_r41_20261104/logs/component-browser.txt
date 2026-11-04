@@ -1,0 +1,1 @@
+{"status": "passed", "cases": 16, "out": "docs/verification/sector_r41_20261104/evidence/component"}

@@ -1,0 +1,299 @@
+{
+  "status": "passed",
+  "browser": "151.0.7922.34",
+  "fixture": "synthetic, not production",
+  "cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          44,
+          44,
+          44
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 5.150807588939102
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          44,
+          44,
+          44
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 5.072673963747834
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          44,
+          44,
+          44
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 3.613414760247038
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          44,
+          44,
+          44
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 4.70802297005213
+      }
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "locale": "en",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          44,
+          44,
+          44
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 5.150807588939102
+      }
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "locale": "zh",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          44,
+          44,
+          44
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 5.072673963747834
+      }
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "locale": "en",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          44,
+          44,
+          44
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 3.613414760247038
+      }
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "locale": "zh",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          44,
+          44,
+          44
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 4.70802297005213
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          48,
+          48,
+          48
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 5.150807588939102
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          48,
+          48,
+          48
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 5.072673963747834
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          48,
+          48,
+          48
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 3.613414760247038
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          48,
+          48,
+          48
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 4.70802297005213
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "en",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          48,
+          48,
+          48
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 5.150807588939102
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          48,
+          48,
+          48
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 5.072673963747834
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "en",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          48,
+          48,
+          48
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 3.613414760247038
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "zh",
+      "status": "passed",
+      "checks": {
+        "overflow": false,
+        "duplicates": [],
+        "buttons": [
+          48,
+          48,
+          48
+        ],
+        "chartCount": 1,
+        "state": "ready",
+        "minTextContrast": 4.70802297005213
+      }
+    }
+  ],
+  "source_sha256": {
+    "sector_dossier_cycle.js": "cbe692eef16c020f7c6d5ad815fe3db847ba746dbada26bb1e18e7dad583a698",
+    "sector_dossier_cycle.css": "22533a0d20b6a08bfe4fe81d7b83033a4c86fb17e4f01f7b05fba6dafde36a0f"
+  }
+}

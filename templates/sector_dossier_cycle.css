@@ -1,0 +1,71 @@
+/* R4.1 Dossier Cycle: local component only; global navigation remains untouched.
+   DARK: calm instrument surfaces with neutral separators.
+   LIGHT: cool research canvas, white surfaces and a restrained material shadow.
+   Both consume the existing theme/locale tokens; no parallel palette. */
+.sdc {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);
+  grid-template-areas: "heading heading" "history facts" "history qualification" "actions actions" "footer footer";
+  gap: 24px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  min-width: 0;
+  width: 100%;
+  line-height: 1.5;
+}
+.sdc *, .sdc *::before, .sdc *::after { box-sizing: border-box; }
+.sdc-heading { grid-area: heading; display: flex; gap: 16px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.sdc-identity { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+.sdc-title { margin: 0; font-size: 32px; line-height: 1.2; font-weight: 700; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.sdc-ticker { color: var(--muted); font: 14px/1.5 var(--font-mono); overflow-wrap: anywhere; }
+.sdc-muted { color: var(--muted); font-size: 13px; line-height: 1.55; margin: 0; overflow-wrap: anywhere; }
+.sdc-asof { font-size: 12px; }
+.sdc-facts { grid-area: facts; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; padding: 24px; border: 1px solid var(--line); border-radius: var(--r-panel,14px); background: var(--panel); }
+.sdc-fact { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.sdc-label { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; font-weight: 500; overflow-wrap: anywhere; }
+.sdc-value { margin: 0; font-size: 22px; line-height: 1.35; font-weight: 600; overflow-wrap: anywhere; }
+.sdc-numeric { font-family: var(--font-mono); font-size: 24px; font-variant-numeric: tabular-nums; }
+.sdc-positive { color: var(--up); }
+.sdc-negative { color: var(--down); }
+.sdc-qualification { grid-area: qualification; padding: 20px; border-radius: var(--r-card,12px); background: var(--panel2); font-size: 14px; }
+.sdc-qualification strong { font-weight: 600; }
+.sdc-qualification .sdc-muted { margin-top: 8px; }
+.sdc-history { grid-area: history; min-width: 0; padding: 24px; border: 1px solid var(--line); border-radius: var(--r-panel,14px); background: var(--panel); }
+.sdc-subtitle { margin: 0 0 8px; color: var(--text); font-size: 17px; line-height: 1.4; font-weight: 600; }
+.sdc-chart { min-height: 300px; min-width: 0; margin-top: 20px; }
+.sdc-chart > .sdc-muted { padding: 32px 16px; text-align: center; background: var(--panel2); border-radius: var(--r-ctl,8px); }
+.sdc-actions { grid-area: actions; display: flex; gap: 12px; flex-wrap: wrap; padding-top: 4px; }
+.sdc-action { appearance: none; min-height: 44px; padding: 10px 18px; border: 1px solid var(--line); border-radius: var(--r-btn,10px); background: var(--panel); color: var(--link); font: 600 14px/1.5 var(--font-ui); cursor: pointer; overflow-wrap: anywhere; }
+.sdc-action:hover:not(:disabled) { background: var(--panel2); }
+.sdc-action:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.sdc-action:disabled { color: var(--muted); cursor: not-allowed; opacity: .7; }
+.sdc-footer { grid-area: footer; font-size: 12px; }
+.sdc-state { grid-column: 1 / -1; padding: 28px; border: 1px solid var(--line); border-radius: var(--r-panel,14px); background: var(--panel); }
+.sdc-state .sdc-title { font-size: 22px; margin-bottom: 12px; }
+.sdc[data-state="stale"] .sdc-asof { font-weight: 600; }
+html[data-theme="light"] .sdc-history,
+html[data-theme="light"] .sdc-facts,
+html[data-theme="light"] .sdc-state { box-shadow: var(--card-shadow); }
+html[data-theme="light"] .sdc-qualification { border: 1px solid var(--line); }
+.sdc[lang="zh-Hans"] { line-height: 1.6; }
+.sdc[lang="zh-Hans"] .sdc-label, .sdc[lang="zh-Hans"] .sdc-muted { line-height: 1.65; }
+@media (max-width: 900px) {
+  .sdc { grid-template-columns: minmax(0, 1fr); grid-template-areas: "heading" "facts" "history" "qualification" "actions" "footer"; gap: 20px; }
+  .sdc-title { font-size: 28px; }
+  .sdc-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; padding: 20px; }
+  .sdc-chart { min-height: 260px; }
+}
+@media (max-width: 560px) {
+  .sdc-heading { gap: 10px; }
+  .sdc-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 16px; }
+  .sdc-history { padding: 16px; }
+  .sdc-chart { min-height: 220px; }
+  .sdc-value { font-size: 20px; }
+  .sdc-numeric { font-size: 24px; }
+  .sdc-actions { flex-direction: column; }
+  .sdc-action { min-height: 48px; width: 100%; }
+  .sdc-state { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sdc *, .sdc *::before, .sdc *::after { scroll-behavior: auto; transition: none; animation: none; }
+}

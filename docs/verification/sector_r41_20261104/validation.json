@@ -1,0 +1,54 @@
+{
+  "observed_at": "2026-11-04T05:45:06.998023+00:00",
+  "operation_id": "sector-r41-dossier-cycle-impl-20261104-sol-001",
+  "base_sha": "4a2291747fd2d8d364a3838e1ed2263636bc64a6",
+  "component_state": "BUILT_NOT_PROVEN",
+  "production_mounted": false,
+  "mission_complete": false,
+  "source_sha256": {
+    "templates/sector_dossier_cycle.js": "cbe692eef16c020f7c6d5ad815fe3db847ba746dbada26bb1e18e7dad583a698",
+    "templates/sector_dossier_cycle.css": "22533a0d20b6a08bfe4fe81d7b83033a4c86fb17e4f01f7b05fba6dafde36a0f",
+    "tests/test_sector_dossier_cycle_js.py": "c5399d56bd38c26b4cfe7f5e7d803765db7e0acbb8d006480d56b815e6d5f38e",
+    ".github/ci/legacy-jobs.yml": "167087544054f7351e4940f81ef63ca9469c493cd269a56a34116407bc3ee529"
+  },
+  "focused_tests": {
+    "passed": 130,
+    "skipped": 3,
+    "failed": 0
+  },
+  "ci_scope_tests": {
+    "passed": 2,
+    "failed": 0
+  },
+  "component_browser": {
+    "passed_cases": 16,
+    "native_chart_zoom_retained": true,
+    "overlapping_date_labels": false,
+    "fixture": "synthetic, not live"
+  },
+  "canonical_visual_capture": {
+    "captured": 24,
+    "rest": 8,
+    "hover": 8,
+    "focus": 8,
+    "guard_exit_code": 0
+  },
+  "design_system": {
+    "blocking_findings": 0
+  },
+  "runtime_style_guard": "passed",
+  "native_route_proof": {
+    "pr": 10703,
+    "head": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
+    "status": "FAILED_DUPLICATE_CONTROL_IDS",
+    "writer_untouched": true
+  },
+  "hosted_ci": "not_yet_submitted",
+  "remaining": [
+    "production mount and canonical Company/return integration",
+    "original D05 Fabric effect reconciliation",
+    "native route duplicate-ID repair and full browser proof",
+    "shared design acceptance and all release holds"
+  ],
+  "whole_repository_suite": "not run; data remains sparse, focused suite only"
+}

@@ -7454,6 +7454,9 @@ jobs:
       - "templates/subsectors.html.j2"
       - "tests/__init__.py"
       - "tests/test_sector_cycles.py"
+      - "tests/test_sector_dossier_cycle_js.py"
+      - "templates/sector_dossier_cycle.js"
+      - "templates/sector_dossier_cycle.css"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - "engine/cycle_phase_age.py"
       - "engine/cycle_rhythm.py"
@@ -7475,6 +7478,8 @@ jobs:
         run: pip install pytest numpy pandas pyyaml jinja2
       - name: sector cycles page and RS arithmetic
         run: python -m pytest tests/test_sector_cycles.py -q
+      - name: source-qualified Dossier Cycle presentation
+        run: python -m pytest tests/test_sector_dossier_cycle_js.py -q
 
   regwall-boundary:
     if: ${{ false }}

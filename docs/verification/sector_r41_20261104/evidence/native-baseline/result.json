@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "completed": [],
+  "case": "1440-dark-en",
+  "error": "Locator.click: Timeout 12000ms exceeded.\nCall log:\n  - waiting for locator(\"#sc-adv-toggle\")\n    - locator resolved to <button type=\"button\" id=\"sc-adv-toggle\" class=\"sc-adv-toggle\" aria-expanded=\"false\" aria-controls=\"sc-advbody\">\u2026</button>\n  - attempting click action\n    2 \u00d7 waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 \u00d7 waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    23 \u00d7 waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n"
+}

@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "completed": [],
+  "case": "1440-dark-en",
+  "error": "Locator.click: Error: strict mode violation: locator(\"#sc-tabs [data-fam=\\\"baskets\\\"]\") resolved to 2 elements:\n    1) <button role=\"tab\" class=\"sc-tab\" data-fam=\"baskets\" aria-selected=\"false\">\u2026</button> aka get_by_text(\"\ud83e\uddfa Themes\u4e3b\u9898\")\n    2) <button type=\"button\" class=\"sc-tab\" data-fam=\"baskets\" aria-pressed=\"false\">\u2026</button> aka get_by_role(\"button\", name=\"Themes\")\n\nCall log:\n  - waiting for locator(\"#sc-tabs [data-fam=\\\"baskets\\\"]\")\n"
+}

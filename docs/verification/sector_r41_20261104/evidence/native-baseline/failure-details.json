@@ -1,0 +1,80 @@
+{
+  "case": "1440-dark-en",
+  "errors": [],
+  "httpFailures": [
+    {
+      "url": "/product-nav-icons.css",
+      "status": 404
+    },
+    {
+      "url": "/fonts/Inter-600.woff2",
+      "status": 404
+    },
+    {
+      "url": "/policy_lever.json",
+      "status": 404
+    },
+    {
+      "url": "/live/shock_state.json",
+      "status": 404
+    },
+    {
+      "url": "/live/basket_pulse.json",
+      "status": 404
+    },
+    {
+      "url": "/marketdata/index_leadership.json",
+      "status": 404
+    },
+    {
+      "url": "/account.js",
+      "status": 404
+    },
+    {
+      "url": "/fonts/Inter-700.woff2",
+      "status": 404
+    },
+    {
+      "url": "/live/quotes.json",
+      "status": 404
+    },
+    {
+      "url": "/live/overlay.json",
+      "status": 404
+    },
+    {
+      "url": "/basketdata/narrative_emergence.json",
+      "status": 404
+    },
+    {
+      "url": "/fonts/Inter-400.woff2",
+      "status": 404
+    },
+    {
+      "url": "/basketdata/etf_pulse.json",
+      "status": 404
+    },
+    {
+      "url": "/basketdata/vol_sentiment.json",
+      "status": 404
+    },
+    {
+      "url": "/basketdata/theme_extension.json",
+      "status": 404
+    },
+    {
+      "url": "/basketdata/pulse.json",
+      "status": 404
+    },
+    {
+      "url": "/terminal_overlay.js",
+      "status": 404
+    },
+    {
+      "url": "/fonts/Inter-800.woff2",
+      "status": 404
+    }
+  ],
+  "url": "http://127.0.0.1:64408/sector_central.html?g=XLE&cycle=xle&cycleSource=latest#cycles",
+  "body": "MASTERMINDX\nUnited States\n\u25be\nChina\n\u25be\nHong Kong\n\u25be\nCanada\n\u25be\nInternational\n\u25be\nOther Assets\n\u25be\nResearch\n\u25be\nNVDA\nTerminal\nSector Intelligence\nUnited States\nas of 2026-11-02\nSelf-grader: 26% hit \u00b7 n=715 \u00b7 v1 calls through 2026-10-16\nBrief\nExplore\nResearch\nWatches\nSectors, themes and industries, connected.\nMarket map\nCycles\nRotation\nBreadth & money\nThemes & compare\nEntry evidence\n\nSECTOR RESEARCH\n\nCycles\n\nFollow the phase. Inspect the price, the legs and the evidence behind it.\n\nReturn to market map\n\nCycle evidence through 2026-11-02. Current reconstruction. Sector origin: 2026-10-30.\n\nOpen standalone Cycles\n\nCycle source through 2026-11-02 \u00b7 Energy \u00b7 XLE \u00b7 Recorded phase: Expansion \u00b7 Current phase age: At least 2 trading sessions \u00b7 Research stance: Act\n\nCurrent reconstruction. Chart history is not a record of what was known then.\n\nMethod & source\n\nRotation events: unavailable for this cycle date \u00b7 Fragmentation: unavailable\n\nSector ETFs\nThemes\nNasdaq-100\n6\nSector rotation overlay\nPrice\nCycle position\nwashed-out\nmid-cycle\nstretched\ntap a line to focus\nscroll \u00b7 drag\nMax 15y\n7y\n3y\n1y\n6m\nHome \u2922\nWHERE THEY STAND\nTopping\n0\nTrending\n4\nRolling over\n1\nPrime entry\n4\nBottoming\n2\nAll phases\n\u2726\nSelect all visible\nTech\nComm\nDiscretionary\nFinancials\nIndustrials\nMaterials\nEnergy\nHealth\nStaples\nUtilities\nReal Estate\nWASHED-OUT\nMID-CYCLE\nEUPHORIC\nLow\nMid\nHigh\n2020\n2022\n2024\n2026\nTODAY\n\u2190 All sectors\n\ud83d\udcc4\nOpen Energy page\n\u2197\nEnergy\nXLE \u00b7 Cyclical \u00b7 above 200d\nTrending\nAct\n\u2191 Tailwind\nWHERE IT STANDS\n72/100 \u00b7 late-cycle\nLAST TROUGH\nJul \u201926\nLAST PEAK\nOct \u201926\nNEXT PEAK\nNov \u201926\nTYPICAL \u00bd-CYCLE\n0.6 yr\nRS VS SPY\n21d +9.5% #7 \u00b7 63d +18.3% #1\n15Y CHANGE\n+93.6%\nTURN HAZARD\nUnavailable today \u2014 the model's short- and long-window reads disagreed, so no clean probability can be shown.\nEngine provenance\nTHE READ\n\nEnergy is in a Trending phase (cycle position 72/100), above its 200-day. RS vs SPY (63d): +18.3%. Next projected peak: 2026-11.\n\nANALYST NOTE\nCURATED 129D AGO\n\nEnergy is rolling over as of mid-2026, printing RS rank #11 -- the weakest sector -- even though it still sits #2 over the trailing window (+21.5%). The current tape is a tech/semis melt-up (SMH +67.9%, high-beta over low-vol +20.7%), and capital is rotating hard into AI growth away from the post-ceasefire oil-premium unwind: a mid-June 2026 Iran-Israel ceasefire and Hormuz-reopening expectations have drained the war-risk bid out of crude (-23.1% oil from the March 2026 peak), pulling XLE back below levels it held during the conflict. The reflation-quad backdrop (cyclicals +11.2% vs defensives +6.9%, oil +19.2% trailing) offers a re-bid scenario if the AI melt-up narrows, but a firming dollar (+3.4% DXY) and the narrow mega-cap tape suggest re-rotation is not imminent. XLE is a value/income play out of favor in a growth-led cycle phase.\n\nProjected next peak \u2248 Nov \u201926 (Sep \u201926\u2013Feb \u201927), from this sector\u2019s own median half-cycle. A timing estimate, not a guarantee.\nCYCLE DNA \u2014 WHY IT RHYMES\nCONFIDENCE HIGH\n\nEnergy (XLE) is structurally oil-price-beta on steroids: its cycle is almost entirely determined by WTI/Brent direction, which in turn cycles through OPEC supply-policy decisions, US shale production dynamics, global growth/demand signals, and dollar direction. When oil rises in a reflation quad (cyclicals beating defensives, falling dollar, rising copper-gold), Energy almost always ranks #1 of 11 sectors. When a deflation scare, dollar surge, or supply glut crushes crude, Energy is invariably last. The sector also carries a secondary geopolitical-premium cycle layered on top: wars, sanctions, and supply-route disruptions (Hormuz, Nord Stream) cause sharp non-fundamental oil spikes that Energy equities amplify. The third axis is the opportunity-cost trade: in AI/tech melt-up tapes, Energy is starved of capital even when oil is stable because money rotates to high-growth sectors, making the sector's RS rank a function of both oil and the overall market leadership regime.\n\nWTI/Brent crude oil price direction (primary driver ~70% of variance)\nOPEC+ supply policy decisions (cuts/hikes/market-share pivots)\nUS shale production cycle (rig counts, break-even dynamics)\nUSD direction (inverse correlation -- DXY up hurts, DXY down helps)\nGlobal growth / China demand cycle (commodity demand multiplier)\nGeopolitical risk premium (wars, sanctions, supply-route threats)\nTROUGHS FORM WHEN\nOil prices at multi-year lows with US rig counts declining sharply (supply destruction underway)\nEnergy RS rank #11 for 2+ months with record short interest in XLE/XOP (capitulation)\nOPEC+ announces surprise deep cuts or geopolitical supply disruption emerges\nDollar peaks and rolls over -- DXY topping is historically bullish for crude and XLE\nPEAKS FORM WHEN\nOil price reaches multi-year highs and majors' free-cash-flow yield compresses below 5% (overvaluation)\nOPEC+ pivots to production increases or Saudi abandons price defense (supply catalyst)\nEnergy RS rank #1 sustained 3+ months in a growth/tech-led tape (exhaustion of rotation flows)\nDollar strength inflects -- DXY breaking above key levels signals commodity headwind\nMedian full cycle \u2248 12 months\nClosest analog The current 2026 post-ceasefire selloff rhymes most closely with the 2022-11-15 leg (November 2022 to March 2023): in both cases, Energy had just completed a supply-disruption-led premium rally to #1, then reversed sharply as the catalyst faded (OPEC+ Oct 2022 cut wearing off / China-demand worry vs Iran ceasefire 2026), with money rotating hard into tech/growth (the late-2022 ChatGPT-driven AI bid in Comm/Tech mirroring the 2026 AI melt-up). In both cases Energy went from #1 to #11 in under four months, oil fell 20%+, and the broader tape was narrow/mega-cap-led. The imperfect fit: the 2022-23 reversal was compounded by an SVB credit shock, whereas the 2026 move is a cleaner geopolitical-premium drain.\nSee more \u25be\nCYCLE LEGS \u2014 TAP FOR THE STORY\nRALLY\nRally +32.6% \u00b7 Jul \u201926 \u2192 Oct \u201926\n+32.6%\nSELLOFF\nCeasefire unwinds the oil premium as semis melt up \u00b7 Mar \u201926 \u2192 Jul \u201926\n\u221215.6%\nRALLY\nLiberation Day tariff crash -- Energy worst in a panic \u00b7 Apr \u201925 \u2192 Mar \u201926\n+63.7%\nSELLOFF\nSelloff \u221222.1% \u00b7 Apr \u201924 \u2192 Apr \u201925\n\u221222.1%\nRALLY\nRally +22.7% \u00b7 Jan \u201924 \u2192 Apr \u201924\n+22.7%\nSELLOFF\nSelloff \u221214.4% \u00b7 Sep \u201923 \u2192 Jan \u201924\n\u221214.4%\nRALLY\nRally +21.9% \u00b7 May \u201923 \u2192 Sep \u201923\n+21.9%\nSELLOFF\nDemand worry, SVB shock, rate regime flips \u00b7 Nov \u201922 \u2192 May \u201923\n\u221218.6%\nRALLY\nOPEC+ 2mb/d cut, weak dollar power a reflation bounce \u00b7 Sep \u201922 \u2192 Nov \u201922\n+36.8%\nSELLOFF\nStrong dollar + rate regime hit oil \u00b7 Aug \u201922 \u2192 Sep \u201922\n\u221218.2%\nRALLY\nTight supply sparks a reflation-quad rebound \u00b7 Jul \u201922 \u2192 Aug \u201922\n+24.6%\nSELLOFF\nRecession scare crushes the oil peak \u00b7 Jun \u201922 \u2192 Jul \u201922\n\u221226.9%\nRALLY\nEnergy crisis + Russia spike -- Energy alone vs a rate-regime selloff \u00b7 Aug \u201921 \u2192 Jun \u201922\n+101.5%\nSELLOFF\nDelta scare, OPEC+ hike -- Energy worst as defensives bid \u00b7 Jun \u201921 \u2192 Aug \u201921\n\u221218.5%\nRALLY\nVaccine reflation, energy leads the reopening \u00b7 Oct \u201920 \u2192 Jun \u201921\n+102.8%\nSELLOFF\nTech melt-up + COVID second wave -- Energy starved out \u00b7 Jun \u201920 \u2192 Oct \u201920\n\u221240.9%\nRALLY\nFiscal/monetary stimulus + OPEC+ record cut -- XLE nearly doubles \u00b7 Mar \u201920 \u2192 Jun \u201920\n+98.8%\nSELLOFF\nUS-China trade war escalation -- Energy worst as bonds rally \u00b7 Apr \u201919 \u2192 Mar \u201920\n\u221265.6%\nRALLY\nFed pivot + OPEC+ cuts + Iran sanctions -- Energy rebounds \u00b7 Dec \u201918 \u2192 Apr \u201919\n+27.4%\nSELLOFF\nFed hikes + shale glut + Q4 panic -- Energy worst by far \u00b7 May \u201918 \u2192 Dec \u201918\n\u221231.8%\nRALLY\nIran deal withdrawal lifts oil -- Energy leads briefly \u00b7 Mar \u201918 \u2192 May \u201918\n+19.5%\nSELLOFF\nVolmageddon inflation scare -- broad selloff, Energy worst \u00b7 Jan \u201918 \u2192 Mar \u201918\n\u221215.4%\nRALLY\nOPEC compliance tightens, oil to $66 -- Energy leads \u00b7 Aug \u201917 \u2192 Jan \u201918\n+25.9%\nSELLOFF\nUS shale offsets OPEC cuts -- Energy alone falls \u00b7 Dec \u201916 \u2192 Aug \u201917\n\u221220.3%\nRALLY\nVienna OPEC deal, Trump reflation -- Energy #1 for the year \u00b7 Jan \u201916 \u2192 Dec \u201916\n+50.3%\nSELLOFF\nOPEC no-cut, Iran sanctions lifted -- oil to $26 \u00b7 Nov \u201915 \u2192 Jan \u201916\n\u221227.5%\nRALLY\nCrash-low rebound -- Energy leads risk-on recovery \u00b7 Aug \u201915 \u2192 Nov \u201915\n+20.6%\nSELLOFF\nOPEC market-share war, shale glut -- 56% oil crash \u00b7 Jun \u201914 \u2192 Aug \u201915\n\u221241.5%\nRALLY\nFed QE3, global reflation -- 2-year Energy boom \u00b7 Jun \u201912 \u2192 Jun \u201914\n+63.4%\nSELLOFF\nEurope reignites, dollar surges, oil/cyclicals crushed \u00b7 Feb \u201912 \u2192 Jun \u201912\n\u221218.7%\nCycle scorecards\nIndustrials\nXLI \u00b7 Cyclical\nBottoming\nWatch \u2014 don't chase\nBUY\nCycle position 2/100\n\u25b2\nref: Peak was proj. Sep \u201925 \u2014 elapsed\n\u2193 Headwind\nRS #9\nTURN HAZARD\nUnavailable today\nCommunication Services\nXLC \u00b7 Growth\nBottoming\nStand aside\nCycle position 5/100\n\u25bc\nNext \u25bc Apr \u201927\n\u2193 Headwind\nRS #10\nTURN HAZARD\nUnavailable today\nReal Estate\nXLRE \u00b7 Rate-sens\nPrime entry\nAct\nBUY\nCycle position 27/100\n\u25b2\nref: Peak was proj. Aug \u201925 \u2014 elapsed\n\u2194 Mixed\nRS #8\nTURN HAZARD\nUnavailable today\nConsumer Discretionary\nXLY \u00b7 Cyclical\nPrime entry\nAct\nBUY\nCycle position 27/100\n\u25b2\nref: Peak was proj. Jul \u201926 \u2014 elapsed\n\u2194 Mixed\nRS #6\nTURN HAZARD\nUnavailable today\nUtilities\nXLU \u00b7 Defensive\nPrime entry\nAct\nBUY\nCycle position 28/100\n\u25bc\nref: Trough was proj. Jun \u201926 \u2014 elapsed\n\u2194 Mixed\nRS #4\nTURN HAZARD\nUnavailable today\nMaterials\nXLB \u00b7 Cyclical\nPrime entry\nWatch \u2014 don't chase\nBUY\nCycle position 31/100\n\u25b2\nref: Peak was proj. Aug \u201925 \u2014 elapsed\n\u2191 Tailwind\nRS #3\nTURN HAZARD\nUnavailable today\nFinancials\nXLF \u00b7 Cyclical\nTrending\nAct\nCycle position 58/100\n\u25b2\nref: Peak was proj. Jun \u201926 \u2014 elapsed\n\u2191 Tailwind\nRS #5\nTURN HAZARD\nUnavailable today\nConsumer Staples\nXLP \u00b7 Defensive\nTrending\nAct\nCycle position 58/100\n\u25b2\nref: Peak was proj. May \u201924 \u2014 elapsed\n\u2191 Tailwind\nRS #1\nTURN HAZARD\nUnavailable today\nEnergy\nXLE \u00b7 Cyclical\nTrending\nAct\nCycle position 72/100\n\u25b2\nNext \u25b2 Nov \u201926\n\u2191 Tailwind\nRS #7\nTURN HAZARD\nUnavailable today\nHealth Care\nXLV \u00b7 Defensive\nTrending\nProtect gains\nCycle position 95/100\n\u25b2\nref: Peak was proj. Oct \u201925 \u2014 elapsed\n\u2191 Tailwind\nRS #2\nTURN HAZARD\nUnavailable today\nTechnology\nXLK \u00b7 Growth\nRolling over\nStand aside\nCycle position 39/100\n\u25b2\nref: Peak was proj. Oct \u201926 \u2014 elapsed\n\u2194 Mixed\nRS #11\nTURN \u22643M\n40%\nHISTORICAL PASS\n\nThe turn record dated 2026-07-02 grades an earlier version of this method, run on a shorter price history. It is not a record of the method behind this month's cards. Across 11 US sector funds it met 17 of 98 real turns. 33 calls were right and 409 were false; right means within 3 months of a real turn.\n\nInformational only, not investment advice. Baskets are equal-weighted and benchmarked to the S&P 500. Membership is curated, so results are descriptive, not an out-of-sample backtest or buy list. Generated .\nD05 LOCAL CANDIDATE \u00b7 archived source fixture \u00b7 not live\nAsk Mastermind\nBrain \u00b7 your desk copilot"
+}
