@@ -1,0 +1,119 @@
+{
+  "schema": "d08b.implementation_return.v1",
+  "observed_at_utc": "2026-11-04 06:08:24 UTC",
+  "bounded_return_complete": true,
+  "parent_mission_complete": false,
+  "finalization_classification": "PROVEN_OUTCOME",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "frozen_interface": {
+    "version": "D08-OPTIONS/1.0.0",
+    "sha": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c"
+  },
+  "design": {
+    "pr": 10686,
+    "original_freeze": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6",
+    "previous_head": "62f95141ce3bc56dbf96ab9b97ff5b3c8b806612",
+    "boards": 18,
+    "retention": {
+      "RETAIN": 27,
+      "IMPROVE": 25,
+      "RELOCATE": 3,
+      "BLOCKED_DATA": 5,
+      "REMOVE": 0
+    }
+  },
+  "terminal": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "pr": 1266,
+    "head": "8d47a4557762e5d1d7e07617255b105cbc8a51a5",
+    "draft": true,
+    "auto_merge": null,
+    "operation_id": "d08b-surface-exact-values-20261104-c3",
+    "branch": "sol/web-d08b-surface-exact-values-20261104-c3",
+    "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d08b-surface-exact-values-20261104-c3",
+    "publication": "APPLIED",
+    "clean": true,
+    "commits": {
+      "surface": "4741b1ceb2e8718d59ab74654bbeefd9eb6c4484",
+      "skew": "4a58b778ade85a78834f8a61cb0ca8c52556f0bf",
+      "term": "ee40d56dfdd447ec7f01e4075aac70275195f160",
+      "history": "8d47a4557762e5d1d7e07617255b105cbc8a51a5"
+    },
+    "final_commit_action_ref": "94ded702d527602e1d6fa09261edd3854802f98a636e4d22cb1436c7f5068179",
+    "final_push_action_ref": "d5500be01b4972c953b4b4f223b34caf603a1923ccfb29d181dcb3e43212e30b"
+  },
+  "verification": {
+    "volatility_unit_passed": 100,
+    "volatility_combined_browser_passed": 32,
+    "volatility_combined_intentional_skips": 10,
+    "final_history_browser_passed": 8,
+    "final_history_intentional_skips": 4,
+    "prior_surface_unit_passed": 48,
+    "surface_presentation_recheck_passed": 7,
+    "scoped_lint": "PASS",
+    "production_build": "PASS",
+    "volatility_current_pngs": 134,
+    "surface_corrected_light_token_pngs": 12,
+    "manifest_files": {
+      "skew": 128,
+      "term": 111,
+      "history": 138
+    },
+    "independent_source_review": "PASS; History final CSS/test-only delta explicitly root-reviewed",
+    "history_calculation_sha256": "4367113c72f95be0a42128bb6120a5e7ae67c78ce93944fc6ad2d0ceaf13abec",
+    "counts_are_not_additive_unique_tests": true
+  },
+  "ci_snapshot": {
+    "head": "8d47a4557762e5d1d7e07617255b105cbc8a51a5",
+    "check_runs": [
+      {
+        "name": "Analyze (python)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41782992325/job/126418621154"
+      },
+      {
+        "name": "Analyze (javascript-typescript)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41782992325/job/126418621131"
+      },
+      {
+        "name": "Analyze (actions)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41782992325/job/126418620909"
+      }
+    ],
+    "all_green_claim": false
+  },
+  "corrections": [
+    "Old Surface/initial Skew light filenames rendered dark; current panel light-token proof replaces that claim",
+    "Oversized desktop Term element captures are superseded by hit-tested viewport captures"
+  ],
+  "proof_limits": [
+    "Controlled source fixtures through actual Options route",
+    "Panel light-token compatibility, not production theme activation",
+    "CSS zoom2, not native/text zoom or full400percent audit",
+    "No complete assistive-technology/performance certification",
+    "No production deployment or whole-program acceptance"
+  ],
+  "ownership_preserved": [
+    "VolView/shared admission/types/strings",
+    "Source/cache/auth/entitlements",
+    "D08C Plan/Save/contract admission",
+    "D08D replay/cursor/availability",
+    "Incumbent matrix/Lab/Levels/navigation writers"
+  ],
+  "held_actions": [
+    "merge",
+    "Ready",
+    "un-draft",
+    "enqueue",
+    "held relabel",
+    "uncertain-operation retry",
+    "production deployment"
+  ],
+  "native_advisers": "ACCEPTED / STOP; no watcher",
+  "next_action": "D08 assigned receiver composes this exact design/source return with existing incumbent interfaces and executes remaining integrated acceptance; retain carriers and release holds"
+}

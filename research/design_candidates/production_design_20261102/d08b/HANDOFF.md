@@ -1,6 +1,6 @@
 # D08B return and continuation frontier
 
-> **Resume update, 2026-11-04:** The [Surface implementation return](updates/20261104-surface-implementation.md) records the newly authorized bounded build and its evidence. The [B01 native correction](updates/20261104-b01-contrast/README.md) supersedes the original B01 contrast-placement claim. The record below is the original frozen commissioning/handoff state at `a3356474cebbdd88e6448e05ffc3d2e44faa5ca6`; its design-only/no-build statements are historical. The original acceptance table remains a program gate, with partial implementation coverage mapped in the update.
+> **Current D08B return, 2026-11-04:** The [cumulative volatility implementation return](updates/20261104-volatility-implementation.md) binds the completed design package and verified Surface, Skew, Term and History source at Terminal `8d47a4557762e5d1d7e07617255b105cbc8a51a5`. It records actual tests, phone/keyboard evidence, the light-token proof correction, the current Web review waiver and remaining integrated-product gates. The [B01 native correction](updates/20261104-b01-contrast/README.md) remains accepted. The original frozen commissioning record below is historical: its design-only/no-build and blanket separate-session review statements do not govern this authorized continuation. The original acceptance table is not globally marked PASS; parent product completion and production remain unclaimed.
 
 ## Mission and disposition
 

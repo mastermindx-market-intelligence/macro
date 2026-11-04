@@ -1,5 +1,7 @@
 # Resumed D08B design and Surface implementation return
 
+> **Subsequent correction:** The [cumulative volatility return](20261104-volatility-implementation.md) supersedes this historical record's light-theme proof and blanket separate-session review statements. Old Surface captures named light actually rendered dark; the new panel light-token captures and explicit production-theme boundary are recorded at Terminal `8d47a4557762e5d1d7e07617255b105cbc8a51a5`. Surface implementation source remains unchanged. The later Skew, Term and History work is built and locally verified on the same Draft carrier.
+
 The Chairman's **“Resume design and implementation”** instruction authorizes the continuation recorded here. It supersedes the original package's design-only commission boundary for this bounded Surface slice. It does not authorize merge, Ready, un-draft, enqueue, held relabel or production deployment.
 
 ## Exact deliverables
