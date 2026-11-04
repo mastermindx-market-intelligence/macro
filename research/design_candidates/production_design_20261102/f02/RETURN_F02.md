@@ -1,8 +1,8 @@
 # F02 Design System — current return
 
-**Latest source checkpoint — 4 November 2026, 07:28 UTC:** implementation [#10698](https://github.com/mastermindx-market-intelligence/macro/pull/10698) is now at **`2b1593acd1b1d4e36014f20363ef11cfc71e8634`**. Three new missing-tail regressions and all **59 renderer tests pass**; all three changed files were read back exactly. Prior-head CI `41784199030` is now completed: 11/12 packs pass, including `ci-pack-1`; only the real-browser changed-illustration evidence gate fails in `ci-pack-5`. New-head CI `41792308587` and fences `41792308617` are queued at the first read. See the final section for the current source, effect and proof frontier; earlier queued/head observations below are historical.
+**Latest component-proof checkpoint — 4 November 2026, 08:43 UTC:** implementation [#10698](https://github.com/mastermindx-market-intelligence/macro/pull/10698) is at **`6e245059af5870d35eb48e34d641e50f38617cc1`**. The actual changed illustration component now has **8/8 canonical browser captures**, visual self-QA of all eight images, **24/24 normal-scroll/reduced-motion browser checks** at 1440/390/320px, and a matching committed `EVIDENCE.yml`. The repository's visual-evidence gate passes locally against the actual changed CSS diff. All 17 published files read back byte-for-byte. [Exact proof and reproduction](https://github.com/mastermindx-market-intelligence/macro/blob/6e245059af5870d35eb48e34d641e50f38617cc1/mockups/evidence/f02-illus-gap-20261104/README.md).
 
-**Classification: CHECKPOINTED_CONTINUATION; source implementation is advancing on Draft #10698. Paper gate G15 remains EFFECT_UNKNOWN, and qualified joint v1 remains gated.** All independently safe native repairs and scoped Product/Taste followups are complete. This is the current return for [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630). The original uncertain Paper effect remains held; all independently safe construction in the planned 32-board set has been completed. No merge, Ready, un-draft, queue, relabel or deployment is authorized or performed.
+**Classification: MORE_WORK_EXISTS (active source continuation). MISSION_COMPLETE: false.** Exact-head hosted [CI 41801079017](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801079017) has started: `ci-plan` passed, `contract-delta` is running, and the 12 packs are queued at this read. No hosted PASS, merge or product acceptance is claimed. Paper G15 remains **EFFECT_UNKNOWN** after fresh same-target inspection and recovery of the original caller journal. Both PRs remain Draft/HOLD. The final section supersedes earlier source/browser/catalog observations while preserving their historical evidence and the native/joint/release boundaries.
 
 ## Concrete delivery
 
@@ -315,3 +315,150 @@ New source `2b1593ac` [fences 41792308617](https://github.com/mastermindx-market
 - Existing native reference, P0B/browser receipts, producer ownership, held overlap #8241/#8721, joint F01/F02 and final acceptance boundaries remain as recorded. No extra optional review ceremony is required for this source phase.
 
 **Exact successor action:** consume material exact-`2b1593ac` CI results and fix any reproducible in-scope source regression on the same branch. To close design-governance, first establish a genuinely authorized preview route with an explicit resolution of the recorded refusal; then capture the actual changed illustration in dark/light × EN/ZH × 1440/390, verify layout/accessibility/reduced-motion and commit real screenshot hashes plus matching `EVIDENCE.yml`. Separately obtain original-carrier terminal/canonical G15 reconciliation before its dependent Paper edits. Do not rerun accepted unchanged native reviews or P0B fixtures, invent preview evidence, or treat old CI success as current-head acceptance. Both PRs remain Draft/HOLD; no Ready/un-draft/relabel/enqueue/merge/deploy. No optional external reviewer, Fabric execution or watcher is being awaited or claimed.
+
+## Component browser proof and original-journal recovery — 4 November 2026, 08:43 UTC
+
+### Capability delta and exact publication
+
+Before this continuation, the changed illustration CSS had no owning eight-cell
+browser receipt; hosted CI failed its design-governance pack. The existing
+source implementation had 59 passing renderer tests but no accepted changed-component
+browser matrix. Now the actual shared renderer and styles have reproducible
+synthetic browser proof and a committed receipt. This closes that component-evidence
+gap locally; it does not close the full F02 mission or a live producer journey.
+
+The original source branch `sol/web-f02-illus-gap-20261104-c2` advanced once by
+expected-head fast-forward from `2b1593acd1b1d4e36014f20363ef11cfc71e8634` to
+**`6e245059af5870d35eb48e34d641e50f38617cc1`**, tree `6f194bd113af4a7e7bbeb4ceea9ef74b0918c247`.
+The GitHub connector remains its publication carrier; the M2 fixture directory was
+a validation surface, not a source checkout or transferred writer. All 17 published
+files were fetched back and matched exact submitted bytes/blob identities.
+
+The renderer remains blob `83159e39ccc63877737b8a5a7050a2b26a9beef3`; illustration
+CSS remains `9708c275eb28c6a02cbbde10d45bbdafcf840436` in both paired paths.
+The freshly rerun **59/59 renderer test functions** pass. Earlier 900/120/72
+comparisons and 1,800 sparse probes retain their original scope; they were not
+relabelled as new runs. No producer, Paper canvas, live data, held #8241/#8721
+integration, release transition or deployment changed.
+
+### Real browser evidence
+
+- Evidence owner: [`mockups/evidence/f02-illus-gap-20261104/`](https://github.com/mastermindx-market-intelligence/macro/tree/6e245059af5870d35eb48e34d641e50f38617cc1/mockups/evidence/f02-illus-gap-20261104).
+  `EVIDENCE.yml` maps the two illustration CSS paths and renderer to the canonical
+  `mastermind.p0_evidence.v2` manifest.
+- The fixture is generated by `scripts/render_illus_gap_fixture.py` from actual
+  source renderer, production CSS/JS, canonical theme and six existing Inter fonts.
+  `fixture-manifest.json` binds source/page hashes to the renderer input head
+  `2b1593ac`; those component bytes are unchanged in the published evidence commit.
+- Unmodified canonical capture runner v1.4.0, SHA-256
+  `9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42`,
+  captured **8/8** 1440/390 × EN/ZH × dark/light cells at
+  `2026-11-04T08:30:58Z`. Actual Chromium: **151.0.7922.34**, macOS 26.5 arm64.
+  Manifest SHA-256: `ea1f882eb233a68a5c5a55cbb9fa4440b421de58b132e8a67affd86c70e0a740`.
+- All eight final PNGs were visually inspected. Gaps stay open; the historical
+  value/date receipt stays above the plot; isolated observations, final zero and
+  sparse extrema remain visible; the honest-null state is explicit. Compact 42px
+  charts at 96/140/240px widths retain their distinct status row. No clipping or
+  overlap was observed in the changed component.
+- The initial capture was rejected because below-fold figures had not received
+  their normal scroll reveal and two fonts were missing from the preview copy.
+  The corrected settled specimen invokes the production `ilxReveal(document)`
+  API and includes the exact fonts. The rejected PNGs are not in the receipt.
+  The canonical manifest retains its honest null HTTP-to-commit resolution;
+  the separate source hashes supply provenance.
+- `scripts/verify_illus_gap_fixture.py` then exercised `?natural=1`, which leaves
+  reveal-on-scroll unchanged, at 1440/390/320 × both locales/themes × normal/reduced
+  motion: **24/24 passed**. It checks actual ink, reduced-motion presentation,
+  status/plot separation, fonts, visible locale, compact accessible window/date,
+  final zero, overflow and browser errors. Supplemental report SHA-256:
+  `4b12af4b029197b2f60e573f4157a13a3591dc21b5313952dea4f17a93449086`.
+- Final capture: zero console errors, zero failed responses, no horizontal overflow
+  or elements wider than the requested viewport. This is synthetic component
+  evidence, not live-user telemetry, a complete accessibility audit or product
+  journey acceptance. The existing API's English accessible names are disclosed;
+  bilingual visible messages do not imply translated screen-reader output.
+- The canonical `check_ui_visual_evidence.py` passed against the actual GitHub
+  template/site CSS diff in the validation subset. Hosted aggregate CI remains
+  a distinct gate. Genuine HK/Canada P0B receipts were preserved unchanged.
+
+The historical generated `data:` navigation refusal remains recorded; its original
+tool payload was not recovered and that navigation was not retried. Current browser
+documentation supports localhost, but the user Chrome extension's attempted loopback
+load failed with technical `net::ERR_SOCKET_NOT_CONNECTED`. Its temporary viewport
+was reset and failed tab closed. The normal repository capture test then ran in
+isolated Chromium against the source-built loopback fixture. No browser policy,
+account, permission or authentication was changed. Temporary M2 server session
+`74595` was terminated after testing; the original session reported completed
+with `KeyboardInterrupt`. No watcher or ongoing preview service is left behind.
+
+### Hosted CI and source continuation
+
+Previous source `2b1593ac` [CI 41792308587](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41792308587)
+completed with **11/12 packs successful**. The sole failed pack was
+[ci-pack-5 / job 126452058299](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41792308587/job/126452058299):
+`templates/illus.css` had no committed owning `EVIDENCE.yml`.
+Fences `41792308617` succeeded. The new receipt addresses that exact failure.
+
+New source `6e245059af5870d35eb48e34d641e50f38617cc1` [CI 41801079017](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801079017)
+has actually started: `ci-plan` passed, `contract-delta` job `126476692280`
+was in progress at 08:43 UTC, and 12 packs were queued. [Fences 41801079069](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801079069)
+was in progress at the initial read. No manual rerun, queue/Ready action or
+optional external review was dispatched.
+
+Current next source actions are to consume material exact-head CI results and repair
+any reproduced source regression on this same branch. A bounded read-only diagnosis
+is checking GitHub's `mergeable:false` observation; do not infer conflict paths or
+merge permission from that boolean. Preserve held overlap and all actual branch
+protection, required CI, formal non-author/release holds. The G05 two-critic/reference
+route applies to final native/reference acceptance; it is not an extra reviewer gate
+for this bug-fix/component-evidence phase under the current Web waiver.
+
+### G15: exact original journal recovered, still unresolved
+
+Protected procedure pin remains compatible Mastermind
+`8eb375fe081339be759888f74a7c93d855727190` (skillpack 1.0.1, bootstrap major 1).
+The original direct Paper carrier is now serviceable for inspect/catalog/read:
+Desktop 0.5.18; accepted TOOL_SCOPED_CONTRACT_V1; catalog SHA
+`03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4`.
+The foreground PROPHET file was not switched or edited.
+
+Fresh same-carrier `get_children` on F02 file
+`01M312VSDSZFVT45674GDVJVZN`, body `7J4-0` still returns eight children ending
+in `7NX-0`, with no footer, and token content hash `356191c3`. Absence is not
+a terminal effect receipt.
+
+The original [writer-dispatch journal](https://github.com/mastermindx-market-intelligence/macro/blob/2ea60216320f2294c0f66aa43d6071e6e1d0d587/research/design_candidates/production_design_20261102/f02/paper/writer-dispatch-journal.jsonl),
+blob **`c6cefad88e41882fa3d8ec8268bf2d298a5f8ce1`**, was recovered via the Git blob
+API after the Contents API returned an empty body for the large file. Its three
+entries for `f02-c2-macro-light-zh-390-chart-footer-20261103-01` record
+`DISPATCHING`, a timestamp-only completion fragment, then
+**`TRANSPORT_ERROR_EFFECT_UNRESOLVED` / `UNAVAILABLE` / `Connection timed out.` /
+`retry_allowed:false`**. They retain no inner terminal effect receipt.
+The timestamps are `2026-11-03T06:32:57.235Z` through
+`2026-11-03T06:33:17.706Z`; a completed timestamp does not establish an applied
+or no-effect outcome.
+
+G15 therefore remains **EFFECT_UNKNOWN / CAPABILITY_GAP_ON_ORIGINAL_CARRIER_RECEIPT**.
+No currently established catalog action retrieves that missing terminal status.
+The current F02 receiver retains recovery ownership; an actual original-carrier
+terminal receipt or documented canonical integration-owner reconciliation is needed.
+No replay, equivalent footer, carrier switch, 33 dependent numeric-frame writes or
+full-set acceptance is permitted. Other accepted native work and the original
+32ea8d5 R3 freeze remain DO_NOT_REDO.
+
+### Recoverable frontier
+
+- **MISSION_COMPLETE: false.** Bounded result: source component browser proof is
+  published and verified; hosted CI, source integration and final product/native
+  acceptance remain separate.
+- **DO_NOT_REDO:** the verified eight-cell evidence and 24 browser checks while
+  renderer/style/fixture inputs remain unchanged; accepted 59-test source behavior,
+  genuine P0B evidence and scoped R3 native/review inputs. Do not replay G15.
+- **Original carriers:** GitHub branch/PR #10698 for source; #10630/current return
+  for cumulative design continuity; original Mastermind Paper direct for G15.
+  No new identity, effect, retry, state, control or review plane was created.
+- **Exact next action:** consume CI `41801079017` at `6e245059af5870d35eb48e34d641e50f38617cc1`;
+  repair only material failures or verified safe integration conflicts on the original
+  source branch. Paper-dependent work remains fenced by the original terminal/canonical
+  reconciliation gate. No archived author, optional reviewer or imaginary background
+  chat is being awaited.
