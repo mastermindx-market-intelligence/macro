@@ -40,7 +40,9 @@ def test_stamp_does_not_ship_a_hard_coded_live_label(template_text: str) -> None
 
 def test_stamp_ships_in_the_baked_state_and_names_its_date(template_text: str) -> None:
     assert 'data-dq-state="baked"' in template_text
-    assert "t('As of ' ~ freshness, '截至 ' ~ freshness)" in template_text
+    assert "t('As of ' ~ price_as_of, '截至 ' ~ price_as_of)" in template_text
+    assert "Price observation date unavailable" in template_text
+    assert "t('As of ' ~ freshness" not in template_text
 
 
 def test_only_the_live_state_gets_the_pulsing_green_pip(template_text: str) -> None:
