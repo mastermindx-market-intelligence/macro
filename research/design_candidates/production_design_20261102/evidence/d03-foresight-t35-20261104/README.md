@@ -3,6 +3,8 @@
 Status: source repair and fixture browser proof, Draft / HOLD. Not merged, deployed, or production-accepted.
 Parent: [D03 checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6623889088).
 Source continuation: [existing T35 handoff](CONTINUATION.md). This maintenance exception has no canonical workstream binding; the unmodified continuation note belongs beside its source evidence, not in the schema-validated Agent OS record directory.
+
+Hosted fence `41789114113` / job `126438094781` at source head `869f96c3` rejected the former note path for missing Agent OS YAML frontmatter. The note is preserved byte-for-byte here, without inventing a workstream or weakening validation. Local `python3 scripts/agentos.py validate` after this relocation: **2045 records, 0 errors, 186 pre-existing/sparse-checkout warnings, exit 0** (shell `pipefail` enabled). Runtime/template/browser-source files are unchanged by this continuity-only repair.
 Specification: `D03_US_PROPHET_PHASE_2A.md` at `e521f04dcc5afb4fb06152584d35c8a01dbe21ff`, T35 / F04.
 Base: `005232fa54edbc6d271a796db6b15d5cd7443641`, refreshed unchanged before publication.
 Protected procedure: Mastermind `75a6540519cf519edfef7633e74f57b68aef9329`.
