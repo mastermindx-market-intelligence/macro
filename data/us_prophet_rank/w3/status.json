@@ -90,30 +90,30 @@
   "last_run": {
     "board_as_of": "2026-11-03",
     "coverage": {
-      "identical": 0,
+      "identical": 8,
       "matured": 0,
-      "revisions_refused": 0,
-      "stamps": 1,
-      "written": 8
+      "revisions_refused": 1,
+      "stamps": 0,
+      "written": 0
     },
     "dry_run": false,
     "failures": [],
     "family": {
-      "identical": 0,
+      "identical": 8,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 8
+      "stamps": 0,
+      "written": 0
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
     "n_paired_rows": 2037,
     "paired": {
-      "identical": 1943,
+      "identical": 1994,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 51
+      "stamps": 0,
+      "written": 0
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -142,12 +142,32 @@
       "2026-10-30"
     ],
     "require_stamp": "2026-11-03",
-    "same_stamp_revisions_refused": [],
+    "same_stamp_revisions_refused": [
+      {
+        "changed_fields": [
+          {
+            "existing": 3,
+            "field": "distinct_values",
+            "incoming": 2
+          }
+        ],
+        "existing_fingerprint": "330bbd3e2503baa608f7ecba8a177000e49ddd46cf37049b58daac878413821c",
+        "grain": "coverage",
+        "incoming_fingerprint": "cc10f051e73bedfab10750fad1d7aca20aeef4a0e966cbf5917b5c4f8eb89cc8",
+        "key": [
+          "2026-11-03",
+          "gex_confirm_verdict"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-11-03"
+      }
+    ],
     "sessions_written": {
-      "identical": 31,
+      "identical": 32,
       "matured": 0,
       "refused": 0,
-      "written": 1
+      "written": 0
     }
   },
   "latest_session": {
@@ -12071,6 +12091,23 @@
         "tier_cascade"
       ],
       "stamp_date": "2026-10-14"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 2
+        }
+      ],
+      "existing_fingerprint": "330bbd3e2503baa608f7ecba8a177000e49ddd46cf37049b58daac878413821c",
+      "grain": "coverage",
+      "incoming_fingerprint": "cc10f051e73bedfab10750fad1d7aca20aeef4a0e966cbf5917b5c4f8eb89cc8",
+      "key": [
+        "2026-11-03",
+        "gex_confirm_verdict"
+      ],
+      "stamp_date": "2026-11-03"
     }
   ],
   "schema": "us.prophet_w3_status/v1",

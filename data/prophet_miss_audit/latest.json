@@ -1702,16 +1702,15 @@
   "asof": "2026-10-30",
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
-  "store_n": 10274,
-  "scan_n": 794,
+  "store_n": 5885,
+  "scan_n": 409,
   "runners_n": 150,
-  "runners_eligible_today_n": 8,
-  "runners_never_eligible_n": 48,
+  "runners_eligible_today_n": 17,
+  "runners_never_eligible_n": 33,
   "excluder_family_hist": {
-   "not_topped_veto": 138,
-   "ELIGIBLE": 8,
-   "freshness_expired": 3,
-   "no_cross": 1
+   "not_topped_veto": 130,
+   "ELIGIBLE": 17,
+   "freshness_expired": 3
   }
  },
  "priority_score_scorecard": {
