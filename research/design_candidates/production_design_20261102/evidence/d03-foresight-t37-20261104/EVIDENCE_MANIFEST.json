@@ -26,12 +26,12 @@
       }
     ]
   },
-  "file_count_excluding_manifest": 50,
+  "file_count_excluding_manifest": 65,
   "files": [
     {
       "path": "CONTINUATION.md",
-      "bytes": 4789,
-      "sha256": "6a29ce8acd411c755ea778c32d172571d6aad8be9c4b21584cbacb1cff940a04"
+      "bytes": 6266,
+      "sha256": "668dd51fc01c501a13ba4738cc707653c0e6775ae42e2344ad4540fc6a11658d"
     },
     {
       "path": "DEPENDENCY_BLOBS.json",
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 10133,
-      "sha256": "6b97d12cc327583cda9d13076be3fae867f619800693393a4e19467492a3058f"
+      "bytes": 12784,
+      "sha256": "5c116dbf9f78cbf6a9114371d28a13ceb9f567b4afc10f186634c8596afe7dcf"
     },
     {
       "path": "browser-final/all-pending-320-light-en.png",
@@ -184,6 +184,81 @@
       "sha256": "568aa4cf0cffd2c05e93188e07fec1263e4876b3c314cff8c30eb45a0d6223f2"
     },
     {
+      "path": "ci-repair/CI_FAILURE.json",
+      "bytes": 1819,
+      "sha256": "181542c0c103333e17ddf299badf1172b79e7d7baa1b8c53cead0016c5e17763"
+    },
+    {
+      "path": "ci-repair/candidate-ui.diff.gz",
+      "bytes": 560,
+      "sha256": "23c1617d8f4700a440fbdcb049cefc2edcadb55a002bb1aacc6a8e0007a2a08d"
+    },
+    {
+      "path": "ci-repair/design-ratchet.txt",
+      "bytes": 279,
+      "sha256": "01a5da63a90ff291918885ea9d4efe6a996db8870c726b7c4251fa37f7974765"
+    },
+    {
+      "path": "ci-repair/diagnostics/input-and-serialization-reconciliation.json",
+      "bytes": 1194,
+      "sha256": "7283513562c99835ff2f97ac57bc164f1a51040fb5ba7983302fa134987819b4"
+    },
+    {
+      "path": "ci-repair/diagnostics/noncanonical-governance-checks.json",
+      "bytes": 1187,
+      "sha256": "b10e1f14dcee73314898f9885b31c1891df97d5d0ca932df6d621144c136d1e9"
+    },
+    {
+      "path": "ci-repair/governance-checks.json",
+      "bytes": 1507,
+      "sha256": "eef5737cb04b3ea74b5b46ff920c5b5d01c3af749448a64b4ffc45d4d433c09e"
+    },
+    {
+      "path": "ci-repair/radius-1440-dark-en.png",
+      "bytes": 81970,
+      "sha256": "6ccc93f3f9f7a0b1d81cb16b5003cf50e34e0c4b13ea114ebd31b58269b52e55"
+    },
+    {
+      "path": "ci-repair/radius-320-dark-zh.png",
+      "bytes": 87083,
+      "sha256": "553f9546892d19901f25af911c8e83115dcb4f7201a3ec312e70947f83252e7c"
+    },
+    {
+      "path": "ci-repair/radius-320-light-en.png",
+      "bytes": 88833,
+      "sha256": "29abf8859e6da1b1b1095dfa402b545fff941a3c72a89018aa5bfd0ecdb264ac"
+    },
+    {
+      "path": "ci-repair/radius-390-light-zh.png",
+      "bytes": 91561,
+      "sha256": "d7c887bbcd4d5931d27afa3fad2d9cd7aa4f2d84178eaa548970079088446384"
+    },
+    {
+      "path": "ci-repair/radius-browser-execution.txt",
+      "bytes": 490,
+      "sha256": "efa2069e95f1ad0dcb724f8c7739abf57c00babee8e164850dd1ea8e6c7e5ac7"
+    },
+    {
+      "path": "ci-repair/radius-browser-proof.json",
+      "bytes": 39273,
+      "sha256": "625eed412cf51dbb280f1a226170ae35137672f887dc55dce2aa1b3cffb08d3c"
+    },
+    {
+      "path": "ci-repair/radius-fixture.html.gz",
+      "bytes": 22804,
+      "sha256": "c34791f10059cf08660639e4c903ee4fa1d0ce28ade94816980a4b334752eddf"
+    },
+    {
+      "path": "ci-repair/verify_radius.py",
+      "bytes": 5338,
+      "sha256": "c4e99df2ea98e2bcffb0fefdf1ecbf0cce105f74a36a045f4a5b700ff6056187"
+    },
+    {
+      "path": "ci-repair/visual-evidence.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
       "path": "diagnostics/README.md",
       "bytes": 747,
       "sha256": "8eeef6a1cac22190235dd02150fbbbb737694ead0fc3684abbe6a9af6930e718"
@@ -279,5 +354,16 @@
       "sha256": "af230df4dac4d7174b3c347d853e81b42dc1e983f90adb62c0595a63747f803b"
     }
   ],
-  "log_normalization": "Only trailing spaces from four pytest RED-output separator lines were removed for git whitespace validation; test messages and outcomes unchanged."
+  "log_normalization": "Only trailing spaces from four pytest RED-output separator lines were removed for git whitespace validation; test messages and outcomes unchanged.",
+  "ci_repair": {
+    "current_source_pin": "cb8fa9132770b1967d585e323dd72b145c580601",
+    "failure_head": "e488b0a00951747e2cab89ecc1d867f470746dc3",
+    "template_sha256": "96c024b2122afd75c444d1945fd840bea9180cbef77662fb6d447dc9fdc957dc",
+    "product_change": "one existing control-radius token substitution; computed8px unchanged",
+    "governance": "design ratchet and material UI evidence gates passed",
+    "focused_browser_cases": 4,
+    "historical_source_hashes_retained": true,
+    "canonical_merge_base": "201e94dd75f385d118cc0f692768c26e0f02b355",
+    "gate_input_sha256": "945b8c3a5a6979bf6d17f3ca3ecfc3229cb9a9664ebe3663b972b99cbcdc6e63"
+  }
 }

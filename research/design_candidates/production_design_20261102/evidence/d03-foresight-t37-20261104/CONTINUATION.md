@@ -40,3 +40,11 @@ This is a typed maintenance exception: Workstream NONE / Linear NONE / Portfolio
 **PROVEN_OUTCOME for T37's bounded local/source/Paper/browser work; MORE_WORK_EXISTS for D03.** This checkpoint is not a stop instruction, user acceptance, deployment proof or release approval.
 
 **Draft / HOLD. No Ready, un-draft, labels, enqueue, auto-merge, merge or deploy.** Current attended session keeps executing safe authorized work. A future successor must recover these exact refs and effects rather than rebuild accepted work.
+
+## Same-session T37 CI repair
+
+Hosted general CI on original head e488b0a reported one introduced added-line radius-token violation; fences passed. Existing source carrier remains cleanly assigned to this session. The only product edit is `.fx-rchip` radius8px → `var(--r-ctl,8px)`; accepted12px text and pending-count semantics remain. Actual design ratchet and material-UI visual-evidence gates pass; four new focused actual-template/browser cells prove computed8px radii/12px text, declared pending count, contrast and no overflow/JS errors. Receipts are under ci-repair/ and bound to template SHA25696c024b2122afd75c444d1945fd840bea9180cbef77662fb6d447dc9fdc957dc.
+
+Next: normal commit/push on this original #10723 branch, remote/head readback, update original Draft PR and parent #10617. No retry of the old hosted run, no new PR, no policy relaxation. Existing48/60 semantic/browser proof remains at its original binding.
+
+T38 is Draft #10730 at295925d518a0a9b011a5c0cf92e713f8f43240b4 with differential gate0introduced/0inherited; fence41814156738 succeeded and generalCI41814156831 was in progress at the last bounded read. T44 has50 content passes but42 blocked complete journeys:33 mobile first-tap failures and30 assistant receipt obstructions (overlap21). Shared touch owner#6860 and mobile boot-occlusion owner#8754 remain preserved. #8754's explicit local-only/NO_PUSH_NO_CI commission is not changed. No shared-source composition or release action was taken.

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "design-ratchet",
+    "exit_code": 0,
+    "seconds": 6.29,
+    "command": [
+      "scripts/check_design_system.py",
+      "--mode",
+      "enforce-added",
+      "--diff-file",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-pending-t37-20261104-c2-b181e904c380228d/research/design_candidates/production_design_20261102/evidence/d03-foresight-t37-20261104/ci-repair/candidate-ui.diff"
+    ],
+    "output": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25318 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25318)\n"
+  },
+  {
+    "name": "visual-evidence",
+    "exit_code": 0,
+    "seconds": 1.53,
+    "command": [
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-pending-t37-20261104-c2-b181e904c380228d/research/design_candidates/production_design_20261102/evidence/d03-foresight-t37-20261104/ci-repair/candidate-ui.diff"
+    ],
+    "output": ""
+  }
+]

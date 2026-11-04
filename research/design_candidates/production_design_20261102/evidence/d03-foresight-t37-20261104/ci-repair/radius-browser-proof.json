@@ -1,0 +1,1384 @@
+{
+  "task": "T37 radius token CI repair",
+  "checkout_head": "e488b0a00951747e2cab89ecc1d867f470746dc3",
+  "uncommitted_candidate_template_sha256": "96c024b2122afd75c444d1945fd840bea9180cbef77662fb6d447dc9fdc957dc",
+  "change": "border-radius:8px -> var(--r-ctl,8px)",
+  "browser": "Chromium 151.0.7922.34",
+  "cases": [
+    {
+      "case": "radius-320-light-en",
+      "status": "PASS",
+      "radii": [
+        {
+          "text": "318 cascade flags",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "96 supply regimes",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "0 fade flags",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "18 estimate reads",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "12 guidance tilts",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "4 discovery candidates",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "7 subsector flags",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "pooled 90d 22% (51) · 95% CI 12–35%",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "Early hit-rate 22% (11/51) · excess +1.2%",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "Late fwd excess +1.7% (n=71) · control arm",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "✅ 0 significant after multiple-testing gate",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "229 pending 90d",
+          "radius": "8px",
+          "font": "12px"
+        }
+      ],
+      "measures": {
+        "viewport": 320,
+        "pageScrollWidth": 320,
+        "theme": "light",
+        "lang": "en",
+        "text": [
+          {
+            "selector": ".fx-rchip",
+            "text": "318 cascade flags",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 166.03125,
+            "width": 128.03125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "96 supply regimes",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 167.75,
+            "width": 129.75,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "0 fade flags",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 174.75,
+            "right": 266.328125,
+            "width": 91.578125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "18 estimate reads",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 163.34375,
+            "width": 125.34375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "12 guidance tilts",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 155.34375,
+            "width": 117.34375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "4 discovery candidates",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 193.53125,
+            "width": 155.53125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "7 subsector flags",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 160.171875,
+            "width": 122.171875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "pooled 90d 22% (51) · 95% CI 12–35%",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 282,
+            "width": 244,
+            "height": 50.375,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "Early hit-rate 22% (11/51) · excess +1.2%",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 282,
+            "width": 244,
+            "height": 50.375,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "Late fwd excess +1.7% (n=71) · control arm",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 282,
+            "width": 244,
+            "height": 50.375,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "✅ 0 significant after multiple-testing gate",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 282,
+            "width": 244,
+            "height": 50.375,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "229 pending 90d",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 160.796875,
+            "width": 122.796875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "318",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 72.5,
+            "width": 22.5,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "96",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 66.40625,
+            "width": 16.40625,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "0",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 186.75,
+            "right": 194.96875,
+            "width": 8.21875,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "18",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 64.46875,
+            "width": 14.46875,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "12",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 63.859375,
+            "width": 13.859375,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "4",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 58.25,
+            "width": 8.25,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "7",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 57.265625,
+            "width": 7.265625,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "pooled 90d",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 118.53125,
+            "width": 68.53125,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "Early",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 80.46875,
+            "width": 30.46875,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "Late",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 76.34375,
+            "width": 26.34375,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "0",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 68.375,
+            "right": 76.59375,
+            "width": 8.21875,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "229",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 73.640625,
+            "width": 23.640625,
+            "height": 15,
+            "overflow": false
+          }
+        ]
+      },
+      "javascript_errors": []
+    },
+    {
+      "case": "radius-320-dark-zh",
+      "status": "PASS",
+      "radii": [
+        {
+          "text": "318 级联标记",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "96 供给机制",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "0 退潮标记",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "18 预期读数",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "12 指引倾向",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "4 发现候选",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "7 子行业标记",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "合计90天 22% (51) · 95%置信 12–35%",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "早期 命中率 22% (11/51) · 超额 +1.2%",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "偏晚 前瞻超额 +1.7% (n=71) · 对照组",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "✅ 0 经多重检验门槛显著",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "229 待90天",
+          "radius": "8px",
+          "font": "12px"
+        }
+      ],
+      "measures": {
+        "viewport": 320,
+        "pageScrollWidth": 320,
+        "theme": "dark",
+        "lang": "zh",
+        "text": [
+          {
+            "selector": ".fx-rchip",
+            "text": "318 级联标记",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 134.59375,
+            "width": 96.59375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "96 供给机制",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 141.59375,
+            "right": 233.265625,
+            "width": 91.671875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "0 退潮标记",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 122.46875,
+            "width": 84.46875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "18 预期读数",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 129.46875,
+            "right": 218.859375,
+            "width": 89.390625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "12 指引倾向",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 127.390625,
+            "width": 89.390625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "4 发现候选",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 134.390625,
+            "right": 218.859375,
+            "width": 84.46875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "7 子行业标记",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 134.15625,
+            "width": 96.15625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "合计90天 22% (51) · 95%置信 12–35%",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 282,
+            "width": 244,
+            "height": 50.375,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "早期 命中率 22% (11/51) · 超额 +1.2%",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 276.734375,
+            "width": 238.734375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "偏晚 前瞻超额 +1.7% (n=71) · 对照组",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 268.015625,
+            "width": 230.015625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "✅ 0 经多重检验门槛显著",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 202.984375,
+            "width": 164.984375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "229 待90天",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 38,
+            "right": 127.125,
+            "width": 89.125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "318",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 50,
+            "right": 69.328125,
+            "width": 19.328125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "96",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 153.59375,
+            "right": 168,
+            "width": 14.40625,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "0",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 50,
+            "right": 57.203125,
+            "width": 7.203125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "18",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 141.46875,
+            "right": 153.59375,
+            "width": 12.125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "12",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 50,
+            "right": 62.125,
+            "width": 12.125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "4",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 146.390625,
+            "right": 153.59375,
+            "width": 7.203125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "7",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 50,
+            "right": 56.640625,
+            "width": 6.640625,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "合计90天",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 50,
+            "right": 100.40625,
+            "width": 50.40625,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "早期",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 50,
+            "right": 74,
+            "width": 24,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "偏晚",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 50,
+            "right": 74,
+            "width": 24,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "0",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 69.25,
+            "right": 76.453125,
+            "width": 7.203125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "229",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 50,
+            "right": 71.609375,
+            "width": 21.609375,
+            "height": 17,
+            "overflow": false
+          }
+        ]
+      },
+      "javascript_errors": []
+    },
+    {
+      "case": "radius-390-light-zh",
+      "status": "PASS",
+      "radii": [
+        {
+          "text": "318 级联标记",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "96 供给机制",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "0 退潮标记",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "18 预期读数",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "12 指引倾向",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "4 发现候选",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "7 子行业标记",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "合计90天 22% (51) · 95%置信 12–35%",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "早期 命中率 22% (11/51) · 超额 +1.2%",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "偏晚 前瞻超额 +1.7% (n=71) · 对照组",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "✅ 0 经多重检验门槛显著",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "229 待90天",
+          "radius": "8px",
+          "font": "12px"
+        }
+      ],
+      "measures": {
+        "viewport": 390,
+        "pageScrollWidth": 390,
+        "theme": "light",
+        "lang": "zh",
+        "text": [
+          {
+            "selector": ".fx-rchip",
+            "text": "318 级联标记",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 134.59375,
+            "width": 96.59375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "96 供给机制",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 141.59375,
+            "right": 233.265625,
+            "width": 91.671875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "0 退潮标记",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 240.265625,
+            "right": 324.734375,
+            "width": 84.46875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "18 预期读数",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 127.390625,
+            "width": 89.390625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "12 指引倾向",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 134.390625,
+            "right": 223.78125,
+            "width": 89.390625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "4 发现候选",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 230.78125,
+            "right": 315.25,
+            "width": 84.46875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "7 子行业标记",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 134.15625,
+            "width": 96.15625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "合计90天 22% (51) · 95%置信 12–35%",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 286.515625,
+            "width": 248.515625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "早期 命中率 22% (11/51) · 超额 +1.2%",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 276.734375,
+            "width": 238.734375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "偏晚 前瞻超额 +1.7% (n=71) · 对照组",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 268.015625,
+            "width": 230.015625,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "✅ 0 经多重检验门槛显著",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 38,
+            "right": 202.984375,
+            "width": 164.984375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "229 待90天",
+            "fontSize": 12,
+            "contrast": 6.211118895496447,
+            "x": 209.984375,
+            "right": 299.109375,
+            "width": 89.125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "318",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 69.328125,
+            "width": 19.328125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "96",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 153.59375,
+            "right": 168,
+            "width": 14.40625,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "0",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 252.265625,
+            "right": 259.46875,
+            "width": 7.203125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "18",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 62.125,
+            "width": 12.125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "12",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 146.390625,
+            "right": 158.515625,
+            "width": 12.125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "4",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 242.78125,
+            "right": 249.984375,
+            "width": 7.203125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "7",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 56.640625,
+            "width": 6.640625,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "合计90天",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 100.40625,
+            "width": 50.40625,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "早期",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 74,
+            "width": 24,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "偏晚",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 50,
+            "right": 74,
+            "width": 24,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "0",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 69.25,
+            "right": 76.453125,
+            "width": 7.203125,
+            "height": 17,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "229",
+            "fontSize": 12,
+            "contrast": 10.206763978564855,
+            "x": 221.984375,
+            "right": 243.59375,
+            "width": 21.609375,
+            "height": 17,
+            "overflow": false
+          }
+        ]
+      },
+      "javascript_errors": []
+    },
+    {
+      "case": "radius-1440-dark-en",
+      "status": "PASS",
+      "radii": [
+        {
+          "text": "318 cascade flags",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "96 supply regimes",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "0 fade flags",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "18 estimate reads",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "12 guidance tilts",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "4 discovery candidates",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "7 subsector flags",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "pooled 90d 22% (51) · 95% CI 12–35%",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "Early hit-rate 22% (11/51) · excess +1.2%",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "Late fwd excess +1.7% (n=71) · control arm",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "✅ 0 significant after multiple-testing gate",
+          "radius": "8px",
+          "font": "12px"
+        },
+        {
+          "text": "229 pending 90d",
+          "radius": "8px",
+          "font": "12px"
+        }
+      ],
+      "measures": {
+        "viewport": 1440,
+        "pageScrollWidth": 1440,
+        "theme": "dark",
+        "lang": "en",
+        "text": [
+          {
+            "selector": ".fx-rchip",
+            "text": "318 cascade flags",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 200,
+            "right": 328.03125,
+            "width": 128.03125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "96 supply regimes",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 335.03125,
+            "right": 464.78125,
+            "width": 129.75,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "0 fade flags",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 471.78125,
+            "right": 563.359375,
+            "width": 91.578125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "18 estimate reads",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 570.359375,
+            "right": 695.703125,
+            "width": 125.34375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "12 guidance tilts",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 702.703125,
+            "right": 820.046875,
+            "width": 117.34375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "4 discovery candidates",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 827.046875,
+            "right": 982.578125,
+            "width": 155.53125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "7 subsector flags",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 989.578125,
+            "right": 1111.75,
+            "width": 122.171875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "pooled 90d 22% (51) · 95% CI 12–35%",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 200,
+            "right": 447.921875,
+            "width": 247.921875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "Early hit-rate 22% (11/51) · excess +1.2%",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 454.921875,
+            "right": 711.03125,
+            "width": 256.109375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "Late fwd excess +1.7% (n=71) · control arm",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 718.03125,
+            "right": 986.46875,
+            "width": 268.4375,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "✅ 0 significant after multiple-testing gate",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 200,
+            "right": 463.78125,
+            "width": 263.78125,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip",
+            "text": "229 pending 90d",
+            "fontSize": 12,
+            "contrast": 5.329661159549015,
+            "x": 470.78125,
+            "right": 593.578125,
+            "width": 122.796875,
+            "height": 31.1875,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "318",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 212,
+            "right": 234.5,
+            "width": 22.5,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "96",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 347.03125,
+            "right": 363.4375,
+            "width": 16.40625,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "0",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 483.78125,
+            "right": 492,
+            "width": 8.21875,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "18",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 582.359375,
+            "right": 596.828125,
+            "width": 14.46875,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "12",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 714.703125,
+            "right": 728.5625,
+            "width": 13.859375,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "4",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 839.046875,
+            "right": 847.296875,
+            "width": 8.25,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "7",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 1001.578125,
+            "right": 1008.84375,
+            "width": 7.265625,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "pooled 90d",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 212,
+            "right": 280.53125,
+            "width": 68.53125,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "Early",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 466.921875,
+            "right": 497.390625,
+            "width": 30.46875,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "Late",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 730.03125,
+            "right": 756.375,
+            "width": 26.34375,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "0",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 230.375,
+            "right": 238.59375,
+            "width": 8.21875,
+            "height": 15,
+            "overflow": false
+          },
+          {
+            "selector": ".fx-rchip b",
+            "text": "229",
+            "fontSize": 12,
+            "contrast": 10.612071246506734,
+            "x": 482.78125,
+            "right": 506.421875,
+            "width": 23.640625,
+            "height": 15,
+            "overflow": false
+          }
+        ]
+      },
+      "javascript_errors": []
+    }
+  ],
+  "assets": {
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "templates/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "templates/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "templates/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "templates/product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "templates/account.js": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+    "templates/nav_market.js": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587",
+    "templates/terminal_overlay.js": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf",
+    "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+  },
+  "stubbed_unrelated_json": [],
+  "blocked_external": [],
+  "limits": "Four focused computed-style/render cells; existing 60-case semantic/interaction proof is retained at its original head. No live data, deployment, or new Paper geometry."
+}
