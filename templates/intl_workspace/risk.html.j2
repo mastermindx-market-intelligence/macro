@@ -305,6 +305,7 @@
               {{ metric_number(row.get('annual_current_account'), 'gdp') }}
               {% set annual = row.get('annual_current_account') %}
               {% if annual is mapping %}
+                <div class="intl-risk__annual-evidence">
                 {% set annual_instrument = annual.get('instrument') %}
                 {% set support = annual.get('support') %}
                 {% if support is mapping %}
@@ -319,6 +320,7 @@
                 {% if annual_instrument is mapping and annual_instrument.get('id') == 'JPN.BCA_NGDPD.A' and annual_source is string and annual_source.startswith('https://data.imf.org/') %}
                   <a href="{{ annual_source|e }}" target="_blank" rel="noopener">{{ words('Source: IMF World Economic Outlook', '来源：IMF《世界经济展望》') }}</a>
                 {% endif %}
+                </div>
               {% endif %}
             </td>
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-breadth">

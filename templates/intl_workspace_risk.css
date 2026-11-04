@@ -160,6 +160,11 @@
   font-size: var(--fs-sm);
   font-weight: 500;
 }
+.intl-risk__annual-evidence {
+  display: grid;
+  gap: calc(var(--fs-body) / 4);
+  margin-block-start: calc(var(--fs-body) / 4);
+}
 .intl-risk__market-id { display: block; font-weight: 500; }
 .intl-risk__market-name { display: block; color: var(--muted); font-size: var(--fs-sm); }
 .intl-risk__cell-label {
