@@ -1,0 +1,35 @@
+{
+  "schema": "tiingo.bounded_continuation_qualification_source_review/v1",
+  "recorded_at_utc": "2026-10-13T02:31:40.647240+00:00",
+  "decision": "PASS",
+  "core_sha256": "c6932707a653fd825256a51531b1e320661b2561ef1633edc52880fd8412cebd",
+  "controller_sha256": "6b4c5eb1527b09078b6bcef1d1e3102c0ffeaf92a6bfa6070360332c34803c9e",
+  "physical_scope_sha256": "39ceba80e6de58c23781156f69b075c1ac5d15499fb03feaf4f9d1349090649a",
+  "plan_sha256": "9ce4a829152152d6558c4170bf7033817453f5207c5faa02e72718371ee1e3fb",
+  "base_coverage_sha256": "8dd1e9b1f55ea5a34dcc9a9c2c5f839797b29382578c7061df8465c1d827df80",
+  "findings": [
+    "Actual scope binds capture4ff,2015 requests,29 holds and physical start2026-10-13T02:27:56.131246+00:00. Selected rows equal consumed combined account never-admitted list.",
+    "All PINS and123 baseline qualification file hashes verified; current collector and physical producer hashes match.",
+    "Baseline8dd is bound to consumed phase01 controller parentd729 before load. Its615 phase01 valid dispositions require exact309 method/3ce scope/parent qualification hashes and are disjoint from current2015 pairs.",
+    "Original wave15 v1/v2 proof versions, original scope and actual consumed parent hashes remain explicit. Only continuation02 q files populate current seen set; prior accepted rows remain economic-date and foreign-owner evidence.",
+    "All2015 request windows match baseline missing windows. Base census45530nonempty+117empty+2039uncaptured+3quality=47689 preserves priorWTFNF/RBGPF/SCNG exactly once.",
+    "scalar_check,artifacts,preflight,qualify,coverage ASTs are identical to accepted phase01. Narrow negative-int-only whole-receipt quarantine, valid-only materialization, absence of bad projections, exclusive frozen snapshot, foreign custody and retained partial hashes remain unchanged.",
+    "Controller changes are physical names and exact helper/scope hashes only;900second new-start bound including after preflight,8prefix limit,>=200 or settled-nonzero trigger, consumed preflight and sequential writer/coverage settlement remain.",
+    "No continuation02 qualification proof existed during review."
+  ],
+  "conditions": [
+    "Original root owns one qualification writer; use exact reviewed files and phase02 names from prefix01.",
+    "Source/hash/storage and all predecessor bindings must pass at each stage; preserve failed or deadline-expired artifacts and no automatic replacement.",
+    "Only actual consumed controller/writer returns and accepted q/census evidence may enter future combined accounting. Settlement-file observation is not actual capture return consumption.",
+    "No source repair, failed provider retry, projection of quality receipt, complete2015/4392 claim or programme acceptance follows from this source review."
+  ],
+  "review_actions": {
+    "helper_execution": false,
+    "provider_calls": 0,
+    "credential_access": false,
+    "archive_writes": 0,
+    "source_changes": 0,
+    "offline_ast_hash_set_checks": true,
+    "review_artifact_only_write": true
+  }
+}

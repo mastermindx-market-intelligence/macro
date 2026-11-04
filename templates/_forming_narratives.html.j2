@@ -23,15 +23,22 @@
   }
   function render() {
     if (called) return;
-    if (typeof window.renderFormingNarratives !== 'function') { unavailable(); return; }
-    called = true;
-    if (sec) sec.setAttribute('data-render-state', 'ready');
-    window.renderFormingNarratives({ base: "{{ ne_base | default('basketdata/') }}" });
+    if (typeof window.renderFormingNarratives === "function") {
+      called = true;
+      if (sec) sec.setAttribute('data-render-state', 'ready');
+      window.renderFormingNarratives({ base: "{{ ne_base | default('basketdata/') }}" });
+    } else unavailable();
   }
-  if (typeof window.renderFormingNarratives === 'function') render();
-  else if (runtime && (runtime.defer || runtime.hasAttribute('defer'))) {
-    runtime.addEventListener('load', render, { once: true });
+  // Deferred load and DOM readiness share one invocation; neither retries the asset.
+  function renderWhenReady() {
+    if (document.readyState !== "loading") render();
+  }
+  if (runtime && (runtime.defer || runtime.hasAttribute('defer'))) {
+    runtime.addEventListener('load', renderWhenReady, { once: true });
     runtime.addEventListener('error', unavailable, { once: true });
-  } else unavailable();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", render, { once: true });
+  } else render();
 })();
 </script>

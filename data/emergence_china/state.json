@@ -1,32 +1,32 @@
 {
-  "1ae477edc89d": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
-    "score": 55.9
-  },
-  "4ccf24ebafe5": {
+  "0fe2f0f53a13": {
     "name_en": "Emerging Industrials cluster",
     "name_zh": "\u65b0\u5174 Industrials \u96c6\u7fa4",
-    "score": 42.1
-  },
-  "5245758a23b9": {
-    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
-    "score": 61.3
+    "score": 52.0
   },
   "61a55f63f603": {
     "name_en": "Emerging Basic Materials cluster",
     "name_zh": "\u65b0\u5174 Basic Materials \u96c6\u7fa4",
-    "score": 54.2
+    "score": 52.4
   },
-  "7348dc67f625": {
-    "name_en": "Cross-sector cluster \u00b7 Basic Materials + Consumer Cyclical",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Basic Materials + Consumer Cyclical",
-    "score": 54.0
+  "6257b1a51edc": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
+    "score": 50.1
   },
-  "afb0de90af88": {
-    "name_en": "Cross-sector cluster \u00b7 Healthcare + Consumer Cyclical",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Healthcare + Consumer Cyclical",
-    "score": 47.8
+  "83b928dbe62d": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Basic Materials",
+    "score": 46.7
+  },
+  "bbb7d32e69fd": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
+    "score": 56.3
+  },
+  "cfcb580681ec": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Basic Materials",
+    "score": 41.1
   }
 }

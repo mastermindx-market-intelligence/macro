@@ -1054,6 +1054,260 @@ class TestZeroDTE:
         assert ev["zerodte"] is True
 
 
+def _signed_print(
+    exp, hhmm="09:30", size=100, price=2.80, sign=1.0, right="C", seq=1,
+) -> dict:
+    """One already-signed print for a direct ``_accumulate_tide`` call.
+
+    Naive ``trade_timestamp`` is exchange time, matching ``_minute_key``.
+    """
+    return {
+        "root": "SPY",
+        "right": right,
+        "expiration": exp,
+        "strike": 550.0,
+        "price": price,
+        "size": size,
+        "sign": sign,
+        "trade_timestamp": f"2026-07-02T{hhmm}:00",
+        "sequence": seq,
+    }
+
+
+def _dte_tide_for(rows: list[dict]) -> dict:
+    """Run the DTE split the way ``_accumulate_tide`` does, and return that dict."""
+    dte_tide: dict = {}
+    lf._accumulate_tide(
+        combined=pd.DataFrame(rows),
+        root="SPY",
+        group_en="Index/ETF",
+        group_zh="指数/ETF",
+        batch_ts=BATCH_TS,
+        session_date=SESSION_DATE,
+        market_tide_minutes={},
+        sector_tide={},
+        dte_tide=dte_tide,
+        root_minutes={},
+        root_strikes={},
+        root_expiries={},
+        sweep_clusters={},
+    )
+    return dte_tide
+
+
+def _admission_frame(exp, hhmm="15:00", size=100, price=0.10, seq=999) -> pd.DataFrame:
+    """One raw call print in the shape ``TestZeroDTE`` feeds ``process_batch``."""
+    ts = f"2026-07-02T{hhmm}:00"
+    return pd.DataFrame([{
+        "root": "SPY", "right": "C", "expiration": exp,
+        "strike": 550.0, "price": price, "bid": 0.05, "ask": 0.15,
+        "size": size, "trade_timestamp": ts, "quote_timestamp": ts,
+        "sequence": seq, "date": "2026-07-02",
+    }])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# F02-Q2 — unreadable or past expiry is unknown, never 0DTE
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestUnknownExpiry:
+    """Expiry that cannot be read, or that is already past, is not 0DTE.
+
+    ``process_batch`` drops those rows before an event exists.
+    ``expirations_valid`` (engine/live_flow.py, the block that calls
+    ``_is_canonical_date`` and ``date.fromisoformat(value) >= session_day``)
+    refuses a non-canonical string and any date before the session. The
+    0DTE coercion lives in ``_enrich_contract_row`` and in the DTE split of
+    ``_accumulate_tide``, which that gate never calls. Same split as
+    ``TestSweepLikeFlag.test_untimed_print_venue_is_not_counted``: assert the
+    drop on ``process_batch``, and call the function that still has the bug.
+    """
+
+    @pytest.mark.parametrize("expiration", ["", "nan", "not-a-date", None])
+    def test_unreadable_expiry_is_unknown_not_0dte(self, expiration):
+        row = pd.Series({
+            "expiration": expiration, "strike": 550.0, "right": "C", "size": 100,
+        })
+        enrich = lf._enrich_contract_row(row, SESSION_DATE, None)
+        assert enrich["dte"] is None, enrich
+        assert enrich["dte_bucket"] == "unknown", enrich
+        assert enrich["zerodte"] is False, enrich
+        # Other keys stay on today's path (no prev close, no prior OI).
+        assert enrich["mny_bucket"] == "unknown"
+        assert enrich["vol_gt_oi"] is None
+        assert enrich["vol_gt_oi_ratio"] is None
+
+        result = _run(_admission_frame(expiration), etf_floor=0, name_floor=0)
+        assert result["events"] == [], (
+            f"expiration {expiration!r} reached an event; "
+            f"events={result['events']!r} notes={result['meta_notes']!r}"
+        )
+        assert any(
+            "invalid_source_rows_dropped" in note for note in result["meta_notes"]
+        ), result["meta_notes"]
+
+    def test_past_expiry_is_unknown_not_0dte(self):
+        """Session 2026-07-02, expiration 2026-07-01 is past, not same-day."""
+        row = pd.Series({
+            "expiration": "2026-07-01", "strike": 550.0, "right": "C", "size": 100,
+        })
+        enrich = lf._enrich_contract_row(row, SESSION_DATE, None)
+        assert enrich["dte"] is None, enrich
+        assert enrich["dte_bucket"] == "unknown", enrich
+        assert enrich["zerodte"] is False, enrich
+        assert enrich["mny_bucket"] == "unknown"
+        assert enrich["vol_gt_oi"] is None
+        assert enrich["vol_gt_oi_ratio"] is None
+
+        result = _run(_admission_frame("2026-07-01"), etf_floor=0, name_floor=0)
+        assert result["events"] == []
+        assert any(
+            "invalid_source_rows_dropped" in note for note in result["meta_notes"]
+        ), result["meta_notes"]
+
+    def test_readable_expiry_is_unchanged(self):
+        """Same-day, 10-day, and compact YYYYMMDD stay on today's arithmetic.
+
+        Compact ``20260705`` parses under ``pd.Timestamp`` (dte 3, bucket
+        ``1_7d``) but ``process_batch`` drops it: ``_is_canonical_date``
+        admits only ``YYYY-MM-DD``. The event-level pin is the direct enrich,
+        which is the path that sees the value.
+        """
+        same = _run(_admission_frame("2026-07-02", seq=1), etf_floor=0, name_floor=0)
+        assert len(same["events"]) == 1
+        ev = same["events"][0]
+        assert ev["dte"] == 0
+        assert ev["dte_bucket"] == "0d"
+        assert ev["zerodte"] is True
+
+        ten = _run(
+            _admission_frame("2026-07-12", hhmm="14:00", price=2.50, seq=2),
+            etf_floor=0, name_floor=0,
+        )
+        assert len(ten["events"]) == 1
+        ev = ten["events"][0]
+        assert ev["dte"] == 10
+        assert ev["dte_bucket"] == "8_30d"
+        assert ev["zerodte"] is False
+
+        compact_batch = _run(
+            _admission_frame("20260705", seq=3), etf_floor=0, name_floor=0,
+        )
+        assert compact_batch["events"] == []
+        assert any(
+            "invalid_source_rows_dropped" in note
+            for note in compact_batch["meta_notes"]
+        ), compact_batch["meta_notes"]
+
+        row = pd.Series({
+            "expiration": "20260705", "strike": 550.0, "right": "C", "size": 100,
+        })
+        enrich = lf._enrich_contract_row(row, SESSION_DATE, None)
+        assert enrich["dte"] == 3
+        assert enrich["dte_bucket"] == "1_7d"
+        assert enrich["zerodte"] is False
+
+    @pytest.mark.parametrize(
+        "expiration",
+        [
+            pytest.param(pd.Timestamp("2026-07-12", tz="UTC"), id="timestamp-utc"),
+            pytest.param("2026-07-12T00:00:00Z", id="iso-zulu"),
+        ],
+    )
+    def test_classify_expiry_tz_aware_is_readable(self, expiration):
+        assert lf._classify_expiry(expiration, SESSION_DATE) == (10, "8_30d")
+
+    @pytest.mark.parametrize(
+        ("expiration", "expected"),
+        [
+            pytest.param(None, (None, "unknown"), id="none"),
+            pytest.param(float("nan"), (None, "unknown"), id="nan-float"),
+            pytest.param("", (None, "unknown"), id="empty"),
+            pytest.param("nan", (None, "unknown"), id="nan-str"),
+            pytest.param("None", (None, "unknown"), id="none-str"),
+            pytest.param("not-a-date", (None, "unknown"), id="junk"),
+            pytest.param("2026-07-01", (None, "unknown"), id="past"),
+            pytest.param(20260705.0, (None, "unknown"), id="float-yyyymmdd"),
+            pytest.param(pd.NaT, (None, "unknown"), id="nat"),
+            pytest.param(1, (None, "unknown"), id="int-one"),
+            pytest.param(b"2026-07-05", (None, "unknown"), id="bytes"),
+            pytest.param(object(), (None, "unknown"), id="object"),
+            pytest.param("2026-07-02", (0, "0d"), id="same-day"),
+            pytest.param("20260705", (3, "1_7d"), id="compact-str"),
+            pytest.param(20260705, (3, "1_7d"), id="compact-int"),
+            pytest.param(pd.Timestamp("2026-07-12"), (10, "8_30d"), id="timestamp-naive"),
+            pytest.param("2026-07-12 16:00", (10, "8_30d"), id="datetime-str"),
+            pytest.param("9999-12-31", (2912260, "90p"), id="far-future"),
+            pytest.param(pd.Timestamp("2026-07-12", tz="UTC"), (10, "8_30d"), id="timestamp-utc"),
+            pytest.param("2026-07-12T00:00:00Z", (10, "8_30d"), id="iso-zulu"),
+        ],
+    )
+    def test_classify_expiry_never_raises(self, expiration, expected):
+        assert lf._classify_expiry(expiration, SESSION_DATE) == expected
+
+    def test_unknown_minutes_survive_consecutive_batches(self):
+        """Two refused rows in two minutes both remain under ``dte_tide["unknown"]``.
+
+        Copies the ``TestPollerMergePath`` prior-state thread. ``process_batch``
+        will not insert the key: ``expirations_valid`` drops the row first.
+        Each batch classifies the refused print with ``_accumulate_tide`` on
+        the carried ``dte_tide`` (the copy at the tide-accumulator block of
+        ``process_batch``, ``{k: dict(v) for k, v in ps.get("dte_tide", {}).items()}``,
+        keeps every key, including one it did not itself create). A later
+        admitted batch must still hold both minutes.
+        """
+        batches = [("", "09:31", 1001), ("not-a-date", "10:15", 2002)]
+        prior = None
+        for exp, hhmm, seq in batches:
+            raw = _admission_frame(exp, hhmm=hhmm, price=2.80, size=100, seq=seq)
+            raw["bid"] = 2.40
+            raw["ask"] = 2.80
+            result = lf.process_batch(
+                calls_df=raw, puts_df=None,
+                session_date=SESSION_DATE, batch_ts=BATCH_TS,
+                prior_state=prior,
+                etf_floor=0, name_floor=0,
+                etf_anchors=["SPY"],
+            )
+            assert result["events"] == []
+            assert any(
+                "invalid_source_rows_dropped" in note
+                for note in result["meta_notes"]
+            ), result["meta_notes"]
+            signed = raw.copy()
+            signed["sign"] = 1.0
+            lf._accumulate_tide(
+                combined=signed,
+                root="SPY",
+                group_en="Index/ETF",
+                group_zh="指数/ETF",
+                batch_ts=BATCH_TS,
+                session_date=SESSION_DATE,
+                market_tide_minutes=result["state"]["market_tide_minutes"],
+                sector_tide=result["state"]["sector_tide"],
+                dte_tide=result["state"]["dte_tide"],
+                root_minutes=result["state"]["root_minutes"],
+                root_strikes=result["state"]["root_strikes"],
+                root_expiries=result["state"]["root_expiries"],
+                sweep_clusters=result["state"]["sweep_clusters"],
+            )
+            prior = result["state"]
+
+        admitted = _admission_frame("2026-07-12", hhmm="11:00", price=2.80, size=100, seq=3003)
+        admitted["bid"] = 2.40
+        admitted["ask"] = 2.80
+        final = lf.process_batch(
+            calls_df=admitted, puts_df=None,
+            session_date=SESSION_DATE, batch_ts=BATCH_TS,
+            prior_state=prior,
+            etf_floor=0, name_floor=0,
+            etf_anchors=["SPY"],
+        )
+        unknown = final["state"]["dte_tide"].get("unknown", {})
+        assert set(unknown) == {"09:31", "10:15"}, final["state"]["dte_tide"]
+        assert "8_30d" in final["state"]["dte_tide"]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # FIX 1 — vol_gt_oi uses cumulative day-volume, not per-batch coalesced size
 # ──────────────────────���──────────────────────────────────────────────────────
@@ -1628,6 +1882,45 @@ class TestSectorDteTideMath:
         dte_tide = result["state"].get("dte_tide", {})
         assert "8_30d" in dte_tide, f"8_30d bucket missing: {list(dte_tide.keys())}"
 
+    def test_one_unreadable_row_does_not_erase_the_minute(self):
+        """One bad expiration must not drop the readable rows of that minute.
+
+        Signed premium is ``price * size * 100 * sign``, and calls add to
+        ``ncp``. Called on ``_accumulate_tide`` directly: ``process_batch``
+        drops the unreadable row at ``expirations_valid`` before this split,
+        so the minute-erasing ``except: pass`` is only reachable here.
+        """
+        price = 2.80
+        readable_size = 100
+        bad_size = 40
+        sign = 1.0
+        mkey = "09:30"
+        readable_ncp = price * readable_size * 100.0 * sign
+        bad_ncp = price * bad_size * 100.0 * sign
+        dte_tide = _dte_tide_for([
+            _signed_print("2026-07-12", hhmm=mkey, size=readable_size, price=price, sign=sign, seq=1),
+            _signed_print("", hhmm=mkey, size=bad_size, price=price, sign=sign, seq=2),
+        ])
+        assert mkey in dte_tide.get("8_30d", {}), dte_tide
+        assert dte_tide["8_30d"][mkey]["ncp"] == pytest.approx(readable_ncp)
+        assert dte_tide["8_30d"][mkey]["npp"] == pytest.approx(0.0)
+        assert dte_tide["unknown"][mkey]["ncp"] == pytest.approx(bad_ncp)
+        assert dte_tide["unknown"][mkey]["npp"] == pytest.approx(0.0)
+
+    def test_past_expiry_tide_is_unknown_not_0d(self):
+        """A past expiration accumulates under ``unknown``, not ``0d``."""
+        price = 2.80
+        size = 100
+        mkey = "09:30"
+        ncp = price * size * 100.0 * 1.0
+        dte_tide = _dte_tide_for([
+            _signed_print("2026-07-01", hhmm=mkey, size=size, price=price, seq=1),
+        ])
+        assert "unknown" in dte_tide, dte_tide
+        assert dte_tide["unknown"][mkey]["ncp"] == pytest.approx(ncp)
+        assert dte_tide["unknown"][mkey]["npp"] == pytest.approx(0.0)
+        assert "0d" not in dte_tide, dte_tide
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 22. Per-root rollups (strikes + expiries)
@@ -1735,10 +2028,13 @@ class TestSweepLikeFlag:
             session_date=SESSION_DATE, batch_ts=BATCH_TS,
             etf_floor=0, name_floor=0, etf_anchors=["SPY"],
         )
-        # Check at least one event exists and is swept
-        if result["events"]:
-            assert result["events"][0]["swept"] is True, \
-                "3 prints, 2 exchanges, 1.5s span must be swept=True"
+        # Non-vacuous: an empty event list must not pass this case.
+        assert result["events"], (
+            "3 prints, 2 exchanges, 1.5s span must emit a notable event"
+        )
+        assert result["events"][0]["swept"] is True, (
+            "3 prints, 2 exchanges, 1.5s span must be swept=True"
+        )
 
     def test_not_swept_single_exchange(self):
         """3 prints, 1 exchange → swept=False (not multi-exchange)."""
@@ -1788,6 +2084,160 @@ class TestSweepLikeFlag:
             assert "swept" in ev, f"'swept' key missing from event: {ev}"
             assert isinstance(ev["swept"], bool), \
                 f"'swept' must be bool, got {type(ev['swept'])}"
+
+    def _run(self, df: pd.DataFrame) -> dict:
+        return lf.process_batch(
+            calls_df=df, puts_df=None,
+            session_date=SESSION_DATE, batch_ts=BATCH_TS,
+            etf_floor=0, name_floor=0, etf_anchors=["SPY"],
+        )
+
+    @pytest.mark.parametrize(
+        "missing",
+        [None, np.nan, "", "   "],
+        ids=["none", "nan", "empty", "whitespace"],
+    )
+    def test_missing_exchange_is_not_a_venue(self, missing):
+        """A missing exchange is not a second venue.
+
+        Three timed prints within 2s on exchanges [CBOE, <missing>, <missing>]
+        are one venue. None, NaN, "" and whitespace are missing.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=1, span_sec=1.0)
+        df.loc[df.index[1], "exchange"] = missing
+        df.loc[df.index[2], "exchange"] = missing
+        stored = df["exchange"].tolist()
+        assert stored[0] == "CBOE"
+        for raw in stored[1:]:
+            blank = isinstance(raw, str) and raw.strip() == ""
+            assert blank or pd.isna(raw), repr(raw)
+
+        result = self._run(df)
+        assert result["events"], "missing-exchange fixture must still emit the contract"
+        assert result["events"][0]["swept"] is False, (
+            f"missing exchange {missing!r} counted as a venue; "
+            f"swept={result['events'][0]['swept']}"
+        )
+
+    def test_untimed_print_venue_is_not_counted(self):
+        """An unparseable timestamp does not contribute its exchange.
+
+        Three CBOE prints within 2s plus one ISE print whose trade_timestamp
+        does not parse is one venue, so the contract is not sweep-like.
+
+        Called on ``_detect_sweeps`` directly. ``process_batch`` drops an
+        unparseable ``trade_timestamp`` at the source gate
+        (``_source_times_et`` / ``rth_valid``, engine/live_flow.py around the
+        ``expirations_valid`` block) before step 4c, so the venue-count defect
+        is only visible on the frame the heuristic itself receives.
+        """
+        timed = self._make_prints(n_prints=3, n_exchanges=1, span_sec=1.0)
+        assert set(timed["exchange"]) == {"CBOE"}
+        untimed = timed.iloc[[0]].copy()
+        untimed["exchange"] = "ISE"
+        untimed["trade_timestamp"] = "not-a-timestamp"
+        untimed["sequence"] = int(timed["sequence"].max()) + 1
+        frame = pd.concat([timed, untimed], ignore_index=True)
+        parsed = pd.to_datetime(frame["trade_timestamp"], errors="coerce")
+        assert int(parsed.isna().sum()) == 1
+        assert frame.loc[parsed.isna(), "exchange"].tolist() == ["ISE"]
+
+        flags = lf._detect_sweeps(frame, {})
+        key = ("2026-07-05", 550.0, "C")
+        assert flags.get(key, False) is False, (
+            f"unparseable-timestamp ISE print counted as a venue; flags={flags}"
+        )
+
+    def test_cross_contract_prints_are_not_grouped(self):
+        """Prints on two strikes are not one sweep, even inside one 2s window."""
+        left = self._make_prints(n_prints=2, n_exchanges=2, span_sec=1.0)
+        right = self._make_prints(n_prints=1, n_exchanges=1, span_sec=0.0)
+        right["strike"] = 555.0
+        right["exchange"] = "PHLX"
+        right["sequence"] = int(left["sequence"].max()) + 1
+        frame = pd.concat([left, right], ignore_index=True)
+
+        flags = lf._detect_sweeps(frame, {})
+        assert flags.get(("2026-07-05", 550.0, "C"), False) is False
+        assert flags.get(("2026-07-05", 555.0, "C"), False) is False
+        assert not any(flags.values()), flags
+
+        result = self._run(frame)
+        assert len(result["events"]) == 2, result["events"]
+        by_strike = {ev["strike"]: ev["swept"] for ev in result["events"]}
+        assert by_strike == {550.0: False, 555.0: False}
+
+    def test_qualified_sweep_with_unqualified_extras_still_flags(self):
+        """Three qualifying prints still flag when a missing-exchange print is added.
+
+        The extra print sits inside the same 2s window. Rejecting the contract
+        because one print has no exchange would be an over-reject.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=2, span_sec=1.5)
+        extra = df.iloc[[0]].copy()
+        extra["sequence"] = int(df["sequence"].max()) + 1
+        extra["exchange"] = None
+        frame = pd.concat([df, extra], ignore_index=True)
+        # Keep a real missing value if concat coerced None into the string dtype.
+        frame.loc[frame.index[-1], "exchange"] = None
+        tail = frame["exchange"].iloc[-1]
+        assert pd.isna(tail) or tail is None, repr(tail)
+
+        result = self._run(frame)
+        assert result["events"], "qualifying sweep must still emit"
+        assert result["events"][0]["swept"] is True, (
+            "3 qualifying prints on 2 venues within 2s must stay swept "
+            "when a missing-exchange print is also present"
+        )
+
+    def test_sweep_flag_key_parity_with_process_batch_lookup(self):
+        """S6: sweep flag keys match process_batch for expirations it admits.
+
+        ``_make_prints`` carries expiration ``"2026-07-05"`` as a str. The
+        source gate ``_is_canonical_date`` (engine/live_flow.py:243) admits
+        only strings matching ``^\\d{4}-\\d{2}-\\d{2}$``, applied in
+        ``process_batch`` at ``expirations_valid`` (engine/live_flow.py:792).
+        ``_coalesce_batch`` rewrites admitted expirations with
+        ``strftime("%Y-%m-%d")`` (engine/live_flow.py:339). Step 5 looks the
+        flag up with ``str(row.get("expiration", ""))`` from that coalesced
+        row (engine/live_flow.py:1029 and the ``sweep_key`` at line 1065).
+
+        Compact ``20260705`` and a Timestamp are not formats this path
+        carries: ``process_batch`` drops them before ``_detect_sweeps``.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=2, span_sec=1.5)
+        assert bool(df["expiration"].map(type).eq(str).all())
+        assert set(df["expiration"].tolist()) == {"2026-07-05"}
+
+        lookup = (
+            str(df["expiration"].iloc[0]),
+            float(df["strike"].iloc[0]),
+            str(df["right"].iloc[0]).upper()[:1],
+        )
+        flags = lf._detect_sweeps(df, {})
+        assert flags.get(lookup) is True, flags
+        assert list(flags) == [lookup]
+
+        result = self._run(df)
+        assert result["events"], "ISO expiration fixture must emit"
+        ev = result["events"][0]
+        assert ev["exp"] == lookup[0]
+        assert ev["right"] == lookup[2]
+        assert float(ev["strike"]) == lookup[1]
+        assert ev["swept"] is True
+
+        for raw in ("20260705", 20260705, pd.Timestamp("2026-07-05")):
+            other = df.copy()
+            other["expiration"] = raw
+            rejected = self._run(other)
+            assert rejected["events"] == [], (
+                f"expiration {raw!r} is not an admitted process_batch format; "
+                f"events={rejected['events']!r} notes={rejected['meta_notes']!r}"
+            )
+            assert any(
+                "invalid_source_rows_dropped" in note
+                for note in rejected["meta_notes"]
+            ), rejected["meta_notes"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1932,6 +2382,35 @@ class TestDteTideCurrentShape:
         assert len(series) == 2
         assert series[1]["ncp"] == pytest.approx(150.0, abs=1), \
             "0d NCP at 09:31 should be cumulative 100+50=150"
+
+    def test_unclassified_sums_unknown_and_defaults_zero(self):
+        """``unclassified`` is the rounded sum of ``dte_tide["unknown"]``.
+
+        ``buckets`` stays the five published labels. A state with no
+        ``unknown`` key still publishes ``{"ncp": 0.0, "npp": 0.0}``.
+        """
+        state = {
+            "dte_tide": {
+                "0d": {"09:30": {"ncp": 100.0, "npp": -50.0}},
+                "unknown": {
+                    "09:30": {"ncp": 10.0, "npp": -4.0},
+                    "09:31": {"ncp": 5.0, "npp": 1.0},
+                },
+            }
+        }
+        out = lf.build_dte_tide_current(SESSION_DATE, BATCH_TS, state)
+        assert out["schema"] == "live_flow.dte_tide/v1"
+        assert out["asof"] == BATCH_TS
+        assert set(out["buckets"]) == {"0d", "1_7d", "8_30d", "31_90d", "90p"}
+        assert "unknown" not in out["buckets"]
+        assert out["buckets"]["0d"] == [{"t": "09:30", "ncp": 100.0, "npp": -50.0}]
+        assert out["unclassified"] == {"ncp": 15.0, "npp": -3.0}
+
+        bare = lf.build_dte_tide_current(SESSION_DATE, BATCH_TS, {})
+        assert bare["schema"] == "live_flow.dte_tide/v1"
+        assert bare["asof"] == BATCH_TS
+        assert set(bare["buckets"]) == {"0d", "1_7d", "8_30d", "31_90d", "90p"}
+        assert bare["unclassified"] == {"ncp": 0.0, "npp": 0.0}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3335,434 +3814,6 @@ class TestDayStateVersionDiscard:
         assert restored["root_ticker_receipts"] == {
             "SPY": "2026-07-02T18:29:59Z",
         }
-
-
-class TestDayStateLearningWal:
-    @staticmethod
-    def _state() -> dict:
-        return {
-            "emitted_ids": {"event-1"},
-            "all_events": [],
-            "pending_learning_events": [{
-                "id": "event-1",
-                "ts": "2026-07-02T14:30:00Z",
-                "observed_at": "2026-07-02T14:31:00Z",
-                "decision_at": "2026-07-02T14:32:00Z",
-            }],
-            "cycle_watermarks": {
-                "SPY": {"ts": "2026-07-02T14:30:00Z", "seq": 1000},
-            },
-            "seen_sequences": {
-                ("SPY", "2026-07-05", 550.0, "C"): 1000,
-            },
-            "contract_vol": {
-                ("SPY", "2026-07-05", 550.0, "C"): 100,
-            },
-            "notability_history": {
-                ("SPY", "2026-07-05", 550.0, "C"): 1,
-            },
-        }
-
-    @staticmethod
-    def _enriched(event: dict) -> dict:
-        return {
-            **event,
-            "available_at": "2026-07-02T14:33:00Z",
-            "published_at": None,
-            "source_snapshot_asof": "2026-07-02T14:33:00Z",
-            "anchor_strategy": "durable_available_at",
-        }
-
-    @staticmethod
-    def _stub_main_prelude(tmp_path, monkeypatch):
-        """Reach the cycle loop without network, host, or publication effects."""
-        import collectors.thetadata as td
-        import scripts.build_flow_archive as flow_archive
-        import scripts.live_flow_poller as poller
-
-        monkeypatch.setattr(poller, "_cfg", lambda: {"retention_hours": 24})
-        monkeypatch.setattr(poller, "_session_date", lambda _override=None: SESSION_DATE)
-        monkeypatch.setattr(poller, "_state_dir", lambda: tmp_path)
-        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(tmp_path / "events"))
-        monkeypatch.setattr(
-            poller, "_initialize_options_context_dispatcher", lambda *_args, **_kwargs: None,
-        )
-        monkeypatch.setattr(poller, "_flush_options_context_outbox", lambda: None)
-        monkeypatch.setattr(td, "reachable", lambda **_kwargs: True)
-        monkeypatch.setattr(poller, "_resolve_universe", lambda _cfg: ["SPY"])
-        monkeypatch.setattr(poller, "_probe_delta_mode", lambda _session: "time_window")
-        monkeypatch.setattr(poller, "_load_baselines", lambda: {})
-        monkeypatch.setattr(poller, "_load_unusual_baseline", lambda: {})
-        monkeypatch.setattr(poller, "_r2_client", lambda: None)
-        monkeypatch.setattr(poller, "_prune_day_states", lambda *_args: None)
-        monkeypatch.setattr(flow_archive, "is_market_session", lambda _session: False)
-        monkeypatch.setattr(poller, "_poll_floor_sec", lambda _cfg: 37)
-        monkeypatch.setattr(poller, "_two_tier_enabled", lambda: False)
-        monkeypatch.setattr(poller, "_daily_summary_enabled", lambda: False)
-        monkeypatch.setattr(poller, "_max_concurrent", lambda _cfg: 1)
-        monkeypatch.setattr(
-            poller, "_select_cycle_roots", lambda roots, _cycle, _cfg: (roots, None),
-        )
-        monkeypatch.setattr(poller, "_utc_now_iso", lambda: "2026-07-02T20:06:00Z")
-        return poller
-
-    def test_wal_save_precedes_stage_and_survives_stage_failure(
-        self, tmp_path, monkeypatch,
-    ):
-        import scripts.live_flow_poller as poller
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
-        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(state_dir / "events"))
-        state = self._state()
-        poller._save_day_state(SESSION_DATE, state)
-
-        with pytest.raises(RuntimeError, match="stage failed"):
-            poller._drain_pending_learning_events(
-                SESSION_DATE,
-                state,
-                event_stager=lambda *_: (_ for _ in ()).throw(RuntimeError("stage failed")),
-            )
-        restored = poller._load_day_state(SESSION_DATE)
-        assert restored["pending_learning_events"] == state["pending_learning_events"]
-        assert restored["all_events"] == []
-        assert restored["seen_sequences"] == state["seen_sequences"]
-
-    def test_crash_after_stage_before_clear_replays_same_wal_then_clears(
-        self, tmp_path, monkeypatch,
-    ):
-        import scripts.live_flow_poller as poller
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
-        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(state_dir / "events"))
-        state = self._state()
-        poller._save_day_state(SESSION_DATE, state)
-        real_save = poller._save_day_state
-        staged_inputs: list[list[dict]] = []
-
-        def stager(_session, events):
-            staged_inputs.append([dict(event) for event in events])
-            return [self._enriched(event) for event in events]
-
-        monkeypatch.setattr(
-            poller, "_save_day_state",
-            lambda *_args, **_kwargs: (_ for _ in ()).throw(
-                RuntimeError("crash before clear")
-            ),
-        )
-        with pytest.raises(RuntimeError, match="crash before clear"):
-            poller._drain_pending_learning_events(
-                SESSION_DATE, state, event_stager=stager,
-            )
-        monkeypatch.setattr(poller, "_save_day_state", real_save)
-        restored = poller._load_day_state(SESSION_DATE)
-        assert restored["pending_learning_events"]
-        cleared, _ = poller._drain_pending_learning_events(
-            SESSION_DATE, restored, event_stager=stager,
-        )
-        assert staged_inputs[0] == staged_inputs[1]
-        assert cleared["pending_learning_events"] == []
-        assert [event["id"] for event in cleared["all_events"]] == ["event-1"]
-        persisted = poller._load_day_state(SESSION_DATE)
-        assert persisted["pending_learning_events"] == []
-        assert persisted["all_events"] == cleared["all_events"]
-
-    def test_stager_mismatch_never_clears_wal(self, tmp_path, monkeypatch):
-        import scripts.live_flow_poller as poller
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
-        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(state_dir / "events"))
-        state = self._state()
-        poller._save_day_state(SESSION_DATE, state)
-        with pytest.raises(RuntimeError, match="reconcile every"):
-            poller._drain_pending_learning_events(
-                SESSION_DATE, state, event_stager=lambda *_: [],
-            )
-        assert poller._load_day_state(SESSION_DATE)["pending_learning_events"]
-
-    def test_same_count_wrong_id_or_duplicate_never_clears_wal(
-        self, tmp_path, monkeypatch,
-    ):
-        import scripts.live_flow_poller as poller
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
-        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(state_dir / "events"))
-        state = self._state()
-        poller._save_day_state(SESSION_DATE, state)
-
-        wrong = self._enriched({**state["pending_learning_events"][0], "id": "wrong-id"})
-        with pytest.raises(RuntimeError, match="changed pending decision payload"):
-            poller._drain_pending_learning_events(
-                SESSION_DATE, state, event_stager=lambda *_: [wrong],
-            )
-        assert poller._load_day_state(SESSION_DATE)["pending_learning_events"]
-
-        duplicated = dict(state)
-        duplicated["pending_learning_events"] = [
-            state["pending_learning_events"][0],
-            dict(state["pending_learning_events"][0]),
-        ]
-        with pytest.raises(RuntimeError, match="duplicate event ids"):
-            poller._drain_pending_learning_events(
-                SESSION_DATE, duplicated, event_stager=lambda *_: [],
-            )
-
-    @pytest.mark.parametrize("override", [False, True])
-    def test_missing_or_corrupt_state_with_existing_stage_fails_closed(
-        self, tmp_path, monkeypatch, override: bool,
-    ):
-        import scripts.live_flow_poller as poller
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        stage_dir = tmp_path / "override-events" if override else state_dir / "events"
-        stage_dir.mkdir()
-        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
-        if override:
-            monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(stage_dir))
-        else:
-            monkeypatch.delenv("LIVE_FLOW_EVENT_STAGE_DIR", raising=False)
-        (stage_dir / f"{SESSION_DATE}.jsonl").write_text('{"durable":true}\n')
-        with pytest.raises(RuntimeError, match="missing"):
-            poller._load_day_state(SESSION_DATE)
-        (state_dir / f"day_state_{SESSION_DATE}.json").write_text("{broken")
-        with pytest.raises(RuntimeError, match="cannot recover"):
-            poller._load_day_state(SESSION_DATE)
-
-    def test_day_state_replace_is_file_and_directory_durable(
-        self, tmp_path, monkeypatch,
-    ):
-        import scripts.live_flow_poller as poller
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
-        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(state_dir / "events"))
-        order: list[str] = []
-        real_fsync = poller.os.fsync
-
-        def fsync_spy(fd: int):
-            order.append(
-                "directory_fsync"
-                if stat.S_ISDIR(poller.os.fstat(fd).st_mode)
-                else "file_fsync"
-            )
-            real_fsync(fd)
-
-        monkeypatch.setattr(poller.os, "fsync", fsync_spy)
-        path = poller._save_day_state(SESSION_DATE, self._state())
-        assert path.read_bytes().endswith(b"\n")
-        assert order[-2:] == ["file_fsync", "directory_fsync"]
-
-    def test_startup_drains_same_session_wal_before_theta_probe(
-        self, tmp_path, monkeypatch,
-    ):
-        import collectors.thetadata as td
-        import scripts.live_flow_poller as poller
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
-        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(state_dir / "events"))
-        state = self._state()
-        poller._save_day_state(SESSION_DATE, state)
-        order: list[str] = []
-
-        def stager(_session, events):
-            order.append("stage")
-            return [self._enriched(event) for event in events]
-
-        monkeypatch.setattr(poller, "_stage_raw_events", stager)
-        monkeypatch.setattr(poller, "_cfg", lambda: {"retention_hours": 24})
-        monkeypatch.setattr(poller, "_session_date", lambda _override=None: SESSION_DATE)
-        monkeypatch.setattr(
-            td, "reachable", lambda **_kwargs: order.append("theta") or False,
-        )
-        assert poller.main(["--once"]) == 1
-        assert order == ["stage", "theta"]
-        assert poller._load_day_state(SESSION_DATE)["pending_learning_events"] == []
-
-    def test_stale_prior_session_wal_is_visible_before_retention_or_theta(
-        self, tmp_path, monkeypatch,
-    ):
-        import collectors.thetadata as td
-        import scripts.live_flow_poller as poller
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
-        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(state_dir / "events"))
-        poller._save_day_state(SESSION_DATE, self._state())
-        assert poller._stale_pending_learning_sessions("2026-07-06") == [SESSION_DATE]
-
-        order: list[str] = []
-        monkeypatch.setattr(poller, "_cfg", lambda: {"retention_hours": 24})
-        monkeypatch.setattr(poller, "_session_date", lambda _override=None: "2026-07-06")
-        monkeypatch.setattr(
-            poller, "_prune_day_states", lambda *_args: order.append("prune"),
-        )
-        monkeypatch.setattr(
-            td, "reachable", lambda **_kwargs: order.append("theta") or True,
-        )
-        assert poller.main(["--once"]) == 1
-        assert order == []
-
-    def test_launchd_restarts_only_abnormal_exit(self):
-        import plistlib
-
-        repo = Path(__file__).resolve().parent.parent
-        payload = plistlib.loads(
-            (repo / "ops/launchd/com.mastermind.liveflow.plist").read_bytes()
-        )
-        assert payload["KeepAlive"] == {"SuccessfulExit": False}
-        assert payload["ThrottleInterval"] == 60
-
-    def test_rth_only_post_close_error_exits_zero_without_publication_or_sleep(
-        self, tmp_path, monkeypatch,
-    ):
-        poller = self._stub_main_prelude(tmp_path, monkeypatch)
-        pending_state = self._state()
-        publication_calls: list[str] = []
-        sleep_calls: list[float] = []
-        prune_calls: list[str] = []
-        rth_checks = iter([True, False])
-
-        def unexpected_sleep(seconds: float):
-            sleep_calls.append(seconds)
-            raise AssertionError("post-close errored cycle must not sleep")
-
-        monkeypatch.setattr(poller, "_within_rth", lambda: next(rth_checks))
-        monkeypatch.setattr(
-            poller,
-            "run_cycle",
-            lambda **_kwargs: (
-                {"events": []},
-                {},
-                {"asof": "2026-07-02T20:05:59Z"},
-                dict(pending_state),
-                {},
-            ),
-        )
-        monkeypatch.setattr(
-            poller,
-            "_drain_pending_learning_events",
-            lambda *_args, **_kwargs: (_ for _ in ()).throw(
-                RuntimeError("injected post-save stage failure")
-            ),
-        )
-        monkeypatch.setattr(
-            poller, "_write_json", lambda name, _payload: publication_calls.append(name),
-        )
-        monkeypatch.setattr(
-            poller, "_upload_r2", lambda *_args, **_kwargs: publication_calls.append("r2"),
-        )
-        monkeypatch.setattr(
-            poller, "_prune_day_states", lambda *_args: prune_calls.append("startup"),
-        )
-        monkeypatch.setattr(poller.time, "sleep", unexpected_sleep)
-
-        assert poller.main(["--rth-only"]) == 0
-        assert publication_calls == []
-        assert sleep_calls == []
-        assert prune_calls == ["startup"]
-        restored = poller._load_day_state(SESSION_DATE)
-        assert restored["pending_learning_events"] == pending_state["pending_learning_events"]
-        assert restored["all_events"] == []
-
-    def test_rth_only_cycle_error_within_rth_sleeps_then_retries(
-        self, tmp_path, monkeypatch,
-    ):
-        poller = self._stub_main_prelude(tmp_path, monkeypatch)
-        attempts: list[int] = []
-        sleep_calls: list[float] = []
-        publication_calls: list[str] = []
-
-        class StopAfterRetry(BaseException):
-            pass
-
-        def fail_then_stop(**_kwargs):
-            attempts.append(len(attempts) + 1)
-            if len(attempts) == 1:
-                raise RuntimeError("injected within-RTH cycle failure")
-            raise StopAfterRetry
-
-        monkeypatch.setattr(poller, "_within_rth", lambda: True)
-        monkeypatch.setattr(poller, "run_cycle", fail_then_stop)
-        monkeypatch.setattr(poller.time, "sleep", sleep_calls.append)
-        monkeypatch.setattr(
-            poller, "_write_json", lambda name, _payload: publication_calls.append(name),
-        )
-
-        with pytest.raises(StopAfterRetry):
-            poller.main(["--rth-only"])
-
-        assert attempts == [1, 2]
-        assert sleep_calls == [37]
-        assert publication_calls == []
-
-    def test_once_cycle_error_remains_nonzero_without_sleep(
-        self, tmp_path, monkeypatch,
-    ):
-        poller = self._stub_main_prelude(tmp_path, monkeypatch)
-        sleep_calls: list[float] = []
-        publication_calls: list[str] = []
-
-        monkeypatch.setattr(
-            poller,
-            "run_cycle",
-            lambda **_kwargs: (_ for _ in ()).throw(RuntimeError("injected once failure")),
-        )
-        monkeypatch.setattr(poller.time, "sleep", sleep_calls.append)
-        monkeypatch.setattr(
-            poller, "_write_json", lambda name, _payload: publication_calls.append(name),
-        )
-
-        assert poller.main(["--once"]) == 1
-        assert sleep_calls == []
-        assert publication_calls == []
-
-    def test_missing_version_treated_as_v1(self, tmp_path, monkeypatch, caplog):
-        """A day_state with no schema_version key is treated as version 1 → discarded."""
-        import logging
-        import json
-        from scripts.live_flow_poller import _load_day_state
-        from engine.live_flow import DAY_STATE_VERSION
-
-        if DAY_STATE_VERSION <= 1:
-            pytest.skip("DAY_STATE_VERSION == 1 means no discard needed")
-
-        state_dir = tmp_path / "live_flow_state"
-        state_dir.mkdir()
-        session = SESSION_DATE
-        p = state_dir / f"day_state_{session}.json"
-        # No schema_version key (legacy state)
-        legacy = {
-            "emitted_ids": ["old_ev"],
-            "all_events": [],
-            "root_gross_today": {},
-            "contract_vol": {},
-            "notability_history": {},
-            "seen_sequences": {},
-        }
-        p.write_text(json.dumps(legacy))
-
-        monkeypatch.setattr(
-            "scripts.live_flow_poller._state_dir",
-            lambda: state_dir,
-        )
-
-        with caplog.at_level(logging.INFO, logger="scripts.live_flow_poller"):
-            result = _load_day_state(session)
-
-        assert result == {}, (
-            "Legacy day_state (no schema_version) should be treated as v1 and discarded")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -5853,7 +5904,10 @@ class TestMicrostructureStrictJsonSafety:
         ]
         micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
 
-        edge_sum = round(micro["at_ask_share"] + micro["at_bid_share"], 6)
-        edge_diff = round(micro["at_ask_share"] - micro["at_bid_share"], 6)
-        assert micro["aggression_share"] == edge_sum
-        assert micro["aggression_balance"] == edge_diff
+        block = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+        edge_sum = round(block["at_ask_share"] + block["at_bid_share"], 6)
+        edge_diff = round(block["at_ask_share"] - block["at_bid_share"], 6)
+        assert block["aggression_share"] == edge_sum
+        assert block["aggression_balance"] == edge_diff
+
+

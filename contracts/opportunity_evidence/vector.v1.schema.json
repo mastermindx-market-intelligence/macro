@@ -152,14 +152,15 @@
         },
         "grain": {"enum": ["date", "datetime"]},
         "t0_source": {
-          "description": "The decision date must come from an existing PIT object, never optimized after seeing forward returns (E0 §4.1). Every source is authenticated by t0_evidence_ref against the registry t0_sources pins (semantic K3E_R021). The retired caller_named_pit_object free string is replaced by owner_pit_reference, which additionally REQUIRES a known native_digest immutability receipt (Sol REQUEST_CHANGES 2026-08-25 item 1). The four named sources are validation-checkable: the registry pins their owner_store and recorded clock class. owner_pit_reference is NOT — its store, clock class and referenced bytes are all caller-declared — so it is an accountability receipt rather than a verification, and the registry restricts it to t0_mode 'retrospective_research' (Sol REQUEST_CHANGES 2026-08-26 item A). No source on this wire is 'fully authenticated' in the sense of validation reading the owner's bytes; this contract holds no owner I/O.",
+          "description": "The decision date must come from an existing PIT object, never optimized after seeing forward returns (E0 §4.1). Every source is authenticated by t0_evidence_ref against the registry t0_sources pins (semantic K3E_R021). The retired caller_named_pit_object free string is replaced by owner_pit_reference, which additionally REQUIRES a known native_digest immutability receipt (Sol REQUEST_CHANGES 2026-08-25 item 1). The four named sources are validation-checkable: the registry pins their owner_store and recorded clock class. owner_pit_reference is NOT — its store, clock class and referenced bytes are all caller-declared — so it is an accountability receipt rather than a verification, and the registry restricts it to t0_mode 'retrospective_research' (Sol REQUEST_CHANGES 2026-08-26 item A). No source on this wire is 'fully authenticated' in the sense of validation reading the owner's bytes; this contract holds no owner I/O. DRL event-session time is retired as a decision origin; drl_captured_read binds present-day retrospective inspection only.",
           "enum": [
             "winner_case_t0_hypothesis",
             "drl_event_date",
             "prophet_stamp_date",
             "radar_observed_at",
-            "owner_pit_reference"
-          ]
+            "owner_pit_reference",
+            "drl_captured_read"
+          , "earnings_workspace_context"]
         },
         "t0_mode": {
           "description": "K1 reference.v1 replay.mode vocabulary, verbatim two-member subset lawful for a decision clock. 'live': the vector claims operational PIT — the recorded_clock must sit within the registry-pinned max_recording_lag_days of t0 (semantic K3E_R021), so a decision-time object minted after the fact fails closed. 'retrospective_research': declared research over a past t0 — the lag law is replaced by this visible declaration; authentication (owner pins, digest requirement, known recorded clock) still binds in full. There is no silent third mode. Membership in this enum is wire-level only and never per-source permission: the registry t0_sources.lawful_t0_modes decides which modes a given t0_source may claim, and K3E_R021 enforces it. Only sources whose owner_store and clock class validation can actually check may claim 'live'; the generic owner_pit_reference may not (Sol REQUEST_CHANGES 2026-08-26 item A), and a source carrying no lawful_t0_modes pin may claim only 'retrospective_research'.",
@@ -240,7 +241,7 @@
       "required": ["subject_type", "value", "identity_state", "identity_bridge"],
       "properties": {
         "subject_type": {
-          "enum": ["us_listing_symbol", "dataos_security_id"]
+          "enum": ["us_listing_symbol", "dataos_security_id", "earnings_cik"]
         },
         "value": {"type": "string", "minLength": 1},
         "identity_state": {
@@ -540,7 +541,11 @@
           "type": ["string", "null"],
           "maxLength": 160,
           "description": "Why this slot is excluded from composition (e.g. lookahead_known_at_after_asof, identity_unresolved). Required non-null when included_in_composition is false."
-        }
+        },
+        "captured_read": {
+          "$ref": "#/$defs/capturedRead"
+        },
+        "earnings_context": {"$ref": "#/$defs/earningsContext"}
       },
       "allOf": [
         {
@@ -820,6 +825,205 @@
         "unknown": {"type": "integer", "minimum": 0}
       },
       "description": "Every aggregate prints its denominator. Counts are the ONLY lawful aggregate arithmetic in this contract: no weighted value, sum of slot values, or cross-family numeric combination exists anywhere on this wire."
+    },
+    "capturedRead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "snapshot_sha256",
+        "captured_at",
+        "event_date",
+        "ticker",
+        "side",
+        "historical_availability"
+      ],
+      "properties": {
+        "schema": {
+          "const": "drl_captured_read.v1"
+        },
+        "snapshot_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "captured_at": {
+          "$ref": "#/$defs/utcInstant"
+        },
+        "event_date": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "ticker": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9.-]{0,14}$"
+        },
+        "side": {
+          "enum": [
+            "up",
+            "down"
+          ]
+        },
+        "historical_availability": {
+          "const": "unknown"
+        },
+        "harvested_asof": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/isoDate"}],
+          "description": "Native harvest as-of session only; never an observed/arrival/availability clock."
+        },
+        "engine_version": {"type": ["string", "null"], "minLength": 1, "maxLength": 128}
+      }
+    }
+  ,
+    "earningsContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "event_id",
+        "generation_id",
+        "workspace_sha256",
+        "cik",
+        "source_available_at",
+        "observed_at",
+        "generated_at",
+        "observation",
+        "fiscal_period"
+      ],
+      "properties": {
+        "schema": {
+          "const": "earnings_context_read.v1"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^evt_cik[0-9]{10}_[0-9]{4}(?:q[1-4]|fy)_[a-z0-9]+$"
+        },
+        "generation_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{24,64}$"
+        },
+        "workspace_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cik": {
+          "type": "string",
+          "pattern": "^[0-9]{10}$"
+        },
+        "source_available_at": {
+          "$ref": "#/$defs/utcInstant"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/utcInstant"
+        },
+        "generated_at": {
+          "$ref": "#/$defs/utcInstant"
+        },
+        "observation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "unit",
+            "basis",
+            "period",
+            "document_id",
+            "source_sha256",
+            "span_id",
+            "text_sha256",
+            "field_path",
+            "rights_profile",
+            "lineage_state",
+            "locally_replayed"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000000000000000
+            },
+            "unit": {
+              "enum": [
+                "USD",
+                "usd_millions"
+              ]
+            },
+            "basis": {
+              "enum": [
+                "reported",
+                "gaap"
+              ]
+            },
+            "period": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "document_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "span_id": {
+              "type": "string",
+              "pattern": "^span_[a-f0-9]{20}$"
+            },
+            "text_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "field_path": {
+              "type": "string",
+              "pattern": "^facts\\[[0-9]+\\]$"
+            },
+            "rights_profile": {
+              "const": "rp_public_primary_v1"
+            },
+            "lineage_state": {
+              "const": "owner_byte_replay_receipt"
+            },
+            "locally_replayed": {
+              "const": false
+            }
+          }
+        },
+        "fiscal_period": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "year",
+            "quarter",
+            "calendar_end"
+          ],
+          "properties": {
+            "year": {
+              "type": "integer",
+              "minimum": 1900,
+              "maximum": 2200
+            },
+            "quarter": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 4
+            },
+            "calendar_end": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/isoDate"
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

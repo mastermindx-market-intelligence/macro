@@ -39,6 +39,7 @@ from typing import Any
 from engine.entry_radar.contracts import Nomination, NominationError, ProducerRead, parse_ts, utcnow
 from engine.entry_radar.producers.base import (
     AdapterResult,
+    finite_or_none,
     grade_staleness,
     stale_after,
     unavailable,
@@ -140,12 +141,10 @@ def read_ipo_calendar(path: Path | None = None, *,
                 text += " · SPAC"
             value = None
             for key in ("offer_value_usd", "offer_price", "range_mid"):
-                try:
-                    if row.get(key) is not None:
-                        value = float(row[key])
+                if row.get(key) is not None:
+                    value = finite_or_none(row[key])
+                    if value is not None:
                         break
-                except (TypeError, ValueError):
-                    continue
             row_asof = parse_ts(row.get("as_of")) or asof or stamp
             try:
                 noms.append(Nomination(
