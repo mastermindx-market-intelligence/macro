@@ -49914,6 +49914,13 @@ jobs:
       - "site/theme.js"
       - "tests/__init__.py"
       - "tests/test_bot_session_recovery_browser.py"
+      - templates/onboard.js
+      - site/onboard.js
+      - site/*.html
+      - templates/*.html
+      - templates/*.j2
+      - tests/test_landing_auth_broker_retry.py
+      - tests/test_landing_pricing_cta.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49924,8 +49931,10 @@ jobs:
         run: pip install pytest playwright
       - name: install Chromium
         run: python -m playwright install --with-deps chromium
-      - name: Bot recovery deadline, replay, cookie and cross-tab contracts
-        run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bot_session_recovery_browser.py -q
+      - name: Bot recovery and ordinary auth session continuity
+        run: |
+          node --version
+          MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bot_session_recovery_browser.py tests/test_landing_auth_broker_retry.py tests/test_landing_pricing_cta.py -q
 
   market-ontology-f09-petroleum-flow:
     if: ${{ false }}  # Executed by the required PR pack runner.

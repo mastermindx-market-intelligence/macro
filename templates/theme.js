@@ -525,7 +525,7 @@
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20261101-expectation-surface-nav'; s.async = true;
+    s.src = pfx + 'account.js?v=20261103-auth-session-continuity'; s.async = true;
     document.head.appendChild(s);
   }
   var boot = window.MDX_PROGRESSIVE_BOOT;
@@ -1924,6 +1924,7 @@
   }
   var _authEnabled = !!(_sbCfg && _sbCfg.url && _sbCfg.anonKey);
   var _sb = null, _sbLoading = null, _curUser = null, _authReady = false, _authBooted = false;
+  var _explicitSignOut = false; // A deliberate logout must suppress background restoration.
   var _SDK_URL = 'supabase.js';
 
   // A Bot renewal document admits one bounded operation through this SAME
@@ -2006,12 +2007,24 @@
   }
 
   function _loadSDK() {
-    if (window.supabase && window.supabase.createClient) return Promise.resolve();
+    if (window.supabase && typeof window.supabase.createClient === 'function') return Promise.resolve();
     if (_sbLoading) return _sbLoading;
     _sbLoading = new Promise(function (resolve, reject) {
       var s = document.createElement('script');
       s.src = _SDK_URL; s.async = true;
-      s.onload = resolve; s.onerror = function () { reject(new Error('sdk')); };
+      s.onload = function () {
+        if (window.supabase && typeof window.supabase.createClient === 'function') { resolve(); return; }
+        // A completed download without the SDK is still a failed load. Do not
+        // cache it as success and poison every later same-page restore.
+        _sbLoading = null;
+        if (s.parentNode) s.parentNode.removeChild(s);
+        reject(new Error('sdk'));
+      };
+      s.onerror = function () {
+        _sbLoading = null; // A transient failure must not permanently poison future restores.
+        if (s.parentNode) s.parentNode.removeChild(s);
+        reject(new Error('sdk'));
+      };
       (document.head || document.documentElement).appendChild(s);
     });
     return _sbLoading;
@@ -2118,6 +2131,10 @@
   // clears the user. Broadcast every change so the gear's account section AND
   // the watchlist's cloud-sync (auth.js) react off one shared session.
   function _onAuth(evt, session) {
+    // A late INITIAL_SESSION/TOKEN_REFRESHED callback from an in-flight SDK
+    // operation cannot undo the user's explicit local logout.
+    if (_explicitSignOut && evt !== 'SIGNED_OUT' && evt !== 'SIGNED_IN') return;
+    if (evt === 'SIGNED_IN') _explicitSignOut = false;
     _curUser = (session && session.user) ? session.user : (evt === 'SIGNED_OUT' ? null : _curUser);
     if (evt === 'SIGNED_OUT') _curUser = null;
     // Drop any cached entitlement when the account changes, so a stale plan never shows for the
@@ -2130,6 +2147,14 @@
     // Leave the SDK's auth callback before calling it again. One bounded pass
     // on a real restored session; failures remain for the next genuine trigger.
     if (_curUser && evt !== 'SIGNED_OUT') Promise.resolve().then(_deliverPendingPrefs);
+  }
+
+  function _clearLocalAuthCookies() {
+    // Reuse the same parent-domain and host-only removal routine as the
+    // canonical Supabase cookie storage; include the PKCE verifier.
+    var key = _storageKey();
+    _clearCookieKey(key);
+    _clearCookieKey(key + '-code-verifier');
   }
 
   window.MDXAuth = {
@@ -2149,11 +2174,17 @@
     open: function (mode) { _mmOpenOnboard(mode || 'signin'); },
     signOut: function () {
       if (!_authEnabled) return Promise.resolve();
-      // sb.auth.signOut() fires SIGNED_OUT via onAuthStateChange -> _onAuth, which
-      // owns the UI reset. Only fall back to a manual emit if that path errors,
-      // so a normal sign-out updates each subscriber exactly once.
-      return getSupabaseClient().then(function (sb) { return sb.auth.signOut(); })
-        .catch(function () { _curUser = null; _emitAuth({ user: null, event: 'SIGNED_OUT' }); _renderAcct(); });
+      _explicitSignOut = true;
+      // The Auth service may return {error} without rejecting, or the SDK
+      // script itself may fail. Either way this browser MUST lose its cookies.
+      // Scope remains local; never revoke another device's refresh session.
+      function settle() {
+        _clearLocalAuthCookies();
+        if (_curUser || !_authReady) _onAuth('SIGNED_OUT', null);
+      }
+      return getSupabaseClient().then(function (sb) {
+        return sb.auth.signOut({ scope: 'local' });
+      }).then(settle, settle);
     },
     onChange: function (cb) {
       window.addEventListener('mdx-auth', function (e) {
@@ -2175,17 +2206,24 @@
     _renderAcct();
   }
   function _authBoot() {
-    if (_authBooted || !_authEnabled) return;
+    if (_explicitSignOut || _authBooted || !_authEnabled) return;
     _authBooted = true;
     if (_isAuthReturn() || _hasSessionCookie()) {
-      // restore the session / exchange the ?code= return; on SDK-load failure
-      // (e.g. supabase.js blocked) settle to signed-out so nothing hangs.
+      // Restore the session; a transient SDK/Auth outage is NOT revocation.
       getSupabaseClient().then(function (sb) { return sb.auth.getSession(); })
-        .catch(function () { _authResolveAnon('SDK_FAILED'); });
+        .then(function (result) { if (result && result.error) throw result.error; })
+        .catch(function () { _authBooted = false; _authResolveAnon('SDK_FAILED'); });
     } else {
       _authResolveAnon('INITIAL_SESSION');   // anonymous — settle, no network
     }
   }
+
+  // Recover on a real browser/network return, without a polling loop or new auth store.
+  function _retryRestoreOnReturn() {
+    if (!_explicitSignOut && !_authBooted && !_curUser && (_hasSessionCookie() || _isAuthReturn())) _authBoot();
+  }
+  window.addEventListener('online', _retryRestoreOnReturn);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) _retryRestoreOnReturn(); });
 
   /* ---- the frosted-glass auth modal (matches index.html .glass) --------- */
   var AUTH_L = {
