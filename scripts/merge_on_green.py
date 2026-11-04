@@ -172,7 +172,7 @@ So the sweep is now BUDGET-AWARE, in three places. It preflights `GET
 /rate_limit` (which does not itself count against the core budget) and DEFERS —
 exit 0 with a notice, never a red run — when the remaining budget cannot fund a
 useful pass. It sizes the pull-request window from the live core limit (25 at the
-historical 1,000/hour limit, up to 100 on Enterprise), in a rotating order that no
+historical 1,000/hour limit, up to 128 on Enterprise), in a rotating order that no
 pull request can be starved out of, and it says which ones it deferred. And it
 re-reads the budget as it goes, stopping cleanly rather than dying half-way
 through on a 403. A deferred sweep merges strictly FEWER pull requests than a
@@ -346,11 +346,12 @@ _LAST_INTEGRATION_BASELINE_SHA = ""
 # pull request. The Enterprise transfer raised this repository's live limit to
 # 15,000/hour, but the old fixed cap kept deferring a 29-pull backlog with 14,904
 # calls still available (run 31536402658). Scale from the proven 25/1,000 ratio,
-# but stop at the pull-list API's 100-item page. If the quota cannot be read, the
-# known-safe 25 remains the fallback.
+# but retain a bounded 128-PR evaluation ceiling: paginated discovery already
+# spans the full backlog independently of this cap. If quota cannot be read,
+# the known-safe 25 remains the fallback.
 REFERENCE_CORE_LIMIT = 1_000
 FALLBACK_PULL_CAP = 25
-MAX_PULL_CAP = 100
+MAX_PULL_CAP = 128
 # Fixed overhead and worst-case marginal cost used to shrink the window when the
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
@@ -3882,9 +3883,9 @@ def pull_cap_for_limit(limit: Any) -> int:
 
     The 25-at-1,000 baseline is measured production behavior, not a guessed
     request cost. Scaling that ratio preserves the old budget share after an
-    account-tier change; the 100 ceiling matches the single pull-list page and
-    keeps one reconciliation bounded. An unreadable or malformed limit falls
-    back to the known-safe baseline.
+    account-tier change; the 128 ceiling covers the measured 110-PR backlog
+    using existing paginated discovery while keeping one reconciliation bounded.
+    An unreadable or malformed limit falls back to the known-safe baseline.
     """
     if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
         return FALLBACK_PULL_CAP
