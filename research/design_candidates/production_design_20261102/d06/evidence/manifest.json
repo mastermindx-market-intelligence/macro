@@ -1,11 +1,11 @@
 {
-  "artifact": "D06 retained specification and baselines, actual Paper R2, published workspace and earlier reader/embed proof",
-  "role": "SOURCE_SPEC_PAPER_EDITED_SOURCE_PUBLISHED_LOCAL_PROOF/PARTIAL; D06 execution continues; not production acceptance",
+  "artifact": "D06 delivered Paper designs and implementations, retained baselines and bounded qualification ledger",
+  "role": "PROVEN_OUTCOME for scoped design and implementation; production acceptance and full migration qualification remain unclaimed",
   "identity": "containing immutable Git commit plus member hashes",
   "pr": 10655,
-  "prior_published_head": "b3db232c3f5dbc7d20769c740d22a02a04875880",
+  "prior_published_head": "8d26633704b73dec6a948744cc2bdb28fb3beeb8",
   "member_count": 109,
-  "aggregate_sha256": "870d00fc8cc184514a27395ee6bfb96f0255810c817f9a88ed4e2b92c7fd67e1",
+  "aggregate_sha256": "be78e1816e40af5a99bddbf8d6ec883a51bed3fc906c00659cc7351c7afb6dd8",
   "aggregate_rule": "SHA256 of sorted lines: member sha256 + space + relative path + LF",
   "manifest_self_excluded": true,
   "members": [
@@ -83,9 +83,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 20571,
-      "sha256": "3725479725e97030f21d43cddc2f04f791f86e9d790b644bf1551c2d434aa8c4",
-      "git_blob_sha1": "9a744127e923cc4d2dcef8f7ca383fe9fb3dda4b"
+      "bytes": 33629,
+      "sha256": "07f81a60ae004e0e4276869da2eeb746f667a9583db8638eedd7f546d56d157b",
+      "git_blob_sha1": "4c3b27d2ea7daa2c5b63ec2d0c50f7f2476b8898"
     },
     {
       "path": "RESPONSIVE_AND_STATE_AUDIT.md",
@@ -95,9 +95,9 @@
     },
     {
       "path": "RESUMED_IMPLEMENTATION_20261104.md",
-      "bytes": 16107,
-      "sha256": "207073dd3438c92302f8bb42f6e6102fb5cc1192a91b09028a9465296124d817",
-      "git_blob_sha1": "023538915a03eb3d0997f74be108d8d07de95cc3"
+      "bytes": 29150,
+      "sha256": "e760d1b9ee3623a3b177e275782ff4f1923f603f8f8dccc00d44440438b136a7",
+      "git_blob_sha1": "1f9d33ee03139fee4a276b004fe1580bce66bb06"
     },
     {
       "path": "ROUTE_DATA_CONTRACTS.md",
@@ -509,9 +509,9 @@
     },
     {
       "path": "evidence/migration_cases.json",
-      "bytes": 32056,
-      "sha256": "9ea8def463143cdef0db49717e3d4058704ccf93cff65cc97ec1cc0672d076ad",
-      "git_blob_sha1": "f9aa8c2ed01d21e80aea95d041cb60cfdedd9114"
+      "bytes": 48472,
+      "sha256": "4a50e241daef060b06947343fcbe3b03deed31052db1fd70c61ef6ba716158af",
+      "git_blob_sha1": "71f4f1d4220a8331506b509923b2361a62a4c461"
     },
     {
       "path": "evidence/paper/chart_context_desktop.jpg",
@@ -641,9 +641,9 @@
     },
     {
       "path": "evidence/resumed_implementation_receipt.json",
-      "bytes": 10306,
-      "sha256": "227d54df01cdd56cea8488b756e80865f21b9f7d24cb139cd086adbaca861ec4",
-      "git_blob_sha1": "1ecd5474546fbca7838c4514d53f24f48314a6ea"
+      "bytes": 29346,
+      "sha256": "7d3739e5ec360b23bd90c3c0eacc83503ce941f0a0ea55aa26cf26b374787eae",
+      "git_blob_sha1": "176c17205bda22ab297a65145e43936db166ab6b"
     },
     {
       "path": "evidence/retained_registry.json",

@@ -1,6 +1,6 @@
 {
   "artifact": "D06 proposed migration cases",
-  "status": "SPECIFIED_WITH_PARTIAL_LOCAL_READER_CLOCK_AND_EMBED_EXECUTION",
+  "status": "SPECIFIED_WITH_BOUNDED_TERMINAL_AND_MACRO_IMPLEMENTATION_PROOF",
   "cases": [
     {
       "id": "NAV01",
@@ -63,7 +63,11 @@
       "input": "Valid/unknown /scripts?id, back/forward and dirty-switch cancellation",
       "expected": "Unknown ID and cancellation preserve current script; prior ID is restored without discarding the buffer.",
       "owner": "Scripts",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Scripts: dirty-switch cancellation, stable selection after list reorder, late-save/cancelled-navigation fencing and typed-buffer preservation were exercised; recorded regression source also covers initial deep-link selection, unknown-ID fallback and query preservation.",
+      "unproven_scope": "No complete browser Back/Forward cancellation or every external invalid-ID/previous-ID restoration path.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "HIST01",
@@ -173,7 +177,11 @@
       "input": "All seven widths with measured navigation, gutters and inspector",
       "expected": "Record available content width; retain a useful chart and reachable actions without whole-page overflow.",
       "owner": "D06/F01/F02",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Workspace measured pane/axis/plot/rail geometry and no root overflow through 1440→1280→1024→861→return; Scripts source scroll/actions at 1440/1024/820/390/320; narrow snapshot and 900/390/320×300 embeds were exercised.",
+      "unproven_scope": "Route-specific measurements do not establish the entire seven-width navigation/gutter/inspector matrix.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "LAY02",
@@ -181,14 +189,22 @@
       "expected": "Preserve renderer, active pane, logical range and drawings; persist only deliberate requested-width changes, never automatic fit caps; restore the request when space returns; expose keyboard separator min/max/current; no unsolicited sheet reopening.",
       "owner": "Chart/Terminal rail",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "Reader dock/inline/focused moves and selected cursor; shared rail resize/range/drawing guarantees remain unqualified."
+      "execution_subset": "Workspace keyboard/Shift/Home/End/reset and pointer resize/cancel, requested-versus-effective width, same renderer/reader, cursor/disclosure/focus/logical-range retention, focus transfer and return are now locally proven.",
+      "historical_execution_subset": "Reader dock/inline/focused moves and selected cursor; shared rail resize/range/drawing guarantees remain unqualified.",
+      "unproven_scope": "Drawings-content guarantees, all active-pane/permutation/rotation/software-keyboard and every boundary/sheet-intent case remain unqualified.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "LAY03",
       "input": "Link same-TF panes with unequal histories; request mixed-TF linking",
       "expected": "Align calendar window/crosshair, not raw indices or price; refuse mixed TF; never propagate symbol/TF.",
       "owner": "paneSync",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Two original desktop link-group journeys pass after targeting the actual price canvas: >30-day source pan, unequal-history calendar following, A/B isolation and crosshair-only non-propagation; active pane and symbols remain unchanged.",
+      "unproven_scope": "This new run does not qualify mixed-timeframe refusal, all crosshair alignment or every symbol/timeframe non-propagation condition.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "LAY04",
@@ -203,7 +219,11 @@
       "expected": "Keep deliberate scroll ownership, reachable close/actions and meaningful return; prevent scroll traps.",
       "owner": "D06/F01",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "Reader internal scroller ownership and bounded focused mode; landscape/software keyboard and all page paths remain unqualified."
+      "execution_subset": "Local reader scroll/disclosure, focused-mode containment, no blank help overflow, disappearing-separator focus,1024×600 action reachability and drawing-toolbar scroll were checked; Scripts source scroll and tall snapshot footer remain reachable.",
+      "historical_execution_subset": "Reader internal scroller ownership and bounded focused mode; landscape/software keyboard and all page paths remain unqualified.",
+      "unproven_scope": "Full wheel/page/rail ownership, physical keyboard/landscape/rotation and every scroll-trap path remain separate.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "KEY01",
@@ -266,14 +286,22 @@
       "input": "Save then type more; duplicate click; wrong ID or invalid stamp response",
       "expected": "Save one captured buffer; clean only its matching acknowledged baseline; newer edits stay dirty.",
       "owner": "Scripts",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Captured-buffer save, single-flight duplicate suppression, late receipt retaining newer edits, exact ID/revision validation, CAS token advancement and explicit readback comparison of name/source/semantic inputs.",
+      "unproven_scope": "Intercepted browser saves/lists; production persistence and real cross-tab database CAS are not claimed.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SCRIPT02",
       "input": "Two-tab CAS conflict, expired session and lost save receipt",
       "expected": "Preserve the mounted buffer; reconcile server outcome before retry or full authentication navigation.",
       "owner": "Scripts/D25",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "409/lost or malformed save outcomes keep the mounted buffer; explicit library readback precedes retry/replacement; unchanged revision stays unresolved; renewed revision/buffer invalidates replacement confirmation.",
+      "unproven_scope": "No real concurrent two-tab database race, session-expiry authentication navigation or production persistence proof.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SCRIPT03",
@@ -287,21 +315,33 @@
       "input": "Free-tier dirty Add, locked flagship, unknown saved ID and repeated consumption",
       "expected": "Explain paid-save blocking; no silent stall or phantom indicator; consume a valid Add once.",
       "owner": "Scripts/Terminal",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Free-tier dirty save/Add gates, read-only protected built-ins, current diagnostic requirement and one-shot Add were checked; desktop integration reaches Terminal, adds saved ID to mm.pineOn, observes the owned Pine instance and consumes addScript once.",
+      "unproven_scope": "No production entitlement/write proof or exhaustive unknown-ID/repeated-consumption replay matrix; route integration is desktop-scoped.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SCRIPT05",
       "input": "Synthetic compile success/error/timeout/supersession and uncertain delete",
       "expected": "Label 130-bar synthetic diagnostic and budget; reconcile delete through the own-script list.",
       "owner": "Pine/Scripts",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "130-bar synthetic diagnostic and one-second budget are visible; success/syntax-error, pending/cancelled and A→B→A supersession paths cannot reuse stale green diagnostics.",
+      "unproven_scope": "Forced timeout and uncertain-delete reconciliation are not bound by these receipts; diagnostics are not a backtest.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SHARE01",
       "input": "Valid PNG, wrong MIME, malformed PNG, oversize, rate limit and upstream failure",
       "expected": "Map actual server validation/status honestly; client validation alone is not upload acceptance.",
       "owner": "Snapshot",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "17 actual snapshotIngress handler/validator unit cases pass for structural PNG, MIME/body mismatch, malformed/trailing chunks, dimensions/size, missing file, upstream rejection and unavailable configuration.",
+      "unproven_scope": "Storage is mocked; no real upload, rate-limit journey or full browser mapping of upload responses is claimed.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SHARE02",
@@ -315,7 +355,11 @@
       "input": "Valid/invalid slug, missing image, network failure and proposed lifecycle states",
       "expected": "Keep current unavailable behavior honest; no invented expiry/revocation/restore; preserve footer until approved change.",
       "owner": "D25/D26",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Slug validation, 404/410-only absence, independent unavailable/retry state, positive image dimensions before ready, corrupt-200 recovery, complete aspect ratio and 320px footer reachability; EN/ZH and light/dark browser states.",
+      "unproven_scope": "CDN/image and account responses are local fixtures; no production lifecycle, expiry, revocation or restore proof.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SHARE04",
@@ -347,91 +391,143 @@
       "input": "Native fullscreen, ordinary browser, CTA and allowed/forbidden frame ancestors",
       "expected": "Provide meaningful behavior, disclose context loss until fixed and keep CSP scope narrow.",
       "owner": "Embed/F01",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Actual browser fullscreen entry/exit preserves renderer/range/SMA/source context, guards duplicate requests and reports enter/exit failure; native handler simulation has priority with no browser fallback. Existing two-origin Macro admission and close-message fence pass. Final CI repair keeps a fully visible 44×44 fullscreen action outside the range scroller.",
+      "unproven_scope": "Native request acknowledgement is not WKWebView navigation; physical native gestures/browser-UI Escape, full frame-ancestor matrix and all CTA transfer conditions remain unqualified.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "MSP01",
       "input": "Null versus zero, missing 2-sigma band and independently missing blocks",
       "expected": "Render gaps and valid siblings; do not fabricate a wide band or observed inactivity.",
       "owner": "Market Structure",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Finite-only series, real zero, missing gaps, singleton/constant lines, healthy sibling blocks and independently absent one-/two-sigma bands are covered by focused tests and actual browser scenarios.",
+      "unproven_scope": "Not an exhaustive producer failure matrix or empirical validation of estimated bands.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "MSP02",
       "input": "Friday/holiday/weekend anchor, latest flip, fallback root date and All history",
       "expected": "Separate source/anchor/build clocks; All means embedded rows; retain actual observation/date summaries.",
       "owner": "Market Structure",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Native range controls and embedded observation/date summaries preserve source/build/anchor distinctions; All retains embedded history; weekly fallback date and independent close/band conditions are tested.",
+      "unproven_scope": "Friday/holiday/weekend, latest-flip and every fallback-root permutation are not independently qualified.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "MSP03",
       "input": "504-observation producer versus 500-row UI threshold, zero-vol VC and CTA units",
       "expected": "Resolve one authoritative state and unknown policy; never attach dollar units to CTA.",
       "owner": "Market/quant",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Producer COR class controls the UI state; missing flow differs from observed zero/pause; CTA units remain non-dollar and invalid counts do not invent a five-window observation.",
+      "unproven_scope": "No independent 504-producer versus500-UI threshold or zero-volatility policy qualification.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "STAGE01",
       "input": "Lifecycle-fresh but stale row, retirement, unresolved/frozen/ahead SPY and low coverage",
       "expected": "Preserve tri-valued currentness and population receipt; no-target counts remain null.",
       "owner": "Stage",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Tri-state currentness/CSV provenance and typed population unknown versus observed zero are tested; no-target counts do not invent population proportions.",
+      "unproven_scope": "Full producer retirement, lifecycle-fresh/stale rows, frozen/ahead SPY and low-coverage derivation remain outside this local proof.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "STAGE02",
       "input": "Six hashes, invalid hash, history, every subview, regional gates and local watch",
       "expected": "Preserve actual navigation; do not claim shareable filters or silently merge watchlists.",
       "owner": "Stage/F03",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "All six tasks and retained subviews, filters, search/watch, row expansion/research and keyboard sorting for Screener/Flows/Calls are exercised.",
+      "unproven_scope": "All direct-hash/history/regional-gate permutations and cross-device watch behavior remain unqualified.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "STAGE03",
       "input": "CSV units/provenance, display caps, stage sketch, earnings reader and snippet",
       "expected": "Label all units and limits; do not claim actual candles, a full transcript or a full report.",
       "owner": "Stage/earnings",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "25-column full-filter CSV beyond the600 display cap preserves raw units, provenance and blank/null versus zero; browser filtered download, earnings reader, research and bounded disclosure remain.",
+      "unproven_scope": "No complete browser600/240 cap matrix, full report/transcript or external actual-candle claim.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "STAGE04",
       "input": "Absent, corrupt, empty, stale and valid publisher inputs; working overview with independently failing/recovering lazy slices",
       "expected": "Preserve schema and per-slice outcomes; targeted retry must not reset valid siblings or relabel stale data current; never claim unobserved or failed siblings work.",
       "owner": "Stage publication",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Per-slice pending/ready/error and targeted retry, nested validation/render failure, valid null EC cells, stale nonempty notes, Daily/Weekly race rejection and publisher revoke/fail-stop/recovery are tested. Actual pinned producer inputs load all12 consumer files in two Stage browser contexts.",
+      "unproven_scope": "No live ingestion, exhaustive schema matrix or freshness certification; other source owners remain unchanged.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "STAGE05",
       "input": "No-target/warm-up dash counts through drawArc and accessible summary",
       "expected": "Keep unknown distinct from observed zero; no NaN-to-zero advancing-count announcement.",
       "owner": "Stage/a11y",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Unknown and known-zero population values, finite integer guard, no NaN-to-zero arc, and honest unknown/empty hero copy are checked in units and ZH browser states.",
+      "unproven_scope": "No physical screen-reader, background animation or upstream population derivation qualification.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SPV01",
       "input": "Missing leg/all missing, zero cash yield, mismatched clocks and confirmation bands",
       "expected": "Separate actual policy from unknown inputs; no visual zero-risk inference.",
       "owner": "D12/quant",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Score/allocation/breakdown/cap/put use their contributing dates; zero/false stay valid and missing/future source facts are withheld in focused tests and browser states.",
+      "unproven_scope": "Missing-leg renormalization/all-missing allocation, zero cash-yield arithmetic, confirmation and redeployment policy are not independently recertified.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SPV02",
       "input": "Decision marker versus next-bar holdings, 3bps cost, weekend carry and tax scenario",
       "expected": "Preserve timing, units, window and assumptions; do not treat the check as performance validation.",
       "owner": "D12/quant",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Decision-marker timing, next-bar holdings,3bps cost, carry and35% tax scenario copy remain disclosed alongside retained historical controls.",
+      "unproven_scope": "No independent numerical recalculation or investment-performance validation.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SPV03",
       "input": "Shadow overlay veto while mechanical hero is unchanged",
       "expected": "No active/live authority label without accepted activation evidence; keep outputs separate.",
       "owner": "D12/overlay",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Recorded66 shadow remains separate from100 mechanical allocation and is not applied; escaped rationale and page-only/current-missing auxiliary-side-effect guards pass.",
+      "unproven_scope": "No live overlay activation, trade authority or production effect is claimed.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "SPV04",
       "input": "All ranges, y-rescale, synchronized panels, log growth, drawdown and thinning",
       "expected": "Retain historical controls and meaningful scales; disclose sampling limits.",
       "owner": "S&P UI",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "All four keyboard ranges update three x-axes and y-rescale; log growth, drawdown, markers, scorecard and native Details depth remain; thinning/rounding limits are disclosed.",
+      "unproven_scope": "No independent drawdown/return arithmetic or full-resolution thinning fidelity audit.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "A11Y01",
@@ -439,7 +535,11 @@
       "expected": "Restore or transfer focus only while the closing/removed surface legitimately owns it; use visible enabled equivalents/fallbacks without scroll jumps; do not steal deliberate navigation/settings focus; trap only blocking sheets.",
       "owner": "D06/F02/reader",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "Conditional reader focus, dismissal and Candle settings handoff; all nested shell/Brain cases remain unqualified."
+      "execution_subset": "Owned reader/separator focus transfer, no unrelated focus theft, keyboard Scripts picker/library, unsaved-dialog trap/Escape/opener return and fullscreen-control return are proven; Macro Stage earnings reader traps/restores focus and native table sorts remain keyboard operable.",
+      "historical_execution_subset": "Conditional reader focus, dismissal and Candle settings handoff; all nested shell/Brain cases remain unqualified.",
+      "unproven_scope": "Complete nested shell/Brain/modal stack and actual assistive technology remain unqualified.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "A11Y02",
@@ -447,8 +547,11 @@
       "expected": "Match document/content language and accessible labels to rendered text; measure contrast, non-color semantics,44px house targets and the separate AA minimum/spacing rule.",
       "owner": "F02/D06",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "Dark EN/ZH and measured 44px target subsets; light composition, full contrast and other route language cases remain unqualified. New clock proof adds visible and aria-describedby-associated EN/ZH qualifiers and 320px date/time wrapping. New narrow target checks cover collapsed controls; full expanded-target and physical-device proof remains separate. Prior published feedback/language subsets remain retained. New embed proof adds EN/ZH empty-versus-unavailable text, scoped language, stable status during crosshair movement, visible attribution keyboard focus, 24px fine/44px coarse attribution height, and at least 14.05:1 contrast for new date/unavailable text on tested opaque backgrounds. This does not qualify all existing targets, axis palettes, host transparency, themes/states or assistive technology.",
-      "execution_receipt": "resumed_implementation_receipt.json"
+      "execution_subset": "Scripts/snapshot/embed and Macro actual EN/ZH light/dark samples, targeted44px controls, visible focus, stricken off-SMA state and tested opaque text contrast are now recorded. Final fullscreen action has actual44×44 on-screen geometry.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "historical_execution_subset": "Dark EN/ZH and measured 44px target subsets; light composition, full contrast and other route language cases remain unqualified. New clock proof adds visible and aria-describedby-associated EN/ZH qualifiers and 320px date/time wrapping. New narrow target checks cover collapsed controls; full expanded-target and physical-device proof remains separate. Prior published feedback/language subsets remain retained. New embed proof adds EN/ZH empty-versus-unavailable text, scoped language, stable status during crosshair movement, visible attribution keyboard focus, 24px fine/44px coarse attribution height, and at least 14.05:1 contrast for new date/unavailable text on tested opaque backgrounds. This does not qualify all existing targets, axis palettes, host transparency, themes/states or assistive technology.",
+      "unproven_scope": "No complete palette/state/target audit or transparent-host/assistive-language qualification; prior fine/coarse attribution target distinctions remain.",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "A11Y03",
@@ -456,8 +559,11 @@
       "expected": "Reflow surrounding content and contain essential 2D overflow; resolve root/widget zoom restrictions with the actual host owner; viewport resizing alone is not zoom or mobile-device proof.",
       "owner": "D06/Terminal/embed",
       "status": "specified_partial_local_fixture",
-      "execution_subset": "320 CSS pixel reflow subset only; no actual 400% zoom or removal of root/embed zoom restrictions. New embed assertions cover 900/390/320px wide 300px frames, local range-strip overflow rather than root scrolling, readable dates and attribution outside the canvas. Viewport resizing is not actual 400% zoom, native-host or physical-device proof.",
-      "execution_receipt": "resumed_implementation_receipt.json"
+      "execution_subset": "320CSSpx source/reader/snapshot/embed reflow and local essential overflow pass. Ordinary web viewport zoom is enabled; one post-hydration native exception owner restores web policy on navigation. Actual Chromium page-scale2× is recorded.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "historical_execution_subset": "320 CSS pixel reflow subset only; no actual 400% zoom or removal of root/embed zoom restrictions. New embed assertions cover 900/390/320px wide 300px frames, local range-strip overflow rather than root scrolling, readable dates and attribution outside the canvas. Viewport resizing is not actual 400% zoom, native-host or physical-device proof.",
+      "unproven_scope": "No400% browser zoom, physical pinch or WKWebView proof;320CSSpx resizing and2×page-scale remain distinct.",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "A11Y04",
@@ -523,7 +629,11 @@
       "input": "Measured dock fit at 639/640 price-plot px; 861/860 boundary, scrollbar occupancy, 300–520 requested rail and multipane charts",
       "expected": "Apply the proposed minimum to active price-data area after real occupied axes/tools/gaps; cap effective rail without overwriting requested width, use inline when minimum cannot fit, avoid mode oscillation and preserve panes/open intent.",
       "owner": "Chart/Terminal rail/F01/F02",
-      "status": "specified_not_executed"
+      "status": "specified_partial_local_fixture",
+      "execution_subset": "Measured minimum dock viewport1116 and actual plot640; one pixel below capacity moves below without sampled oscillation; requested520 caps to464 at1280 without overwriting persistence and restores at1440; one→two→one chart columns retain one reader.",
+      "unproven_scope": "Fixture/font/axis-dependent observations; forced scrollbar occupancy, all axis/font/pane combinations and native/coarse-pointer permutations remain unqualified.",
+      "execution_receipt": "resumed_implementation_receipt.json",
+      "current_credit": "2026-11-04 completed design/implementation evidence, bounded local and pinned-producer verification"
     },
     {
       "id": "NAV11",
@@ -547,10 +657,10 @@
       "status": "specified_not_executed"
     }
   ],
-  "baseline_observation_note": "Guest and signed-in-presentation before-design observations remain separate. Published reader/clock/feedback/language proof retains its original source. The current embed source-state/date slice has 47 unit passes, 39 full browser passes and 9overlapping final color/compact passes. Twelve broad cases have bounded local-fixture evidence, 63 remain specified/unexecuted,and zero have complete-case acceptance.",
+  "baseline_observation_note": "The75 original IDs/inputs/expected results/owners are preserved. Current source publication covers Terminal workspace, Scripts, snapshot/embed and all three Macro readers, with actual Paper designs and bounded local/pinned-producer proof.35 broad cases carry partial evidence and40 remain specified/unexecuted; no complete cross-owner/production case is asserted. Historical attempts, skips and original source/crop identities remain separate from final current-source proof.",
   "complete_case_passes": 0,
-  "partial_case_count": 12,
+  "partial_case_count": 35,
   "execution_receipt": "resumed_implementation_receipt.json",
-  "specified_unexecuted_count": 63,
+  "specified_unexecuted_count": 40,
   "historical_execution_receipt": "implementation_receipt.json"
 }
