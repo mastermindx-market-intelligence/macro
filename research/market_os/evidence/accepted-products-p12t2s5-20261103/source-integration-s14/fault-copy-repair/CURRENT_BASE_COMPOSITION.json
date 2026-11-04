@@ -1,0 +1,44 @@
+{
+  "source_review_subject": "de5ddd7dfff693e98f5a716df02f9ed684a7f966",
+  "incoming_protected": "3a03a77296b8455484f2e3c6f7ac30c1a456c99c",
+  "runtime_source_and_33fragment_postimages_exact_de5": true,
+  "native_inputs_assets_raw_snapshot_manifest_exact_de5": true,
+  "native_Business_only_delta": "2actual non-economic page-build time nodes, canonical renderer/write_page/assetstage, no manual HTML",
+  "de5_native_sha256": "1016b2fa0895bd114eb724a9dfa0e86878d2d7a009196a6eb826a643df97ccc1",
+  "composed_native_sha256": "52bb4fda5479439fff74125043dff9fc0c96385bdd294c63bb3113e9b7ab811e",
+  "actual_page_built_at": "2026-11-04T04:42:19Z",
+  "Bonds_preservation": "Entire protected current financial body/data/clocks byte-identical except one reviewed asset-only fingerprint href",
+  "bonds_protected_sha256": "626a14bc7b454bd49fa0c695b0e2c1617bd0aa0feafa22b9e8e4d2fa3f11de54",
+  "bonds_composed_sha256": "744a110817a02a7344d9557b616455e231c9f9a52d728d664ff2de64a237dbe8",
+  "incoming_CI_manifest_exact": true,
+  "native_report_sha256": "db5ce6a4547bd816ead504a2705e9299bfd7308974b959a883f7ddf9d79227da",
+  "frozen_T11_paths_upstream_delta": [],
+  "claims": "Composition/source/native-static only; no new financial producer/quant/data authenticity/browser/CIclear/host/served/PIT",
+  "exact_reviewed_source_context": {
+    "lib/macro_suite_view.py": "4a24afb319d44f2102f01fc582d4f3d09762286bdddf08ba6117fcec71c88e27",
+    "templates/_macro_suite_shell.html.j2": "622b0a70c86d6c913eb5491d162c1ec31aaefd938b06c1877b82a7a2d7f2018a",
+    "tests/fixtures/macro_suite_t11/collapses/zz_business_period_clocks_p12t2s14.json": "1711bda390f078c44574c97f62d73e4e939d2b95d78709d64ae74073d5687e24",
+    "scripts/build_macro_suite_pages.py": "150ddd0ab332669a18e399b4bb3037242fddaf4b3587c394963a72b9f13bc03e",
+    "lib/macro_suite_labels.py": "d17c225917e652ae3c882df97ffb471b146993ad03279a5221cf30d3d0713784",
+    "app/macro_command.py": "f721b4aa308d6bf6dcaa3e6ddd71523cdf0213b5586e33cc470b04f344750d60",
+    "engine/market_os/macro_workspaces/business_activity.py": "ade306a972aff62bc40ada2dbbfd83cfa3df259e2577cbebc5109ce551d37416",
+    "tests/test_macro_suite_pages.py": "8cbfe8a8e0a16b6cc2b55adb804a1b891513db7da83fbb09e8fbc0c4895ce26a",
+    "tests/test_macro_rates_curves_route.py": "5845f75b7d882ce749a8f6c5f3134f42ce4ec025a482b3d670ce7a4618fc36d2",
+    "tests/test_macro_command_copy_law.py": "a31d4bb080a04ca811689cc7150cf022ba3f218ac11ff89709f66400cac5cd2c",
+    "tests/test_macro_command_read_strip.py": "65e5b7a89069aa6c42e3736bff184a18cbffcb2b4d0a957241b4d2b17a97c328"
+  },
+  "changed_risk_review": {
+    "receipt": "business-s14-fault-copy-independent-review.json",
+    "sha256": "84d2e8336c18f382911f663dd4e9cc3377dae7cfe1bbb6bf9b1ac6f7fcba84ee",
+    "verdict": "PASS_SCOPED exact de5; current-source equality +2actualpagebuildtimes bound separately; no CI/served/PIT transfer"
+  },
+  "affected_composition_checks": {
+    "raw": "...                                                                      [100%]\n3 passed in 9.97s\n",
+    "sha256": "24077aa3332fa1dd2a559a5ebc1f547853ee4506877f5d4f78c873d115b63dc9",
+    "cases": [
+      "T11currentregion+mutation",
+      "trackednativecopynumberlaw",
+      "Bondsstylesheetfingerprint"
+    ]
+  }
+}
