@@ -60,7 +60,12 @@ def test_table_preserves_same_entitled_card_detail(tmp_path, surface):
     fragment = html if surface == "shell" else paid["cards_html"]
     card = BeautifulSoup(fragment, "html.parser").select_one(
         '.po-card[data-ticker="' + rows[0]["ticker"] + '"] .pv-setup-body')
-    inert = BeautifulSoup(rows[0]["setup_detail"], "html.parser").select_one("template .pv-setup-body")
+    source = BeautifulSoup(rows[0]["setup_detail"], "html.parser").select_one("template.pvs-body-source")
+    assert source is not None
+    # Soup Sieve 4 treats template contents as a separate selection scope.
+    # Enter the actual source template before inspecting the dialog body.
+    inert = source.select_one(".pv-setup-body")
+    assert inert is not None
     # Reparse the body outside <template>, just as the dialog moves it into the
     # active document. BeautifulSoup intentionally omits inert TemplateStrings.
     table = BeautifulSoup(str(inert), "html.parser").select_one(".pv-setup-body")
@@ -80,6 +85,7 @@ def test_table_preserves_same_entitled_card_detail(tmp_path, surface):
 def test_unavailable_plan_read_does_not_gain_a_relation_from_ticker_map(tmp_path, surface):
     _, shell_rows, paid = _render(tmp_path, unknown_relation=True)
     rows = shell_rows if surface == "shell" else paid["rows"]
-    table = BeautifulSoup(rows[0]["setup_detail"], "html.parser")
+    table = BeautifulSoup(rows[0]["setup_detail"], "html.parser").select_one("template.pvs-body-source")
+    assert table is not None
     assert table.select_one('[data-plan-relation="unknown"]')
     assert not table.select(".pvs-plan-link")

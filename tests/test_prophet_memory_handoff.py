@@ -38,7 +38,12 @@ def test_native_card_handoff_contains_only_this_symbol_not_an_assessment(prefix)
 def test_handoff_stays_inside_existing_public_paid_row_split(tmp_path, surface):
     html, shell, paid = render_table(tmp_path)
     row = (shell if surface == 'shell' else paid['rows'])[0]
-    body = BeautifulSoup(row['setup_detail'], 'html.parser').select_one('.pv-setup-body')
+    source = BeautifulSoup(row['setup_detail'], 'html.parser').select_one('template.pvs-body-source')
+    assert source is not None
+    # Inspect the real inert source explicitly; Soup Sieve 4 does not search
+    # template contents from the surrounding document.
+    body = source.select_one('.pv-setup-body')
+    assert body is not None
     body = BeautifulSoup(str(body), 'html.parser')
     check_links(body, row['ticker'])
     assert 'PVTABLELOCKED' not in html
