@@ -1,0 +1,8 @@
+{
+  "original_pid": 35788,
+  "observed_command": "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python /tmp/cwb10597-digest-client-browser-1104.py /Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence /tmp/cwb10597-client-browser-1104",
+  "signal": "SIGINT",
+  "reason": "Bounded cancellation of isolated browser qualification stalled in a returned unresolved test Promise; no product source or production effect",
+  "sent_at": "2026-11-04T07:27:04.227113+00:00",
+  "signal_sent": true
+}

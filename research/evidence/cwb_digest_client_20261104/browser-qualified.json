@@ -1,0 +1,172 @@
+{
+  "source_asset_sha256": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+  "live_network": false,
+  "live_mail": false,
+  "provider_auth": "synthetic dependency seam",
+  "api": "actual current ASGI routes",
+  "database": "isolated Unix-only PostgreSQL using existing fixture",
+  "browser_version": "156.0.8078.4",
+  "postgres_version": "17.11 (Homebrew)",
+  "status": "PASS",
+  "cases": [
+    {
+      "case": "real_browser_asgi_pg_enable_withdraw",
+      "passed": true
+    },
+    {
+      "case": "real_conflict_requires_fresh_read_and_click",
+      "passed": true
+    },
+    {
+      "case": "committed_withdrawal_lost_reply_not_replayed_or_confirmed_by_get",
+      "passed": true
+    },
+    {
+      "case": "delayed_token_subject_mismatch_refused_before_database",
+      "passed": true
+    },
+    {
+      "case": "chinese_enrollment_off_still_allows_real_withdrawal",
+      "passed": true
+    },
+    {
+      "case": "read_unavailable_still_allows_subject_bound_withdrawal",
+      "passed": true
+    }
+  ],
+  "screenshots": {
+    "english_enabled.png": "21a017c7f32e4b4d2fa0ec2ccb178ded5b605b47efdee42c1c016177e5cf2546",
+    "english_withdrawn.png": "5a403252628d8ae16e485a2291647aceaf7a8263d27a4d0399cab8410d16d434",
+    "english_unconfirmed_withdrawal.png": "94ca83a59338f8de1c0127b182dfb16c4e3ebf7fe0d06bfed933d5148e30e09d",
+    "chinese_enrollment_off_withdrawal.png": "ecb13b348be3ec86542a2311c358e6ba7d7c02c2732ed8f9ad2f873d9374e70d"
+  },
+  "rpc_calls": 7,
+  "network_requests": [
+    {
+      "path": "/fixture.html",
+      "method": "GET"
+    },
+    {
+      "path": "/account.js",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "PUT"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "PUT"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "PUT"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "PUT"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "PUT"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "GET"
+    },
+    {
+      "path": "/fixture.html",
+      "method": "GET"
+    },
+    {
+      "path": "/account.js",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "PUT"
+    },
+    {
+      "path": "/fixture.html",
+      "method": "GET"
+    },
+    {
+      "path": "/account.js",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "PUT"
+    },
+    {
+      "path": "/fixture.html",
+      "method": "GET"
+    },
+    {
+      "path": "/account.js",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "GET"
+    },
+    {
+      "path": "/api/account/prefs/portfolio-digest",
+      "method": "PUT"
+    }
+  ],
+  "source_sha256": {
+    "templates/account.js": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+    "site/account.js": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+    "app/account_prefs.py": "98d6582d112330077ad68018672b45be9a0a2a9aea889ed6d3205571b2962631",
+    "scripts/deploy/portfolio_digest_consent_v1.sql": "a330a0fcbcde0669487fd327ad22cdd5acbb8b08de9fca3f575066acfd50569b"
+  }
+}

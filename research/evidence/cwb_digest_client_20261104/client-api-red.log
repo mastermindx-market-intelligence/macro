@@ -1,0 +1,212 @@
+FFFF........FFFFFF                                                       [100%]
+=================================== FAILURES ===================================
+_ test_observed_subject_cannot_mutate_a_different_authenticated_account[False] _
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d2999a0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1084c6600>
+enabled = False
+
+    @pytest.mark.parametrize("enabled", [False, True])
+    def test_observed_subject_cannot_mutate_a_different_authenticated_account(client, monkeypatch, enabled):
+        calls = install(monkeypatch, applied(enabled))
+        response = client.put(PATH, json={"enabled": enabled, "expected_revision": None,
+                                         "expected_user_id": OTHER})
+>       assert response.status_code == 409
+E       assert 422 == 409
+E        +  where 422 = <tests.test_portfolio_digest_consent._Response object at 0x10caf3800>.status_code
+
+tests/test_portfolio_digest_consent.py:234: AssertionError
+_ test_observed_subject_cannot_mutate_a_different_authenticated_account[True] __
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d29a600>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d263170>
+enabled = True
+
+    @pytest.mark.parametrize("enabled", [False, True])
+    def test_observed_subject_cannot_mutate_a_different_authenticated_account(client, monkeypatch, enabled):
+        calls = install(monkeypatch, applied(enabled))
+        response = client.put(PATH, json={"enabled": enabled, "expected_revision": None,
+                                         "expected_user_id": OTHER})
+>       assert response.status_code == 409
+E       assert 422 == 409
+E        +  where 422 = <tests.test_portfolio_digest_consent._Response object at 0x10d29a870>.status_code
+
+tests/test_portfolio_digest_consent.py:234: AssertionError
+_______ test_observed_subject_matching_auth_retains_one_owner_rpc[False] _______
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d310770>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d2631a0>
+enabled = False
+
+    @pytest.mark.parametrize("enabled", [False, True])
+    def test_observed_subject_matching_auth_retains_one_owner_rpc(client, monkeypatch, enabled):
+        calls = install(monkeypatch, applied(enabled))
+        response = client.put(PATH, json={"enabled": enabled, "expected_revision": R0,
+                                         "expected_user_id": UID})
+>       assert response.status_code == 200
+E       assert 422 == 200
+E        +  where 422 = <tests.test_portfolio_digest_consent._Response object at 0x10d29b9e0>.status_code
+
+tests/test_portfolio_digest_consent.py:245: AssertionError
+_______ test_observed_subject_matching_auth_retains_one_owner_rpc[True] ________
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d311a00>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d313740>
+enabled = True
+
+    @pytest.mark.parametrize("enabled", [False, True])
+    def test_observed_subject_matching_auth_retains_one_owner_rpc(client, monkeypatch, enabled):
+        calls = install(monkeypatch, applied(enabled))
+        response = client.put(PATH, json={"enabled": enabled, "expected_revision": R0,
+                                         "expected_user_id": UID})
+>       assert response.status_code == 200
+E       assert 422 == 200
+E        +  where 422 = <tests.test_portfolio_digest_consent._Response object at 0x10d311be0>.status_code
+
+tests/test_portfolio_digest_consent.py:245: AssertionError
+_ test_client_view_binds_actor_and_existing_enrollment_availability[None-False] _
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d3130e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ccda060>
+flag = None, available = False
+
+    @pytest.mark.parametrize("flag,available", [(None, False), ("0", False), ("true", False), ("1", True)])
+    def test_client_view_binds_actor_and_existing_enrollment_availability(client, monkeypatch, flag, available):
+        if flag is None:
+            monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+        else:
+            monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", flag)
+        calls = install(monkeypatch, [row(False, R0, marketing_opt_out=True)])
+        response = client.get(PATH)
+        assert response.status_code == 200
+>       assert response.json() == {"enabled": False, "marketing_opt_out": True, "revision": R0,
+                                   "user_id": UID, "enrollment_available": available}
+E       AssertionError: assert {'enabled': F...000000000201'} == {'enabled': F...0000101', ...}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Right contains 2 more items:
+E         {'enrollment_available': False,
+E          'user_id': '00000000-0000-4000-8000-000000000101'}
+E         Use -v to get more diff
+
+tests/test_portfolio_digest_consent.py:271: AssertionError
+__ test_client_view_binds_actor_and_existing_enrollment_availability[0-False] __
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d311e80>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d378b00>
+flag = '0', available = False
+
+    @pytest.mark.parametrize("flag,available", [(None, False), ("0", False), ("true", False), ("1", True)])
+    def test_client_view_binds_actor_and_existing_enrollment_availability(client, monkeypatch, flag, available):
+        if flag is None:
+            monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+        else:
+            monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", flag)
+        calls = install(monkeypatch, [row(False, R0, marketing_opt_out=True)])
+        response = client.get(PATH)
+        assert response.status_code == 200
+>       assert response.json() == {"enabled": False, "marketing_opt_out": True, "revision": R0,
+                                   "user_id": UID, "enrollment_available": available}
+E       AssertionError: assert {'enabled': F...000000000201'} == {'enabled': F...0000101', ...}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Right contains 2 more items:
+E         {'enrollment_available': False,
+E          'user_id': '00000000-0000-4000-8000-000000000101'}
+E         Use -v to get more diff
+
+tests/test_portfolio_digest_consent.py:271: AssertionError
+_ test_client_view_binds_actor_and_existing_enrollment_availability[true-False] _
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d29b410>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d37a5d0>
+flag = 'true', available = False
+
+    @pytest.mark.parametrize("flag,available", [(None, False), ("0", False), ("true", False), ("1", True)])
+    def test_client_view_binds_actor_and_existing_enrollment_availability(client, monkeypatch, flag, available):
+        if flag is None:
+            monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+        else:
+            monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", flag)
+        calls = install(monkeypatch, [row(False, R0, marketing_opt_out=True)])
+        response = client.get(PATH)
+        assert response.status_code == 200
+>       assert response.json() == {"enabled": False, "marketing_opt_out": True, "revision": R0,
+                                   "user_id": UID, "enrollment_available": available}
+E       AssertionError: assert {'enabled': F...000000000201'} == {'enabled': F...0000101', ...}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Right contains 2 more items:
+E         {'enrollment_available': False,
+E          'user_id': '00000000-0000-4000-8000-000000000101'}
+E         Use -v to get more diff
+
+tests/test_portfolio_digest_consent.py:271: AssertionError
+__ test_client_view_binds_actor_and_existing_enrollment_availability[1-True] ___
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d35d040>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d379ca0>
+flag = '1', available = True
+
+    @pytest.mark.parametrize("flag,available", [(None, False), ("0", False), ("true", False), ("1", True)])
+    def test_client_view_binds_actor_and_existing_enrollment_availability(client, monkeypatch, flag, available):
+        if flag is None:
+            monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+        else:
+            monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", flag)
+        calls = install(monkeypatch, [row(False, R0, marketing_opt_out=True)])
+        response = client.get(PATH)
+        assert response.status_code == 200
+>       assert response.json() == {"enabled": False, "marketing_opt_out": True, "revision": R0,
+                                   "user_id": UID, "enrollment_available": available}
+E       AssertionError: assert {'enabled': F...000000000201'} == {'enabled': F...0000101', ...}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Right contains 2 more items:
+E         {'enrollment_available': True,
+E          'user_id': '00000000-0000-4000-8000-000000000101'}
+E         Use -v to get more diff
+
+tests/test_portfolio_digest_consent.py:271: AssertionError
+_____ test_observed_subject_withdrawal_stays_available_with_enrollment_off _____
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d35dc40>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d29b710>
+
+    def test_observed_subject_withdrawal_stays_available_with_enrollment_off(client, monkeypatch):
+        monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+        calls = install(monkeypatch, applied(False))
+        response = client.put(PATH, json={"enabled": False, "expected_user_id": UID})
+>       assert response.status_code == 200
+E       assert 422 == 200
+E        +  where 422 = <tests.test_portfolio_digest_consent._Response object at 0x10d35dd30>.status_code
+
+tests/test_portfolio_digest_consent.py:280: AssertionError
+_______________ test_observed_subject_lost_reply_is_not_replayed _______________
+
+client = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d3b51f0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d35c290>
+
+    def test_observed_subject_lost_reply_is_not_replayed(client, monkeypatch):
+        calls = install(monkeypatch, RuntimeError("synthetic lost committed response"))
+        response = client.put(PATH, json={"enabled": True, "expected_revision": R0,
+                                         "expected_user_id": UID})
+>       assert response.status_code == 503
+E       assert 422 == 503
+E        +  where 422 = <tests.test_portfolio_digest_consent._Response object at 0x10d3b6090>.status_code
+
+tests/test_portfolio_digest_consent.py:289: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_portfolio_digest_consent.py::test_observed_subject_cannot_mutate_a_different_authenticated_account[False]
+FAILED tests/test_portfolio_digest_consent.py::test_observed_subject_cannot_mutate_a_different_authenticated_account[True]
+FAILED tests/test_portfolio_digest_consent.py::test_observed_subject_matching_auth_retains_one_owner_rpc[False]
+FAILED tests/test_portfolio_digest_consent.py::test_observed_subject_matching_auth_retains_one_owner_rpc[True]
+FAILED tests/test_portfolio_digest_consent.py::test_client_view_binds_actor_and_existing_enrollment_availability[None-False]
+FAILED tests/test_portfolio_digest_consent.py::test_client_view_binds_actor_and_existing_enrollment_availability[0-False]
+FAILED tests/test_portfolio_digest_consent.py::test_client_view_binds_actor_and_existing_enrollment_availability[true-False]
+FAILED tests/test_portfolio_digest_consent.py::test_client_view_binds_actor_and_existing_enrollment_availability[1-True]
+FAILED tests/test_portfolio_digest_consent.py::test_observed_subject_withdrawal_stays_available_with_enrollment_off
+FAILED tests/test_portfolio_digest_consent.py::test_observed_subject_lost_reply_is_not_replayed
+10 failed, 8 passed, 36 deselected in 5.84s

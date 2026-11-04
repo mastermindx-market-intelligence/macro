@@ -1,0 +1,31 @@
+{
+  "head": "7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3",
+  "command": [
+    "/tmp/clear-workstream-blockers-20261103-test-venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_site_assets.py",
+    "tests/test_asset_stamp_refresh.py",
+    "tests/test_optimize_assets.py",
+    "tests/test_asset_stamp_lane_order.py",
+    "-q",
+    "-ra",
+    "--basetemp=/tmp/cwb10597-asset-owner-1104-pytest",
+    "--junitxml=/tmp/cwb10597-asset-owner-1104.xml"
+  ],
+  "exit": 0,
+  "seconds": 13.54,
+  "source_sha256": {
+    "lib/site_assets.py": "2d1fd7b3847b0e524ddfd2831bfc3d92b03ffcf64956e3188fa26b9959b7e936",
+    "templates/theme.js": "9d0694b11183dabcc22c09ca8f7b02f40349b345e0a186464fe5d5e526848225",
+    "tests/test_site_assets.py": "57d0f572a700510d81008989413d0db3dbcebaf3e7c160298656f985b5626f14",
+    "site/theme.js": "8ca5bdfdb903942656eebe9d1a7741d3bbeccae5537eaca648ba230d072b80fb",
+    "templates/account.js": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+    "site/account.js": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c"
+  },
+  "account_version": "fec5541f",
+  "theme_version": "8ca5bdfd",
+  "log": "/tmp/cwb10597-asset-owner-1104.log",
+  "log_sha256": "e0eca24c15adc112716817d3279901a6ea5e790fbaa58562d4253e6ac9fb7c5f",
+  "tail": "........................................................................ [ 54%]\n....................s......s................................             [100%]\n=========================== short test summary info ============================\nSKIPPED [1] tests/test_asset_stamp_lane_order.py:141: weekly.yml has no post-rebase heal block (minimal push loop)\nSKIPPED [1] tests/test_asset_stamp_lane_order.py:163: weekly.yml has no post-rebase heal block (minimal push loop)\n130 passed, 2 skipped in 10.90s\n"
+}

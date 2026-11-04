@@ -1,0 +1,67 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+___________ test_account_dependency_key_matches_final_copied_payload ___________
+
+tmp_path = PosixPath('/private/tmp/cwb10597-account-cache-red-1104-pytest/test_account_dependency_key_ma0')
+
+    def test_account_dependency_key_matches_final_copied_payload(tmp_path: Path) -> None:
+        import hashlib
+        site_assets.copy_asset("account.js", TEMPLATES / "account.js", tmp_path)
+        site_assets.copy_asset("theme.js", TEMPLATES / "theme.js", tmp_path)
+        expected = hashlib.sha256((tmp_path / "account.js").read_bytes()).hexdigest()[:8]
+        emitted = (tmp_path / "theme.js").read_text()
+>       assert site_assets.account_version(TEMPLATES / "theme.js") == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'lib.site_assets' has no attribute 'account_version'
+
+tests/test_site_assets.py:337: AttributeError
+_ test_account_only_change_advances_dynamic_loader_key_without_manual_release_edit _
+
+tmp_path = PosixPath('/private/tmp/cwb10597-account-cache-red-1104-pytest/test_account_only_change_advan0')
+
+    def test_account_only_change_advances_dynamic_loader_key_without_manual_release_edit(tmp_path: Path) -> None:
+        source = tmp_path / "templates"
+        output = tmp_path / "site"
+        source.mkdir()
+        output.mkdir()
+        theme = source / "theme.js"
+>       theme.write_text("var accountVersion=" + site_assets.ACCOUNT_VER_TOKEN + ";")
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'lib.site_assets' has no attribute 'ACCOUNT_VER_TOKEN'
+
+tests/test_site_assets.py:349: AttributeError
+_____ test_account_key_uses_normalized_emitted_bytes_not_raw_source_bytes ______
+
+tmp_path = PosixPath('/private/tmp/cwb10597-account-cache-red-1104-pytest/test_account_key_uses_normaliz0')
+
+    def test_account_key_uses_normalized_emitted_bytes_not_raw_source_bytes(tmp_path: Path) -> None:
+        import hashlib
+        source = tmp_path / "templates"
+        output = tmp_path / "site"
+        source.mkdir()
+        output.mkdir()
+        theme = source / "theme.js"
+>       theme.write_text("var accountVersion=" + site_assets.ACCOUNT_VER_TOKEN + ";")
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'lib.site_assets' has no attribute 'ACCOUNT_VER_TOKEN'
+
+tests/test_site_assets.py:372: AttributeError
+______ test_missing_account_dependency_falls_back_to_unversioned_request _______
+
+tmp_path = PosixPath('/private/tmp/cwb10597-account-cache-red-1104-pytest/test_missing_account_dependenc0')
+
+    def test_missing_account_dependency_falls_back_to_unversioned_request(tmp_path: Path) -> None:
+        theme = tmp_path / "theme.js"
+>       theme.write_text("var accountVersion=" + site_assets.ACCOUNT_VER_TOKEN + ";")
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'lib.site_assets' has no attribute 'ACCOUNT_VER_TOKEN'
+
+tests/test_site_assets.py:386: AttributeError
+
+NOTE: sparse worktree — data, mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_site_assets.py::test_account_dependency_key_matches_final_copied_payload
+FAILED tests/test_site_assets.py::test_account_only_change_advances_dynamic_loader_key_without_manual_release_edit
+FAILED tests/test_site_assets.py::test_account_key_uses_normalized_emitted_bytes_not_raw_source_bytes
+FAILED tests/test_site_assets.py::test_missing_account_dependency_falls_back_to_unversioned_request
+4 failed, 13 deselected in 5.22s

@@ -1223,3 +1223,335 @@ test('S1-01 red: claimsPref releases theme/lang during the sign-in pref apply an
   await env.advance(1000);
   assert.equal(env.posts(PREFS).length, 0, 'sign-in pref apply echoed a save');
 });
+
+
+// Digest consent uses this same real account component and deterministic transport.
+// The server revision and observed subject travel with an explicit choice; this
+// consumer does not own authentication, retry, delivery or a persistent queue.
+const DIGEST_PATH = '/api/account/prefs/portfolio-digest';
+const DIGEST_A = '00000000-0000-4000-8000-000000000101';
+const DIGEST_B = '00000000-0000-4000-8000-000000000102';
+const DIGEST_R0 = '00000000-0000-4000-8000-000000000201';
+const DIGEST_R1 = '00000000-0000-4000-8000-000000000202';
+const DIGEST_R2 = '00000000-0000-4000-8000-000000000203';
+const digestAccount = (id = DIGEST_A) => ({ ...ACCT_A, id, user_id: id });
+const digestState = (over = {}) => ({
+  user_id: DIGEST_A, enabled: false, marketing_opt_out: false,
+  revision: DIGEST_R0, enrollment_available: true, ...over,
+});
+const digestButton = (env, act) => env.q('[data-act="digest-' + act + '"]');
+const digestPhase = (env) => env.q('[data-digest-state]')?.getAttribute('data-digest-state');
+const digestMessage = (env) => msgText(env, 'mmacc-digest-msg');
+const digestWrites = (env) => env.requests(DIGEST_PATH, 'PUT');
+async function openDigest(over = {}, opts = {}) {
+  const env = makeEnv({ user: { id: DIGEST_A, email: ACCT_A.email }, ...opts });
+  await openSignedIn(env, digestAccount());
+  const read = env.pending(DIGEST_PATH)[0];
+  assert.ok(read, 'the existing account component must read the digest preference');
+  env.respond(read, 200, digestState(over));
+  await env.settle();
+  return env;
+}
+
+test('Digest: the signed-in account reads its canonical preference without writing', async () => {
+  const env = await openDigest();
+  assert.equal(env.requests(DIGEST_PATH).length, 1);
+  assert.equal(digestWrites(env).length, 0);
+  assert.equal(digestPhase(env), 'ready');
+  assert.equal(digestButton(env, 'enable').hasAttribute('disabled'), false);
+  assert.equal(env.requests(DIGEST_PATH)[0].headers.Authorization, 'Bearer fictional-token');
+});
+
+test('Digest: enable sends exactly the displayed revision and observed account', async () => {
+  const env = await openDigest();
+  env.click(digestButton(env, 'enable')); await env.settle();
+  assert.equal(digestWrites(env).length, 1);
+  const write = digestWrites(env)[0];
+  assert.deepEqual(write.body, {
+    enabled: true, expected_revision: DIGEST_R0, expected_user_id: DIGEST_A,
+  });
+  assert.equal(env.requests(DIGEST_PATH).length, 1, 'enable must not rebase through another GET');
+  assert.equal(digestPhase(env), 'saving');
+  env.respond(write, 200, digestState({ enabled: true, revision: DIGEST_R1 }));
+  await env.settle();
+  assert.equal(digestPhase(env), 'saved');
+  assert.match(digestMessage(env), /Saved/);
+});
+
+test('Digest: a valid absent observation is sent as explicit null', async () => {
+  const env = await openDigest({ revision: null, marketing_opt_out: null });
+  env.click(digestButton(env, 'enable')); await env.settle();
+  assert.deepEqual(digestWrites(env)[0].body, {
+    enabled: true, expected_revision: null, expected_user_id: DIGEST_A,
+  });
+});
+
+for (const [name, value] of [
+  ['missing revision', { revision: undefined }],
+  ['malformed revision', { revision: 'stale' }],
+  ['wrong subject', { user_id: DIGEST_B }],
+  ['nonliteral enabled', { enabled: 'false' }],
+  ['nonliteral global veto', { marketing_opt_out: 'false' }],
+  ['missing availability', { enrollment_available: undefined }],
+  ['nonliteral availability', { enrollment_available: 'true' }],
+  ['false absence', { revision: null, marketing_opt_out: false }],
+  ['enabled absence', { revision: null, marketing_opt_out: null, enabled: true }],
+]) {
+  test('Digest: ' + name + ' cannot authorize enable', async () => {
+    const env = await openDigest(value);
+    assert.equal(digestPhase(env), 'unavailable');
+    env.click(digestButton(env, 'enable')); await env.settle();
+    assert.equal(digestWrites(env).length, 0);
+    assert.equal(digestButton(env, 'disable').hasAttribute('disabled'), false);
+  });
+}
+
+for (const [name, over] of [
+  ['enrollment off', { enrollment_available: false }],
+  ['global opt-out', { marketing_opt_out: true }],
+]) {
+  test('Digest: ' + name + ' blocks only enable, preserving withdrawal', async () => {
+    const env = await openDigest(over);
+    env.click(digestButton(env, 'enable')); await env.settle();
+    assert.equal(digestWrites(env).length, 0);
+    env.click(digestButton(env, 'disable')); await env.settle();
+    assert.deepEqual(digestWrites(env)[0].body, { enabled: false, expected_user_id: DIGEST_A });
+  });
+}
+
+test('Digest: an already-off withdrawal still reaches the server once', async () => {
+  const env = await openDigest();
+  env.click(digestButton(env, 'disable'));
+  env.click(digestButton(env, 'disable'));
+  await env.settle();
+  assert.equal(digestWrites(env).length, 1);
+  env.respond(digestWrites(env)[0], 200, digestState({ revision: DIGEST_R1 }));
+  await env.settle();
+  assert.equal(digestPhase(env), 'saved');
+});
+
+test('Digest: unavailable reads do not disable a new explicit withdrawal', async () => {
+  const env = makeEnv({ user: { id: DIGEST_A, email: ACCT_A.email } });
+  await openSignedIn(env, digestAccount());
+  env.respond(env.pending(DIGEST_PATH)[0], 503, { detail: 'synthetic unavailable' });
+  await env.settle();
+  env.click(digestButton(env, 'disable')); await env.settle();
+  assert.deepEqual(digestWrites(env)[0].body, { enabled: false, expected_user_id: DIGEST_A });
+});
+
+for (const withdrawalReplyFirst of [false, true]) {
+  test('Digest: withdrawal supersedes pending enable, reply order ' + withdrawalReplyFirst, async () => {
+    const env = await openDigest();
+    env.click(digestButton(env, 'enable')); await env.settle();
+    const positive = digestWrites(env)[0];
+    env.click(digestButton(env, 'disable')); await env.settle();
+    const negative = digestWrites(env)[1];
+    assert.ok(negative, 'a pending enable must not prevent withdrawal');
+    const positiveReply = () => env.respond(positive, 200, digestState({ enabled: true, revision: DIGEST_R1 }));
+    const negativeReply = () => env.respond(negative, 200, digestState({ revision: DIGEST_R2 }));
+    (withdrawalReplyFirst ? negativeReply : positiveReply)();
+    await env.settle();
+    (withdrawalReplyFirst ? positiveReply : negativeReply)();
+    await env.settle();
+    assert.equal(digestPhase(env), 'saved');
+    assert.equal(env.q('[data-digest-enabled]')?.getAttribute('data-digest-enabled'), 'false');
+    assert.equal(digestWrites(env).length, 2);
+  });
+}
+
+test('Digest: a late read cannot overwrite an acknowledged withdrawal', async () => {
+  const env = makeEnv({ user: { id: DIGEST_A, email: ACCT_A.email } });
+  await openSignedIn(env, digestAccount());
+  const read = env.pending(DIGEST_PATH)[0];
+  env.click(digestButton(env, 'disable')); await env.settle();
+  env.respond(digestWrites(env)[0], 200, digestState({ revision: DIGEST_R2 }));
+  await env.settle();
+  env.respond(read, 200, digestState({ enabled: true, revision: DIGEST_R0 }));
+  await env.settle();
+  assert.equal(digestPhase(env), 'saved');
+  assert.equal(env.q('[data-digest-enabled]')?.getAttribute('data-digest-enabled'), 'false');
+});
+
+test('Digest: conflict requires a read and fresh click, never automatic replay', async () => {
+  const env = await openDigest();
+  env.click(digestButton(env, 'enable')); await env.settle();
+  env.respond(digestWrites(env)[0], 409, { detail: { state: digestState({ revision: DIGEST_R1 }) } });
+  await env.settle();
+  assert.equal(digestPhase(env), 'conflict');
+  assert.equal(digestWrites(env).length, 1);
+  assert.equal(env.requests(DIGEST_PATH).length, 1);
+  env.click(digestButton(env, 'refresh')); await env.settle();
+  env.respond(env.pending(DIGEST_PATH)[0], 200, digestState({ revision: DIGEST_R2 }));
+  await env.settle();
+  assert.equal(digestWrites(env).length, 1);
+  env.click(digestButton(env, 'enable')); await env.settle();
+  assert.equal(digestWrites(env).length, 2);
+  assert.equal(digestWrites(env)[1].body.expected_revision, DIGEST_R2);
+});
+
+test('Digest: a failed mutation stays unconfirmed after a later status read', async () => {
+  const env = await openDigest();
+  env.click(digestButton(env, 'enable')); await env.settle();
+  env.fail(digestWrites(env)[0]); await env.settle();
+  assert.equal(digestPhase(env), 'unconfirmed');
+  assert.match(digestMessage(env), /couldn.t confirm/i);
+  env.click(digestButton(env, 'refresh')); await env.settle();
+  env.respond(env.pending(DIGEST_PATH)[0], 200, digestState({ revision: DIGEST_R2 }));
+  await env.settle();
+  assert.equal(digestPhase(env), 'ready');
+  assert.match(digestMessage(env), /couldn.t confirm/i, 'a GET cannot confirm the earlier attempt');
+  assert.doesNotMatch(digestMessage(env), /Saved/);
+  assert.equal(digestWrites(env).length, 1);
+});
+
+test('Digest: a timed-out mutation is not retried or reported saved', async () => {
+  const env = await openDigest();
+  env.click(digestButton(env, 'disable')); await env.settle();
+  await env.advance(30000);
+  assert.equal(digestPhase(env), 'unconfirmed');
+  assert.equal(digestWrites(env).length, 1);
+  assert.doesNotMatch(digestMessage(env), /Saved/);
+});
+
+for (const [name, over] of [
+  ['unchanged revision', { enabled: true, revision: DIGEST_R0 }],
+  ['wrong subject', { enabled: true, revision: DIGEST_R1, user_id: DIGEST_B }],
+  ['wrong choice', { enabled: false, revision: DIGEST_R1 }],
+  ['missing revision', { enabled: true, revision: undefined }],
+  ['malformed global veto', { enabled: true, revision: DIGEST_R1, marketing_opt_out: null }],
+]) {
+  test('Digest: malformed success (' + name + ') remains unconfirmed', async () => {
+    const env = await openDigest();
+    env.click(digestButton(env, 'enable')); await env.settle();
+    env.respond(digestWrites(env)[0], 200, digestState(over));
+    await env.settle();
+    assert.equal(digestPhase(env), 'unconfirmed');
+    assert.doesNotMatch(digestMessage(env), /Saved/);
+    assert.equal(digestWrites(env).length, 1);
+  });
+}
+
+async function switchDigestAccount(env) {
+  env.authEvent('SIGNED_IN', { id: DIGEST_B, email: ACCT_B.email });
+  await env.settle();
+  env.respond(env.pending('/api/account')[0], 200, { ...ACCT_B, id: DIGEST_B, user_id: DIGEST_B });
+  await env.settle();
+  env.respond(env.pending(PREFS)[0], 200, { prefs: {}, unset: [] });
+  await env.settle();
+}
+
+test('Digest: an account switch discards the prior account read and revision', async () => {
+  const env = makeEnv({ user: { id: DIGEST_A, email: ACCT_A.email } });
+  await openSignedIn(env, digestAccount());
+  const oldRead = env.pending(DIGEST_PATH)[0];
+  await switchDigestAccount(env);
+  const newRead = env.pending(DIGEST_PATH).find((x) => x !== oldRead);
+  env.respond(newRead, 200, digestState({ user_id: DIGEST_B, revision: DIGEST_R2 }));
+  await env.settle();
+  env.respond(oldRead, 200, digestState({ enabled: true, revision: DIGEST_R1 }));
+  await env.settle();
+  env.click(digestButton(env, 'enable')); await env.settle();
+  assert.deepEqual(digestWrites(env)[0].body, {
+    enabled: true, expected_revision: DIGEST_R2, expected_user_id: DIGEST_B,
+  });
+});
+
+test('Digest: delayed token acquisition cannot retarget the observed account assertion', async () => {
+  const env = await openDigest({ revision: null, marketing_opt_out: null });
+  const originalClient = env.win.MDXAuth.client;
+  let releaseClient;
+  env.win.MDXAuth.client = () => new Promise((resolve) => { releaseClient = resolve; });
+  env.click(digestButton(env, 'enable')); await env.settle();
+  assert.equal(digestWrites(env).length, 0);
+  env.win.MDXAuth.client = originalClient;
+  await switchDigestAccount(env);
+  env.respond(env.pending(DIGEST_PATH)[0], 200, digestState({ user_id: DIGEST_B, revision: DIGEST_R2 }));
+  await env.settle();
+  releaseClient({ auth: { getSession: () => Promise.resolve({
+    data: { session: { access_token: 'fictional-new-account-token' } },
+  }) } });
+  await env.settle();
+  const stale = digestWrites(env)[0];
+  assert.equal(stale.headers.Authorization, 'Bearer fictional-new-account-token');
+  assert.deepEqual(stale.body, { enabled: true, expected_revision: null, expected_user_id: DIGEST_A });
+  // The API's real ASGI tests separately prove this subject mismatch performs no store call.
+  env.respond(stale, 409, { detail: { code: 'digest_account_changed' } });
+  await env.settle();
+  assert.equal(digestPhase(env), 'ready');
+  assert.equal(env.q('[data-digest-enabled]')?.getAttribute('data-digest-enabled'), 'false');
+});
+
+test('Digest: an explicit account mismatch requires the existing account reload', async () => {
+  const env = await openDigest();
+  env.click(digestButton(env, 'disable')); await env.settle();
+  env.respond(digestWrites(env)[0], 409, { detail: { code: 'digest_account_changed' } });
+  await env.settle();
+  assert.equal(digestPhase(env), 'account_changed');
+  env.click(digestButton(env, 'enable')); env.click(digestButton(env, 'disable'));
+  await env.settle();
+  assert.equal(digestWrites(env).length, 1);
+  env.click(digestButton(env, 'refresh')); await env.settle();
+  assert.equal(env.pending('/api/account').length, 1);
+});
+
+test('Digest: close and reopen preserve an unconfirmed choice without replay', async () => {
+  const env = await openDigest();
+  env.click(digestButton(env, 'enable')); await env.settle();
+  env.fail(digestWrites(env)[0]); await env.settle();
+  await escClose(env); await reopen(env);
+  assert.equal(digestPhase(env), 'unconfirmed');
+  assert.equal(digestWrites(env).length, 1);
+  assert.equal(env.requests(DIGEST_PATH).length, 1);
+});
+
+test('Digest: Chinese renders the same consent actions and uncertainty in Chinese', async () => {
+  const env = await openDigest({}, { lang: 'zh' });
+  assert.equal(digestButton(env, 'enable').textContent, '开启');
+  assert.equal(digestButton(env, 'disable').textContent, '关闭');
+  env.click(digestButton(env, 'enable')); await env.settle();
+  env.fail(digestWrites(env)[0]); await env.settle();
+  assert.match(digestMessage(env), /无法确认/);
+  assert.doesNotMatch(digestMessage(env), /Saved|unconfirmed|couldn.t confirm/i);
+});
+
+test('Digest: an anonymous account never loads or changes a digest preference', async () => {
+  const env = makeEnv({ user: null });
+  await openWith(env, 401, { detail: 'Not authenticated' });
+  assert.equal(env.requests(DIGEST_PATH).length, 0);
+  assert.equal(digestWrites(env).length, 0);
+  assert.equal(digestButton(env, 'enable'), null);
+});
+
+
+test('Digest: an unconfirmed withdrawal blocks enables and repeat withdrawals after status refresh', async () => {
+  const env = await openDigest({ enabled: true });
+  env.click(digestButton(env, 'disable')); await env.settle();
+  env.fail(digestWrites(env)[0]); await env.settle();
+  env.click(digestButton(env, 'refresh')); await env.settle();
+  env.respond(env.pending(DIGEST_PATH)[0], 200, digestState({ revision: DIGEST_R1 }));
+  await env.settle();
+  assert.equal(digestPhase(env), 'ready');
+  assert.match(digestMessage(env), /couldn.t confirm/i);
+  env.click(digestButton(env, 'enable'));
+  env.click(digestButton(env, 'disable'));
+  await env.settle();
+  assert.equal(digestWrites(env).length, 1, 'a GET cannot settle the outstanding unconditional withdrawal');
+});
+
+test('Digest: a new confirmed withdrawal fences an uncertain older enable', async () => {
+  const env = await openDigest();
+  env.click(digestButton(env, 'enable')); await env.settle();
+  env.fail(digestWrites(env)[0]); await env.settle();
+  env.click(digestButton(env, 'refresh')); await env.settle();
+  env.respond(env.pending(DIGEST_PATH)[0], 200, digestState({ revision: DIGEST_R0 }));
+  await env.settle();
+  env.click(digestButton(env, 'enable')); await env.settle();
+  assert.equal(digestWrites(env).length, 1);
+  env.click(digestButton(env, 'disable')); await env.settle();
+  env.respond(digestWrites(env)[1], 200, digestState({ revision: DIGEST_R2 }));
+  await env.settle();
+  assert.equal(digestPhase(env), 'saved');
+  env.click(digestButton(env, 'enable')); await env.settle();
+  assert.equal(digestWrites(env).length, 3);
+  assert.equal(digestWrites(env)[2].body.expected_revision, DIGEST_R2);
+});

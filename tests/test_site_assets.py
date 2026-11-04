@@ -325,3 +325,64 @@ def test_actual_emitted_bundle_is_valid_javascript(tmp_path):
     emitted = site_assets.emit_theme_js(TEMPLATES / "theme.js")
     candidate = tmp_path / "theme.js"; candidate.write_text(emitted)
     subprocess.run(["node", "--check", str(candidate)], capture_output=True, text=True, check=True)
+
+
+# Dynamic account loading and direct HTML tags must share the emitted payload key.
+def test_account_dependency_key_matches_final_copied_payload(tmp_path: Path) -> None:
+    import hashlib
+    site_assets.copy_asset("account.js", TEMPLATES / "account.js", tmp_path)
+    site_assets.copy_asset("theme.js", TEMPLATES / "theme.js", tmp_path)
+    expected = hashlib.sha256((tmp_path / "account.js").read_bytes()).hexdigest()[:8]
+    emitted = (tmp_path / "theme.js").read_text()
+    assert site_assets.account_version(TEMPLATES / "theme.js") == expected
+    assert 'accountVersion="' + expected + '"' in emitted
+    assert site_assets.ACCOUNT_VER_TOKEN not in emitted
+    assert "account.js?v=20261101-expectation-surface-nav" not in emitted
+
+
+def test_account_only_change_advances_dynamic_loader_key_without_manual_release_edit(tmp_path: Path) -> None:
+    source = tmp_path / "templates"
+    output = tmp_path / "site"
+    source.mkdir()
+    output.mkdir()
+    theme = source / "theme.js"
+    theme.write_text("var accountVersion=" + site_assets.ACCOUNT_VER_TOKEN + ";")
+    account = source / "account.js"
+    account.write_text("window.example=1;\n")
+    site_assets.copy_asset("account.js", account, output)
+    site_assets.copy_asset("theme.js", theme, output)
+    before = (output / "theme.js").read_bytes()
+    account.write_text("window.example=2;\n")
+    site_assets.copy_asset("account.js", account, output)
+    site_assets.copy_asset("theme.js", theme, output)
+    after = (output / "theme.js").read_bytes()
+    assert after != before
+    site_assets.copy_asset("account.js", account, output)
+    site_assets.copy_asset("theme.js", theme, output)
+    assert (output / "theme.js").read_bytes() == after
+
+
+def test_account_key_uses_normalized_emitted_bytes_not_raw_source_bytes(tmp_path: Path) -> None:
+    import hashlib
+    source = tmp_path / "templates"
+    output = tmp_path / "site"
+    source.mkdir()
+    output.mkdir()
+    theme = source / "theme.js"
+    theme.write_text("var accountVersion=" + site_assets.ACCOUNT_VER_TOKEN + ";")
+    account = source / "account.js"
+    account.write_bytes("// 投资组合\r\nwindow.example=1;\r\n".encode("utf-8"))
+    site_assets.copy_asset("account.js", account, output)
+    site_assets.copy_asset("theme.js", theme, output)
+    served = (output / "account.js").read_bytes()
+    assert b"\r" not in served
+    expected = hashlib.sha256(served).hexdigest()[:8]
+    assert site_assets.account_version(theme) == expected
+    assert 'accountVersion="' + expected + '"' in (output / "theme.js").read_text()
+
+
+def test_missing_account_dependency_falls_back_to_unversioned_request(tmp_path: Path) -> None:
+    theme = tmp_path / "theme.js"
+    theme.write_text("var accountVersion=" + site_assets.ACCOUNT_VER_TOKEN + ";")
+    assert site_assets.account_version(theme) == ""
+    assert site_assets.emit_theme_js(theme) == 'var accountVersion="";'

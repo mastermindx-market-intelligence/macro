@@ -229,6 +229,9 @@ class PortfolioDigestChoice(BaseModel):
     # Explicit null means the client observed no email_prefs row. Omission cannot
     # authorize an enable; a server-side refresh would rebase an older intent.
     expected_revision: StrictStr | None = None
+    # Optional assertion for a displayed account, never a caller-selected target.
+    # It also fences an account switch while the browser awaits its auth token.
+    expected_user_id: StrictStr | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -272,13 +275,18 @@ _DIGEST_PREF_FIELDS = "user_id,portfolio_digest_opt_in,marketing_opt_out,portfol
 _DIGEST_PRIVATE = {"Cache-Control": "private, no-store"}
 
 
+def _digest_client_state(uid: str, state: dict) -> dict:
+    return {**state, "user_id": uid,
+            "enrollment_available": os.environ.get("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED") == "1"}
+
+
 @router.get("/api/account/prefs/portfolio-digest")
 def get_portfolio_digest_choice(response: Response, user: dict = Depends(_current_user)) -> dict:
     response.headers["Cache-Control"] = "private, no-store"
     uid = _digest_actor(user)
     try:
         rows = _digest_pref_store("GET", f"email_prefs?user_id=eq.{uid}&select={_DIGEST_PREF_FIELDS}")
-        return _digest_pref_state(uid, rows)
+        return _digest_client_state(uid, _digest_pref_state(uid, rows))
     except Exception:
         raise HTTPException(503, "Digest preference unavailable", headers=_DIGEST_PRIVATE) from None
 
@@ -288,6 +296,15 @@ def set_portfolio_digest_choice(body: PortfolioDigestChoice, response: Response,
                                 user: dict = Depends(_current_user)) -> dict:
     response.headers["Cache-Control"] = "private, no-store"
     uid = _digest_actor(user)
+    if "expected_user_id" in body.model_fields_set:
+        try:
+            observed_uid = _digest_revision(body.expected_user_id)
+        except (ValueError, TypeError, AttributeError):
+            raise HTTPException(422, "Invalid observed account", headers=_DIGEST_PRIVATE) from None
+        if observed_uid != uid:
+            raise HTTPException(409, {"code": "digest_account_changed",
+                                      "message": "Your signed-in account changed. Reload account settings."},
+                                headers=_DIGEST_PRIVATE)
     expected = None
     if body.enabled:
         if os.environ.get("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED") != "1":
@@ -331,6 +348,7 @@ def set_portfolio_digest_choice(body: PortfolioDigestChoice, response: Response,
         raise HTTPException(503, "Digest preference change unconfirmed",
                             headers=_DIGEST_PRIVATE) from None
 
+    state = _digest_client_state(uid, state)
     if result["status"] == "stale_revision":
         raise HTTPException(409, {"message": "Digest preference changed. Refresh before enabling.",
                                   "state": state}, headers=_DIGEST_PRIVATE)

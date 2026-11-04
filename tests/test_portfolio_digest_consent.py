@@ -102,7 +102,8 @@ def test_get_exposes_only_exact_account_revision_and_private_cache(client, monke
     calls = install(monkeypatch, [row(marketing_opt_out=True)])
     response = client.get(PATH)
     assert response.status_code == 200
-    assert response.json() == {"enabled": False, "marketing_opt_out": True, "revision": R0}
+    assert response.json() == {"enabled": False, "marketing_opt_out": True, "revision": R0,
+                               "user_id": UID, "enrollment_available": True}
     assert response.headers["cache-control"] == "private, no-store"
     assert calls == [("GET", f"email_prefs?user_id=eq.{UID}&select={prefs._DIGEST_PREF_FIELDS}", {})]
 
@@ -110,7 +111,8 @@ def test_get_exposes_only_exact_account_revision_and_private_cache(client, monke
 def test_absent_row_is_explicit_observation_not_an_implicit_enable(client, monkeypatch):
     calls = install(monkeypatch, [])
     response = client.get(PATH)
-    assert response.json() == {"enabled": False, "marketing_opt_out": None, "revision": None}
+    assert response.json() == {"enabled": False, "marketing_opt_out": None, "revision": None,
+                               "user_id": UID, "enrollment_available": True}
     response = client.put(PATH, json={"enabled": True})
     assert response.status_code == 409 and len(calls) == 1
     calls = install(monkeypatch, applied(True))
@@ -124,7 +126,8 @@ def test_enable_binds_the_received_revision_without_a_server_refresh(client, mon
     calls = install(monkeypatch, applied(True, marketing_opt_out=True))
     response = client.put(PATH, json={"enabled": True, "expected_revision": R0})
     assert response.status_code == 200
-    assert response.json() == {"enabled": True, "marketing_opt_out": True, "revision": R1}
+    assert response.json() == {"enabled": True, "marketing_opt_out": True, "revision": R1,
+                               "user_id": UID, "enrollment_available": True}
     assert len(calls) == 1 and calls[0][0] == "POST"
     assert calls[0][2]["body"] == {"p_user_id": UID, "p_enabled": True, "p_expected_revision": R0}
 
@@ -224,3 +227,65 @@ def test_anonymous_actor_cannot_choose_a_target_account(client, monkeypatch):
     client.app.dependency_overrides[prefs._current_user] = lambda: {}
     response = client.put(PATH, json={"enabled": True, "expected_revision": R0})
     assert response.status_code == 401 and not calls
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_observed_subject_cannot_mutate_a_different_authenticated_account(client, monkeypatch, enabled):
+    calls = install(monkeypatch, applied(enabled))
+    response = client.put(PATH, json={"enabled": enabled, "expected_revision": None,
+                                     "expected_user_id": OTHER})
+    assert response.status_code == 409
+    assert response.json()["detail"]["code"] == "digest_account_changed"
+    assert calls == [], "the observed account is an assertion, never a target override"
+    assert response.headers["cache-control"] == "private, no-store"
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_observed_subject_matching_auth_retains_one_owner_rpc(client, monkeypatch, enabled):
+    calls = install(monkeypatch, applied(enabled))
+    response = client.put(PATH, json={"enabled": enabled, "expected_revision": R0,
+                                     "expected_user_id": UID})
+    assert response.status_code == 200
+    assert response.json()["user_id"] == UID
+    assert response.json()["enrollment_available"] is True
+    assert len(calls) == 1 and calls[0][2]["body"]["p_user_id"] == UID
+
+
+@pytest.mark.parametrize("subject", [None, "", "not-a-uuid", "AAAAAAAA-0000-4000-8000-000000000101", 1, True, {}, []])
+def test_observed_subject_must_be_explicit_canonical_uuid_when_supplied(client, monkeypatch, subject):
+    calls = install(monkeypatch, applied(False))
+    response = client.put(PATH, json={"enabled": False, "expected_user_id": subject})
+    assert response.status_code == 422
+    assert calls == []
+
+
+@pytest.mark.parametrize("flag,available", [(None, False), ("0", False), ("true", False), ("1", True)])
+def test_client_view_binds_actor_and_existing_enrollment_availability(client, monkeypatch, flag, available):
+    if flag is None:
+        monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+    else:
+        monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", flag)
+    calls = install(monkeypatch, [row(False, R0, marketing_opt_out=True)])
+    response = client.get(PATH)
+    assert response.status_code == 200
+    assert response.json() == {"enabled": False, "marketing_opt_out": True, "revision": R0,
+                               "user_id": UID, "enrollment_available": available}
+    assert len(calls) == 1 and calls[0][0] == "GET"
+
+
+def test_observed_subject_withdrawal_stays_available_with_enrollment_off(client, monkeypatch):
+    monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
+    calls = install(monkeypatch, applied(False))
+    response = client.put(PATH, json={"enabled": False, "expected_user_id": UID})
+    assert response.status_code == 200
+    assert response.json()["enrollment_available"] is False
+    assert len(calls) == 1
+
+
+def test_observed_subject_lost_reply_is_not_replayed(client, monkeypatch):
+    calls = install(monkeypatch, RuntimeError("synthetic lost committed response"))
+    response = client.put(PATH, json={"enabled": True, "expected_revision": R0,
+                                     "expected_user_id": UID})
+    assert response.status_code == 503
+    assert response.json()["detail"] == "Digest preference change unconfirmed"
+    assert len(calls) == 1

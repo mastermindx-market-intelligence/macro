@@ -1,0 +1,39 @@
+{
+  "base": "7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3",
+  "tests_only": true,
+  "runs": [
+    {
+      "name": "api",
+      "command": [
+        "/tmp/clear-workstream-blockers-20261103-test-venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_portfolio_digest_consent.py",
+        "-k",
+        "observed_subject or client_view",
+        "-q",
+        "--basetemp=/tmp/cwb10597-client-api-red-1104-pytest",
+        "--junitxml=/tmp/cwb10597-client-api-red-1104.xml"
+      ],
+      "exit": 1,
+      "seconds": 7.59,
+      "log": "/tmp/cwb10597-client-api-red-1104.log",
+      "log_sha256": "1f2b2512ab4531eabe8c278213d81b2c81318c9a8a904dd9c8bae51159da9979",
+      "tail": "ect_lost_reply_is_not_replayed _______________\n\nclient = <tests.test_portfolio_digest_consent._AsgiClient object at 0x10d3b51f0>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d35c290>\n\n    def test_observed_subject_lost_reply_is_not_replayed(client, monkeypatch):\n        calls = install(monkeypatch, RuntimeError(\"synthetic lost committed response\"))\n        response = client.put(PATH, json={\"enabled\": True, \"expected_revision\": R0,\n                                         \"expected_user_id\": UID})\n>       assert response.status_code == 503\nE       assert 422 == 503\nE        +  where 422 = <tests.test_portfolio_digest_consent._Response object at 0x10d3b6090>.status_code\n\ntests/test_portfolio_digest_consent.py:289: AssertionError\n\nNOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_portfolio_digest_consent.py::test_observed_subject_cannot_mutate_a_different_authenticated_account[False]\nFAILED tests/test_portfolio_digest_consent.py::test_observed_subject_cannot_mutate_a_different_authenticated_account[True]\nFAILED tests/test_portfolio_digest_consent.py::test_observed_subject_matching_auth_retains_one_owner_rpc[False]\nFAILED tests/test_portfolio_digest_consent.py::test_observed_subject_matching_auth_retains_one_owner_rpc[True]\nFAILED tests/test_portfolio_digest_consent.py::test_client_view_binds_actor_and_existing_enrollment_availability[None-False]\nFAILED tests/test_portfolio_digest_consent.py::test_client_view_binds_actor_and_existing_enrollment_availability[0-False]\nFAILED tests/test_portfolio_digest_consent.py::test_client_view_binds_actor_and_existing_enrollment_availability[true-False]\nFAILED tests/test_portfolio_digest_consent.py::test_client_view_binds_actor_and_existing_enrollment_availability[1-True]\nFAILED tests/test_portfolio_digest_consent.py::test_observed_subject_withdrawal_stays_available_with_enrollment_off\nFAILED tests/test_portfolio_digest_consent.py::test_observed_subject_lost_reply_is_not_replayed\n10 failed, 8 passed, 36 deselected in 5.84s\n"
+    },
+    {
+      "name": "client",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-name-pattern=Digest:",
+        "tests/js/account_continuity.test.mjs"
+      ],
+      "exit": 1,
+      "seconds": 0.59,
+      "log": "/tmp/cwb10597-client-client-red-1104.log",
+      "log_sha256": "e15dfc934f92ed10e53a4184c5c027aaf150d822cf7ccaedf8712484b51e80be",
+      "tail": "tream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1485:15)\n      at async Test.run (node:internal/test_runner/test:1389:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: undefined,\n    expected: true,\n    operator: '==',\n    diff: 'simple'\n  }\n\ntest at tests/js/account_continuity.test.mjs:1497:1\n\u2716 Digest: close and reopen preserve an unconfirmed choice without replay (10.153916ms)\n  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference\n      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)\n      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1498:15)\n      at async Test.run (node:internal/test_runner/test:1389:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: undefined,\n    expected: true,\n    operator: '==',\n    diff: 'simple'\n  }\n\ntest at tests/js/account_continuity.test.mjs:1507:1\n\u2716 Digest: Chinese renders the same consent actions and uncertainty in Chinese (8.659583ms)\n  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference\n      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)\n      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1508:15)\n      at async Test.run (node:internal/test_runner/test:1389:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: undefined,\n    expected: true,\n    operator: '==',\n    diff: 'simple'\n  }\n"
+    }
+  ]
+}

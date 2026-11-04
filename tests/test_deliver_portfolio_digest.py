@@ -214,7 +214,8 @@ def test_authenticated_choice_and_two_account_nights_feed_the_digest(estate, mon
                 expected_revision=pref["portfolio_digest_revision"] if value else None),
             response, {"id": UID})
     assert save(True) == {"enabled": True, "marketing_opt_out": False,
-                          "revision": pref["portfolio_digest_revision"]}
+                          "revision": pref["portfolio_digest_revision"],
+                          "user_id": UID, "enrollment_available": True}
     assert response.headers["Cache-Control"] == "private, no-store"
     assert account_prefs.get_portfolio_digest_choice(response, {"id": UID})["enabled"]
 
@@ -332,7 +333,8 @@ def test_consent_readback_is_per_account_and_preserves_global_opt_out(monkeypatc
     assert prefs.set_portfolio_digest_choice(prefs.PortfolioDigestChoice(enabled=False),
                                              Response(), {"id": UID})["enabled"] is False
     assert prefs.get_portfolio_digest_choice(Response(), {"id": other}) == {
-        "enabled": True, "marketing_opt_out": True, "revision": revision}
+        "enabled": True, "marketing_opt_out": True, "revision": revision,
+        "user_id": other, "enrollment_available": False}
     def schema_missing(*args, **kwargs):
         raise RuntimeError("column unavailable")
     monkeypatch.setattr(prefs, "_digest_pref_store", schema_missing)

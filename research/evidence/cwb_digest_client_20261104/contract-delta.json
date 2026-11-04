@@ -1,0 +1,17 @@
+{
+  "base": "7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3",
+  "candidate_tree": "274e7371058440239852a8b818e0ee08e0f088f2",
+  "command": [
+    "/tmp/clear-workstream-blockers-20261103-test-venv/bin/python",
+    "scripts/check_contract_delta.py",
+    "--base",
+    "7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3"
+  ],
+  "exit": 0,
+  "seconds": 718.98,
+  "log": "/tmp/cwb10597-client-contract-delta-1104.log",
+  "log_sha256": "9ad986aec4ee05830a9836af12bb47d8223bb29fd50c01c18df67a8c1f3a567a",
+  "source_hashes_preserved": true,
+  "candidate_receipt_sha256": "36c52c312d46ff5bcf3f095d01374b8d116bed71aaf2543995726fdbce953c86",
+  "tail": "contract-delta: probe templates/index.html: head 136 jobs / 5,848 s / 10 packs; base 136 jobs / 5,848 s / 10 packs; ceilings 137 / 5,886 / 10\ncontract-delta: probe scripts/build_free_content.py: head 137 jobs / 5,877 s / 10 packs; base 137 jobs / 5,877 s / 10 packs; ceilings 138 / 5,877 / 10\ncontract-delta: probe engine/prophet/plan_book.py: head 129 jobs / 5,600 s / 10 packs; base 129 jobs / 5,600 s / 10 packs; ceilings 130 / 5,636 / 10\ncontract-delta: head census seconds: closure_and_suites 407.3, probes 84.2, skip_only 27.5, trigger_gaps 78.7\ncontract-delta: base census seconds: closure_and_suites 392.4, probes 83.5, skip_only 28.3, trigger_gaps 76.0\ncontract-delta: 0 introduced, 0 inherited (base 7b3a8d4049fa)\ncontract-delta: wall 684.5 s"
+}

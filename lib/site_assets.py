@@ -29,11 +29,12 @@ from pathlib import Path
 from lib import config
 
 # The literal tokens emitted by templates/theme.js; kept in sync with that file.
-# Both are comment-prefixed literals, so an UNBAKED theme.js is still valid JS
+# These are comment-prefixed literals, so an UNBAKED theme.js is still valid JS
 # that degrades to a disabled account system / an unversioned bundle request
 # rather than a syntax error taking the whole shared script down.
 SUPABASE_TOKEN = "/*__SUPABASE_CFG__*/null"
 MM_BRAIN_VER_TOKEN = "/*__MM_BRAIN_VER__*/''"
+ACCOUNT_VER_TOKEN = "/*__ACCOUNT_VER__*/''"
 
 
 def project_ref(url: str) -> str:
@@ -117,10 +118,24 @@ def mm_brain_version(src: Path) -> str:
         return ""
 
 
+def account_version(src: Path) -> str:
+    """Hash the UTF-8/LF account payload emitted by the existing copy owner.
+
+    Direct HTML and the dynamic loader share one cache key. Missing local/custom
+    inputs produce an unversioned request rather than retaining a stale key.
+    """
+    try:
+        payload = src.with_name("account.js").read_text().encode("utf-8")
+        return hashlib.sha256(payload).hexdigest()[:8]
+    except OSError:
+        return ""
+
+
 def emit_theme_js(src: Path) -> str:
     """Build the exact ``theme.js`` bytes served by production."""
     text = bake_theme_js(src.read_text())
     text = text.replace(MM_BRAIN_VER_TOKEN, json.dumps(mm_brain_version(src)))
+    text = text.replace(ACCOUNT_VER_TOKEN, json.dumps(account_version(src)))
     overlay_src = src.with_name("terminal_overlay.js")
     if overlay_src.exists():
         text = f"{text.rstrip()}\n\n{overlay_src.read_text().lstrip()}"

@@ -1,0 +1,6 @@
+........................................................................ [ 54%]
+....................s......s................................             [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_asset_stamp_lane_order.py:141: weekly.yml has no post-rebase heal block (minimal push loop)
+SKIPPED [1] tests/test_asset_stamp_lane_order.py:163: weekly.yml has no post-rebase heal block (minimal push loop)
+130 passed, 2 skipped in 10.90s

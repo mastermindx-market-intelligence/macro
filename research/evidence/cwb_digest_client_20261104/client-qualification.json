@@ -1,0 +1,47 @@
+{
+  "base": "7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3",
+  "runs": [
+    {
+      "label": "node",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "tests/js/account_get_token.test.mjs",
+        "tests/js/account_continuity.test.mjs"
+      ],
+      "exit": 0,
+      "seconds": 2.81,
+      "log": "/tmp/cwb10597-client-node-1104.log",
+      "log_sha256": "79ae9bd5b35df9f7ff56bc13e45110562469049abb95bfa411de04a8d2c1dbf0",
+      "tail": "n and shows it (11.525875ms)\n\u2714 S1-04 red: a double click sends one revocation request (17.899958ms)\n\u2714 S1-04 red: ZH unknown copy after a server failure (10.303417ms)\n\u2714 S1-04 positive: local sign-out stays a separate, labelled action (9.845208ms)\n\u2714 S1-01 red: a SIGNED_IN under a different user id with the same email drops the pending save and re-reads (7.308667ms)\n\u2714 S1-03 red: a same-id SIGNED_IN with a changed email neither drops the save nor re-reads (6.886375ms)\n\u2714 S1-01 positive: an account read without an id still keys the fence by email (7.497ms)\n\u2714 S1-03 positive: the panel copies the stable user id (10.709334ms)\n\u2714 S1-03 red: an account read that never answers times out into the unavailable state (7.336292ms)\n\u2714 S1-03 positive: a read answered in time is not aborted later (8.213291ms)\n\u2714 S1-01 red: a pref save that never answers times out as failed (9.962334ms)\n\u2714 S1-02 red: a tz save that never answers times out and reverts to the server copy (11.568375ms)\n\u2714 S1-04 red: a revocation that never answers is not confirmed (6.353291ms)\n\u2714 S1-01 red: MMAccount.claimsPref owns theme/lang only for a loaded signed-in account (6.534042ms)\n\u2714 S1-03 red: claimsPref is false while the account is unavailable or anonymous (3.701459ms)\n\u2714 S1-01 red: claimsPref releases theme/lang during the sign-in pref apply and reclaims after (5.151084ms)\n\u2714 Digest: the signed-in account reads its canonical preference without writing (15.705ms)\n\u2714 Digest: enable sends exactly the displayed revision and observed account (62.861833ms)\n\u2714 Digest: a valid absent observation is sent as explicit null (23.184416ms)\n\u2714 Digest: missing revision cannot authorize enable (30.864541ms)\n\u2714 Digest: malformed revision cannot authorize enable (20.91ms)\n\u2714 Digest: wrong subject cannot authorize enable (13.167625ms)\n\u2714 Digest: nonliteral enabled cannot authorize enable (11.49725ms)\n\u2714 Digest: nonliteral global veto cannot authorize enable (22.427458ms)\n\u2714 Digest: missing availability cannot authorize enable (14.421958ms)\n\u2714 Digest: nonliteral availability cannot authorize enable (15.214416ms)\n\u2714 Digest: false absence cannot authorize enable (16.639959ms)\n\u2714 Digest: enabled absence cannot authorize enable (23.836042ms)\n\u2714 Digest: enrollment off blocks only enable, preserving withdrawal (42.547416ms)\n\u2714 Digest: global opt-out blocks only enable, preserving withdrawal (32.49125ms)\n\u2714 Digest: an already-off withdrawal still reaches the server once (41.3675ms)\n\u2714 Digest: unavailable reads do not disable a new explicit withdrawal (28.3975ms)\n\u2714 Digest: withdrawal supersedes pending enable, reply order false (47.472917ms)\n\u2714 Digest: withdrawal supersedes pending enable, reply order true (54.737542ms)\n\u2714 Digest: a late read cannot overwrite an acknowledged withdrawal (16.671209ms)\n\u2714 Digest: conflict requires a read and fresh click, never automatic replay (34.912541ms)\n\u2714 Digest: a failed mutation stays unconfirmed after a later status read (49.9865ms)\n\u2714 Digest: a timed-out mutation is not retried or reported saved (34.161834ms)\n\u2714 Digest: malformed success (unchanged revision) remains unconfirmed (24.620084ms)\n\u2714 Digest: malformed success (wrong subject) remains unconfirmed (29.945125ms)\n\u2714 Digest: malformed success (wrong choice) remains unconfirmed (36.695041ms)\n\u2714 Digest: malformed success (missing revision) remains unconfirmed (39.593375ms)\n\u2714 Digest: malformed success (malformed global veto) remains unconfirmed (30.383458ms)\n\u2714 Digest: an account switch discards the prior account read and revision (29.741208ms)\n\u2714 Digest: delayed token acquisition cannot retarget the observed account assertion (53.703333ms)\n\u2714 Digest: an explicit account mismatch requires the existing account reload (35.671292ms)\n\u2714 Digest: close and reopen preserve an unconfirmed choice without replay (30.106ms)\n\u2714 Digest: Chinese renders the same consent actions and uncertainty in Chinese (29.415958ms)\n\u2714 Digest: an anonymous account never loads or changes a digest preference (6.942541ms)\n\u2714 Digest: an unconfirmed withdrawal blocks enables and repeat withdrawals after status refresh (50.17975ms)\n\u2714 Digest: a new confirmed withdrawal fences an uncertain older enable (65.539708ms)\n\u2714 getToken awaits MDXAuth.client() Promise and resolves the session token (2.226208ms)\n\u2714 getToken returns null when MDXAuth.client() rejects, and never throws (0.526584ms)\n\u2714 getToken returns null when MDXAuth.client is missing, and never throws (0.419041ms)\n\u2139 tests 102\n\u2139 suites 0\n\u2139 pass 102\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 2597.310333\n"
+    },
+    {
+      "label": "owner",
+      "command": [
+        "/tmp/clear-workstream-blockers-20261103-test-venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_billing_emails.py",
+        "tests/test_deliver_portfolio_digest.py",
+        "tests/test_portfolio_digest_consent.py",
+        "tests/test_portfolio_digest_consent_postgres.py",
+        "-q",
+        "-ra",
+        "--basetemp=/tmp/cwb10597-client-owner-1104-pytest",
+        "--junitxml=/tmp/cwb10597-client-owner-1104.xml"
+      ],
+      "exit": 0,
+      "seconds": 44.73,
+      "log": "/tmp/cwb10597-client-owner-1104.log",
+      "log_sha256": "482bc0b4c33919b4383487a58f2ca0f5e88ee60a9c61eae0f31e07a955fdfe7a",
+      "tail": "........................................................................ [ 34%]\n........................................................................ [ 69%]\n................................................................         [100%]\n208 passed in 41.70s\n"
+    }
+  ],
+  "source_sha256": {
+    "app/account_prefs.py": "98d6582d112330077ad68018672b45be9a0a2a9aea889ed6d3205571b2962631",
+    "templates/account.js": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+    "tests/js/account_continuity.test.mjs": "97b4300246c2b54781643b3cdb79d7df8b3b3e18de30ef8a7051124260ffaa65",
+    "tests/test_portfolio_digest_consent.py": "27f810b85ae394006f51bae66bc4a7bc3e2eedc54f56b90ee4a4096b127619fc",
+    "tests/test_deliver_portfolio_digest.py": "5a16c7ce5fa15e0180cff029ac6bfb8bc0850134a732e24d40db01e7f086636e"
+  }
+}

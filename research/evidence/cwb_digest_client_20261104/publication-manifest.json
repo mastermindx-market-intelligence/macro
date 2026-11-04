@@ -1,0 +1,180 @@
+{
+  "base": "7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3",
+  "qualified_implementation_tree": "274e7371058440239852a8b818e0ee08e0f088f2",
+  "implementation_path_count": 13982,
+  "implementation_hash_manifest": "candidate.json.gz",
+  "implementation_hash_manifest_uncompressed_sha256": "36c52c312d46ff5bcf3f095d01374b8d116bed71aaf2543995726fdbce953c86",
+  "source_hashes_preserved": true,
+  "evidence": {
+    "client-red.json": {
+      "bytes": 5599,
+      "sha256": "fe2bc1ea97f605c5885277d86a9e0348776b84a7c6575e7429f415995adae4b6",
+      "original_path": "/tmp/cwb10597-client-red-1104.json"
+    },
+    "client-api-red.log": {
+      "bytes": 12295,
+      "sha256": "1f2b2512ab4531eabe8c278213d81b2c81318c9a8a904dd9c8bae51159da9979",
+      "original_path": "/tmp/cwb10597-client-api-red-1104.log"
+    },
+    "client-node-red.log": {
+      "bytes": 31459,
+      "sha256": "e15dfc934f92ed10e53a4184c5c027aaf150d822cf7ccaedf8712484b51e80be",
+      "original_path": "/tmp/cwb10597-client-client-red-1104.log"
+    },
+    "client-qualification.json": {
+      "bytes": 6881,
+      "sha256": "f6e37a807c650c0c48ffd6d113d1b7b942e38e82ff3b87c61636d22dc4a136c3",
+      "original_path": "/tmp/cwb10597-client-first-1104.json"
+    },
+    "client-node.log": {
+      "bytes": 8864,
+      "sha256": "79ae9bd5b35df9f7ff56bc13e45110562469049abb95bfa411de04a8d2c1dbf0",
+      "original_path": "/tmp/cwb10597-client-node-1104.log"
+    },
+    "client-owner.log": {
+      "bytes": 261,
+      "sha256": "482bc0b4c33919b4383487a58f2ca0f5e88ee60a9c61eae0f31e07a955fdfe7a",
+      "original_path": "/tmp/cwb10597-client-owner-1104.log"
+    },
+    "client-owner.xml": {
+      "bytes": 27778,
+      "sha256": "11ece2d785392d8901b6862bcf56abf0cd9e23399d6552d0e089da7b7a040653",
+      "original_path": "/tmp/cwb10597-client-owner-1104.xml"
+    },
+    "asset-red.json": {
+      "bytes": 2153,
+      "sha256": "0babdac3d70eb7752c6e98eab6e7e95f73dc8377d6490fd400ea572c93b104c1",
+      "original_path": "/tmp/cwb10597-account-cache-red-1104.json"
+    },
+    "asset-red.log": {
+      "bytes": 3845,
+      "sha256": "4e6a2501da58917b4ddf58484f09b11e958a94aa04de0fa8ecb4483159479940",
+      "original_path": "/tmp/cwb10597-account-cache-red-1104.log"
+    },
+    "asset-qualification.json": {
+      "bytes": 1794,
+      "sha256": "723baee546b46771530617d06714d0fc5a4f2af99c024655f0bc8704b5e3af1d",
+      "original_path": "/tmp/cwb10597-asset-owner-1104.json"
+    },
+    "asset-owner.log": {
+      "bytes": 503,
+      "sha256": "e0eca24c15adc112716817d3279901a6ea5e790fbaa58562d4253e6ac9fb7c5f",
+      "original_path": "/tmp/cwb10597-asset-owner-1104.log"
+    },
+    "asset-owner.xml": {
+      "bytes": 18038,
+      "sha256": "42cabfe5faf4a4cf935bd83da48fab364301f21c5de9f9cdb5e174516c9763ac",
+      "original_path": "/tmp/cwb10597-asset-owner-1104.xml"
+    },
+    "browser-original.py": {
+      "bytes": 13745,
+      "sha256": "23bcb6e35e18c44bb621a013814a96b5dd26f4fa147337655fc56a6434128aad",
+      "original_path": "/tmp/cwb10597-digest-client-browser-original-1104.py"
+    },
+    "browser-original-partial.json": {
+      "bytes": 2741,
+      "sha256": "0b2a9e95c8a3f3fa22073aac27fdfdbf6da1a2d9d357cabbbe9e72a298a5bfe4",
+      "original_path": "/tmp/cwb10597-client-browser-1104/browser.json"
+    },
+    "browser-original-cancellation.json": {
+      "bytes": 615,
+      "sha256": "7834857c00cb90bcc8b503eccef38d0ccef40640b3d1e634d90ce9d452ec1463",
+      "original_path": "/tmp/cwb10597-client-browser-cancellation-1104.json"
+    },
+    "browser-qualified.py": {
+      "bytes": 13874,
+      "sha256": "ebec8e4d9ad54d0c21145a0f0a1db5d0746f1cc11cda9da9dd4e53a0dd74a8ba",
+      "original_path": "/tmp/cwb10597-digest-client-browser-1104.py"
+    },
+    "browser-qualified.json": {
+      "bytes": 4240,
+      "sha256": "93c1c1fc950901d866002e0a476d3ec65d9cbafcbd531bb30c7e88e63330ce8a",
+      "original_path": "/tmp/cwb10597-client-browser-qualified-1104/browser.json"
+    },
+    "asset-owner-preimage.json": {
+      "bytes": 595,
+      "sha256": "0566affd334431cd41128c42e2ccbf55bf9b697c220afe71abf6bb471e78fa12",
+      "original_path": "/tmp/cwb10597-client-asset-owner-preimage-1104.json"
+    },
+    "site-materialization.json": {
+      "bytes": 336,
+      "sha256": "007470b1fac99e9cdda0e0ad3b4f1a9aaa9eebb838e8b9cfe83ffd43feb267a3",
+      "original_path": "/tmp/cwb10597-client-site-materialization-1104.json"
+    },
+    "warm-cache.json": {
+      "bytes": 22125,
+      "sha256": "18ba51aa20674a26736d355c95ee86f6d56cc227bcc808c49efd7f9c91a5e429",
+      "original_path": "/tmp/cwb10597-client-warm-cache-1104/warm-cache.json"
+    },
+    "warm-cache.py": {
+      "bytes": 9721,
+      "sha256": "d51aa38f67f7be79a55cb6f3a15a370c28923b3016b46df46c3500b5084a7635",
+      "original_path": "/tmp/cwb10597-client-warm-cache-1104.py"
+    },
+    "reference-closure.py": {
+      "bytes": 7012,
+      "sha256": "ef1eb180495e3cf0a1012a7734ead3729421218b3b889ae556fd8ec59760587d",
+      "original_path": "/tmp/cwb10597-client-reference-closure-1104.py"
+    },
+    "contract-runner.py": {
+      "bytes": 3049,
+      "sha256": "cb59cc08cabe467957f3c2554fb115ded30b0f096cf9ea6b288a9321f70c8d2c",
+      "original_path": "/tmp/cwb10597-client-contract-1104.py"
+    },
+    "contract-delta.json": {
+      "bytes": 1389,
+      "sha256": "9414a1b8ed406adbd9e458397113811fb24990b6e9265d4aa855d75cb8ecbc0d",
+      "original_path": "/tmp/cwb10597-client-contract-delta-1104.json"
+    },
+    "contract-delta.log": {
+      "bytes": 753,
+      "sha256": "9ad986aec4ee05830a9836af12bb47d8223bb29fd50c01c18df67a8c1f3a567a",
+      "original_path": "/tmp/cwb10597-client-contract-delta-1104.log"
+    },
+    "english_enabled.png": {
+      "bytes": 8798,
+      "sha256": "21a017c7f32e4b4d2fa0ec2ccb178ded5b605b47efdee42c1c016177e5cf2546",
+      "original_path": "/tmp/cwb10597-client-browser-qualified-1104/english_enabled.png"
+    },
+    "english_withdrawn.png": {
+      "bytes": 8754,
+      "sha256": "5a403252628d8ae16e485a2291647aceaf7a8263d27a4d0399cab8410d16d434",
+      "original_path": "/tmp/cwb10597-client-browser-qualified-1104/english_withdrawn.png"
+    },
+    "english_unconfirmed_withdrawal.png": {
+      "bytes": 13008,
+      "sha256": "94ca83a59338f8de1c0127b182dfb16c4e3ebf7fe0d06bfed933d5148e30e09d",
+      "original_path": "/tmp/cwb10597-client-browser-qualified-1104/english_unconfirmed_withdrawal.png"
+    },
+    "chinese_enrollment_off_withdrawal.png": {
+      "bytes": 15946,
+      "sha256": "ecb13b348be3ec86542a2311c358e6ba7d7c02c2732ed8f9ad2f873d9374e70d",
+      "original_path": "/tmp/cwb10597-client-browser-qualified-1104/chinese_enrollment_off_withdrawal.png"
+    },
+    "reference-dry.json.gz": {
+      "bytes": 1373777,
+      "sha256": "54cd4acdc6f93f07dd009de04dd852bdcf22a421959405a82f6eb557bb70ff91",
+      "uncompressed_bytes": 9135118,
+      "uncompressed_sha256": "d2d966ed37b168eb78a3af0af56aecb23b27dea6438b75abdf7d974e0a25488b",
+      "original_path": "/tmp/cwb10597-client-reference-dry-1104.json"
+    },
+    "reference-applied.json.gz": {
+      "bytes": 1937840,
+      "sha256": "ab8824b6770b2700ac17bfdfb969697ae1f256636091afcb1429ba87aa0df9d1",
+      "uncompressed_bytes": 10420700,
+      "uncompressed_sha256": "122155c3c5eaf9b4d3f3792023add1db3c960973fd5cf873e4e8d7eabaa1b54d",
+      "original_path": "/tmp/cwb10597-client-reference-applied-1104.json"
+    },
+    "candidate.json.gz": {
+      "bytes": 772966,
+      "sha256": "22d29bad7e4638db41119100940c282f3f1cb57e4773875abce2fc1d79e4b7d8",
+      "uncompressed_bytes": 2468394,
+      "uncompressed_sha256": "36c52c312d46ff5bcf3f095d01374b8d116bed71aaf2543995726fdbce953c86",
+      "original_path": "/tmp/cwb10597-client-candidate-1104.json"
+    }
+  },
+  "brief_sha256": "e34a187b327ed815e7a4d384ea8eb4d05b0eccd4f2461671f0d52445fbe62ce3",
+  "server_brief_sha256": "e3485c035101e961e766249298101e8b7c082599cf579779a0b442808a9f7551",
+  "review": "Non-author exact-source review required; author's repairs do not clear prior REQUEST_CHANGES",
+  "acceptance": "No installed migration, protected merge, production enrollment or delivery claim"
+}

@@ -502,10 +502,10 @@
    carrying a ready.then promise, the SAME original loader below is deferred
    until whichever comes first -- ready resolution, ready rejection, a 1500ms
    fallback timer, or the first pointerdown/keydown input.  The original loader
-   body is unchanged: the __mmAccountLoading singleton guard is claimed
-   synchronously at execution (so a duplicate boot can never double-load), and
-   the MM_API default, the _mmSharedAssetRoot source prefix and the account.js
-   release key are all retained.  The deferral arms (timer + both listeners)
+   __mmAccountLoading singleton guard is claimed synchronously at execution
+   (so a duplicate boot can never double-load). The MM_API default and shared
+   asset root remain in place; the existing asset owner now derives the
+   account.js release key from the final copied payload.  The deferral arms (timer + both listeners)
    are removed on release and the loader fires exactly once.  No scheduler,
    storage, auth, session or entitlement access is added. */
 (function loadAccount() {
@@ -517,15 +517,14 @@
     done = true;
     window.MM_API = window.MM_API || 'https://app.mastermind-x.com';
     /* Shared-asset root comes from this script's own URL context via
-       _mmSharedAssetRoot (the rendered theme.js reference already carries the
-       correct ../ depth); the explicit release key below keeps a year-cached
-       account.js from pinning an older navigation loader. */
+       _mmSharedAssetRoot. The existing asset owner bakes the final account
+       payload's content key, shared with direct HTML references. */
     var pfx = _mmSharedAssetRoot;
+    var accountVersion = /*__ACCOUNT_VER__*/'';
     var s = document.createElement('script');
-    // Keep the dynamic dependency cache-safe too. theme.js itself is
-    // content-hashed in every page; this explicit release key prevents a
-    // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20261101-expectation-surface-nav'; s.async = true;
+    // Unbaked local/custom inputs retain the unversioned local path.
+    s.src = pfx + 'account.js' + (accountVersion ? '?v=' + accountVersion : '');
+    s.async = true;
     document.head.appendChild(s);
   }
   var boot = window.MDX_PROGRESSIVE_BOOT;

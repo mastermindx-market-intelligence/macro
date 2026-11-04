@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/tmp/clear-workstream-blockers-20261103-test-venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_site_assets.py",
+    "-k",
+    "account_dependency or account_only_change or account_key_uses or missing_account_dependency",
+    "-q",
+    "--basetemp=/tmp/cwb10597-account-cache-red-1104-pytest"
+  ],
+  "exit": 1,
+  "seconds": 6.94,
+  "log": "/tmp/cwb10597-account-cache-red-1104.log",
+  "log_sha256": "4e6a2501da58917b4ddf58484f09b11e958a94aa04de0fa8ecb4483159479940",
+  "tail": "/ \"theme.js\"\n>       theme.write_text(\"var accountVersion=\" + site_assets.ACCOUNT_VER_TOKEN + \";\")\n                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: module 'lib.site_assets' has no attribute 'ACCOUNT_VER_TOKEN'\n\ntests/test_site_assets.py:372: AttributeError\n______ test_missing_account_dependency_falls_back_to_unversioned_request _______\n\ntmp_path = PosixPath('/private/tmp/cwb10597-account-cache-red-1104-pytest/test_missing_account_dependenc0')\n\n    def test_missing_account_dependency_falls_back_to_unversioned_request(tmp_path: Path) -> None:\n        theme = tmp_path / \"theme.js\"\n>       theme.write_text(\"var accountVersion=\" + site_assets.ACCOUNT_VER_TOKEN + \";\")\n                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: module 'lib.site_assets' has no attribute 'ACCOUNT_VER_TOKEN'\n\ntests/test_site_assets.py:386: AttributeError\n\nNOTE: sparse worktree \u2014 data, mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_site_assets.py::test_account_dependency_key_matches_final_copied_payload\nFAILED tests/test_site_assets.py::test_account_only_change_advances_dynamic_loader_key_without_manual_release_edit\nFAILED tests/test_site_assets.py::test_account_key_uses_normalized_emitted_bytes_not_raw_source_bytes\nFAILED tests/test_site_assets.py::test_missing_account_dependency_falls_back_to_unversioned_request\n4 failed, 13 deselected in 5.22s\n"
+}

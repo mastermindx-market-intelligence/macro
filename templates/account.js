@@ -193,6 +193,20 @@
     al_qh_e: ['Quiet hours end', '免打扰结束时间'],
     al_clear: ['Clear', '清除'],
     al_saved: ['Saved', '已保存'],
+    dg_title: ['Portfolio digest', '投资组合摘要'],
+    dg_description: ['A daily email when your saved portfolio changes.', '当你保存的投资组合发生变化时，接收每日摘要邮件。'],
+    dg_on: ['On', '已开启'], dg_off: ['Off', '已关闭'],
+    dg_enable: ['Turn on', '开启'], dg_disable: ['Turn off', '关闭'],
+    dg_refresh: ['Check status', '查看状态'],
+    dg_loading: ['Checking your preference…', '正在查看你的偏好…'],
+    dg_saving: ['Saving your choice…', '正在保存你的选择…'],
+    dg_saved: ['Saved.', '已保存。'],
+    dg_unavailable: ['Your preference is unavailable. You can still ask to turn the digest off.', '暂时无法查看你的偏好。你仍可请求关闭摘要邮件。'],
+    dg_unconfirmed: ['We couldn’t confirm the earlier change. Checking status does not confirm that change.', '无法确认之前的更改是否完成。查看当前状态不代表该更改已确认。'],
+    dg_conflict: ['Your preference changed elsewhere. Check its current status before making a new choice.', '你的偏好已在其他地方更改。请先查看当前状态，再作新的选择。'],
+    dg_account_changed: ['Your signed-in account changed. Check status to reload account settings.', '当前登录账户已更改。请点击“查看状态”重新加载账户设置。'],
+    dg_global_off: ['Your global email opt-out still applies. This choice does not turn those emails back on.', '你的全局邮件退订仍然有效。此处的选择不会重新开启这些邮件。'],
+    dg_not_open: ['New digest subscriptions are not available yet. You can still turn the digest off.', '摘要邮件暂未开放新订阅。你仍可关闭摘要邮件。'],
     security: ['Security', '安全'], login_method: ['Login method', '登录方式'],
     member_since: ['Member since', '注册于'], last_signin: ['Last sign-in', '上次登录'],
     user_id: ['User ID', '用户 ID'], copy: ['Copy', '复制'], copied: ['Copied', '已复制'],
@@ -396,6 +410,7 @@
         }
         if (_mode === 'standalone') paintTrigger();
         render();
+        ensureDigestChoice();
       });
       return;
     }
@@ -519,6 +534,140 @@
         c.setAttribute('aria-checked', (val || []).indexOf(c.getAttribute('data-cat')) !== -1 ? 'true' : 'false');
       });
     }
+  }
+
+
+  // Digest choices are a view of email_prefs, never a second consent or auth owner.
+  // _wgen binds identity; seq orders this view's reads and explicit choices.
+  var _digestView = null;
+  function _digestUuid(value) {
+    return typeof value === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value);
+  }
+  function _digestFor(a) {
+    if (!(a && a.authenticated && _digestUuid(a.id))) return null;
+    if (!_digestView || _digestView.owner !== a.id || _digestView.wgen !== _wgen) {
+      _digestView = { owner: a.id, wgen: _wgen, seq: 0, phase: 'idle',
+        snapshot: null, read: null, write: null, unresolved: null };
+    }
+    return _digestView;
+  }
+  function _digestLive(view) {
+    return !!(view && _digestView === view && view.wgen === _wgen &&
+      state.loaded && !state.unavail && state.acct && state.acct.authenticated &&
+      state.acct.id === view.owner);
+  }
+  function _digestSnapshot(value, owner) {
+    if (!value || typeof value !== 'object' || Array.isArray(value) ||
+        value.user_id !== owner || typeof value.enabled !== 'boolean' ||
+        typeof value.enrollment_available !== 'boolean') return null;
+    if (value.revision === null) {
+      if (value.enabled !== false || value.marketing_opt_out !== null) return null;
+    } else if (!_digestUuid(value.revision) || typeof value.marketing_opt_out !== 'boolean') return null;
+    return { user_id: owner, enabled: value.enabled, revision: value.revision,
+      marketing_opt_out: value.marketing_opt_out, enrollment_available: value.enrollment_available };
+  }
+  function _digestCanEnable(view) {
+    var snap = view && view.snapshot;
+    return !!(_digestLive(view) && snap && !view.read && !view.write && !view.unresolved &&
+      (view.phase === 'ready' || view.phase === 'saved') &&
+      !snap.enabled && snap.enrollment_available && snap.marketing_opt_out !== true);
+  }
+  function _digestCanDisable(view) {
+    return !!(_digestLive(view) && view.phase !== 'account_changed' &&
+      !(view.write && !view.write.enabled) &&
+      !(view.unresolved && !view.unresolved.enabled));
+  }
+  function loadDigestChoice() {
+    var view = _digestFor(state.acct);
+    if (!_digestLive(view) || view.read || view.write) return;
+    var seq = ++view.seq;
+    view.read = seq; view.phase = 'loading'; view.snapshot = null;
+    render();
+    api('/api/account/prefs/portfolio-digest').then(function (res) {
+      if (!_digestLive(view) || view.seq !== seq) return;
+      view.read = null;
+      var snap = res && res.ok ? _digestSnapshot(res.data, view.owner) : null;
+      view.snapshot = snap; view.phase = snap ? 'ready' : 'unavailable';
+      // A current-state GET cannot confirm or cancel an earlier uncertain write.
+      render();
+    });
+  }
+  function ensureDigestChoice() {
+    var view = _digestFor(state.acct);
+    if (view && view.phase === 'idle') loadDigestChoice();
+  }
+  function refreshDigestChoice() {
+    var view = _digestFor(state.acct);
+    if (!_digestLive(view) || view.read || view.write) return;
+    if (view.phase === 'account_changed') {
+      _digestView = null;
+      onRetryLoad();  // Reuse the incumbent account reader; no second identity client.
+      return;
+    }
+    loadDigestChoice();
+  }
+  function changeDigestChoice(enabled) {
+    var view = _digestFor(state.acct);
+    if (enabled ? !_digestCanEnable(view) : !_digestCanDisable(view)) return;
+    // Capture all intent before api() begins asynchronous token acquisition.
+    var revision = view.snapshot ? view.snapshot.revision : null;
+    var job = { seq: ++view.seq, enabled: enabled, revision: revision };
+    var body = { enabled: enabled, expected_user_id: view.owner };
+    if (enabled) body.expected_revision = revision;
+    view.write = job; view.read = null; view.phase = 'saving';
+    render();
+    api('/api/account/prefs/portfolio-digest', { method: 'PUT', body: body }).then(function (res) {
+      if (!_digestLive(view) || view.seq !== job.seq) return;
+      view.write = null;
+      var snap = res && res.ok ? _digestSnapshot(res.data, view.owner) : null;
+      if (snap && snap.enabled === job.enabled && snap.revision !== null &&
+          snap.revision !== job.revision) {
+        view.snapshot = snap; view.phase = 'saved';
+        // A confirmed negative creates a new fence against an older pending
+        // revision-bound enable. It cannot settle a prior unconditional negative;
+        // those prevent another write in _digestCanDisable/_digestCanEnable.
+        view.unresolved = null;
+      } else if (res && res.status === 409) {
+        var detail = res.data && res.data.detail;
+        view.snapshot = null;
+        view.phase = detail && detail.code === 'digest_account_changed' ? 'account_changed' : 'conflict';
+      } else {
+        view.snapshot = null; view.phase = 'unconfirmed'; view.unresolved = job;
+      }
+      render();
+    });
+  }
+  function digestPrefsGroupHTML(a) {
+    var view = _digestFor(a), snap = view && view.snapshot;
+    var phase = view ? view.phase : 'unavailable';
+    var pending = !!(view && view.write);
+    var message = phase === 'idle' || phase === 'loading' ? T('dg_loading') :
+      phase === 'saving' ? T('dg_saving') :
+      phase === 'account_changed' ? T('dg_account_changed') :
+      phase === 'conflict' ? T('dg_conflict') :
+      phase === 'unconfirmed' || (view && view.unresolved) ? T('dg_unconfirmed') :
+      phase === 'unavailable' ? T('dg_unavailable') :
+      phase === 'saved' ? T('dg_saved') : '';
+    var known = snap ? (snap.enabled ? 'true' : 'false') : 'unknown';
+    return '<div class="mmacc-group mmacc-digest" role="group" aria-labelledby="mmacc-digest-label" data-digest-state="' + phase +
+      '" data-digest-enabled="' + known + '">' +
+      '<div class="mmacc-glabel" id="mmacc-digest-label">' + esc(T('dg_title')) + '</div>' +
+      '<div class="mmacc-hint">' + esc(T('dg_description')) + '</div>' +
+      (snap ? '<div class="mmacc-line"><span class="mmacc-line-v">' +
+        esc(snap.enabled ? T('dg_on') : T('dg_off')) + '</span></div>' : '') +
+      (snap && snap.marketing_opt_out === true ? '<div class="mmacc-hint">' + esc(T('dg_global_off')) + '</div>' : '') +
+      (snap && !snap.enrollment_available ? '<div class="mmacc-hint">' + esc(T('dg_not_open')) + '</div>' : '') +
+      '<div class="mmacc-msg' + (message ? ' show' : '') + '" id="mmacc-digest-msg" role="status" aria-live="polite">' +
+        esc(message) + '</div>' +
+      '<div class="mmacc-btnrow">' +
+        '<button type="button" class="mmacc-btn mmacc-ghost" data-act="digest-enable" aria-label="' + esc(T('dg_title') + ' — ' + T('dg_enable')) + '"' +
+          (_digestCanEnable(view) ? '' : ' disabled') + '>' + esc(T('dg_enable')) + '</button>' +
+        '<button type="button" class="mmacc-btn mmacc-ghost" data-act="digest-disable" aria-label="' + esc(T('dg_title') + ' — ' + T('dg_disable')) + '"' +
+          (_digestCanDisable(view) ? '' : ' disabled') + '>' + esc(T('dg_disable')) + '</button>' +
+        '<button type="button" class="mmacc-mini" data-act="digest-refresh"' +
+          (!view || view.read || pending ? ' disabled' : '') + '>' + esc(T('dg_refresh')) + '</button>' +
+      '</div></div>';
   }
 
   // -------------------------------------------------- section builders -------
@@ -757,7 +906,7 @@
   function bodySignedIn(a) {
     var ap = (a && a.alert_prefs) || {}; var unset = (a && a.alert_prefs_unset) || [];
     return planCardHTML(a) + emailGroupHTML(a) + pwGroupHTML() + alertPrefsGroupHTML(ap, unset) +
-      securityGroupHTML(a) + dangerGroupHTML();
+      digestPrefsGroupHTML(a) + securityGroupHTML(a) + dangerGroupHTML();
   }
   function bodySignedOut(a) {
     if (_macro) return guestNoteHTML();   // macro: sign-in lives in the ⚙ gear, not here
@@ -1017,6 +1166,9 @@
     switch (b.getAttribute('data-act')) {
       case 'close': return close();
       case 'retry-load': return onRetryLoad();
+      case 'digest-enable': return changeDigestChoice(true);
+      case 'digest-disable': return changeDigestChoice(false);
+      case 'digest-refresh': return refreshDigestChoice();
       case 'alert-optin': return onAlertOptin(b);
       case 'alert-cat': return onAlertCat(b);
       case 'alert-qh-clear': return onAlertQhClear();

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/tmp/clear-workstream-blockers-20261103-test-venv/bin/python",
+    "scripts/worktree_sparse.py",
+    "add",
+    "site"
+  ],
+  "exit": 0,
+  "seconds": 92.16,
+  "log_sha256": "26cc281547e1b34421b458ecc070c95be428c63d9899b3fbe5deb4ebd044f2f6",
+  "qualified_sources_preserved": true,
+  "account_asset_present": true
+}

@@ -1,0 +1,705 @@
+{
+  "base": "7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3",
+  "origin": "http://127.0.0.1:61490",
+  "fixture_scope": "Unmodified generated HTML and JS on loopback with external-dependency CSP; no authenticated production claim",
+  "playwright_routing_used": false,
+  "versions": {
+    "theme.js": "8ca5bdfd",
+    "account.js": "fec5541f"
+  },
+  "asset_sha256": {
+    "theme.js": "8ca5bdfdb903942656eebe9d1a7741d3bbeccae5537eaca648ba230d072b80fb",
+    "account.js": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c"
+  },
+  "chromium": "156.0.8078.4",
+  "status": "PASS",
+  "cases": [
+    {
+      "case": "root_loader",
+      "page": "macro_business_activity.html",
+      "status": "PASS",
+      "old_html_sha256": "07d425073eac47e874293d4c7231d510f16fb0068122af74915e34a4f0163613",
+      "new_html_sha256": "1bfdf2c4bbda2c0fcb09adafad8f2eb8fa00df7d0bbd4b617bfcb56d91e956a8",
+      "seed_requests": [
+        {
+          "phase": "old",
+          "url": "/theme.js?v=3c193891",
+          "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+          "status": 200
+        },
+        {
+          "phase": "old",
+          "url": "/account.js?v=20261101-expectation-surface-nav",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+          "status": 200
+        }
+      ],
+      "new_requests": [
+        {
+          "phase": "new",
+          "url": "/theme.js?v=8ca5bdfd",
+          "sha256": "8ca5bdfdb903942656eebe9d1a7741d3bbeccae5537eaca648ba230d072b80fb",
+          "status": 200
+        },
+        {
+          "phase": "new",
+          "url": "/account.js?v=fec5541f",
+          "sha256": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+          "status": 200
+        }
+      ],
+      "old_reference_control_after_deployment_change": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=20261101-expectation-surface-nav",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          },
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=20261101-expectation-surface-nav",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          }
+        ],
+        "moduleReady": true
+      },
+      "service_workers_blocked": true,
+      "old_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=20261101-expectation-surface-nav",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          },
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=20261101-expectation-surface-nav",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_first": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 280572,
+            "decodedBodySize": 280272
+          },
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 85401,
+            "decodedBodySize": 85101
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 0,
+            "decodedBodySize": 280272
+          },
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 0,
+            "decodedBodySize": 85101
+          }
+        ],
+        "moduleReady": true
+      },
+      "chromium_cache_events": 106,
+      "page_errors": []
+    },
+    {
+      "case": "root_direct",
+      "page": "about-research.html",
+      "status": "PASS",
+      "old_html_sha256": "3fa7ff7bd2c4af8a9a8d77e3588ab68f01f38ff46262c45d4225303e465e7f6c",
+      "new_html_sha256": "7c241b1be79c4ca90ccbd76e5dfedf91bc815c3c41a1eda9426b06824dc7f6d5",
+      "seed_requests": [
+        {
+          "phase": "old",
+          "url": "/account.js?v=3a75ad49",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+          "status": 200
+        },
+        {
+          "phase": "old",
+          "url": "/theme.js?v=3c193891",
+          "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+          "status": 200
+        }
+      ],
+      "new_requests": [
+        {
+          "phase": "new",
+          "url": "/account.js?v=fec5541f",
+          "sha256": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+          "status": 200
+        },
+        {
+          "phase": "new",
+          "url": "/theme.js?v=8ca5bdfd",
+          "sha256": "8ca5bdfdb903942656eebe9d1a7741d3bbeccae5537eaca648ba230d072b80fb",
+          "status": 200
+        }
+      ],
+      "old_reference_control_after_deployment_change": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=3a75ad49",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=3a75ad49",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          }
+        ],
+        "moduleReady": true
+      },
+      "service_workers_blocked": true,
+      "old_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=3a75ad49",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=3a75ad49",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_first": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 85401,
+            "decodedBodySize": 85101
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 280572,
+            "decodedBodySize": 280272
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 0,
+            "decodedBodySize": 85101
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 0,
+            "decodedBodySize": 280272
+          }
+        ],
+        "moduleReady": true
+      },
+      "chromium_cache_events": 46,
+      "page_errors": []
+    },
+    {
+      "case": "nested_loader",
+      "page": "basket/ai_agents.html",
+      "status": "PASS",
+      "old_html_sha256": "2a35cb592306bf97495f2a21b27ce4a6ce9c64383b817b6c4c2fe9603a133f70",
+      "new_html_sha256": "f0fc775011ff8ef391a5fdb974a7adc746d501bd4193903e40f736afba4b8cb9",
+      "seed_requests": [
+        {
+          "phase": "old",
+          "url": "/theme.js?v=3c193891",
+          "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+          "status": 200
+        },
+        {
+          "phase": "old",
+          "url": "/account.js?v=20261101-expectation-surface-nav",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+          "status": 200
+        }
+      ],
+      "new_requests": [
+        {
+          "phase": "new",
+          "url": "/theme.js?v=8ca5bdfd",
+          "sha256": "8ca5bdfdb903942656eebe9d1a7741d3bbeccae5537eaca648ba230d072b80fb",
+          "status": 200
+        },
+        {
+          "phase": "new",
+          "url": "/account.js?v=fec5541f",
+          "sha256": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+          "status": 200
+        }
+      ],
+      "old_reference_control_after_deployment_change": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=20261101-expectation-surface-nav",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          },
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=20261101-expectation-surface-nav",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          }
+        ],
+        "moduleReady": true
+      },
+      "service_workers_blocked": true,
+      "old_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=20261101-expectation-surface-nav",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          },
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=20261101-expectation-surface-nav",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_first": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 280572,
+            "decodedBodySize": 280272
+          },
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 85401,
+            "decodedBodySize": 85101
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 0,
+            "decodedBodySize": 280272
+          },
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 0,
+            "decodedBodySize": 85101
+          }
+        ],
+        "moduleReady": true
+      },
+      "chromium_cache_events": 90,
+      "page_errors": []
+    },
+    {
+      "case": "nested_direct",
+      "page": "blog/compound-growth-for-traders.html",
+      "status": "PASS",
+      "old_html_sha256": "aebc83232c6ad09ef13324bc78d8a8a17fb73bcbb1bfed1994d6a3d619309017",
+      "new_html_sha256": "22b6a5d5f9b41eea243c7e8da9b06807eb0550006a847ef9581f3c8e47f32dcd",
+      "seed_requests": [
+        {
+          "phase": "old",
+          "url": "/account.js?v=3a75ad49",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+          "status": 200
+        },
+        {
+          "phase": "old",
+          "url": "/theme.js?v=3c193891",
+          "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+          "status": 200
+        }
+      ],
+      "new_requests": [
+        {
+          "phase": "new",
+          "url": "/account.js?v=fec5541f",
+          "sha256": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+          "status": 200
+        },
+        {
+          "phase": "new",
+          "url": "/theme.js?v=8ca5bdfd",
+          "sha256": "8ca5bdfdb903942656eebe9d1a7741d3bbeccae5537eaca648ba230d072b80fb",
+          "status": 200
+        }
+      ],
+      "old_reference_control_after_deployment_change": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=3a75ad49",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=3a75ad49",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          }
+        ],
+        "moduleReady": true
+      },
+      "service_workers_blocked": true,
+      "old_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=3a75ad49",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=3a75ad49",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_first": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 85401,
+            "decodedBodySize": 85101
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 280572,
+            "decodedBodySize": 280272
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 0,
+            "decodedBodySize": 85101
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 0,
+            "decodedBodySize": 280272
+          }
+        ],
+        "moduleReady": true
+      },
+      "chromium_cache_events": 46,
+      "page_errors": []
+    },
+    {
+      "case": "depth_two_direct",
+      "page": "learn/options/charm-and-time-drift.html",
+      "status": "PASS",
+      "old_html_sha256": "3e2c3388a144ff40de809090f62cb6072045bd220e1b7e992015e47b5e58340c",
+      "new_html_sha256": "8d0101b4d081bebbce82b2691e6b4815710001cb273c089d6c689ba79d6ca617",
+      "seed_requests": [
+        {
+          "phase": "old",
+          "url": "/account.js?v=3a75ad49",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+          "status": 200
+        },
+        {
+          "phase": "old",
+          "url": "/theme.js?v=3c193891",
+          "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+          "status": 200
+        }
+      ],
+      "new_requests": [
+        {
+          "phase": "new",
+          "url": "/account.js?v=fec5541f",
+          "sha256": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+          "status": 200
+        },
+        {
+          "phase": "new",
+          "url": "/theme.js?v=8ca5bdfd",
+          "sha256": "8ca5bdfdb903942656eebe9d1a7741d3bbeccae5537eaca648ba230d072b80fb",
+          "status": 200
+        }
+      ],
+      "old_reference_control_after_deployment_change": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=3a75ad49",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=3a75ad49",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          }
+        ],
+        "moduleReady": true
+      },
+      "service_workers_blocked": true,
+      "old_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=3a75ad49",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=3a75ad49",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_first": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 85401,
+            "decodedBodySize": 85101
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 280572,
+            "decodedBodySize": 280272
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 0,
+            "decodedBodySize": 85101
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 0,
+            "decodedBodySize": 280272
+          }
+        ],
+        "moduleReady": true
+      },
+      "chromium_cache_events": 46,
+      "page_errors": []
+    },
+    {
+      "case": "depth_three_direct",
+      "page": "stocks/earnings/weekly/2026-03-09.html",
+      "status": "PASS",
+      "old_html_sha256": "787d27efe43af2b3b7101e5a465196215fcef8f3fe6cd44468e8e0bff3fc9c39",
+      "new_html_sha256": "8ace3d0908ac8c844ec40081e399271f72e076dfa7799945619dd8889f199bd8",
+      "seed_requests": [
+        {
+          "phase": "old",
+          "url": "/theme.js?v=3c193891",
+          "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+          "status": 200
+        },
+        {
+          "phase": "old",
+          "url": "/account.js?v=3a75ad49",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+          "status": 200
+        }
+      ],
+      "new_requests": [
+        {
+          "phase": "new",
+          "url": "/account.js?v=fec5541f",
+          "sha256": "fec5541f828b26646cc90de6eec90656174ee60de11dc87bf9c88906dce7615c",
+          "status": 200
+        },
+        {
+          "phase": "new",
+          "url": "/theme.js?v=8ca5bdfd",
+          "sha256": "8ca5bdfdb903942656eebe9d1a7741d3bbeccae5537eaca648ba230d072b80fb",
+          "status": 200
+        }
+      ],
+      "old_reference_control_after_deployment_change": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=3a75ad49",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=3a75ad49",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          }
+        ],
+        "moduleReady": true
+      },
+      "service_workers_blocked": true,
+      "old_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=3a75ad49",
+          "http://127.0.0.1:61490/theme.js?v=3c193891"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=3a75ad49",
+            "transferSize": 0,
+            "decodedBodySize": 75906
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=3c193891",
+            "transferSize": 0,
+            "decodedBodySize": 280236
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_first": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 85401,
+            "decodedBodySize": 85101
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 280572,
+            "decodedBodySize": 280272
+          }
+        ],
+        "moduleReady": true
+      },
+      "new_repeat": {
+        "scripts": [
+          "http://127.0.0.1:61490/account.js?v=fec5541f",
+          "http://127.0.0.1:61490/theme.js?v=8ca5bdfd"
+        ],
+        "resources": [
+          {
+            "url": "http://127.0.0.1:61490/account.js?v=fec5541f",
+            "transferSize": 0,
+            "decodedBodySize": 85101
+          },
+          {
+            "url": "http://127.0.0.1:61490/theme.js?v=8ca5bdfd",
+            "transferSize": 0,
+            "decodedBodySize": 280272
+          }
+        ],
+        "moduleReady": true
+      },
+      "chromium_cache_events": 46,
+      "page_errors": []
+    }
+  ],
+  "errors": [],
+  "server_stopped": true,
+  "seconds": 4.67
+}

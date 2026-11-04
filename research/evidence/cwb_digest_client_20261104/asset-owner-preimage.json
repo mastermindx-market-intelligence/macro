@@ -1,0 +1,11 @@
+{
+  "baseline_emission_matches_committed": true,
+  "head": "7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3",
+  "source_sha256": {
+    "lib/site_assets.py": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "tests/test_site_assets.py": "90f80c4c7bffbaeea2de03252e3493047225ea1bf463710a5787e7e3f261dabe",
+    "site/theme.js": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00"
+  },
+  "emitted_sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00"
+}

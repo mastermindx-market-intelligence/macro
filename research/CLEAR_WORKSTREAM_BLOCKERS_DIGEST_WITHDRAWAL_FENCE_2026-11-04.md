@@ -13,6 +13,8 @@ This change addresses the stale-enable-after-withdrawal problem identified in th
 - Canonical mission handoff: [Mastermind #917](https://github.com/mastermindx-market-intelligence/Mastermind/issues/917#issuecomment-6620138345).
 - This principal authored the repair and cannot provide its independent approval or protected merge. The earlier independent REQUEST_CHANGES is not cleared by these tests.
 
+The later [authenticated-client and asset-delivery continuation](CLEAR_WORKSTREAM_BLOCKERS_DIGEST_CLIENT_2026-11-04.md) builds on published server commit 7b3a8d4049fa00f3e498589b5468e82a2d2dc0a3. Its qualification and remaining acceptance boundaries are recorded separately below that brief.
+
 ## Consumer problem and guarantee
 
 The original implementation could acknowledge a negative choice without advancing durable state when the preference was absent or already false. An older positive request could subsequently enable delivery. This is a stronger withdrawal-contract defect; the original concurrent schedule alone is not a violation of linearizability.
@@ -67,7 +69,7 @@ The two new modules are appended to the existing billing-emails pytest step alon
 
 The API tests use the incumbent direct-ASGI approach, avoiding an httpx dependency in the billing job. The PostgreSQL tests use an isolated temporary Unix-socket cluster; unavailable binaries fail instead of silently skipping. No live project, user account, mail service or scheduler is involved.
 
-## Qualification
+## First published server qualification
 
 Complete machine-readable receipts and original logs are in [evidence/cwb_digest_consent_20261104](evidence/cwb_digest_consent_20261104).
 
@@ -111,7 +113,7 @@ Installed RLS, role membership/effective privileges, function/trigger provenance
 2. Obtain genuine non-author review of the exact composed source and SQL. Reviewers must assess installation compatibility and the bounded privileged-maintenance assumptions; this author's tests do not clear the earlier review.
 3. On an available admitted read route, inspect the installed canonical project/catalog and known privileged erasure entry points. Refuse drift or missing evidence; do not create a replacement auth/migration/control plane.
 4. Apply the reviewed migration through the established deployment owner, record its exact source and result, and verify installed definitions, RLS, grants, guards and real PostgREST behavior. Keep enrollment disabled.
-5. Connect the authenticated revision-bearing client to this contract, including conflict presentation and uncertain-response handling. A 409 or unconfirmed result must require fresh observation and explicit user intent.
+5. The authenticated revision-bearing client and deterministic cache-version delivery are now implemented and locally qualified in this same continuation; see [the complete client/evidence brief](CLEAR_WORKSTREAM_BLOCKERS_DIGEST_CLIENT_2026-11-04.md). Preserve its explicit conflict/unconfirmed handling and qualify the actual deployed path after reviewed installation.
 6. Finish and reconcile the original P1 sender carrier. Complete the trusted per-account nightly cursor contract. Then qualify the actual authenticated opt-in, one authorized delivery, duplicate suppression and one-click withdrawal under the real product path.
 7. Record required browser/production receipts and persona acceptance before changing enrollment/runtime holds. Green CI alone does not establish completion.
 

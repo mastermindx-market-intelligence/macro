@@ -1,0 +1,523 @@
+✖ Digest: the signed-in account reads its canonical preference without writing (45.002875ms)
+✖ Digest: enable sends exactly the displayed revision and observed account (13.981917ms)
+✖ Digest: a valid absent observation is sent as explicit null (10.766292ms)
+✖ Digest: missing revision cannot authorize enable (14.092459ms)
+✖ Digest: malformed revision cannot authorize enable (13.230959ms)
+✖ Digest: wrong subject cannot authorize enable (11.1045ms)
+✖ Digest: nonliteral enabled cannot authorize enable (12.416208ms)
+✖ Digest: nonliteral global veto cannot authorize enable (8.857209ms)
+✖ Digest: missing availability cannot authorize enable (10.333792ms)
+✖ Digest: nonliteral availability cannot authorize enable (7.979625ms)
+✖ Digest: false absence cannot authorize enable (9.186083ms)
+✖ Digest: enabled absence cannot authorize enable (8.670292ms)
+✖ Digest: enrollment off blocks only enable, preserving withdrawal (6.7585ms)
+✖ Digest: global opt-out blocks only enable, preserving withdrawal (9.120334ms)
+✖ Digest: an already-off withdrawal still reaches the server once (7.395167ms)
+✖ Digest: unavailable reads do not disable a new explicit withdrawal (6.968833ms)
+✖ Digest: withdrawal supersedes pending enable, reply order false (10.1115ms)
+✖ Digest: withdrawal supersedes pending enable, reply order true (9.779833ms)
+✖ Digest: a late read cannot overwrite an acknowledged withdrawal (14.967125ms)
+✖ Digest: conflict requires a read and fresh click, never automatic replay (8.884833ms)
+✖ Digest: a failed mutation stays unconfirmed after a later status read (10.732916ms)
+✖ Digest: a timed-out mutation is not retried or reported saved (15.811584ms)
+✖ Digest: malformed success (unchanged revision) remains unconfirmed (10.306792ms)
+✖ Digest: malformed success (wrong subject) remains unconfirmed (8.576958ms)
+✖ Digest: malformed success (wrong choice) remains unconfirmed (12.386708ms)
+✖ Digest: malformed success (missing revision) remains unconfirmed (12.43225ms)
+✖ Digest: malformed success (malformed global veto) remains unconfirmed (14.292208ms)
+✖ Digest: an account switch discards the prior account read and revision (17.042416ms)
+✖ Digest: delayed token acquisition cannot retarget the observed account assertion (5.957667ms)
+✖ Digest: an explicit account mismatch requires the existing account reload (8.304167ms)
+✖ Digest: close and reopen preserve an unconfirmed choice without replay (10.153916ms)
+✖ Digest: Chinese renders the same consent actions and uncertainty in Chinese (8.659583ms)
+✔ Digest: an anonymous account never loads or changes a digest preference (3.482542ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 1
+ℹ fail 32
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 504.355291
+
+✖ failing tests:
+
+test at tests/js/account_continuity.test.mjs:1256:1
+✖ Digest: the signed-in account reads its canonical preference without writing (45.002875ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1257:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1265:1
+✖ Digest: enable sends exactly the displayed revision and observed account (13.981917ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1266:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1281:1
+✖ Digest: a valid absent observation is sent as explicit null (10.766292ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1282:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: missing revision cannot authorize enable (14.092459ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: malformed revision cannot authorize enable (13.230959ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: wrong subject cannot authorize enable (11.1045ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: nonliteral enabled cannot authorize enable (12.416208ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: nonliteral global veto cannot authorize enable (8.857209ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: missing availability cannot authorize enable (10.333792ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: nonliteral availability cannot authorize enable (7.979625ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: false absence cannot authorize enable (9.186083ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1300:3
+✖ Digest: enabled absence cannot authorize enable (8.670292ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1301:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1313:3
+✖ Digest: enrollment off blocks only enable, preserving withdrawal (6.7585ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1314:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1313:3
+✖ Digest: global opt-out blocks only enable, preserving withdrawal (9.120334ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1314:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1322:1
+✖ Digest: an already-off withdrawal still reaches the server once (7.395167ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1323:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1333:1
+✖ Digest: unavailable reads do not disable a new explicit withdrawal (6.968833ms)
+  AssertionError [ERR_ASSERTION]: respond(): no such request
+      at Object.respond (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:455:14)
+      at TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1336:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1343:3
+✖ Digest: withdrawal supersedes pending enable, reply order false (10.1115ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1344:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1343:3
+✖ Digest: withdrawal supersedes pending enable, reply order true (9.779833ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1344:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1362:1
+✖ Digest: a late read cannot overwrite an acknowledged withdrawal (14.967125ms)
+  AssertionError [ERR_ASSERTION]: click(): element not found
+      at Object.click (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:474:24)
+      at TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1366:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1375:1
+✖ Digest: conflict requires a read and fresh click, never automatic replay (8.884833ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1376:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1392:1
+✖ Digest: a failed mutation stays unconfirmed after a later status read (10.732916ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1393:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1407:1
+✖ Digest: a timed-out mutation is not retried or reported saved (15.811584ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1408:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1423:3
+✖ Digest: malformed success (unchanged revision) remains unconfirmed (10.306792ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1424:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1423:3
+✖ Digest: malformed success (wrong subject) remains unconfirmed (8.576958ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1424:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1423:3
+✖ Digest: malformed success (wrong choice) remains unconfirmed (12.386708ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1424:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1423:3
+✖ Digest: malformed success (missing revision) remains unconfirmed (12.43225ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1424:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1423:3
+✖ Digest: malformed success (malformed global veto) remains unconfirmed (14.292208ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1424:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1443:1
+✖ Digest: an account switch discards the prior account read and revision (17.042416ms)
+  AssertionError [ERR_ASSERTION]: respond(): no such request
+      at Object.respond (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:455:14)
+      at TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1449:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1459:1
+✖ Digest: delayed token acquisition cannot retarget the observed account assertion (5.957667ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1460:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1484:1
+✖ Digest: an explicit account mismatch requires the existing account reload (8.304167ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1485:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1497:1
+✖ Digest: close and reopen preserve an unconfirmed choice without replay (10.153916ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1498:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/js/account_continuity.test.mjs:1507:1
+✖ Digest: Chinese renders the same consent actions and uncertainty in Chinese (8.659583ms)
+  AssertionError [ERR_ASSERTION]: the existing account component must read the digest preference
+      at openDigest (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1250:10)
+      at async TestContext.<anonymous> (file:///Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence/tests/js/account_continuity.test.mjs:1508:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
