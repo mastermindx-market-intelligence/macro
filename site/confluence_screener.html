@@ -56,10 +56,184 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="assets/css/ce44fb7e.css?v=ce44fb7e">
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* ── bilingual toggle (mirrors theme.css mechanism for the self-contained head) ── */
+html:not([data-lang="zh"]) .l-zh{display:none}
+html[data-lang="zh"] .l-en{display:none}
+html[data-lang="zh"] body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",Inter,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--ink-link, var(--link));text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 72px}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+
+/* ── page brand / lead ── */
+.pg-brand{font-weight:800;font-size:23px;color:var(--text);letter-spacing:-.02em;margin:8px 0 2px;display:flex;align-items:center;gap:9px}
+.pg-brand .gn{color:var(--ink-info, var(--info))}
+.pg-lead{color:var(--muted);font-size:14px;margin:0 0 22px;max-width:60ch}
+
+/* ── HERO — glass state card ── */
+.hero{position:relative;background:var(--glass-bg);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-brd);border-radius:20px;padding:26px 28px;box-shadow:var(--glass-shadow);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 140% at 88% -20%, color-mix(in srgb,var(--info) 20%,transparent), transparent 60%)}
+.hero-inner{position:relative;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+.hero-eyebrow{font-size:var(--fs-sm,12.5px);font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:9px}
+.hero-state{font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:0;color:var(--text)}
+.hero-state .n{color:var(--ink-info, var(--info))}
+.stance{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:999px;font-size:13px;font-weight:700;margin-top:14px;
+  background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--ink-warn, var(--warn))}
+.stance::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.hero-sentence{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:46ch;line-height:1.55}
+/* right rail — the "line-up" motif: 3 stacked leg ticks converging into a dot */
+.hero-motif{width:132px;height:112px;flex:none}
+
+/* ── section head ── */
+.sec-h{display:flex;align-items:baseline;gap:10px;margin:34px 0 4px;flex-wrap:wrap}
+.sec-h h2{margin:0;font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.01em}
+.sec-h .sub{font-size:12.5px;color:var(--muted)}
+
+/* ── LEDGER CARD (signature) ── */
+.ledger{display:flex;flex-direction:column;gap:16px;margin-top:14px}
+.lc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:20px 22px 18px;transition:border-color .16s,box-shadow .16s,transform .16s}
+.lc:hover{border-color:var(--line);background:var(--panel)}
+.lc.free{border-color:var(--line)}
+.lc-top{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}
+/* rank chip — rank_score IS a real ordering, so the numeral carries information */
+.lc-rank{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--muted);
+  border:1px solid var(--line);border-radius:9px;padding:5px 9px;line-height:1;letter-spacing:.02em;white-space:nowrap;margin-top:2px}
+.lc.free .lc-rank{color:var(--text);background:var(--panel2);border-color:var(--line)}
+.lc-title{font-size:16px;font-weight:700;color:var(--text);line-height:1.35;letter-spacing:-.01em}
+.lc-since{font-size:var(--fs-sm,12.5px);color:var(--muted);margin-top:var(--sp-1,4px);overflow-wrap:anywhere}
+/* win-rate hero block — the number is the type hero, honestly paired with the older era */
+.lc-title-wrap{min-width:0}
+.lc-wr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2,8px) var(--sp-3,12px);width:310px;min-width:0;text-align:left}
+.lc-era{display:flex;flex-direction:column;gap:var(--sp-2,8px);min-width:0}
+.lc-era-label,.lc-sample,.lc-wr-unit{font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.45}
+.lc-era-label{font-weight:600}
+.lc-wr-big,.lc-wr-old{font:700 var(--fs-h1,28px)/1.1 var(--font-mono);color:var(--text);font-variant-numeric:tabular-nums}
+.lc-rate-denominator{font-size:var(--fs-sm,12.5px);color:var(--muted);font-weight:500}
+.lc-wr-unit{grid-column:1/-1;border-top:1px solid var(--line);padding-top:var(--sp-2,8px)}
+.lc-method{margin-top:var(--sp-3,12px);border-top:1px solid var(--line);font-size:var(--fs-sm,12.5px);color:var(--muted)}
+.lc-method summary{min-height:44px;display:flex;align-items:center;gap:var(--sp-2,8px);cursor:pointer;color:var(--text);font-weight:600;list-style:none}
+.lc-method summary::-webkit-details-marker{display:none}
+.lc-method summary::before{content:"+";font:700 16px var(--font-mono);width:16px;flex:none}
+.lc-method[open] summary::before{content:"−"}
+.lc-method p{font-size:var(--fs-body,14px);line-height:1.55;margin:0 0 var(--sp-3,12px);max-width:85ch}
+.confluence-access{display:flex;align-items:center;gap:var(--sp-3,12px);flex-wrap:wrap;padding:var(--sp-4,16px);margin-top:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);font-size:var(--fs-body,14px)}
+.confluence-access[hidden],.confluence-access button[hidden]{display:none}
+.empty .btn{margin-top:var(--sp-4,16px)}
+.tkr,.btn{min-height:44px}
+.tkr{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.tkr .nm{font-size:var(--fs-sm,12.5px);min-width:0}
+.hero::before{background:none}
+html[data-theme="light"] .hero,html[data-theme="light"] .lc,html[data-theme="light"] .cta-band{background:var(--panel);border-color:var(--line);box-shadow:var(--card-shadow);backdrop-filter:none}
+html[data-theme="light"] .confluence-access{background:var(--panel);box-shadow:var(--card-shadow)}
+
+
+/* the line-up leg stack */
+.legs{display:flex;flex-direction:column;gap:7px;margin:16px 0 4px}
+.leg{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:center}
+.leg-tf{font-family:var(--font-mono);font-size:10.5px;font-weight:700;text-align:center;border-radius:6px;padding:3px 0;line-height:1}
+.leg-tf.d{background:color-mix(in srgb,var(--muted) 20%,transparent);color:var(--muted)}
+.leg-tf.w{background:color-mix(in srgb,var(--info) 20%,transparent);color:var(--ink-info, var(--info))}
+.leg-txt{font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}
+.leg-txt::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:color-mix(in srgb,var(--up) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 14%,transparent)}
+
+/* wins-per-10 segmented bar */
+.w10{display:inline-flex;gap:3px;vertical-align:middle}
+.w10 i{width:10px;height:10px;border-radius:3px;background:color-mix(in srgb,var(--muted) 26%,transparent)}
+.w10.tone-free i.on{background:var(--up)}
+.w10.tone-gated i.on{background:color-mix(in srgb,var(--muted) 60%,transparent)}
+
+/* footer receipts row */
+.lc-foot{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.chip.ok{color:var(--ink-up, var(--up))}
+.chip .w10{margin-left:2px}
+.tickers{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.tkr{display:inline-flex;align-items:baseline;gap:6px;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--text);
+  background:color-mix(in srgb,var(--up) 12%,transparent);border:1px solid color-mix(in srgb,var(--up) 26%,transparent);
+  border-radius:8px;padding:5px 10px}
+.tkr .ticker-symbol{flex:none;white-space:nowrap}
+.tkr .nm{font-family:var(--font-ui);font-weight:500;font-size:var(--fs-sm,12.5px);color:var(--muted)}
+
+/* locked state — honest, built from active_count only. NO blurred text. */
+.locked{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding:14px 16px;border-radius:12px;
+  background:var(--panel2);border:1px dashed var(--line)}
+.locked .ic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--info) 16%,transparent);color:var(--ink-info, var(--info))}
+.locked .lk-tx{flex:1;min-width:180px;font-size:13px;color:var(--text);line-height:1.4}
+.locked .lk-tx b{font-weight:700}
+.locked .lk-tx .sub{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;border-radius:10px;padding:9px 16px;
+  background:var(--fill-info, var(--info));color:#fff;border:0;cursor:pointer;transition:filter .15s,transform .15s;white-space:nowrap}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--ink-info, var(--info));border:1px solid color-mix(in srgb,var(--info) 40%,var(--line))}
+
+/* honesty footer + big CTA */
+.honesty{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.honesty h3{margin:0 0 10px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.honesty ul{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+.honesty li{position:relative;padding-left:20px;font-size:13px;color:var(--text);line-height:1.5}
+.honesty li::before{content:"";position:absolute;left:2px;top:8px;width:7px;height:7px;border-radius:2px;background:color-mix(in srgb,var(--warn) 70%,transparent)}
+.cta-band{margin-top:22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  background:var(--glass-bg);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-brd);border-radius:16px;padding:20px 24px;box-shadow:var(--glass-shadow)}
+.cta-band .cb-tx{font-size:15px;font-weight:700;color:var(--text)}
+.cta-band .cb-sub{font-size:12.5px;color:var(--muted);font-weight:400;margin-top:3px}
+
+/* empty state */
+.empty{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:40px 24px;text-align:center;margin-top:14px}
+.empty .ec-ic{font-size:30px;margin-bottom:10px;opacity:.7}
+.empty h3{margin:0 0 6px;font-size:18px;font-weight:800;color:var(--text)}
+.empty p{margin:0 auto;font-size:13.5px;color:var(--muted);max-width:40ch;line-height:1.55}
+
+/* footer */
+.site-foot{max-width:1080px;margin:34px auto 0;padding:18px 20px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+
+/* zh Asia colour convention — theme.css swaps --up/--down globally, but our
+   green-tinted ticker chips + win cells reference --up so they follow for free.
+   Keep the wins bar semantic (win = good), so we DON'T flip it: a win is a win in
+   both languages. Guard only the ticker chip, which reads as "price up = green"
+   and should invert in zh. */
+html[data-lang="zh"] .tkr{background:color-mix(in srgb,var(--down) 12%,transparent);border-color:color-mix(in srgb,var(--down) 26%,transparent)}
+
+/* focus visibility */
+a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:8px}
+
+/* responsive */
+@media(max-width:640px){
+  .hero-inner{grid-template-columns:1fr}
+  .hero-motif{display:none}
+  .hero-state{font-size:26px}
+  .lc-top{grid-template-columns:auto 1fr;grid-template-areas:"rank title" "wr wr"}
+  .lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr;text-align:left;margin-top:6px}
+  .lc-wr{width:100%;gap:var(--sp-3,12px)}
+  .lc{padding:var(--sp-4,16px)}
+  .hero{padding:var(--sp-5,20px)}
+  .hero-eyebrow{overflow-wrap:anywhere}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* DARK (base) — dim dotted rule that brightens; no glow, no wash */
+.cs-tipped{ border-bottom:1px dotted color-mix(in srgb,var(--muted) 48%,transparent);
+            padding-bottom:3px; border-radius:var(--r-ctl,8px);
+            transition:border-color .16s ease, background .16s ease; }
+.cs-tipped:hover,.cs-tipped:focus-visible{ border-bottom-color:var(--info); background:none; outline:none; }
+.cs-tipped:focus-visible{ outline:2px solid var(--ink-info,var(--info)); outline-offset:3px; box-shadow:none; }
+
+/* LIGHT — crisp solid hairline; hover washes the material instead of brightening the rule */
+html[data-theme="light"] .cs-tipped{ border-bottom:1px solid color-mix(in srgb,var(--muted) 52%,transparent);
+            padding-bottom:2px; }
+html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:focus-visible{
+            background:color-mix(in srgb,var(--info) 9%,transparent);
+            border-bottom-color:color-mix(in srgb,var(--info) 60%,transparent); }
+@media (prefers-reduced-motion:reduce){ .cs-tipped{ transition:none; } }
+</style>
 </head>
 <body>
 
@@ -69,9 +243,9 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
-    
+
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
       <svg class="brand-glyph" width="29" height="29" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
@@ -96,24 +270,24 @@
       </svg>
       <span class="brand-word">MASTERMINDX</span>
     </a>
-    
+
     <div class="nav-dd">
       <a class="nav-link" href="macro.html"><span class="menu-icon menu-icon-flag menu-icon-us" aria-hidden="true"></span><span class="l-en">United States</span><span class="l-zh">美国</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="macro.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">Regime · growth · inflation · nowcast</span><span class="l-zh">市况 · 增长 · 通胀 · 实时测算</span></span></a>
         <a href="us_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · sectors · flows</span><span class="l-zh">Prophet · 板块 · 资金</span></span></a>
-        
+
         <a href="intraday_flow.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Intraday Flow Tracker</span><span class="l-zh">盘中资金流追踪</span><span class="d"><span class="l-en">Live session board — volume, tape and stance lanes · ≈15-min delayed</span><span class="l-zh">盘中实时看板 — 量能、盘面与操作分级 · 约延迟15分钟</span></span></a>
         <a href="stage_analysis.html"><span class="submenu-icon submenu-icon-stage" aria-hidden="true"></span><span class="l-en">Stage Analysis</span><span class="l-zh">阶段分析</span><span class="d"><span class="l-en">Stage 1-4 cycle · fresh breakouts · earnings tone</span><span class="l-zh">阶段1-4周期 · 新突破 · 财报语气</span></span></a>
-        
+
         <a href="winner_health.html"><span class="submenu-icon submenu-icon-leader" aria-hidden="true"></span><span class="l-en">Winner Health</span><span class="l-zh">持仓健康度</span><span class="d"><span class="l-en">Big gains near their highs · how the move is aging · what similar past runs did</span><span class="l-zh">涨幅可观且仍在高位 · 行情老化到什么程度 · 相似历史行情走过的路</span></span></a>
-        
+
         <a href="sector_central.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Sectors, themes & rotation in one read · lanes · cycle map · graded</span><span class="l-zh">板块·主题·轮动一页读 · 操作清单 · 周期图谱 · 自评分</span></span></a>
         <a href="sector_central.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now S&P 500 subsectors · T1-T4 tiers · two-way confirmed stocks · basket charts</span><span class="l-zh">S&P 500 现可入场子行业 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="strategies.html"><span class="submenu-icon submenu-icon-strategy" aria-hidden="true"></span><span class="l-en">Strategies</span><span class="l-zh">策略</span><span class="d"><span class="l-en">Tactical strategy scorecards</span><span class="l-zh">战术策略记分卡</span></span></a>
         <a href="news.html"><span class="submenu-icon submenu-icon-news" aria-hidden="true"></span><span class="l-en">News Feed</span><span class="l-zh">新闻流</span><span class="d"><span class="l-en">Macro headlines · catalysts · sentiment</span><span class="l-zh">宏观头条 · 日程 · 情绪</span></span></a>
         <a href="alerts.html"><span class="submenu-icon submenu-icon-alert" aria-hidden="true"></span><span class="l-en">Alert Center</span><span class="l-zh">警报中心</span><span class="d"><span class="l-en">Ranked & triaged alerts</span><span class="l-zh">分级分诊的警报</span></span></a>
-        
+
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="options.html"><span class="nav-sub-text"><span class="submenu-icon submenu-icon-options" aria-hidden="true"></span><span class="l-en">Options & Market Structure</span><span class="l-zh">期权与市场结构</span><span class="d"><span class="l-en">Workspace · dark pool · index regime</span><span class="l-zh">工作台 · 暗池 · 指数结构</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -130,7 +304,7 @@
       <div class="nav-dd-menu" role="menu">
         <a href="china.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">A-share regime · sectors · flows</span><span class="l-zh">A股周期 · 板块 · 资金</span></span></a>
         <a href="china_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · alpha · setups</span><span class="l-zh">Prophet · 超额收益 · 买点</span></span></a>
-        
+
         <a href="sector_central_china.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Gated board · cycle map · whole-market rotation · theme baskets — one page</span><span class="l-zh">门控研判 · 周期图谱 · 全市场轮动 · 主题篮子 — 一页尽览</span></span></a>
         <a href="sector_central_china.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now 同花顺 concepts · T1-T4 tiers · two-way confirmed A-shares · basket charts</span><span class="l-zh">同花顺现可入场概念 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="china_heatmap.html"><span class="submenu-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap</span><span class="l-zh">市场热力图</span><span class="d"><span class="l-en">Every A-share · sector treemap · market-cap</span><span class="l-zh">全部A股 · 板块树图 · 按市值</span></span></a>
@@ -177,7 +351,7 @@
       <a class="nav-link" href="intl.html"><span class="menu-icon menu-icon-intl" aria-hidden="true"></span><span class="l-en">International</span><span class="l-zh">国际</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="intl.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">JP · KR · TW · UK · EU compared</span><span class="l-zh">日 · 韩 · 台 · 英 · 欧 对比</span></span></a>
-        
+
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="japan.html"><span class="nav-sub-text"><span aria-hidden="true">🌐</span> <span class="l-en">Country Dashboards</span><span class="l-zh">国家看板</span><span class="d"><span class="l-en">Japan · Korea · Euro Area · UK · India</span><span class="l-zh">日本 · 韩国 · 欧元区 · 英国 · 印度</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -208,7 +382,7 @@
         <a href="bonds.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Bonds</span><span class="l-zh">债券</span><span class="d"><span class="l-en">Curve · credit · duration compass</span><span class="l-zh">曲线 · 信用 · 久期罗盘</span></span></a>
       </div>
     </div>
-    
+
     <div class="nav-dd nav-mega-dd">
       <a class="nav-link" href="intelligence_hub.html"><span class="menu-icon menu-icon-research" aria-hidden="true"></span><span class="l-en">Research</span><span class="l-zh">研究</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu nav-mega mega-menu" role="menu">
@@ -217,9 +391,9 @@
             <h2 class="section-label nav-mega-h"><span class="l-en">Core Research</span><span class="l-zh">核心研究</span></h2>
             <div class="item-grid nav-mega-item-grid">
               <a class="mega-item nm-feat" href="intelligence_hub.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 12 24 3l18 9v23l-18 10L6 35Z"/><path d="m24 9 12 7v15l-12 7-12-7V16Z"/><circle class="soft-fill" cx="24" cy="24" r="4"/><path class="accent" d="M24 20V9M28 24h8M24 28v10M20 24h-8M21 21l-6-5M27 21l6-5M21 27l-6 5M27 27l6 5"/><circle cx="24" cy="9" r="1.5"/><circle cx="36" cy="24" r="1.5"/><circle cx="24" cy="38" r="1.5"/><circle cx="12" cy="24" r="1.5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Intelligence Hub</span><span class="l-zh">情报中心</span></span><span class="item-desc d"><span class="l-en">Your complete market command center</span><span class="l-zh">你的完整市场指挥中心</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="watchlist.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M25 7a17 17 0 0 1 16 16"/><circle cx="21" cy="26" r="14"/><circle class="ghost" cx="21" cy="26" r="6"/><path class="accent" d="M21 12a14 14 0 0 1 12.1 7L21 26Z"/><path d="M21 12v14l12.1-7"/><circle class="soft-fill" cx="21" cy="26" r="3.2"/><path class="accent" d="M39 41v-9M44 41v-15"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Portfolio</span><span class="l-zh">Mastermind 组合</span></span><span class="item-desc d"><span class="l-en">Your holdings with tonight’s signals</span><span class="l-zh">你的持仓与今晚信号</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="https://bot.mastermind-x.com" target="_blank" rel="noopener"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M17 11V6M24 11V6M31 11V6M17 37v5M24 37v5M31 37v5M11 17H6M11 24H6M11 31H6M37 17h5M37 24h5M37 31h5"/><rect x="11" y="11" width="26" height="26" rx="5"/><path class="accent" d="m15 29 4-4 3.5 2.5 3.5-5.5"/><circle class="soft-fill" cx="26" cy="22" r="2.4"/><path class="ghost" d="m28 20.5 6-5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Bot</span><span class="l-zh">Mastermind 交易机器人</span><span class="nm-tier">PRO</span></span><span class="item-desc d"><span class="l-en">The AI’s own paper account — every trade explained</span><span class="l-zh">AI 自己的模拟账户，每笔交易都附理由</span></span></span></a>
               <a class="mega-item nm-feat" href="reports.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M13 7h22l6 6v28H13z"/><path d="M9 4h22l6 6v28H9z"/><path d="M31 4v7h6"/><path class="accent" d="M15 29h16M15 33h12M15 16h16"/><path d="m15 25 4-4 4 2 6-7 3 3"/><circle class="soft-fill" cx="29" cy="16" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Reports</span><span class="l-zh">研究报告</span></span><span class="item-desc d"><span class="l-en">Deep dives and market calls</span><span class="l-zh">深度研究与市场判断</span></span></span></a>
               <a class="mega-item nm-feat" href="research_vault.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="m7 14 17-9 17 9v23l-17 8-17-8Z"/><path d="m10 16 14-7 14 7v19l-14 7-14-7Z"/><path d="M10 16l14 7 14-7M24 23v19"/><circle class="soft-fill" cx="24" cy="27" r="6"/><path class="accent" d="M24 24v6M21 27h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Vault</span><span class="l-zh">研报库</span></span><span class="item-desc d"><span class="l-en">Search every published research note</span><span class="l-zh">搜索所有已发布研究</span></span></span></a>
@@ -228,7 +402,7 @@
               <a class="mega-item nm-feat" href="neural_web.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 24h36M24 6v36"/><circle class="soft-fill" cx="24" cy="24" r="5"/><circle cx="11" cy="12" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="9" cy="34" r="3"/><circle cx="39" cy="34" r="3"/><path class="accent" d="M20 21 13 14M28 21l7-7M20 27l-8 5M28 27l8 5M14 12h20M11 15l-2 16M37 15l2 16M12 34h24"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Neural Web</span><span class="l-zh">智脑</span></span><span class="item-desc d"><span class="l-en">See how every signal votes</span><span class="l-zh">查看每个信号如何投票</span></span></span></a>
               <a class="mega-item nm-feat" href="market_memory.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 10h32v28H8z"/><path d="M7 8h14c5 0 8 3 8 8v24c0-5-3-8-8-8H7zM41 8H27v32c0-5 3-8 8-8h6z"/><path class="accent" d="M13 16h9M13 21h7M33 15h4M33 20h4"/><circle class="soft-fill" cx="27" cy="29" r="4"/><path d="M24 29h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></span><span class="item-desc d"><span class="l-en">Put today beside comparable episodes</span><span class="l-zh">将今天与可比历史片段并排</span></span></span></a>
               <a class="mega-item nm-feat" href="reference.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h28v26H10z"/><path d="M7 12h28a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3Z"/><path class="accent" d="M16 12V8h12v4"/><path d="M11 22h18M11 28h13"/><circle class="soft-fill" cx="33" cy="28" r="3"/><path class="accent" d="M11 34h9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span></span><span class="item-desc d"><span class="l-en">Look up any indicator or term</span><span class="l-zh">查询任意指标与术语</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="am_edition.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 32h36M9 26h30"/><path class="accent" d="M24 22V8M24 8l-7 7M24 8l7 7"/><circle class="soft-fill" cx="24" cy="28" r="6"/><path d="M14 32v3M34 32v3M9 35v3M39 35v3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></span><span class="item-desc d"><span class="l-en">Tape, session clock, regime and watch — before the open</span><span class="l-zh">开盘前 — 盘面、交易时段、周期与观察</span></span></span></a>
             </div>
           </section>
@@ -288,11 +462,11 @@
       </div>
     </div>
   </div>
-  
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -301,7 +475,7 @@
     <div class="nav-sugg"></div>
   </div>
   <div class="nav-ctrls">
-    
+
     <a class="ai-brief-link nav-context-link" href="mastermind.html"><span class="product-icon product-icon-mastermind" aria-hidden="true"></span><span class="l-en">Mastermind</span><span class="l-zh">操盘大脑</span></a>
     <a class="ai-brief-link terminal-link" href="https://app.mastermind-x.com" target="_blank" rel="noopener"><span class="product-icon product-icon-terminal" aria-hidden="true"></span><span class="l-en">Terminal</span><span class="l-zh">终端</span></a>
     <button class="theme-switch" aria-label="Toggle dark / light mode">
@@ -318,37 +492,37 @@
 
 
 <div class="wrap">
-  <div class="pg-brand">📊 <span class="l-en">Signals <span class="gn">Lining Up</span></span><span class="l-zh">信号<span class="gn">共振</span></span></div>
+  <div class="pg-brand"><span class="l-en">Signals <span class="gn">Lining Up</span></span><span class="l-zh">信号<span class="gn">共振</span></span></div>
   <p class="pg-lead">
-    <span class="l-en">Free daily screener. When several proven buy signals line up on the same stock at once, we surface the pattern — with honest win rates from the recent years and the years before, printed side by side.</span>
-    <span class="l-zh">免费每日筛选器。当同一只股票上多个经检验的买入信号同时共振时，我们呈现该形态——并把近年与更早年份的胜率并排如实列出。</span>
+    <span class="l-en">Find signal combinations worth researching. Compare both historical periods before opening a company.</span>
+    <span class="l-zh">寻找值得研究的信号组合。先比较两段历史，再查看公司。</span>
   </p>
 
-  
-  
-  
+
+
+
   <div class="hero">
     <div class="hero-inner">
       <div>
-        <div class="hero-eyebrow"><span class="l-en">SETUP TAPE · 2026-11-03</span><span class="l-zh">布局磁带 · 2026-11-03</span></div>
+        <div class="hero-eyebrow"><span class="l-en">SOURCE BUILT · 2026-11-03T23:00:50Z</span><span class="l-zh">源数据生成于 · 2026-11-03T23:00:50Z</span></div>
         <h1 class="hero-state" tabindex="0"
-            data-tip-en="How many proven signal line-ups are firing across the large-cap list today. A line-up only appears here if it cleared the history gates below."
-            data-tip-zh="今日在大盘股名单中触发的、且已通过历史门槛的信号组合数量。未达门槛的组合不会出现在这里。"
+            data-tip-en="Eligible active signal combinations in this source snapshot, not stocks. The list below shows up to three combinations in source rank order."
+            data-tip-zh="此数据快照中符合条件的活跃信号组合数，不是股票数。下方最多展示按源数据排名的前三组。"
             data-tip-rc-en="Gates: ≥40 fires pooled · ≥24 distinct months pooled · ≥10 tickers · ≥15 fires and ≥12 distinct months since 2018-01-01 · horizon 21 trading days"
             data-tip-rc-zh="门槛：合计触发 ≥40 次 · 合计 ≥24 个不同月份 · ≥10 只股票 · 2018-01-01 起触发 ≥15 次且覆盖 ≥12 个不同月份 · 持有期 21 个交易日">
-          <span class="l-en"><span class="n">3</span> setups lining up today</span>
-          <span class="l-zh"><span class="n">3</span> 组信号今日共振</span>
+          <span class="l-en"><span class="n">18</span> active line-ups</span>
+          <span class="l-zh"><span class="n">18</span> 组活跃信号组合</span>
         </h1>
         <span class="stance">
           <span class="l-en">Watch &amp; research — don't chase</span>
           <span class="l-zh">观察研究，别追高</span>
         </span>
         <p class="hero-sentence">
-          <span class="l-en">These are historical leads, not buy calls. The strongest one below is free — see the stock it's matching now. Two more are lining up behind it.</span>
-          <span class="l-zh">这些是历史线索，非买入建议。下方最强的一组免费——查看它当前匹配的股票。另有两组正在其后共振。</span>
+          <span class="l-en">Showing 3 of 18 eligible line-ups. Open the first group's companies for free.</span>
+          <span class="l-zh">展示 18 组中的前 3 组。第一组的匹配公司可免费查看。</span>
         </p>
       </div>
-      
+
       <svg class="hero-motif" viewBox="0 0 132 112" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <g fill="none" stroke-width="2.4" stroke-linecap="round">
           <path d="M6 26 H84" stroke="var(--info)" opacity=".55"/>
@@ -366,239 +540,249 @@
     </div>
   </div>
 
-  
+
   <div class="sec-h">
-    <h2><span class="l-en">Today&#39;s line-ups</span><span class="l-zh">今日共振组合</span></h2>
-    <span class="sub"><span class="l-en">Ranked strongest first · large established US stocks</span><span class="l-zh">按强度排序 · 大型成熟美股</span></span>
+    <h2><span class="l-en">Compare the evidence</span><span class="l-zh">比较历史依据</span></h2>
+    <span class="sub"><span class="l-en">Source rank · large established US stocks</span><span class="l-zh">源数据排名 · 大型成熟美股</span></span>
   </div>
 
   <div class="ledger">
-    
+
     <div class="lc free">
       <div class="lc-top">
         <div class="lc-rank cs-tipped" tabindex="0"
-             data-tip-en="Ranked by the cautious end of its recent win rate — a line-up with fewer months behind it is pushed down, not up."
-             data-tip-zh="按近年胜率的保守下限排序——历史月份越少的组合排名越靠后，而非靠前。"
-             data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, minus the random-entry baseline, 21-day horizon, recent half"
-             data-tip-rc-zh="按月合并胜率的 Wilson 置信下限，减去随机入场基准 · 21 日持有期 · 近期样本">01</div>
+             data-tip-en="Source ordering uses recent monthly win averages and a small-sample penalty relative to random entry. This ranking heuristic does not establish statistical significance."
+             data-tip-zh="源数据按近年月均胜率、样本量惩罚和随机入场基准排序。这是排序方法，不代表统计显著性。"
+             data-tip-rc-en="Wilson-based ranking heuristic on the monthly win average, minus the random-entry baseline · 21 trading days · recent test period"
+             data-tip-rc-zh="月均胜率的 Wilson 排序近似值，减去随机入场基准 · 21 个交易日 · 近期测试期">01</div>
         <div class="lc-title-wrap">
           <div class="lc-title"><span class="l-en">Weekly 50/200 golden cross + weekly reclaims 7-day line + weekly ribbon flips up + weekly Stochastic-RSI bullish cross</span><span class="l-zh">周线50/200金叉 + 周线站上7日线 + 周线均线带翻多 + 周线随机 RSI 金叉</span></div>
           <div class="lc-since" tabindex="0"
-               data-tip-en="Every time all of this line-up's signals were true for a stock on the same day counts as one sighting. The yearly figure is those sightings spread over the span between the first and the last."
-               data-tip-zh="该组合的全部信号在同一天对同一只股票同时成立，即计为一次出现。「每年约 N 次」是把这些次数摊到首末两次之间的年数上。">
+               data-tip-en="A sighting starts when a stock's full signal combination changes from false to true. Consecutive days that stay true do not add sightings. The yearly figure averages sightings over the first-to-last span."
+               data-tip-zh="某只股票的完整信号组合由不成立变为成立，计为一次触发。连续成立的日期不重复计数。年均次数按首次至末次的时间跨度计算。">
+
             <span class="l-en">Seen 62 times since 1972 · about 1.1 a year · last 2026-10-23</span>
             <span class="l-zh">自 1972 年出现 62 次 · 约每年 1.1 次 · 最近 2026-10-23</span>
+
           </div>
         </div>
         <div class="lc-wr">
-          <div class="lc-wr-big mono cs-tipped" tabindex="0"
-               data-tip-en="Out of the recent months where this line-up fired, the share that ended higher 21 trading days later — about a calendar month. Each month counts once, so a busy month can't inflate it."
-               data-tip-zh="在近年触发过的月份中，21 个交易日（约一个自然月）后收高的月份占比。每个月只计一次，密集触发不会虚增。"
-               data-tip-rc-en="15 months · 16 fires · 2018-01-01 → 2026-11-03 · win = up after 21 trading days"
-               data-tip-rc-zh="15 个月 · 触发 16 次 · 2018-01-01 至 2026-11-03 · 胜 = 21 个交易日后上涨">9.3<span style="font-size:15px;color:var(--muted);font-weight:600">/10</span></div>
-          <div class="lc-wr-unit"><span class="l-en">wins recently (2018+)</span><span class="l-zh">近年胜率 (2018起)</span></div>
-          <div class="lc-wr-old cs-tipped" tabindex="0"
-               data-tip-en="The same reading on the years before the split — the out-of-sample check. A line-up that only works after the split is the one to distrust."
-               data-tip-zh="同一读数应用于分割日之前的年份——即样本外检验。只在分割日之后才有效的组合最值得怀疑。"
-               data-tip-rc-en="36 months · 45 fires · first fire 1972-10-13 → 2018-01-01"
-               data-tip-rc-zh="36 个月 · 触发 45 次 · 首次触发 1972-10-13 至 2018-01-01"><span class="l-en">older years:</span><span class="l-zh">更早年份:</span> <b>6.7/10</b></div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
+            <div class="lc-wr-big mono">9.3<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">15 months · 16 fires</span><span class="l-zh">15 个月 · 16 次触发</span></div>
+          </div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
+            <div class="lc-wr-old">6.7<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">36 months · 45 fires</span><span class="l-zh">36 个月 · 45 次触发</span></div>
+          </div>
+          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
         </div>
       </div>
 
-      
+      <details class="lc-method">
+        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
+        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
+        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
+      </details>
+
+
       <div class="legs">
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf w" tabindex="0"
-                data-tip-en="Read on weekly bars — a slower leg that only changes a few times a year."
-                data-tip-zh="按周线读取——变化较慢的一条，一年只切换几次。">W</span>
-          
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
+
           <span class="leg-txt"><span class="l-en">Golden Cross (50/200)</span><span class="l-zh">黄金交叉 (50/200)</span></span>
         </div>
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf w" tabindex="0"
-                data-tip-en="Read on weekly bars — a slower leg that only changes a few times a year."
-                data-tip-zh="按周线读取——变化较慢的一条，一年只切换几次。">W</span>
-          
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
+
           <span class="leg-txt"><span class="l-en">MA Buy (7)</span><span class="l-zh">均线买入 (7)</span></span>
         </div>
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf w" tabindex="0"
-                data-tip-en="Read on weekly bars — a slower leg that only changes a few times a year."
-                data-tip-zh="按周线读取——变化较慢的一条，一年只切换几次。">W</span>
-          
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
+
           <span class="leg-txt"><span class="l-en">Trend Ribbon — Flip to Uptrend</span><span class="l-zh">趋势带 — 翻转为上升趋势</span></span>
         </div>
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf w" tabindex="0"
-                data-tip-en="Read on weekly bars — a slower leg that only changes a few times a year."
-                data-tip-zh="按周线读取——变化较慢的一条，一年只切换几次。">W</span>
-          
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
+
           <span class="leg-txt"><span class="l-en">Stochastic-RSI bullish cross</span><span class="l-zh">随机 RSI 金叉</span></span>
         </div>
-        
+
       </div>
 
       <div class="lc-foot">
         <span class="chip ok" tabindex="0"
-              data-tip-en="Ten blocks, one per win in ten. Filled blocks are the recent win rate rounded to the nearest whole win."
-              data-tip-zh="十个方块代表十次中的胜负。填充的方块数是近年胜率四舍五入到整数的结果。">
+              data-tip-en="Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades."
+              data-tip-zh="十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。">
 <span class="w10 tone-free" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
           <span class="l-en">9.3 in 10 recently</span>
           <span class="l-zh">近年 9.3/10</span></span>
-        
-        
+
         <span class="chip cs-tipped" tabindex="0"
               data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
-              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。"
-              data-tip-rc-en="Random-entry baseline, month-collapsed win rate, 21-day horizon, 2018-01-01 → 2026-11-03"
-              data-tip-rc-zh="随机入场基准 · 按月合并胜率 · 21 日持有期 · 2018-01-01 至 2026-11-03">
-          <span class="l-en">+37 points better than entering at random</span>
-          
-          <span class="l-zh">较随机入场高 37 个百分点</span>
-          
+              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。">
+          <span class="l-en">+36.6 percentage points vs random entry</span>
+          <span class="l-zh">较随机入场 +36.6 个百分点</span>
         </span>
-        
-        <span class="chip ok cs-tipped" tabindex="0"
-              data-tip-en="It beat random entry in the older years as well as the recent ones. Both halves had to clear the bar, not just the recent one."
-              data-tip-zh="在更早年份与近年，它都跑赢了随机入场。两段样本须同时达标，而非只看近年。">✓ <span class="l-en">held up in both eras</span><span class="l-zh">两期均稳</span></span>
-        
+
+        <span class="chip ok"><span class="l-en">Above baseline in both periods</span><span class="l-zh">两期均高于基准</span></span>
+
+
       </div>
 
-      
-      
-        
+
+
+
         <div class="lc-foot" style="border-top:0;padding-top:6px;margin-top:8px">
           <span class="chip ok" style="color:var(--text)">
-            <span class="l-en">Matching now &nbsp;→</span><span class="l-zh">当前匹配 &nbsp;→</span>
+            <span class="l-en">Matching in this snapshot &nbsp;→</span><span class="l-zh">此快照匹配 &nbsp;→</span>
           </span>
           <div class="tickers">
-            
-            <a class="tkr" href="stocks/DG.html">DG<span class="nm">Dollar General</span></a>
-            
+
+            <a class="tkr" href="stocks/DG.html"><span class="ticker-symbol">DG</span><span class="nm">Dollar General</span></a>
+
           </div>
         </div>
-        
-      
+
+
     </div>
-    
+
     <div class="lc gated">
       <div class="lc-top">
         <div class="lc-rank cs-tipped" tabindex="0"
-             data-tip-en="Ranked by the cautious end of its recent win rate — a line-up with fewer months behind it is pushed down, not up."
-             data-tip-zh="按近年胜率的保守下限排序——历史月份越少的组合排名越靠后，而非靠前。"
-             data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, minus the random-entry baseline, 21-day horizon, recent half"
-             data-tip-rc-zh="按月合并胜率的 Wilson 置信下限，减去随机入场基准 · 21 日持有期 · 近期样本">02</div>
+             data-tip-en="Source ordering uses recent monthly win averages and a small-sample penalty relative to random entry. This ranking heuristic does not establish statistical significance."
+             data-tip-zh="源数据按近年月均胜率、样本量惩罚和随机入场基准排序。这是排序方法，不代表统计显著性。"
+             data-tip-rc-en="Wilson-based ranking heuristic on the monthly win average, minus the random-entry baseline · 21 trading days · recent test period"
+             data-tip-rc-zh="月均胜率的 Wilson 排序近似值，减去随机入场基准 · 21 个交易日 · 近期测试期">02</div>
         <div class="lc-title-wrap">
           <div class="lc-title"><span class="l-en">Weekly 50/200 golden cross + weekly cloud breakout + RSI stack curls up + RSI crosses above 50</span><span class="l-zh">周线50/200金叉 + 周线向上突破云层 + RSI组齐转上 + RSI 上穿 50</span></div>
           <div class="lc-since" tabindex="0"
-               data-tip-en="Every time all of this line-up's signals were true for a stock on the same day counts as one sighting. The yearly figure is those sightings spread over the span between the first and the last."
-               data-tip-zh="该组合的全部信号在同一天对同一只股票同时成立，即计为一次出现。「每年约 N 次」是把这些次数摊到首末两次之间的年数上。">
+               data-tip-en="A sighting starts when a stock's full signal combination changes from false to true. Consecutive days that stay true do not add sightings. The yearly figure averages sightings over the first-to-last span."
+               data-tip-zh="某只股票的完整信号组合由不成立变为成立，计为一次触发。连续成立的日期不重复计数。年均次数按首次至末次的时间跨度计算。">
+
             <span class="l-en">Seen 82 times since 1971 · about 1.5 a year · last 2026-10-29</span>
             <span class="l-zh">自 1971 年出现 82 次 · 约每年 1.5 次 · 最近 2026-10-29</span>
+
           </div>
         </div>
         <div class="lc-wr">
-          <div class="lc-wr-big mono cs-tipped" tabindex="0"
-               data-tip-en="Out of the recent months where this line-up fired, the share that ended higher 21 trading days later — about a calendar month. Each month counts once, so a busy month can't inflate it."
-               data-tip-zh="在近年触发过的月份中，21 个交易日（约一个自然月）后收高的月份占比。每个月只计一次，密集触发不会虚增。"
-               data-tip-rc-en="18 months · 21 fires · 2018-01-01 → 2026-11-03 · win = up after 21 trading days"
-               data-tip-rc-zh="18 个月 · 触发 21 次 · 2018-01-01 至 2026-11-03 · 胜 = 21 个交易日后上涨">9.2<span style="font-size:15px;color:var(--muted);font-weight:600">/10</span></div>
-          <div class="lc-wr-unit"><span class="l-en">wins recently (2018+)</span><span class="l-zh">近年胜率 (2018起)</span></div>
-          <div class="lc-wr-old cs-tipped" tabindex="0"
-               data-tip-en="The same reading on the years before the split — the out-of-sample check. A line-up that only works after the split is the one to distrust."
-               data-tip-zh="同一读数应用于分割日之前的年份——即样本外检验。只在分割日之后才有效的组合最值得怀疑。"
-               data-tip-rc-en="49 months · 60 fires · first fire 1971-11-12 → 2018-01-01"
-               data-tip-rc-zh="49 个月 · 触发 60 次 · 首次触发 1971-11-12 至 2018-01-01"><span class="l-en">older years:</span><span class="l-zh">更早年份:</span> <b>6.9/10</b></div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
+            <div class="lc-wr-big mono">9.2<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">18 months · 21 fires</span><span class="l-zh">18 个月 · 21 次触发</span></div>
+          </div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
+            <div class="lc-wr-old">6.9<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">49 months · 60 fires</span><span class="l-zh">49 个月 · 60 次触发</span></div>
+          </div>
+          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
         </div>
       </div>
 
-      
+      <details class="lc-method">
+        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
+        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
+        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
+      </details>
+
+
       <div class="legs">
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf w" tabindex="0"
-                data-tip-en="Read on weekly bars — a slower leg that only changes a few times a year."
-                data-tip-zh="按周线读取——变化较慢的一条，一年只切换几次。">W</span>
-          
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
+
           <span class="leg-txt"><span class="l-en">Golden Cross (50/200)</span><span class="l-zh">黄金交叉 (50/200)</span></span>
         </div>
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf w" tabindex="0"
-                data-tip-en="Read on weekly bars — a slower leg that only changes a few times a year."
-                data-tip-zh="按周线读取——变化较慢的一条，一年只切换几次。">W</span>
-          
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
+
           <span class="leg-txt"><span class="l-en">Ichimoku — Cloud Breakout Up (Price crosses above Kumo)</span><span class="l-zh">一目均衡 — 向上突破云层（价格上穿云顶）</span></span>
         </div>
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf d" tabindex="0"
-                data-tip-en="Read on daily bars — this signal has to be true on the day."
-                data-tip-zh="按日线读取——该信号须在当日成立。">D</span>
-          
+                data-tip-en="This leg is evaluated on daily bars. The indicator itself may use a longer lookback."
+                data-tip-zh="此条件在日线数据上计算；指标本身可能使用更长的回看窗口。">D</span>
+
           <span class="leg-txt"><span class="l-en">RSI Stack (7/14/21) — All Three Curling Up</span><span class="l-zh">RSI叠加（7/14/21）— 三条RSI同步上翘</span></span>
         </div>
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf d" tabindex="0"
-                data-tip-en="Read on daily bars — this signal has to be true on the day."
-                data-tip-zh="按日线读取——该信号须在当日成立。">D</span>
-          
+                data-tip-en="This leg is evaluated on daily bars. The indicator itself may use a longer lookback."
+                data-tip-zh="此条件在日线数据上计算；指标本身可能使用更长的回看窗口。">D</span>
+
           <span class="leg-txt"><span class="l-en">RSI crosses above 50</span><span class="l-zh">RSI 上穿 50</span></span>
         </div>
-        
+
       </div>
 
       <div class="lc-foot">
         <span class="chip ok" tabindex="0"
-              data-tip-en="Ten blocks, one per win in ten. Filled blocks are the recent win rate rounded to the nearest whole win."
-              data-tip-zh="十个方块代表十次中的胜负。填充的方块数是近年胜率四舍五入到整数的结果。">
+              data-tip-en="Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades."
+              data-tip-zh="十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。">
 <span class="w10 tone-gated" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
           <span class="l-en">9.2 in 10 recently</span>
           <span class="l-zh">近年 9.2/10</span></span>
-        
-        
+
         <span class="chip cs-tipped" tabindex="0"
               data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
-              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。"
-              data-tip-rc-en="Random-entry baseline, month-collapsed win rate, 21-day horizon, 2018-01-01 → 2026-11-03"
-              data-tip-rc-zh="随机入场基准 · 按月合并胜率 · 21 日持有期 · 2018-01-01 至 2026-11-03">
-          <span class="l-en">+35 points better than entering at random</span>
-          
-          <span class="l-zh">较随机入场高 35 个百分点</span>
-          
+              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。">
+          <span class="l-en">+35.0 percentage points vs random entry</span>
+          <span class="l-zh">较随机入场 +35.0 个百分点</span>
         </span>
-        
-        <span class="chip ok cs-tipped" tabindex="0"
-              data-tip-en="It beat random entry in the older years as well as the recent ones. Both halves had to clear the bar, not just the recent one."
-              data-tip-zh="在更早年份与近年，它都跑赢了随机入场。两段样本须同时达标，而非只看近年。">✓ <span class="l-en">held up in both eras</span><span class="l-zh">两期均稳</span></span>
-        
+
+        <span class="chip ok"><span class="l-en">Above baseline in both periods</span><span class="l-zh">两期均高于基准</span></span>
+
+
       </div>
 
-      
-      
-        <div class="locked" data-confluence-combo="L0005">
+
+
+        <div class="locked" data-confluence-combo="L0005" data-confluence-count="1">
           <span class="ic" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
           </span>
           <span class="lk-tx">
             <b class="cs-tipped" tabindex="0"
-               data-tip-en="How many of today's large-cap names this line-up matches right now. The names sit behind the trial; the count does not."
-               data-tip-zh="该组合当前匹配的大盘股数量。具体名称需试用后查看，数量本身不设限。">
-              <span class="l-en">1 stock lining up now</span>
-              <span class="l-zh">1 只股票当前共振</span>
+               data-tip-en="Matching large-cap stocks in this source snapshot. Their count is public; names require an entitled response for this same snapshot."
+               data-tip-zh="此源数据快照中匹配的大盘股数量。数量公开；名称须来自有权限访问的同一快照。">
+              <span class="l-en">1 stock in this snapshot</span>
+              <span class="l-zh">1 只股票在此快照匹配</span>
             </b>
             <span class="sub">
               <span class="l-en">Unlock this line-up's matching tickers with the free trial.</span>
@@ -607,110 +791,115 @@
           </span>
           <a class="btn" href="https://app.mastermind-x.com/?utm_source=site&amp;utm_medium=free_tools&amp;utm_campaign=confluence_screener&amp;utm_content=cta"><span class="l-en">Start free trial</span><span class="l-zh">开始免费试用</span></a>
         </div>
-      
+
     </div>
-    
+
     <div class="lc gated">
       <div class="lc-top">
         <div class="lc-rank cs-tipped" tabindex="0"
-             data-tip-en="Ranked by the cautious end of its recent win rate — a line-up with fewer months behind it is pushed down, not up."
-             data-tip-zh="按近年胜率的保守下限排序——历史月份越少的组合排名越靠后，而非靠前。"
-             data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, minus the random-entry baseline, 21-day horizon, recent half"
-             data-tip-rc-zh="按月合并胜率的 Wilson 置信下限，减去随机入场基准 · 21 日持有期 · 近期样本">03</div>
+             data-tip-en="Source ordering uses recent monthly win averages and a small-sample penalty relative to random entry. This ranking heuristic does not establish statistical significance."
+             data-tip-zh="源数据按近年月均胜率、样本量惩罚和随机入场基准排序。这是排序方法，不代表统计显著性。"
+             data-tip-rc-en="Wilson-based ranking heuristic on the monthly win average, minus the random-entry baseline · 21 trading days · recent test period"
+             data-tip-rc-zh="月均胜率的 Wilson 排序近似值，减去随机入场基准 · 21 个交易日 · 近期测试期">03</div>
         <div class="lc-title-wrap">
           <div class="lc-title"><span class="l-en">Weekly 7/35 golden cross + reclaims 21-day line + Bi-weekly Stochastic-RSI bullish cross</span><span class="l-zh">周线7/35金叉 + 站上21日线 + 双周随机 RSI 金叉</span></div>
           <div class="lc-since" tabindex="0"
-               data-tip-en="Every time all of this line-up's signals were true for a stock on the same day counts as one sighting. The yearly figure is those sightings spread over the span between the first and the last."
-               data-tip-zh="该组合的全部信号在同一天对同一只股票同时成立，即计为一次出现。「每年约 N 次」是把这些次数摊到首末两次之间的年数上。">
+               data-tip-en="A sighting starts when a stock's full signal combination changes from false to true. Consecutive days that stay true do not add sightings. The yearly figure averages sightings over the first-to-last span."
+               data-tip-zh="某只股票的完整信号组合由不成立变为成立，计为一次触发。连续成立的日期不重复计数。年均次数按首次至末次的时间跨度计算。">
+
             <span class="l-en">Seen 103 times since 1964 · about 1.6 a year · last 2026-10-30</span>
             <span class="l-zh">自 1964 年出现 103 次 · 约每年 1.6 次 · 最近 2026-10-30</span>
+
           </div>
         </div>
         <div class="lc-wr">
-          <div class="lc-wr-big mono cs-tipped" tabindex="0"
-               data-tip-en="Out of the recent months where this line-up fired, the share that ended higher 21 trading days later — about a calendar month. Each month counts once, so a busy month can't inflate it."
-               data-tip-zh="在近年触发过的月份中，21 个交易日（约一个自然月）后收高的月份占比。每个月只计一次，密集触发不会虚增。"
-               data-tip-rc-en="12 months · 17 fires · 2018-01-01 → 2026-11-03 · win = up after 21 trading days"
-               data-tip-rc-zh="12 个月 · 触发 17 次 · 2018-01-01 至 2026-11-03 · 胜 = 21 个交易日后上涨">9.0<span style="font-size:15px;color:var(--muted);font-weight:600">/10</span></div>
-          <div class="lc-wr-unit"><span class="l-en">wins recently (2018+)</span><span class="l-zh">近年胜率 (2018起)</span></div>
-          <div class="lc-wr-old cs-tipped" tabindex="0"
-               data-tip-en="The same reading on the years before the split — the out-of-sample check. A line-up that only works after the split is the one to distrust."
-               data-tip-zh="同一读数应用于分割日之前的年份——即样本外检验。只在分割日之后才有效的组合最值得怀疑。"
-               data-tip-rc-en="71 months · 84 fires · first fire 1964-07-22 → 2018-01-01"
-               data-tip-rc-zh="71 个月 · 触发 84 次 · 首次触发 1964-07-22 至 2018-01-01"><span class="l-en">older years:</span><span class="l-zh">更早年份:</span> <b>5.7/10</b></div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
+            <div class="lc-wr-big mono">9.0<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">12 months · 17 fires</span><span class="l-zh">12 个月 · 17 次触发</span></div>
+          </div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
+            <div class="lc-wr-old">5.7<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">71 months · 84 fires</span><span class="l-zh">71 个月 · 84 次触发</span></div>
+          </div>
+          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
         </div>
       </div>
 
-      
+      <details class="lc-method">
+        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
+        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
+        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
+      </details>
+
+
       <div class="legs">
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf w" tabindex="0"
-                data-tip-en="Read on weekly bars — a slower leg that only changes a few times a year."
-                data-tip-zh="按周线读取——变化较慢的一条，一年只切换几次。">W</span>
-          
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
+
           <span class="leg-txt"><span class="l-en">Golden Cross (7/35)</span><span class="l-zh">黄金交叉 (7/35)</span></span>
         </div>
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf d" tabindex="0"
-                data-tip-en="Read on daily bars — this signal has to be true on the day."
-                data-tip-zh="按日线读取——该信号须在当日成立。">D</span>
-          
+                data-tip-en="This leg is evaluated on daily bars. The indicator itself may use a longer lookback."
+                data-tip-zh="此条件在日线数据上计算；指标本身可能使用更长的回看窗口。">D</span>
+
           <span class="leg-txt"><span class="l-en">MA Buy (21)</span><span class="l-zh">均线买入 (21)</span></span>
         </div>
-        
+
         <div class="leg">
-          
+
           <span class="leg-tf d" tabindex="0"
-                data-tip-en="Read on daily bars — this signal has to be true on the day."
-                data-tip-zh="按日线读取——该信号须在当日成立。">D</span>
-          
+                data-tip-en="This leg is evaluated on daily bars. The indicator itself may use a longer lookback."
+                data-tip-zh="此条件在日线数据上计算；指标本身可能使用更长的回看窗口。">D</span>
+
           <span class="leg-txt"><span class="l-en">Bi-weekly Stochastic-RSI bullish cross</span><span class="l-zh">双周随机 RSI 金叉</span></span>
         </div>
-        
+
       </div>
 
       <div class="lc-foot">
         <span class="chip ok" tabindex="0"
-              data-tip-en="Ten blocks, one per win in ten. Filled blocks are the recent win rate rounded to the nearest whole win."
-              data-tip-zh="十个方块代表十次中的胜负。填充的方块数是近年胜率四舍五入到整数的结果。">
+              data-tip-en="Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades."
+              data-tip-zh="十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。">
 <span class="w10 tone-gated" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
           <span class="l-en">9.0 in 10 recently</span>
           <span class="l-zh">近年 9.0/10</span></span>
-        
-        
+
         <span class="chip cs-tipped" tabindex="0"
               data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
-              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。"
-              data-tip-rc-en="Random-entry baseline, month-collapsed win rate, 21-day horizon, 2018-01-01 → 2026-11-03"
-              data-tip-rc-zh="随机入场基准 · 按月合并胜率 · 21 日持有期 · 2018-01-01 至 2026-11-03">
-          <span class="l-en">+34 points better than entering at random</span>
-          
-          <span class="l-zh">较随机入场高 34 个百分点</span>
-          
+              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。">
+          <span class="l-en">+33.6 percentage points vs random entry</span>
+          <span class="l-zh">较随机入场 +33.6 个百分点</span>
         </span>
-        
-        <span class="chip ok cs-tipped" tabindex="0"
-              data-tip-en="It beat random entry in the older years as well as the recent ones. Both halves had to clear the bar, not just the recent one."
-              data-tip-zh="在更早年份与近年，它都跑赢了随机入场。两段样本须同时达标，而非只看近年。">✓ <span class="l-en">held up in both eras</span><span class="l-zh">两期均稳</span></span>
-        
+
+        <span class="chip ok"><span class="l-en">Above baseline in both periods</span><span class="l-zh">两期均高于基准</span></span>
+
+
       </div>
 
-      
-      
-        <div class="locked" data-confluence-combo="L0019">
+
+
+        <div class="locked" data-confluence-combo="L0019" data-confluence-count="1">
           <span class="ic" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
           </span>
           <span class="lk-tx">
             <b class="cs-tipped" tabindex="0"
-               data-tip-en="How many of today's large-cap names this line-up matches right now. The names sit behind the trial; the count does not."
-               data-tip-zh="该组合当前匹配的大盘股数量。具体名称需试用后查看，数量本身不设限。">
-              <span class="l-en">1 stock lining up now</span>
-              <span class="l-zh">1 只股票当前共振</span>
+               data-tip-en="Matching large-cap stocks in this source snapshot. Their count is public; names require an entitled response for this same snapshot."
+               data-tip-zh="此源数据快照中匹配的大盘股数量。数量公开；名称须来自有权限访问的同一快照。">
+              <span class="l-en">1 stock in this snapshot</span>
+              <span class="l-zh">1 只股票在此快照匹配</span>
             </b>
             <span class="sub">
               <span class="l-en">Unlock this line-up's matching tickers with the free trial.</span>
@@ -719,12 +908,12 @@
           </span>
           <a class="btn" href="https://app.mastermind-x.com/?utm_source=site&amp;utm_medium=free_tools&amp;utm_campaign=confluence_screener&amp;utm_content=cta"><span class="l-en">Start free trial</span><span class="l-zh">开始免费试用</span></a>
         </div>
-      
+
     </div>
-    
+
   </div>
 
-  
+
   <div class="honesty">
     <h3><span class="l-en">How to read this honestly</span><span class="l-zh">如何客观解读</span></h3>
     <ul>
@@ -732,194 +921,312 @@
         <span class="l-zh"><b>线索，非定论。</b>这些组合由自动搜索大量信号配方得出。请将其视为值得观察与研究的线索，而非保证。</span></li>
       <li><span class="l-en"><b>The stocks are survivors.</b> The list covers 255 large, established US companies — names that made it. That flatters the win rates. Small and failed companies aren't here.</span>
         <span class="l-zh"><b>标的是幸存者。</b>名单覆盖 255 家大型成熟美国公司——都是活下来的赢家。这会美化胜率。小盘股与失败公司不在其中。</span></li>
-      <li><span class="l-en"><b>Small recent samples.</b> A recent-era rate can rest on only a couple dozen monthly readings — samples that thin will wobble. Hover or tap any win rate to see how many months it rests on.</span>
-        <span class="l-zh"><b>近期样本偏小。</b>近期胜率可能只基于二十来个月度读数——样本这么小，数字会有波动。将鼠标移到任一胜率上（手机端点按），即可看到它基于多少个月的读数。</span></li>
-      <li><span class="l-en"><b>Win rates are historical, month-by-month reads.</b> Each calendar month counts once, so clusters don't inflate them. We show the recent years and the older years so you can see if a pattern is cherry-picked.</span>
-        <span class="l-zh"><b>胜率是逐月的历史读数。</b>每个日历月只计一次，密集触发不会虚增。我们同时展示近年与更早年份，便于你判断某形态是否被挑选出来。</span></li>
+      <li><span class="l-en"><b>Small recent samples.</b> A recent-era rate can rest on only a couple dozen monthly readings — samples that thin will wobble. Months and fires are shown beside each rate; open “How these readings are calculated” for definitions.</span>
+        <span class="l-zh"><b>近期样本偏小。</b>近期胜率可能只基于二十来个月度读数——样本这么小，数字会有波动。月份与触发次数列在各读数旁；打开「这些读数如何计算」可查看定义。</span></li>
+      <li><span class="l-en"><b>Win rates are historical, month-by-month reads.</b> First average wins within each month, then average those months equally. This does not remove dependence between observations or selection bias from searching many recipes.</span>
+        <span class="l-zh"><b>胜率是逐月的历史读数。</b>先计算每个月内的胜率，再对各月等权平均。这不能消除观察值之间的相关性，也不能消除搜索大量组合带来的选择偏差。</span></li>
       <li><span class="l-en"><b>The honest stance is watch, not buy.</b> A signal lining up tells you where to look. Your own entry, sizing and stop are still your call.</span>
         <span class="l-zh"><b>客观立场是观察，而非买入。</b>信号共振告诉你该看哪里。具体入场、仓位与止损仍由你决定。</span></li>
     </ul>
   </div>
 
+
+  <div class="confluence-access" id="confluence-access-status" hidden>
+    <span role="status" aria-live="polite" id="confluence-access-message"></span>
+    <button type="button" class="btn ghost" id="confluence-check-access" hidden><span class="l-en">Check access</span><span class="l-zh">检查访问权限</span></button>
+    <button type="button" class="btn ghost" id="confluence-reload-access" hidden><span class="l-en">Reload latest page</span><span class="l-zh">重新加载最新页面</span></button>
+  </div>
   <div class="cta-band" id="confluence-paid-cta">
     <div>
-      <div class="cb-tx"><span class="l-en">See every line-up's matching stocks</span><span class="l-zh">查看每组共振匹配的股票</span></div>
-      <div class="cb-sub"><span class="l-en">The full screener updates daily. Build your own combos and screen all 255 names.</span><span class="l-zh">完整筛选器每日更新。自建组合并筛选全部 255 只标的。</span></div>
+      <div class="cb-tx"><span class="l-en">See these line-ups' stocks</span><span class="l-zh">查看这些组合的匹配股票</span></div>
+      <div class="cb-sub"><span class="l-en">Matching names for the other displayed line-ups require an eligible plan.</span><span class="l-zh">其他已展示组合的匹配名称需要相应方案权限。</span></div>
     </div>
     <a class="btn" href="https://app.mastermind-x.com/?utm_source=site&amp;utm_medium=free_tools&amp;utm_campaign=confluence_screener&amp;utm_content=cta"><span class="l-en">Start free trial →</span><span class="l-zh">开始免费试用 →</span></a>
   </div>
 
-  
+
+
 
   <div class="site-foot">
-    <span><span class="l-en">Data as of 2026-11-03 · large-cap US universe · updated daily.</span><span class="l-zh">数据截至 2026-11-03 · 美国大盘股 · 每日更新。</span></span>
+    <span><span class="l-en">Source built 2026-11-03T23:00:50Z · market observation time not supplied.</span><span class="l-zh">源数据生成于 2026-11-03T23:00:50Z · 未提供市场观察时间。</span></span>
     <span><span class="l-en">Context, not investment advice.</span><span class="l-zh">仅供参考，非投资建议。</span></span>
   </div>
 </div>
 
-<script src="theme.js?v=3c193891" defer></script>
+<script src="theme.js"></script>
 <script>
 (function(){
   'use strict';
 
-  /* The public document contains only the free ticker row. The server-protected
-     /premiumdata/ response is authoritative: a 200 hydrates rank 2/3, while
-     401/403/offline leaves the rendered trial wall unchanged. */
+  var reloadPage = document.getElementById('confluence-reload-page');
+  if(reloadPage) reloadPage.addEventListener('click', function(){ location.reload(); });
+
+  /* A generation receipt joins two projections; only the existing protected
+     endpoint authorizes names. Never commit part of a paid response. */
   var PREMIUM_PAYLOAD = "/premiumdata/confluence_screener.json";
-  var hydrated = false;
-  var inFlight = false;
-
-  function freshSession(){
-    try{
-      if(window.MDXAuth && window.MDXAuth.client &&
-         window.MDXAuth.hasSession && window.MDXAuth.hasSession()){
-        return window.MDXAuth.client()
-          .then(function(sb){ return sb.auth.getSession(); })
-          .catch(function(){});
-      }
-    }catch(e){}
-    return Promise.resolve();
-  }
-
-  /* theme.js is deferred, so wait briefly for its first auth broadcast before
-     refreshing the shared session cookie and requesting the protected asset. */
-  function whenAuthSettled(){
-    return new Promise(function(resolve){
-      var done = false;
-      function go(){ if(done) return; done = true; resolve(); }
-      if(window.MDXAuth){ go(); return; }
-      window.addEventListener('mdx-auth', go, {once:true});
-      setTimeout(go, 3000);
-    });
-  }
+  var SOURCE_RECEIPT = {"generated_utc": "2026-11-03T23:00:50Z", "schema": "confluence_source.v1", "sha256": "3ac5eb2df31d138995fba95f8e5c62997e13c66265248f02865532453b6722ab"};
+  var rows = Array.prototype.map.call(document.querySelectorAll('[data-confluence-combo]'), function(wall){
+    return {
+      id: wall.getAttribute('data-confluence-combo'),
+      count: Number(wall.getAttribute('data-confluence-count')),
+      original: wall.cloneNode(true),
+      live: wall
+    };
+  });
+  var band = document.getElementById('confluence-paid-cta');
+  var originalBand = band ? band.cloneNode(true) : null;
+  var statusBox = document.getElementById('confluence-access-status');
+  var message = document.getElementById('confluence-access-message');
+  var retry = document.getElementById('confluence-check-access');
+  var reload = document.getElementById('confluence-reload-access');
+  var epoch = 0, inFlight = null, hydrated = false, scheduled = null, expiryTimer = null;
 
   function bilingual(en, zh){
     var frag = document.createDocumentFragment();
-    var enNode = document.createElement('span');
-    var zhNode = document.createElement('span');
-    enNode.className = 'l-en';
-    zhNode.className = 'l-zh';
-    enNode.textContent = en;
-    zhNode.textContent = zh || en;
-    frag.appendChild(enNode);
-    frag.appendChild(zhNode);
+    ['l-en', 'l-zh'].forEach(function(cls, i){
+      var node = document.createElement('span');
+      node.className = cls;
+      node.textContent = i ? zh : en;
+      frag.appendChild(node);
+    });
     return frag;
   }
 
-  function tickerLink(item){
-    var ticker = typeof item.ticker === 'string' ? item.ticker.trim() : '';
-    if(!/^[A-Za-z0-9._^=-]{1,20}$/.test(ticker)) return null;
-
-    var link = document.createElement('a');
-    link.className = 'tkr';
-    link.href = 'stocks/' + encodeURIComponent(ticker) + '.html';
-    link.appendChild(document.createTextNode(ticker));
-    if(item.name){
-      var name = document.createElement('span');
-      name.className = 'nm';
-      name.textContent = String(item.name);
-      link.appendChild(name);
-    }
-    return link;
+  function showState(state){
+    if(!statusBox) return;
+    var copy = {
+      checking: ['Checking access to matching stocks…', '正在检查匹配股票的访问权限…'],
+      denied: ['Your plan does not include these matching names. Public evidence remains available.', '您的方案不包含这些匹配名称，公开历史依据仍可查看。'],
+      expired: ['Sign in again to check access. Public evidence remains available.', '请重新登录以检查访问权限，公开历史依据仍可查看。'],
+      unavailable: ['Matching stocks could not be loaded. The public counts are unchanged.', '暂时无法加载匹配股票，公开数量保持不变。'],
+      mismatch: ['This page and the stock list are from different updates. Reload the latest page.', '此页面与股票名单来自不同更新，请重新加载最新页面。'],
+      invalid: ['The matching-stock response is incomplete. No paid names were displayed.', '匹配股票的返回数据不完整，未显示任何付费名称。']
+    };
+    statusBox.setAttribute('data-state', state);
+    statusBox.hidden = !copy[state];
+    retry.hidden = ['unavailable', 'invalid', 'denied', 'expired'].indexOf(state) < 0 && !(state === 'checking' && inFlight && inFlight.returnFocus);
+    /* Keep a deliberate retry focusable while checking; the handler guards
+       duplicate activation. Native disabling can discard keyboard focus. */
+    retry.setAttribute('aria-disabled', state === 'checking' ? 'true' : 'false');
+    reload.hidden = state !== 'mismatch';
+    message.textContent = '';
+    if(copy[state]) message.appendChild(bilingual(copy[state][0], copy[state][1]));
+    rows.forEach(function(row){ row.live.setAttribute('aria-busy', state === 'checking' ? 'true' : 'false'); });
   }
 
-  function replaceLockedRow(combo){
-    var walls = document.querySelectorAll('[data-confluence-combo]');
-    var wall = null;
-    for(var i=0;i<walls.length;i++){
-      if(walls[i].getAttribute('data-confluence-combo') === combo.combo_id){
-        wall = walls[i];
-        break;
-      }
-    }
-    if(!wall) return;
+  function currentUserId(){
+    try{
+      var user = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user();
+      return user && typeof user.id === 'string' && user.id ? user.id : null;
+    }catch(e){ return null; }
+  }
 
-    var foot = document.createElement('div');
-    foot.className = 'lc-foot';
-    foot.style.borderTop = '0';
-    foot.style.paddingTop = '6px';
-    foot.style.marginTop = '8px';
-
-    var label = document.createElement('span');
-    label.className = 'chip ok';
-    label.style.color = 'var(--text)';
-    label.appendChild(bilingual('Matching now \u00a0→', '当前匹配 \u00a0→'));
-    foot.appendChild(label);
-
-    var tickers = document.createElement('div');
-    tickers.className = 'tickers';
-    var items = Array.isArray(combo.active_tickers) ? combo.active_tickers : [];
-    items.forEach(function(item){
-      var link = tickerLink(item || {});
-      if(link) tickers.appendChild(link);
+  function freshSession(){
+    var auth = window.MDXAuth;
+    if(!auth || !auth.client || (!currentUserId() && !(auth.hasSession && auth.hasSession()))) return Promise.resolve(null);
+    return auth.client().then(function(sb){ return sb.auth.getSession(); }).then(function(result){
+      if(!result || result.error) throw new Error('unavailable');
+      return result.data && result.data.session;
     });
-    if(!tickers.children.length){
-      tickers.appendChild(bilingual(
-        'No stock matches this one today.',
-        '今日无股票匹配此组合。'
-      ));
-    }
-    foot.appendChild(tickers);
-    wall.replaceWith(foot);
   }
 
-  function showUnlockedCta(){
-    var band = document.getElementById('confluence-paid-cta');
-    if(!band) return;
-    var title = band.querySelector('.cb-tx');
-    var sub = band.querySelector('.cb-sub');
-    var button = band.querySelector('.btn');
-    if(title){
-      title.textContent = '';
-      title.appendChild(bilingual('Paid view unlocked', '付费视图已解锁'));
+  function invalidate(restoreFocus, keepStatus){
+    epoch++;
+    if(inFlight && inFlight.controller) inFlight.controller.abort();
+    inFlight = null;
+    hydrated = false;
+    if(scheduled !== null){ clearTimeout(scheduled); scheduled = null; }
+    if(expiryTimer !== null){ clearTimeout(expiryTimer); expiryTimer = null; }
+    rows.forEach(function(row){
+      var hadFocus = restoreFocus && row.live.contains(document.activeElement);
+      var wall = row.original.cloneNode(true);
+      row.live.replaceWith(wall);
+      row.live = wall;
+      if(hadFocus){
+        var target = wall.querySelector('a,button,[tabindex]');
+        if(target) target.focus({preventScroll:true});
+      }
+    });
+    if(band && originalBand){
+      band.replaceChildren.apply(band, Array.prototype.map.call(originalBand.childNodes, function(n){ return n.cloneNode(true); }));
     }
-    if(sub){
-      sub.textContent = '';
-      sub.appendChild(bilingual(
-        'All matching stocks available to your plan are visible above.',
-        '您方案内可用的全部匹配股票已显示在上方。'
-      ));
-    }
-    if(button){
-      button.textContent = '';
-      button.appendChild(bilingual('Open Mastermind →', '打开操盘大脑 →'));
-    }
+    if(!keepStatus) showState('locked');
   }
 
-  function hydrate(payload){
-    if(!payload || payload.schema !== 'tier_payload.v1' ||
-       payload.page !== 'confluence_screener' ||
-       !Array.isArray(payload.combos)){
-      throw new Error('invalid payload');
+  function sameRequest(ticket){
+    return ticket.epoch === epoch && (!ticket.owner || ticket.owner === currentUserId());
+  }
+
+  function requireUnexpired(ticket){
+    if(!Number.isFinite(ticket.expiresAt) || ticket.expiresAt <= Date.now()) throw new Error('expired');
+  }
+
+  function armExpiry(ticket){
+    if(expiryTimer !== null) clearTimeout(expiryTimer);
+    /* This is a display deadline from the existing auth owner's session, not a
+       new token/plan authority or refresh loop. The endpoint authorizes names. */
+    expiryTimer = setTimeout(function(){
+      expiryTimer = null;
+      if(!sameRequest(ticket)) return;
+      if(Date.now() < ticket.expiresAt){ armExpiry(ticket); return; }
+      invalidate(true);
+      showState('expired');
+    }, Math.max(0, Math.min(ticket.expiresAt - Date.now(), 2147483647)));
+  }
+
+  function prepareRows(payload){
+    if(!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'confluence_screener' ||
+       payload.gated !== true || payload.required_tier !== 'essential' ||
+       payload.source_status !== 'available' || !Array.isArray(payload.combos)){
+      throw new Error('invalid');
     }
-    payload.combos.forEach(replaceLockedRow);
-    showUnlockedCta();
+    var got = payload.source_generation;
+    if(!got || !SOURCE_RECEIPT || got.schema !== 'confluence_source.v1' ||
+       got.sha256 !== SOURCE_RECEIPT.sha256 ||
+       got.generated_utc !== SOURCE_RECEIPT.generated_utc || payload.built !== SOURCE_RECEIPT.generated_utc){
+      throw new Error('mismatch');
+    }
+    if(payload.combos.length !== rows.length) throw new Error('invalid');
+    var byId = new Map();
+    payload.combos.forEach(function(combo){
+      if(!combo || typeof combo.combo_id !== 'string' || byId.has(combo.combo_id)) throw new Error('invalid');
+      byId.set(combo.combo_id, combo);
+    });
+    return rows.map(function(row){
+      var combo = byId.get(row.id);
+      if(!combo || !Number.isSafeInteger(combo.active_count) || combo.active_count !== row.count ||
+         !Number.isSafeInteger(row.count) || row.count < 1 || !Array.isArray(combo.active_tickers) ||
+         combo.active_tickers.length !== row.count){
+        throw new Error('invalid');
+      }
+      var seen = new Set();
+      var foot = document.createElement('div');
+      foot.className = 'lc-foot';
+      foot.setAttribute('data-confluence-combo', row.id);
+      foot.setAttribute('data-confluence-count', String(row.count));
+      foot.setAttribute('data-confluence-hydrated', 'true');
+      var label = document.createElement('span');
+      label.className = 'chip';
+      label.appendChild(bilingual('Matching in this snapshot →', '此快照匹配 →'));
+      foot.appendChild(label);
+      var tickers = document.createElement('div');
+      tickers.className = 'tickers';
+      combo.active_tickers.forEach(function(item){
+        if(!item || typeof item.ticker !== 'string' || !/^[A-Za-z0-9._^=-]{1,20}$/.test(item.ticker) ||
+           typeof item.name !== 'string' || seen.has(item.ticker)){
+          throw new Error('invalid');
+        }
+        seen.add(item.ticker);
+        var link = document.createElement('a');
+        link.className = 'tkr';
+        link.href = 'stocks/' + encodeURIComponent(item.ticker) + '.html';
+        var symbol = document.createElement('span');
+        symbol.className = 'ticker-symbol';
+        symbol.textContent = item.ticker;
+        link.appendChild(symbol);
+        if(item.name){
+          var name = document.createElement('span');
+          name.className = 'nm';
+          name.textContent = item.name;
+          link.appendChild(name);
+        }
+        tickers.appendChild(link);
+      });
+      foot.appendChild(tickers);
+      return foot;
+    });
+  }
+
+  function hydrate(payload, ticket){
+    if(!sameRequest(ticket)) return;
+    requireUnexpired(ticket);
+    var prepared = prepareRows(payload);
+    if(!sameRequest(ticket)) return;
+    requireUnexpired(ticket);
+    rows.forEach(function(row, i){ row.live.replaceWith(prepared[i]); row.live = prepared[i]; });
+    if(band){
+      var title = band.querySelector('.cb-tx'), sub = band.querySelector('.cb-sub'), button = band.querySelector('.btn');
+      if(title){ title.textContent = ''; title.appendChild(bilingual('Matching stocks loaded', '匹配股票已加载')); }
+      if(sub){ sub.textContent = ''; sub.appendChild(bilingual('Names for the displayed line-ups are visible above.', '已展示组合的匹配名称列在上方。')); }
+      if(button){ button.textContent = ''; button.appendChild(bilingual('Open Mastermind →', '打开操盘大脑 →')); }
+    }
     hydrated = true;
+    if(ticket.returnFocus && document.activeElement === retry){
+      var firstName = rows[0].live.querySelector('a.tkr');
+      if(firstName) firstName.focus({preventScroll:true});
+    }
+    showState('loaded');
   }
 
-  function attemptHydrate(){
-    if(hydrated || inFlight || !PREMIUM_PAYLOAD) return Promise.resolve();
-    inFlight = true;
-    return freshSession()
-      .then(function(){
-        return fetch(PREMIUM_PAYLOAD, {
-          credentials: 'same-origin',
-          cache: 'no-store'
-        });
-      })
-      .then(function(response){
-        if(!response || !response.ok) throw new Error('locked');
-        return response.json();
-      })
-      .then(hydrate)
-      .catch(function(){
-        /* Locked (or offline): keep the honest server-rendered wall. */
-      })
-      .then(function(){ inFlight = false; });
+  function attemptHydrate(returnFocus){
+    if(hydrated || inFlight || !rows.length || !PREMIUM_PAYLOAD || !SOURCE_RECEIPT) return Promise.resolve();
+    var ticket = {epoch:epoch, owner:null, expiresAt:null, returnFocus:!!returnFocus, controller:window.AbortController ? new AbortController() : null};
+    inFlight = ticket;
+    showState('checking');
+    return freshSession().then(function(session){
+      if(!sameRequest(ticket)) return null;
+      var owner = currentUserId();
+      if(!session || !session.user || session.user.id !== owner || !owner){
+        showState('locked');
+        return null;
+      }
+      ticket.owner = owner;
+      if(typeof session.expires_at !== 'number' || !Number.isFinite(session.expires_at)) throw new Error('unavailable');
+      ticket.expiresAt = session.expires_at * 1000;
+      requireUnexpired(ticket);
+      armExpiry(ticket);
+      return fetch(PREMIUM_PAYLOAD, {
+        credentials: 'same-origin',
+        cache: 'no-store',
+        signal: ticket.controller ? ticket.controller.signal : undefined
+      });
+    }).then(function(response){
+      if(!response || !sameRequest(ticket)) return null;
+      requireUnexpired(ticket);
+      if(response.status === 401) throw new Error('expired');
+      if(response.status === 403) throw new Error('denied');
+      if(!response.ok) throw new Error('unavailable');
+      return response.json().then(function(payload){ return {payload:payload}; }).catch(function(){ throw new Error('invalid'); });
+    }).then(function(result){
+      if(result && sameRequest(ticket)) hydrate(result.payload, ticket);
+    }).catch(function(error){
+      if(!sameRequest(ticket)) return;
+      showState(['expired','denied','mismatch','invalid'].indexOf(error.message) >= 0 ? error.message : 'unavailable');
+    }).then(function(){
+      if(inFlight === ticket) inFlight = null;
+    });
   }
 
-  whenAuthSettled().then(attemptHydrate);
-  window.addEventListener('mdx-auth', attemptHydrate);
+  function scheduleCheck(){
+    if(scheduled !== null || document.visibilityState === 'hidden') return;
+    /* Leave the shared SDK auth callback before requesting its session. */
+    scheduled = setTimeout(function(){ scheduled = null; attemptHydrate(); }, 0);
+  }
+
+  var seenOwner = currentUserId();
+  window.addEventListener('mdx-auth', function(event){
+    var detail = event.detail || {};
+    var nextOwner = detail.user && typeof detail.user.id === 'string' ? detail.user.id : null;
+    if(detail.event === 'PREFS_SAVED' && nextOwner === seenOwner) return;
+    seenOwner = nextOwner;
+    invalidate(true);
+    if(detail.event !== 'SIGNED_OUT' && detail.event !== 'SDK_FAILED') scheduleCheck();
+  });
+  if(retry) retry.addEventListener('click', function(){
+    if(inFlight) return;
+    var returnFocus = document.activeElement === retry;
+    invalidate(false, true);
+    attemptHydrate(returnFocus);
+  });
+  if(reload) reload.addEventListener('click', function(){ location.reload(); });
+  window.addEventListener('pagehide', function(){ invalidate(false); });
+  window.addEventListener('pageshow', function(event){ if(event.persisted){ invalidate(false); scheduleCheck(); } });
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'hidden') invalidate(false);
+    else scheduleCheck();
+  });
+  if(window.MDXAuth) scheduleCheck();
+  else setTimeout(scheduleCheck, 3000); // one bounded initialization fallback; no polling
 })();
 </script>
 </body>
