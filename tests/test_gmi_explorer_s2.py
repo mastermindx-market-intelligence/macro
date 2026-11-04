@@ -112,6 +112,8 @@ def pages(tmp_path_factory, fixture_model) -> dict:
     out["held"] = _render(held_variant(fixture_model), tmp_path_factory.mktemp("s2_held"))
     bare = copy.deepcopy(fixture_model)
     bare["theme_links"] = []
+    for issuer in bare["issuers"]:
+        issuer["links"] = []
     for mv in bare["micros"].values():
         mv["admitted"] = 0
         mv["kind"] = "acc" if mv["tier"] == "acceptance" else "disp"
@@ -235,22 +237,26 @@ def test_empty_categories_render_empty_bands_and_rows(pages):
 
 
 # ---------------------------------------------------------------- side panels
-def test_live_shows_admitted_panel(pages):
+def test_live_leads_with_dated_company_evidence(pages):
     page = pages["live"]["gmi.html"]
-    assert "Admitted after review. Counted in coverage." in page
-    assert "经审核已纳入，计入覆盖率。" in page
+    assert '<article class="gmi-evidence-card">' in page
+    assert "Current delivery and revenue exposure are not established here" in page
+    assert "Taxonomy &amp; research context" in page
 
 
-def test_held_variant_shows_held_panel(pages):
+def test_held_variant_keeps_taxonomy_without_publishing_unreviewed_evidence(pages):
     page = pages["held"]["gmi.html"]
-    assert "Proposed, not a member. Not counted until reviewed." in page
-    assert "拟议关联，尚非成员。审核前不计入统计。" in page
+    assert "No company evidence yet" in page
+    assert "暂无公司证据" in page
+    assert '<article class="gmi-evidence-card">' not in page
+    assert "data-gmi-tree-id" in page
 
 
-def test_nolink_model_shows_empty_review_panel(pages):
+def test_nolink_model_explains_empty_evidence_without_claiming_absence(pages):
     page = pages["nolink"]["gmi.html"]
-    assert "Nothing is waiting for review." in page
-    assert "目前没有待审核的关联。" in page
+    assert "No company evidence yet" in page
+    assert "An empty result does not mean no companies participate in this theme" in page
+    assert "Browse available evidence" in page
 
 
 def test_empty_subs_summary_row_names_them(tmp_path, fixture_model):

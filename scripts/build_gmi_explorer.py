@@ -27,6 +27,7 @@ import os
 import subprocess
 import sys
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -44,6 +45,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = {
     "gmi.html": ("gmi_map.html.j2", "map"),
     "gmi-index.html": ("gmi_index.html.j2", "index"),
+    "gmi-companies.html": ("gmi_companies.html.j2", "companies"),
     "gmi-relationships.html": ("gmi_relationships.html.j2", "relationships"),
     "gmi-coverage.html": ("gmi_coverage.html.j2", "coverage"),
     "gmi-states.html": ("gmi_states.html.j2", "states"),
@@ -53,6 +55,139 @@ ISSUER_TEMPLATE = ("gmi_issuer.html.j2", "issuer")
 #: Owned by the parallel lane; copied only when present.
 PAIRED_ASSETS = ("gmi.css", "gmi.js")
 SNAPSHOT_DIRNAME = Path("data/symbol_directory/snapshots")
+
+
+# Snapshot-scoped presentation of the one separately cleared product observation
+# in DESIGN_RECORD.md §11.9. This does not grant source rights, graph use, or
+# publication authority to additional records. Other source facts must await the
+# incumbent owner's verified public-fact projection.
+def _field(row: object, *keys: str) -> object:
+    for key in keys:
+        if not isinstance(row, dict):
+            return None
+        row = row.get(key)
+    return row
+
+
+def _knowledge_date(link: dict) -> str | None:
+    """Keep an unknown knowledge date distinct from source publication."""
+    value = _field(link, "clock_states", "knowledge", "value")
+    if (_field(link, "clock_states", "knowledge", "state") != "KNOWN"
+            or not isinstance(value, str)):
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).date().isoformat()
+    except ValueError:
+        return None
+
+
+def _current_public_product(issuer: dict, link: dict) -> bool:
+    return (
+        _field(issuer, "node_id") == "co:us:MU"
+        and _field(issuer, "ticker") == "MU"
+        # The cleared sentence includes its display attribution. Raw labels
+        # cannot rename the issuer or source while retaining the same receipt.
+        and _field(issuer, "display_name") == "Micron Technology"
+        and _field(issuer, "exchange") == "Nasdaq"
+        and _field(link, "proposal_id") == "actprop:287edbf7e04b8aba873b7493"
+        and _field(link, "micro_id") == "theme:hbm_packaging"
+        and _field(link, "micro_en") == "HBM & advanced packaging"
+        and _field(link, "micro_zh") == "HBM 与先进封装"
+        and _field(link, "status") == "RATIFIED"
+        and _field(link, "curation", "decision") == "ACCEPT"
+        and _field(link, "lifecycle") == "planned"
+        and _field(link, "emission_state") == "RIGHTS_FAMILY_UNRESOLVED"
+        and _field(link, "scope", "product") == "24GB 8H HBM3E"
+        and _field(link, "scope", "platform") == "NVIDIA H200"
+        and _field(link, "source", "source_key") == "manual:micron-ir:hbm3e-h200:2024-02-26"
+        and _field(link, "source", "text_sha256") == "f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a"
+        and _field(link, "source", "published_date") == "2024-02-26"
+        and _field(link, "source", "label_en") == "Company source"
+        and _field(link, "source", "label_zh") == "公司来源"
+        and _field(link, "source", "url_if_public") ==
+        "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx"
+    )
+
+
+def _public_render_model(model: dict) -> dict:
+    """Whitelist the entire Jinja model; private graphs and raw issuer data stay out.
+
+    The one current product sentence is separately cleared in DESIGN_RECORD §11.9.
+    This is not a general fact/rights admission mechanism for new model rows.
+    """
+    names = (
+        "cats", "micros", "totals", "disposition_counts", "coverage",
+        "reason_words", "extended_on", "asof",
+    )
+    public = {name: model[name] for name in names}
+    public["provenance"] = {"built_at_utc": model["provenance"]["built_at_utc"]}
+    public["issuers"] = []
+    public["theme_links"] = []
+
+    for issuer in model.get("issuers", []):
+        if not isinstance(issuer, dict):
+            continue
+        links = [lk for lk in issuer.get("links", [])
+                 if _current_public_product(issuer, lk)]
+        if not links:
+            continue
+        public_links = []
+        for link in links:
+            # Never hand Jinja internal scope, graph-use, correction or
+            # raw-source fields, even for the currently cleared sentence.
+            source = link["source"]
+            public_links.append({
+                "proposal_id": link["proposal_id"],
+                "status": link["status"],
+                "micro_id": link["micro_id"],
+                "micro_en": link["micro_en"],
+                "micro_zh": link["micro_zh"],
+                "lifecycle": link["lifecycle"],
+                "curation": {"decision": link["curation"]["decision"]},
+                "scope": {
+                    "product": link["scope"]["product"],
+                    "platform": link["scope"]["platform"],
+                },
+                "source": {
+                    "source_key": source["source_key"],
+                    "text_sha256": source["text_sha256"],
+                    "published_date": source["published_date"],
+                    "url_if_public": source["url_if_public"],
+                    "label_en": source["label_en"],
+                    "label_zh": source["label_zh"],
+                },
+            })
+            micro = model["micros"][link["micro_id"]]
+            first_seen = _knowledge_date(link)
+            public["theme_links"].append({
+                "kind": "adm" if micro["admitted"] > 0 else "held",
+                "ticker": issuer["ticker"],
+                "name": issuer["display_name"],
+                "micro_id": link["micro_id"],
+                "micro_en": link["micro_en"],
+                "micro_zh": link["micro_zh"],
+                "first_seen": first_seen,
+                "href": f"gmi-issuer-{issuer['ticker'].lower()}.html",
+            })
+        public["issuers"].append({
+            "ticker": issuer["ticker"],
+            "exchange": issuer["exchange"],
+            "display_name": issuer["display_name"],
+            "links": public_links,
+        })
+    return public
+
+
+def _remove_stale_issuer_pages(site: Path, public_model: dict) -> None:
+    """Retire generated issuer files after clearance withdrawal; never follow links."""
+    current = {f"gmi-issuer-{issuer['ticker'].lower()}.html"
+               for issuer in public_model["issuers"]}
+    for old in site.glob("gmi-issuer-*.html"):
+        if old.is_symlink() or not old.is_file():
+            raise RuntimeError(f"refusing to replace nonregular GMI issuer output: {old.name}")
+        if old.name in current:
+            continue
+        old.unlink()
 
 
 def _newest_snapshot() -> Path:
@@ -116,18 +251,32 @@ def build_live_model(coverage_report: str | Path | None = None,
 def render_site(model: dict, site_dir: str | Path) -> list[Path]:
     """Render every explorer page (and sync the paired assets) from ``model``."""
     site = Path(site_dir)
+    # Prevent a pre-existing output redirect from escaping the requested site
+    # tree. This preflight runs before pruning or writing any generated page
+    # or paired asset; the issuer family has its own nonregular-output guard.
+    if site.is_symlink():
+        raise RuntimeError(f"refusing nonregular GMI output directory: {site}")
     site.mkdir(parents=True, exist_ok=True)
-    env = make_env(model, ROOT / "templates")
+    # The page registry's conservative AST scanner recognizes only items()
+    # as an immutable table read; a direct table unpack is deliberately held.
+    fixed_pages = [page for page, _ in TEMPLATES.items()]
+    for name in (*fixed_pages, *PAIRED_ASSETS):
+        output = site / name
+        if output.is_symlink() or (output.exists() and not output.is_file()):
+            raise RuntimeError(f"refusing to replace nonregular GMI output: {name}")
+    public_model = _public_render_model(model)
+    _remove_stale_issuer_pages(site, public_model)
+    env = make_env(public_model, ROOT / "templates")
     written: list[Path] = []
     for page, (template, page_key) in TEMPLATES.items():
         write_page(site / page, env.get_template(template).render(
-            model=model, nav_prefix="", page_key=page_key))
+            model=public_model, nav_prefix="", page_key=page_key))
         written.append(site / page)
     template, page_key = ISSUER_TEMPLATE
-    for issuer in model["issuers"]:
+    for issuer in public_model["issuers"]:
         page = f"gmi-issuer-{issuer['ticker'].lower()}.html"
         write_page(site / page, env.get_template(template).render(
-            model=model, nav_prefix="", page_key=page_key, issuer=issuer))
+            model=public_model, nav_prefix="", page_key=page_key, issuer=issuer))
         written.append(site / page)
 
     for name in PAIRED_ASSETS:

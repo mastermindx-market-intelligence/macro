@@ -1,7 +1,7 @@
 # GMI Explorer — design record (2026-10-21 / 22)
 
 Author: ORCH-DESIGN (Opus 5.5 suborchestrator) under GMI Meta-CEO seat `6f14c2da`.
-Deliverable: reference designs and an exact spec for five GMI product surfaces. No product code ships here.
+Historical deliverable: reference designs and an exact spec. The active product implementation and consolidation scope is defined in §11, which supersedes prior design-only completion.
 Exact spec: `mockups/refs/gmi_explorer/SPECS.md`. References: `mockups/refs/gmi_explorer/png/` (60 PNG).
 Paper file: "GMI Explorer 2026-10-21" (16 boards). Rendered against `templates/theme.css` at main `9b48e798a3eb`.
 
@@ -397,3 +397,355 @@ The generator re-rendered all 60 matrix PNGs: 7 stems × 1440/390 × dark/light 
    path boxes or rungs.
 6. Keep S1 at two elevation levels. Keep the five light mechanisms of D2 as written CSS, not as a token swap.
 7. Keep the S2 phone jump strip, the 57px sticky headers and the hash-preserving chip click. Keep the 371-row gate.
+
+
+## 10. GMI editable makeover — completed 2026-11-03
+
+Chairman assignment: substantially upgrade the GMI Explorer UI/UX and its theme system in the original Paper file. The complete static design and implementation handoff are delivered. This does not claim a production application deployment.
+
+- Operation: `gmi-paper-makeover-20261103-sol`
+- Paper file: `01M5H6EARN9YHQV17JC6ZG9BRY`
+- Governing source: Mastermind `b2326bbe30e9988d26199f5e774a482b9c09068a`
+- Product/data source: Macro `21444bcfd9001654935eb4b43b0005eb5a7eb47b`
+- Displayed reference snapshot: 31 October 2026; original publication/on-file dates remain separate.
+- Root was the sole Paper writer; independent readers reviewed visuals, data semantics, translation and exported variants.
+- Original 16 reference boards remain intact on the archive page.
+
+### Outcome and task tree
+
+| Task | Outcome / DONE_WHEN | Dependencies | Final state / evidence |
+|---|---|---|---|
+| GMI-D1 | Inspect original boards and current product semantics | None | Complete: original raster reference census and current committed source census |
+| GMI-D2 | Editable atlas and shared semantic/type/spacing system | D1 | Complete: 48 Paper tokens; native editable desktop and mobile atlas |
+| GMI-D3 | Coherent detail/value-chain, index, issuer, relationship and coverage views | D2 | Complete: six desktop journeys in Noir and Day |
+| GMI-D4 | Theme, locale, mobile and state coverage | D3 | Complete: six mobile journeys in Noir and Day; representative Chinese atlas at both sizes/modes; mobile filter sheet/value-chain lens; nine operational states in both themes |
+| GMI-D5 | Actual captures, repaired defects, board map, native JSX and saved handoff | D3,D4 | Complete: 34 JSX +34 native JPEG exports, manifest hashes, no canvas overlaps, final static review accepted, handoff archive saved |
+
+All design tasks are complete. The remaining implementation/browser/accessibility/deployment work is a separate stage, not an unfinished design claim.
+
+### Final Paper structure
+
+| Page | Boards | Link |
+|---|---:|---|
+| 01 · Desktop · Noir + Day |14| [Open desktop](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0) |
+| 02 · Mobile · Journeys & controls |16| [Open mobile](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-3-0) |
+| 03 · System · Tokens & states |4| [Open system](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-4-0) |
+| Archive · 21 Oct references |16 preserved| [Original references](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0) |
+
+Desktop Noir EN: atlas `9A-0`, detail `I4-0`, index `QH-0`, company `YU-0`, relationship `177-0`, coverage `1FK-0`.
+Desktop Day EN: `26V-0`, `2F8-0`, `2KO-0`, `2RB-0`, `2W0-0`, `310-0`.
+Desktop Chinese atlas: `4H1-0` / `4PE-0`.
+
+Mobile Noir EN: atlas `35A-0`, detail `3NX-0`, index `3QZ-0`, company `3U1-0`, relationship `3X3-0`, coverage `405-0`.
+Mobile Day EN: `38N-0`, `4XR-0`, `51O-0`, `559-0`, `58M-0`, `5C5-0`.
+Mobile Chinese atlas: `3BP-0` / `3ER-0`; filter sheet `3HT-0`; value-chain lens `3KV-0`.
+System: foundations `5FQ-0`; Noir states `5FR-0`; Day states `5X8-0`; interaction contracts `5FS-0`.
+
+### Design decisions and preserved semantics
+
+Mastermind Noir foundations with an intentional Day counterpart; Inter/PingFang SC with mono numeric detail; restrained blue actions, explicit state text and symbols, no colored container rails. Readable rows, category navigation and an evidence inspector replace tiny status-square walls. Preserve full index access, optional subthemes/multiple parents, coverage/value-chain lenses, issuer explanations, directed relationships and source receipts.
+
+The current source snapshot has 371 micros (68 Core/303 Extended), one reviewed Micron company/link and zero held. Reviewed classification remains separate from graph-use permission. Micron's product/platform example retains Planned. Relationships remain proposed/unreviewed; Cirrus Logic→Apple retains 91% of seller revenue FY2026, 89% FY2025 and87% FY2024. Provisional U.S. and unresolved China denominators, unmeasured accuracy and untracked changes remain explicit. No live-feed, exposure, validation-score or production acceptance is fabricated.
+
+### Final review and corrections
+
+Root and independent reviews inspected the actual static compositions. All six Day desktop and mobile variants passed; EN mobile visible-text sequences match their Noir counterparts. Representative Chinese desktop/mobile Noir/Day layouts, all system states, filter sheet and value-chain view passed without clipping or remaining layout blockers.
+
+Applied corrections include Taxonomy path wording; explicit global Core/Extended scope (Chinese 全库); Planned in mobile theme evidence; fiscal-year chart labels; neutral withheld-excerpt language; No recorded link yet in mobile index; disabled first-page Previous controls; and the exact 371-micro-theme value-chain denominator.
+
+48-token hash: `ac191fd9`. Final finish operation: `gmi-paper-makeover-20261103-sol-finish-all-design-boards`, result `APPLIED_RESPONSE_OBSERVED`. No unresolved modifying effect remains.
+
+### Saved handoff
+
+`GMI-Explorer-Design-Handoff-2026-11-03.zip` — 3,992,532 bytes, SHA-256 `35319072a59e3e61b3bb2f59acf9ab21a77863152b28c18edfb687aa88c8c7d8`.
+
+Contains an offline visual gallery, 34 native JSX snippets with node IDs, 34 unmodified JPEG captures, 48-token JSON/CSS, the full implementation/data/interaction contract, final page inventory and hashed manifest. Relative links, all content hashes and ZIP integrity were verified. Artboard dimensions and coordinates show zero overlaps.
+
+Chinese atlas composition is supplied at both sizes and in both modes; separate Chinese deep-view/state mockups are not included. Their complete language parity is an implementation requirement.
+
+No live product build, merge, deployment, authentication change, qualification promotion, parent runtime-wave update or source-law change was performed. Implementation should use the existing governed navigation, theme/language controller, components, readers and permissions, then obtain ordinary real-path/browser and accessibility evidence.
+
+## 11. Chairman-directed product rebuild and file consolidation — ACTIVE, 2026-11-03
+
+### Authority, feedback and custody
+
+The Chairman resumed this assignment and explicitly required execution and implementation, rejected the current design/product as mediocre and unclear, and directed consolidation of the two GMI Paper files. This supersedes §10's visual acceptance and separate-stage boundary. Prior exports remain historical evidence, not current production acceptance.
+
+Original operation root: `gmi-paper-makeover-20261103-sol`. Current attended parent/source operation: `gmi-product-upgrade-20261103-sol`. New bounded implementation child: `gmi-product-upgrade-20261103-model01`. These are source-custody continuity identifiers on the existing trusted connection, not new authentication or runtime authority. No prior active or uncertain effect is transferred. Root owns product judgment, Paper edits, integration and acceptance; bounded Fabric workers own only commissioned code paths. Native consultations are read-only reasoning/census.
+
+Protected law: Mastermind `9f65957e29eba92245d78609f032aaea523b7cb4` (compatible Sol skillpack 1.0.1/bootstrap 1).
+Product base: Macro `b8f14e308b57cd772e1464217e1e2becc1286086`.
+Earlier source materialization at `12c551c2512fc57e12743fac17a2874e001cf6db` is compatible for inspected GMI paths; eight critical blobs were rechecked at b8f14e3.
+Source branch: `claude/gmi-product-upgrade-20261103`. Existing workstream: `agentos/workstreams/WS-GMI-THEME-GRAPH.md`; parent program and D2E/W3 closure remain with their existing owners.
+
+### Product contract
+
+Persona: a research reader using English or Chinese on desktop or phone. Primary job: understand a theme, identify a documented business connection, inspect the dated source and limitations. The first viewport must communicate that job without requiring taxonomy/status-code literacy.
+
+Tier-1 title: **GMI Explorer**.
+Deck: **Understand themes, business connections, and the evidence behind them.**
+Main workspace: answer-first theme research; relationship research is a separate capability. Coverage, full taxonomy and technical receipts remain available without dominating the opening answer.
+A selected theme must explain its meaning using approved definitions when available, show taxonomy context, show only permitted documented company evidence, and distinguish absent evidence from absent real-world participation. Never invent definitions or company links from labels.
+The Micron example retains Planned and the 26 February 2024 source date alongside its claim. Product context is Micron → 24GB 8H HBM3E → NVIDIA H200; this is not inferred revenue exposure or a qualified supply-chain graph.
+Search/filter/select state must be addressable, restore through browser history, work in both locales, support keyboard/focus/touch, and have useful zero-result recovery.
+
+### Current truth and permission invariants
+
+- All 371 themes and multiple-parent context remain navigable; Core/Extended describes scope, not completed review or an investment ranking.
+- Current relationship package: 248 records, 165 distinct endpoint companies, 283 distinct coverage issuer IDs. These populations must never be conflated. Package is proposed as of 21 October 2026.
+- All current relationship records have public_display, magnitude_display and excerpt_display = unknown, with purposes private_api/research. Public GMI HTML/JSON MUST NOT contain restricted records, parties, magnitudes, excerpts or hidden payloads. Enforce permission before serialization/rendering; do not implement CSS-only hiding or infer rights from a public source URL. Public aggregate context uses approved package fields only. Rich relationship browsing is available only from a lawful permitted projection/context; no new grant or auth bypass.
+- The old MU graph_membership_use=NOT_GRANTED is stale. The existing APPEND event and bridge receipt authorize internal graph use. The owner state remains NOT_QUALIFIED / D2E_UNSEALED and graph synchronization disagrees (0 materialized, 1 projected). All gate/materialize/publish/qualify/rank/size authority remains false. This UI reads existing owner outputs; it does not write or reinterpret authority.
+- Missing, denied, unknown, stale, failed, empty and loading are distinct. Freshness uses actual source/package/build clocks, not a fabricated live-feed timestamp.
+- Do not consume the frozen 19 October coverage report or design fixture as current production data.
+
+### Paper consolidation and visual contract
+
+Canonical file: `01M5H6EARN9YHQV17JC6ZG9BRY`.
+Original entry `p-1-0` becomes the current product entry, after moving the original 16 references to an explicit historical page.
+Secondary file: `01M5J3GC90GAKHK8B6SAPRV3JQ` (Round 2), four historical boards `1-0,1D-0,29-0,3D-0`. Preserve unique reference content inside the canonical file before marking the secondary file superseded and pointing to the canonical destination. No third GMI file. If archive/delete is unavailable in the guarded catalog, do not bypass it.
+Root is the sole writer for these specific consolidation/new-board effects. Each mutation uses current target read, fresh snapshot and stable operation ID; unknown effects are reconciled on the original carrier.
+Dark: restrained luminance hierarchy, selective raised interaction surfaces, neutral fine rules, deliberate answer typography.
+Light: cool canvas, white research surface, crisp hairlines, controlled layered shadows and neutral selection. Shared semantics/geometry, different material mechanisms; palette swap alone is insufficient.
+Use governed theme tokens and existing shared navigation. No colored container-edge stripes, parallel theme system, duplicate header, speculative charts or unsupported metrics.
+Actual Paper screenshots and JSX follow visual acceptance; browser screenshots prove the integrated product separately.
+
+### Task tree and DONE_WHEN
+
+| Task | Dependency | Required outcome | Status |
+|---|---|---|---|
+| GMI-P1 | None | Live two-file census, current data/rights/custody, preserved advanced functions | Proven read-only |
+| GMI-P2 | P1 | One clear canonical Paper entry; four Round 2 references consolidated; prior versions marked historical | Active |
+| GMI-P3 | P1 | New answer-first compositions, distinct Noir/Day, EN/ZH and desktop/mobile; actual visual review | Active |
+| GMI-P4 | P1 | Render-boundary rights, current MU status from owner outputs, deterministic searchable/selectable model, meaningful tests | Ready for bounded worker |
+| GMI-P5 | P3,P4 | Real template/CSS/JS implementation in existing routes, no raw restricted payload, full user journeys and recovery | Pending |
+| GMI-P6 | P5 | Current builder, relevant regression/design checks, browser matrix and independent exact-head review | Pending |
+| GMI-P7 | P6 | Reviewable coherent candidate, ordinary approved release path, verified served behavior where authorized | Pending |
+| GMI-P8 | P2,P3,P6,P7 | Durable exact Paper/source/proof record; clear distinction between candidate, merge, deployment and acceptance | Pending |
+
+Implementation seam: scripts/build_gmi_explorer.py, scripts/gmi_explorer/{model,present,variants}.py; templates/_gmi*.html.j2, templates/gmi*.html.j2, templates/gmi.{css,js}; paired generated site/gmi*; relevant existing GMI tests plus focused regressions. Do not modify shared theme.css/nav, identity/security owner files, history/bridge producers or active PR #10638 paths. PR #10641 remains separate identity research; #10654 owns shared accent-stripe cleanup.
+
+Build must preserve lib.pages.write_page and shared _site_nav/_navlinks/theme.js/supabase.js. Use current proof and real model. A saved current --model-in is allowed for isolated render; synthetic fixtures are tests, never production facts. Generated CSS/JS must match templates byte-for-byte.
+
+Acceptance: a reader understands purpose in five seconds; can find/select a non-default theme, inspect permitted evidence, follow a company/source path, share and restore state, clear an empty search, use keyboard and a 390px phone, and read equivalent EN/ZH in both themes. Relationship denial is enforced at serialization and explained plainly; lawful future GRANTED records support real search/filter/select rather than hardcoded edges[0]. A rendering, passing CI, PR or deployment alone is not acceptance.
+
+### Execution controls and current frontier
+
+Direct retention reason: PRINCIPAL_JUDGMENT for product/visual decisions; UNIQUE_APPROVED_ACCESS for canonical Paper effects; integration remains with root. Routine bounded source work will use qualified Fabric if admitted; no provider/model/authority invention.
+Git proxy authentication was unavailable, but authenticated GitHub reads and Git-data writes are available. Exact-source materialization and atomic tree/commit/ref publication remain lawful. No credentials or infrastructure change is requested.
+Read-only census found no frontend-path overlap with #10638. There is no claimed file-wide lease.
+Next: verify this plan readback; commission model/projection slice; consolidate Paper; implement/review the visual frontend; prove actual browser journeys and pursue the ordinary release gate.
+
+### 11.8 Current execution frontier — consolidation and product implementation
+- Paper consolidation is visually verified. Canonical file `01M5H6EARN9YHQV17JC6ZG9BRY` is now **GMI Explorer · Product system**, with `p-1-0` as the current-product entry. Original references are preserved on `p-5-0`; Round 2 boards were imported as `61N-0`, `62X-0`, `63T-0`, `64V-0`, and all 21 owned raster fills were restored and screenshot-checked.
+- Secondary file `01M5J3GC90GAKHK8B6SAPRV3JQ` is renamed **Archived · GMI Round 2 · merged into Product system**. Its first page contains canonical pointer `4N-0`; original Round 2 boards remain on its archive page. Rename timeout was reconciled against the same exact file and observed name; no Paper effect remains unknown.
+- Current answer-first product boards: Noir desktop `61M-0`, Day desktop `6A7-0`, Noir mobile `6DR-0`, Day mobile `6FY-0`. An independent critique was applied: topic hierarchy strengthened, source publication date placed beside Planned, platform label corrected, evidence coverage made explicit. Day has separate surface/shadow/recessed-ledger treatment. These boards establish visual direction, not product acceptance or shipped proof. Chinese variants and final state review remain.
+- Model child `gmi-product-upgrade-20261103-model01` ended **EFFECT_UNKNOWN**, `remote_cleanup_unproven`, lease `868f3981b9bd` preserved. Root/parent remain unverified; result consumption is denied. No result was consumed, no retry or successor dispatched, no retained receipt was accessed through another carrier. Original model/presentation/test paths in §11 remain fenced.
+- Exact model-lane gate: original installed Fabric owner must reconcile this same run/root/parent/process/lease and publish an eligible terminal status through its existing owner. No applicable exposed settlement action was found. This blocks only that lane.
+- Root continues principal visual/integration judgment in disjoint existing GMI templates, CSS, JS, and production render integration. Next action is actual frontend construction, followed by fresh-source build and browser validation. Current binary source acquisition uses ordinary Macro repository objects only and must not access the fenced worker result.
+- Current source remains Macro `b8f14e308b57cd772e1464217e1e2becc1286086`; public relationship permissions remain unknown for all current records. The public renderer must not emit restricted records, parties, amounts, excerpts, or search payloads. The actual public permission state is an intended product path.
+- **DO_NOT_REDO:** accepted consolidation/imports and completed visual refinements. **MORE_WORK_EXISTS:** frontend implementation, real browser journeys, accessible mobile/keyboard/history/copy flows, current permission enforcement, focused validation, exact candidate/review/release, and durable evidence.
+
+### 11.9 Implemented product candidate and real browser proof — 2026-11-03
+
+The Chairman's resumed instruction includes implementation, product clarity and consolidation of the two Paper files. The root retained principal product judgment and owned the disjoint frontend integration. This section records the resulting candidate; it does not close the parent GMI data program or establish production delivery.
+
+#### Product behavior and preserved depth
+
+The primary journey now answers, in order: which theme is selected, what that theme means, which dated company/product connection is documented, what the source does not establish, and where the reader can inspect the company or source. The current Micron claim is explicitly historical and planned: “Micron planned HBM3E for NVIDIA H200.” The 26 February 2024 source date sits beside the planned lifecycle. Current delivery, deal size and revenue exposure are not inferred.
+
+The implementation includes seven generated public routes: `gmi.html`, `gmi-companies.html`, `gmi-issuer-mu.html`, `gmi-relationships.html`, `gmi-index.html`, `gmi-coverage.html`, and `gmi-states.html`. The company catalogue is a real searchable route; the issuer view renders all eligible documented connections rather than taking only the first link.
+
+All 371 microthemes remain addressable. Search covers English/Chinese topic names, classification paths, company names, tickers and named products. Category filtering considers every actual parent path. Core/Extended and evidence-only filters, URL state, browser back/forward restoration, related themes, source receipts, the full index, taxonomy tree, coverage census and value-chain lens remain available. Advanced detail is disclosed after the primary research answer.
+
+On mobile, the same browse component moves into a native dialog rather than creating a second search owner. Escape, focus return, selection focus, roving result tab stops, empty results and reset behavior are implemented. Link copying confirms success only after the actual clipboard succeeds; denial provides a selectable address. Server-rendered evidence and the full index remain usable with JavaScript disabled or a malformed interactive payload.
+
+The existing shared theme/language controllers and Brain owner remain authoritative. Brain's original root container is docked in the product header, retaining its tokens, delegated handlers, lazy loading, language and focus behavior. Header paragraph selectors are scoped so they cannot alter Brain message styling. No second theme, language, authentication, chat, storage or publication controller was created.
+
+All new GMI color treatments consume existing canonical theme tokens. Day mode uses white surfaces, recessed context and the existing elevation; Noir uses the existing dark materials and hero wash. Chinese tracking remains natural. Final visual corrections separated the coverage band from the following sections, grouped denominator help with its text, spaced the publication icon/label, and preserved contrast on the selected topic. The unsupported specimen sampling threshold was removed because the source model supplies no such rule.
+
+#### Public-data boundary and outstanding model work
+
+The template payload is a presentation allowlist of topics, paths and current reviewed product cards. It does not serialize the raw model, relationship edges, party names, deck or private correction lineage. Rejected/unreviewed product records are excluded. Source links are restricted to HTTP(S), and text/JSON escaping is verified.
+
+The current relationship model contains internal observations without a verified public projection. The public route therefore withholds relationship identities, facts, amounts, excerpts, package receipts and hidden search payloads. Its empty presentation clearly describes a publication restriction, not an absence of relationships. The state reference contains generic examples, preserves the original state keys and adds confirmed-action success; it does not publish provider-derived examples or simulated incident timestamps.
+
+ACCEPT/RATIFIED filtering is **not** a general public-fact permission rule. The separately cleared current source fact is distinct from internal graph-use permission. Broader qualification and the owner-supplied public projection remain unfinished in the fenced model lane. No frontend rendering result is offered as a substitute for that work.
+
+The original `scripts/gmi_explorer/model.py` and `present.py` remain byte-identical to base, with Git blobs `2614997dd87bf7d7e2d0b61b283c6b364801e1b1` and `c5ae61d80a484c07d583831577db52881843061b`. No retained worker result was consumed. The original model test file also remains upstream-identical. A historical name test initially lacked its 21 October input in the isolated materialization; fetching the exact original snapshot resolved it without changing model or test behavior.
+
+#### Canonical Paper home and current boards
+
+Canonical file: `01M5H6EARN9YHQV17JC6ZG9BRY`, **GMI Explorer · Product system**, current page `p-1-0`.
+
+| Current product variant | Board ID |
+|---|---|
+| Noir / desktop / EN | `61M-0` |
+| Day / desktop / EN | `6A7-0` |
+| Noir / mobile / EN | `6DR-0` |
+| Day / mobile / EN | `6FY-0` |
+| Noir / desktop / ZH | `6I6-0` |
+| Day / desktop / ZH | `6LQ-0` |
+| Noir / mobile / ZH | `6PA-0` |
+| Day / mobile / ZH | `6R7-0` |
+
+All eight are actual editable Paper boards and have screenshot plus JSX exports under `product_20261103/paper-*`. The secondary file `01M5J3GC90GAKHK8B6SAPRV3JQ` is explicitly named **Archived · GMI Round 2 · merged into Product system**. Its first page points to the canonical home through board `4N-0`; its four originals remain in history. The consolidation is not a claim that the secondary file was deleted. The four imported reference boards and all 21 raster fills were preserved and inspected as recorded in §11.8.
+
+The final Paper working indicators were released through observed operation `gmi-product-upgrade-20261103-sol-release-final-claim-boards`. The 48-token hash remains `ac191fd9`; no Paper effect is unresolved. Do not repeat the accepted consolidation.
+
+#### Verification and durable proof
+
+- Full incumbent GMI suite plus the new public-view suite: **148 passed in 57.38 seconds** at the final candidate. This includes the original model and reason-code tests, source rendering/round-trip, taxonomy and denominator arithmetic, safe output, source/date/stage, injection, paired assets and route coverage.
+- Real headless Chrome **156.0.8078.80**, fresh anonymous profiles on the authorized M2: **64/64 cases passed**, with no uncaught page exceptions. Every one of the seven routes passed desktop/mobile × dark/light × EN/ZH checks, including horizontal geometry and one H1. The remaining cases exercised real product navigation, search, history, dialog/focus, copy success and injected denial, malformed-payload fallback, no-JS rendering, reduced-motion configuration and the existing Brain open/close path.
+- **66 original PNG captures**, with actual dimensions, byte counts and SHA-256/Git hashes. The canonical `mastermind.p0_evidence.v2` manifest covers **56 REST cells plus four actual desktop EN hover/focus captures**, and the existing `mastermind.page_evidence_receipt.v1` receipt owns the changed GMI templates/assets. Additional screenshots show selected-empty, no-results, company/publication and Brain-restored paths.
+- Canonical artifacts: `mockups/evidence/gmi-product-20261103/EVIDENCE.yml`, `manifest.json`, `browser-report.json`, `capture-metadata.json` and the PNGs. The exact generated HTML/CSS/JS hashes match the bytes served to the browser. The executable browser proof is `research/theme_graph/gmi_design_20261021/verify_product_browser.py`.
+- The design-system added-line gate reports zero blocking findings. The GMI JavaScript has zero runtime-style injection signatures. The full-estate runtime ratchet and hosted CI remain distinct from this scoped check.
+- Independent read-only review inspected primary and secondary captures and the shared-owner integration. It found the Brain root/style ancestry issue and the three coverage/publication spacing issues; these were fixed and recaptured. The independent final review of both coverage captures and mobile Chinese publication status returned PASS: all three spacing/help issues resolved, with no clipping, overlap or loss of context.
+
+The browser proof uses generated public pages on a loopback HTTP server. It does not establish authenticated backend flows, external-source availability, production performance, native branch-protection enforcement, merge, deployment or live URL acceptance. Clipboard-denied and malformed-payload scenarios are explicitly injected faults; they are not claims of observed production incidents. Network-response/console telemetry and performance timings were not measured. Long-index screenshots may show the initial viewport; full-document horizontal geometry and every index target were checked separately.
+
+The existing `gmi-explorer` CI job now includes the new public-view test, `_gmi*` partial-template selection and its explicit BeautifulSoup dependency. No new workflow or deployment plane was introduced. Current main was rechecked at `8bc2f6f211636874a3b0438700f818ac908ef3bd`: all 23 existing candidate paths still equal the original base, all eight new paths are absent, and the canonical design record on main is unchanged. The branch retains its earlier scope/consolidation record.
+
+#### Exact remaining release gate
+
+The original Fabric run `gmi-product-upgrade-20261103-model01`, root `gmi-paper-makeover-20261103-sol`, parent `gmi-product-upgrade-20261103-sol`, controller PID `38742`, lease `868f3981b9bd`, remains fenced as **EFFECT_UNKNOWN / remote_cleanup_unproven / ROOT_UNVERIFIED**. Result consumption was denied and the retained result was not read through another carrier. The same run/process/lease must be reconciled by the original installed runtime owner and an eligible terminal status published before its result or affected model paths can be resumed. No applicable settlement action is exposed in this session.
+
+Until that settlement, owner-qualified public projection, concluded CI, normal release and live user-path verification are complete, this remains a verified frontend candidate. Do not arm merge or infer production acceptance from the screenshots, test counts, Paper edits, JSX or commit. Preserve the same branch, root, writer and model fence; do not dispatch a replacement or recreate fenced work in another file.
+
+
+
+### 11.10 Company-evidence completion and native-site hardening — 2026-11-04
+
+Chairman direction: resume the actual Paper design and native-site implementation, resolve blockers rather than repeating status-only checkpoints. This continuation preserves the existing branch, operation root, current data permissions and no-merge/no-Ready/no-enqueue/no-relabel boundary. Direct execution rationale: PRINCIPAL_JUDGMENT for visual acceptance and LOWER_TOTAL_OVERHEAD for completing the already-owned disjoint frontend patch. No new model worker was dispatched.
+
+**Implemented capability.** The company catalogue now explains each eligible product connection before drill-down: company/ticker, theme, product, named platform, publication date, lifecycle and original HTTP(S) source. It renders all eligible connections, includes a server-rendered result count and zero-evidence state, and gives clear limits beside the result. Desktop uses a broad evidence list with a reading guide; mobile stacks the same content. Existing classification filters are preserved, not promoted into a general public-permission rule.
+
+The existing URL-state implementation now retains theme/filter/search context through Coverage, Full Index, Relationships and state-reference visits. Index search survives reload, preserves unrelated lens/open/return keys, and Escape clears it without losing the other keys. Company and issuer return behavior, new-tab safety, keyboard focus, malformed-payload recovery and the shared Brain remain intact. No second router, state store, theme/language controller, authentication owner or data-publication path was added.
+
+**Corrected proof/source mismatch.** Commit 2144ca13 contained the return-context JavaScript and regression script but omitted two return-context CSS rules used by its 74-case local browser proof. This continuation commits those rules in both paired assets and recaptures the actual candidate. The older 74-case proof is not treated as exact-style proof of 2144ca13. A new company-symbol radius fallback was caught by the incumbent primitive test and corrected to the existing 10px button token; no test was weakened.
+
+**Native implementation.** Eight source/test paths change: templates/gmi.js, site/gmi.js, templates/gmi.css, site/gmi.css, templates/gmi_companies.html.j2, site/gmi-companies.html, tests/test_gmi_product_public_view.py and research/theme_graph/gmi_design_20261021/verify_product_browser.py. The company HTML was generated through the real build_gmi_explorer / make_env / lib.pages.write_page pipeline using exact committed source inputs, without model/presentation modifications or the fenced worker result. Missing materialization dependencies were restored from the same immutable source, including the shared data_base.js injection. The six other generated HTML routes remain byte-identical to 2144ca13. Coverage retains its committed 3 November snapshot; this UI patch does not publish a new review-ledger date or reorder coverage reasons. The generated CSS and JavaScript exactly equal their template sources.
+
+**Paper delivery.** The canonical file remains 01M5H6EARN9YHQV17JC6ZG9BRY, page p-1-0. The eight current theme-research boards and the completed two-file consolidation are preserved. Two additional editable boards complete the company-evidence direction:
+
+| Board | Native ID | Size |
+|---|---|---|
+| Company evidence / Noir / EN / desktop | 6VF-0 | 1440 × 1090 |
+| Company evidence / Day / ZH / mobile | 6Y9-0 | 390 × 1727 |
+
+Actual direct-Paper screenshots were inspected; inherited text and SVG contrast defects were corrected and re-inspected. The mobile layout is genuinely rearranged and translated, not a scaled desktop screenshot. Final company-card JSX was read from node 6X2-0 after visual QA. Both boards' working indicators were released through observed operation gmi-product-upgrade-20261103-sol-company-finish01. Snapshot 3eb8340a707e6ffd1b2ef55b35f91d5894be95542a75d631662cd2ac16b44fe7; token hash ac191fd9 unchanged. The screenshots above were native MCP observations, not invented on-disk Paper exports; the repository PNGs are separate actual browser captures.
+
+**Verification.** The final exact candidate passed 151 incumbent-plus-public-view tests without warnings using an operation-owned temporary directory, and 92/92 real Chrome browser cases with zero uncaught page exceptions. The added cases cover context returns from secondary routes, date/lifecycle/source visibility on company results, and persisted full-index search across desktop/mobile, Noir/Day and EN/ZH. Additional server tests prove multiple connections, unsafe-source withholding and useful no-JavaScript empty results. Three representative browser tests failed on the prior implementation before their corresponding fixes.
+
+The existing design-system enforce-added check passed with zero added blocking findings, and the existing visual-evidence validator passed against the actual eight-path diff. Ninety-one original PNGs (including 56 REST matrix cells and four real hover/focus cells) are hashed in capture-metadata.json; the existing page evidence receipt and 60-state manifest are refreshed. All nine GMI browser-input hashes match the files intended for this commit. These are generated-public, fresh-anonymous browser checks, not authenticated-backend, live deployment, performance or user acceptance claims. The repository-wide/hosted checks remain distinct from the 151-test local GMI suite.
+
+**Remaining original-model fence.** Run gmi-product-upgrade-20261103-model01 still requires original-runtime reconciliation; root gmi-paper-makeover-20261103-sol, parent gmi-product-upgrade-20261103-sol, controller PID 38742, lease 868f3981b9bd. The original Fabric controller-output read now reports no retained session for that PID but explicitly does not prove execution absence. No result was consumed, no lease/root was rewritten, and no replacement was dispatched. The exposed Fabric catalog has no settlement action; Executive session_targets reports the installed Session Bridge owner unavailable. A bounded Slack coordination send was blocked by the platform, was not delivered, and was not retried or rerouted. No background worker or observer is claimed. These observations preserve EFFECT_UNKNOWN; they do not clear it.
+
+**Release boundary.** The frontend and Paper improvements are implemented and locally validated. Production release remains gated by that exact original-run settlement, the existing qualified public-data projection and ordinary protected release/live-path verification. Required non-author approvals, if any, cannot be satisfied by this source writer. The existing hold, noindex posture, no-merge/no-Ready/no-enqueue/no-relabel instructions remain unchanged. Do not repeat accepted consolidation, regenerate already-proven frontend work without a material invalidator, consume the denied model result through a different carrier, or infer production completion from this record.
+
+
+### 11.11 Submitted-diff validation and evidenced CI repair — 2026-11-04
+
+This continuation starts from PR #10676 head `8a612a8e818bc49ab6de532508784a3dec9afbb9` and preserves every accepted outcome in §11.10. The source-law pin is protected Mastermind/master `b5e8a9682f72b1bf802e50cf16f77f878ce596f3`, bootstrap major 1. Direct execution is the bounded repair of an observed integration failure; no new model worker or Paper writer was admitted.
+
+**Consumed evidence.** The already-started Studio process 15509 completed successfully (exit 0); its design-system validation used the actual submitted PR diff, 2,242,182 bytes, with zero added blocking findings. It was not rerun. Hosted CI run [41770439156](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41770439156), attempt 1, has concluded. Eleven of twelve packs passed, including the GMI job with **151 passed in 81.20 seconds**. Contract-delta passed. The final semantic evidence contains 117 logical jobs and identifies one failing logical job: product-experience-registry. Its page-registry contract failed because the upstream test expected six surfaces while the accepted GMI builder correctly adds Companies as the seventh. The two subsequent design-system steps in that logical job did not run after the failure; they remain owed in successor CI. No unrelated failure was inferred from the aggregate red gate.
+
+**Exact source integration and repair.** CI tested merge commit `08f1132e0206667df80c9285ee70124837d0b78e`, tree `b54ab791fa84fecb1cfb69f8293d81c1c7d180d0`, composed from main `4a2291747fd2d8d364a3838e1ed2263636bc64a6` and the candidate head above. The registry test and its expanded scanner arrived on that tested main after the candidate branch diverged. This repair uses that actual tested composition in a normal two-parent integration commit on the existing source branch: first parent is the accepted candidate, second parent is the tested main. It does not merge the PR into main. Relative to the CI-tested tree, only this record and `tests/test_build_product_page_registry.py` change. The test now requires the exact seven-surface set, including `("/gmi-companies.html", False, "gmi_companies.html.j2")`, and its name says seven surfaces. No assertion was relaxed and no upstream scanner tests were discarded.
+
+**Focused red/green proof.** The original six-surface assertion failed locally against exact immutable CI source inputs with the same unexpected Companies tuple. After the two-line contract repair, all **81 tests in tests/test_build_product_page_registry.py passed in 0.70 seconds**. Validation used an isolated evidence directory on the existing authorized M2, exact scanner/GMI/ontology builder/config/registry/conftest blobs, and an operation-owned pytest temporary directory; it did not mutate the primary checkout. The repaired test blob is `cd3f8a7f9677d87c30a041b758da2e81697371c7`. Logs are retained at `/Users/chriswong/agent-evidence/gmi-10676-registry-ci-41770439156-2w0h1bcb/registry-before.txt` and `registry-after.txt`. This is focused module proof, not a claim that the full-estate registry build or successor hosted CI already passed.
+
+**Preservation.** Before repair, all 29 candidate-owned implementation/test files compared across the accepted head and CI-tested composition were byte-identical. The complete mockups tree, including the 91 PNG captures, has unchanged tree SHA `c3862605dd4ecd5b1dfdc280baba8ae6f0185b23`; the research/theme_graph subtree was also identical before appending this record. The shared theme, navigation, Supabase/data-base assets and fenced scripts/gmi_explorer subtree were unchanged. The completed Paper consolidation, ten product boards, 151-test GMI result and 92-case browser proof remain accepted. They were not regenerated or rerun. No UI change in this repair invalidates that proof.
+
+**Original-owner reconciliation remains unresolved.** The same run `gmi-product-upgrade-20261103-model01`, root `gmi-paper-makeover-20261103-sol`, parent `gmi-product-upgrade-20261103-sol`, controller PID `38742`, lease `868f3981b9bd` remains fenced. A fresh owner status reports EFFECT_UNKNOWN, ROOT_UNVERIFIED, EXECUTION_NOT_ELIGIBLE, no authorized result consumption, no retry/dispatch authorization and no proof of execution absence. The exposed Fabric catalog has no settlement action. Executive V2 reports its backend unavailable; Executive V3 reports the installed Session Bridge owner unavailable. A bounded read-only inspection of the selected incumbent owner generation `8cefc4b27b2036f86bcec1d626e864f45f792e2c290ab8de56fbde89f78ac94a` established that its reconciliation/observation helpers have closed scope for other historical runs, not this November run. Those ineligible helpers were not invoked. No result was read through another carrier, no root/lease/status was rewritten, and no replacement or retry was dispatched. The blocked Slack and PR-note sends were not retried.
+
+**Continuation and release boundary.** The next CI evidence must bind the successor head on the same branch and resolve the registry job, its two previously unrun steps and the normal aggregate gate. Original-model reconciliation must continue only through its existing eligible installed runtime owner for the exact tuple above; the current client has no applicable admitted settlement action. Until owner settlement, qualified public-data projection, protected release requirements and real live-path verification are complete, keep the PR Draft, noindex and all existing no-merge/no-Ready/no-enqueue/no-relabel holds. No production completion, background observer, terminal model result or user acceptance is claimed.
+
+### 11.12 Public-fact render-boundary hardening — 2026-11-04
+
+The accepted §11.10 Paper consolidation, 10 product boards, 151-test GMI suite, 92-case Chrome proof and 91 original PNGs remain DO_NOT_REDO. The registry correction at §11.11 passed hosted successor CI [41777490547](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41777490547): all 12 packs, contract-delta, the 81-test product registry and the previously skipped 69/97 design-system steps passed; aggregate ci-gate SUCCESS. Fences [41777490350](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41777490350) SUCCESS. These passes bind the previous exact head `f328fe875d48db8392533ff649271d687961219d`, not this new hardening commit.
+
+**Reproduced risk, not a production incident.** The existing Jinja public-topic list admitted any future product with curation ACCEPT and status RATIFIED, even where `emission_state` remained unresolved. A controlled Jinja render demonstrated that a synthetic unqualified company/product fact then enters the public topic JSON. Separately, the builder emitted issuer pages for every model issuer and did not retire previously generated issuer pages after a rights withdrawal. No actual unauthorized production record or incident was observed.
+
+**Targeted correction.** The frontend builder now supplies Jinja a bounded public presentation model. Only the separately cleared existing Micron planned-product sentence remains visible, bound to the exact proposal, issuer, microtheme, status, source key/span SHA, publication date, product/platform/lifecycle and original source URL accepted for the current snapshot. The upstream `source_rights.public_emission` remains unresolved: this narrowly preserves the already accepted factual display; it is not a new source-rights grant, graph-use permission, relationship publication projection, or general ACCEPT/RATIFIED admission. All other issuer facts remain withheld until the existing owner delivers a qualified public-fact projection. Raw edges and party_names are excluded from the template context. The builder emits only cleared issuer pages and retires stale feature-owned `gmi-issuer-*.html` output; a nonregular/symlink target refuses rather than being followed or removed.
+
+The public-view suite adds negative future-issuer and future-link cases, four exact-fact-change/revocation cases and a symlink refusal. The existing HTML/JSON escaping regression now mutates an issuer display name, not the provenance-bound product fact. The separate multi-record renderer test retains its own synthetic test-only qualification to check multi-connection and unsafe-URL behaviour without pretending it is a production rights grant. A pure AST/synthetic source-level probe compiled the builder and tests, retained the current Micron fact, withheld an unqualified issuer and private edge context, refused altered clearance and validated stale output/symlink guards. This is **not** yet a full hosted or live browser acceptance for the new head.
+
+The original model run `gmi-product-upgrade-20261103-model01` remains EFFECT_UNKNOWN / ROOT_UNVERIFIED; original root `gmi-paper-makeover-20261103-sol`, parent `gmi-product-upgrade-20261103-sol`, controller PID 38742, lease 868f3981b9bd. None of its fenced model/presentation/test files was edited and no result was consumed, retried or reassigned. The qualified data projection, noindex and all Draft/no-merge/no-Ready/no-enqueue/no-relabel release holds remain in force. Next: consume fresh exact-head CI after this bounded frontend hardening; repair only its evidenced defects, then continue model settlement solely through the original installed runtime owner.
+
+**Self-QA of the submitted fence (subsequent correction).** The existing `lib.pages.write_page` performs `Path.write_text` and would follow a symlink at a *currently permitted* issuer filename. The first guard rejected nonregular stale filenames only; it missed this permitted-name case. An isolated red/green test observed the old allowed-name path bypass and the corrected upfront nonregular/symlink refusal without modifying the unrelated target. The regression test now covers both stale `gmi-issuer-zz.html` and active `gmi-issuer-mu.html`. This remains a frontend output-safety repair, not a model rights settlement. New exact-head hosted CI is owed.
+
+**Public-context closure (second self-QA correction).** The first source guard restricted issuer links, but still used `{**model}`, which unnecessarily exposed internal `deck`, `edge_package`, `owners`, `identity`, raw issuer/link fields and unrelated `theme_links` to Jinja, even when not currently serialized. The hardened renderer now supplies an explicit top-level allowlist of taxonomy/coverage/current date fields, a build-clock-only provenance object, minimal cleared issuer/product/source display fields, and a theme-focus list derived only from cleared product links. No original private relationship edges, party names, internal correction/scope metadata or arbitrary future `theme_links` reach the template environment. A controlled source/AST test passed for the retained Micron fact, suppressed unauthorized company/source/context sentinels, and preserved the existing approved theme-focus knowledge clock. The public-view suite asserts the exact projection shape and sentinel exclusion. This is still not hosted CI or real-browser proof for the successor head. No new qualification/publishing owner was created; the original model fence and release holds remain.
+
+
+### 11.13 Public-boundary regression alignment and exact-input proof — 2026-11-04
+
+This continuation binds original draft PR #10676 to parent head `bc05ff3f82742c694d6e3ff75d82e2fbc14fd0dc`, the same `claude/gmi-product-upgrade-20261103` branch and operation `gmi-product-upgrade-20261103-sol`. Protected Mastermind/master `690e5316629815ae3e78f65ebdec2eb87f0cad16` is compatible with Sol skillpack 1.0.1/bootstrap 1. Direct execution is LOWER_TOTAL_OVERHEAD for the observed, bounded frontend test repair; no new model worker or Paper writer was dispatched.
+
+**Evidenced failure.** Fresh local verification matched 130 source/data/template/test input files to exact parent-head Git blobs, with zero mismatches before the intended repair. The latest committed symbol-directory snapshot is 2026-11-03. The new public-view suite passed 19/19. The seven incumbent GMI suites then produced 138 passes and three failures, all in `tests/test_gmi_explorer_s1_s5.py`. Each failed while reading an issuer page that §11.12 correctly no longer creates for an unreviewed or incomplete raw fact. This was an integration-test contract mismatch, not evidence to weaken the fail-closed renderer.
+
+**Repair and retained coverage.** The held-fact test now requires the issuer file, its links, proposal ID and product text to be absent from all generated public pages, together with the useful company-catalogue empty state. The excerpt test checks all public pages and injects a nonempty private sentinel into both cleared-product and held-product inputs. The existing EN/ZH missing-value typography test remains, exercised directly on an already projected presentation model; it does not override production admission. Three new production-render cases independently withhold missing product, platform and lifecycle. No assertion was skipped, xfailed or weakened, and no source-rights grant was created. Only the frontend test module changes; its repaired Git blob is `17001d563f87bb9cd4191fd63e92edb67b96a26c`.
+
+**Green proof.** The repaired S1/S5 module passed **25/25 in 35.24 seconds**. The exact eight-suite command selected by the existing `gmi-explorer` hosted job then passed **163/163 in 79.08 seconds**, with process 46300 ending exit 0. The source-bound validation record is [PUBLIC_BOUNDARY_VALIDATION_20261104.json](PUBLIC_BOUNDARY_VALIDATION_20261104.json); its logs and input manifest remain on the original M2 evidence carrier `/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/`. This is local proof; successor hosted CI remains owed.
+
+**Proof preservation.** Both the incumbent and hardened renderer were executed against the identical saved accepted model. All seven HTML pages plus paired CSS and JavaScript were byte-identical between the two renderers. The saved model's coverage order/build clock differs from the committed 3-November coverage display in both renderers, so no new coverage snapshot or generated-page update was published. The committed nine GMI browser inputs retain the exact hashes in the accepted 92/92 Chrome report, with zero recorded page exceptions. All template/site/mockup/data/model/shared-library trees remain unchanged by this repair. The accepted 91 PNGs and 92-case browser proof were not recaptured.
+
+**Paper readback.** A real native Mastermind Paper explicit-file read confirmed `01M5H6EARN9YHQV17JC6ZG9BRY`, current entry `p-1-0`, all ten current product boards, historical-reference pages and unchanged token hash `ac191fd9`. The user-active unrelated Paper file was not edited. Accepted consolidation and canvas work remain DO_NOT_REDO.
+
+**Hosted and runtime frontier.** Before this repair, exact-head fences run 41787361491 passed; CI run 41787361445 had completed planning and was executing its packs. No terminal full-CI pass was asserted. A new source head must be observed separately. Original model run `gmi-product-upgrade-20261103-model01`, root `gmi-paper-makeover-20261103-sol`, parent `gmi-product-upgrade-20261103-sol`, controller PID 38742 and lease `868f3981b9bd` remain EFFECT_UNKNOWN / ROOT_UNVERIFIED. The original Fabric status explicitly denies result consumption, retry and dispatch; its current catalog exposes no settlement action. Executive V3 state reports its reader request was not sent because the backend is unavailable; session_targets reports the installed Session Bridge owner unavailable. No denied result, lease rewrite, alternate controller, replacement worker or blocked message was attempted.
+
+**Next action and holds.** Consume the successor head's ordinary hosted CI and repair only evidenced failures. Continue original-run settlement only through its eligible installed runtime owner. Public-data qualification and the normal protected release/live-path gates remain open independently. Keep Draft, noindex and every no-merge/no-Ready/no-un-draft/no-enqueue/no-relabel hold. The existing hourly observer remains attention only, not a worker or release authority. This is a verified candidate and a removed regression blocker, not production completion.
+
+### 11.14 Bound display attribution for the current product specimen — 2026-11-04
+
+This bounded frontend continuation uses parent `e2488ac7840ccfacd647a1c184895bf79c6cac1c`, the same draft PR #10676 and protected source pin as §11.13. The previous tests-only commit was read back exactly; its compare contained only the three intended test/evidence paths. No accepted Paper, visual, model-owner or generated-site work was reopened.
+
+**Confirmed input-integrity defect.** Source analysis identified that the current receipt predicate bound issuer ID/ticker and the factual source tuple but not visible descriptive attribution. The original carrier reproduced the issue: changing only the current issuer's display name to a sentinel left admission true and put that altered company name on the topic, company-catalogue and issuer pages. The corresponding production-render regression failed before the fix (one failure, 6.32 seconds). This demonstrates an input-integrity gap, not a claim that the accepted live specimen was already wrong or that a general source-rights grant exists.
+
+**Bounded repair.** The existing builder now binds six display fields to the same already accepted specimen: Micron Technology, Nasdaq, the EN/ZH HBM theme labels and the EN/ZH company-source labels. An altered field withholds the fact and retires the stale issuer page. Six independent regression cases check the issuer route, all remaining public HTML, the company empty state and topic connection payload. The existing escaping test still exercises hostile text in an already projected template fixture; production identity mutation no longer doubles as a grant. Two incumbent issuer expectations and the company-catalogue expectation now explicitly represent the one cleared specimen instead of asserting blanket publication for every raw issuer or ACCEPT/RATIFIED row. Existing multi-record rendering, unsafe URL and bilingual missing-value capabilities remain covered.
+
+**Proof.** The exact existing eight-suite GMI CI command passed **169/169 in 82.67 seconds**, process 75347 exit 0. The isolated materialization matched all 130 bound inputs with only the three intended source/test blob overrides and no unexpected differences. The accepted input produced all nine HTML/CSS/JS files byte-identical before and after this repair. Templates, committed generated pages, the 91 PNGs and accepted 92/92 browser report remain unchanged; no new browser or production claim is made. [PUBLIC_ATTRIBUTION_VALIDATION_20261104.json](PUBLIC_ATTRIBUTION_VALIDATION_20261104.json) records the red/green reproducer, exact blobs, source inputs, command and original-carrier logs. A bounded native reasoning adviser supplied source analysis, returned and received terminal STOP; it was optional advice, not an independent approval gate or a substitute Fabric execution.
+
+**Current frontier.** Parent-head fences 41792645034 passed; parent CI 41792644982 was pending when observed. Successor hosted CI must be read at the new source head. The original model run, root/parent, controller PID 38742, lease `868f3981b9bd`, EFFECT_UNKNOWN / ROOT_UNVERIFIED result restriction and original-owner-only settlement remain as recorded in §11.13. No model result, lease, worker or release effect was consumed, replaced or advanced. Keep Draft, noindex and all no-merge/no-Ready/no-un-draft/no-enqueue/no-relabel holds; public-data qualification and protected release/live-path proof remain separate obligations.
+
+**Exact next action.** Read the ordinary hosted CI for the resulting head and repair only evidenced failures. Keep the existing observer attention-only and aligned with the current source frontier; do not create another watcher or infer background execution from a scheduled observer. Original-run settlement requires an eligible action from the original installed runtime owner. Current accepted design and browser work remain DO_NOT_REDO without a material invalidator.
+
+
+### 11.15 Preserve unknown knowledge dates without fabricating publication fallback — 2026-11-04
+
+This continuation binds parent head `71d7124f6634c4080ad4d926826d4a24dd60b68b`, the existing draft PR #10676, branch `claude/gmi-product-upgrade-20261103` and operation `gmi-product-upgrade-20261103-sol`. Protected Mastermind/master `3f420c7a8020254a45386cd1614bdec2b0c67c73` was verified with INDEX and the required laws at the same SHA; Sol skillpack 1.0.1/bootstrap 1 is compatible. Direct execution is LOWER_TOTAL_OVERHEAD for this bounded frontend correction. No replacement model worker, Paper writer or new watcher was created.
+
+**Confirmed defect.** The frontend projection substituted source publication for missing, UNKNOWN or UNDISCLOSED knowledge time. A rendered held-link tooltip therefore asserted “first seen 26 Feb 2024” when no first-seen date was recorded. Further production-render regressions demonstrated a missing/nonstring KNOWN value could stop rendering, while an impossible calendar date could appear in the tooltip. The test-first run produced **7 failures and 1 pass in 11.73 seconds**, process 46306 exit 1; the positive control kept knowledge time distinct from publication.
+
+**Repair.** The frontend builder now accepts only a valid recorded KNOWN ISO date/timestamp for this display. Missing, unknown, undisclosed and malformed values remain unknown. The owned tooltip macro renders “first seen not recorded” / “首次收录时间未记录” without passing missing values to the date formatter. Valid knowledge dates, source publication date and the Planned lifecycle remain independent and unchanged. Eight production-render cases cover both language attributes, seven failure states and the known-date control. The model/presentation subtree and model-owner tests were not modified.
+
+**Verification.** The original evidence carrier first matched all **130 bound inputs** to their parent-head blobs. The candidate changed only the builder, tooltip macro and product-view tests among those inputs; no unexpected differences were found. The exact existing eight-suite GMI command passed **177/177 in 71.52 seconds**, process 51097 exit 0. Self-review covered the complete three-file source diff. Rendering the same saved accepted model produced **9/9 byte-identical HTML/CSS/JS outputs**. The committed generated pages, 91 accepted PNGs and 92/92 Chrome report remain unchanged, so the accepted browser matrix was preserved rather than recaptured. The new fallback states are covered by production-render regression tests; no additional browser or production acceptance is asserted. [PUBLIC_KNOWLEDGE_CLOCK_VALIDATION_20261104.json](PUBLIC_KNOWLEDGE_CLOCK_VALIDATION_20261104.json) records all input blobs, red/green results, commands, output hashes and original-carrier evidence.
+
+**Paper and runtime readback.** Native explicit-file inspection confirmed the canonical product-system file `01M5H6EARN9YHQV17JC6ZG9BRY`, entry `p-1-0`, ten current boards and unchanged token hash `ac191fd9`; no canvas edits were needed. Original model run `gmi-product-upgrade-20261103-model01`, root `gmi-paper-makeover-20261103-sol`, parent `gmi-product-upgrade-20261103-sol`, PID 38742 and lease `868f3981b9bd` remain EFFECT_UNKNOWN / ROOT_UNVERIFIED. Native Fabric status denies result consumption, retry and dispatch. The current catalog exposes no eligible settlement action; Executive session targets report the installed Session Bridge owner unavailable. The original M2 filesystem/process carrier remains usable, so this is a narrow runtime-owner gap. No result, lease, controller or work ownership was reassigned. An optional native reasoning adviser failed before returning findings and received terminal STOP; it created no review dependency or source changes.
+
+**Current frontier and exact successor action.** Parent-head fences run 41793928552 passed. Parent CI 41793928668 completed planning and was executing ordinary packs when last read; a complete parent or successor hosted pass is not asserted here. After this commit, read the successor head's ordinary hosted CI and repair only an evidenced failure. Original-run settlement must come from its eligible installed runtime owner at the same run/process/lease, followed by the incumbent public-data qualification and protected release/live-path gates. Keep Draft, noindex and every no-merge/no-Ready/no-un-draft/no-enqueue/no-relabel hold. Keep the existing observer attention-only and update its handled source frontier without creating a duplicate. Accepted Paper/design/browser work remains DO_NOT_REDO absent material change. This closes the bounded knowledge-clock defect and leaves a verified candidate at a real hosted-CI/runtime boundary.
+
+
+### 11.16 Guard pre-existing fixed GMI output symlinks — 2026-11-04
+
+This continuation binds the exact original Draft PR #10676, branch \`claude/gmi-product-upgrade-20261103\`, operation \`gmi-product-upgrade-20261103-sol\` and parent commit \`0a7e8e66f7ac63ed297548026936c096531d3167\`. Protected Mastermind/master \`124df8d533dd01400a7dc514ac98b92b2d63186e\`, skillpack 1.0.1/bootstrap 1, was loaded at one commit with its required owner laws. The accepted Paper file, ten boards, 48-token hash, 91 PNGs and 92-case browser proof remain DO_NOT_REDO.
+
+**Observed independent defect, not a production incident.** The GMI builder's prior nonregular-output guard covered the generated issuer family but not six fixed HTML routes, paired \`gmi.css\`/\`gmi.js\`, or the requested \`site_dir\` itself. An isolated, disposable \`site/gmi.html\` symlink redirected \`lib.pages.write_page\` into an outside sentinel and overwrote it with 972,129 bytes. No production path or non-test file was used. Nine production-render regressions then failed at the original head: six HTML files, two paired assets and the output directory all failed to refuse pre-existing symlinks.
+
+**Bounded source fix.** Before stale issuer pruning or any page/asset write, \`render_site\` now refuses a symlink output directory and refuses symlink or other nonregular targets for every fixed HTML/paired-asset name. The existing issuer page guard, \`lib.pages.write_page\`, default data/model/rights projection and normal builder remain unchanged. No alternate writer, source permission, file server, pipeline or renderer was introduced. This check is deterministic preflight, not a claim of race-free protection against a hostile concurrent filesystem actor.
+
+**Red/green and preservation.** The nine new tests failed on the original code (\`9 failed, 33 deselected in 10.07s\`), then all nine passed after the fix. The exact incumbent eight-suite GMI test selection passed **186/186 in 109.89 seconds** (process 10446 exit 0). The isolated carrier matched all 130 bound source/data/template/test inputs with no unintended changes; the only owned source edits are \`scripts/build_gmi_explorer.py\` and \`tests/test_gmi_product_public_view.py\`. Their new Git blobs are \`96789b43ca2b9ca7b612400913b9697704094233\` and \`148754bf9c7a6d470ff40b09c46ab5a88cef595d\`. Rendering the same saved accepted model produced **9/9 byte-identical** HTML/CSS/JS outputs, so the prior 92-case browser proof and 91 original captures remain applicable to the unchanged generated inputs; those browser cases were not rerun. \`PUBLIC_OUTPUT_SYMLINK_VALIDATION_20261104.json\` binds exact inputs, tested behavior, local red/green logs and comparison.
+
+**Cross-program interface.** A read-only current-source comparison found that Market-OS PR #10696 at \`941f3ed2\` registers six GMI routes but not the new \`/gmi-companies.html\` route from this PR; both branches change the registry test file. The accountable registry owner received the exact combined-source acceptance contract in [#10696 comment 6626264216](https://github.com/mastermindx-market-intelligence/macro/pull/10696#issuecomment-6626264216). This is a future composition requirement, not a new Shared Shell audience grant or authority to edit the registry owner branch.
+
+**Holds and exact next action.** The previous head's normal CI run [41797747897](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41797747897) had passed planning and contract delta and was executing packs when last observed; its fences [41797747751](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41797747751) passed. These are not successor-head checks. Read naturally triggered exact-head hosted CI/fences after this commit and repair only evidenced failures. The original model worker \`gmi-product-upgrade-20261103-model01\` remains EFFECT_UNKNOWN / ROOT_UNVERIFIED with PID 38742 and lease \`868f3981b9bd\`; result consumption/retry/dispatch remain denied. Settlement requires the same original runtime owner. Public-fact/relationship qualification, combined product-registry admission, protected release, authenticated live-path proof and user acceptance remain separate unmet obligations. Keep Draft, noindex and all no-merge/no-Ready/no-un-draft/no-enqueue/no-relabel holds. No model result, lease, watcher successor or production effect was advanced.
+
+### 11.17 Registry scanner attribution repair — 2026-11-04
+
+**Exact existing ownership:** Draft Macro PR #10676, branch `claude/gmi-product-upgrade-20261103`, parent source `d6500a8398d11d717ca4af7015d557c61fb084b1`; protected Mastermind source pin `124df8d533dd01400a7dc514ac98b92b2d63186e`, skillpack 1.0.1/bootstrap 1. The ten editable Paper boards and prior 92-case browser proof are accepted and preserved.
+
+**Observed CI regression:** Current-head CI [41801221560](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801221560) concluded FAILURE solely because pack 8, job `product-experience-registry`, failed its seven-surface AST attribution test (`tests/test_build_product_page_registry.py::test_gmi_real_gmi_builder_binds_all_seven_surfaces`; 1 failed, 80 passed). Eleven other CI packs, planner and contract-delta passed; semantic gate had one `pr_regression` and zero infrastructure findings. Fences [41801221276](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801221276) passed. This is a real source defect, not an excuse to rerun CI unchanged.
+
+**Root cause and minimal fix:** The safety hardening in §11.16 iterated `(*TEMPLATES, *PAIRED_ASSETS)`. The incumbent conservative `scripts/build_product_page_registry.py::_reassigned_or_mutated` treats that as a possible alias/mutation and refuses the entire table, falsely omitting six literal fixed-route write sites while retaining the issuer family. The sole code change extracts fixed pages through `TEMPLATES.items()` (the scanner's deliberately permitted immutable read), then runs the unchanged pre-write symlink guard across the resulting six fixed pages and paired CSS/JS assets. The shared registry scanner, registry test, producer data, permissions and other owners remain unmodified.
+
+**Original-source red/green proof:** On an isolated Studio verification mirror pinned to parent source, the real scanner (blob `1e359523bffcc9c74f33e4b0557f853c5c8546e6`) initially reported one issuer family and six unresolved fixed routes. After the patch it reports exactly seven routes and zero GMI unresolved sites. The *exact* failed source test (blob `cd3f8a7f9677d87c30a041b758da2e81697371c7`) passed `1 passed, 80 deselected` after staging its unchanged ontology sibling (blob `597dba23fb8f4bd377d0cd41193e6fc04a7e5650`) into the isolated mirror. The 186-case GMI suite passed in 77.50s, all 130 previously bound GMI source/data inputs were accounted for with no unintended changes, and the nine accepted generated HTML/CSS/JS files remained byte-identical. The original 92-case Chrome proof was not rerun. New builder Git blob `900253d42a7b1d43ad41aa493e8032444c4570de`; [structured validation](CI_PRODUCT_REGISTRY_REPAIR_20261104.json) binds exact tests, copies, limitations and logs.
+
+**Continuing holds:** The new semantic head requires its own natural hosted CI/fences. Separate Market-OS PR #10696 still must compose the new `/gmi-companies.html` registry entry with existing access/rights restrictions; cross-owner [comment 6626264216](https://github.com/mastermindx-market-intelligence/macro/pull/10696#issuecomment-6626264216) remains the designated boundary. Original model run `gmi-product-upgrade-20261103-model01` remains `EFFECT_UNKNOWN / ROOT_UNVERIFIED` and blocks result consumption/retry/replacement. No Paper edit, public relationship qualification, merge, Ready, un-draft, enqueue, relabel, indexing, deployment, authenticated backend proof or user acceptance occurred. Keep the original holds and observer only. **Next action:** consume successor-head natural CI evidence, repair only actual failures, then obtain combined-source product-registry proof through its incumbent owner.

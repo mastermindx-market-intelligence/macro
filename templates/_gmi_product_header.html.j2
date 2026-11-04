@@ -1,0 +1,14 @@
+{% from "_gmi_macros.html.j2" import t, d, ic with context %}
+<header class="gmi-product-head">
+  <div><a class="gmi-product-name" href="{{ nav_prefix }}gmi.html">GMI Explorer</a><p>{{ t('Understand themes, business connections, and the evidence behind them.', '理解产业主题、业务关联，以及背后的证据。') }}</p></div>
+  <div class="gmi-snapshot" data-gmi-snapshot="{{ model.asof }}"><span>{{ t('Snapshot', '快照日期') }} · {{ d(model.asof) }}</span><span class="gmi-snapshot-stale" hidden>{{ ic('clock', 14) }}{{ t('Older snapshot', '快照较旧') }}</span></div>
+<div class="gmi-brain-slot" id="gmi-brain-slot"></div>
+</header>
+<nav class="gmi-product-nav" aria-label="GMI Explorer" data-aria-en="GMI Explorer" data-aria-zh="GMI 浏览器">
+  <div class="gmi-product-tabs">
+    <a href="{{ nav_prefix }}gmi.html"{% if page_key == 'map' %} aria-current="page"{% endif %}>{{ t('Theme research', '主题研究') }}</a>
+    <a href="{{ nav_prefix }}gmi-companies.html"{% if page_key in ('companies', 'issuer') %} aria-current="page"{% endif %}>{{ t('Company evidence', '公司证据') }}</a>
+    <a href="{{ nav_prefix }}gmi-relationships.html"{% if page_key == 'relationships' %} aria-current="page"{% endif %}>{{ t('Relationships', '公司关系') }}</a>
+  </div>
+  <div class="gmi-product-tools"><a href="{{ nav_prefix }}gmi-index.html"{% if page_key == 'index' %} aria-current="page"{% endif %}>{{ ic('list', 16) }}{{ t('Full index', '完整索引') }}</a><a href="{{ nav_prefix }}gmi-coverage.html"{% if page_key == 'coverage' %} aria-current="page"{% endif %}>{{ t('Coverage & methodology', '覆盖与方法') }}{{ ic('arrow', 14) }}</a></div>
+</nav>

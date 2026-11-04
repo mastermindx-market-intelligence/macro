@@ -25,12 +25,16 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 :focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:var(--r-ctl,8px)}
 </style>
 </head>
-<body class="page-macro gmi-page">
+<body class="page-macro gmi-page gmi-product">
+<a class="gmi-skip" href="#main">{{ t('Skip to research', '跳至研究内容') }}</a>
 {% include "_site_nav.html.j2" %}
 
 <main class="gmi-wrap" id="main">
+{% include "_gmi_product_header.html.j2" %}
 {% block body %}{% endblock %}
 </main>
+
+{% block page_data %}{% endblock %}
 
 <script src="{{ nav_prefix }}supabase.js" defer></script>
 <script src="{{ nav_prefix }}theme.js" defer></script>

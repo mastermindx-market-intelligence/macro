@@ -1,0 +1,108 @@
+{
+  "schema": "gmi.public_attribution_validation.v1",
+  "parent_commit": "e2488ac7840ccfacd647a1c184895bf79c6cac1c",
+  "source_law_pin": "690e5316629815ae3e78f65ebdec2eb87f0cad16",
+  "scope": "Bind the already cleared product observation's visible attribution; frontend builder and frontend tests only.",
+  "candidate_changes": {
+    "scripts/build_gmi_explorer.py": {
+      "old_git_blob": "3783036596d64038b5e69d3a4c7d1a67fa813114",
+      "new_git_blob": "083879691076fdf305a236aa6d66371b0f197a4a"
+    },
+    "tests/test_gmi_product_public_view.py": {
+      "old_git_blob": "5bdd5c806e27762113e5feebdb0aa701b54f09ef",
+      "new_git_blob": "76949c8ddc543f299b1ce9b2838895c9742db648"
+    },
+    "tests/test_gmi_explorer_s1_s5.py": {
+      "old_git_blob": "17001d563f87bb9cd4191fd63e92edb67b96a26c",
+      "new_git_blob": "cc8ef447accc243d7bd972d954c24885d9c91122"
+    }
+  },
+  "finding": {
+    "field": "issuer.display_name",
+    "admitted_with_altered_company_name_before": true,
+    "affected_pages": [
+      "gmi.html",
+      "gmi-companies.html",
+      "gmi-issuer-mu.html"
+    ],
+    "accepted_labels": {
+      "display_name": "Micron Technology",
+      "exchange": "Nasdaq",
+      "micro_en": "HBM & advanced packaging",
+      "micro_zh": "HBM 与先进封装",
+      "label_en": "Company source",
+      "label_zh": "公司来源"
+    }
+  },
+  "before": {
+    "regression": "test_current_fact_attribution_changes_fail_closed[display_name]",
+    "failed": 1,
+    "seconds": 6.32,
+    "process_exit_code": 1
+  },
+  "after": {
+    "full_gmi_ci_command": {
+      "passed": 169,
+      "failed": 0,
+      "seconds": 82.67,
+      "process_exit_code": 0,
+      "process_pid": 75347,
+      "command": "TZ=UTC python3 -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py tests/test_gmi_explorer_s2.py tests/test_gmi_explorer_s1_s5.py tests/test_gmi_explorer_s3_s4.py tests/test_gmi_product_public_view.py -q -p no:cacheprovider --basetemp='../pytest-attribution-green-e2488ac7'"
+    },
+    "attribution_regression_fields": [
+      "display_name",
+      "exchange",
+      "links.0.micro_en",
+      "links.0.micro_zh",
+      "links.0.source.label_en",
+      "links.0.source.label_zh"
+    ],
+    "preserves_template_escaping": true,
+    "preserves_missing_value_template_coverage": true
+  },
+  "exact_input_verification": {
+    "count": 130,
+    "mismatches": [],
+    "baseline_manifest": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/validation-bc05ff3f-expected-blobs.json",
+    "candidate_overrides": 3,
+    "all_other_inputs_unchanged": true
+  },
+  "same_input_renderer_comparison": {
+    "input": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/native-render-model.json",
+    "baseline_output": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/render-bc05ff3f",
+    "candidate_output": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/render-attribution-e2488ac7",
+    "unchanged_files": [
+      "gmi-companies.html",
+      "gmi-coverage.html",
+      "gmi-index.html",
+      "gmi-issuer-mu.html",
+      "gmi-relationships.html",
+      "gmi-states.html",
+      "gmi.css",
+      "gmi.html",
+      "gmi.js"
+    ],
+    "different_files": [],
+    "new_files": []
+  },
+  "accepted_browser_proof": {
+    "path": "mockups/evidence/gmi-product-20261103/browser-report.json",
+    "cases": 92,
+    "pass": true,
+    "page_errors": [],
+    "unchanged_input_hashes": 9,
+    "recaptured": false,
+    "template_and_committed_site_inputs_unchanged": true
+  },
+  "logs": {
+    "before": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/pytest-attribution-red-e2488ac7.log",
+    "after": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/pytest-attribution-green-e2488ac7.log"
+  },
+  "limitations": [
+    "Local GMI source/model/render verification is not complete hosted CI.",
+    "The original model run remains EFFECT_UNKNOWN; result consumption/retry remain unauthorized.",
+    "No new public-fact or source-rights grant is introduced.",
+    "No authenticated-backend, deployment, live URL, performance or user acceptance is claimed."
+  ],
+  "recorded_at_utc": "2026-11-04T07:38:29Z"
+}

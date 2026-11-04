@@ -3,15 +3,9 @@
 Renders the REAL model and its specimen variants through ``render_site`` (the
 production path) and pins, per page:
 
-- S3 empty state (the live model with its edges removed — the live envelope
-  is wired since DEC:GMI-RELATIONSHIP-ENVELOPE-CONTRACT): five zero species
-  chips, none on, the honest empty band, the link panel in the model's kind
-  with both facts shown (admitted AND not permitted — G-UI-10), the coverage
-  empty panel.
-- S3 edges state: the relgrid hero and the ``#excerpt`` receipt; the live
-  model renders the same present branch from the committed envelope.
-- S3 held-link branch (G-UI-9): ``held_variant(edges_variant(m))`` is the
-  specimen's exact state — the panel flips to the held mark and words.
+- S3 withholds internal records, identities and excerpts until the existing
+  model/data owner supplies a verified public projection. Empty, held and
+  populated internal variants cannot bypass that publication boundary.
 - Page law on every render: one h1, no ``title=``, no script inside ``main``,
   no reason code, never "validated", inline style only data geometry.
 - S4: hero number == the model's N on every variant; each market's rendered
@@ -91,63 +85,48 @@ def _main(html: str) -> str:
 
 
 # ---------------------------------------------------------------- S3 states
-def test_s3_empty_state(pages) -> None:
+def test_s3_empty_snapshot_explains_publication_status(pages) -> None:
     html = _main(pages[("empty", S3)])
-    assert html.count("gmi-spec gmi-spec--zero") == 5
+    assert "No relationships cleared for public display" in html
+    assert "暂无获准公开展示的关系" in html
+    assert "not a statement that no relationships exist" in html
     assert "gmi-spec--on" not in html
-    assert 'aria-pressed="true"' not in html
-    assert "No documented relationships yet" in html
-    assert "尚无已记录的关系" in html
-    # NOT_GRANTED renders both facts truthfully (G-UI-10): admitted AND not permitted
-    assert "Not permitted yet" in html
-    assert "暂不允许" in html
-    assert "gmi-empty-inline" in html
+    assert "gmi-relgrid" not in html
 
 
-def test_s3_edges_state(pages) -> None:
+def test_s3_internal_edges_do_not_enable_public_rendering(pages) -> None:
     html = _main(pages[("edges", S3)])
-    assert '<details class="mx-disc" id="excerpt">' in html
-    assert "gmi-relgrid" in html
-    assert "gmi-thread" in html
-    assert "gmi-chain gmi-chain--edges" in html
-    assert "No documented relationships yet" not in html
+    assert "No relationships cleared for public display" in html
+    assert 'id="excerpt"' not in html
+    assert "gmi-relgrid" not in html
+    assert "gmi-chain--edges" not in html
 
 
-def test_s3_live_state_reads_the_envelope(pages) -> None:
-    """The committed v1 envelope renders the present branch at display tier."""
+def test_s3_live_envelope_is_withheld_without_public_projection(pages) -> None:
     model = pages["models"]["live"]
     assert model["edges_state"] == "present" and model["edges"]
     html = _main(pages[("live", S3)])
-    assert "gmi-relgrid" in html
-    assert "No documented relationships yet" not in html
-    assert "尚无已记录的关系" not in html
-    assert "Display only — never a rank, size or gate input" in html
+    assert "No relationships cleared for public display" in html
+    for edge in model["edges"]:
+        assert edge["relationship_key"] not in html
+    assert "gmi-relgrid" not in html
 
 
-def test_s3_edge_parties_carry_the_name_rule(pages) -> None:
-    """Seat GAP 21: an edge party reads its directory name, never a bare ticker
-    when the directory knows it — the same rule as an issuer's own name."""
+def test_s3_internal_party_names_do_not_leak_to_public_markup(pages) -> None:
     names = pages["models"]["edges"]["party_names"]
     assert names["ISS:US-XNAS-SWKS"]["display_name"].startswith("Skyworks")
     assert names["ISS:US-XNAS-AAPL"]["display_name"] == "Apple"
-    head = _main(pages[("edges", S3)]).split('id="rel-h"', 1)[1].split("</div>", 1)[0]
-    assert "Skyworks" in head and "Apple" in head
-    assert ">SWKS<" not in head and ">AAPL<" not in head
-    assert pages["models"]["empty"]["party_names"] == {}
-    live = pages["models"]["live"]
-    assert set(live["party_names"]) == {e[side]["issuer_id"] for e in live["edges"]
-                                        for side in ("from", "to")}
+    html = _main(pages[("edges", S3)])
+    assert "Skyworks" not in html and "Apple" not in html
+    assert "ISS:US-XNAS-SWKS" not in html and "ISS:US-XNAS-AAPL" not in html
 
 
-def test_s3_held_link_branch(proof_model, tmp_path) -> None:
-    """G-UI-9: kind held -> the held mark, held words, held tip (the specimen state)."""
+def test_s3_held_membership_does_not_change_publication_restriction(proof_model, tmp_path) -> None:
     site = tmp_path / "held_edges"
     render_site(held_variant(edges_variant(proof_model)), site)
     html = _main((site / S3).read_text(encoding="utf-8"))
-    assert "gmi-sm--held" in html
-    assert "gmi-sm--adm" not in html
-    assert "Held for review" in html
-    assert "A proposed theme link, not a member. Not shown on the map." in html
+    assert "No relationships cleared for public display" in html
+    assert "gmi-sm--held" not in html and "gmi-sm--adm" not in html
 
 
 # ---------------------------------------------------------------- page law
@@ -213,14 +192,16 @@ def test_s4_legend_words_are_reason_words(pages) -> None:
     assert "REASON_" not in pages[("held", S4)]
 
 
-def test_s4_live_corrections_only_theme_links(pages) -> None:
-    """Live (no edges): the corrections log carries exactly the Theme links row."""
+def test_s4_corrections_log_explains_what_is_and_is_not_published(pages) -> None:
     main = _main(pages[("live", S4)])
     log = main.split("Corrections log", 1)[1].split("</section>", 1)[0]
-    assert log.count("<dt>") == 1
+    assert log.count("<dt>") == 2
     assert "Theme links" in log and "主题关联" in log
+    assert "Relationships" in log and "公司关系" in log
     assert "Changes are not tracked yet." in log
     assert "Skyworks" not in log
+    for edge in pages["models"]["live"]["edges"]:
+        assert edge["relationship_key"] not in log
 
 
 # ---------------------------------------------------------------- templates

@@ -1079,13 +1079,14 @@ def render_site(model, site_dir):
 REAL_GMI_BUILDER = REPO_ROOT / "scripts" / "build_gmi_explorer.py"  # ci-trigger-closure: data — parse-only builder source; imports are not executed
 
 
-def test_gmi_real_gmi_builder_binds_all_six_surfaces():
+def test_gmi_real_gmi_builder_binds_all_seven_surfaces():
     sites, _unresolved = reg.scan_write_sites(REPO_ROOT / "scripts")
     mine = [s for s in sites if s.builder == "scripts/build_gmi_explorer.py"]  # ci-trigger-closure: data — builder identity assertion, not an import
     got = {(s.route, s.is_family, s.template) for s in mine}
     assert got == {
         ("/gmi.html", False, "gmi_map.html.j2"),
         ("/gmi-index.html", False, "gmi_index.html.j2"),
+        ("/gmi-companies.html", False, "gmi_companies.html.j2"),
         ("/gmi-relationships.html", False, "gmi_relationships.html.j2"),
         ("/gmi-coverage.html", False, "gmi_coverage.html.j2"),
         ("/gmi-states.html", False, "gmi_states.html.j2"),

@@ -5,8 +5,7 @@
 {% block seo %}{% set seo_title = 'GMI Explorer — Coverage & receipts | Mastermind' %}{% set seo_desc = 'How many companies are admitted to a theme, out of honest denominators, and the plain-word reason for every company not yet admitted.' %}{% set seo_path = 'gmi-coverage.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
 {% block body %}
 {#- S4 coverage & receipts (specimen s4_coverage). Every number is the model's;
-    the 200/100/100 sample thresholds are specimen copy — the proof carries no
-    threshold field (GAP). Stack parts read the proof's per-market
+    Stack parts read the proof's per-market
     remainder_by_reason in config/gmi_reason_codes.yml order (= the
     model.reason_words insertion order); classes are s1..sN. -#}
 {% set N = model.coverage.us.numerator_issuers + model.coverage.cn.numerator_issuers %}
@@ -49,11 +48,7 @@
 {% if HELD_N %}{% set _ = note_zh.p.append(HELD_N|num ~ '个有待审核的关联') %}{% endif %}
 {% if ADM_N %}{% set _ = note_zh.p.append(ADM_N|num ~ '个有已获准纳入的关联') %}{% endif %}
 {%- macro mono(x) -%}{% set m %}<span class="gmi-mono">{{ x }}</span>{% endset %}{{ m }}{%- endmacro -%}
-{#- relationship amendment reason slugs -> the specimen's plain words (GAP: no
-    plain-word table for these slugs lives in the model; unknown slugs print
-    the slug itself). -#}
-{% set REL_REASON = {'part_iii_only_amendment': ('Part III only amendment', '仅修订第三部分')} %}
-{% set edge0 = model.edges[0] if model.edges else none %}
+{# Public coverage never reads internal relationship correction metadata. #}
 <section class="gmi-band" aria-labelledby="cov-h"><div class="gmi-band-card">
 <div class="gmi-big0"><span class="gmi-mag-num" id="cov-h">{{ N }}</span><span class="gmi-mag-cap gmi-mag-cap--wide">{{ t(cap_en, cap_zh) }}</span>{{ tip_adm() }}</div>
 <div class="gmi-cov">
@@ -86,7 +81,7 @@
 {% set codes = [] %}
 {% for code in model.reason_words %}{% if code in rem %}{% set _ = codes.append(code) %}{% endif %}{% endfor %}
 <div class="gmi-cov-row"><div class="gmi-cov-top"><span class="gmi-cov-mkt">{{ t(mkt_en, mkt_zh) }}</span>
-<span class="gmi-cov-num">{{ mrow.numerator_issuers }}</span><span class="gmi-cov-den">{{ t('of ' ~ (bnds[0]|num) ~ '–' ~ (bnds[1]|num) ~ ' companies', '/ 共 ' ~ (bnds[0]|num) ~ '–' ~ (bnds[1]|num) ~ ' 家公司') }}</span>{% if unres > 0 %}{{ tip(tp_en, tp_zh) }}{% endif %}</div>
+<span class="gmi-cov-num">{{ mrow.numerator_issuers }}</span><span class="gmi-cov-den">{{ t('of ' ~ (bnds[0]|num) ~ '–' ~ (bnds[1]|num) ~ ' companies', '/ 共 ' ~ (bnds[0]|num) ~ '–' ~ (bnds[1]|num) ~ ' 家公司') }}{% if unres > 0 %}{{ tip(tp_en, tp_zh) }}{% endif %}</span></div>
 {{ track }}
 <p class="gmi-note gmi-note--flush">{{ note }}</p><div class="gmi-stack" aria-hidden="true">{% for code in codes %}<i class="s{{ loop.index }}" style="flex:{{ rem[code] }} 1 0"></i>{% endfor %}</div><div class="gmi-legend">{% for code in codes %}<span><i class="s{{ loop.index }}"></i><b>{{ rem[code]|num }}</b>{{ t(model.reason_words[code].en, model.reason_words[code].zh) }}</span>{% endfor %}</div></div>
 {%- endfor -%}
@@ -98,18 +93,9 @@
 <p class="gmi-note">{{ t(note_en.p|join(' '), note_zh.p|join('；') ~ '。') }}</p>
 <div class="gmi-tally-lab gmi-tally-lab--wrap">{{ mark('disp') }}<b class="tnum gmi-num-strong">{{ model.totals.extended|num }}</b>&nbsp;{{ t('extended micro-themes are shown on the map but not counted.', '个扩展细分主题在地图上显示，但不计入。') }}{{ tip_ext() }}</div>
 </section><section class="gmi-panel">{{ sec('Corrections log', '更正记录') }}
-<dl class="gmi-dl">{% if edge0 and model.deck %}{% for cl in edge0.correction_lineage %}{% if cl.known_at %}
-{% set rw = REL_REASON.get(cl.reason, (cl.reason, cl.reason)) %}
-{% set sent_en = model.deck.corrections.amendment_not_restated.en|fill(accession=cl.accession, amends_accession=cl.amends_accession, reason=rw[0]) %}
-{% set sent_zh = model.deck.corrections.amendment_not_restated.zh|fill(accession=cl.accession, amends_accession=cl.amends_accession, reason=rw[1]) %}
-{#- |safe below only re-wraps accession strings (digits/dash) in gmi-mono spans;
-    every other token is repo-frozen deck text or the reason word pair. -#}
-{% set dd_en %}{{ sent_en|replace(cl.accession, mono(cl.accession))|replace(cl.amends_accession, mono(cl.amends_accession))|safe }}{% endset %}
-{% set dd_zh %}{{ sent_zh|replace(cl.accession, mono(cl.accession))|replace(cl.amends_accession, mono(cl.amends_accession))|safe }}{% endset %}
-<div><dt>{{ d(cl.known_at[:10]) }}</dt><dd><span class="l-en">{{ dd_en }}</span><span class="l-zh">{{ dd_zh }}</span></dd></div>
-{% endif %}{% endfor %}{% endif %}
+<dl class="gmi-dl"><div><dt>{{ t('Relationships', '公司关系') }}</dt><dd class="gmi-muted">{{ t('Public correction history is not available in this snapshot.', '此快照尚无可公开展示的更正历史。') }}</dd></div>
 <div><dt>{{ t('Theme links', '主题关联') }}</dt><dd class="gmi-muted">{{ t('Changes are not tracked yet.', '变更尚未跟踪。') }}</dd></div></dl></section></div><div class="gmi-col-side"><section class="gmi-panel">{{ sec('Accuracy check', '准确性抽查') }}
 <div class="mx-empty gmi-empty-inline"><div class="mx-empty-line">{{ t('Not measured yet', '尚未衡量') }}</div>
-<div class="mx-empty-why">{{ t('Needs 200 admitted links (100 US, 100 China) before a sample is drawn. Now ' ~ N ~ '.', '需要200条获准纳入的关联（美国100条、中国100条）后才会抽样。目前为' ~ N ~ '。') }}</div></div></section></div></div>
+<div class="mx-empty-why">{{ t('This snapshot does not include an accuracy sample or an accuracy rate.', '此快照不包含准确性样本或准确率。') }}</div></div></section></div></div>
 <p class="gmi-foot">{{ t('Sources: company filings; exchange symbol directory, ' ~ (model.asof|de) ~ '; review ledger, ' ~ (model.provenance.built_at_utc[:10]|de) ~ '.', '来源：公司披露文件；交易所证券代码目录（' ~ (model.asof|dz) ~ '）；审核记录（' ~ (model.provenance.built_at_utc[:10]|dz) ~ '）。') }}</p>
 {% endblock %}

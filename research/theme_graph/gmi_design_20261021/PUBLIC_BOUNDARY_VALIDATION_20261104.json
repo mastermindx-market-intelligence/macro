@@ -1,0 +1,90 @@
+{
+  "schema": "gmi.public_boundary_validation.v1",
+  "parent_commit": "bc05ff3f82742c694d6e3ff75d82e2fbc14fd0dc",
+  "source_law_pin": "690e5316629815ae3e78f65ebdec2eb87f0cad16",
+  "candidate_changes": {
+    "tests/test_gmi_explorer_s1_s5.py": {
+      "old_git_blob": "61f2d280b51c85c85c83634890c731867cf1e36a",
+      "new_git_blob": "17001d563f87bb9cd4191fd63e92edb67b96a26c"
+    }
+  },
+  "scope": "Frontend render-boundary regression alignment; no model-owner source or result consumption.",
+  "exact_input_verification": {
+    "count": 130,
+    "mismatches": [],
+    "latest_symbol_snapshot": "data/symbol_directory/snapshots/2026-11-03.parquet",
+    "expected_blob_manifest": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/validation-bc05ff3f-expected-blobs.json"
+  },
+  "before": {
+    "public_view": {
+      "passed": 19,
+      "seconds": 19.73
+    },
+    "incumbent": {
+      "passed": 138,
+      "failed": 3,
+      "seconds": 65.68,
+      "failures": [
+        "test_s1_unreviewed_connections_do_not_become_product_evidence",
+        "test_s1_no_excerpt_text_when_not_granted",
+        "test_s1_missing_product_values_are_plain_words"
+      ]
+    }
+  },
+  "after": {
+    "focused_s1_s5": {
+      "passed": 25,
+      "seconds": 35.24
+    },
+    "full_gmi_ci_command": {
+      "passed": 163,
+      "failed": 0,
+      "seconds": 79.08,
+      "command": "TZ=UTC python3 -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py tests/test_gmi_explorer_s2.py tests/test_gmi_explorer_s1_s5.py tests/test_gmi_explorer_s3_s4.py tests/test_gmi_product_public_view.py -q -p no:cacheprovider --basetemp='../pytest-complete-repaired-bc05ff3f'"
+    }
+  },
+  "same_input_renderer_comparison": {
+    "input": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/native-render-model.json",
+    "unchanged_files": [
+      "gmi-companies.html",
+      "gmi-coverage.html",
+      "gmi-index.html",
+      "gmi-issuer-mu.html",
+      "gmi-relationships.html",
+      "gmi-states.html",
+      "gmi.css",
+      "gmi.html",
+      "gmi.js"
+    ],
+    "different_files": [],
+    "note": "Both original and hardened renderer use the same saved input. The saved model's coverage clock/order differs from the committed 3-November display; that is not a hardening regression and no generated coverage update was published."
+  },
+  "accepted_browser_proof": {
+    "path": "mockups/evidence/gmi-product-20261103/browser-report.json",
+    "cases": 92,
+    "pass": true,
+    "page_errors": [],
+    "unchanged_input_hashes": 9,
+    "recaptured": false,
+    "source_tree_unchanged": true
+  },
+  "paper_readback": {
+    "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "page_id": "p-1-0",
+    "artboards": 10,
+    "token_hash": "ac191fd9",
+    "edit_performed": false
+  },
+  "logs": {
+    "before": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/pytest-incumbent-bc05ff3f.log",
+    "focused": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/pytest-s1s5-repaired-bc05ff3f.log",
+    "after": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/pytest-complete-repaired-bc05ff3f.log"
+  },
+  "limitations": [
+    "Local GMI source/model/render verification is not complete hosted CI.",
+    "The original model run remains EFFECT_UNKNOWN; result consumption/retry remain unauthorized.",
+    "No new public-fact or source-rights grant is introduced.",
+    "No authenticated-backend, deployment, live URL, performance or user acceptance is claimed."
+  ],
+  "recorded_at_utc": "2026-11-04T07:28:11Z"
+}

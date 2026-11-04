@@ -30,7 +30,7 @@
 {% if mids %}
 <h3 class="gmi-index-t"><span>{{ t(th.en, th.zh) }}</span><small>{{ mids|length }}</small></h3>
 {% for mid in mids %}{% set mv = model.micros[mid] %}
-<div class="gmi-irow{% if mv.kind == 'held' %} gmi-irow--held{% endif %}" data-gmi-id="{{ mid }}" data-gmi-q="{{ mv.en }} {{ mv.zh }}">{{ mark(mv.kind) }}<span class="gmi-irow-name">{{ t(mv.en, mv.zh) }}</span><span class="{% if mv.kind == 'disp' %}gmi-vh{% else %}gmi-irow-tag{% endif %}">{{ kind_tag(mv.kind) }}</span></div>
+<div class="gmi-irow{% if mv.kind == 'held' %} gmi-irow--held{% endif %}" data-gmi-id="{{ mid }}" data-gmi-q="{{ mv.en }} {{ mv.zh }}">{{ mark(mv.kind) }}<a class="gmi-irow-name" href="{{ nav_prefix }}gmi.html#theme={{ mid|urlencode }}">{{ t(mv.en, mv.zh) }}</a><span class="{% if mv.kind == 'disp' %}gmi-vh{% else %}gmi-irow-tag{% endif %}">{{ kind_tag(mv.kind) }}</span></div>
 {% endfor %}
 {% endif %}
 {% endfor %}

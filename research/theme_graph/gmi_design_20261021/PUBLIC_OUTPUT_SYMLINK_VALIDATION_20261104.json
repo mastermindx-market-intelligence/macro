@@ -1,0 +1,109 @@
+{
+  "schema": "gmi.output_target_symlink_hardening.v1",
+  "parent_head": "0a7e8e66f7ac63ed297548026936c096531d3167",
+  "ownership": "GMI frontend builder and product-view tests only",
+  "finding": "Fixed GMI pages and paired assets followed preexisting symlinks, permitting a caller-controlled target to overwrite a file outside the selected output tree; the site output directory itself also followed a symlink.",
+  "isolated_reproduction": {
+    "external_sentinel_overwritten": true,
+    "observed_external_bytes": 972129,
+    "target": "gmi.html",
+    "no_production_incident_claim": true
+  },
+  "red": {
+    "rc": 1,
+    "summary": "9 failed, 33 deselected in 10.07s",
+    "log": "pytest-red.log"
+  },
+  "green": [
+    {
+      "name": "targeted",
+      "rc": 0,
+      "seconds": 11.27,
+      "summary": "9 passed, 33 deselected in 10.41s",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_gmi_product_public_view.py",
+        "-k",
+        "generated_fixed_output_refuses_symlink or generated_output_directory_refuses_symlink",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/symlink-hardening-0a7e8e66/pytest-targeted"
+      ]
+    },
+    {
+      "name": "full",
+      "rc": 0,
+      "seconds": 110.98,
+      "summary": "186 passed in 109.89s (0:01:49)",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_gmi_explorer_model.py",
+        "tests/test_gmi_explorer_shared.py",
+        "tests/test_gmi_explorer_assets.py",
+        "tests/test_gmi_reason_codes.py",
+        "tests/test_gmi_explorer_s2.py",
+        "tests/test_gmi_explorer_s1_s5.py",
+        "tests/test_gmi_explorer_s3_s4.py",
+        "tests/test_gmi_product_public_view.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/symlink-hardening-0a7e8e66/pytest-full"
+      ]
+    }
+  ],
+  "source_inputs": {
+    "count": 130,
+    "unexpected_changes": [],
+    "owned_before": {
+      "scripts/build_gmi_explorer.py": "ca1a7ed0226271f20e63c3291e74ccec687f6b87",
+      "tests/test_gmi_product_public_view.py": "3be390c3a57b1287e7e7fd6e1e3eb85ec93c8f47"
+    },
+    "owned_after": {
+      "scripts/build_gmi_explorer.py": "96789b43ca2b9ca7b612400913b9697704094233",
+      "tests/test_gmi_product_public_view.py": "148754bf9c7a6d470ff40b09c46ab5a88cef595d"
+    }
+  },
+  "render": {
+    "files": [
+      "gmi-companies.html",
+      "gmi-coverage.html",
+      "gmi-index.html",
+      "gmi-issuer-mu.html",
+      "gmi-relationships.html",
+      "gmi-states.html",
+      "gmi.css",
+      "gmi.html",
+      "gmi.js"
+    ],
+    "identical": {
+      "gmi-companies.html": true,
+      "gmi-coverage.html": true,
+      "gmi-index.html": true,
+      "gmi-issuer-mu.html": true,
+      "gmi-relationships.html": true,
+      "gmi-states.html": true,
+      "gmi.css": true,
+      "gmi.html": true,
+      "gmi.js": true
+    },
+    "count": 9
+  },
+  "limits": [
+    "Pre-existing direct output symlinks are guarded before any generated write or stale-prune. No race-free filesystem or hostile concurrent mutation claim.",
+    "No source model, protected permission, actual Paper, committed generated site, or live deployment changed.",
+    "Accepted 92/92 browser proof and 91 captures are preserved because all nine generated inputs are byte identical, but this does not claim a new browser run.",
+    "Hosted CI for successor head is separate. Original model run remains EFFECT_UNKNOWN; no result consumption or retry."
+  ],
+  "evidence": {
+    "patch": "candidate.patch",
+    "red": "pytest-red.log",
+    "targeted": "targeted.log",
+    "full": "full.log"
+  }
+}
