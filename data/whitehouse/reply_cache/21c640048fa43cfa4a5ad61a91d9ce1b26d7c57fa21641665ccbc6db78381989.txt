@@ -1,0 +1,71 @@
+{
+  "activate": true,
+  "importance": 78,
+  "banner_days": 3,
+  "tone": "mixed",
+  "banner_title": "Trump declares space open for US development — commercial space, lunar infra in focus",
+  "banner_title_zh": "特朗普宣布太空对美国开放开发——商业航天与月球基建受关注",
+  "summary": "President Trump issued a proclamation declaring outer space open to exploration, development, and permanent presence by American citizens, reaffirming a 2028 Moon return and laying groundwork for a sustained lunar presence. The announcement signals continued federal prioritization of commercial space activity and lunar infrastructure.",
+  "summary_zh": "特朗普总统发布公告，宣布外层空间对美国公民开放探索、开发与建立永久存在，重申2028年重返月球并奠基可持续月球存在。该公告表明联邦继续优先支持商业航天与月球基础设施。",
+  "analysis": "The proclamation is largely declaratory and does not create new statutory authority beyond existing space policy directives. However, it re-cements the administration's posture that private American entities are explicitly encouraged and expected to lead in in-situ resource utilization, lunar development, and permanent settlement. Under the current reflationary regime with low macro risk, policy continuity of this kind reduces regulatory uncertainty for space contractors and suppliers.\n\nThe market transmission mechanism is primarily through federal procurement and public-private partnership pipelines: a reaffirmed Moon-by-2028 target keeps Artemis program funding flows visible, which benefits the prime contractors, launch providers, and subsystems suppliers already booked against those milestones. The proclamation's emphasis on 'permanent presence' also reinforces longer-horizon capital allocation into orbital and lunar logistics, habitats, and resource extraction technologies.\n\nThe key market-relevant language is the explicit framing of space as the 'province of all humans' open to 'exploration, development, use, and the establishment of a permanent presence by American citizens' — a pro-commercial posture that validates private claims and investment in space assets. This is supportive for the space industrial complex but unlikely to move broad indices.\n\nThe main uncertainty is execution risk: Artemis II has flown but Artemis III's timeline remains aggressive, and Congress holds the purse strings. A proclamation cannot appropriate funds, so near-term stock moves should reflect sentiment and backlog visibility rather than incremental earnings. Confidence in a positive read for the space sector is medium, tempered by the announcement's lack of enforceable specificity.",
+  "sectors": [
+    {
+      "name": "Aerospace & Defense — Prime Contractors",
+      "impact": "tailwind",
+      "rationale": "Reaffirmation of Artemis timeline supports continued visibility on lunar program prime contracts."
+    },
+    {
+      "name": "Commercial Space & Launch",
+      "impact": "tailwind",
+      "rationale": "Pro-commercial framing signals favorable policy environment for private launch and orbital services."
+    },
+    {
+      "name": "Space Infrastructure & Satellite",
+      "impact": "tailwind",
+      "rationale": "Permanent-presence language bolsters long-term demand for orbital and lunar infrastructure, communications, and logistics."
+    },
+    {
+      "name": "Defense & Space Electronics",
+      "impact": "tailwind",
+      "rationale": "Emphasis on American space superiority and national security supports continued defense-space outlays."
+    },
+    {
+      "name": "Broad Market / Non-Space Industrials",
+      "impact": "neutral",
+      "rationale": "Declaratory proclamation lacks direct broad-market spillover; impact is contained to space-adjacent names."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "LMT",
+      "direction": "benefit",
+      "rationale": "Prime contractor on Orion spacecraft, directly tied to Artemis lunar return milestones."
+    },
+    {
+      "symbol": "BA",
+      "direction": "benefit",
+      "rationale": "Lead on Space Launch System core stage; sustained Artemis schedule supports its space segment revenue."
+    },
+    {
+      "symbol": "NOC",
+      "direction": "benefit",
+      "rationale": "Supplier of solid rocket boosters for SLS and major space systems contractor."
+    },
+    {
+      "symbol": "RTX",
+      "direction": "benefit",
+      "rationale": "Space and defense electronics exposure; national-security space framing supports segment backlogs."
+    },
+    {
+      "symbol": "LHX",
+      "direction": "benefit",
+      "rationale": "Systems and components integrated into space-qualified hardware and defense payloads."
+    },
+    {
+      "symbol": "RKLB",
+      "direction": "benefit",
+      "rationale": "Pure-play commercial launch and space systems provider; pro-commercial space policy is a direct tailwind."
+    }
+  ],
+  "confidence": "medium"
+}
