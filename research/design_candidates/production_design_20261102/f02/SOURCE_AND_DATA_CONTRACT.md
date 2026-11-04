@@ -1,6 +1,12 @@
 # F02 — Source and data boundary contract
 
-## Current continuation status — NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED
+## Current continuation — 4 November 2026
+
+The current record is **32 actual F02 boards, 31 complete native JPEG/JSX pairs, 650 dispatches, 649 observed applied responses and one original unresolved Chinese comparison operation**. Independently safe construction and the reviewed static repairs are complete. The [scoped R3 native input](paper/freezes/scoped-native-20261104-r3/MANIFEST.json), commit `32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f`, has89 members, aggregate `280483a1f8e2f9c005381ddf051265d59d3fa2df904b42ccb75eab094fdbf6a4`. Product/Taste followups preserve PASS_WITH_CONDITIONS for this31-board reference. It excludes original Chinese comparison7IS-0; full joint v1 remains gated.
+
+Use [the current return](RETURN_F02.md), [current verification](paper/native-current-verification.json) and [exact remaining native work](paper/NATIVE_PENDING_WORK.md). English390 numeric correction is applied. Only the held Chinese comparison's two groups,33 numeric frames and five dependent bindings remain in the planned native set. The original request `f02-c2-macro-light-zh-390-chart-footer-20261103-01` requires original-carrier terminal/canonical reconciliation before dependent edits; no replay, replacement or reroute is authorized. Earlier source/Paper/review receipts retain their historical scope. The paragraph below is retained history, not a relaunch list or current global write pause.
+
+## Historical native checkpoint — 3 November 2026 / 435 dispatches (superseded)
 
 The accepted **Mastermind Paper direct app** created 22 observed F02 candidate boards in canonical file `01M312VSDSZFVT45674GDVJVZN`. The stable [writer checkpoint](paper/writer-continuation-progress.json) contains 435 dispatch records: **434 applied responses observed and one unresolved transport outcome**. Twenty boards have full capture/export pairs; partial boards and unapplied repairs are distinguished in [the exact pending-work record](paper/NATIVE_PENDING_WORK.md). A full pair is evidence of observed bytes, not completion or approval.
 
@@ -16,7 +22,8 @@ The Chinese390 footer request timed out without an applied receipt. Same-carrier
 | Current Macro source | `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e` | Source styles, design doctrine, migration factory, charts, public editorial builder/templates |
 | Current Terminal source | `b79b1e136290978ff7675087de979bb1b42b3713` | AppShell, Company/Options/data inspector implementations, formatting, freshness, Refraction record |
 | Initial procedure baseline carried by F02 | Mastermind `c57adacb338fe837c7d585f1e372c64d9b0118ec` | Initial source/static phase; preserved historical pin |
-| Native-continuation procedure pin | Mastermind `1225133923333926d990b8bfd30432eec289181e` | Current continuation protected-source pin; compatible skillpack 1.0.1 / bootstrap minimum 1 |
+| Earlier native-continuation procedure pin | Mastermind `1225133923333926d990b8bfd30432eec289181e` | Historical action pin; compatible skillpack 1.0.1 / bootstrap minimum 1 |
+| Current recovery procedure pin | Mastermind `910803421beca53ca25145392725ab2d84c7a8e9` | Reused verified compatible pin for the4 November continuation; earlier action pins are preserved |
 
 All implementation observations below refer to these source revisions. The three Macro normative documents were initially read from `main`, then checked at the immutable Macro pin: blob SHAs match exactly (`MASTER_PRODUCT_DESIGN_SYSTEM_V1.md`: `f8a28702767b78b2e48299f55a85e21a5c2360cd`; `DESIGN_DOCTRINE.md`: `3fc7ff36799ae3855c8dc25218dff00c18b04cc1`; `DESIGN_MIGRATION_FACTORY_V1.md`: `1ae6aef395216c7990ef0367f7885f95c4db5981`). A source implementation is evidence of a capability, not proof that the current public deployment is serving this revision.
 

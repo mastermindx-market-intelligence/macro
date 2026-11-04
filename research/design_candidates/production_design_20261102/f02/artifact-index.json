@@ -1,12 +1,12 @@
 {
   "schema": "f02.source_artifact_index.v1",
-  "generated_at": "2026-11-04T02:13:02.622092+00:00",
+  "generated_at": "2026-11-04T02:36:38.450837+00:00",
   "excludes_self": true,
   "scope": "F02 current source, applied native repairs, immutable scoped review inputs and historical retained evidence",
   "delivery_status": "SCOPED_NATIVE_REVIEW_ORIGINAL_EFFECT_HELD",
   "not_final_repaired_native_review_freeze": true,
-  "file_count": 753,
-  "aggregate_sha256": "10f0fb81ad7d4f975e53c6790d8994fe15b7828e25f25c3c048396299d25cf68",
+  "file_count": 771,
+  "aggregate_sha256": "01ed5c12c3f72e0ecdac6cdba7231691119749c9ae4ec39fb42c740183301c38",
   "aggregate_rule": "SHA256 of sorted relative path + NUL + lowercase member SHA256 + LF; index excludes itself",
   "files": [
     {
@@ -16,13 +16,18 @@
     },
     {
       "path": "CONTINUITY_AND_GATES.md",
-      "bytes": 10078,
-      "sha256": "ceb1a05b4e30692efbedb450b787b543ea120e0dc6a44492d2dd928f56737318"
+      "bytes": 10399,
+      "sha256": "d8b0dacc935d28f89661e8937e2babb91b11809748ddf3e0f83c2e7a10943420"
     },
     {
       "path": "F01_HANDSHAKE_CANDIDATE.md",
-      "bytes": 22082,
-      "sha256": "1ebc1143e23c45e82f6c8e7b0a91cbd89bdc084a6b1564b2efbde43a654f9f81"
+      "bytes": 23763,
+      "sha256": "00fdd9ad63813c8abb8e63c1d8dc4777dd86d8f9dcf113a2e742a0a3929cd475"
+    },
+    {
+      "path": "F01_RESIZE_FOCUS_RESPONSE.md",
+      "bytes": 8133,
+      "sha256": "491e232f34c54be685fa69f65bb53ba349d8870fabeeb7f0bf65aa93923ac3cb"
     },
     {
       "path": "INTERACTION_STATES.md",
@@ -31,8 +36,8 @@
     },
     {
       "path": "PAPER_BUILD_PLAN.md",
-      "bytes": 17387,
-      "sha256": "5170ec8c71abe7d3d3344ea8f46a9087339571a6f79d538dd2f0567c44914021"
+      "bytes": 17567,
+      "sha256": "4e17663649ac76b612c3016e5b74c85129df3e0764ea838bb04f8dc399cb00a9"
     },
     {
       "path": "PAPER_RETENTION_LEDGER.md",
@@ -41,18 +46,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 4724,
-      "sha256": "95d52ff69c98b14690575dc623bad1a7fe410d40431bd49047b10aa8a402389f"
+      "bytes": 5105,
+      "sha256": "904ede30294b0f31097abade2746393ee9cd399c7146cecb83c0349aa86ff196"
     },
     {
       "path": "RETURN_F02.md",
-      "bytes": 12777,
-      "sha256": "f42dccea76cfb0a2ad4b97cd38fc9f0f801daec3c197e232155e068583838b2a"
+      "bytes": 14767,
+      "sha256": "d58c50df87f05472c3e46853b8a8514500d7ac11a95829b52fe08e7b1ab5e34a"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
-      "bytes": 67817,
-      "sha256": "47eaca2bfab2b804e7cdae9a8f701d307c4c07ca4b534f0e397dd40d25322a6c"
+      "bytes": 69406,
+      "sha256": "07b8637bf5ad55915520ef40b033b93a5d762798b97894c63c09ecb2735e5553"
     },
     {
       "path": "SYSTEM_CONTRACT.md",
@@ -61,8 +66,8 @@
     },
     {
       "path": "VERIFICATION.md",
-      "bytes": 19226,
-      "sha256": "2fd0bf70a1bbf3855e9248e96a304b09f288aa438e253cde4b779ba6bb7fc074"
+      "bytes": 20088,
+      "sha256": "db2a738229b8fe12b13fde0a438f44053b3d1309f10ede22f6239e5fa7fff4ee"
     },
     {
       "path": "capability-ledger.json",
@@ -246,8 +251,8 @@
     },
     {
       "path": "paper/CURRENT_DESIGN_AUTHORITY.md",
-      "bytes": 7202,
-      "sha256": "97f65690d7cf66b73c843481410834242703daea6dedf07fbeb3a14d8718c862"
+      "bytes": 7547,
+      "sha256": "1baa9693e50ab46b3737b2d2c01e56dce6616e8cf09e2d5122558b7a0c147e3d"
     },
     {
       "path": "paper/FINAL_NATIVE_FREEZE_README.md",
@@ -256,8 +261,8 @@
     },
     {
       "path": "paper/FORMAL_REVIEW_INPUT_HANDOFF.md",
-      "bytes": 7439,
-      "sha256": "a511d4121a561be0434253719d614272285a7450746c16cb7c79ffb5773641d8"
+      "bytes": 8225,
+      "sha256": "492850fcaeb72e6e0b1324bae48b9040a6514a89ebef0b3e96962047440e2741"
     },
     {
       "path": "paper/FORMAL_RIG_ROUTE_20261103.md",
@@ -271,18 +276,18 @@
     },
     {
       "path": "paper/NATIVE_CONTINUATION_20261104.md",
-      "bytes": 5844,
-      "sha256": "0419d53d54f68130a16eddfd1999f3b6ec7dd142bd8e8fdac9aad0c3805a0777"
+      "bytes": 6289,
+      "sha256": "2f479ad4cb0394422c66316885344439af7b7f00012767da5fc8a07ecdda7e03"
     },
     {
       "path": "paper/NATIVE_PENDING_WORK.md",
-      "bytes": 2950,
-      "sha256": "d515d31b334ba94e490897a6ad3bc8ede71a194b434af9bd9c73bd45bd1a5828"
+      "bytes": 3814,
+      "sha256": "ce699e1efb47e624cada42f4a324367a208cdaadfa621151eebb85b4fde66c31"
     },
     {
       "path": "paper/README.md",
       "bytes": 4853,
-      "sha256": "c80bdee016beb62f97293942485be0c51bcc53a99d84c32a2aecf589caaf3227"
+      "sha256": "fa307b9485ffe62bd1e958d952dfde55c94542080c458a1fbf9259af4b39e64c"
     },
     {
       "path": "paper/ROLE_EVIDENCE_INPUT_MAP.md",
@@ -2301,8 +2306,8 @@
     },
     {
       "path": "paper/native-current-verification.json",
-      "bytes": 110811,
-      "sha256": "e6a6858609c414c9782f80b92f2ac91f9768cfd8af18eb6a01c48938a79d367c"
+      "bytes": 111401,
+      "sha256": "74c7a561feeb0a5a4b3e78429a87e7a2797b37e157a07ee4e98d67b91a982d3b"
     },
     {
       "path": "paper/native-final-retention-read-receipts.json",
@@ -2515,6 +2520,11 @@
       "sha256": "2a0373653c80b8ae7413ba91bbbe56271a2da0e8b0e346c6297b0a56d449d9b4"
     },
     {
+      "path": "paper/repairs/final-capture-selection-20261104.json",
+      "bytes": 2716,
+      "sha256": "30ab2efe97891433d97890d484851947f571fba63145333a8b50e96a5a82eded"
+    },
+    {
       "path": "paper/repairs/fixture-coherence-v1/FIXTURE_CONTRACT.md",
       "bytes": 11398,
       "sha256": "4397134701c3a728edebe4a9dce8af093cd1fef94b0a3620f59abf90288679e3"
@@ -2700,9 +2710,24 @@
       "sha256": "e9c3fbd8d1fc9c2090fe7b86ccfb8660da97f2bb26c610aeec2313057d6edfc2"
     },
     {
+      "path": "paper/repairs/full-freeze-all-optional-diagnostic-650-20261104.json",
+      "bytes": 5084,
+      "sha256": "c7d72fbca437c155a590f435cc5593b606e832d9d784aae53bf35e5a7ea33839"
+    },
+    {
+      "path": "paper/repairs/full-freeze-explicit-optional-diagnostic-650-20261104.json",
+      "bytes": 6436,
+      "sha256": "9c18123fd100d4da7a42a01f01c2213af9206e95a68ff26c165a4fbf28e9594b"
+    },
+    {
       "path": "paper/repairs/full-freeze-preflight-20261104.json",
       "bytes": 4531,
       "sha256": "6866fd6cc6be06289919b28c1b82ea86115be38fc8092120b9f7a7bf25236043"
+    },
+    {
+      "path": "paper/repairs/full-freeze-preflight-650-20261104.json",
+      "bytes": 4903,
+      "sha256": "3d0f3c93cc74342b646dec78739eafd441a5cd4227cafd747fea6718b5fdc50a"
     },
     {
       "path": "paper/repairs/macro-en390-native-verification.json",
@@ -2976,13 +3001,18 @@
     },
     {
       "path": "paper/reviews/NATIVE_REVIEW_REPORT.md",
-      "bytes": 5012,
-      "sha256": "01bf74685457445155e22f1a97b88c99942867d4191ba7bdda111fe1fb544cca"
+      "bytes": 5395,
+      "sha256": "954ff378a475a92c60db7503b84b4cf4a5978c0c18113090bfb20f92ccd92550"
     },
     {
       "path": "paper/reviews/NATIVE_REVIEW_SEQUENCE.md",
-      "bytes": 4774,
-      "sha256": "1aea189aea849bf69adca2d9aa9b264a6caadd176420397bf42e7b9225e20a36"
+      "bytes": 6519,
+      "sha256": "184e9215580af9f8d8ab7c58f3a84b61692e4ddd50bfc1571634fc561ab5d6f8"
+    },
+    {
+      "path": "paper/reviews/SCOPED_REVIEW_ADJUDICATION_20261104.md",
+      "bytes": 10489,
+      "sha256": "523a34ce6c600702d7f7cc681cd7745b4795d193963c70dc34c15c0024894ff1"
     },
     {
       "path": "paper/reviews/closeout-consistency-review.json",
@@ -3015,9 +3045,39 @@
       "sha256": "71f6afe31ff9361a4c2b3ad0bb0d74e2e3c36aca99a0f3acae7f8b74479db012"
     },
     {
+      "path": "paper/reviews/f01-latest-source-readback-20261104.json",
+      "bytes": 1703,
+      "sha256": "dee267d98c94d18914388422d1912063ab3d32c97146c1ecbb6421010d22d6ed"
+    },
+    {
       "path": "paper/reviews/f01-owner-response-20261104.json",
       "bytes": 8082,
       "sha256": "09cc23390f64a7a7001c382e253392e94d7ac47f624bc3d91b27a910e2901c14"
+    },
+    {
+      "path": "paper/reviews/f01-resize-concurrence-advisory-20261104.md",
+      "bytes": 6538,
+      "sha256": "7a37d98f4bda1a5acb79d318b709c5db9caa5a7c82b5b1660e974e8e386f0b74"
+    },
+    {
+      "path": "paper/reviews/f01-resize-response-check-20261104.md",
+      "bytes": 1880,
+      "sha256": "336b4e6b8ec3205196af9ca3fbe0ee81b5134968bdd910705d641739b691f9a5"
+    },
+    {
+      "path": "paper/reviews/f02-nonauthor-review-5762038797.json",
+      "bytes": 6723,
+      "sha256": "a58eb7ccd68d0399f42826c0e4bf4618f9f7c6aa0493f8fbe81e71a0418d1ebc"
+    },
+    {
+      "path": "paper/reviews/final-handoff-consistency-20261104.md",
+      "bytes": 4995,
+      "sha256": "409b8c968d6ccbc37849a5c903934b913fae606d3960f7d841b8be4954b3e504"
+    },
+    {
+      "path": "paper/reviews/final-source-handoff-verification-20261104.json",
+      "bytes": 1538,
+      "sha256": "1ead572d9813b31a5117232cb6a85cba64526b9f6b943b13a06043bc31213d21"
     },
     {
       "path": "paper/reviews/formal-route-actionability-20261104.md",
@@ -3045,6 +3105,11 @@
       "sha256": "d5805c5b440f696b8ab932f8d9c7de17fee589f90f9ead709253aec9998e372b"
     },
     {
+      "path": "paper/reviews/handoff-metadata-final-check-20261104.md",
+      "bytes": 1731,
+      "sha256": "1ebc52d72577062ac1371ffc6602063b11db38cbba8a2df2945ac82ade15477b"
+    },
+    {
       "path": "paper/reviews/implementation-contract-audit.md",
       "bytes": 13202,
       "sha256": "79e6e43d1d7ccb612089e2961e773986ed170eda864e95747d1bd93ff46e8392"
@@ -3065,6 +3130,11 @@
       "sha256": "76c3d6ae2b2dcd10dcdf595cf2623a45725df505ac7c2c2f71804f4cf0ef20e2"
     },
     {
+      "path": "paper/reviews/native-product-r3-unit-followup.md",
+      "bytes": 5356,
+      "sha256": "f1fd8ebc612f9718f78c2c70bcda6ea797a1cb02d38e9698069e3ae2fe9fd286"
+    },
+    {
       "path": "paper/reviews/native-taste-r2-affected-pass.md",
       "bytes": 10443,
       "sha256": "2432399d20757421175676dc4a7690c5605f39f7ce5ccf16b9ea896777cfed58"
@@ -3075,6 +3145,11 @@
       "sha256": "da8f0f2044446c592797d9a1b752a6559068548d1d8eb467aba485bf82bb6ae6"
     },
     {
+      "path": "paper/reviews/native-taste-r3-unit-followup.md",
+      "bytes": 5695,
+      "sha256": "b89eae6e4a7b28e2d50bf68a6cfa15eb2dee8509f268cecddeff325526c38779"
+    },
+    {
       "path": "paper/reviews/product-native-first-pass.md",
       "bytes": 37844,
       "sha256": "a5d3bbfdb1a77eedb45a6c91a9c9a7fffedd4858babba53fe12d9eb2498f6b43"
@@ -3083,6 +3158,21 @@
       "path": "paper/reviews/product-native-rationale-pass.md",
       "bytes": 8016,
       "sha256": "ec344300bd2e7c6a3bc05fa5b8bd77563bff6338f6528fdb3868ad9ac4041975"
+    },
+    {
+      "path": "paper/reviews/shared-ledger-exact-parent-diff-20261104.patch",
+      "bytes": 3769,
+      "sha256": "69cad1a8862246b100e0fe6465c4a58e7f3355b2c3205c2e30b1ec22f78b1fd7"
+    },
+    {
+      "path": "paper/reviews/shared-ledger-reconciliation-20261104.json",
+      "bytes": 1411,
+      "sha256": "3d8978131e4e82543432091b7731a6c2c91d373b22f926b1aeddbe40fef45b5c"
+    },
+    {
+      "path": "paper/reviews/source-status-history-correction-20261104.json",
+      "bytes": 623,
+      "sha256": "d1300178a5012fc7686b096711ffe3eff21353ab6cbb6aa4d3ac8fdc9eec1b0c"
     },
     {
       "path": "paper/reviews/taste-native-first-pass.md",

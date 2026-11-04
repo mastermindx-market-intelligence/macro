@@ -2698,7 +2698,7 @@
   ],
   "retention_receipt": "paper/repairs/retention-observed-20261104.json",
   "scope_audit_passed": true,
-  "visual_review": "R1 and R2 Product/Taste reports preserved; R2-P-001 and R2-T-001/002/003 closed in static scope. Residual NVTC-004 unit/time-zone headers now corrected on four boards; actual captures and exact eight-node style diff frozen for R3 affected review.",
+  "visual_review": "R1 and R2 Product/Taste reports preserved. R2 static minors closed. Both R3 affected followups PASS the exact eight-header correction; NVTC-004 closed for included static reference. Overall31-board PASS_WITH_CONDITIONS; original Chinese, full consumers, runtime, joint and formal gates remain.",
   "browser_proof": "NOT_RUN",
   "approval": false,
   "boundary": "Thirty-one completed design references plus one held partial Chinese comparison. Native construction/capture is not runtime or full v1 acceptance.",
@@ -2730,7 +2730,14 @@
     "full_board_pairs": 31,
     "changed_board_pairs": 4,
     "changed_text_nodes": 8,
-    "status": "FROZEN_AWAITING_AFFECTED_REVIEW",
-    "approval": false
-  }
+    "status": "BOTH_AFFECTED_FOLLOWUPS_PASS_NVTC004_STATIC_CLOSED",
+    "approval": false,
+    "commit": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f",
+    "overall_scoped_reference": "PASS_WITH_CONDITIONS",
+    "product_report": "paper/reviews/native-product-r3-unit-followup.md",
+    "product_report_sha256": "f1fd8ebc612f9718f78c2c70bcda6ea797a1cb02d38e9698069e3ae2fe9fd286",
+    "taste_report": "paper/reviews/native-taste-r3-unit-followup.md",
+    "taste_report_sha256": "b89eae6e4a7b28e2d50bf68a6cfa15eb2dee8509f268cecddeff325526c38779"
+  },
+  "adjudication": "paper/reviews/SCOPED_REVIEW_ADJUDICATION_20261104.md"
 }

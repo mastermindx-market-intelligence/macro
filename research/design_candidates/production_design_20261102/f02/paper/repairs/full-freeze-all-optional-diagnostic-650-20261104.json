@@ -1,0 +1,161 @@
+{
+  "schema": "f02.native-freeze-preflight.v1",
+  "observed_at_utc": "2026-11-04T02:29:40.970623Z",
+  "mode": "DRY_RUN",
+  "ready_to_package": false,
+  "freeze_created": false,
+  "partial_output_directory": null,
+  "expected_board_count": 32,
+  "writer_board_count": 32,
+  "final_capture_receipts": 31,
+  "selected_optional_captures": 1,
+  "source_file_count": 146,
+  "final_receipts": {
+    "retention": {
+      "status": "SUPPLIED",
+      "path": "paper/repairs/retention-observed-20261104.json",
+      "receipt_status": "LIVE_IDENTITIES_RETAINED_WITH_ORIGINAL_EFFECT_HOLD"
+    },
+    "verification": {
+      "status": "NOT_SUPPLIED",
+      "path": null
+    }
+  },
+  "errors": [
+    {
+      "code": "UNRESOLVED_OPERATIONS",
+      "path": "paper/writer-continuation-progress.json",
+      "message": "unresolved_effects must be an explicit empty list"
+    },
+    {
+      "code": "UNRESOLVED_OPERATIONS",
+      "path": "paper/native-board-index.json",
+      "message": "unresolved_operations must be empty"
+    },
+    {
+      "code": "UNRESOLVED_OPERATION",
+      "path": "paper/writer-continuation-progress.json",
+      "message": "f02-c2-macro-light-zh-390-chart-footer-20261103-01: TRANSPORT_ERROR_EFFECT_UNRESOLVED"
+    },
+    {
+      "code": "EXPECTED_STEPS_MISSING",
+      "path": "macro-light-zh-390 / 7IS-0",
+      "message": "build-note, chart-footer"
+    },
+    {
+      "code": "ARTIFACT_RECEIPT_MISSING",
+      "path": "final-native-image",
+      "message": "expected path, bytes and SHA256"
+    },
+    {
+      "code": "ARTIFACT_RECEIPT_MISSING",
+      "path": "final-native-export",
+      "message": "expected path, bytes and SHA256"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "macro-light-zh-390 / 7IS-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDINGS",
+      "path": "paper/native-role-bindings.json",
+      "message": "all portable board/step/export bindings must resolve"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "SectionHeader",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "SectionHeader / narrow English and Chinese title wrapping",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "SectionHeader / narrow English and Chinese title wrapping",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "TableFrame",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "TableFrame / narrow comparison with overflow cue and adjacent evidence",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "TableFrame / narrow comparison with overflow cue and adjacent evidence",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "EvidenceTrigger",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "EvidenceTrigger / icon plus visible action and 44px target",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "EvidenceTrigger / icon plus visible action and 44px target",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "EvidenceInspector",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "EvidenceInspector / Chinese comparison → evidence → return",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "EvidenceInspector / Chinese comparison → evidence → return",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Width classes",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Width classes",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "STALE_SECTION_CONTENT",
+      "path": "paper/exports/controls-variants--mobile-error.jsx",
+      "message": "section differs from the final full export"
+    },
+    {
+      "code": "STALE_FINAL_RECEIPT",
+      "path": "paper/repairs/retention-observed-20261104.json",
+      "message": "receipt must follow the current recorded operations"
+    },
+    {
+      "code": "RETENTION_UNRESOLVED",
+      "path": "paper/repairs/retention-observed-20261104.json",
+      "message": "missing originals and uncertain operations must be empty"
+    },
+    {
+      "code": "RETENTION_SCOPE_CHECK",
+      "path": "paper/repairs/retention-observed-20261104.json",
+      "message": "owned mutation scope check is missing or unresolved"
+    },
+    {
+      "code": "FINAL_RECEIPT_MISSING",
+      "path": "paper/native-final-verification.json",
+      "message": "--require-final-receipts was selected"
+    }
+  ]
+}

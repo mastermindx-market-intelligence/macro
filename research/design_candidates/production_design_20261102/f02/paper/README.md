@@ -1,8 +1,8 @@
 # F02 native Paper evidence
 
-**Current: 32 boards constructed, 31 complete native JPEG/JSX pairs, one held partial Chinese comparison; scoped review at `caf707a7f3e57c1e3fa7b8b4e087641ab893334c`.** The original Mastermind Paper direct carrier has 649 observed applied responses and one unresolved original dispatch. Full joint v1 is not accepted.
+**Current: 32 boards constructed, 31 complete native JPEG/JSX pairs, one held partial Chinese comparison; scoped review at `32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f`.** The original Mastermind Paper direct carrier has 649 observed applied responses and one unresolved original dispatch. Full joint v1 is not accepted.
 
-Start with [the current return](../RETURN_F02.md), [current authority](CURRENT_DESIGN_AUTHORITY.md), [actual native index](NATIVE_BOARD_INDEX.md), [strict remaining work](NATIVE_PENDING_WORK.md), and [scoped freeze manifest](freezes/scoped-native-20261104-r2/MANIFEST.json). [Read me page in Paper](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0), board `47Q-0`, contains the actual directory and builder guidance.
+Start with [the current return](../RETURN_F02.md), [current authority](CURRENT_DESIGN_AUTHORITY.md), [actual native index](NATIVE_BOARD_INDEX.md), [strict remaining work](NATIVE_PENDING_WORK.md), and [scoped freeze manifest](freezes/scoped-native-20261104-r3/MANIFEST.json). [Read me page in Paper](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0), board `47Q-0`, contains the actual directory and builder guidance.
 
 All 67 originals and 20 shared tokens were reread unchanged at the 640-operation checkpoint; [retention/scope audit](repairs/retention-observed-20261104.json) has zero original targets or scope violations. [Ten later scoped text/style changes](repairs/post-review-owned-delta-20261104.json) preserve that target boundary and token hash without claiming another full original read. Original construction inputs retain preparation-time statuses; the operation journal, actual bindings and current captures establish application.
 
@@ -45,6 +45,6 @@ All 67 originals and 20 shared tokens were reread unchanged at the 640-operation
 
 ## Evidence boundaries
 
-The scoped freeze includes 31 full pairs, eight supplements and seven before/current-system images; its 89-member aggregate is `9182ad14a8b0feadebdb9a39900a3f949c81577c20913582a3c7a35ac3ab4e9f`. Closed comparison captures and scoped native crops supplement the full references. A return-state drawing is not a successful browser return, and a full screenshot is not approval. `states-matrix-in-progress.jpg` and original first-pass reports remain historical.
+The scoped freeze includes 31 full pairs, eight supplements and seven before/current-system images; its 89-member aggregate is `280483a1f8e2f9c005381ddf051265d59d3fa2df904b42ccb75eab094fdbf6a4`. Closed comparison captures and scoped native crops supplement the full references. A return-state drawing is not a successful browser return, and a full screenshot is not approval. `states-matrix-in-progress.jpg` and original first-pass reports remain historical.
 
 Use source contracts and retained incumbent owners for implementation. F01 source concurrence, native advisory review, formal RIG, browser proof, merge and deployment are distinct stages. Preserve Draft/HOLD and the exact original operation until canonical terminal reconciliation.

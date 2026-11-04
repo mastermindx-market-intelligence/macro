@@ -1,0 +1,49 @@
+{
+  "schema": "f02.actual-nonauthor-source-review.v1",
+  "observed_at": "2026-11-04T02:18:43.360Z",
+  "review": {
+    "id": 5762038797,
+    "node_id": "PRR_kwDOS4LjIs8AAAABV3G8DQ",
+    "user": {
+      "login": "mastermindxryan",
+      "id": 333722846,
+      "node_id": "U_kgDOE-Q03g",
+      "avatar_url": "https://avatars.githubusercontent.com/u/333722846?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/mastermindxryan",
+      "html_url": "https://github.com/mastermindxryan",
+      "followers_url": "https://api.github.com/users/mastermindxryan/followers",
+      "following_url": "https://api.github.com/users/mastermindxryan/following{/other_user}",
+      "gists_url": "https://api.github.com/users/mastermindxryan/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/mastermindxryan/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/mastermindxryan/subscriptions",
+      "organizations_url": "https://api.github.com/users/mastermindxryan/orgs",
+      "repos_url": "https://api.github.com/users/mastermindxryan/repos",
+      "events_url": "https://api.github.com/users/mastermindxryan/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/mastermindxryan/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "**F02 NON-AUTHOR BOUNDED SOURCE/HANDOFF REVIEW — COMMENT / INTEGRATION CORRECTION NEEDED. Not final design/RIG or release approval.**\n\n**Identity and examined inputs.** Reviewer `mastermindxryan` is distinct from F02 PR author `mastermindx-2`. Existing request [#6620018694](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6620018694) anchors the changed-source scope at `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`; I also examined the one-commit source/handoff continuation at exact current head `c985c24e2558dbd4211d34e7bac2e62e50506ba3`. The PR remains Draft, base `main`. Inspected the F01 handshake, SOURCE_AND_DATA_CONTRACT, INTERACTION_STATES, NATIVE_CONTINUATION, current RETURN_F02, formal-review input/route observation, and the 31-board scoped native manifest. The 88-member manifest parses with 88 distinct non-traversing relative paths and matches its recorded member count (not an independent recomputation of media SHA-256). The PR's 559 changed paths include 558 within F02 and one shared `SESSION_RETURNS.md` path.\n\n**Scoped semantic finding: source policy is coherent.** Candidate.2 continuous gutter/rail/overlay geometry and candidate.4 ownership/Brain/focus concurrence match the existing F01 source contract. The corrected focus language conditions restoration on actual retiring-surface ownership and preserves intentional subsequent focus. Brain Close is not Stop, open/mounted is not visible, one modal owns Escape, and the D06 focused-reader/price-plot dimensions are distinct from the shared inspector. F02 documents the true `32 boards / 31 complete native pairs / 640 dispatches / 639 observed applies / 1 EFFECT_UNKNOWN` state, retains 67 originals and 20 tokens by its existing same-carrier receipt, and expressly excludes the Chinese comparison from the scoped review. This is source-consistency checking, **not** a separate visual review, executed browser proof, cryptographic media rehash or native-state attestation.\n\n**Material integration finding — reconcile the parent-owned shared ledger before any integration.** The F02 head contains `SESSION_RETURNS.md` blob `d0b7a982e169101a57252e3427f3aef5243c23f4`, with only F02 marked progressing and **P00/F01/F03/D02/D03/D06/D07/D08 still `NOT_STARTED`**. The existing programme parent [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) at `a1676c9d59b38936527cdade2531f11e7a5e07e7` has this same file at blob `9c8ca8a3fdaf6efb1692b12352cdd0a4e9003c4e`, reconciling **9 verified returns / 27 unverified assignments**. The F02 PR is based on `main`, not the parent head; its old whole-file view must not overwrite the parent’s eight other reconciled returns or reclassify them as unlaunched. **Action for existing F02 and programme owners:** on the current carriers, reconcile this one shared-path delta against the parent-owned ledger, preserve all nine verified rows and the latest F02 state, and produce an exact-base integration diff before release. Do not add a second ledger, duplicate a session/reviewer, or change a held PR's Ready/queue/label state.\n\n**Small source-navigation correction in the same existing F02 pass.** `SOURCE_AND_DATA_CONTRACT.md` still labels its top section “Current continuation status — NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED” and narrates the historical 22-board/435-dispatch/50-binding checkpoint. Current `RETURN_F02.md` and `paper/NATIVE_CONTINUATION_20261104.md` clearly supersede it. Date and mark that paragraph **historical/superseded**, or update it to the 32-board scoped state, to prevent a future builder from mistaking completed disjoint repairs for work to relaunch.\n\n**Preserved gates:** operation `f02-c2-macro-light-zh-390-chart-footer-20261103-01` remains EFFECT_UNKNOWN on the original Paper carrier; no replay or replacement. Neither this review nor the source-policy concurrence clears the missing Chinese full-board capture, independent Product/Taste disposition, F01 native holds, formal reviewer-class/RIG admission, domain/Brain/host integration, real keyboard/touch/zoom/locale proof, implementation/deployment, or PR release. No source edits or Paper operations were performed by this reviewer.\n\n**Disposition: SOURCE-POLICY CHECK PASSES WITH EXPLICIT INTEGRATION CORRECTIONS; PR-WIDE APPROVAL WITHHELD.** This is a real non-author COMMENT review answering the already pending request, not an additional commission or release approval.",
+    "state": "COMMENTED",
+    "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/10630#pullrequestreview-5762038797",
+    "pull_request_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/10630",
+    "author_association": "MEMBER",
+    "is_copilot_code_review": false,
+    "copilot_code_review_effort": null,
+    "_links": {
+      "html": {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/pull/10630#pullrequestreview-5762038797"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/10630"
+      }
+    },
+    "submitted_at": "2026-11-04T01:44:01Z",
+    "commit_id": "c985c24e2558dbd4211d34e7bac2e62e50506ba3"
+  },
+  "classification": "ACTUAL_COMMENT_REVIEW_SOURCE_POLICY_PASSES_INTEGRATION_CORRECTIONS_REQUIRED",
+  "approval": false
+}
+

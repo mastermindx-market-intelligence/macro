@@ -1,0 +1,12 @@
+{
+  "schema": "f02.source-navigation-correction.v1",
+  "observed_at": "2026-11-04T02:21:32.875233+00:00",
+  "review_id": 5762038797,
+  "path": "SOURCE_AND_DATA_CONTRACT.md",
+  "before_sha256": "47eaca2bfab2b804e7cdae9a8f701d307c4c07ca4b534f0e397dd40d25322a6c",
+  "after_sha256": "07b8637bf5ad55915520ef40b033b93a5d762798b97894c63c09ecb2735e5553",
+  "change": "Add current650/649/1 scoped state and clearly date/mark435-operation pause as superseded history; retain old receipt narrative and add actual current procedure pin.",
+  "section_2_onward_byte_identical": true,
+  "policy_change": false,
+  "native_effect": false
+}
