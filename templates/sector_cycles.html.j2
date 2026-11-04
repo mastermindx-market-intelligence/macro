@@ -16,13 +16,13 @@
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="cycle.css?v=4">
-<link rel="stylesheet" href="sector_cycles.css">
+<link rel="stylesheet" href="sector_cycles.css"><link rel="stylesheet" href="sector_cycles_platform.css"><link rel="stylesheet" href="sector_cycles_states.css">
 {# Preload the critical path (core data + engine + orchestrator) so they download in PARALLEL;
    prefetch the after-first-paint chunks. optimize_assets stamps ?v=<hash> on these hrefs post-render
    → immutable edge cache; sector_cycles.js vUrl() reuses the stamped/preloaded response. #}
 <link rel="preload" href="sector_cycles_data.js" as="script">
 <link rel="preload" href="mm_charts.js" as="script">
-<link rel="preload" href="sector_cycles.js" as="script">
+<link rel="preload" href="sector_cycles.js" as="script"><link rel="preload" href="sector_cycles_states.js" as="script"><link rel="preload" href="sector_cycles_face.js" as="script"><link rel="preload" href="sector_cycles_compare.js" as="script"><link rel="preload" href="sector_cycles_platform.js" as="script">
 <link rel="prefetch" href="sector_cycles_series_data.js" as="script">
 <link rel="prefetch" href="sector_cycles_narr_data.js" as="script">
 <link rel="prefetch" href="sector_cycles_dna_data.js" as="script">
@@ -42,7 +42,7 @@
         Projections here are windows, not certainties — re-drawn nightly as new data lands.</span><span class="l-zh">11 个 GICS 板块 ETF 同处一张周期时钟——真实价格（再基准化并取对数，使每条线共用同一坐标轴），并可一键切换为<b>周期位置</b>视图。波峰与波谷由价格走势自动识别，每个板块按其周期所处阶段评级，点击任一区段即可了解推动该走势的原因。这里的预测是时间窗口，而非确定性结论——每晚随新数据重新计算。</span></p>
     </div>
     <div class="cyc-ctrls">
-      <span class="cyc-asof"><span class="l-en">As of</span><span class="l-zh">截至</span> <span id="sc-asof">…</span></span>
+      <span class="cyc-asof"><span class="l-en">As of</span><span class="l-zh">截至</span> <span id="sc-asof">{% if cycles_ctx is defined and cycles_ctx.asof %}{{ cycles_ctx.asof|e }}{% else %}…{% endif %}</span>{% if cycles_ctx is defined and cycles_ctx.generation %}{% set g = cycles_ctx.generation %} · <span class="sc-gen" data-gen="{{ g.status|e }}"><span class="l-en">Generation</span><span class="l-zh">生成状态</span> {% if g.status == 'aligned' %}<span class="l-en">Up to date</span><span class="l-zh">已是最新</span>{% elif g.status == 'incompatible_generation' %}<span class="l-en" title="History {{ (g.artifact_session or '—')|e }}, current read {{ (g.consumer_session or '—')|e }}. Not drawn, so the two are never mixed.">History is from a different day</span><span class="l-zh" title="历史 {{ (g.artifact_session or '—')|e }}，当前读数 {{ (g.consumer_session or '—')|e }}。不绘制，避免混用。">历史来自不同日期</span>{% else %}<span class="l-en">— unavailable</span><span class="l-zh">— 不可用</span>{% endif %}</span>{% endif %}</span> <a class="cyc-open-central" href="sector_central.html#cycles"><span class="l-en">Open in Sector Central</span><span class="l-zh">在板块中枢查看</span></a>
     </div>
   </header>
 
@@ -116,9 +116,13 @@
 
 <script src="sector_cycles_data.js"></script>
 <script src="mm_charts.js"></script>
+<script src="sector_cycles_states.js"></script>
+<script src="sector_cycles_face.js"></script>
+<script src="sector_cycles_compare.js"></script>
+<script src="sector_cycles_platform.js"></script>
 <script>window.SC_EXTRA_DATA=['sector_cycles_narr_data.js','sector_cycles_dna_data.js'];window.SC_SERIES_DATA='sector_cycles_series_data.js';</script>
 <script src="sector_cycles.js"></script>
-<script>document.addEventListener('DOMContentLoaded',function(){try{document.getElementById('sc-asof').textContent=(window.SECTOR_CYCLES&&window.SECTOR_CYCLES.meta||{}).asOf||'';}catch(e){}});</script>
+<script>document.addEventListener('DOMContentLoaded',function(){try{var a=(window.SECTOR_CYCLES&&window.SECTOR_CYCLES.meta||{}).asOf;var e=document.getElementById('sc-asof');if(!e)return;if(typeof a==='string'&&a){e.textContent=a;}else if(e.textContent==='…'){e.innerHTML='<span class="l-en">— unavailable</span><span class="l-zh">— 不可用</span>';}}catch(e){}});</script>
 <script>
 // window.SECTOR_CYCLES comes from a deferred script, which has run by DOMContentLoaded.
 document.addEventListener("DOMContentLoaded", function () {

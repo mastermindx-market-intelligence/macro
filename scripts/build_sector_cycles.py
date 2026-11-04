@@ -35,6 +35,9 @@ from lib.pages import write_page  # noqa: E402
 log = logging.getLogger("build_sector_cycles")
 
 PAGE_ASSETS = ("sector_cycles.css", "sector_cycles.js")
+# the Cycles seam modules (states / face / compare / platform) ride with the page that injects them
+PAGE_ASSETS += ("sector_cycles_face.js", "sector_cycles_states.js", "sector_cycles_compare.js",
+                "sector_cycles_platform.js", "sector_cycles_platform.css", "sector_cycles_states.css")
 # the shared cycle design system this page reuses — must exist in site/ (built by
 # build_cycle.py and committed); copied from templates/ only if a refactor moves them.
 SHARED_ASSETS = ("mm_charts.js", "cycle.css")
@@ -238,6 +241,37 @@ def _stamp_rotation_context(payload: dict, *, site_root=None, today=None) -> Non
         payload["rotation_alignment_version"] = 1
 
 
+def cycles_page_ctx(payload: dict, *, require_generation: bool = True) -> dict:
+    """L4 C24: what the server prints in the page head; a pure read of the payload.
+
+    ``asof`` is the payload's own observation date (``meta.asOf``), None when absent; the
+    build time is never printed in its place.  ``generation`` projects only the already
+    stamped ``rotation_context``: "aligned" when every present side is aligned,
+    "incompatible_generation" (with that side's two sessions) when any side is, otherwise
+    "unavailable".  Without a rotation context it is "unavailable", or None when the
+    caller does not require one (the China page prints no generation line then).
+    """
+    meta = payload.get("meta") if isinstance(payload, dict) else None
+    asof = meta.get("asOf") if isinstance(meta, dict) else None
+    asof = asof if isinstance(asof, str) and asof else None
+    rc = payload.get("rotation_context") if isinstance(payload, dict) else None
+    unavailable = {"status": "unavailable", "artifact_session": None, "consumer_session": None}
+    if not isinstance(rc, dict):
+        return {"asof": asof, "generation": dict(unavailable) if require_generation else None}
+    sides = [rc[k] for k in ("events", "fragmentation") if isinstance(rc.get(k), dict)]
+    if rc.get("status") == "unavailable" or not sides:
+        return {"asof": asof, "generation": dict(unavailable)}
+    for side in sides:
+        if side.get("status") == "incompatible_generation":
+            return {"asof": asof, "generation": {"status": "incompatible_generation",
+                                                 "artifact_session": side.get("artifact_session"),
+                                                 "consumer_session": side.get("consumer_session")}}
+    if all(side.get("status") == "aligned" for side in sides):
+        return {"asof": asof, "generation": {"status": "aligned", "artifact_session": None,
+                                             "consumer_session": None}}
+    return {"asof": asof, "generation": dict(unavailable)}
+
+
 def main() -> int:
     root = config.ROOT
     try:
@@ -321,7 +355,7 @@ def main() -> int:
         env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
     except Exception:  # noqa: BLE001 — degrade to English-only rather than crash the build
         env.globals.update(td=lambda en: en, tr=lambda en: en, t=lambda en, zh="": en)
-    html = env.get_template("sector_cycles.html.j2").render()
+    html = env.get_template("sector_cycles.html.j2").render(cycles_ctx=cycles_page_ctx(data))
     write_page(site / "sector_cycles.html", html, encoding="utf-8")
 
     for asset in PAGE_ASSETS:

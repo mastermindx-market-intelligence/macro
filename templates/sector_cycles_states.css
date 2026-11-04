@@ -1,0 +1,19 @@
+/* sector_cycles_states.css — SC_STATES typed-state faces (programme 7646, lane L4).
+   Tokens only; one even border per surface, no edge accent. The state is named in words. */
+.sc-state{font:400 var(--fs-label,12px)/1.45 var(--font-ui,inherit);color:var(--text)}
+div.sc-state{padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+.sc-state--compact{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:var(--r-pill,999px);
+  background:var(--panel2);border:1px solid var(--line);font-weight:700;line-height:1}
+.sc-state-t{margin:0;font-weight:700}
+.sc-state-b{margin:4px 0 0;color:var(--muted)}
+.sc-state-k{color:var(--muted);font-weight:600}
+.sc-state [title],.sc-gen [title]{text-decoration:underline dotted;text-underline-offset:2px;cursor:help}
+.sc-state-a{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:var(--r-pill,999px);border:1px solid var(--line);
+  background:var(--panel2);color:var(--link);font:700 var(--fs-label,12px)/1 var(--font-ui,inherit);text-decoration:none;cursor:pointer}
+.sc-state-a:hover{background:var(--panel)}
+.sc-state-a:focus-visible,.cyc-open-central:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.sc-gen{font-weight:600}
+.cyc-open-central{margin-left:10px;color:var(--link);font:600 var(--fs-label,12px)/1 var(--font-ui,inherit);text-decoration:none;
+  transition:color .15s var(--ease,ease)}
+.cyc-open-central:hover{text-decoration:underline;text-underline-offset:2px}
+@media (prefers-reduced-motion:reduce){.cyc-open-central{transition:none}}
