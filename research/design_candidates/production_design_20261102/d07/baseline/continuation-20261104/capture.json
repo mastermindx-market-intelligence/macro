@@ -1,0 +1,153 @@
+{
+  "evidence_class": "ACTUAL_SERVED_BROWSER_BASELINE",
+  "observed_date_utc": "2026-11-04",
+  "served_build_commit": "UNATTESTED",
+  "captures": [
+    {
+      "file": "article-320.jpg",
+      "pixels": [
+        320,
+        844
+      ],
+      "sha256": "5a9406d6bcc5f771ab15e1b7fc36e5bc65a70ac5a0f1dc4e730f43229c712e51",
+      "bytes": 39602,
+      "capture_method": "native_browser_screenshot",
+      "actual_mime_type": "image/jpeg",
+      "tool_reported_mime_type": "image/png",
+      "viewport": [
+        320,
+        844
+      ],
+      "clip": null
+    },
+    {
+      "file": "article-390.jpg",
+      "pixels": [
+        390,
+        844
+      ],
+      "sha256": "ebc3773b701566a34ad06e81c5c3ed6e523067fedbdec91e09f4aff06c44e7f9",
+      "bytes": 43049,
+      "capture_method": "native_browser_screenshot",
+      "actual_mime_type": "image/jpeg",
+      "tool_reported_mime_type": "image/png",
+      "viewport": [
+        390,
+        844
+      ],
+      "clip": null
+    },
+    {
+      "file": "cn-actuals-320.jpg",
+      "pixels": [
+        320,
+        782
+      ],
+      "sha256": "c534da08c94b2e2969f17cb52e2cc975f7cfa2f00ac208ddccce5965c551a17d",
+      "bytes": 28145,
+      "capture_method": "native_browser_screenshot",
+      "actual_mime_type": "image/jpeg",
+      "tool_reported_mime_type": "image/png",
+      "viewport": [
+        320,
+        844
+      ],
+      "clip": {
+        "x": 0,
+        "y": 62,
+        "width": 320,
+        "height": 782
+      }
+    },
+    {
+      "file": "cn-actuals-390.jpg",
+      "pixels": [
+        390,
+        844
+      ],
+      "sha256": "a6b8e97bce3f4d6e63b47746ff6d01ab98d692cdb2561460f6ad6ddb82e7e57c",
+      "bytes": 32389,
+      "capture_method": "native_browser_screenshot",
+      "actual_mime_type": "image/jpeg",
+      "tool_reported_mime_type": "image/png",
+      "viewport": [
+        390,
+        844
+      ],
+      "clip": null
+    },
+    {
+      "file": "cn-actuals-dark-320-bottom.jpg",
+      "pixels": [
+        320,
+        844
+      ],
+      "sha256": "2126e834a530b601eee97089a7b94eec0ff191ada5525fc916373b1390feaa81",
+      "bytes": 29190,
+      "capture_method": "native_browser_screenshot",
+      "actual_mime_type": "image/jpeg",
+      "tool_reported_mime_type": "image/png",
+      "viewport": [
+        320,
+        844
+      ],
+      "clip": null
+    },
+    {
+      "file": "cn-actuals-zh-390.jpg",
+      "pixels": [
+        390,
+        782
+      ],
+      "sha256": "471993dc1a70e44666ee93f9e111f62a5eb3effef2e18aec262e7c573c50b8f3",
+      "bytes": 27289,
+      "capture_method": "native_browser_screenshot",
+      "actual_mime_type": "image/jpeg",
+      "tool_reported_mime_type": "image/png",
+      "viewport": [
+        390,
+        844
+      ],
+      "clip": {
+        "x": 0,
+        "y": 62,
+        "width": 390,
+        "height": 782
+      }
+    },
+    {
+      "file": "cn-forecast-desktop.jpg",
+      "pixels": [
+        1585,
+        1180
+      ],
+      "sha256": "8ae0580c71407d999c5b9fb3a77c851962a31e9f46a85f511b05a3d5afe483f7",
+      "bytes": 129078,
+      "capture_method": "native_browser_screenshot",
+      "actual_mime_type": "image/jpeg",
+      "tool_reported_mime_type": "image/png",
+      "viewport": [
+        1585,
+        1180
+      ],
+      "clip": null
+    },
+    {
+      "file": "company-search-baba-preview.jpg",
+      "pixels": [
+        1585,
+        1180
+      ],
+      "sha256": "bee2a4ff62941395dd4cd9d28f7e0bef047c0504970e00b8720964d86edb49e7",
+      "bytes": 89490,
+      "capture_method": "native_browser_screenshot",
+      "actual_mime_type": "image/jpeg",
+      "tool_reported_mime_type": "image/png",
+      "viewport": [
+        1585,
+        1180
+      ],
+      "clip": null
+    }
+  ]
+}

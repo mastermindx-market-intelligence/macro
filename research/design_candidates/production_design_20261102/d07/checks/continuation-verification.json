@@ -1,18 +1,29 @@
 {
   "schema": "d07.phase2a.continuation-verification.v1",
-  "observed_date_utc": "2026-11-03",
+  "observed_date_utc": "2026-11-04",
   "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
-  "procedure_pin": "d47cdb5652096e038a8bfb24e431ebe48ccf7ff2",
+  "procedure_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
   "source_carrier": {
     "pr": 10617,
     "branch": "design/paper-production-audit-20261102-ryan",
-    "observed_head": "e3468cb9482297c9ee66b9b749012b7f4439f475",
+    "observed_head": "e00e87cd0e14a27ab030968b404763cfdbb891e5",
     "draft": true,
     "state": "open",
     "merged": false,
     "owned_subtree": "research/design_candidates/production_design_20261102/d07/",
-    "preparation_head": "739821372ca4cce1def155e670c89dc638ab7ef7",
-    "observation_phase": "frozen_artifact_publication_readback"
+    "preparation_head": "b0d827361e7adc266079fa0501789fd005d0794c",
+    "observation_phase": "continuation_preparation",
+    "acting_principal": "mastermindx-3",
+    "existing_pr_owner": "mastermindxryan",
+    "publication_parent": "e00e87cd0e14a27ab030968b404763cfdbb891e5",
+    "concurrent_delta": {
+      "commits": 2,
+      "paths": [
+        "research/design_candidates/production_design_20261102/d05/AUDIT_CHECKPOINT.md",
+        "research/design_candidates/production_design_20261102/d05/README.md"
+      ],
+      "d07_overlap": false
+    }
   },
   "foundations": {
     "joint": {
@@ -23,16 +34,33 @@
     "system": {
       "version": "F02-SYSTEM/1.0.0-candidate.2",
       "commit": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
-      "current_return": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
-      "release": "unreleased"
+      "current_return": "e6c28413ee74e83950b8c5ff58a34b81e76c1781",
+      "release": "unreleased",
+      "source_policy_concurrence": "candidate.4 ownership/change table and sections 4.1–4.3",
+      "native_state": "DISJOINT_WORK_RESUMED_ORIGINAL_CHINESE_TARGET_EFFECT_UNKNOWN",
+      "native_boards": 23,
+      "dispatches": 545,
+      "observed_applied": 544
     },
     "latest_F01": {
-      "commit": "d6ebeefcba90387b42817f8e87792e630d5862eb",
-      "version": "F01-F02-SHELL/1.0.0-candidate.3",
+      "commit": "922ec2522108071d9bbed1d31ef8dbf52910f0ca",
+      "version": "F01-F02-SHELL/1.0.0-candidate.4",
       "geometry": "candidate.2 preserved",
-      "new_interactions": "pending F02/D06",
+      "new_interactions": "F02_OWNER_SOURCE_POLICY_CONCURRENCE_RECEIVED_RUNTIME_AND_FINAL_QUALIFICATION_OPEN",
       "release": "unreleased",
-      "status": "PARTIAL / REQUEST_CHANGES / RIG draft"
+      "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
+      "semantic_package": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+      "board_D_overlay_px": 440,
+      "original_state_8_effect": "EFFECT_UNKNOWN",
+      "semantic_head": "3e334bd3eabf1d6ecc7980845fbd7a813dd023e1",
+      "semantic_blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+      "source_review": {
+        "id": 5760649569,
+        "state": "APPROVED",
+        "reviewer": "mastermindxryan",
+        "commit": "3e334bd3eabf1d6ecc7980845fbd7a813dd023e1",
+        "scope": "SOURCE_CONTRACT_HANDOFF_ONLY"
+      }
     }
   },
   "tests": [
@@ -42,39 +70,51 @@
       "assertions": 180,
       "source_blobs_verified": 4,
       "status": "PASS",
-      "recorded_output_reproduced": true
+      "recorded_output_reproduced": true,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
     },
     {
       "name": "original estimate observations",
       "cases": 6,
       "status": "BASELINE_REPRODUCED",
       "known_defect_cases": 1,
-      "recorded_output_reproduced": true
+      "recorded_output_reproduced": true,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
     },
     {
       "name": "estimate producer",
       "cases": 9,
       "status": "BASELINE_REPRODUCED",
-      "recorded_output_reproduced": true
+      "recorded_output_reproduced": true,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
     },
     {
       "name": "estimate client request/index seam",
       "cases": 4,
       "status": "BASELINE_REPRODUCED",
       "presentation_callback": "recorder",
-      "recorded_output_reproduced": true
+      "recorded_output_reproduced": true,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
     },
     {
       "name": "earnings member loader",
       "cases": 6,
       "status": "BASELINE_REPRODUCED",
-      "recorded_output_reproduced": true
+      "recorded_output_reproduced": true,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
     },
     {
       "name": "joint candidate specification arithmetic",
       "assertions": 42,
       "status": "PASS",
-      "recorded_output_reproduced": true
+      "recorded_output_reproduced": true,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
     },
     {
       "name": "statement helpers",
@@ -85,7 +125,9 @@
       "status": "BASELINE_REPRODUCED",
       "known_undesirable_case": "ST22",
       "ui_assertions": 0,
-      "recorded_output_reproduced": true
+      "recorded_output_reproduced": true,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
     },
     {
       "name": "dossier and planner return",
@@ -93,7 +135,9 @@
       "positive_control": "matching v1 tx",
       "status": "BASELINE_REPRODUCED",
       "ui_assertions": 0,
-      "recorded_output_reproduced": true
+      "recorded_output_reproduced": true,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
     },
     {
       "name": "Paper task-state static artifacts",
@@ -105,54 +149,62 @@
       "minimum_text_contrast": 4.737883,
       "ui_execution_assertions": 0,
       "recorded_output_reproduced": true,
-      "inline_spans_included": 28
+      "inline_spans_included": 28,
+      "evidence_origin": "2026-11-03 published receipt",
+      "rerun_in_current_continuation": false
+    },
+    {
+      "name": "Forecast consumer functions",
+      "cases": 13,
+      "assertions": 32,
+      "integrity_checks": 15,
+      "status": "SOURCE_BEHAVIOR_REPRODUCED",
+      "component_render_assertions": 0,
+      "browser_assertions": 0,
+      "result": "diagnostics/forecast/consumer-results.json",
+      "evidence_origin": "2026-11-04 continuation execution",
+      "rerun_in_current_continuation": true,
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "CN forecast producer definitions",
+      "cases": 6,
+      "assertions": 16,
+      "integrity_checks": 3,
+      "status": "SOURCE_BEHAVIOR_REPRODUCED",
+      "component_render_assertions": 0,
+      "browser_assertions": 0,
+      "result": "diagnostics/forecast/producer-results.json",
+      "evidence_origin": "2026-11-04 continuation execution",
+      "rerun_in_current_continuation": true,
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "Company search context helpers",
+      "cases": 35,
+      "assertions": 41,
+      "integrity_checks": 6,
+      "status": "SOURCE_BEHAVIOR_REPRODUCED",
+      "browser_assertions": 0,
+      "history_restore_assertions": 0,
+      "result": "diagnostics/company-search/results.json",
+      "evidence_origin": "2026-11-04 continuation execution",
+      "rerun_in_current_continuation": true,
+      "recorded_output_reproduced": true
     }
   ],
   "rerun_receipts": [
     {
-      "suite": "routes",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
+      "command": "node checks/diagnostics/forecast/probe-consumer.mjs",
+      "byte_identical_saved_output": true
     },
     {
-      "suite": "original-estimates",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
+      "command": "python checks/diagnostics/forecast/probe-producer.py",
+      "byte_identical_saved_output": true
     },
     {
-      "suite": "estimate-producer",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
-    },
-    {
-      "suite": "estimate-client",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
-    },
-    {
-      "suite": "earnings-hydration",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
-    },
-    {
-      "suite": "geometry",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
-    },
-    {
-      "suite": "statements",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
-    },
-    {
-      "suite": "dossier-planner",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
-    },
-    {
-      "suite": "paper-studies",
-      "exit_code": 0,
-      "recorded_output_reproduced": true
+      "command": "node checks/diagnostics/company-search/probe.mjs",
+      "byte_identical_saved_output": true
     }
   ],
   "retention": {
@@ -163,7 +215,7 @@
     "BLOCKED_DATA": 4,
     "REMOVE": 0
   },
-  "proposed_end_to_end_cases": 24,
+  "proposed_end_to_end_cases": 33,
   "responsive_cases": 12,
   "semantic_task_oracles": 12,
   "paper": {
@@ -242,23 +294,45 @@
       "token_hash": "55dd37b7",
       "indicators_finished": true,
       "classification": "PROVISIONAL_CONTENT_AND_INTERACTION_STUDIES"
+    },
+    "read_only_continuation": {
+      "observed_date_utc": "2026-11-04",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-11-0",
+      "boards_present": 9,
+      "token_hash": "55dd37b7",
+      "catalog_hash": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+      "R3_inspected_node": "1CD3-0",
+      "modifying_operations": 0,
+      "F02_company_inspection": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-6-0",
+        "board_id": "56L-0",
+        "token_hash": "356191c3",
+        "method": "LIVE_SCREENSHOT_READ",
+        "existing_fixture": "ILLUSTRATIVE_CANDIDATE_REVIEW_PENDING",
+        "modifying_operations": 0
+      }
     }
   },
-  "pinned_source_targets": 109,
+  "pinned_source_targets": {
+    "verified": 119,
+    "reused": 107,
+    "new_or_repinned": 12,
+    "receipt": "source-link-verification.json"
+  },
   "reference_acceptance": "open",
   "rig_submission": "unsubmitted",
-  "phase2a": "research_and_specification_complete",
+  "phase2a": "SPECIFICATION_AND_RESEARCH_EXTENDED",
   "task_studies": "provisional",
   "full_assignment": "PARTIAL",
-  "finalization_classification": "CHECKPOINTED_CONTINUATION",
+  "finalization_classification": "MORE_WORK_EXISTS",
   "mission_complete": false,
   "served_article_continuation": {
-    "url": "https://beta.mastermind-x.com/stocks/earnings/aal-2026q3-call-record.html",
-    "observed_title": "aal 2026q3 call record · Mastermind",
-    "url_and_title_observed": true,
-    "visible_dom": "MCP -32603 timeout",
-    "bounded_status_read": "same URL and title",
-    "body_access_cta_back_verified": false
+    "observed_date_utc": "2026-11-04",
+    "status": "BODY_AND_SELECTED_CALL_OBSERVED_CURRENT_CONTEXT",
+    "receipt": "../baseline/continuation-20261104/observations.json",
+    "all_access_or_return_cases_qualified": false
   },
   "source_qa_amendments": [
     "Public glance projection fields and display-string arithmetic",
@@ -271,10 +345,15 @@
     "Existing planner list/batch controls distinguished from proposed date/filter controls",
     "Requested historical call retained when latest dossier advances",
     "Legacy heuristic cross-fiscal stored-value chunk documented",
-    "CN forecast consumer execution remains unexecuted",
     "Partial metadata guard qualified by duration/basis presence",
     "Styled inline spans are parsed with their own inherited or explicit colors",
-    "Matching-call control resets the recorder and asserts one fresh callback"
+    "Matching-call control resets the recorder and asserts one fresh callback",
+    "Forecast source bodies and real positive path executed with component fixture mount separately blocked",
+    "Distinct consensus and report populations retained",
+    "Forward comparator vintage gap classified as undesirable source baseline",
+    "Search epoch kept narrow and exact listing metadata qualified",
+    "F01 corrected 440px native D and candidate.4 lifecycle owners reconciled",
+    "Conditional focus and explicit evidence reopening replace automatic restoration"
   ],
   "internal_visual_qa": {
     "pairs_reviewed": 8,
@@ -286,744 +365,13 @@
     "formal_reviewer_class_receipt": false
   },
   "previous_checkpoint": {
-    "commit": "739821372ca4cce1def155e670c89dc638ab7ef7",
-    "files_verified": 41
+    "commit": "b0d827361e7adc266079fa0501789fd005d0794c",
+    "d07_tree": "b93021083c739b226ade36f76f759113f25d13f6",
+    "manifest_sha256": "1822e3575331debfb015b25088a0acc562134b3e8f8d9416606acfae33ea28c5",
+    "files_verified": 80,
+    "recovery_current_continuation": true
   },
-  "publication_state": "FROZEN_ARTIFACT_READBACK_VERIFIED",
-  "source_publication": {
-    "commit": "e3468cb9482297c9ee66b9b749012b7f4439f475",
-    "parent": "739821372ca4cce1def155e670c89dc638ab7ef7",
-    "repository_root_tree": "6c49d62103fce65f9ed93695bb80c047b9e10f57",
-    "d07_tree": "dd17aa3c21b88c575f47135f35edd0619c61d557",
-    "manifest_sha256": "118a370a9cf9c612dc59a817bf8e6e26f12d766d2c68f2e92aca9d855baa7e87",
-    "observed_date_utc": "2026-11-03",
-    "file_count": 80,
-    "changed_files": 52,
-    "changed_outside_d07": 0,
-    "ref_readback_matched": true,
-    "files": [
-      {
-        "path": "ACCEPTANCE.md",
-        "git_blob": "d5b696f5c5485f837aa55e806c7432974cc54b16",
-        "bytes": 19016,
-        "body_encoding": "base64",
-        "encoded_body_length": 25356,
-        "sha256": "1afc2ba3418e91e931eb807ecc96d549667d4aafa63c529339127c40aa3eb012",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "ANALYSIS.md",
-        "git_blob": "008cf1080a81d588488874c20ef1814ab80d852d",
-        "bytes": 26894,
-        "body_encoding": "base64",
-        "encoded_body_length": 35860,
-        "sha256": "f4a1bd0a4bee723d4c663b2dc335775ed946822029209c262c4b73eccc253817",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "CONTINUATION.md",
-        "git_blob": "88a18b1a67bd1ffd6ce7b4ed1a4de5d2105e13ac",
-        "bytes": 16437,
-        "body_encoding": "base64",
-        "encoded_body_length": 21916,
-        "sha256": "96fb8caa7b40ecaee81a501e5779f130c5dc141695b6209d87b368a9ff270c68",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "EARNINGS.md",
-        "git_blob": "4336aa34caaf12781985f3a1de7c4e7af621b00a",
-        "bytes": 28134,
-        "body_encoding": "base64",
-        "encoded_body_length": 37512,
-        "sha256": "6ae3a35ebc9f9a24ca98da9b28ceb11e49b3c36720b967aff497bff6222f8ef3",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "EXPERIENCE.md",
-        "git_blob": "c8d718d195ecd6ae8442732c712d201c4f084108",
-        "bytes": 11974,
-        "body_encoding": "base64",
-        "encoded_body_length": 15968,
-        "sha256": "e53c753cc64eb485feab98d39ec9f8baf21af811dc1fa748529088841868db11",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "JOURNEY_RETURN.md",
-        "git_blob": "b59cbd82ce53f400528d1d2940eebd0a19ae642d",
-        "bytes": 16968,
-        "body_encoding": "base64",
-        "encoded_body_length": 22624,
-        "sha256": "74bbe29e6f85306a366a72251ec804d8da70aa1b57c1b5c2c47f79df63a62403",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "MACRO.md",
-        "git_blob": "91feea7b8c5ee22c9722513772ac2b0d3979c9f8",
-        "bytes": 30599,
-        "body_encoding": "base64",
-        "encoded_body_length": 40800,
-        "sha256": "e701f56f5a32f630985a3f26d116bca0df087e7db45ca9059b7c24fc770e50a9",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "README.md",
-        "git_blob": "611700c310c58f876008c318e9b9dd489697e391",
-        "bytes": 7546,
-        "body_encoding": "base64",
-        "encoded_body_length": 10064,
-        "sha256": "435ead81d1a5b3e3d3fd4cd61155771e1c57d9d33e452a952d27ee1ab9aa9f73",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "RESPONSIVE.md",
-        "git_blob": "2b11fc03c62dba4f54fec93849b665a7b6366f9f",
-        "bytes": 27286,
-        "body_encoding": "base64",
-        "encoded_body_length": 36384,
-        "sha256": "4fcf8b18d6e0e3cd234c8f137beb5e0440861e4aeb6e9cad72ae90990315f683",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "RETENTION.md",
-        "git_blob": "e36151045429fd4899611167372d85e9d0f7d7ad",
-        "bytes": 9262,
-        "body_encoding": "base64",
-        "encoded_body_length": 12352,
-        "sha256": "1432cced56947730a993d0d81a6fea2e5bd24b0c3a8252c02d21d66a1fab5a25",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "SEMANTIC_TASKS.md",
-        "git_blob": "ab4a5e938194904d8f663205a3974cbde723b68b",
-        "bytes": 24590,
-        "body_encoding": "base64",
-        "encoded_body_length": 32788,
-        "sha256": "6aafe1e9ed3a3df304a414c7ed50a367127e342187a8c628db0ce760b211749f",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "SHA256SUMS",
-        "git_blob": "ccb5a44fccf067dea13591dab306b5725ebe1930",
-        "bytes": 7845,
-        "body_encoding": "base64",
-        "encoded_body_length": 10460,
-        "sha256": "118a370a9cf9c612dc59a817bf8e6e26f12d766d2c68f2e92aca9d855baa7e87",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "baseline/OBSERVATIONS.md",
-        "git_blob": "24cb65852f6bb89d766a0c500d5c8f4b258b0853",
-        "bytes": 8431,
-        "body_encoding": "base64",
-        "encoded_body_length": 11244,
-        "sha256": "507dc1876441bd3f81cb7e08958f5d4f3f99ac0aecb4c44af28fa8cb4b6cae54",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "baseline/beta-earnings-320-redacted.png",
-        "git_blob": "f781af9fddbaaaa2f72a0dbe9a6a248312d6ddc8",
-        "bytes": 91637,
-        "body_encoding": "base64",
-        "encoded_body_length": 122184,
-        "sha256": "74a2f0bbae673ed3b8df355a45c7d8e2ac57d74bdc21c3d427681e1862bcdfd3",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "baseline/beta-earnings-390-redacted.png",
-        "git_blob": "0b39ec711137726866548262126523782621632e",
-        "bytes": 92580,
-        "body_encoding": "base64",
-        "encoded_body_length": 123440,
-        "sha256": "337852bd547550e30da94f0b47d9732f949856904125478ce8531e9e0fc96cd4",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "baseline/paper-inventory.json",
-        "git_blob": "e26137239a96e2f258f6ecdaf669ee941e2c8f4f",
-        "bytes": 17452,
-        "body_encoding": "base64",
-        "encoded_body_length": 23272,
-        "sha256": "4e85f5f2986318ee68f7365b6ddd4fda20ad42e12835ce361e65abc7096cfd60",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "baseline/r3-brief-1BEK-0.jpg",
-        "git_blob": "597e97fd4d62c875cfd24fbd1a58b9bb7deea73e",
-        "bytes": 146768,
-        "body_encoding": "base64",
-        "encoded_body_length": 195692,
-        "sha256": "21b961bad1b0efc5181b36d44edf83ad21cf769cda21d514d93fe08436925c83",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "baseline/r3-expectations-1CD3-0.jpg",
-        "git_blob": "81e3d1f8c32e0435543d404d46719f695b7672a1",
-        "bytes": 128950,
-        "body_encoding": "base64",
-        "encoded_body_length": 171936,
-        "sha256": "b129b2ce8038e479bb0ffc97c7617e7b636fa711192be72e5f0173315193b1a7",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "baseline/r3-phone-1D9K-0.jpg",
-        "git_blob": "4077e3b45a00a56ee1a8f1952e3241aa5dc24267",
-        "bytes": 2748,
-        "body_encoding": "base64",
-        "encoded_body_length": 3664,
-        "sha256": "c96abeeb334236776a06d629d30df641d6ad62c2d5195cb51c4668577e0efd0f",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/EXPECTATION_ADVISORY.md",
-        "git_blob": "46f24f9dd6d259ea8df1f4fe17cae43aaef82f19",
-        "bytes": 5700,
-        "body_encoding": "base64",
-        "encoded_body_length": 7600,
-        "sha256": "0ff958eefa1321e9060622e73b2cc9465d8e050a3d29bf9b86b2773b67cb0aa6",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/README.md",
-        "git_blob": "7044627f31df113955062d0e881f72e0fa13da0a",
-        "bytes": 8077,
-        "body_encoding": "base64",
-        "encoded_body_length": 10772,
-        "sha256": "0fa5972a1cd0f35538ce5a5cfedd8f9371783bc621cadd696cc0b2e044ccdf9b",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/continuation-verification.json",
-        "git_blob": "5357ff5b427e818122f1c93476fbbb84d7beb43f",
-        "bytes": 8461,
-        "body_encoding": "base64",
-        "encoded_body_length": 11284,
-        "sha256": "16fa77dcf2c73b949eefb25ee426c64ab643d4bfd01c9ba5b563304f0b2ecfba",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/dossier-return/README.md",
-        "git_blob": "aa2a3b5f5d95edcb31689387157b8c9d522cd460",
-        "bytes": 3733,
-        "body_encoding": "base64",
-        "encoded_body_length": 4980,
-        "sha256": "060004ee3941e557fffd38dd734bb9cde350446c17a94a15bcc4535043b7cc58",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/dossier-return/probe.mjs",
-        "git_blob": "da8d0e448eea46f24272c120b796704f04da57e5",
-        "bytes": 5622,
-        "body_encoding": "base64",
-        "encoded_body_length": 7496,
-        "sha256": "e17143565e3b1e0b3e4de5b708690e88b1bb530aec7775efdd5fe55593af37c0",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/dossier-return/results.json",
-        "git_blob": "085ddfa1adef17ab0e97bef89329b6cf6fdadee9",
-        "bytes": 1488,
-        "body_encoding": "base64",
-        "encoded_body_length": 1984,
-        "sha256": "99ba0e1b50ac330c1c2b369b7c83e00c129fa17f51b6bec17f6e2d8fa5a56abd",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/dossier-return/source-manifest.json",
-        "git_blob": "99ca29b15202c087496a2fe3d2e485351a5c6af1",
-        "bytes": 1842,
-        "body_encoding": "base64",
-        "encoded_body_length": 2456,
-        "sha256": "a883e3ae72447a7a1e1d9bc3f04a200399fd2e5e2edc76b33b8a37315fcff4e3",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/dossier-return/sources/company-intelligence-dossier.js",
-        "git_blob": "f211bb2aa8fa5cbfe78c522159402231c1267840",
-        "bytes": 33001,
-        "body_encoding": "base64",
-        "encoded_body_length": 44004,
-        "sha256": "a3f07e0863fc8323b99068e0c52dc7192d65960de03707e7cf73b59c2622e6e3",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/dossier-return/sources/watchlistEventPlanner.ts",
-        "git_blob": "131b7c0a6881d65d8a7023363969748542a495aa",
-        "bytes": 25646,
-        "body_encoding": "base64",
-        "encoded_body_length": 34196,
-        "sha256": "e8d419fad52bacf56c28be70ac2dea8f64d86b63978d7efe058b5c9c96bc8fa2",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/earnings-hydration/earnings-wire.pinned.js",
-        "git_blob": "12216b31e5a747d959051ca2295bc690270335ac",
-        "bytes": 4934,
-        "body_encoding": "base64",
-        "encoded_body_length": 6580,
-        "sha256": "3f9ccdd4df324d6a2a13d66a596480bbb30bb5d6d794c5f19df9d4b6b4b2fabd",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/earnings-hydration/probe-hydration.cjs",
-        "git_blob": "7e819982a8ead9bffc14397935ab32f7371333da",
-        "bytes": 6786,
-        "body_encoding": "base64",
-        "encoded_body_length": 9048,
-        "sha256": "5de185d20c02361567b1d84ae574a5dfc88c0ebc8e6f8aaf6e8b3e9be8e4b927",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/earnings-hydration/probe-results.txt",
-        "git_blob": "5edc3ade6452f81e3d43d4bd7927a14f41e7566f",
-        "bytes": 1254,
-        "body_encoding": "base64",
-        "encoded_body_length": 1672,
-        "sha256": "7a23f090ca4289eb62e93dd6e347a2af0da1b440982276b85f3ff4ad40fce8e9",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/statements/README.md",
-        "git_blob": "9423618bb88ddd987f04881594f042c95f156b49",
-        "bytes": 7466,
-        "body_encoding": "base64",
-        "encoded_body_length": 9956,
-        "sha256": "d6ede66148d50985ac7a4b43ef81466b2cd8174b8613d7ae06adfe3d8d203069",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/statements/probe-statements.mjs",
-        "git_blob": "f138a3f9a479cecc5fd807490d5ca8594e326eee",
-        "bytes": 21237,
-        "body_encoding": "base64",
-        "encoded_body_length": 28316,
-        "sha256": "e796c1d2fe50ab50aa4e82565377e04b67d08e234eea67d85d99b542c545ead2",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/statements/results.json",
-        "git_blob": "774d61947e3132bca227a1bcaf8f073e7a86673c",
-        "bytes": 13722,
-        "body_encoding": "base64",
-        "encoded_body_length": 18296,
-        "sha256": "e7fc5ae27036ce3c62b4599443171550a5b9211290fb2d23d6764ab8306bebef",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/statements/sources/terminal/lib/finStatementMath.ts",
-        "git_blob": "9bf1e3077a66d65f2546261cb9efa7b27140fda5",
-        "bytes": 29784,
-        "body_encoding": "base64",
-        "encoded_body_length": 39712,
-        "sha256": "81d9d6aab076b165dec07045533015344b215ee67672d6985cf44acb9beab3b2",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/statements/sources/terminal/lib/finStatements.ts",
-        "git_blob": "d6b0cff78c94f6c4cead423122cf4fcd6a5f19d5",
-        "bytes": 6411,
-        "body_encoding": "base64",
-        "encoded_body_length": 8548,
-        "sha256": "be18116d51b66222cf78247c5882b43abc6967cb82a9a09232c77fe8b6c343d2",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/statements/sources/terminal/lib/fund.ts",
-        "git_blob": "7d60914b44d123bc30e63dc7a0652b9ea24aa9a1",
-        "bytes": 27726,
-        "body_encoding": "base64",
-        "encoded_body_length": 36968,
-        "sha256": "37bb8a8631fcc5ee0dd748079e17397dfa520a707eb07f164de95122c0b25808",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/statements/sources/terminal/lib/markets.ts",
-        "git_blob": "6168662381b7d0a32af90eb262ae2c8862883a1b",
-        "bytes": 19574,
-        "body_encoding": "base64",
-        "encoded_body_length": 26100,
-        "sha256": "6a113c2faa6237f134792f0988d44e657f9fa182fecff9c57eef2919964a50f0",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/diagnostics/statements/sources.json",
-        "git_blob": "e5b8754a2643b6941765cf634d03df9b96a69810",
-        "bytes": 1803,
-        "body_encoding": "base64",
-        "encoded_body_length": 2404,
-        "sha256": "bc8c35adc00a08ddea78dd96433f6e257788727eccf99880d8008b16366fe533",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/expectation-client-advisory.json",
-        "git_blob": "43e05fd1be3715a9ac536389a40a905280527cd0",
-        "bytes": 1699,
-        "body_encoding": "base64",
-        "encoded_body_length": 2268,
-        "sha256": "90b059e30e8586867c1024ec47c18ad40364f28409f0322680616358a203cad4",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/expectation-producer-advisory.json",
-        "git_blob": "a2b3ff22df033ad006152b97edb423197926ddea",
-        "bytes": 4408,
-        "body_encoding": "base64",
-        "encoded_body_length": 5880,
-        "sha256": "f4d68acc8e9a4448dd98cb0f72a2faa4c798660da6583e3a3ccf78ff43a9171c",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/expectation-results.txt",
-        "git_blob": "44ed997371ed41c20d600e71e7bf2ec11d6d2f07",
-        "bytes": 544,
-        "body_encoding": "base64",
-        "encoded_body_length": 728,
-        "sha256": "a7860c5f8e6bde23c72874959d2014fb032517791ffe75cf42db309ea18921b2",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/geometry-results.txt",
-        "git_blob": "e40b5f104ac62be1657d5a7a53441d5fdccbd639",
-        "bytes": 3530,
-        "body_encoding": "base64",
-        "encoded_body_length": 4708,
-        "sha256": "c8dd637c1df393d3fcbb9c3956a9a5b3cc60feb4dfdc86f428df0cf1e2196fd4",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/matrix.json",
-        "git_blob": "a6f34f91d94d97067087b3ceb3c3b461a699b539",
-        "bytes": 7367,
-        "body_encoding": "base64",
-        "encoded_body_length": 9824,
-        "sha256": "780657445c729422069337b947454f4aadad5b698dcc5608371093a121e9ffce",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/probe-expectation-client.mjs",
-        "git_blob": "3240d00b8475f2ef7d5e349671cea3219275526a",
-        "bytes": 4578,
-        "body_encoding": "base64",
-        "encoded_body_length": 6104,
-        "sha256": "acb1fd834722a1bd7edcb4703c6c7040b66d1700ba3c73c6cfaaa53ee74c4ae9",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/probe-expectation-producer.py",
-        "git_blob": "d21ef741037e441e673ab6f3f2bdb9ef190b5872",
-        "bytes": 9211,
-        "body_encoding": "base64",
-        "encoded_body_length": 12284,
-        "sha256": "6a807f3d56e6cff1ec599415cf9c3e6f2e8ff952ddddbf46251e8c324d9280aa",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/route-results.txt",
-        "git_blob": "95c4845f19f878fec870b9723714aa0f0d9a000c",
-        "bytes": 1583,
-        "body_encoding": "base64",
-        "encoded_body_length": 2112,
-        "sha256": "5dbf0082ed8ebc7b81123290263ce372e2b2c18877e38a2ec926593afd346528",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/source-link-verification.json",
-        "git_blob": "970b3ea4ebfc312dcacbc821e0c6ba5f9cd86df5",
-        "bytes": 37734,
-        "body_encoding": "base64",
-        "encoded_body_length": 50312,
-        "sha256": "f3193ece93544e5fe7c45f53828d03b71878b1d7fd8ac28fd06ef29e722dad44",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/sources.json",
-        "git_blob": "002236b347dbdfd75f8efc8ee92766779946b7d2",
-        "bytes": 618,
-        "body_encoding": "base64",
-        "encoded_body_length": 824,
-        "sha256": "909e0f7edd25b9582cf5376b6bdd80a355590474bd4ea80f78c37a488a478f95",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/task-study-results.json",
-        "git_blob": "4a9a94d2a7053d172dac94b945e7bc1dbe776366",
-        "bytes": 86712,
-        "body_encoding": "base64",
-        "encoded_body_length": 115616,
-        "sha256": "888a21d114b04def26edc4a38d05a7f612f19d556ebe82984be09fd4844062d3",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/verify-expectations.mjs",
-        "git_blob": "a74e1d6969b56ca34c99bde5b60180e2eee4d1c9",
-        "bytes": 2269,
-        "body_encoding": "base64",
-        "encoded_body_length": 3028,
-        "sha256": "16cae046aad4af1ff27268aab8a5352114fd8033e97c213b3db49cc2e76ea268",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/verify-geometry.py",
-        "git_blob": "dd044abc2ee3b0d89758e7667d627289fbeba342",
-        "bytes": 4097,
-        "body_encoding": "base64",
-        "encoded_body_length": 5464,
-        "sha256": "1d3f58f1c1dcc38e604c47d7490a5ef9430a9eaa7f371471c3bcc7ed0457d84d",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/verify-routes.mjs",
-        "git_blob": "724c2fea12f6fe39ddfd72f2e4bcd363e8f80415",
-        "bytes": 2628,
-        "body_encoding": "base64",
-        "encoded_body_length": 3504,
-        "sha256": "20dce71958c1e55a2ff5dc9225e5d6f3096bfdf3faf0dfc2e800c9b9d868d565",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "checks/verify-task-study.py",
-        "git_blob": "6834547d89689400179a8883de3a8d28d3bdb047",
-        "bytes": 11268,
-        "body_encoding": "base64",
-        "encoded_body_length": 15024,
-        "sha256": "1c0aa2802f2d03ab337068038f3d42f664062fd23777762753151b48f9aef6cc",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/README.md",
-        "git_blob": "6d779915fdc3661f521d0b5bc429bcb5f1dec826",
-        "bytes": 2616,
-        "body_encoding": "base64",
-        "encoded_body_length": 3488,
-        "sha256": "df534187804335d116ae925ca377b1b8c61883690807e776b3868a1231b866dc",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/build-contract.jpg",
-        "git_blob": "20b1e3cc5640509b6f77f55ef41d159f98afbb72",
-        "bytes": 433080,
-        "body_encoding": "base64",
-        "encoded_body_length": 577440,
-        "sha256": "668b9276c72b1c64bb128937d0f46abd369bf49aae859df3c813d302918c7404",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/build-contract.jsx",
-        "git_blob": "faa0fe86a04bee9d68c69f3a0ebee57a629b2de2",
-        "bytes": 13374,
-        "body_encoding": "base64",
-        "encoded_body_length": 17832,
-        "sha256": "e76b86926ffa931deeced61a3e17b7347b8bbcc0343748ac3a7ccc38021f4e65",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/capture.json",
-        "git_blob": "3c3a2a07d2c7e95697f6f638c1911cec4599e6f9",
-        "bytes": 3335,
-        "body_encoding": "base64",
-        "encoded_body_length": 4448,
-        "sha256": "82075e5bd9d09258bf367ff42bf541be86a43cbe928f285bcfaf829532222b05",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/operations.json",
-        "git_blob": "eafcec5d1a35a6b0cb1d7be69d6a5d101dc93dd0",
-        "bytes": 16528,
-        "body_encoding": "base64",
-        "encoded_body_length": 22040,
-        "sha256": "fa5d4c78c5b79b4e6506cd9819aeadd5337ed752ef7acca859405337c7d0e0f9",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/README.md",
-        "git_blob": "9cdd40259c41d62692395854ea90da0aabb74546",
-        "bytes": 9211,
-        "body_encoding": "base64",
-        "encoded_body_length": 12284,
-        "sha256": "5f9ee3f0c39c6c099f46c0b4a54927854ad25b2949c02d89b0512e4b3d345e49",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/a320.jpg",
-        "git_blob": "561fa13e448768bc2fcf35a113704865deba5894",
-        "bytes": 59560,
-        "body_encoding": "base64",
-        "encoded_body_length": 79416,
-        "sha256": "1b009832bb4df10ea94e0362b187efc7b721d5d07ed558eacde6cba9f589ae22",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/a320.jsx",
-        "git_blob": "e44f91c16a72c51b4d44a53cd2becf9ac629e7e2",
-        "bytes": 10010,
-        "body_encoding": "base64",
-        "encoded_body_length": 13348,
-        "sha256": "ebbc66f966dd6a90bda33a1ce0838cb06079b4bf7be088e52e56f13d801d036b",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/b390.jpg",
-        "git_blob": "402b6b17343aabf5933023b98d7d81037b250c9f",
-        "bytes": 61441,
-        "body_encoding": "base64",
-        "encoded_body_length": 81924,
-        "sha256": "56430a71b3017d2dc99d27aaaf1d602a896853507971ea2382d3948a4e8119d8",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/b390.jsx",
-        "git_blob": "8c226d0094ccec5d60797abde6259a2c1b6a046e",
-        "bytes": 10010,
-        "body_encoding": "base64",
-        "encoded_body_length": 13348,
-        "sha256": "20adf26bb3ca777d2252279e286b63f60f895dbb3c55055e663798930e7c2edb",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/c664-evidence320.jpg",
-        "git_blob": "00ff56e17d744155728b130915457dfd02ecb092",
-        "bytes": 110333,
-        "body_encoding": "base64",
-        "encoded_body_length": 147112,
-        "sha256": "63533fb321b4280d8ffe908915b91e9fd661275ea5fd4459ca7fc83865c4c34c",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/c664-evidence320.jsx",
-        "git_blob": "dcaea24ff9738be743cbff3a031cb91f426359ff",
-        "bytes": 24111,
-        "body_encoding": "base64",
-        "encoded_body_length": 32148,
-        "sha256": "21843e71fb5b2e5f1fcaabc4a2e9e2d8b2708ec9c6da717b6cd698a40ff84ba9",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/capture.json",
-        "git_blob": "334ab0dfdbfe0e88c0299a685cd7da7775c2025f",
-        "bytes": 9510,
-        "body_encoding": "base64",
-        "encoded_body_length": 12680,
-        "sha256": "22eac4afe80ec696b561b3d8a32c468417ba0d98e8497aed6588bc4f8f124f4a",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/d664-selection.jpg",
-        "git_blob": "7363963199aab77808d3b6b3174849af4df7433b",
-        "bytes": 110678,
-        "body_encoding": "base64",
-        "encoded_body_length": 147572,
-        "sha256": "09181db7770c91c11e8a696e83e30e16d50f2dbe57433ace1b0db6c2a5fe00c5",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/d664-selection.jsx",
-        "git_blob": "0d23b27d06703bd7aa379faaf7d41e29b86c6806",
-        "bytes": 24161,
-        "body_encoding": "base64",
-        "encoded_body_length": 32216,
-        "sha256": "5398594c99653f4b7012b336cce6b30f964c518315a13dc6c1ac882cc5e9410b",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/e320-evidence.jpg",
-        "git_blob": "35e8cb8af044ec9a20882e9c8491b3d09e7ff3a1",
-        "bytes": 38253,
-        "body_encoding": "base64",
-        "encoded_body_length": 51004,
-        "sha256": "71014b095bfb1607b0f7c8ec9f2e1018b6c57b84e9e0e35a47270fbe28c30f78",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/e320-evidence.jsx",
-        "git_blob": "00171be13b16c8af42c4430866e766d268af1aef",
-        "bytes": 6413,
-        "body_encoding": "base64",
-        "encoded_body_length": 8552,
-        "sha256": "bbc8a09a6bff4fdae075078b90d02a3139792c8838355f893eb7f182aab18d75",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/f390-zh.jpg",
-        "git_blob": "792b8b8416b43f70522aad96c8adcaa354071c81",
-        "bytes": 62702,
-        "body_encoding": "base64",
-        "encoded_body_length": 83604,
-        "sha256": "8fd1ed3da64ff0211589a9da9166c73faf192635bf44b39f22a7528ab863180a",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/f390-zh.jsx",
-        "git_blob": "f39d5d9fd08936b71612758744740cb5b36d42a9",
-        "bytes": 10626,
-        "body_encoding": "base64",
-        "encoded_body_length": 14168,
-        "sha256": "6e86a05eb5500641f4c0de4d7c691289e4f53d85a4c42cfe0b39ad76b98caa26",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/fixtures.json",
-        "git_blob": "b6e54cf182c898fe15d3074a266111f2c1a705b6",
-        "bytes": 6327,
-        "body_encoding": "base64",
-        "encoded_body_length": 8436,
-        "sha256": "b731282128e6f77064022e700f53231a4a2439d35c2d9802e310c15a1624355d",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/g320-zh.jpg",
-        "git_blob": "c9a33cbb24da330055d91d8daeb36334398241c7",
-        "bytes": 60566,
-        "body_encoding": "base64",
-        "encoded_body_length": 80756,
-        "sha256": "51f3bea71906ab59862e4bd627970dd681975ef0915d908dac14f3bf7eb72a9e",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/g320-zh.jsx",
-        "git_blob": "6c97115b3b4f3816c4af7e7fb1e7308ea277c13a",
-        "bytes": 10626,
-        "body_encoding": "base64",
-        "encoded_body_length": 14168,
-        "sha256": "4cbb5e39e0cf2ebb6e51a2f91948b011c183a8f0dd61db4b85ef6a4fae39e204",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/h320-chooser.jpg",
-        "git_blob": "0c4d8b2954201612b81fefe05850b30900641ee8",
-        "bytes": 22853,
-        "body_encoding": "base64",
-        "encoded_body_length": 30472,
-        "sha256": "4b71df1130835816bfc4150a1ccf88b7e6c4725d8f4192130b5e5ca9ea6dcb9b",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/h320-chooser.jsx",
-        "git_blob": "95802f8dad8d03701b5cd16957c0061a8d29e002",
-        "bytes": 5353,
-        "body_encoding": "base64",
-        "encoded_body_length": 7140,
-        "sha256": "9836ac526a5b8a940c54a88b3852af016cfd7ef1b3c2dd121774b4e8ddfef4ba",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/inventory.json",
-        "git_blob": "54652fb3a7c9e9ceb93af34d945cbb1c9093c4e1",
-        "bytes": 3679,
-        "body_encoding": "base64",
-        "encoded_body_length": 4908,
-        "sha256": "f5582c32c5f81917edd94791328ea6268ea0468c8febafac0c9ef3c1bb07eec4",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      },
-      {
-        "path": "paper/task-study/operations.json",
-        "git_blob": "8e717ddc0fdcf503ceca9637aa97f6a6573580d8",
-        "bytes": 84384,
-        "body_encoding": "base64",
-        "encoded_body_length": 112512,
-        "sha256": "1966e0807c25b765c50a03461b3e2b68d429116cc85e9c5954915b2be3ba7999",
-        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
-      }
-    ]
-  },
+  "publication_state": "PREPARED_AWAITING_ORIGINAL_CARRIER_PUBLICATION",
   "held_returns_readback": [
     {
       "pr": 814,
@@ -1041,5 +389,108 @@
       "state": "open",
       "merged": false
     }
-  ]
+  ],
+  "previous_source_publication": {
+    "commit": "e3468cb9482297c9ee66b9b749012b7f4439f475",
+    "parent": "739821372ca4cce1def155e670c89dc638ab7ef7",
+    "repository_root_tree": "6c49d62103fce65f9ed93695bb80c047b9e10f57",
+    "d07_tree": "dd17aa3c21b88c575f47135f35edd0619c61d557",
+    "manifest_sha256": "118a370a9cf9c612dc59a817bf8e6e26f12d766d2c68f2e92aca9d855baa7e87",
+    "observed_date_utc": "2026-11-03",
+    "file_count": 80,
+    "changed_files": 52,
+    "changed_outside_d07": 0,
+    "ref_readback_matched": true,
+    "complete_receipt": "https://github.com/mastermindx-market-intelligence/macro/blob/b0d827361e7adc266079fa0501789fd005d0794c/research/design_candidates/production_design_20261102/d07/checks/continuation-verification.json"
+  },
+  "served_article_previous_attempt": {
+    "url": "https://beta.mastermind-x.com/stocks/earnings/aal-2026q3-call-record.html",
+    "observed_title": "aal 2026q3 call record · Mastermind",
+    "url_and_title_observed": true,
+    "visible_dom": "MCP -32603 timeout",
+    "bounded_status_read": "same URL and title",
+    "body_access_cta_back_verified": false
+  },
+  "served_browser_continuation": {
+    "captures": 8,
+    "capture_manifest": "../baseline/continuation-20261104/capture.json",
+    "observations": "../baseline/continuation-20261104/observations.json",
+    "served_build_commit": "UNATTESTED",
+    "source_diagnostic_assertions_separate": true
+  },
+  "component_fixture_mount": {
+    "state": "BLOCKED_DEPENDENCY_SETUP",
+    "action": "npm install of inspected package versions for isolated React fixture harness",
+    "error": "E403 registry.npmjs.org/esbuild",
+    "component_render_assertions": 0,
+    "retry_or_alternate_registry": false
+  },
+  "source_publication": null,
+  "internal_advisory_qa": {
+    "roles": [
+      "foundation judgment",
+      "forecast/source judgment"
+    ],
+    "author_context": true,
+    "formal_independent_review": false,
+    "both_returns_consumed": true,
+    "explicit_stop_sent": true
+  },
+  "previous_rerun_receipts": [
+    {
+      "suite": "routes",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "original-estimates",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "estimate-producer",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "estimate-client",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "earnings-hydration",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "geometry",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "statements",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "dossier-planner",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    },
+    {
+      "suite": "paper-studies",
+      "exit_code": 0,
+      "recorded_output_reproduced": true
+    }
+  ],
+  "artifact_consistency": {
+    "relative_file_links_checked": 199,
+    "missing_relative_files": 0,
+    "capture_hashes_checked": 8,
+    "acceptance_cases": 33,
+    "responsive_cases": 12,
+    "semantic_oracles": 12,
+    "immutable_linked_targets": 119,
+    "all_new_source_outputs_reproduced": true
+  }
 }

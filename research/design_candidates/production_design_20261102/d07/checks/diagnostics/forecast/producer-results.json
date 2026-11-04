@@ -1,0 +1,304 @@
+{
+  "status": "SOURCE_BEHAVIOR_REPRODUCED",
+  "source_commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "method": "AST-selected unchanged _f and build_estimates definitions; no producer top-level execution",
+  "cases": 6,
+  "assertions": 16,
+  "integrity_checks": 3,
+  "component_render_assertions": 0,
+  "browser_assertions": 0,
+  "results": [
+    {
+      "id": "FP01",
+      "label": "Three annual targets and null quarters",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "eps_fy": {
+          "periods": [
+            "2026",
+            "2027",
+            "2028"
+          ],
+          "avg": [
+            6.0,
+            7.0,
+            8.0
+          ],
+          "high": [
+            null,
+            null,
+            null
+          ],
+          "low": [
+            null,
+            null,
+            null
+          ],
+          "n": [
+            null,
+            null,
+            null
+          ]
+        },
+        "rev_fy": {
+          "periods": [
+            "2026",
+            "2027",
+            "2028"
+          ],
+          "avg": [
+            6000000.0,
+            7000000.0,
+            8000000.0
+          ],
+          "high": [
+            null,
+            null,
+            null
+          ],
+          "low": [
+            null,
+            null,
+            null
+          ],
+          "n": [
+            null,
+            null,
+            null
+          ]
+        },
+        "eps_q": null,
+        "growth": {
+          "eps_yoy": null,
+          "rev_yoy": null
+        }
+      }
+    },
+    {
+      "id": "FP02",
+      "label": "Sparse targets preserve the absent year",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "eps_fy": {
+          "periods": [
+            "2026",
+            "2028"
+          ],
+          "avg": [
+            6.0,
+            8.0
+          ],
+          "high": [
+            null,
+            null
+          ],
+          "low": [
+            null,
+            null
+          ],
+          "n": [
+            null,
+            null
+          ]
+        },
+        "rev_fy": {
+          "periods": [
+            "2026",
+            "2028"
+          ],
+          "avg": [
+            6000000.0,
+            8000000.0
+          ],
+          "high": [
+            null,
+            null
+          ],
+          "low": [
+            null,
+            null
+          ],
+          "n": [
+            null,
+            null
+          ]
+        },
+        "eps_q": null,
+        "growth": {
+          "eps_yoy": null,
+          "rev_yoy": null
+        }
+      }
+    },
+    {
+      "id": "FP03",
+      "label": "A single later target retains its fiscal identity",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "eps_fy": {
+          "periods": [
+            "2028"
+          ],
+          "avg": [
+            8.0
+          ],
+          "high": [
+            null
+          ],
+          "low": [
+            null
+          ],
+          "n": [
+            null
+          ]
+        },
+        "rev_fy": {
+          "periods": [
+            "2028"
+          ],
+          "avg": [
+            8000000.0
+          ],
+          "high": [
+            null
+          ],
+          "low": [
+            null
+          ],
+          "n": [
+            null
+          ]
+        },
+        "eps_q": null,
+        "growth": {
+          "eps_yoy": null,
+          "rev_yoy": null
+        }
+      }
+    },
+    {
+      "id": "FP04",
+      "label": "Reports alone do not manufacture consensus coverage",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": null
+    },
+    {
+      "id": "FP05",
+      "label": "Consensus mean and per-report range/count retain distinct populations",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "eps_fy": {
+          "periods": [
+            "2026"
+          ],
+          "avg": [
+            6.0
+          ],
+          "high": [
+            9.0
+          ],
+          "low": [
+            8.0
+          ],
+          "n": [
+            2
+          ]
+        },
+        "rev_fy": {
+          "periods": [
+            "2026"
+          ],
+          "avg": [
+            6000000.0
+          ],
+          "high": [
+            null
+          ],
+          "low": [
+            null
+          ],
+          "n": [
+            null
+          ]
+        },
+        "eps_q": null,
+        "growth": {
+          "eps_yoy": null,
+          "rev_yoy": null
+        }
+      }
+    },
+    {
+      "id": "FP06",
+      "label": "Zero, negative and absent estimate values remain distinct",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "eps_fy": {
+          "periods": [
+            "2026",
+            "2027",
+            "2028"
+          ],
+          "avg": [
+            0.0,
+            -2.0,
+            null
+          ],
+          "high": [
+            null,
+            null,
+            null
+          ],
+          "low": [
+            null,
+            null,
+            null
+          ],
+          "n": [
+            null,
+            null,
+            null
+          ]
+        },
+        "rev_fy": {
+          "periods": [
+            "2026",
+            "2027",
+            "2028"
+          ],
+          "avg": [
+            null,
+            0.0,
+            null
+          ],
+          "high": [
+            null,
+            null,
+            null
+          ],
+          "low": [
+            null,
+            null,
+            null
+          ],
+          "n": [
+            null,
+            null,
+            null
+          ]
+        },
+        "eps_q": null,
+        "growth": {
+          "eps_yoy": null,
+          "rev_yoy": null
+        }
+      }
+    }
+  ]
+}

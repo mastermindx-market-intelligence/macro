@@ -63,3 +63,17 @@ Run `python checks/verify-task-study.py` with Pillow available. The 433 checks c
 | Paper task-state artifacts | 433 static checks passed | Eight native export pairs, values, geometry declarations, contrast and capture integrity |
 
 The source and specification results remain distinct from served browser observations, final Paper visual review, RIG acceptance and production proof.
+
+## 4 November continuation diagnostics
+
+From this directory, run the new dependency-free probes with Node 24 and Python 3.
+
+```sh
+node diagnostics/forecast/probe-consumer.mjs
+python diagnostics/forecast/probe-producer.py
+node diagnostics/company-search/probe.mjs
+```
+
+The frozen outputs contain 54 cases, 89 functional assertions and 24 input-integrity checks. Forecast executes unchanged bodies/definitions at the established financial pin. Search imports unchanged modules at its explicitly narrower newer source epoch. Undesirable baseline cases are retained. The controlled React fixture mount was blocked during npm setup with E403. These scripts contain zero component-render assertions. [Forecast methods and limitations](diagnostics/forecast/README.md) · [Search methods and limitations](diagnostics/company-search/README.md)
+
+The separate served browser receipt covers AAL article/call, live CN three-target/quarterly and EN/ZH phone paths, and exact-listing search preview/commit/Back/cancel. It has eight hashed images and authored action readbacks. The served build commit remains unattested. Full controlled component, access-state and independent visual qualification remain open. [Actual browser observations](../baseline/continuation-20261104/README.md)

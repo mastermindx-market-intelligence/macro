@@ -1,0 +1,391 @@
+{
+  "status": "SOURCE_BEHAVIOR_REPRODUCED",
+  "source_commit": "2ded360882b9c721e690907ff363b553781fb920",
+  "method": "Unchanged module imports with Node native type stripping",
+  "cases": 35,
+  "assertions": 41,
+  "integrity_checks": 6,
+  "browser_assertions": 0,
+  "history_restore_assertions": 0,
+  "limitations": [
+    "ShellSearch React lifecycle is source-inspected separately",
+    "New source epoch is a narrow dependency read",
+    "Whitespace-only venue requires owner qualification"
+  ],
+  "results": [
+    {
+      "id": "SQ01",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 7,
+        "output": "Alibaba"
+      }
+    },
+    {
+      "id": "SQ02",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 10,
+        "output": "阿里巴巴 & #"
+      }
+    },
+    {
+      "id": "SQ03",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 0,
+        "output": ""
+      }
+    },
+    {
+      "id": "SQ04",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 10,
+        "output": "Alibaba"
+      }
+    },
+    {
+      "id": "SQ05",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 8,
+        "output": null
+      }
+    },
+    {
+      "id": "SQ06",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 8,
+        "output": null
+      }
+    },
+    {
+      "id": "SQ07",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 160,
+        "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    },
+    {
+      "id": "SQ08",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 161,
+        "output": null
+      }
+    },
+    {
+      "id": "SQ09",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 160,
+        "output": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀"
+      }
+    },
+    {
+      "id": "SQ10",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "string",
+        "input_length": 162,
+        "output": null
+      }
+    },
+    {
+      "id": "SQ11",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "object",
+        "input_length": null,
+        "output": null
+      }
+    },
+    {
+      "id": "SQ12",
+      "label": "Query normalization and UTF-16 limit",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "input_type": "number",
+        "input_length": null,
+        "output": null
+      }
+    },
+    {
+      "id": "SS01",
+      "label": "Canonical listing and narrow selection shape",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "symbol": "BABA",
+        "query": "Alibaba"
+      }
+    },
+    {
+      "id": "SS02",
+      "label": "Canonical listing and narrow selection shape",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "symbol": "9988.HK",
+        "query": "阿里"
+      }
+    },
+    {
+      "id": "SS03",
+      "label": "Canonical listing and narrow selection shape",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": null
+    },
+    {
+      "id": "SS04",
+      "label": "Canonical listing and narrow selection shape",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": null
+    },
+    {
+      "id": "SS05",
+      "label": "Canonical listing and narrow selection shape",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": null
+    },
+    {
+      "id": "SS06",
+      "label": "Canonical listing and narrow selection shape",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": null
+    },
+    {
+      "id": "SS07",
+      "label": "Canonical listing and narrow selection shape",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": null
+    },
+    {
+      "id": "SU01",
+      "label": "Encoded listing and CJK query round trip",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "href": "/analysis?symbol=9988.HK&company_query=%E9%98%BF%E9%87%8C+%26+%23",
+        "query": "阿里 & #"
+      }
+    },
+    {
+      "id": "SU02",
+      "label": "Empty search differs from missing context",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "href": "/analysis?symbol=BABA&company_query="
+      }
+    },
+    {
+      "id": "SU03",
+      "label": "Duplicate or malformed query loses only search context",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "duplicate": null,
+        "malformed": null,
+        "invalid_selection_href": null
+      }
+    },
+    {
+      "id": "SC01",
+      "label": "Trading currency requires exact listing and quote field",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "requested": "BABA",
+        "observed": "USD"
+      }
+    },
+    {
+      "id": "SC02",
+      "label": "Trading currency requires exact listing and quote field",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "requested": "BABA",
+        "observed": null
+      }
+    },
+    {
+      "id": "SC03",
+      "label": "Trading currency requires exact listing and quote field",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "requested": "BABA",
+        "observed": null
+      }
+    },
+    {
+      "id": "SC04",
+      "label": "Trading currency requires exact listing and quote field",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "requested": "BABA",
+        "observed": null
+      }
+    },
+    {
+      "id": "SC05",
+      "label": "Trading currency requires exact listing and quote field",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "requested": "9988.HK",
+        "observed": "HKD"
+      }
+    },
+    {
+      "id": "SV01",
+      "label": "Explicit venue field boundary",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "observed": "NYSE"
+      }
+    },
+    {
+      "id": "SV02",
+      "label": "Explicit venue field boundary",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "observed": null
+      }
+    },
+    {
+      "id": "SV03",
+      "label": "Explicit venue field boundary",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "observed": null
+      }
+    },
+    {
+      "id": "SV04",
+      "label": "Explicit venue field boundary",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "observed": null
+      }
+    },
+    {
+      "id": "SV05",
+      "label": "Explicit venue field boundary",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "observed": null
+      }
+    },
+    {
+      "id": "SV06",
+      "label": "Explicit venue field boundary",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "observed": null
+      }
+    },
+    {
+      "id": "SV07",
+      "label": "Explicit venue field boundary",
+      "evidence_class": "EXPECTED_UNDESIRABLE_BASELINE",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "observed": "   "
+      }
+    },
+    {
+      "id": "SV08",
+      "label": "A different listing never supplies the venue",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "observed": null
+      }
+    }
+  ]
+}

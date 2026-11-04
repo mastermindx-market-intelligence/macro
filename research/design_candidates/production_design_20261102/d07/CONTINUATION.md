@@ -1,5 +1,61 @@
 # D07 Phase 2A cumulative continuation
 
+## 4 November 2026 current frontier
+
+**Phase 2A research and specification extended. Full design assignment PARTIAL. Joint foundation and reference acceptance remain open.**
+
+This continues the existing D07 owner and Draft PR #10617, branch `design/paper-production-audit-20261102-ryan`, from verified head `b0d827361e7adc266079fa0501789fd005d0794c`. The authorized subtree remains `research/design_candidates/production_design_20261102/d07/`. The five commissioning files remain pinned to `6e1862867193ec6486a22001a0e4fb515da20448`. The current protected procedure is `910803421beca53ca25145392725ab2d84c7a8e9`, skillpack 1.0.1, bootstrap major 1. Applicable changed laws and Paper integration were loaded at that pin. The exact comparison allowed reuse of unchanged mandatory law bodies. [Protected index](https://github.com/mastermindx-market-intelligence/Mastermind/blob/910803421beca53ca25145392725ab2d84c7a8e9/docs/sol_skills/INDEX.md) · [Package index](README.md)
+
+The source connector's acting principal is `mastermindx-3`. The D07 assignment and source carrier retain their original owner. The local continuation was prepared only inside the existing D07 subtree. A publication-boundary read found carrier head `e00e87cd0e14a27ab030968b404763cfdbb891e5`. The exact comparison adds only two D05 files, so publication preserves those concurrent changes as its parent without replacing the D07 owner or source carrier. Current publication evidence is recorded in the verification receipt and the source-readback section below. [Verification receipt](checks/continuation-verification.json)
+
+### Material work completed
+
+| Work | Actual result | Evidence class |
+| --- | --- | --- |
+| Recover existing artifacts | All 80 files at the preceding published head restored and checked against Git blob and manifest identities. Earlier diagrams, historical receipts and source tests retained. | Published-source recovery |
+| Real Earnings path | AAL Q3 FY2026 article body, explicit new-tab call navigation, keyboard transition, close and settled-URL reload inspected. Correct selected call opened. Focus fallback and URL/view restoration need further qualification. | Actual served browser, current context |
+| Real Company path | CN Forecast retained three annual targets through 2028. Quarterly selection retained actuals with missing estimates. EN/ZH and 320/390 measurements exposed coverage copy, report-count wording and small-control gaps. A 320 dark scroll reached the final row above the fixed navigation. | Actual served browser, current context |
+| Shared search path | Alibaba query previewed exact BABA/NYSE/USD and 9988.HK/HKEX/HKD. Explicit BABA commit, Back restoration, cancel and Forward/Back were observed. Underlying Forecast subview returned to its default. | Actual served browser, current context |
+| New source diagnostics | Forecast consumer 13 cases / 32 assertions / 15 input checks. CN producer 6 / 16 / 3. Search 35 / 41 / 6. Combined 54 / 89 / 24, with zero component-render assertions. | Controlled unchanged-source execution |
+| Contract refinement | Corrected annual target/null semantics, report populations, unclocked historical comparison, exact listing context, source epochs, return owners, Brain lifecycle and conditional focus. Main matrix now 33 proposed end-to-end cases, alongside twelve responsive cases and twelve semantic task oracles. | Product/UX/data/build specification |
+| Existing Paper evidence | Live read found all nine D07 boards and token hash `55dd37b7` intact. R3 Lab `1CD3-0` and repaired F02 Company dark `56L-0` were visually inspected again. This continuation performed read-only Paper operations. Eight prior task studies and their 433 static checks remain available. | Live read plus retained native artifact receipts |
+
+[Eight captures and exact action readbacks](baseline/continuation-20261104/README.md) · [Forecast diagnostics](checks/diagnostics/forecast/README.md) · [Search diagnostics](checks/diagnostics/company-search/README.md) · [Builder matrix](ACCEPTANCE.md)
+
+### Current foundation and source boundaries
+
+F01 is candidate.4 at `3e334bd3eabf1d6ecc7980845fbd7a813dd023e1`, with semantic package `8926b16af4e0c3e5310cdb4cf057390ec04d18ff`. Board D `6ZYC-0` is now 440px in its frozen evidence. Bilateral candidate.2 geometry still governs the shared arithmetic. Joint v1 is unreleased. F01 remains PARTIAL / REQUEST_CHANGES / RIG draft, and its original state-8 effect `F01-20261103-c4-state-8-v1` remains with that owner. The later evidence head is `922ec2522108071d9bbed1d31ef8dbf52910f0ca`. Actual independent source-only review 5760649569 approves the candidate.4 handoff at `3e334bd3eabf1d6ecc7980845fbd7a813dd023e1`. Its unchanged semantic blob remains `1160f14b108bf0948384f59a249320385a1dfb6c`. Earlier review 5760292764 retains its earlier scope. [Actual candidate.4 review](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569) [Current F01 return](https://github.com/mastermindx-market-intelligence/macro/blob/922ec2522108071d9bbed1d31ef8dbf52910f0ca/research/design_candidates/production_design_20261102/f01/RETURN_F01.md)
+
+F02 advanced to `e6c28413ee74e83950b8c5ff58a34b81e76c1781` and recorded scoped candidate.4 source-policy concurrence. Its current native record has 23 boards, 545 dispatches, 544 observed applied responses and one unresolved original operation. Disjoint native work resumed. The original operation `f02-c2-macro-light-zh-390-chart-footer-20261103-01`, target `7J4-0` on `7IS-0`, remains with its owner. Prior Product/Taste findings and the full repaired-set gate remain open. Final D07 composition awaits verified joint v1 and fresh exact writer/target binding. [F02 policy concurrence](https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md) · [Current native recovery](https://github.com/mastermindx-market-intelligence/macro/blob/e6c28413ee74e83950b8c5ff58a34b81e76c1781/research/design_candidates/production_design_20261102/f02/paper/NATIVE_CONTINUATION_20261104.md)
+
+Brain/D14 retains widget lifecycle, request and context ownership, integrated by the Terminal host. D06 retains focused composition and reader rules. F01 owns shared-layer policy and F02 primitives. Evidence remains reachable but closed after Brain dismissal until explicitly reopened and revalidated. Conditional focus prevents delayed callbacks from stealing a later intentional focus target. The focused reader's 360px default and 300–520px requested-width clamp remain separate from D07's 320+24 shared dock. [Responsive and lifecycle contract](RESPONSIVE.md)
+
+The established financial/Earnings/parser source pin remains Terminal `3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9`. The narrow Company search read uses `2ded360882b9c721e690907ff363b553781fb920`. The served beta build commit is unattested. A source read does not repin the deployed product. Existing Earnings OS, forecast producers, retained context, private thesis/investigation and planner owners keep their stores and authority.
+
+### Verification limits and next executable actions
+
+| Open condition | Evidence and exact next action | Owner |
+| --- | --- | --- |
+| Joint foundation release | Read the verified F01/F02 v1 release and reconciled effects when available. Then compare only changed geometry/lifecycle clauses and bind the exact D07 targets before final composition. | F01/F02, then existing D07 owner |
+| Controlled component fixtures | The attempted real React mount stopped on npm E403 for `registry.npmjs.org/esbuild`. All dependency-free source diagnostics reproduce. Run the normal `ForecastPage` component against S05's absent/all-null/sparse/quarterly fixtures in an existing permitted dependency environment. | Existing frontend/test owner |
+| Data and historical qualification | Propagate provider observation/vintage and population receipts through the current producers. Preserve missing state when absent. Resolve ST22's missing cumulative base, FC09's unclocked comparator, CN report-count wording and source-owned historical call selection. | Existing financial, Earnings and data owners |
+| Full behavioral proof | Complete guest/expired/revoked/cross-subject, retained-revision, passage, full planner-return and named-return cases. Qualify full keyboard/touch, theme/locale, zoom and reduced motion after the authorized UI work. | Existing route/access owners and later builder |
+| Reference acceptance | Freeze final editable compositions and exact captures, then obtain separate independent product/taste review and QA01 cross-product re-audit under the existing RIG process. | Existing review owners |
+
+The current observed account context and source-shaped synthetic fixtures were chosen to advance the authorized research. They establish only their recorded scopes. Two internal advisory returns refined the foundation and forecast interpretations. Both had author context and were explicitly stopped after consumption. D07’s formal independent reference review remains open.
+
+### Continuity and preserved effects
+
+The real-browser Price target input timeout was reconciled by UI readback showing the requested selection had applied. The action was not replayed. Browser theme/locale returned to light/EN and viewport emulation was reset. D07's preceding Paper operations retain their known response receipts. The new live catalog hash is `03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4`. Catalog transport/writer wording differs from the exposed app description. Current user one-writer and exact-target restrictions still govern. This read creates no write grant.
+
+Preserve exact D07 page `p-11-0` in file `01M3NSZGE8JWN2EZCSF0DT05RM`, build contract `1NFS-0`, and studies A `1NH5-0`, B `1NII-0`, C `1NJL-0`, D `1NMQ-0`, E `1NPF-0`, F `1NPG-0`, G `1NR7-0`, H `1NSA-0`. The eight studies remain provisional and their synthetic/historical source labels remain intact. [Paper page](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-11-0) · [Native IDs and capture receipts](paper/task-study/capture.json)
+
+DO_NOT_REDO the unchanged 80-file recovery, prior parser/statement/Expectation/member diagnostics, existing eight Paper task studies or the same source-state support polls. Revisit only affected receipts after a material source, dependency, access or behavior change. Retain the held Returns PRs #814/#1043 with their existing owners. The next D07 design action is final composition after verified F01/F02 v1 and fresh writer/target qualification. The source/test continuation remains available to the existing builder/data owners for its explicitly open cases.
+
+## 3 November historical checkpoint
+
+The following record preserves the earlier source and publication history. Its foundation heads and earlier tool limitations are dated observations. The current frontier above supersedes those current-state descriptions.
+
 **3 November 2026 UTC. Design/research package extended and verified. Full assignment PARTIAL. Reference acceptance open.**
 
 This resumption continues the existing D07 return at `739821372ca4cce1def155e670c89dc638ab7ef7` on Draft #10617, branch `design/paper-production-audit-20261102-ryan`. The commissioning package remains pinned to `6e1862867193ec6486a22001a0e4fb515da20448`. The current protected Mastermind procedure is `d47cdb5652096e038a8bfb24e431ebe48ccf7ff2`, skillpack 1.0.1 and bootstrap major 1. Its movement from `b2326bbe30e9988d26199f5e774a482b9c09068a` was path-disjoint from the required procedure and Paper companions. Current closeout and reconciliation guidance was also read at the new pin. D07 retains its existing owner, product boundary and source carrier. [Package index](README.md) · [Protected procedure](https://github.com/mastermindx-market-intelligence/Mastermind/blob/d47cdb5652096e038a8bfb24e431ebe48ccf7ff2/docs/sol_skills/INDEX.md)

@@ -1,5 +1,7 @@
 # D07 before-state evidence
 
+The observations below retain their original dates. The 4 November continuation adds a successful AAL article-body and selected-call read, live CN Forecast and search return evidence. Earlier access/tool limitations describe those earlier attempts. [Later actual browser observations](continuation-20261104/README.md)
+
 Observed 3 November 2026 UTC in the D07 design/research session. This file preserves the initial before-state evidence published at `d8ff43f6bf8cbadcf3a72bc6f47007b93d841910`. The later editable documentation page and its captured export are recorded separately in [the continuation](../CONTINUATION.md) and [Paper receipt](../paper/capture.json). Final screen composition and independent reference review remain open.
 
 ## Signed-in beta

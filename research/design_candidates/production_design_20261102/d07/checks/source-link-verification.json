@@ -1,12 +1,24 @@
 {
   "schema": "d07.pinned-source-target-verification.v1",
-  "observed_date_utc": "2026-11-03",
-  "scope": "Existence and Git blob identity of immutable source files cited by current D07 Markdown. Semantic findings remain in the source chapters.",
-  "verified": 109,
-  "reused_immutable_target_receipts": 95,
-  "new_or_repinned_reads": 14,
-  "previous_receipt_commit": "739821372ca4cce1def155e670c89dc638ab7ef7",
+  "observed_date_utc": "2026-11-04",
+  "scope": "Existence and Git blob identity of immutable source files linked by current D07 Markdown. Semantic findings retain their separate chapters.",
+  "verified": 119,
+  "reused_immutable_target_receipts": 107,
+  "new_or_repinned_reads": 12,
+  "previous_receipt_commit": "b0d827361e7adc266079fa0501789fd005d0794c",
   "files": [
+    {
+      "repo": "mastermindx-market-intelligence/Mastermind",
+      "ref": "910803421beca53ca25145392725ab2d84c7a8e9",
+      "path": "docs/sol_skills/INDEX.md",
+      "used_by": [
+        "CONTINUATION.md",
+        "README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "95b36446601250ccaf298dfb1c9b51fa9823e042",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
+    },
     {
       "repo": "mastermindx-market-intelligence/Mastermind",
       "ref": "b2326bbe30e9988d26199f5e774a482b9c09068a",
@@ -15,18 +27,19 @@
         "baseline/OBSERVATIONS.md"
       ],
       "status": "VERIFIED",
-      "blob": "df05f9dd5d1c27976374dd6dd3a2f139dc1b76c3"
+      "blob": "df05f9dd5d1c27976374dd6dd3a2f139dc1b76c3",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/Mastermind",
       "ref": "d47cdb5652096e038a8bfb24e431ebe48ccf7ff2",
       "path": "docs/sol_skills/INDEX.md",
       "used_by": [
-        "CONTINUATION.md",
-        "README.md"
+        "CONTINUATION.md"
       ],
       "status": "VERIFIED",
-      "blob": "df05f9dd5d1c27976374dd6dd3a2f139dc1b76c3"
+      "blob": "df05f9dd5d1c27976374dd6dd3a2f139dc1b76c3",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -36,7 +49,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "258610b02c8dcd8d113b0d4b29d93dbe3f0a575c"
+      "blob": "258610b02c8dcd8d113b0d4b29d93dbe3f0a575c",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -46,7 +60,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "67ea69cc96a9af7633546e614f0ee8dc9eac4ebb"
+      "blob": "67ea69cc96a9af7633546e614f0ee8dc9eac4ebb",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -56,7 +71,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "85bb04b1feef71b3c4af623c6f8c3b89351dda42"
+      "blob": "85bb04b1feef71b3c4af623c6f8c3b89351dda42",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -66,7 +82,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "569e8a19a2e5e74c0257e3bf4053a227cb66759a"
+      "blob": "569e8a19a2e5e74c0257e3bf4053a227cb66759a",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -76,7 +93,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "28a06a56f6452b975885793a08f3520913828fa4"
+      "blob": "28a06a56f6452b975885793a08f3520913828fa4",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -86,7 +104,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "068e3186af91d708f49c4ef924ca207efebaa0bf"
+      "blob": "068e3186af91d708f49c4ef924ca207efebaa0bf",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -96,7 +115,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "db175c463a31828263b57a3287afba661439a765"
+      "blob": "db175c463a31828263b57a3287afba661439a765",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -106,7 +126,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "bfa98c7e0316fd9f46d8e74c6e724c6cc9fe4961"
+      "blob": "bfa98c7e0316fd9f46d8e74c6e724c6cc9fe4961",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -116,7 +137,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "c4063ef52c86d7c16e70132f82aaaac92392df85"
+      "blob": "c4063ef52c86d7c16e70132f82aaaac92392df85",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -126,7 +148,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "3895aa83ae0040db0bf50339075c47309560afad"
+      "blob": "3895aa83ae0040db0bf50339075c47309560afad",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -136,7 +159,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "00490a81355544e5d55733852e38c2881e4e827c"
+      "blob": "00490a81355544e5d55733852e38c2881e4e827c",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -146,7 +170,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "1b39e3a519a548d2187130498dd05b58a256ccdd"
+      "blob": "1b39e3a519a548d2187130498dd05b58a256ccdd",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -156,7 +181,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "a911a4f000a4caf79d7f9069fe0904f9d4215a3c"
+      "blob": "a911a4f000a4caf79d7f9069fe0904f9d4215a3c",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -166,7 +192,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "1e706f5e2b47d735ccc6e3bc987587ffc6dc2ef6"
+      "blob": "1e706f5e2b47d735ccc6e3bc987587ffc6dc2ef6",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -176,7 +203,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "f211bb2aa8fa5cbfe78c522159402231c1267840"
+      "blob": "f211bb2aa8fa5cbfe78c522159402231c1267840",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -187,7 +215,8 @@
         "checks/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "d8a377c2ac42a8c56e42798146db6ed5be31d24a"
+      "blob": "d8a377c2ac42a8c56e42798146db6ed5be31d24a",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -197,7 +226,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "07d01f3371638fa55ed799265a4e70b378b8e92d"
+      "blob": "07d01f3371638fa55ed799265a4e70b378b8e92d",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -207,7 +237,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "6da18fd668934c80c89c2e8df3bfd7749e0a08a1"
+      "blob": "6da18fd668934c80c89c2e8df3bfd7749e0a08a1",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -217,7 +248,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "18f793b774002108e9d736e29a248ac46ca964cd"
+      "blob": "18f793b774002108e9d736e29a248ac46ca964cd",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -227,7 +259,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "51d99c9ac76557e2dce356a53231416f5fe84a44"
+      "blob": "51d99c9ac76557e2dce356a53231416f5fe84a44",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -237,7 +270,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "8659d49333a9169ea166eef28ef8b761a18a9f4d"
+      "blob": "8659d49333a9169ea166eef28ef8b761a18a9f4d",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -247,7 +281,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "5ffa0868253f94bd3e2c3c7a9c8f097d102de5c3"
+      "blob": "5ffa0868253f94bd3e2c3c7a9c8f097d102de5c3",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -257,7 +292,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "a5b023233dc0ef365aa22ffb9fde16a7a1c5b067"
+      "blob": "a5b023233dc0ef365aa22ffb9fde16a7a1c5b067",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -267,7 +303,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "17f4b59ec98883cfaeb7953a755b63ff30a55357"
+      "blob": "17f4b59ec98883cfaeb7953a755b63ff30a55357",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -277,7 +314,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "00c2c1f0d8c3091d775dd155ff1d61b542c437ab"
+      "blob": "00c2c1f0d8c3091d775dd155ff1d61b542c437ab",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -287,7 +325,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "6630254e78061d1875906e556a9b220101abb404"
+      "blob": "6630254e78061d1875906e556a9b220101abb404",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -297,7 +336,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "22a8e7bfb3c78ec5b4c1e9e1b26ccb0f94419a9f"
+      "blob": "22a8e7bfb3c78ec5b4c1e9e1b26ccb0f94419a9f",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -305,21 +345,33 @@
       "path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
       "used_by": [
         "CONTINUATION.md",
-        "README.md",
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "611e72560cc74f90c1b4ee2cb46f046b60cb95b4"
+      "blob": "611e72560cc74f90c1b4ee2cb46f046b60cb95b4",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
-      "ref": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
-      "path": "research/design_candidates/production_design_20261102/f01/README.md",
+      "ref": "3e334bd3eabf1d6ecc7980845fbd7a813dd023e1",
+      "path": "research/design_candidates/production_design_20261102/f01/CONSUMER_INTEGRATION_NOTES.md",
       "used_by": [
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "4dddc09e99842d80ecf576797803e30a84b438f0"
+      "blob": "f267c40d1ef847386099d2e1ec1b3bc3e0a4c209",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "3e334bd3eabf1d6ecc7980845fbd7a813dd023e1",
+      "path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+      "used_by": [
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -329,7 +381,21 @@
         "README.md"
       ],
       "status": "VERIFIED",
-      "blob": "f7097fd6cc97c6a85c1705c4727e88c1e1de05e2"
+      "blob": "f7097fd6cc97c6a85c1705c4727e88c1e1de05e2",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "922ec2522108071d9bbed1d31ef8dbf52910f0ca",
+      "path": "research/design_candidates/production_design_20261102/f01/RETURN_F01.md",
+      "used_by": [
+        "CONTINUATION.md",
+        "README.md",
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "4c04936295c4dc4b298774fa7a5f7e0fd6471df1",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -339,7 +405,8 @@
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "175e56ba17fd1f1e923535cf2f7d3377e7a6fd5d"
+      "blob": "175e56ba17fd1f1e923535cf2f7d3377e7a6fd5d",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -349,7 +416,8 @@
         "ACCEPTANCE.md"
       ],
       "status": "VERIFIED",
-      "blob": "b1c08d0c3cb3b3ae6282e051cf345920c807d7af"
+      "blob": "b1c08d0c3cb3b3ae6282e051cf345920c807d7af",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -359,7 +427,8 @@
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "a7ec801d3b559cc64f4fd57141c32f63098c6461"
+      "blob": "a7ec801d3b559cc64f4fd57141c32f63098c6461",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -369,28 +438,19 @@
         "CONTINUATION.md"
       ],
       "status": "VERIFIED",
-      "blob": "6bfacea37e9a54be4dcfa9170b6016b2e9c38d43"
+      "blob": "6bfacea37e9a54be4dcfa9170b6016b2e9c38d43",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
       "ref": "d6ebeefcba90387b42817f8e87792e630d5862eb",
       "path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
       "used_by": [
-        "CONTINUATION.md",
-        "RESPONSIVE.md"
+        "CONTINUATION.md"
       ],
       "status": "VERIFIED",
-      "blob": "01456cb2193e71a080611e4b7e26b3fcfb3456c5"
-    },
-    {
-      "repo": "mastermindx-market-intelligence/macro",
-      "ref": "d6ebeefcba90387b42817f8e87792e630d5862eb",
-      "path": "research/design_candidates/production_design_20261102/f01/README.md",
-      "used_by": [
-        "README.md"
-      ],
-      "status": "VERIFIED",
-      "blob": "d60e83f0ab76ac83eeb3d667dca3a550678c2a3a"
+      "blob": "01456cb2193e71a080611e4b7e26b3fcfb3456c5",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -400,7 +460,68 @@
         "CONTINUATION.md"
       ],
       "status": "VERIFIED",
-      "blob": "432ed78fd85f5764538d27daa4ea70cd911b949b"
+      "blob": "432ed78fd85f5764538d27daa4ea70cd911b949b",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "e6c28413ee74e83950b8c5ff58a34b81e76c1781",
+      "path": "research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md",
+      "used_by": [
+        "ACCEPTANCE.md",
+        "CONTINUATION.md",
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "4f627da25a8bfe318467eb13e0524adf2d7eef32",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "e6c28413ee74e83950b8c5ff58a34b81e76c1781",
+      "path": "research/design_candidates/production_design_20261102/f02/SYSTEM_CONTRACT.md",
+      "used_by": [
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1310877964805e6e356a6e050472754dae6deb8b",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "e6c28413ee74e83950b8c5ff58a34b81e76c1781",
+      "path": "research/design_candidates/production_design_20261102/f02/paper/NATIVE_CONTINUATION_20261104.md",
+      "used_by": [
+        "ACCEPTANCE.md",
+        "CONTINUATION.md",
+        "README.md",
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "af3f0d97e34cf37bd4874c3521cc4fbc98f31c55",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "e6c28413ee74e83950b8c5ff58a34b81e76c1781",
+      "path": "research/design_candidates/production_design_20261102/f02/paper/exports/company-dark.jsx",
+      "used_by": [
+        "EXPERIENCE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "17d6db35cb40d4cb879a655296de0eb8cfb3c193",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "e6c28413ee74e83950b8c5ff58a34b81e76c1781",
+      "path": "research/design_candidates/production_design_20261102/f02/paper/screenshots/company-dark.jpg",
+      "used_by": [
+        "EXPERIENCE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "07784f703555cfb67db6d558b7048b18d38296f7",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -410,7 +531,8 @@
         "ACCEPTANCE.md"
       ],
       "status": "VERIFIED",
-      "blob": "268bced507d0f37dea0beda7746118161d366482"
+      "blob": "268bced507d0f37dea0beda7746118161d366482",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -420,19 +542,19 @@
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "58b18e3ef094f1c24dfe4f583d73cb2ae9aa7306"
+      "blob": "58b18e3ef094f1c24dfe4f583d73cb2ae9aa7306",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
       "ref": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
       "path": "research/design_candidates/production_design_20261102/f02/RETURN_F02.md",
       "used_by": [
-        "CONTINUATION.md",
-        "README.md",
-        "RESPONSIVE.md"
+        "CONTINUATION.md"
       ],
       "status": "VERIFIED",
-      "blob": "e754ed29943f1ef2e3e7d38db2f9774abcac7333"
+      "blob": "e754ed29943f1ef2e3e7d38db2f9774abcac7333",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -442,7 +564,8 @@
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "54c5c0852cdb107411cdd60f4ddb9e08a4857974"
+      "blob": "54c5c0852cdb107411cdd60f4ddb9e08a4857974",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -452,7 +575,8 @@
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "d200364c1f84ff381ddea8ec41fb37e67f56e1c3"
+      "blob": "d200364c1f84ff381ddea8ec41fb37e67f56e1c3",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -462,7 +586,8 @@
         "MACRO.md"
       ],
       "status": "VERIFIED",
-      "blob": "692a150735914eb689bea5680db743dc2a039d37"
+      "blob": "692a150735914eb689bea5680db743dc2a039d37",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -473,7 +598,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "85bb04b1feef71b3c4af623c6f8c3b89351dda42"
+      "blob": "85bb04b1feef71b3c4af623c6f8c3b89351dda42",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -483,7 +609,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "3b8251388c8e9ae59b933212a7384faaea61eb27"
+      "blob": "3b8251388c8e9ae59b933212a7384faaea61eb27",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -493,7 +620,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "3cf263cdc561697cd003366937d0807c8b3f0025"
+      "blob": "3cf263cdc561697cd003366937d0807c8b3f0025",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -505,7 +633,8 @@
         "checks/EXPECTATION_ADVISORY.md"
       ],
       "status": "VERIFIED",
-      "blob": "f543f2ff2e5d4078f5ddc4626d9ba8dc98fec2f9"
+      "blob": "f543f2ff2e5d4078f5ddc4626d9ba8dc98fec2f9",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -516,7 +645,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "068e3186af91d708f49c4ef924ca207efebaa0bf"
+      "blob": "068e3186af91d708f49c4ef924ca207efebaa0bf",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -526,7 +656,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "1c29b43396f077189a008516950a72675d8c7bb5"
+      "blob": "1c29b43396f077189a008516950a72675d8c7bb5",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -536,7 +667,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "0ee93909693893f419f0109f9eba1994d94e2b46"
+      "blob": "0ee93909693893f419f0109f9eba1994d94e2b46",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -547,7 +679,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "d2ed6d41344b72d793335164d73cd78422da6098"
+      "blob": "d2ed6d41344b72d793335164d73cd78422da6098",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -559,7 +692,8 @@
         "checks/EXPECTATION_ADVISORY.md"
       ],
       "status": "VERIFIED",
-      "blob": "b2cd6cfacfba92a1bf9c929450b0cdcabb68ecdd"
+      "blob": "b2cd6cfacfba92a1bf9c929450b0cdcabb68ecdd",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -569,7 +703,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "7652a31cc06c7b88b6a872b8b7b92d77bb41689b"
+      "blob": "7652a31cc06c7b88b6a872b8b7b92d77bb41689b",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -580,7 +715,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "00490a81355544e5d55733852e38c2881e4e827c"
+      "blob": "00490a81355544e5d55733852e38c2881e4e827c",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -592,7 +728,8 @@
         "checks/EXPECTATION_ADVISORY.md"
       ],
       "status": "VERIFIED",
-      "blob": "1b39e3a519a548d2187130498dd05b58a256ccdd"
+      "blob": "1b39e3a519a548d2187130498dd05b58a256ccdd",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -602,7 +739,8 @@
         "baseline/OBSERVATIONS.md"
       ],
       "status": "VERIFIED",
-      "blob": "1e706f5e2b47d735ccc6e3bc987587ffc6dc2ef6"
+      "blob": "1e706f5e2b47d735ccc6e3bc987587ffc6dc2ef6",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -614,7 +752,8 @@
         "checks/diagnostics/dossier-return/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "f211bb2aa8fa5cbfe78c522159402231c1267840"
+      "blob": "f211bb2aa8fa5cbfe78c522159402231c1267840",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -626,7 +765,8 @@
         "checks/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "ddf20f7a1023cded3930715425713969ea324c1d"
+      "blob": "ddf20f7a1023cded3930715425713969ea324c1d",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -639,7 +779,8 @@
         "checks/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "15d5e943cb490176db663e59ad4dcf63acca9980"
+      "blob": "15d5e943cb490176db663e59ad4dcf63acca9980",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -649,7 +790,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "1a046569f077edcdf6b8e61ddf91306a571b5dc5"
+      "blob": "1a046569f077edcdf6b8e61ddf91306a571b5dc5",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -659,7 +801,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "4f6b8d8563eb91f9ee643429696ebeb7d2ccc19d"
+      "blob": "4f6b8d8563eb91f9ee643429696ebeb7d2ccc19d",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -670,7 +813,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "12216b31e5a747d959051ca2295bc690270335ac"
+      "blob": "12216b31e5a747d959051ca2295bc690270335ac",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -681,7 +825,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "1f5d27e2894ffdf4a8116c7374547362358ff925"
+      "blob": "1f5d27e2894ffdf4a8116c7374547362358ff925",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -693,7 +838,8 @@
         "checks/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "51d99c9ac76557e2dce356a53231416f5fe84a44"
+      "blob": "51d99c9ac76557e2dce356a53231416f5fe84a44",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -703,7 +849,30 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "21a1fb1627ac34badc6078cff486f98486e9b773"
+      "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "2ded360882b9c721e690907ff363b553781fb920",
+      "path": "terminal/components/chrome/shared-shell/ShellSearch.tsx",
+      "used_by": [
+        "JOURNEY_RETURN.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "e4e50d27ba25328812233bb90c1f3b536f87219a",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "2ded360882b9c721e690907ff363b553781fb920",
+      "path": "terminal/lib/companySearchContext.ts",
+      "used_by": [
+        "JOURNEY_RETURN.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "2166bbbccb4d85667acc218ece36b75133c17b14",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -714,7 +883,8 @@
         "baseline/OBSERVATIONS.md"
       ],
       "status": "VERIFIED",
-      "blob": "5a7851304a35ff1c1a226524dbbf2b8957d7475e"
+      "blob": "5a7851304a35ff1c1a226524dbbf2b8957d7475e",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -725,7 +895,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "eaa974c278ded18d4f20b29684fd7cbec2b01f14"
+      "blob": "eaa974c278ded18d4f20b29684fd7cbec2b01f14",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -735,7 +906,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "40b5bfe366f53762daa10e25f0c56d1aec7d2285"
+      "blob": "40b5bfe366f53762daa10e25f0c56d1aec7d2285",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -746,7 +918,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "267880845d395985d5dfb566def5971d99774bfc"
+      "blob": "267880845d395985d5dfb566def5971d99774bfc",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -756,7 +929,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "b6dec9b01102e04d4d0c4676ee46e5e841cc1404"
+      "blob": "b6dec9b01102e04d4d0c4676ee46e5e841cc1404",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -766,7 +940,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "69dd9b36abc8b9598e930d1548293a28829ebd23"
+      "blob": "69dd9b36abc8b9598e930d1548293a28829ebd23",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -776,7 +951,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "f5498e598205bee5bd73ba780a502dde7955df64"
+      "blob": "f5498e598205bee5bd73ba780a502dde7955df64",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -786,7 +962,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "59be1b31ee28ed983906ea57949220fa51637a09"
+      "blob": "59be1b31ee28ed983906ea57949220fa51637a09",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -797,7 +974,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "421f9ea972fd7956d30190f15dbd9fe23e642694"
+      "blob": "421f9ea972fd7956d30190f15dbd9fe23e642694",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -807,7 +985,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "3e57ffb79edbb4e3665b40e28a77276f596b59f9"
+      "blob": "3e57ffb79edbb4e3665b40e28a77276f596b59f9",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -817,7 +996,8 @@
         "JOURNEY_RETURN.md"
       ],
       "status": "VERIFIED",
-      "blob": "5bdfda92d670004fcb3659404ecf208f359c8259"
+      "blob": "5bdfda92d670004fcb3659404ecf208f359c8259",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -828,7 +1008,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "594cff2b78961e481c9afa941ac9fc83d4f5c45b"
+      "blob": "594cff2b78961e481c9afa941ac9fc83d4f5c45b",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -838,7 +1019,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "7dab903014873180aae2e50be4a05fb1618c7801"
+      "blob": "7dab903014873180aae2e50be4a05fb1618c7801",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -848,7 +1030,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "6e0f39c0c66fee895b4b11b2cebcb8fb1275999b"
+      "blob": "6e0f39c0c66fee895b4b11b2cebcb8fb1275999b",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -859,7 +1042,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "ef781f5f763ee77a70b15ac9278be9d79357ac88"
+      "blob": "ef781f5f763ee77a70b15ac9278be9d79357ac88",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -871,7 +1055,8 @@
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "02c5e865f1a7dddea906b0ca2cb04722eb3751a7"
+      "blob": "02c5e865f1a7dddea906b0ca2cb04722eb3751a7",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -881,7 +1066,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "a093722c180a61cd6863604333412af5c02160d3"
+      "blob": "a093722c180a61cd6863604333412af5c02160d3",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -891,7 +1077,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "6e8b41d376c1f5380a8a0df3a73d2400f7c28766"
+      "blob": "6e8b41d376c1f5380a8a0df3a73d2400f7c28766",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -902,7 +1089,8 @@
         "RESPONSIVE.md"
       ],
       "status": "VERIFIED",
-      "blob": "49049cac5652efd5d515d5a8a31ed4d732094d39"
+      "blob": "49049cac5652efd5d515d5a8a31ed4d732094d39",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -912,7 +1100,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "77cbdad052503a5158cae882ad77bd69614abaca"
+      "blob": "77cbdad052503a5158cae882ad77bd69614abaca",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -923,7 +1112,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "221134c8c734ef5a490cde5c634edd0d42d79706"
+      "blob": "221134c8c734ef5a490cde5c634edd0d42d79706",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -933,7 +1123,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "2b0b398a8656d7a6a62fcd832b8ff867530c9791"
+      "blob": "2b0b398a8656d7a6a62fcd832b8ff867530c9791",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -943,7 +1134,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "24855b1df2d8077706ddea5257c83d32e379e7b6"
+      "blob": "24855b1df2d8077706ddea5257c83d32e379e7b6",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -953,7 +1145,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "4126bd73348aa3fdd95f31451e570ce089a631e7"
+      "blob": "4126bd73348aa3fdd95f31451e570ce089a631e7",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -964,7 +1157,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "65a600184185c258e5e572bcf0d7dcaa0a50220d"
+      "blob": "65a600184185c258e5e572bcf0d7dcaa0a50220d",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -974,7 +1168,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "122749e095ef69098b71c687ca4456b042e7138d"
+      "blob": "122749e095ef69098b71c687ca4456b042e7138d",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -984,7 +1179,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "18a189709ad1d1cdd184a954e70e4915d4964ba7"
+      "blob": "18a189709ad1d1cdd184a954e70e4915d4964ba7",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -994,7 +1190,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "2b1bf19d08acf463c7f6ea104dabab4695aa3111"
+      "blob": "2b1bf19d08acf463c7f6ea104dabab4695aa3111",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1004,7 +1201,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "45472f56bf166d493a8dad00e903717d360e971b"
+      "blob": "45472f56bf166d493a8dad00e903717d360e971b",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1014,7 +1212,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "b8ba8b8f585a4bbfbba882df7068eeec85671b60"
+      "blob": "b8ba8b8f585a4bbfbba882df7068eeec85671b60",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1025,7 +1224,8 @@
         "baseline/OBSERVATIONS.md"
       ],
       "status": "VERIFIED",
-      "blob": "549d94e4ba6dd3d6b278d9849dc3c4852f8d5ebd"
+      "blob": "549d94e4ba6dd3d6b278d9849dc3c4852f8d5ebd",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1035,7 +1235,8 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "b4581b1d38d4a6fd112b61f954fb2bf5490fc2a1"
+      "blob": "b4581b1d38d4a6fd112b61f954fb2bf5490fc2a1",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1046,7 +1247,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "2a0d2d716953535b42a1f17d80e1446a87cba938"
+      "blob": "2a0d2d716953535b42a1f17d80e1446a87cba938",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1056,7 +1258,8 @@
         "SEMANTIC_TASKS.md"
       ],
       "status": "VERIFIED",
-      "blob": "dd040ffe7d7407d67a5c1349f51fdb36319feae7"
+      "blob": "dd040ffe7d7407d67a5c1349f51fdb36319feae7",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1067,7 +1270,8 @@
         "checks/diagnostics/statements/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "9bf1e3077a66d65f2546261cb9efa7b27140fda5"
+      "blob": "9bf1e3077a66d65f2546261cb9efa7b27140fda5",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1078,7 +1282,8 @@
         "checks/diagnostics/statements/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "d6b0cff78c94f6c4cead423122cf4fcd6a5f19d5"
+      "blob": "d6b0cff78c94f6c4cead423122cf4fcd6a5f19d5",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1090,7 +1295,8 @@
         "checks/diagnostics/statements/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "7d60914b44d123bc30e63dc7a0652b9ea24aa9a1"
+      "blob": "7d60914b44d123bc30e63dc7a0652b9ea24aa9a1",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1100,7 +1306,19 @@
         "checks/diagnostics/statements/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "6168662381b7d0a32af90eb262ae2c8862883a1b"
+      "blob": "6168662381b7d0a32af90eb262ae2c8862883a1b",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/originNav.ts",
+      "used_by": [
+        "JOURNEY_RETURN.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "7484e1894b9282045a5bfec8e3d24846e40c0a61",
+      "receipt": "EXACT_CURRENT_TOOL_READ"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1110,7 +1328,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "1e6bc5c80127386d40513144c72e74febddadfee"
+      "blob": "1e6bc5c80127386d40513144c72e74febddadfee",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1122,7 +1341,8 @@
         "checks/diagnostics/dossier-return/README.md"
       ],
       "status": "VERIFIED",
-      "blob": "131b7c0a6881d65d8a7023363969748542a495aa"
+      "blob": "131b7c0a6881d65d8a7023363969748542a495aa",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1132,7 +1352,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "ae5d10b19881cc27fff325f73420b2399a764bcd"
+      "blob": "ae5d10b19881cc27fff325f73420b2399a764bcd",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
@@ -1142,7 +1363,8 @@
         "EARNINGS.md"
       ],
       "status": "VERIFIED",
-      "blob": "58d9c0f691009e3c94a29341b323062490c9c9dd"
+      "blob": "58d9c0f691009e3c94a29341b323062490c9c9dd",
+      "receipt": "REUSED_IMMUTABLE_TARGET"
     }
   ]
 }

@@ -1,0 +1,22 @@
+{
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "commit": "2ded360882b9c721e690907ff363b553781fb920",
+  "files": [
+    {
+      "local_path": "sources/companySearchContext.ts",
+      "source_path": "terminal/lib/companySearchContext.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/companySearchContext.ts",
+      "git_blob": "2166bbbccb4d85667acc218ece36b75133c17b14",
+      "sha256": "ee780295ea796509bbfdf92688ddd522144cd38f0fb82925a8ca31acfdaf4b12",
+      "bytes": 8870
+    },
+    {
+      "local_path": "sources/analysisSymbol.ts",
+      "source_path": "terminal/lib/analysisSymbol.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/analysisSymbol.ts",
+      "git_blob": "b32106075430767915f66a30a0bc47f8d55fada6",
+      "sha256": "8be2bee6a178eee8d2951a65c4744fb039c8905f964daa022d86e4c575b49776",
+      "bytes": 1065
+    }
+  ]
+}
