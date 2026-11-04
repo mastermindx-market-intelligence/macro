@@ -1,0 +1,149 @@
+{
+  "schema": "f02.crypto_gap_publication_assembly.v1",
+  "scope": "Verification and packaging of already-completed evidence; no test/browser/server rerun",
+  "source_base": "6e245059af5870d35eb48e34d641e50f38617cc1",
+  "source_candidates_verified": 11,
+  "loaded_modules_verified": 20,
+  "rendered_page_hashes_verified": 4,
+  "asset_hashes_verified": 10,
+  "synthetic_fixture_files_verified": 3,
+  "images_verified": [
+    {
+      "path": "evidence/d2b75f830368fc16.png",
+      "sha256": "d2b75f830368fc16c5fa1b0a723b93d6f64181a846419265ff46c334a7f75205",
+      "git_blob": "db3ab20bc12e6a0c6bf074f7758e33d9f3c36827",
+      "bytes": 269389,
+      "width": 1440,
+      "height": 1072,
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "dark"
+    },
+    {
+      "path": "evidence/0dbe1b5390d15946.png",
+      "sha256": "0dbe1b5390d15946d469bf5da50487683fc22358fc8bfbee0cc503551c63c659",
+      "git_blob": "2d0e4d098136379050517d6d68d84fe53847be71",
+      "bytes": 259977,
+      "width": 1440,
+      "height": 1072,
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "light"
+    },
+    {
+      "path": "evidence/0e5a646c9657a8bc.png",
+      "sha256": "0e5a646c9657a8bc865ae2d72e231a8521e7623b67e20afb6787b1496f07ce64",
+      "git_blob": "e8f248077145d8bc9cf09004dab8bb9fb83121ef",
+      "bytes": 274115,
+      "width": 1440,
+      "height": 1060,
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "dark"
+    },
+    {
+      "path": "evidence/f2996d910e97a457.png",
+      "sha256": "f2996d910e97a457fd6eba228d3e95ad345c231d7d620b5722bfaf18bbee0b16",
+      "git_blob": "ba07aa1638461984107a2d32b08db99446476b4f",
+      "bytes": 265979,
+      "width": 1440,
+      "height": 1060,
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "light"
+    },
+    {
+      "path": "evidence/5aea1ce908190a8b.png",
+      "sha256": "5aea1ce908190a8b63810cdd872c6c13ab9ed8648215a8fa6fcfd2c853652180",
+      "git_blob": "2c2da586972faa02b3d5a837632f07cf173e970c",
+      "bytes": 277526,
+      "width": 390,
+      "height": 2574,
+      "viewport": "mobile",
+      "locale": "en",
+      "theme": "dark"
+    },
+    {
+      "path": "evidence/4f45cf742371d940.png",
+      "sha256": "4f45cf742371d94083acbb12065ca2e6b47ff8d32529e7e0bb55300eb2e9728b",
+      "git_blob": "3161568023781d2aeae1609d35b42d870e4efc5e",
+      "bytes": 271722,
+      "width": 390,
+      "height": 2574,
+      "viewport": "mobile",
+      "locale": "en",
+      "theme": "light"
+    },
+    {
+      "path": "evidence/15f2ffad44b692ac.png",
+      "sha256": "15f2ffad44b692ac001577edea41f6ab032ec1e2212b1f6dc752b47b7ae491ba",
+      "git_blob": "97426618d15a46ab8f57d5a4764a59a60d25fb12",
+      "bytes": 271553,
+      "width": 390,
+      "height": 2409,
+      "viewport": "mobile",
+      "locale": "zh",
+      "theme": "dark"
+    },
+    {
+      "path": "evidence/bd06d399e01cb498.png",
+      "sha256": "bd06d399e01cb4989416c1a69010486406f88faed393faa3b759401de94b9eeb",
+      "git_blob": "8e0b1f96ed96e980966e6396244cc1742055ad31",
+      "bytes": 266195,
+      "width": 390,
+      "height": 2409,
+      "viewport": "mobile",
+      "locale": "zh",
+      "theme": "light"
+    }
+  ],
+  "image_count": 8,
+  "image_total_bytes": 2156456,
+  "browser_report": {
+    "retrieved_complete": true,
+    "total_lines": 14659,
+    "remaining_lines": 0,
+    "saved_bytes": 429767,
+    "sha256": "4d740c483b83dd300989324f212d33c0bdae8e64fa145fac6d604a3bd61c1f21",
+    "matches_actual_checker_output_serialization": true,
+    "generated_at": "2026-11-04T20:29:01.366941+00:00",
+    "attempted": 24,
+    "passed": 24,
+    "failures": [],
+    "reported_chart_observations": 288,
+    "device_id": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+    "remote_source": "/Volumes/Mastermind/agent-evidence/f02-crypto-visual-20261104-c2/compact-proof/browser-checks.json"
+  },
+  "junit": {
+    "tests": 81,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "450ee6ee566d40c10b4750441039f1842fcb96cc4efc5c704f72ccd8953e774d",
+    "module_counts": {
+      "tests.test_illus": 62,
+      "tests.test_crypto_chart_gaps": 7,
+      "tests.test_crypto_legacy_chart_gaps": 12
+    }
+  },
+  "root_visual_review": {
+    "reviewed": 8,
+    "passed": 8,
+    "source": "parent-reported direct inspection"
+  },
+  "separate_focused_differential_receipt": {
+    "status": "NOT_PRESENT_IN_INSPECTED_LOCAL_EVIDENCE",
+    "searched_roots": [
+      "f02-source",
+      "f02-producer-test-deps",
+      "f02-crypto-preview"
+    ],
+    "tests_not_rerun": true
+  },
+  "source_file_mutations": 0,
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "test_reruns": 0,
+  "github_mutations": 0,
+  "full_live_route_proof": false
+}

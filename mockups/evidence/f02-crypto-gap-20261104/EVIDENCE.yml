@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - engine/crypto_universe.py
+  - scripts/build_crypto.py
+  - lib/illus.py
+  - templates/illus.css
+  - site/illus.css
+manifest: mockups/evidence/f02-crypto-gap-20261104/manifest.json

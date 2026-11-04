@@ -35,16 +35,21 @@ Plotly fragments on dashboard surfaces.
   Historical receipts occupy a separate metadata lane above the plot so they
   cannot cover a high last-observed point. The chart, reference captions and
   date labels resize together inside their own plot container.
-  Short gapped lines (`height < 96`, source-tested at 32/42/64/95px) use the
-  `.ilx-compact` variant: a separate, full-width status row instead of overlaid
-  corner dates or an end-value tag. At the existing 42px table size, the default
-  12px status line and 4px spacing leave a 26px plot. The status is `N missing`
+  Short lines (`height < 96`, source-tested at 32/42/64/95px), including complete
+  histories, use `.ilx-compact` to keep overlapping corner dates and end-value
+  tags off the plot. Complete histories retain the full plot height, unchanged
+  SVG geometry and no status row. Gapped histories reserve a separate full-width
+  status row: at 42px, the default 12px status line and 4px spacing leave a 26px
+  plot. The status is `N missing`
   / `缺失 N 条`, or **Latest missing / 最新值缺失** when the final slot is absent.
-  The figure's accessible name retains the full missing count, original date
-  window, and last-observed value, unit and date. No compact gap caption reserves
-  140px for hidden corner dates. Complete-series output and other chart kinds
-  do not opt into this variant; actual page rendering remains an integration
-  acceptance step, not something source-level layout tests can establish.
+  Every compact line's accessible name retains its original date window and
+  last-observed value, unit and date; gaps additionally disclose the missing
+  count. No compact gap caption reserves 140px for hidden corner dates. The
+  complete compact wrapper and accessible metadata intentionally differ from
+  the previous output after a 96px-wide fixture exposed colliding captions.
+  Complete output at heights of 96px and above remains unchanged, and other
+  chart kinds do not opt into this variant. Actual page rendering remains an
+  integration acceptance step, not something source-level tests establish.
   Supplied dates define the `line` observation grid. If its value array ends
   early, each remaining supplied date is a missing observation; it cannot silently
   shorten the window or move an old value to the chart's right edge. Internal
@@ -160,3 +165,28 @@ contains exact commands, source hashes, eight actual PNGs and 24 browser checks.
 This is component proof on synthetic inputs. A producer that drops missing
 observations, and live application interaction/access/data paths, require their
 own integration proof.
+
+### Crypto producer preservation and fixtures
+
+`scripts/build_crypto.py` opts its deep BTC/ETH/SOL sparkline reads into retaining
+supplied missing slots; `_series()` keeps its existing clean default for other
+callers. The dated snapshot cutoff still applies. The display starts at the first
+of the last 90 valid observations and retains intervening and unavailable tail
+slots. `history_days`, history chips and breadth eligibility continue to count
+valid observations, not display slots. `engine/crypto_universe.py` preserves the
+same display slots in the legacy parquet path after its source/ID continuity
+boundary. Invalid latest prices remain refused, and unresolved identity history
+remains empty. Nonpositive crypto prices are unavailable under the producer's
+price contract; the generic renderer still accepts real zero observations.
+
+`scripts/render_crypto_gap_fixture.py` passes synthetic deep-history frames and
+an actual temporary parquet roundtrip through the real producers and renderer.
+It covers an internal gap, an unavailable tail, invalid legacy prices and a
+complete baseline at 42px high and 96/140/240px wide in dark/light × EN/ZH pages.
+Its manifest binds the loaded source, inputs, producer results, assets and HTML
+by hash. `scripts/verify_crypto_gap_fixture.py` checks the 24 combinations of
+1440/390/320px, theme, language and motion preference, including hidden compact
+captions, complete full-height plots, gap status separation and accessible
+window/value/date semantics. These are local producer/component fixtures on
+synthetic data. Generation is not browser acceptance, live-data proof or a
+full-route claim; screenshots and browser results must be recorded separately.

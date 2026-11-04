@@ -1,0 +1,300 @@
+{
+  "schema": "f02.crypto_producer_proof_source_binding.v1",
+  "source_base": "6e245059af5870d35eb48e34d641e50f38617cc1",
+  "source_head_role": "base revision; loaded source hashes identify the rendered implementation",
+  "future_publication_commit": null,
+  "future_publication_commit_reason": "Root supplies the containing commit after publication; these files bind actual source bytes and do not self-reference an unknown future commit.",
+  "source_files": [
+    {
+      "path": "engine/crypto_universe.py",
+      "bytes": 27285,
+      "sha256": "1a70808d11add2c6228b1a572f99893e35d56192bc698a91ee7c2da3877e6a7a",
+      "git_blob": "a358ac865fc43c6b3dbed5c0ac98f5ad4b03a442",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "scripts/build_crypto.py",
+      "bytes": 29534,
+      "sha256": "38f79e1aafa83cccfd4469411b21c158246c5dc314f4a8c61495d6932c1085b7",
+      "git_blob": "4035b836bdcdf3cb1062984bec88f917b0cf2ed0",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "lib/illus.py",
+      "bytes": 48118,
+      "sha256": "6359363cdcada8ab7756f794ebbef2cd4566bf243ce8bb66dbce081e49000359",
+      "git_blob": "c14a9f429866b2e6a976bba28d1873951c45ffcd",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "templates/illus.css",
+      "bytes": 16324,
+      "sha256": "f152efb39164cec78295fb335b5061cf8edd9700d50a405edd0f47d47f2279d1",
+      "git_blob": "5841f3df38390938392c2a2f43cc4342ce2f25de",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "site/illus.css",
+      "bytes": 16324,
+      "sha256": "f152efb39164cec78295fb335b5061cf8edd9700d50a405edd0f47d47f2279d1",
+      "git_blob": "5841f3df38390938392c2a2f43cc4342ce2f25de",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "tests/test_crypto_chart_gaps.py",
+      "bytes": 5741,
+      "sha256": "3b934f3f2cb829db17eac1aee4b0a7faf1d1ac18005157fd307b10abe2a297ba",
+      "git_blob": "205ade71086497db146f05d14d59dfda95068484",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "tests/test_crypto_legacy_chart_gaps.py",
+      "bytes": 8161,
+      "sha256": "d41e4afdd9a757649e45a169538e83a84f04b97fa7bf09c304f8beaa87d0073c",
+      "git_blob": "cd4e19f6fc7410f7eed9ab5df00969df2e1c94ef",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "tests/test_illus.py",
+      "bytes": 39789,
+      "sha256": "f65512b11f24f82d83176eb2a9d24f66c804502bae0c76892a55290d18b6cdcc",
+      "git_blob": "add62b2efd926f37093c1ce7daea3b32221b425d",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "scripts/render_crypto_gap_fixture.py",
+      "bytes": 16662,
+      "sha256": "6d1c1d9bb6a52f8a68d1a87ced97cc6c9edc928abc80d5d8c18da88cf738598b",
+      "git_blob": "8fd21a80ed7883c33456394aa3bf412b8d8ae6c9",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "scripts/verify_crypto_gap_fixture.py",
+      "bytes": 9762,
+      "sha256": "ed76c50e12db029c2318f760398618b3927a950a754f30f5e13a00be22526b3b",
+      "git_blob": "688e72335f6c653e8fcfca2310938ff42835e66d",
+      "verified_current_source_bytes": true
+    },
+    {
+      "path": "docs/ILLUSTRATIONS.md",
+      "bytes": 12461,
+      "sha256": "8c1912732ace7aca861a5cd1dd825218795a4927dc9a2832da87abd5224a7482",
+      "git_blob": "c551830a89754c15478f4e702b34dc0238e4a7ee",
+      "verified_current_source_bytes": true
+    }
+  ],
+  "loaded_modules": [
+    {
+      "module": "engine",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.alt_cycle",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/alt_cycle.py",
+      "sha256": "f2b1e4471256d822218853e8f474953960d12bacf8270da61ba0dc0698b9f176",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.btc_mtf",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/btc_mtf.py",
+      "sha256": "720a340b79a9461de7d691751e9c85f19d213ad33d04a5c7e94f968eae99f996",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.btc_options",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/btc_options.py",
+      "sha256": "ede40c26ba0b80fb26d979d0c9f7875bd3f05d3b265bd2fe176eb166f84e8b6b",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.btc_signals",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/btc_signals.py",
+      "sha256": "e91c7a39265acda38748f5d589cc341f6f335679eb9c743e2dd01630b0d065a6",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.crypto_market_state",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/crypto_market_state.py",
+      "sha256": "e670c291c2ee6721d1712b1a4681519b6c2932424934e56d215c25d51a8eef05",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.crypto_universe",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/crypto_universe.py",
+      "sha256": "1a70808d11add2c6228b1a572f99893e35d56192bc698a91ee7c2da3877e6a7a",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.cycles",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/cycles.py",
+      "sha256": "679fafe2ef043a67bd390d9d9425bb610831453f76018be49e449294e1d33f56",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.eth_state",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/eth_state.py",
+      "sha256": "7461edb34a02428357f635867199fea05d5f1d8a044c1a91a354f49dd324dddb",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.event_calendar",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/event_calendar.py",
+      "sha256": "b6b65616575bde5a3d3972304bbcfcd9c1034eee2df83dc7d50c13b7333b700e",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.session_anchor",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/session_anchor.py",
+      "sha256": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "engine.technicals",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/technicals.py",
+      "sha256": "83e90996d3f6eb58162cc6005ac292116ae784332700ef5323b381d495269739",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "lib",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "lib.config",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/config.py",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "lib.illus",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/illus.py",
+      "sha256": "6359363cdcada8ab7756f794ebbef2cd4566bf243ce8bb66dbce081e49000359",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "lib.nyse_calendar",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/nyse_calendar.py",
+      "sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "lib.pages",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/pages.py",
+      "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "lib.store",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/store.py",
+      "sha256": "14907e9d2bd6e7ae6498a7cdd3f28a5764433114d10c50681828446ce7764413",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "scripts.build_crypto",
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/scripts/build_crypto.py",
+      "sha256": "38f79e1aafa83cccfd4469411b21c158246c5dc314f4a8c61495d6932c1085b7",
+      "verified_local_bytes": true
+    },
+    {
+      "module": "scripts.render_illus_gap_fixture",
+      "path": "/workspace/scratch/0638a6b73079/f02-source/scripts/render_illus_gap_fixture.py",
+      "sha256": "2851b9c72af9c5549794b2a02e9229045e3196239be0d2e961862f74c58f3869",
+      "verified_local_bytes": true
+    }
+  ],
+  "rendered_pages": [
+    {
+      "source_path": "dark-en.html",
+      "evidence_path": "rendered-pages/dark-en.html",
+      "sha256": "01680a77d22a2f705086ee35d2f6726c5b91cf8a2c28e9d53c7fd588500ba63f"
+    },
+    {
+      "source_path": "dark-zh.html",
+      "evidence_path": "rendered-pages/dark-zh.html",
+      "sha256": "dfe3ad9646ff0cfc5b99c4fa4da5784a0a6aa952c36040b696c368ed221c33ec"
+    },
+    {
+      "source_path": "light-en.html",
+      "evidence_path": "rendered-pages/light-en.html",
+      "sha256": "4163a6dad68b8c7d0b4edef58b0b66222820dcba79e9d1286765200153d9669f"
+    },
+    {
+      "source_path": "light-zh.html",
+      "evidence_path": "rendered-pages/light-zh.html",
+      "sha256": "663924a8d429085a36c196b2c5176ad7b73feec966d4790f389a86fa3db578e3"
+    }
+  ],
+  "assets": [
+    {
+      "path": "illus.css",
+      "sha256": "f152efb39164cec78295fb335b5061cf8edd9700d50a405edd0f47d47f2279d1",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "illus.js",
+      "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "theme.css",
+      "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "product-nav-icons.css",
+      "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "fonts/Inter-400.woff2",
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "fonts/Inter-500.woff2",
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "fonts/Inter-600.woff2",
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "fonts/Inter-700.woff2",
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "fonts/Inter-800.woff2",
+      "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    },
+    {
+      "path": "fonts/Inter-900.woff2",
+      "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+      "verified_against_rendered_fixture": true,
+      "duplicated_in_evidence": false
+    }
+  ],
+  "fixture_manifest_sha256": "367681171ee8bb049e7372eb07673e7b0d6b10b06a022d811082255b1ed89810",
+  "producer_results_sha256": "f274ece2c7c57510786607f23c46b49235bb08755e8355029a50e88b32e2a937",
+  "producer_test_provenance_sha256": "e8d35772e439f6bec01db7d338e03ec4c7cde872c4e550743c2e4238ef9a3a52",
+  "junit_sha256": "450ee6ee566d40c10b4750441039f1842fcb96cc4efc5c704f72ccd8953e774d",
+  "capture_manifest_field_identity_preserved": true,
+  "capture_origin_resolved_sha": null,
+  "fixture_readiness_note": "The fixture and transfer manifests retain their historical preparation/readiness fields unchanged. Final browser-checks.json and root visual review are subsequent evidence.",
+  "scope": "Synthetic actual-producer/shared-component proof; no live data, authenticated route, deployment, or full-route acceptance."
+}

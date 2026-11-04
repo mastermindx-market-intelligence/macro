@@ -441,9 +441,15 @@ def _load_parquet_snapshot(top_n: int = 50, root: Path | None = None) -> dict:
         breaks = np.flatnonzero(~same_identity.to_numpy())
         start = int(breaks[-1]) + 1 if len(breaks) else 0
         history_frame = frame.iloc[start:]
-        prices = pd.to_numeric(history_frame["current_price"], errors="coerce")
-        prices = prices.loc[np.isfinite(prices) & (prices > 0)]
+        supplied_prices = pd.to_numeric(history_frame["current_price"], errors="coerce")
+        usable = np.isfinite(supplied_prices) & (supplied_prices > 0)
+        prices = supplied_prices.loc[usable]
         hist = prices.tail(90)
+        # Keep the existing observed-history count, but do not reconnect the
+        # display across unavailable rows. An unresolved identity can leave an
+        # empty history segment even when the latest price itself is valid.
+        display = supplied_prices.loc[hist.index[0]:] if not hist.empty else hist
+        display_usable = usable.loc[hist.index[0]:] if not hist.empty else usable.iloc[:0]
         c24 = _number(current.get("change_24h_pct"))
         c7 = _number(current.get("change_7d_pct"))
         c30 = _number(current.get("change_30d_pct"))
@@ -459,8 +465,9 @@ def _load_parquet_snapshot(top_n: int = 50, root: Path | None = None) -> dict:
             "state": state, "tone": tone,
             "history_days": len(hist), "history_chip": _history_chip(len(hist)),
             "history_reset": "SOURCE_IDENTITY_CHANGED" if start else None,
-            "spark_dates": [str(x.date()) for x in hist.index],
-            "spark_values": [round(float(x), 8) for x in hist.to_numpy()],
+            "spark_dates": [str(x.date()) for x in display.index],
+            "spark_values": [round(float(x), 8) if valid else None
+                             for x, valid in zip(display, display_usable)],
             "as_of": receipt["as_of"],
         })
     kept, duplicate_excluded = _collapse_duplicate_ids(rows)
@@ -634,3 +641,4 @@ def display_price_path(close: pd.Series, asset: str) -> pd.DataFrame:
         index=series.index,
     )
     return frame.loc[:, list(_PRICE_PATH_COLUMNS)]
+

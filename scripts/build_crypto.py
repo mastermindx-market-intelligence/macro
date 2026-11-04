@@ -33,13 +33,17 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_crypto")
 
 
-def _series(group: str, name: str, columns: tuple[str, ...] = ("close", "close_price")):
+def _series(
+    group: str, name: str, columns: tuple[str, ...] = ("close", "close_price"),
+    *, preserve_missing: bool = False,
+):
     frame = store.read(group, name)
     if frame is None or frame.empty:
         return pd.Series(dtype=float)
     for column in columns:
         if column in frame.columns:
-            return pd.to_numeric(frame[column], errors="coerce").dropna().sort_index()
+            series = pd.to_numeric(frame[column], errors="coerce").sort_index()
+            return series if preserve_missing else series.dropna()
     return pd.Series(dtype=float)
 
 
@@ -179,13 +183,13 @@ def _load_e0(site: Path) -> dict:
 
 def _enrich_universe(rows: list[dict]) -> list[dict]:
     deep = {
-        "BTC": _series("coinbase", "btc_daily"),
-        "ETH": _series("coinbase", "eth_daily"),
-        "SOL": _series("coinbase", "sol_daily"),
+        "BTC": _series("coinbase", "btc_daily", preserve_missing=True),
+        "ETH": _series("coinbase", "eth_daily", preserve_missing=True),
+        "SOL": _series("coinbase", "sol_daily", preserve_missing=True),
     }
     for symbol in ("BTC", "ETH", "SOL"):
-        if deep[symbol].empty:
-            deep[symbol] = _series("yahoo", f"{symbol}-USD")
+        if deep[symbol].dropna().empty:
+            deep[symbol] = _series("yahoo", f"{symbol}-USD", preserve_missing=True)
     for row in rows:
         series = deep.get(row["symbol"])
         if series is not None and row.get("as_of"):
@@ -193,13 +197,20 @@ def _enrich_universe(rows: list[dict]) -> list[dict]:
             dates = pd.to_datetime(series.index, utc=True)
             cutoff = pd.Timestamp(row["as_of"], tz="UTC")
             series = series.loc[dates.normalize() <= cutoff]
-            series = series.loc[series.map(lambda x: math.isfinite(x) and x > 0)]
-        if series is not None and len(series) >= 30:
-            hist = series.tail(90)
+        usable = (series.map(lambda x: pd.notna(x) and math.isfinite(x) and x > 0)
+                  if series is not None else pd.Series(dtype=bool))
+        positions = [i for i, valid in enumerate(usable) if valid]
+        if len(positions) >= 30:
+            selected = positions[-90:]
+            history_days = len(selected)
+            # Preserve the existing 90-observation history/breadth contract,
+            # plus all supplied gaps and unavailable tail slots in that window.
+            hist = series.iloc[selected[0]:]
+            hist_usable = usable.iloc[selected[0]:]
             row["spark_dates"] = [str(pd.Timestamp(x).date()) for x in hist.index]
-            row["spark_values"] = [float(x) for x in hist.to_numpy()]
-            row["history_days"] = len(hist)
-            row["history_chip"] = f"{len(hist)}D"
+            row["spark_values"] = [float(x) if valid else None for x, valid in zip(hist, hist_usable)]
+            row["history_days"] = history_days
+            row["history_chip"] = f"{history_days}D"
         if len(row.get("spark_values") or []) >= 4:
             row["spark"] = illus(
                 {"dates": row["spark_dates"], "vals": row["spark_values"]},
@@ -712,3 +723,4 @@ def build(site_dir: Path | None = None) -> Path:
 
 if __name__ == "__main__":
     build()
+

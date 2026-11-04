@@ -42,7 +42,7 @@ __all__ = ["illus", "regime_tape", "session_filmstrip"]
 _VBW = 560.0
 _PAD_T = 8.0     # top breathing room so the end-dot glow isn't clipped
 _PAD_B = 8.0     # bottom breathing room
-_COMPACT_GAP_H = 96  # short lines use a status row instead of overlaid metadata
+_COMPACT_LINE_H = 96  # short lines keep metadata off the plot
 
 
 # --------------------------------------------------------------------------- #
@@ -764,11 +764,11 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
     line_gap = (_line_geometry_with_gaps(dates, vals,
                                         height, max_points=max_points, reference=reference)
                 if kind == "line" else None)
+    compact_line = kind == "line" and height < _COMPACT_LINE_H
     raw_slots = (list(zip(dates or [], vals or []))
-                 if line_gap is not None else [])
+                 if line_gap is not None or compact_line else [])
     trailing_gap = bool(raw_slots and not _clean([raw_slots[-1][0]],
                                                 [raw_slots[-1][1]]))
-    compact_gap = line_gap is not None and height < _COMPACT_GAP_H
     uid = _hash_id(kind, pairs, extra=f"{accent}{baseline}{reference}")
 
     if kind == "bars":
@@ -857,18 +857,18 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
                        if line_gap is not None else "")
     if trailing_gap:
         gap_description += "; latest observation unavailable"
-    if compact_gap:
+    if compact_line:
         # The compact visual layout hides corner and end-value tags. Preserve
         # their source window and value/date meaning in the accessible name.
         gap_description += f"; window {raw_slots[0][0]} to {raw_slots[-1][0]}"
-    if trailing_gap or compact_gap:
+    if trailing_gap or compact_line:
         observed_unit = f" {unit_en or unit_zh}" if (unit_en or unit_zh) else ""
         gap_description += (f"; last observed {_fmt(pairs_all[-1][1], value_fmt)}"
                             f"{observed_unit} on {pairs_all[-1][0]}")
     gap_html = ""
     if line_gap is not None:
         gap_en, gap_zh = f"Gap: {line_gap[3]} missing", f"缺失 {line_gap[3]} 条"
-        if compact_gap:
+        if compact_line:
             gap_en = f"{line_gap[3]} missing"
             if trailing_gap:
                 gap_en, gap_zh = "Latest missing", "最新值缺失"
@@ -885,10 +885,11 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
     # Keep all plot-relative captions inside the same resizing container.
     content = f"{svg}{band_html}{ref_html}{corners}{end}{gap_html}"
     variant_classes = " ilx-historical" if trailing_gap else ""
-    if compact_gap:
+    if compact_line:
         # The compact table caller can be only 42px tall and less than 100px
-        # wide. Its status needs a separate row, not the 140px date-label
-        # reservation or a two-line historical tag competing with the ink.
+        # wide, so complete histories need the same caption suppression and
+        # accessible metadata as gaps. Only a gap status adds a separate row;
+        # a complete line keeps the entire plot height and unchanged SVG.
         variant_classes += " ilx-compact"
         content = (f'<div class="ilx-plot">{svg}{band_html}{ref_html}'
                    f'{corners}{end}</div>{gap_html}')

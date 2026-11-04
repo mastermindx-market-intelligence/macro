@@ -137,9 +137,10 @@
 .ilx-tag-value .ilx-u { margin-inline-start: 2px; }
 .ilx-tag-date { max-width: 100%; overflow-wrap: anywhere; color: var(--text); font-size: var(--fs-micro, 10px); font-weight: 500; }
 
-/* Gapped compact lines reserve a status row rather than painting over the
-   ink. At the 42px table size, a 12px label and 4px gap leave a 26px plot.
-   Value/date/window semantics remain in the figure's accessible name. */
+/* Compact lines keep overlapping value/date captions off the ink. Complete
+   lines retain the full plot height; gaps alone reserve a status row (a 12px
+   label and 4px gap leave a 26px plot at 42px). Value/date/window semantics
+   remain in the figure's accessible name. */
 .ilx-compact { display: flex; flex-direction: column; gap: var(--sp-1, 4px); }
 .ilx-compact .ilx-plot { position: relative; flex: 1; min-height: 0; }
 .ilx-compact .ilx-tag,

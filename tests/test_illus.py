@@ -297,7 +297,7 @@ def test_line_compact_historical_status_does_not_claim_a_current_value():
     assert f'window {dates[0]} to {dates[-1]}' in out
 
 
-def test_line_compact_gap_variant_is_scoped_to_short_discontinuous_lines():
+def test_line_compact_variant_is_scoped_to_short_lines():
     dates = _dates(6)
     for height in (32, 42, 64, 95, 96, 190):
         sparse = I.illus({"dates": dates, "vals": [1, 2, None, 3, 4, 5]},
@@ -305,12 +305,61 @@ def test_line_compact_gap_variant_is_scoped_to_short_discontinuous_lines():
         assert ('ilx-compact' in sparse) is (height < 96)
         complete = I.illus({"dates": dates, "vals": [1, 2, 3, 4, 5, 6]},
                            height=height)
-        assert 'ilx-compact' not in complete and 'ilx-plot' not in complete
+        assert ('ilx-compact' in complete) is (height < 96)
+        assert ('ilx-plot' in complete) is (height < 96)
+        assert 'data-gap-count=' not in complete
         for kind in ('area', 'baseline', 'drawdown', 'bars', 'multi'):
             series = ([{"dates": dates, "vals": [1, 2, None, 3, 4, 5]}]
                       if kind == 'multi'
                       else {"dates": dates, "vals": [1, 2, None, 3, 4, 5]})
             assert 'ilx-compact' not in I.illus(series, kind=kind, height=height)
+
+
+def test_line_compact_complete_keeps_geometry_and_full_accessible_metadata():
+    dates = _dates(8)
+    out = I.illus({"dates": dates, "vals": [1, 3, 2, 4, 6, 5, 7, 0]},
+                  height=42, unit_en="USD", value_fmt="{:.2f}",
+                  aria_en="Complete history")
+    assert 'class="ilx ilx-line ilx-compact"' in out
+    assert '<div class="ilx-plot">' in out
+    assert 'data-gap-count=' not in out and 'ilx-gap-note' not in out
+    assert 'ilx-historical' not in out and 'latest observation unavailable' not in out
+    assert f'window {dates[0]} to {dates[-1]}' in out
+    assert f'last observed 0.00 USD on {dates[-1]}' in out
+    # This SVG is the pre-fix complete-line geometry at height 42. A caption
+    # wrapper must neither change the path nor add a status row to this case.
+    svg = re.search(r'<svg.*?</svg>', out).group(0)
+    assert svg == (
+        '<svg viewBox="0 0 560 42" preserveAspectRatio="none" aria-hidden="true">'
+        '<defs></defs><path class="ilx-path" d="M0.0 29.0 L80.0 22.6 '
+        'L160.0 25.8 L240.0 19.4 L320.0 13.0 L400.0 16.2 L480.0 9.79 '
+        'L560.0 32.21"/><circle class="ilx-dot" cx="560.0" cy="32.21" r="3.2"/></svg>'
+    )
+
+
+def test_line_complete_noncompact_output_retains_exact_pre_fix_bytes():
+    import hashlib
+    # Goldens from 6e245059 before the complete compact-caption repair.
+    expected = {
+        96: '4b3ac254c29d1dc20bb67b586a54092ad7721ddc49a0f005c5b6ab0c68655726',
+        190: 'ede5b974d934d2abb380a4c8c4bad673fab1b0745a83753d085ba3f2768094a3',
+    }
+    for height, digest in expected.items():
+        out = I.illus({"dates": _dates(8), "vals": [1, 3, 2, 4, 6, 5, 7, 0]},
+                      height=height, unit_en="USD", value_fmt="{:.2f}",
+                      aria_en="Complete history")
+        assert hashlib.sha256(out.encode()).hexdigest() == digest
+
+
+def test_line_compact_complete_escapes_accessible_metadata():
+    dates = ['<start>', '2024-01-02', '2024-01-03', '<end>']
+    out = I.illus({"dates": dates, "vals": [1, 2, 3, 0]}, height=42,
+                  unit_en='USD"<&', aria_en='History "<&')
+    aria = re.search(r'aria-label="([^"]*)"', out).group(1)
+    assert 'History &quot;&lt;&amp;' in aria
+    assert 'window &lt;start&gt; to &lt;end&gt;' in aria
+    assert 'last observed 0.0 USD&quot;&lt;&amp; on &lt;end&gt;' in aria
+    assert '<start>' not in out and '<end>' not in out
 
 
 def test_line_compact_gap_keeps_slot_geometry_and_isolated_observations():
