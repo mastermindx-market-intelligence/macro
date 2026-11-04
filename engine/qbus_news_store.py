@@ -24,8 +24,9 @@ import urllib.parse
 from collections.abc import Mapping
 from typing import Iterable, Sequence
 
-from engine.qbus_news_quality import (EDITORIAL_POLICY_VERSION, curated_source, display_text, publisher_identity, register_curated_reader, representatives_in_display_order, reporting_state)
+from engine.qbus_news_quality import (EDITORIAL_POLICY_VERSION, curated_source, curated_sql_clause, display_text, information_family_count, publisher_identity, register_curated_reader, representatives_in_display_order, reporting_state)
 from engine.qbus_news_contract import NewsRevision
+from engine.qbus_news_editorial import NewsEditorialView
 from engine.qbus_news_cluster import (
     UNKNOWN_CLUSTER_POLICY_VERSION,
     ClusterCandidate,
@@ -161,6 +162,7 @@ class StoryRow:
     source_item_id: str
     story_id: str
     source_count: int
+    publisher_count: int
     item_count: int
     title: str
     url: str
@@ -197,6 +199,7 @@ class ChangeRow:
     universe_revision: str
     observed_at: datetime
     source_count: int | None = None
+    publisher_count: int | None = None
     item_count: int | None = None
     published_at: datetime | None = None
     updated_at: datetime | None = None
@@ -219,6 +222,7 @@ class StoryDetail:
     schema: str
     story_id: str
     source_count: int
+    publisher_count: int
     item_count: int
     members: tuple[StoryRow, ...]
     reporting_state: str = "not_compared"
@@ -614,6 +618,7 @@ def _projection_story(
     row: sqlite3.Row,
     story_id: str,
     source_count: int,
+    publisher_count: int,
     item_count: int,
     universe_revision: str,
     rights: NewsReadRights,
@@ -628,6 +633,7 @@ def _projection_story(
         source_item_id=str(row["source_item_id"]),
         story_id=story_id,
         source_count=source_count,
+        publisher_count=publisher_count,
         item_count=item_count,
         title=display_text(row["title"]) if rights.allows(str(row["source"]), "title") else "",
         url=str(row["url"]) if rights.allows(str(row["source"]), "url") else "",
@@ -647,6 +653,7 @@ def _redact_story(
     state: NewsState,
     story_id: str,
     source_count: int,
+    publisher_count: int,
     item_count: int,
     universe_revision: str,
     rights: NewsReadRights,
@@ -657,6 +664,7 @@ def _redact_story(
         source_item_id=state.source_item_id,
         story_id=story_id,
         source_count=source_count,
+        publisher_count=publisher_count,
         item_count=item_count,
         title=display_text(state.title) if rights.allows(state.source, "title") else "",
         url=state.url if rights.allows(state.source, "url") else "",
@@ -717,6 +725,7 @@ class NewsStore:
         self._cluster_policy_passed = True
         self._read_only = False
         self._curated = False
+        self._editorial_view = None
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(
             str(self.path),
@@ -736,8 +745,12 @@ class NewsStore:
         source_key: str,
         cluster_policy: ClusterPolicy | None = None,
         curated: bool = False,
+        editorial_view: NewsEditorialView | None = None,
     ) -> "NewsStore":
-        if not isinstance(curated, bool):
+        if not isinstance(curated, bool) or (
+            editorial_view is not None and
+            (not curated or not isinstance(editorial_view, NewsEditorialView))
+        ):
             raise StoreValidationError("qbus_news_store:invalid_editorial_view")
         db = Path(path)
         if not db.exists() or not db.is_file():
@@ -749,6 +762,7 @@ class NewsStore:
         obj._cluster_policy_passed = cluster_policy is not None
         obj._read_only = True
         obj._curated = curated
+        obj._editorial_view = editorial_view
         try:
             obj._conn = sqlite3.connect(
                 f"file:{urllib.parse.quote(str(db))}?mode=ro",
@@ -758,7 +772,7 @@ class NewsStore:
             )
             obj._conn.row_factory = sqlite3.Row
             if curated:
-                register_curated_reader(obj._conn)
+                register_curated_reader(obj._conn, editorial_view)
             obj._conn.execute("PRAGMA query_only=ON")
             row = obj._conn.execute(
                 "SELECT value FROM qbus_meta WHERE key='schema'"
@@ -774,9 +788,19 @@ class NewsStore:
             raise StoreSchemaError("qbus_news_store:schema_mismatch")
         return obj
 
-    @property
-    def _curated_clause(self) -> str:
-        return "AND qbus_news_is_curated(s.source, p.title)=1" if self._curated else ""
+    def _curated_clause(self, rights: NewsReadRights) -> tuple[str, tuple[str, ...]]:
+        if not self._curated:
+            return "", ()
+        return curated_sql_clause(
+            tuple(source for source in self._read_sources(rights) if rights.allows(source, "url")),
+            tuple(source for source in self._read_sources(rights) if rights.allows(source, "teaser")),
+            editorial_view=self._editorial_view,
+        )
+
+    def _check_editorial_security(self, security_id: str) -> None:
+        company = self._editorial_view.company if self._editorial_view else None
+        if company is not None and company.security_id != security_id:
+            raise StoreValidationError("qbus_news_store:editorial_security_mismatch")
 
     def _read_sources(self, rights: NewsReadRights) -> frozenset[str]:
         # Editorial eligibility narrows this read; the rights object and raw
@@ -1740,6 +1764,7 @@ class NewsStore:
         rights: NewsReadRights,
     ) -> NewsSnapshot:
         security_id = _validate_token(security_id, "security_id", 1024)
+        self._check_editorial_security(security_id)
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
         if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 500:
@@ -1760,10 +1785,12 @@ class NewsStore:
             return NewsSnapshot(SCHEMA, security_id, (), cursor, False, change_sequence)
 
         placeholders = ",".join("?" for _ in self._read_sources(rights))
+        curated_clause, curated_params = self._curated_clause(rights)
         params: list[object] = [
             security_id,
             *sorted(self._read_sources(rights)),
             security_id,
+            *curated_params,
             *sorted(self._read_sources(rights)),
         ]
         having_cursor = ""
@@ -1805,7 +1832,7 @@ class NewsStore:
             ) w ON w.cluster_id=m.cluster_id
             WHERE i.security_id=?
               AND s.status='active'
-                  {self._curated_clause}
+                  {curated_clause}
               AND s.source IN ({placeholders})
             GROUP BY m.cluster_id
             {having_cursor}
@@ -1842,7 +1869,7 @@ class NewsStore:
                   ON i.source=s.source AND i.source_item_id=s.source_item_id
                 WHERE i.security_id=?
                   AND s.status='active'
-                  {self._curated_clause}
+                  {curated_clause}
                   AND s.source IN ({placeholders})
                   AND m.cluster_id IN ({cluster_placeholders})
                 ORDER BY m.cluster_id, s.last_sequence DESC,
@@ -1850,6 +1877,7 @@ class NewsStore:
                 """,
                 (
                     security_id,
+                    *curated_params,
                     *sorted(self._read_sources(rights)),
                     *selected_ids,
                 ),
@@ -1875,7 +1903,8 @@ class NewsStore:
                     sequence=int(cluster["cluster_sequence"]),
                     row=representative,
                     story_id=cluster_id,
-                    source_count=len(
+                    source_count=information_family_count(members, rights),
+                    publisher_count=len(
                         {publisher_identity(str(member["source"]), str(member["url"])) for member in members}
                     ),
                     item_count=len(members),
@@ -1943,7 +1972,8 @@ class NewsStore:
                     break
                 stories.append({
                     "story_id": item.story_id, "story_sequence": item.sequence,
-                    "source_count": detail.source_count, "item_count": detail.item_count,
+                    "source_count": detail.source_count, "publisher_count": detail.publisher_count,
+                    "item_count": detail.item_count,
                     "reporting_state": detail.reporting_state,
                     "reports_truncated": detail.item_count > len(reports), "reports": reports,
                 })
@@ -1966,6 +1996,7 @@ class NewsStore:
         touching its write path. Failures raise; the API layer maps them.
         """
         security_id = _validate_token(security_id, "security_id", 1024)
+        self._check_editorial_security(security_id)
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
         if (
@@ -2001,6 +2032,13 @@ class NewsStore:
                 now=as_of,
                 allowed_sources=self._read_sources(rights),
                 curated=self._curated,
+                allowed_url_sources=tuple(
+                    source for source in self._read_sources(rights) if rights.allows(source, "url")
+                ),
+                allowed_teaser_sources=tuple(
+                    source for source in self._read_sources(rights) if rights.allows(source, "teaser")
+                ),
+                editorial_view=self._editorial_view,
             )
         finally:
             conn.close()
@@ -2011,6 +2049,7 @@ class NewsStore:
         provenance = {
             "velocity_schema": VELOCITY_SCHEMA,
             **({"editorial_policy": EDITORIAL_POLICY_VERSION} if self._curated else {}),
+            **({"editorial_view": self._editorial_view.metadata()} if self._editorial_view else {}),
             "sources_counted": velocity["sources_counted"],
             "status_counted": "active",
             "distinct_by": "source + source_item_id",
@@ -2079,14 +2118,20 @@ class NewsStore:
         security_id: str | None = None,
     ) -> StoryDetail | None:
         story_id = _validate_token(story_id, "story_id", 1024)
+        company = self._editorial_view.company if self._editorial_view else None
+        if company is not None:
+            security_id = security_id or company.security_id
+            self._check_editorial_security(security_id)
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
         if not self._read_sources(rights):
             return None
         security_filter = ""
-        params = [story_id, *sorted(self._read_sources(rights))]
+        curated_clause, curated_params = self._curated_clause(rights)
+        params = [story_id, *curated_params, *sorted(self._read_sources(rights))]
         if security_id is not None:
             security_id = _validate_token(security_id, "security_id", 1024)
+            self._check_editorial_security(security_id)
             security_filter = """AND EXISTS (
                 SELECT 1 FROM news_security_index i
                 WHERE i.source=s.source AND i.source_item_id=s.source_item_id
@@ -2106,7 +2151,7 @@ class NewsStore:
               ON p.source=s.source AND p.source_item_id=s.source_item_id
             WHERE m.cluster_id=?
               AND s.status='active'
-                  {self._curated_clause}
+                  {curated_clause}
               AND s.source IN ({placeholders})
               {security_filter}
             ORDER BY s.last_sequence DESC, s.source, s.source_item_id
@@ -2121,7 +2166,8 @@ class NewsStore:
             if rights.allows(str(row["source"]), "title") and row["title"]
         }))
         rows = representatives_in_display_order(rows, rights, comparison=comparison)
-        source_count = len({publisher_identity(str(row["source"]), str(row["url"])) for row in rows})
+        source_count = information_family_count(rows, rights)
+        publisher_count = len({publisher_identity(str(row["source"]), str(row["url"])) for row in rows})
         item_count = len(rows)
         members = tuple(
             _projection_story(
@@ -2129,6 +2175,7 @@ class NewsStore:
                 row=row,
                 story_id=story_id,
                 source_count=source_count,
+                publisher_count=publisher_count,
                 item_count=item_count,
                 universe_revision=str(row["universe_revision"]),
                 rights=rights,
@@ -2141,6 +2188,7 @@ class NewsStore:
             schema=SCHEMA,
             story_id=story_id,
             source_count=source_count,
+            publisher_count=publisher_count,
             item_count=item_count,
             members=members,
             reporting_state=comparison,
@@ -2155,6 +2203,7 @@ class NewsStore:
         rights: NewsReadRights,
     ) -> ChangePage:
         security_id = _validate_token(security_id, "security_id", 1024)
+        self._check_editorial_security(security_id)
         if (
             not isinstance(after_sequence, int)
             or isinstance(after_sequence, bool)
@@ -2244,7 +2293,8 @@ class NewsStore:
                         row.story_id, max(member.sequence for member in detail.members),
                     ),
                     title=best.title, url=best.url, teaser=best.teaser,
-                    source_count=detail.source_count, item_count=detail.item_count,
+                    source_count=detail.source_count, publisher_count=detail.publisher_count,
+                    item_count=detail.item_count,
                     published_at=best.published_at, updated_at=best.updated_at,
                     received_at=best.received_at, universe_revision=best.universe_revision,
                     reporting_state=detail.reporting_state,

@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-14T11:59:26.470790+00:00",
+  "command": [
+    "python3",
+    "-B",
+    "research/evidence/eval-os-tier-query-20261014/release-probe/test_followon_adoption_probe.py",
+    "-v"
+  ],
+  "returncode": 0
+}

@@ -1,0 +1,19 @@
+{
+  "record_type": "parent_source_reconciliation",
+  "base": "97261c2a319e62faec05690c04e6fae180540235",
+  "ours": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "incoming": "69dd6e774cc48223005426765e74aed193d55954",
+  "actual_tree": "dbcaadef4514bb614aa266992fa681b3fee2d6bf",
+  "manifest_hashes": {
+    "base": "83f7c3fe74990a1c65311357e793e1982fc843018dae1ad486e1f72d6905a138",
+    "ours": "5000829c3b7b028065e7f79922be64e1285cb1116b4c9c7ed7756cf738dca003",
+    "incoming": "31fd61c8c31e41205f5cff90edb4d3b372fcba66ddfe657f54add7c2e9bad380",
+    "census": "2ab0a9d753cfe1f0b8611ac709dae87a369e89c96a3d7aa8af010c40b05c5514",
+    "actual": "2ab0a9d753cfe1f0b8611ac709dae87a369e89c96a3d7aa8af010c40b05c5514"
+  },
+  "actual_matches_readonly_merge_census": true,
+  "branch_delta_matches_exactly_after_incoming_changes": true,
+  "branch_change_groups": 43,
+  "meaning": "Both CI owner additions are retained; original shared-shell/site-assets path ownership and existing Shared Shell/All tools test additions remain. Incoming named theme-graph ownership and additional original suites remain. No CI authority rule or required context is weakened.",
+  "validation": "Original run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --validate-only succeeded;327 legacy jobs validated. No hosted suite execution or admission is claimed."
+}

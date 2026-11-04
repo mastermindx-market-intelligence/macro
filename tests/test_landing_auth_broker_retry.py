@@ -61,6 +61,9 @@ function _storageKey(){return 'sb-test-auth-token';}
 function _clearCookieKey(k){keys.push(k);}
 function _hasSessionCookie(){return true;}
 function _mmOpenOnboard(){}
+// Current main added these unrelated broker members; this fixture never invokes them.
+function _queuePendingPrefs(){}
+function _deliverPendingPrefs(){}
 function _onAuth(event){_curUser=null;notifications.push(event);}
 function getSupabaseClient(){
   if(mode==='sdk-failure')return Promise.reject(new Error('SDK offline'));
@@ -124,9 +127,56 @@ def test_every_entry_page_references_current_immutable_auth_assets() -> None:
         for name in ("theme", "onboard")
     }
     for base in (ROOT / "site", ROOT / "templates"):
-        pages = [*base.glob("*.html"), *base.glob("*.j2")]
+        # Nested stock, basket, earnings and research pages share these auth assets.
+        pages = [*base.rglob("*.html"), *base.rglob("*.j2")]
         assert pages
         for p in pages:
             text = p.read_text(encoding="utf-8")
-            for name, stamp in re.findall(r"(theme|onboard)\.js\?v=([0-9a-f]{8})", text):
+            # Match a complete asset basename; ontology-theme.js has its own digest.
+            for name, stamp in re.findall(r"(?<![\w.-])(theme|onboard)\.js\?v=([0-9a-f]{8})", text):
                 assert stamp == digests[name], f"{p}: stale {name}.js?v={stamp}, current={digests[name]}"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+@pytest.mark.parametrize("malformed", [None, {}, {"createClient": True}, {"createClient": "not-callable"}])
+def test_dashboard_sdk_without_callable_client_can_retry(malformed) -> None:
+    """A script load event without the actual SDK never poisons the cached promise."""
+    source = (ROOT / "templates/theme.js").read_text(encoding="utf-8")
+    start = source.index("  function _loadSDK()")
+    end = source.index("  function getSupabaseClient()", start)
+    harness = r"""
+const window={supabase:__MALFORMED__}; let _sbLoading=null; const _SDK_URL='supabase.js';
+const scripts=[];
+const host={appendChild(s){s.parentNode=this;scripts.push(s)},removeChild(s){s.removed=true}};
+const document={createElement(){return {}},head:host,documentElement:host};
+__SOURCE__
+(async()=>{
+ const first=_loadSDK();
+ if(scripts.length!==1)throw Error('Non-callable SDK was treated as available');
+ scripts[0].onload();
+ let outcome='resolved';try{await first}catch(e){outcome='rejected'}
+ const retry=_loadSDK();
+ if(scripts.length===2){window.supabase={createClient(){}};scripts[1].onload()}
+ await retry;
+ process.stdout.write(JSON.stringify({outcome,loads:scripts.length,removed:!!scripts[0].removed}));
+})().catch(e=>{console.error(e.name);process.exit(2)});
+""".replace("__MALFORMED__", json.dumps(malformed)).replace("__SOURCE__", source[start:end])
+    result = subprocess.run(["node", "-e", harness], capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {"outcome": "rejected", "loads": 2, "removed": True}
+
+
+@pytest.mark.parametrize("path", ["templates/theme.js", "site/theme.js"])
+def test_dynamic_account_asset_release_key_tracks_local_signout_bytes(path: str) -> None:
+    """A year-cached account dependency must not keep the pre-repair global logout."""
+    # Account and navigation already share one explicit release key. Keep that
+    # owner contract; the existing nav-payload digest independently pins bytes.
+    expected = "20261103-auth-session-continuity"
+    assert f"account.js?v={expected}" in (ROOT / path).read_text(encoding="utf-8")
+    assert f"nav_market.js?v={expected}" in (ROOT / "templates/account.js").read_text()
+
+
+def test_account_generated_asset_preserves_authored_local_signout() -> None:
+    authored = (ROOT / "templates/account.js").read_bytes()
+    assert authored == (ROOT / "site/account.js").read_bytes()
+    assert b"sb.auth.signOut({ scope: 'local' })" in authored

@@ -1,117 +1,117 @@
 {
   "schema": "thematic_rotation_phase0.v1",
   "region": "canada",
-  "generated_at": "2026-10-21T07:19:52.161469+00:00",
+  "generated_at": "2026-11-03T21:23:30.764552+00:00",
   "cost_bps": 10.0,
   "universes": {
     "sectors": {
       "n_assets": 9,
       "span": [
         "2002-10-31",
-        "2026-10-31"
+        "2026-11-30"
       ],
       "contaminated": false,
       "algorithm": {
         "ew_buyhold": {
-          "cagr": 0.123,
-          "sharpe": 0.92,
+          "cagr": 0.1218,
+          "sharpe": 0.91,
           "max_dd": -0.3755,
-          "calmar": 0.33,
-          "n_months": 288,
+          "calmar": 0.32,
+          "n_months": 289,
           "dsr": 0.988,
           "worst_decile_ret": -0.0565
         },
         "top3_mom12_rel": {
-          "cagr": 0.1442,
+          "cagr": 0.1439,
           "sharpe": 0.86,
           "max_dd": -0.4332,
           "calmar": 0.33,
-          "n_months": 276,
+          "n_months": 277,
           "dsr": 0.993,
           "worst_decile_ret": -0.0554
         },
         "top3_mom6_rel": {
-          "cagr": 0.1213,
+          "cagr": 0.121,
           "sharpe": 0.72,
           "max_dd": -0.5006,
           "calmar": 0.24,
-          "n_months": 278,
+          "n_months": 279,
           "dsr": 0.967,
           "worst_decile_ret": -0.0585
         },
         "top3_mom12_dual": {
-          "cagr": 0.1167,
+          "cagr": 0.1165,
           "sharpe": 0.85,
           "max_dd": -0.2427,
           "calmar": 0.48,
-          "n_months": 276,
+          "n_months": 277,
           "dsr": 0.991,
           "worst_decile_ret": -0.0475
         },
         "top4_mom12_dual": {
-          "cagr": 0.1073,
+          "cagr": 0.1061,
           "sharpe": 0.89,
           "max_dd": -0.2032,
-          "calmar": 0.53,
-          "n_months": 276,
-          "dsr": 0.994,
+          "calmar": 0.52,
+          "n_months": 277,
+          "dsr": 0.993,
           "worst_decile_ret": -0.0434
         }
       },
       "rank_ic": {
         "1m": {
-          "mean_ic": 0.0501,
-          "ic_t_hac": 1.815,
-          "hit": 0.547,
-          "n_steps": 276
+          "mean_ic": 0.0503,
+          "ic_t_hac": 1.834,
+          "hit": 0.549,
+          "n_steps": 277
         },
         "3m": {
-          "mean_ic": 0.0793,
-          "ic_t_hac": 1.467,
+          "mean_ic": 0.0795,
+          "ic_t_hac": 1.47,
           "hit": 0.554,
           "n_steps": 92
         }
       },
       "tsmom_conditional": {
         "above_trend": {
-          "mean": 0.009,
-          "std": 0.0564,
-          "sharpe": 0.55,
-          "p05": -0.0801,
-          "n": 1490
+          "mean": 0.0088,
+          "std": 0.0565,
+          "sharpe": 0.54,
+          "p05": -0.081,
+          "n": 1496
         },
         "below_trend": {
           "mean": 0.0126,
-          "std": 0.0797,
+          "std": 0.0795,
           "sharpe": 0.55,
-          "p05": -0.1042,
-          "n": 752
+          "p05": -0.104,
+          "n": 755
         },
-        "mean_diff_t": -1.09,
-        "mean_diff_p": 0.2769
+        "mean_diff_t": -1.15,
+        "mean_diff_p": 0.2485
       },
       "extension_drawdown": {
         "fwd_days": 63,
         "cohorts": {
           "normal": {
-            "mean_fwd_maxdd": -0.0668,
-            "p05_fwd_maxdd": -0.2223,
-            "n": 33309
+            "mean_fwd_maxdd": -0.0667,
+            "p05_fwd_maxdd": -0.222,
+            "n": 33376
           },
           "stretched": {
             "mean_fwd_maxdd": -0.0564,
-            "p05_fwd_maxdd": -0.179,
-            "n": 8713
+            "p05_fwd_maxdd": -0.1788,
+            "n": 8728
           },
           "parabolic": {
             "mean_fwd_maxdd": -0.0658,
-            "p05_fwd_maxdd": -0.2041,
-            "n": 2340
+            "p05_fwd_maxdd": -0.2042,
+            "n": 2339
           }
         },
-        "spearman_ez_vs_fwd_maxdd": 0.062
+        "spearman_ez_vs_fwd_maxdd": 0.061
       },
-      "years": 24.0
+      "years": 24.1
     }
   },
   "gate_helps": true,

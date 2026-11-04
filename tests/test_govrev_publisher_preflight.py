@@ -173,7 +173,10 @@ def test_rerun_attempt_cannot_start_new_publication(tmp_path,monkeypatch):
 def test_preflight_precedes_builds_and_permissions_only_existing_owners():
     workflow=yaml.safe_load((BASE/'.github/workflows/government-revenue-live.yml').read_text())
     steps=workflow['jobs']['refresh']['steps'];index=next(i for i,s in enumerate(steps) if s.get('name')==pre.STEP_NAME)
-    assert index==1
+    assert index==3
+    assert steps[0]['with']['ref']=='${{ github.sha }}'
+    assert steps[1]['id']=='source_binding'
+    assert steps[2]['with']['ref']=='${{ steps.source_binding.outputs.source_sha }}'
     assert workflow['permissions']['actions']=='read'
     assert all('build_government_revenue' not in s.get('run','') for s in steps[:index])
     daily=yaml.safe_load((BASE/'.github/workflows/daily.yml').read_text())

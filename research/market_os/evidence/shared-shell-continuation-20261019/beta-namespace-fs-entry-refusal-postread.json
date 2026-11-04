@@ -1,0 +1,38 @@
+{
+  "observed_at": "2026-10-20T03:06:27.965656+00:00",
+  "host_mutated": false,
+  "paths": [
+    {
+      "path": "/opt/terminal/beta/terminal/.next/cache/.market-os-namespace-acceptance-ec383ffcb1994aa8adda2d4b08172f83",
+      "exists": false
+    },
+    {
+      "path": "/proc/2427329/root/opt/terminal/beta/terminal/.next/cache/.market-os-namespace-acceptance-ec383ffcb1994aa8adda2d4b08172f83",
+      "exists": false
+    }
+  ],
+  "old_probe_pid_exists": false,
+  "service": {
+    "exit": 0,
+    "out": "MainPID=2427329\nExecMainStartTimestampMonotonic=7560285026653\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+    "err": ""
+  },
+  "cache_parent_identity": [
+    {
+      "path": "/opt/terminal/beta/terminal/.next/cache",
+      "dev": 2048,
+      "ino": 426021,
+      "uid": 987,
+      "gid": 981,
+      "mode": "0o750"
+    },
+    {
+      "path": "/proc/2427329/root/opt/terminal/beta/terminal/.next/cache",
+      "dev": 2048,
+      "ino": 426021,
+      "uid": 987,
+      "gid": 981,
+      "mode": "0o750"
+    }
+  ]
+}

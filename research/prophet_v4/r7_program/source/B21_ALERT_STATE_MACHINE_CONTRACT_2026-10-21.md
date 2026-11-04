@@ -113,6 +113,10 @@ contract.
   knowledge is not a journey change. Maturity is pinned UNESTIMABLE by the native read
   (`engine/prophet_candidate_state.py:1433-1443` expects `"maturity_state":
   "UNESTIMABLE"`), so no maturity transition is producible today and none is eligible.
+  Exception (ratified deviation, seat ruling F28 R8): for the `emergence_triggered` diff a
+  prior emergence state that is absent or `UNESTIMABLE` (B3's `SOURCE_NOT_SUPPLIED`
+  default) counts as not triggered, so a later `TRIGGERED` carrying a real relation id is
+  eligible.
 - B1 `REARM_SUPPRESSED` (replay no-op, `engine/us_candidate_episode.py:617-618`) and
   `OBSERVED`/`EXPERT_EVENT_ATTACHED` (engine-internal relations, no user-facing state
   change of record).
@@ -420,7 +424,7 @@ Real source change → existing transport → receipt readback:
 | U1 | `ALERT_CATEGORIES` member + comment line + enum gate | `lib/user_prefs.py:68-72`, `tests/test_alert_prefs.py` | **READY** | none technical; coordination fact = open cs-v2 lane `9807f9067f80` edits the same tuple (§3 bytes) — merge-order coordination, both gates must accept the union |
 | U2 | pure producer core: §1 eligibility, §2 id + synthetic alert_id, payload compose, `not_after`, requires_tier | new `engine/prophet_journey_notifications.py` (fif shape; pure half) | **READY** | none |
 | U3 | IO + dormant runner + `config/dag.yml` step row | fif IO shape (`read_designated_lists`/`read_list_symbols`/`read_existing_fire_ids`/`enqueue`, `:577-657`) | **READY** | none (nightly engine job config owner) |
-| U4 | correction/retraction rows: original-status readback (`status,attempts,last_error` select), unsent-supersede PATCH, typed `correction_original_effect_unknown` count | extends U3's read; PATCH analogue = terminal one-shot disarm | **READY** | none legal; the effect-unknown copy variant is a Sol ruling (open, §4) |
+| U4 | correction/retraction rows: original-status readback (`status,attempts,last_error` select), unsent-supersede PATCH, typed `original_quarantined` count (the readback + typed counts landed in U2 under seat ruling F28 R5/R6; key name as implemented) | extends U3's read; PATCH analogue = terminal one-shot disarm | **READY** | none legal; the effect-unknown copy variant is a Sol ruling (open, §4) |
 | U5 | drain stale-fact guard: `not_after` check in `decide_row`, reason `mandatory_fact_stale` | `engine/alert_delivery_drain.py:484-531` | **READY** | none (drain lane; pin suite `tests/test_alert_delivery_drain.py` at BASE) |
 | U6 | premium payload `requires_tier` | U2 payload | **READY** | exact tier literal pends the B07 entitlement-surface decision (mechanism fixed, §6) |
 | U7 | account-UI category row + i18n strings | `templates/account.js:655-656` | **READY, deferrable** | honest-absence ruling permits shipping after the producer (§3.4); no blocker |

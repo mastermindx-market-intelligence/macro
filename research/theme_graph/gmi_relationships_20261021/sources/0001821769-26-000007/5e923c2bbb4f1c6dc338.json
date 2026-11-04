@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T19:58:40Z",
+ "accession": "0001821769-26-000007",
+ "cik": "0001821769",
+ "doc_byte_length": 1600578,
+ "doc_sha256": "783bd188b20989e8d4ffb9a61875a2c9b5e3c5f38c296519406605a3b05e74e9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nvts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 207854,
+  "byte_start": 207440,
+  "normalized": "and SiC technology. The competitive value of our patent portfolio was validated in October 2024 when we entered into a broad patent cross-license with Infineon Technologies AG.",
+  "normalized_sha256": "fe57640431b2b2f95b70fc99594bb557f6b0c099af546f1d1e06bde31b5198c4",
+  "raw": "and SiC technology.</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:12pt;font-weight:400;line-height:139%\"> </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:139%\">The competitive value of our patent portfolio was validated in October 2024 when we entered into a broad patent cross-license with Infineon Technologies AG.",
+  "raw_sha256": "5e923c2bbb4f1c6dc338b3c261b5ed23093be49e09e8553d7cefd9133ed17c54"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1821769/000182176926000007/nvts-20251231.htm",
+ "xbrl_contexts": []
+}

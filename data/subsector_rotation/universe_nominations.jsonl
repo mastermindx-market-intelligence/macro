@@ -131,3 +131,13 @@
 {"date":"2026-10-20","theme":"Digital Entertainment","donor":"entertainmentinfrastructure","receiver":"entertainmentbetting","confidence":0.308,"both_confirmed":false}
 {"date":"2026-10-20","theme":"Big Data","donor":"bigdatainfrastructure","receiver":"bigdataproviders","confidence":0.304,"both_confirmed":false}
 {"date":"2026-10-20","theme":"Healthcare & Biotech","donor":"healthcaregenomics","receiver":"healthcaremetabolic","confidence":0.247,"both_confirmed":false}
+{"date":"2026-10-30","theme":"Cloud Computing","donor":"cloudhsaas","receiver":"clouddatacenters","confidence":0.662,"both_confirmed":false}
+{"date":"2026-10-30","theme":"Hardware","donor":"hardwaregaming","receiver":"hardwaretelecom","confidence":0.4,"both_confirmed":false}
+{"date":"2026-10-30","theme":"Healthcare & Biotech","donor":"healthcareitdata","receiver":"healthcaretherapeutics","confidence":0.398,"both_confirmed":false}
+{"date":"2026-10-30","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aienergy","confidence":0.388,"both_confirmed":false}
+{"date":"2026-10-30","theme":"Wearables","donor":"wearablessmartwatches","receiver":"wearablesimmersive","confidence":0.366,"both_confirmed":false}
+{"date":"2026-10-30","theme":"Semiconductors","donor":"semisfoundries","receiver":"semisanalog","confidence":0.348,"both_confirmed":false}
+{"date":"2026-10-30","theme":"Internet of Things","donor":"iotsoftware","receiver":"iotnetworking","confidence":0.348,"both_confirmed":false}
+{"date":"2026-10-30","theme":"Industrial Automation","donor":"automationiot","receiver":"automationautomation","confidence":0.33,"both_confirmed":false}
+{"date":"2026-11-03","theme":"Internet of Things","donor":"iotsecurity","receiver":"iotnetworking","confidence":0.556,"both_confirmed":false}
+{"date":"2026-11-03","theme":"Semiconductors","donor":"semisfoundries","receiver":"semisanalog","confidence":0.296,"both_confirmed":false}

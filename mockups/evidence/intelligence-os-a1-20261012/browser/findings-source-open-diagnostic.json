@@ -1,0 +1,35 @@
+{
+  "scope": "Actual light EN390 opened source disclosure",
+  "geometry": [
+    {
+      "text": "SOURCE AS OF\n2026-10-11",
+      "width": 328,
+      "scrollWidth": 328,
+      "height": 54
+    },
+    {
+      "text": "FINDINGS WITHOUT AN ENGINE ASSOCIATION\n1",
+      "width": 328,
+      "scrollWidth": 328,
+      "height": 54
+    },
+    {
+      "text": "NUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.",
+      "width": 328,
+      "scrollWidth": 328,
+      "height": 73
+    },
+    {
+      "text": "PATH\ndata/neuralweb/confluence_graph.json",
+      "width": 328,
+      "scrollWidth": 328,
+      "height": 54
+    },
+    {
+      "text": "SOURCE DIGEST\nc90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+      "width": 328,
+      "scrollWidth": 508,
+      "height": 54
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "accession": "0000320193-22-000070",
+    "expected_period_end": "2022-06-25",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_absent",
+    "pack_id": "PK06",
+    "polarity": "negative",
+    "reason": "aapl-20220625.htm | untagged | No lease amounts in the 10-Q: grepped the whole primary for 'right-of-use', 'operating lease' and 'finance lease': 0 matches each, and no us-gaap:*Lease* facts are tagged; the Company's lease disclosures appear only in the Form 10-K, so no current finance lease liability amount is disclosed.",
+    "section_family": "lease_liability",
+    "split": "held_out",
+    "target_id": "finance_lease_liability_current",
+    "target_kind": "extract",
+    "trial_id": "PK06|0000320193-22-000070|extract|finance_lease_liability_current"
+  }
+]

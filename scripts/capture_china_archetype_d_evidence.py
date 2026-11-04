@@ -377,12 +377,14 @@ def render_macro_block(vm: dict | None = None) -> str:
 
 
 def write_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     scratch.mkdir(parents=True, exist_ok=True)
     shutil.copy(TEMPLATES_DIR / "theme.css", scratch / "theme.css")
     shutil.copy(TEMPLATES_DIR / "theme.js", scratch / "theme.js")
-    (scratch / "china_s1.html").write_text(render_macro_block(), encoding="utf-8")
+    write_unshimmed_html(scratch / "china_s1.html", render_macro_block(), encoding="utf-8")
     for name, _subject, _sel, builder in DEFECT_CELLS:
-        (scratch / f"china_s1_defect_{name}.html").write_text(
+        write_unshimmed_html(
+            scratch / f"china_s1_defect_{name}.html",
             render_macro_block(builder()), encoding="utf-8"
         )
 

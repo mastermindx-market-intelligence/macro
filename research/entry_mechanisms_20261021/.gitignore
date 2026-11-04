@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+results/*.parquet
+*.lock
+deliverables/*.pdf
+deliverables/figures/*.png
+transfer_bundle.txt
+results/*transfer*
+results/report_inputs.json
+results/audit_compact.csv
+results/*_compact.csv

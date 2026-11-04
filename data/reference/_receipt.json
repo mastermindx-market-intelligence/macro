@@ -13,12 +13,12 @@
     "evidence_sources": {
       "cn": {
         "dataset": "data/china_filings/filings.parquet",
-        "newest_observation": "2026-10-16",
+        "newest_observation": "2026-11-02",
         "provenance": "CNInfo (\u5de8\u6f6e\u8d44\u8baf\u7f51) SSE+SZSE disclosure metadata (collectors/china_filings.py)"
       },
       "hk": {
         "dataset": "data/hk_shorts/positions.parquet + data/hk_shorts/turnover.parquet",
-        "newest_observation": "2026-10-16",
+        "newest_observation": "2026-11-02",
         "provenance": "SFC official Short Position Reports + HKEX official turnover statistics (collectors/hk_shorts.py)"
       }
     },
@@ -57,13 +57,14 @@
     },
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
   },
-  "cik_map_snapshot": "2026-10-20",
-  "code_version": "0cfc0d97051f42b826805e9ea82b6f0d052923a9",
+  "cik_map_snapshot": "2026-11-03",
+  "code_version": "aba2ddcfe4cb90e4d2106c4a02de3ccb306f0551",
   "coverage": {
-    "resolved": 1624,
+    "resolved": 1619,
     "total": 1636,
-    "unresolved": 12,
+    "unresolved": 17,
     "unresolved_names": [
+      "ACA",
       "ANGPY",
       "B",
       "BLD",
@@ -73,8 +74,12 @@
       "GATO",
       "HLX",
       "IMPUY",
+      "KVUE",
+      "LXP",
       "MAG",
+      "MSGS",
       "PSKY",
+      "RAMP",
       "RHHBY"
     ]
   },
@@ -158,7 +163,7 @@
     "QQQ": "CURRENT",
     "SPY": "CURRENT"
   },
-  "generated_at": "2026-10-20T15:03:23",
+  "generated_at": "2026-11-03T05:32:46",
   "identity_exceptions": [
     {
       "evidence": "SEC Barnes Group 2025-01-27 8-K/Form 25; Barrick Mining 2025-05-07 Form 6-K Exhibit 99.2; Gold.com 2025-11-12 AMRK->NYSE GOLD transfer announcement; config/theme_graph_identity_breaks.yml GOLD",
@@ -177,21 +182,21 @@
     "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
     "config/delisted_symbols.yml": "c83b53d39a934fdcbe82f655f1979d1a4c14f8c45fb35474e2dc666bec539b5e",
     "data/baskets/membership.json": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
-    "data/breadth/constituents.parquet": "859fbb9d59e96ba80a0ae5ebd71df424b60d30a6652140b25d1c14b91c2fa238",
-    "data/china_filings/filings.parquet": "79895d10effcc22ebdb1495343c04cf2043bad4488c1b42fdb7e699d7579f728",
-    "data/hk_shorts/positions.parquet": "b50d939873e0025bf90aae9a47c54a554611c05b45dd61c80da66de11fc18479",
-    "data/hk_shorts/turnover.parquet": "09fb7a70429cc0a1c904c995a30e290c166e7a760004bec0a93649e36b35b030",
+    "data/breadth/constituents.parquet": "d125a097273102c78b435ff39fccb540f157ae076eedbdb6d372d77b43672b66",
+    "data/china_filings/filings.parquet": "63c14512f6d3e7faa7905a047ec0ba9d32a4ae43d0146c397b11c8274e6e038c",
+    "data/hk_shorts/positions.parquet": "4f76317cfa0b15ac69f78fc8cdf2079e1e82423d90ddc3a8d39fe4bcac945f4b",
+    "data/hk_shorts/turnover.parquet": "396cbd7e9909fb0c00605b462b8a529d05ca45cbe27191218f4c4f82afd842f2",
     "data/midcap_breadth/constituents.parquet": "ea790e05b5b8cc9b5224b2d2e5b6d882a3541a9baa25a30ad5aeb6e438775a08",
     "data/smallcap_breadth/constituents.parquet": "5ceb85a4e7471fd108d630fb8dace42d163c370cdec8083b69345065dc4b635e",
-    "data/symbol_directory/cik_map": "641c8d65a6b64d24ebcc13a606f576953a736f9230e210d2b8bc638965af647e",
-    "data/symbol_directory/snapshots": "ff777addc94190c23ef9a319f972de21075314a5e836038370eacd5833bf162e",
-    "data/theme_graph/nodes.parquet": "518915629a274c258e0ed7e90d445f798f0162889525f7f11383cea4e80386b3",
+    "data/symbol_directory/cik_map": "d5052101d74afd5080fa1592608edf779f44771b1294c927c786bbe7a44f6984",
+    "data/symbol_directory/snapshots": "e913c916abb0ede78de5f591e2346629754e2a8f8bf222b21d8be5570838ca51",
+    "data/theme_graph/nodes.parquet": "2edf86b9c0dfe0ec7b7c61fdaf0de267c10545047b682df604a812d2540f52d9",
     "lib/ticker_aliases.py": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
   },
   "issuer": {
     "era": "issuer_semantic_correction_v1",
     "era_migrations_total": 5,
-    "evidence_snapshot": "2026-10-20",
+    "evidence_snapshot": "2026-11-03",
     "migrations_this_run": 0,
     "multi_security_groups": [
       {
@@ -237,11 +242,16 @@
     }
   },
   "listing_continuity": [
+    "ACA",
     "CECO",
     "CSAN",
     "GWH",
     "HUCK",
     "IBOC",
+    "KVUE",
+    "LXP",
+    "MSGS",
+    "RAMP",
     "YFOR",
     {
       "code": "GOLD",
@@ -257,11 +267,16 @@
         "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-IBOC",
         "SEC:US-XNAS-YYGH",
+        "SEC:US-XNYS-ACA",
         "SEC:US-XNYS-CSAN",
-        "SEC:US-XNYS-GWH"
+        "SEC:US-XNYS-GWH",
+        "SEC:US-XNYS-KVUE",
+        "SEC:US-XNYS-LXP",
+        "SEC:US-XNYS-MSGS",
+        "SEC:US-XNYS-RAMP"
       ],
-      "reason": "pending-transition fence: 6 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
-      "snapshot_date": "2026-10-20",
+      "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "snapshot_date": "2026-11-03",
       "symbol": "CECO"
     },
     {
@@ -271,11 +286,16 @@
         "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-IBOC",
         "SEC:US-XNAS-YYGH",
+        "SEC:US-XNYS-ACA",
         "SEC:US-XNYS-CSAN",
-        "SEC:US-XNYS-GWH"
+        "SEC:US-XNYS-GWH",
+        "SEC:US-XNYS-KVUE",
+        "SEC:US-XNYS-LXP",
+        "SEC:US-XNYS-MSGS",
+        "SEC:US-XNYS-RAMP"
       ],
-      "reason": "pending-transition fence: 6 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
-      "snapshot_date": "2026-10-20",
+      "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "snapshot_date": "2026-11-03",
       "symbol": "IBOC"
     }
   ],
@@ -732,7 +752,7 @@
   },
   "seed_counts": {
     "delisted_keys": 11,
-    "directory_symbols": 13291,
+    "directory_symbols": 13279,
     "gmi_seed_keys": 1241,
     "ticker_fixups": 2,
     "ticker_key_migrations": 1,
@@ -818,7 +838,7 @@
     "valid_to": "2026-10-16",
     "vendor": "thetadata"
   },
-  "symbol_directory_snapshot": "2026-10-20",
+  "symbol_directory_snapshot": "2026-11-03",
   "undated_renames": [
     {
       "evidence": "lib/ticker_aliases.py YAHOO_FETCH_ALIASES FI->FISV (vendor LAGS the rename); config.yml breadth.ticker_fixups FISV->FI; no in-repo date for the 2023 change",
@@ -837,6 +857,14 @@
         "symbol": "FISV",
         "winning_security_id": "SEC:US-XNAS-FISV",
         "winning_symbol": "FI"
+      },
+      {
+        "code": "duplicate_claim_collapsed",
+        "listing_key": "US-XNAS-SATS",
+        "reason": "'SATS' renders the same listing key 'US-XNAS-SATS' as 'ECHO' \u2014 a duplicate graph-topology reference to one security, collapsed to the winning claimant; never a second mint or a second alias-row set (D2B2-US \u00a72, AMENDMENT R3/R14)",
+        "symbol": "SATS",
+        "winning_security_id": "SEC:US-XNAS-SATS",
+        "winning_symbol": "ECHO"
       }
     ],
     "identity_exception_excluded": [
@@ -974,6 +1002,10 @@
     "refused_this_run": 24,
     "resolved_not_rederivable": [
       {
+        "code": "ACA",
+        "security_id": "SEC:US-XNYS-ACA"
+      },
+      {
         "code": "CECO",
         "security_id": "SEC:US-XNAS-CECO"
       },
@@ -994,12 +1026,12 @@
         "security_id": "SEC:US-XNYS-GWH"
       },
       {
-        "code": "PSKY",
-        "security_id": "SEC:US-XNAS-PSKY"
+        "code": "KVUE",
+        "security_id": "SEC:US-XNYS-KVUE"
       },
       {
-        "code": "SATS",
-        "security_id": "SEC:US-XNAS-SATS"
+        "code": "PSKY",
+        "security_id": "SEC:US-XNAS-PSKY"
       },
       {
         "code": "YYGH",
@@ -1007,7 +1039,7 @@
       }
     ],
     "resolved_this_run": 0,
-    "resolved_total": 1214,
+    "resolved_total": 1213,
     "structural_check_exempt_exit_ledger": [],
     "target_n": 1239,
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope=us)"

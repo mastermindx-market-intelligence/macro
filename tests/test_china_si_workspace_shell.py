@@ -283,6 +283,22 @@ def test_cycle_map_trio_is_router_mounted_not_page_injected() -> None:
         "the board's mini sparklines listen for sc:cycles-data; the router must fire it"
 
 
+def test_cycles_flag_lands_before_the_trio_is_injected() -> None:
+    """RI09 MAJOR: loadCycles must set SC_LAZY_EXTRAS BEFORE sector_cycles.js is
+    injected — the EN loader does, the China loader did not, so sector_cycles.js read
+    an unset flag at its own boot, bound its standalone popstate/hashchange listeners
+    inside this shell, and a Back/Forward replaceState'd the shell's #view entry
+    fragment-less. The flag is read at cycles boot, not at focus time, so the ORDERING
+    is the whole fix — a flag set after the inject calls binds the listeners anyway."""
+    code = _code(_router())
+    lc = code.split("function loadCycles()", 1)[1].split("function loadAssets", 1)[0]
+    flag = lc.find("window.SC_LAZY_EXTRAS=true")
+    assert flag >= 0, \
+        "China loadCycles does not set SC_LAZY_EXTRAS — EN-hub parity break (RI09 MAJOR)"
+    assert lc.find("files.forEach") > flag, \
+        "SC_LAZY_EXTRAS must be set BEFORE the cycles trio is injected — sector_cycles.js reads it at boot"
+
+
 def test_cycles_mount_on_overview_too() -> None:
     """The 31 Overview conviction cards each draw a mini cycle-position sparkline from
     window.SECTOR_CYCLES. Without '@cycles' on overview they ship an empty reserved slot

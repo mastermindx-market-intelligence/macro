@@ -27,6 +27,8 @@ admin/brain_guest_access.json
 # living OUTSIDE the git work-tree so `git reset --hard` can't expose a partial
 # file (app/deploy/update.sh + Caddyfile). Box-only; never committed.
 site.served/
+# Box-only OHLC release generations and atomic current selection.
+ohlc.served/
 # retired 2026-07-05: Pages has no custom domain and workflow-type Pages deploys
 # ignore CNAME files anyway — listed here so an in-flight render on pre-removal
 # code can't re-commit it (git add skips ignored files).
@@ -40,7 +42,7 @@ site/go/**/.tmp_*
 # symlink reached a commit (a crop harness links the nightly artifacts in from the
 # main checkout, an aborted run left it behind, and a broad `git add` swept it up).
 site/stockdata
-site/ohlc/
+site/ohlc
 site/stockbrief/
 site/chinastockdata/
 site/chinamechanicsdata/
@@ -58,6 +60,16 @@ site/feeds/
 # live intraday overlay — runtime artifact written by scripts/build_live_overlay (intraday
 # cron) and by the offline test path; never committed (the cron force-pushes / re-emits it).
 site/live/
+# Atomic-publish staging siblings of the sector holdings coverage feed
+# (scripts/build_sector_holdings_coverage.py writes .<name>.<suffix> next to
+# the destination and replaces it in one step). A hard crash (SIGKILL) can
+# leave such a sibling behind, and render.yml stages a broad `git add site/`
+# that would sweep it into the commit. No trailing slash, so the pattern
+# matches the sibling FILE (or a symlink at that path) and never the
+# published feed itself — site/sectordata/sector_holdings_coverage.json stays
+# tracked. No writer-side sweep: another writer may legitimately hold that
+# name right now.
+site/sectordata/.sector_holdings_coverage.json.*
 # NOTE: site/research/ is deliberately NOT ignored. #3507 ignored it as "a runtime
 # plane like site/live/", but the estate is 87 TRACKED files (#3501/#3512) that reach
 # the edge by being committed. Ignoring a tracked tree is the worst of both: `git add
@@ -754,3 +766,8 @@ data/qledger/control_evidence_clock_start/
 
 # MedTech qualification receipts contain raw source bytes and a private SQLite store.
 /reports/medtech-r14-runtime/
+
+# Private Yahoo capture objects require0700/0600 and must never be Git checkout
+# inputs. WTI's bounded CL_F.observation.json export rides normal data publication.
+data/yahoo/.availability_capture/
+data/yahoo/.CL_F.observation-*

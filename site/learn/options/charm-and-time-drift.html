@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="../../shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="../../shared_shell_bridge.js?v=071ef720"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=2e861147"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Learn","item":"https://www.mastermind-x.com/learn/index.html"},{"@type":"ListItem","position":3,"name":"Options \u0026 Dealer Positioning","item":"https://www.mastermind-x.com/learn/options/"},{"@type":"ListItem","position":4,"name":"Charm and Vanna: Second-Order Options Mechanics"}]}</script><script type="application/ld+json">{
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=9bd171a6"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Learn","item":"https://www.mastermind-x.com/learn/index.html"},{"@type":"ListItem","position":3,"name":"Options \u0026 Dealer Positioning","item":"https://www.mastermind-x.com/learn/index.html#track-options"},{"@type":"ListItem","position":4,"name":"Charm and Vanna: Second-Order Options Mechanics"}]}</script><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Charm and Vanna: Second-Order Options Mechanics",
@@ -68,10 +68,10 @@
   }
 }</script>
 
-<link rel="stylesheet" href="../../assets/css/3c29bc85.css?v=3c29bc85">
+<link rel="stylesheet" href="../../assets/css/bdb8adf8.css?v=bdb8adf8">
 
 <link rel="stylesheet" href="../../assets/css/17c15c21.css?v=17c15c21">
-<link rel="preload" as="style" href="../../product-nav-icons.css?v=093ad1ea">
+<link rel="preload" as="style" href="../../product-nav-icons.css?v=432f6a45">
 
 
 </head>
@@ -186,17 +186,17 @@
   <ol>
     
     <li>
-      <a href="../../">Home</a>
+      <a href="../../"><span class="l-en">Home</span><span class="l-zh">首页</span></a>
     </li>
     <li class="sep" aria-hidden="true">/</li>
     
     <li>
-      <a href="../../learn/index.html">Learn</a>
+      <a href="../../learn/index.html"><span class="l-en">Learn</span><span class="l-zh">学习</span></a>
     </li>
     <li class="sep" aria-hidden="true">/</li>
     
     <li>
-      <a href="../../learn/options/">Options &amp; Dealer Positioning</a>
+      <a href="../../learn/index.html#track-options"><span class="l-en">Options & Dealer Positioning</span><span class="l-zh">期权与做市商持仓</span></a>
     </li>
     <li class="sep" aria-hidden="true">/</li>
     
@@ -218,8 +218,8 @@
     <path d="M2 11 C 40 11, 55 4, 90 7 S 150 3, 178 5 S 210 4, 218 3"/>
     <circle class="dot" cx="218" cy="3" r="2.6"/>
   </svg>
-  <h1 class="est-title">Charm and Vanna: Second-Order Options Mechanics</h1>
-  <p class="est-dek">Charm and vanna describe how an option&#39;s delta drifts with time and volatility. Learn the mechanics as context only, with an honest note on their limits.</p>
+  <h1 class="est-title" lang="en">Charm and Vanna: Second-Order Options Mechanics</h1>
+  <p class="est-dek" lang="en">Charm and vanna describe how an option&#39;s delta drifts with time and volatility. Learn the mechanics as context only, with an honest note on their limits.</p>
   <div class="est-meta">
     <span><span class="l-en">Published</span><span class="l-zh">发布</span> <span class="mono">2026-07-25</span></span>
     
@@ -228,14 +228,19 @@
 
 <div class="art-layout">
   
-  <nav class="art-toc" id="toc" aria-label="On this page">
-    <p class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></p>
-    <a href="#charm-delta-drift-from-time">Charm — delta drift from time</a><a href="#vanna-delta-drift-from-volatility">Vanna — delta drift from volatility</a><a href="#why-we-teach-these-but-do-not-trade-them">Why we teach these but do not trade them</a><a href="#how-this-fits-the-honest-read-of-the-desk">How this fits the honest read of the desk</a>
-  </nav>
+  <details class="art-outline" open>
+    <summary>
+      <span class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></span>
+      <span class="toc-caret" aria-hidden="true"></span>
+    </summary>
+    <nav class="art-toc" id="toc" aria-label="On this page">
+      <a href="#charm-delta-drift-from-time" lang="en">Charm — delta drift from time</a><a href="#vanna-delta-drift-from-volatility" lang="en">Vanna — delta drift from volatility</a><a href="#why-we-teach-these-but-do-not-trade-them" lang="en">Why we teach these but do not trade them</a><a href="#how-this-fits-the-honest-read-of-the-desk" lang="en">How this fits the honest read of the desk</a>
+    </nav>
+  </details>
   
 
   <div class="art-main">
-    <article class="est-prose">
+    <article class="est-prose" lang="en">
       <div class="callout lead">
 <span class="co-h">Learning objective</span>
 Understand charm and vanna — the second-order forces that move an option's delta even when price sits still, one driven by the passage of time and the other by changes in volatility — as educational context, and understand clearly why we do not build trading signals on them.
@@ -384,13 +389,25 @@ Understand charm and vanna — the second-order forces that move an option's del
       ls.forEach(function(a,i){ a.classList.toggle('active',i===act); }); }
     window.addEventListener('scroll',spy,{passive:true}); spy(); })();
 </script>
+<script>
+  /* TOC disclosure governance: one details, two regimes. Desktop rail stays
+     open (summary inert); mobile starts collapsed, user may expand. Same
+     900px boundary as the estate_css media query. */
+  (function(){ var d=document.querySelector('details.art-outline'); if(!d)return;
+    var mq=window.matchMedia('(max-width:900px)');
+    function sync(){ if(mq.matches) d.removeAttribute('open'); else d.setAttribute('open',''); }
+    if(mq.addEventListener) mq.addEventListener('change',sync);
+    else if(mq.addListener) mq.addListener(sync);
+    d.addEventListener('toggle',function(){ if(!mq.matches&&!d.open) d.setAttribute('open',''); });
+    sync(); })();
+</script>
 
 
 
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';window.__mmAccountLoading=true;</script>
 <script src="../../supabase.js?v=8596965f" defer></script>
-<script src="../../account.js?v=94a05a67" defer></script>
-<script src="../../theme.js?v=1c9d7ad5" defer></script>
+<script src="../../account.js?v=3a75ad49" defer></script>
+<script src="../../theme.js?v=8522554f" defer></script>
 
 <script>
 (function(){
@@ -514,7 +531,7 @@ Understand charm and vanna — the second-order forces that move an option's del
 })();
 </script>
 
-<script src="../../onboard.js?v=e9bbc4fb" defer></script>
+<script src="../../onboard.js?v=62a84705" defer></script>
 <script defer data-whb data-root="../../" src="../../wh_banner.js?v=b1207f44"></script>
 </body>
 </html>

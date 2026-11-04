@@ -1,0 +1,871 @@
+<SEC-DOCUMENT>0001493152-26-034585.txt : 20261001
+<SEC-HEADER>0001493152-26-034585.hdr.sgml : 20261001
+<ACCEPTANCE-DATETIME>20261001162314
+ACCESSION NUMBER:		0001493152-26-034585
+CONFORMED SUBMISSION TYPE:	S-3
+PUBLIC DOCUMENT COUNT:		2
+FILED AS OF DATE:		20261001
+DATE AS OF CHANGE:		20261001
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Orbital Therapeutics Inc
+		CENTRAL INDEX KEY:			0002030954
+		STANDARD INDUSTRIAL CLASSIFICATION:	MISSING VALUE
+		ORGANIZATION NAME:	          	Orbital Therapeutics Inc
+		EIN:				981234567
+
+	FILING VALUES:
+		FORM TYPE:	S-3
+		SEC ACT:	1933 Act
+		SEC FILE NUMBER:	333-281234
+		FILM NUMBER:		261190493
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1 MARKET STREET
+		CITY:			SAN FRANCISCO
+		STATE:			CA
+		ZIP:			94105
+		BUSINESS PHONE:		4155550100
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>EX-FILING FEES
+<SEQUENCE>1
+<FILENAME>ex107.htm
+<TEXT>
+<?xml version='1.0' encoding='ASCII'?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2015-02-26" xmlns:ixt-sec="http://www.sec.gov/inlineXBRL/transformation/2015-08-31" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dei="http://xbrl.sec.gov/dei/2026" xmlns:ffd="http://xbrl.sec.gov/ffd/2026">
+  <head>
+    <title>EX-FILING FEES</title>
+  </head>
+  <body>
+    <div style="display: none">
+      <ix:header>
+        <ix:hidden>
+          <ix:nonNumeric name="ffd:FormTp" contextRef="rc" id="ixv-331">S-3</ix:nonNumeric>
+          <ix:nonNumeric name="ffd:SubmissnTp" contextRef="rc" id="ixv-332">S-3</ix:nonNumeric>
+          <ix:nonNumeric name="ffd:FeeExhibitTp" contextRef="rc" id="ixv-333">EX-FILING FEES</ix:nonNumeric>
+          <ix:nonNumeric name="dei:EntityCentralIndexKey" contextRef="rc" id="ixv-334">0002030954</ix:nonNumeric>
+          <ix:nonNumeric name="dei:EntityRegistrantName" contextRef="rc" id="ixv-335">TEN Holdings, Inc.</ix:nonNumeric>
+          <ix:nonNumeric name="ffd:OfferingTableNa" contextRef="rc" id="hiddenrcOfferingTableNa" xsi:nil="true"></ix:nonNumeric>
+          <ix:nonNumeric name="ffd:OffsetTableNa" contextRef="rc" id="hiddenrcOffsetTableNa">N/A</ix:nonNumeric>
+          <ix:nonNumeric name="ffd:CombinedProspectusTableNa" contextRef="rc" id="hiddenrcCombinedProspectusTableNa">N/A</ix:nonNumeric>
+        </ix:hidden>
+        <ix:references>
+          <link:schemaRef xlink:href="https://xbrl.sec.gov/ffd/2026/ffd-2026.xsd" xlink:type="simple"/>
+        </ix:references>
+        <ix:resources>
+          <xbrli:context id="rc">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.sec.gov/CIK">0002030954</xbrli:identifier>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>2026-07-24</xbrli:startDate>
+              <xbrli:endDate>2026-07-24</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="offrl_1">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.sec.gov/CIK">0002030954</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:typedMember dimension="ffd:OfferingAxis">
+                  <dei:lineNo>1</dei:lineNo>
+                </xbrldi:typedMember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>2026-07-24</xbrli:startDate>
+              <xbrli:endDate>2026-07-24</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:unit id="USD">
+            <xbrli:measure>iso4217:USD</xbrli:measure>
+          </xbrli:unit>
+          <xbrli:unit id="pure">
+            <xbrli:measure>xbrli:pure</xbrli:measure>
+          </xbrli:unit>
+          <xbrli:unit id="Shares">
+            <xbrli:measure>xbrli:shares</xbrli:measure>
+          </xbrli:unit>
+        </ix:resources>
+      </ix:header>
+    </div>
+    <div>
+      <table style="width: 99%; font-family: Arial, Helvetica, sans-serif; font-size: 20pt; text-align: center;">
+        <tr>
+          <td colspan="4" style="padding-bottom: .5em">
+            <p>
+              <b>Calculation of Filing Fee Tables</b>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: .25em">
+            <p>
+              <b>
+                <ix:nonNumeric name="ffd:FormTp" contextRef="rc" id="ixv-363">S-3</ix:nonNumeric>
+              </b>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: .25em">
+            <p>
+              <b>
+                <ix:nonNumeric name="dei:EntityRegistrantName" contextRef="rc" id="ixv-364">TEN Holdings, Inc.</ix:nonNumeric>
+              </b>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="padding-bottom: 20px;">
+      <table style="float: center; width: 100%; text-align: left;  ">
+        <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 16px">
+          <th style="vertical-align: bottom; text-align: left; word-wrap: break-word">
+            <b>Table 1: Newly Registered and Carry Forward Securities</b>
+          </th>
+          <th style="vertical-align: bottom; word-wrap: break-word; text-align: right;">
+            <span style="-sec-ix-hidden: hiddenrcOfferingTableNa">&#9744;Not Applicable</span>
+          </th>
+        </tr>
+      </table>
+      <table style="font-family: Arial, Helvetica, sans-serif; float: center; width: 100%; text-align: center; border: 1px solid black; font-size: 16px;">
+        <tr style="background-color:#9ADAF6">
+          <th style="width: 12%;">
+            <!-- BLANK -->
+          </th>
+          <th style="width: 2%;">
+            <!-- BLANK -->
+          </th>
+          <th style="width: 12%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Security Type</b>
+            </p>
+          </th>
+          <th style="width: 14%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Security Class Title </b>
+            </p>
+          </th>
+          <th style="width: 2%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Fee Calculation or Carry Forward Rule</b>
+            </p>
+          </th>
+          <th style="width: 5%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Amount Registered</b>
+            </p>
+          </th>
+          <th style="width: 15%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Proposed Maximum Offering Price Per Unit</b>
+            </p>
+          </th>
+          <th style="width: 10%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Maximum Aggregate Offering Price</b>
+            </p>
+          </th>
+          <th style="width: 5%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Fee Rate</b>
+            </p>
+          </th>
+          <th style="width: 6%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Amount of Registration Fee</b>
+            </p>
+          </th>
+          <th style="width: 1%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Carry Forward Form Type</b>
+            </p>
+          </th>
+          <th style="width: 7%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Carry Forward File Number</b>
+            </p>
+          </th>
+          <th style="width: 6%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Carry Forward Initial Effective Date</b>
+            </p>
+          </th>
+          <th style="width: 7%;">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Filing Fee Previously Paid in Connection with Unsold Securities to be Carried Forward</b>
+            </p>
+          </th>
+        </tr>
+        <tr>
+          <td colspan="14" style="text-align: center">
+            <b>Newly Registered Securities</b>
+          </td>
+        </tr>
+        <tr style="background-color:#E7E7E2">
+          <td style="text-align: left;">
+            <ix:nonNumeric name="ffd:PrevslyPdFlg" contextRef="offrl_1" format="ixt:booleanfalse" id="ixv-365">Fees to be Paid</ix:nonNumeric>
+          </td>
+          <td style="text-align: center;">
+		1
+	</td>
+          <td style="text-align: left;">
+            <ix:nonNumeric name="ffd:OfferingSctyTp" contextRef="offrl_1" id="ixv-366">Equity</ix:nonNumeric>
+          </td>
+          <td style="text-align: left;">
+            <ix:nonNumeric name="ffd:OfferingSctyTitl" contextRef="offrl_1" id="ixv-367">Common Stock, par value $0.0001</ix:nonNumeric>
+          </td>
+          <td style="text-align: center;">
+            <ix:nonNumeric name="ffd:FeesOthrRuleFlg" contextRef="offrl_1" format="ixt:booleantrue" id="ixv-368">Other</ix:nonNumeric>
+          </td>
+          <td style="text-align: right;">
+            <ix:nonFraction name="ffd:AmtSctiesRegd" unitRef="Shares" decimals="0" format="ixt:numdotdecimal" contextRef="offrl_1" id="ixv-369">500,000</ix:nonFraction>
+          </td>
+          <td style="text-align: right;">
+            <span>$</span>
+            <ix:nonFraction name="ffd:MaxOfferingPricPerScty" unitRef="USD" decimals="5" format="ixt:numdotdecimal" contextRef="offrl_1" id="ixv-370">2.01995</ix:nonFraction>
+          </td>
+          <td style="text-align: right;">
+            <span>$</span>
+            <ix:nonFraction name="ffd:MaxAggtOfferingPric" unitRef="USD" decimals="2" format="ixt:numdotdecimal" contextRef="offrl_1" id="ixv-371">1,009,975.00</ix:nonFraction>
+          </td>
+          <td style="text-align: right;">
+            <ix:nonFraction name="ffd:FeeRate" unitRef="pure" decimals="7" format="ixt:numdotdecimal" contextRef="offrl_1" id="ixv-372">0.0001381</ix:nonFraction>
+          </td>
+          <td style="text-align: right;">
+            <span>$</span>
+            <ix:nonFraction name="ffd:FeeAmt" unitRef="USD" decimals="2" format="ixt:numdotdecimal" contextRef="offrl_1" id="ixv-373">139.48</ix:nonFraction>
+          </td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+        </tr>
+        <tr style="background-color:#E7E7E2">
+          <td style="text-align: left;">
+		Fees Previously Paid
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+        </tr>
+        <tr>
+          <td colspan="14" style="text-align: center">
+            <b>Carry Forward Securities</b>
+          </td>
+        </tr>
+        <tr style="background-color:#E7E7E2">
+          <td style="text-align: left;">
+		Carry Forward Securities
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+        </tr>
+        <tr>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td colspan="3" style="vertical-align: top">
+            <p style="margin: 0pt; text-align: right">Total Offering Amounts:</p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td style="vertical-align: top; width: 16%;">
+            <p id="MaxAggtOfferingPrice" style="margin: 0pt; text-align: right">
+              <span>$</span>
+              <ix:nonFraction name="ffd:TtlOfferingAmt" contextRef="rc" decimals="2" format="ixt:numdotdecimal" unitRef="USD" id="ixv-374">1,009,975.00</ix:nonFraction>
+            </p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td style="vertical-align: top; border-bottom: 1px black; width: 16%;">
+            <p id="TotalFeeAmt" style="margin: 0pt; text-align: right">
+              <span>$</span>
+              <ix:nonFraction name="ffd:TtlFeeAmt" contextRef="rc" decimals="2" format="ixt:numdotdecimal" unitRef="USD" id="ixv-375">139.48</ix:nonFraction>
+            </p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td colspan="3" style="vertical-align: top">
+            <p style="margin: 0pt; text-align: right">
+					Total Fees Previously Paid:
+				</p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td style="vertical-align: top">
+            <p id="TotalPreviouslyPaidAmt" style="margin: 0pt; text-align: right">
+              <span>$</span>
+              <ix:nonFraction name="ffd:TtlPrevslyPdAmt" contextRef="rc" decimals="2" format="ixt:numdotdecimal" unitRef="USD" id="ixv-376">0.00</ix:nonFraction>
+            </p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td colspan="3" style="vertical-align: top">
+            <p style="margin: 0pt; text-align: right">
+					Total Fee Offsets:
+				</p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td style="vertical-align: top">
+            <p id="TotalOffsetAmt" style="margin: 0pt; text-align: right">
+              <span>$</span>
+              <ix:nonFraction name="ffd:TtlOffsetAmt" contextRef="rc" decimals="2" format="ixt:numdotdecimal" unitRef="USD" id="ixv-377">0.00</ix:nonFraction>
+            </p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td colspan="3" style="vertical-align: top">
+            <p style="margin: 0pt; text-align: right">
+					Net Fee Due:
+				</p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td style="vertical-align: top">
+            <p id="NetFeeAmt" style="margin: 0pt; text-align: right">
+              <span>$</span>
+              <ix:nonFraction name="ffd:NetFeeAmt" contextRef="rc" decimals="2" format="ixt:numdotdecimal" unitRef="USD" id="ixv-378">139.48</ix:nonFraction>
+            </p>
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+          <td>
+            <!-- BLANK -->
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <table style="width: 100%; text-indent: 0px;">
+        <tbody>
+          <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; vertical-align: top;">
+            <td>
+              <p style="margin:0pt;text-align:left; margin-bottom: 5px;">
+                <b>Offering Note</b>
+              </p>
+            </td>
+            <td/>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="padding-bottom: 20px;">
+      <table style="width: 100%; text-indent: 0px;">
+        <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; vertical-align: top;">
+          <td style="width:10pt;">
+            <p style="margin:0pt;text-align:left;">
+              <sup style="vertical-align:top;line-height:120%;font-size:10px">1</sup>
+            </p>
+          </td>
+          <td colspan="7" style="white-space: pre-line;">
+            <ix:nonNumeric name="ffd:OfferingNote" escape="1" contextRef="offrl_1" id="ixv-379">This Registration Statement on Form S-3 (this "Registration Statement") covers shares of common stock, $0.0001 par value per share ("Common Stock"), of TEN Holdings, Inc. (the "Company" or "Registrant") previously issued on May 22, 2026 to the selling stockholder named in the Registration Statement and pursuant to Rule 416 under the Securities Act of 1933, as amended (the "Securities Act"), any additional shares of Common Stock that may be issued by reason of any stock dividend, stock split or other similar transaction.
+
+Estimated solely for the purpose of calculating the registration fee pursuant to Rule 457(c) under the Securities Act. The Proposed Maximum Offering Price per Unit and the Maximum Aggregate Offering Price are based on the average of the high ($2.0499) and low ($1.99) prices of the Registrant's Common Stock as reported on the Nasdaq on July 21, 2026, which date is within five business days prior to filing this Registration Statement.</ix:nonNumeric>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="7">
+            <hr style="width:100%;text-align:left;margin-left:0"/>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="padding-bottom: 20px;">
+      <table style="float: center; width: 100%; text-align: left;  ">
+        <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 16px">
+          <th style="vertical-align: bottom; text-align: left; word-wrap: break-word">
+            <b>Table 2: Fee Offset Claims and Sources</b>
+          </th>
+          <th style="vertical-align: bottom; word-wrap: break-word; text-align: right;">
+            <span style="-sec-ix-hidden: hiddenrcOffsetTableNa">&#9745;Not Applicable</span>
+          </th>
+        </tr>
+      </table>
+      <table style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; float: center; width: 100%; text-align: center;  border: 1px solid black;">
+        <tr style="background-color:#9ADAF6">
+          <th style="width: 10%; text-align: left;">
+            <!-- BLANK -->
+          </th>
+          <th style="width: 8%; text-align: left;">
+            <!-- BLANK -->
+          </th>
+          <th style="width: 16%;">
+				Registrant or Filer Name
+			</th>
+          <th style="width: 6%;">
+				Form or Filing Type
+			</th>
+          <th style="width: 7%;">
+				File Number
+			</th>
+          <th style="width: 6%;">
+				Initial Filing Date
+			</th>
+          <th style="width: 6%;">
+				Filing Date
+			</th>
+          <th style="width: 6%;">
+				Fee Offset Claimed
+			</th>
+          <th style="width: 6%;">
+				Security Type Associated with Fee Offset Claimed
+			</th>
+          <th style="width: 8%;">
+				Security Title Associated with Fee Offset Claimed
+			</th>
+          <th style="width: 6%;">
+				Unsold Securities Associated with Fee Offset Claimed
+			</th>
+          <th style="width: 9%;">
+				Unsold Aggregate Offering Amount Associated with Fee Offset Claimed
+			</th>
+          <th style="width: 6%;">
+				Fee Paid with Fee Offset Source
+			</th>
+        </tr>
+        <tr>
+          <td colspan="14" style="text-align: center">
+            <b>Rules 457(b) and 0-11(a)(2)</b>
+          </td>
+        </tr>
+        <tr style="background-color:#E7E7E2">
+          <td style="text-align: left;">
+		Fee Offset Claims
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+        </tr>
+        <tr style="background-color:#E7E7E2">
+          <td style="text-align: left;">
+		Fee Offset Sources
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+        </tr>
+        <tr>
+          <td colspan="14" style="text-align: center">
+            <b>Rule 457(p)</b>
+          </td>
+        </tr>
+        <tr style="background-color:#E7E7E2">
+          <td style="text-align: left;">
+		Fee Offset Claims
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+        </tr>
+        <tr style="background-color:#E7E7E2">
+          <td style="text-align: left;">
+		Fee Offset Sources
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: left;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+        </tr>
+      </table>
+    </div>
+    <div style="padding-bottom: 20px;">
+      <table style="float: center; width: 100%; text-align: left;  ">
+        <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 16px">
+          <th style="vertical-align: bottom; text-align: left; word-wrap: break-word">
+            <b>Table 3: Combined Prospectuses</b>
+          </th>
+          <th style="vertical-align: bottom; word-wrap: break-word; text-align: right;">
+            <span style="-sec-ix-hidden: hiddenrcCombinedProspectusTableNa">&#9745;Not Applicable</span>
+          </th>
+        </tr>
+      </table>
+      <table style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; float: center; width: 100%; border: 1px solid black;">
+        <tr style="background-color:#9ADAF6">
+          <th style="width: 4%">
+            <!-- Note column -->
+          </th>
+          <th style="width: 14%">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Security Type</b>
+            </p>
+          </th>
+          <th style="width: 25%">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Security Class Title</b>
+            </p>
+          </th>
+          <th style="width: 14%">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Amount of Securities Previously Registered</b>
+            </p>
+          </th>
+          <th style="width: 18%">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Maximum Aggregate Offering Price of Securities Previously Registered</b>
+            </p>
+          </th>
+          <th style="width: 6%">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Form Type</b>
+            </p>
+          </th>
+          <th style="width: 10%">
+            <p style="margin: 0pt; text-align: center;">
+              <b>File Number</b>
+            </p>
+          </th>
+          <th style="width: 8%">
+            <p style="margin: 0pt; text-align: center;">
+              <b>Initial Effective Date</b>
+            </p>
+          </th>
+        </tr>
+        <tr style="background-color:#E7E7E2;">
+          <td style="text-align: center;">
+
+	</td>
+          <td>
+
+	</td>
+          <td>
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: right;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+          <td style="text-align: center;">
+
+	</td>
+        </tr>
+      </table>
+    </div>
+  <script type="text/javascript"  src="/ZKIQkH/5jIN4S/q/Itm/1ekxjqa3kIk/YacuQhJfbt6wwV3X/bgcJeAMB/Fx1s/RQU0NDU"></script></body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

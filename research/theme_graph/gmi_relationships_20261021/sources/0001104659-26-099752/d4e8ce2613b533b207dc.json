@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-21T21:28:07Z",
+ "accession": "0001104659-26-099752",
+ "cik": "0001039065",
+ "doc_byte_length": 4024472,
+ "doc_sha256": "589070d596b74afbbb814659b93209cdfca014fbb9be6a77dc1a9e3e9be09e80",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-21",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "osis-20260630x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1654675,
+  "byte_start": 1653416,
+  "normalized": "In fiscal year 2025, one Security division customer accounted for 11% of net revenues. In fiscal year 2026, no customer accounted for greater than 10% of net revenues. We perform ongoing credit evaluations of our customers’ financial condition and maintain allowances for potential credit losses.",
+  "normalized_sha256": "2ce4d3822495c966e45660e5573a2941143fe2b641f22a800c06dd927215aada",
+  "raw": " In fiscal year 2025, <ix:nonFraction unitRef=\"Unit_Standard_customer_YBzHKxvicken042UxrY56w\" contextRef=\"Duration_7_1_2024_To_6_30_2025_srt_MajorCustomersAxis_osis_CustomerOneMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_EVqIMhCh5UmopIIehf2HJA\" decimals=\"INF\" format=\"ixt-sec:numwordsen\" name=\"osis:ConcentrationRiskNumberOfCustomer\" scale=\"0\" id=\"Narr_8g5cEXHdxE-W0lqeQrp9yA\">one</ix:nonFraction> Security division customer accounted for <ix:nonFraction unitRef=\"Unit_Standard_pure_NXHGqMYTdUGIFrD3fs0WPQ\" contextRef=\"Duration_7_1_2024_To_6_30_2025_srt_MajorCustomersAxis_osis_CustomerOneMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_EVqIMhCh5UmopIIehf2HJA\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Narr_Y3H4TB8VQEKHuwnZjiaG-A\">11</ix:nonFraction>% of net revenues. In fiscal year 2026, no customer accounted for greater than 10% of net revenues. We perform ongoing credit evaluations of our customers&#8217; financial condition and maintain allowances for potential credit losses.",
+  "raw_sha256": "d4e8ce2613b533b207dc53f2c8dfeb1c06db1ecac891cc421ea187290f667e6a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1039065/000110465926099752/osis-20260630x10k.htm",
+ "xbrl_contexts": []
+}

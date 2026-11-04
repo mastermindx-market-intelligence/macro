@@ -11,8 +11,10 @@ no relation to the wall clock (a guard whose fixtures age is a scheduled red).
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
+import jsonschema
 import pandas as pd
 import pytest
 
@@ -21,6 +23,7 @@ from scripts import check_theme_graph_contracts as guard
 
 STAMP = "2024-01-02T00:00:00Z"
 EV_ID = "ev:00000000000000aa"
+FIXTURES = Path(__file__).resolve().parent / "fixtures" / "semiconductor_theme_research"
 
 
 # ---------------------------------------------------------------------------
@@ -33,7 +36,7 @@ def _evidence_row(**over) -> dict:
            "source_ref": "fixture://membership.json",
            "licensing_internal_ok": True, "licensing_display_ok": True,
            "licensing_redistribution_ok": True, "retention": None,
-           "computed_at": STAMP}
+           "computed_at": STAMP, "curation_assertion": None}
     row.update(over)
     return row
 
@@ -525,3 +528,168 @@ def test_r1_section_6_2_a_resolution_row_referencing_the_canonical_row_does_not_
         },
     ])
     assert not any("security-axis-superseded" in x for x in _breaches(root, breaks))
+
+
+# ---------------------------------------------------------------------------
+# 8. T02 — the curation_assertion evidence cell (additive, optional per row)
+# ---------------------------------------------------------------------------
+
+def _load_case(name: str) -> dict:
+    """Tiny local loader for the synthetic semiconductor fixtures (the shared
+    helpers module belongs to a sibling task; this file only needs one case)."""
+    doc = json.loads((FIXTURES / f"{name}.json").read_text(encoding="utf-8"))
+    assert doc["synthetic"] is True
+    return doc
+
+
+def _valid_encoded_assertion() -> str:
+    """A real encoded assertion produced by the module itself (via the fixture
+    the generator built with encode_assertion) — no builder duplicated here."""
+    return _load_case("same_url_different_statements")["native_rows"][0]["curation_assertion"]
+
+
+def _evidence_schema() -> dict:
+    return json.loads((guard.CONTRACTS / "evidence.v1.schema.json")
+                      .read_text(encoding="utf-8"))
+
+
+def test_a_legacy_evidence_row_with_a_null_curation_assertion_passes_the_schema():
+    jsonschema.Draft202012Validator(_evidence_schema()).validate(_evidence_row())
+
+
+def test_an_evidence_row_with_a_valid_encoded_assertion_passes_the_schema():
+    row = _evidence_row(curation_assertion=_valid_encoded_assertion())
+    jsonschema.Draft202012Validator(_evidence_schema()).validate(row)
+
+
+def test_the_per_row_curation_check_reports_each_breach_class():
+    encoded = _valid_encoded_assertion()
+    wrong_stamp = json.loads(encoded)
+    wrong_stamp["curation_revision"] = "gmirca_" + "f" * 32
+    unknown_key = json.loads(encoded)
+    unknown_key["mystery_key"] = 1
+    for bad in ("{not json",
+                json.dumps(wrong_stamp),
+                json.dumps(unknown_key)):
+        breaches = guard.curation_assertion_breaches(EV_ID, bad)
+        assert breaches, f"no breach for {bad[:40]!r}"
+        assert breaches[0].startswith(f"evidence {EV_ID} curation_assertion invalid:")
+
+
+def test_null_and_empty_and_valid_curation_cells_are_never_a_breach():
+    assert guard.curation_assertion_breaches(EV_ID, None) == []
+    assert guard.curation_assertion_breaches(EV_ID, "") == []
+    assert guard.curation_assertion_breaches(EV_ID, _valid_encoded_assertion()) == []
+
+
+def test_the_audit_names_a_bad_curation_cell_when_the_column_exists(tmp_path, breaks):
+    """Wiring, not just the helper: a store whose evidence parquet carries the
+    column with a corrupt cell must be named by the audit itself. Until #7462
+    lands, the extra column ALSO trips column-set drift — today's correct
+    verdict — so this test pins only that the curation breach is named."""
+    root = _write_store(tmp_path / "curation_bad")
+    df = pd.read_parquet(root / "evidence.parquet")
+    df["curation_assertion"] = "{not json"
+    df.to_parquet(root / "evidence.parquet", index=False)
+    assert any("curation_assertion invalid" in x for x in _breaches(root, breaks))
+
+
+@pytest.mark.xfail(strict=True, reason="EVIDENCE_COLUMNS append frozen pending #7462 custody release (ruling R2)")
+def test_distinct_statements_and_corrections_survive_native_store(tmp_path, monkeypatch):
+    from engine.theme_graph import store
+    from engine.theme_graph.curation_assertion import decode_assertion
+    monkeypatch.setattr(store.config, 'data_dir', lambda: tmp_path)
+    rows = _load_case('same_url_different_statements')['native_rows']
+    assert store.write_evidence(rows, lane='nightly') == 3
+    got = store.read_evidence()
+    assert len(got) == 3
+    decoded = [decode_assertion(x) for x in got['curation_assertion']]
+    assert len({x['curation_revision'] for x in decoded}) == 3
+    assert any(x['correction']['predecessor_revision'] for x in decoded)
+    assert store.write_evidence(rows, lane='nightly') == 0
+
+
+# ---------------------------------------------------------------------------
+# B1 fold-seam (r6): the curated activity-history fold (engine.theme_graph.
+# materialize, ACTIVITY_HISTORY_CONFIDENCE_BASIS) is the ONE owned path that may
+# emit a company→theme MEMBER_OF — admitted per ROW by its exact provenance
+# triple, never by pair.
+# ---------------------------------------------------------------------------
+
+ACTIVITY_PROVENANCE = {"source_class": "curated",
+                       "date_provenance": "activity_history",
+                       "confidence_basis": "activity_history.v1"}
+
+
+def test_an_activity_history_member_of_company_to_theme_passes(tmp_path, breaks):
+    """The fold emits company→theme MEMBER_OF rows; a row carrying the exact
+    provenance triple must pass cleanly — no pairing breach, no §9.6 tag breach,
+    nothing."""
+    root = _write_store(
+        tmp_path / "activity_ok",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+            dst="theme:activity_fixture", **ACTIVITY_PROVENANCE)])
+    assert not _breaches(root, breaks)
+
+
+def test_a_company_to_theme_member_of_with_other_provenance_still_breaches(
+    tmp_path, breaks,
+):
+    """Same pair, other provenance: admission is per row, so a crosswalk
+    company→theme MEMBER_OF is still the refused derived edge."""
+    root = _write_store(
+        tmp_path / "crosswalk_member",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:crosswalk_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:crosswalk_fixture@2024-01-01",
+            dst="theme:crosswalk_fixture", date_provenance="crosswalk")])
+    assert any("is not a pairing this type may carry" in x
+               for x in _breaches(root, breaks))
+
+
+def test_activity_history_admission_is_per_row_not_per_pair(tmp_path, breaks):
+    """One admitted activity row AND one non-activity company→theme row in the
+    SAME store: exactly the non-activity row is reported."""
+    root = _write_store(
+        tmp_path / "mixed",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[
+            _edge_row(
+                edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+                dst="theme:activity_fixture", **ACTIVITY_PROVENANCE),
+            _edge_row(
+                edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-02",
+                dst="theme:activity_fixture", date_provenance="crosswalk"),
+        ])
+    breaches = _breaches(root, breaks)
+    assert breaches, "the non-activity company→theme row must breach"
+    assert not any("@2024-01-01" in x for x in breaches), \
+        f"the admitted activity row must not be reported: {breaches}"
+    assert any("@2024-01-02" in x and "is not a pairing this type may carry" in x
+               for x in breaches)
+
+
+def test_activity_history_admission_requires_the_exact_confidence_basis(
+    tmp_path, breaks,
+):
+    """Right date_provenance, wrong confidence_basis: the triple is exact or the
+    row is just another company→theme smuggle."""
+    root = _write_store(
+        tmp_path / "wrong_basis",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+            dst="theme:activity_fixture", date_provenance="activity_history",
+            confidence_basis="activity_history.v2")])
+    assert any("is not a pairing this type may carry" in x
+               for x in _breaches(root, breaks))

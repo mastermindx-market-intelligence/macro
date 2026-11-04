@@ -1,0 +1,25 @@
+{
+  "started_at": "2026-10-20T19:34:15.819250+00:00",
+  "head": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+  "integrated_main": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "remote_before": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1\trefs/heads/main\n2ae6498d0b9f2a088af2e827abf6527799757f8c\trefs/heads/sol/market-os-shared-shell-design-20260924",
+  "pr_before": {
+    "head": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+    "mergeable": false,
+    "mergeable_state": "dirty",
+    "labels": [
+      "merge-blocked"
+    ]
+  },
+  "scope": "One original-owner main-only fetch after new actual dirty state while previous exact-head CI continues; no merge yet",
+  "fetch_exit": 0,
+  "log_bytes": 120,
+  "log_sha256": "8549aac3972cdbd4a2da495e5575ebfaebf4017a10a93da754d33fa75dbfcf66",
+  "incoming": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1",
+  "merge_base": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "new_main_changes": "M\t.github/ci/legacy-jobs.yml\nA\t.github/workflows/medtech-contracts.yml\nM\t.gitignore\nM\tagentos/decisions/DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md\nM\tagentos/decisions/DEC-TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP.md\nM\tapp/deploy/api-setup.sh\nM\tapp/deploy/macro-api.service\nM\tapp/deploy/macro-market-memory-options.service\nA\tapp/deploy/macro-medtech.service\nA\tapp/deploy/macro-medtech.timer\nA\tapp/deploy/medtech-api-boundary.py\nA\tapp/deploy/medtech-environment.example\nA\tapp/deploy/medtech-prereqs.py\nA\tapp/deploy/medtech-setup.sh\nM\tapp/deploy/update.sh\nM\tapp/main.py\nA\tapp/medtech.py\nA\tcollectors/medtech/__init__.py\nA\tcollectors/medtech/openfda.py\nM\tdata/marketing/hot_tape_ring.jsonl\nA\tdocs/evidence/medtech-r14-ci-copy-repair-20261020.json\nA\tdocs/evidence/medtech-r14-current-main-composition-20261020.json\nA\tdocs/evidence/medtech-r14-deployment-qualification-20261020.json\nA\tdocs/evidence/medtech-r14-main-composition-20261020.json\nA\tdocs/evidence/medtech-r14-main-reconciliation-20261020.json\nA\tdocs/evidence/medtech-r14-production-scope-local-qualification-20261020.json\nA\tdocs/evidence/medtech-r14-release-admission-repair-20261020.json\nA\tdocs/evidence/medtech-r14-retained-source-20261020.json\nA\tdocs/medtech_backend.md\nA\tdocs/medtech_r14_release_runbook.md\nA\tengine/medtech/__init__.py\nA\tengine/medtech/events.py\nA\tengine/medtech/publication.py\nA\tengine/medtech/store.py\nM\tengine/pick_lab/render_cn.py\nM\tlib/macro_suite_labels.py\nA\tscripts/medtech_worker.py\nM\tsite/macro_labor_markets.html\nM\ttemplates/china_stocks_lab.html.j2\nM\ttests/test_macro_command_copy_law.py\nA\ttests/test_medtech.py\nA\ttests/test_medtech_deployment.py\nM\ttests/test_pick_lab_cn_render.py",
+  "commits": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1 feat(medtech): ship R14 evidence watchdesk backend and qualified release ordering (#9816)\n1ed4f3ce6967187b32320e0e87f8f5dedbf63d92 hot-tape: radar 2026-10-20T19:31Z [skip ci]\nfe5093cc4ebab5f4a041f4d35430cb7164bd96d3 hot-tape: radar 2026-10-20T19:25Z [skip ci]\n1448c03c5a643d1a2a490a0545968ed3de94e77d hot-tape: radar 2026-10-20T19:20Z [skip ci]\n547e1015ea6a18405ace5a7e4367e4f413d79686 hot-tape: radar 2026-10-20T19:15Z [skip ci]\nf06e9b64c4dfad92e1150d1a9d91bc8ec4d2e071 hot-tape: radar 2026-10-20T19:09Z [skip ci]\n05f645d8dddbe5465d1498fd9c1f93fd7121d60e feat(pick-lab): CN lab prints 25-session path columns and matured denominator (W30-L38) (#9889)\n2e2a9cdbb52f0d93b87fc1b5c1ead864a038699c hot-tape: radar 2026-10-20T19:04Z [skip ci]",
+  "finished_at": "2026-10-20T19:34:24.282252+00:00",
+  "head_unchanged": true,
+  "clean": true
+}

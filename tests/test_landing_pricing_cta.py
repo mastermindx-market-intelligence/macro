@@ -603,7 +603,11 @@ document.querySelectorAll = () => [];
     harness += r"""
 document.querySelector = selector => selector.includes('landing.css') ? landing : themed;
 """
-    program = harness + guard + "\n" + _extract_fn(theme, "setTheme") + r"""
+    # Execute the actual current Shared Shell dependencies, not a constant
+    # stub; the ordinary page in this fixture has no qualified bridge.
+    shell_helpers = (_extract_fn(theme, "_mmShellBridge") + "\n"
+                     + _extract_fn(theme, "_mmShellApplying") + "\n")
+    program = harness + guard + "\n" + shell_helpers + _extract_fn(theme, "setTheme") + r"""
 setTheme('dark');
 console.log(JSON.stringify({theme:attrs['data-theme'], saved:storage.get('theme'),
                            soft:classes.has('soft-contrast')}));

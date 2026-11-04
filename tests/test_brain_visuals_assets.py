@@ -10,7 +10,9 @@ import yaml
 from lib import site_assets
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSETS = ('mm_brain.js', 'mm_brain_visuals.js', 'mm_brain_visuals.css')
+ASSETS = ('mm_brain.js', 'mm_brain_visuals.js', 'mm_brain_visuals.css',
+          'mm_brain_presentation.js', 'mm_brain_markdown.js', 'mm_brain_finance.js',
+          'mm_brain_finance.css', 'mm_brain_finance_math_v1.js', 'mm_brain_math.js')
 
 
 def test_visual_assets_are_public_code_not_a_new_public_data_route():

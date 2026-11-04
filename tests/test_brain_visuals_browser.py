@@ -137,6 +137,33 @@ def test_bars_too_small_to_see_have_visible_disclosure(page):
     assert 'too small to see' in page.locator('figure').inner_text()
 
 
+@pytest.mark.parametrize("later_series_style", [False, True])
+def test_initial_resize_delivery_keeps_rings_connected_and_real_resize_redraws(page, later_series_style):
+    if later_series_style:
+        page.add_style_tag(content="#mmb-root .mmb-v-series-0{fill:currentColor}")
+    wire = sample('donut', columns=['Category', 'Value'], rows=[['A', 3], ['B', 2], ['Missing', None]])
+    initial = page.evaluate('''(wire) => {
+        MMBrainVisuals.mount(document.querySelector('#host'), wire);
+        const original = document.querySelector('figure svg');
+        const rings = Array.from(original.querySelectorAll('circle'));
+        // Two rendering frames include the observer's initial delivery. A no-op
+        // width notification must not detach nodes already handed to a reader.
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve({
+            sameSvg: document.querySelector('figure svg') === original,
+            rings: rings.map(e => ({connected: e.isConnected, fill: getComputedStyle(e).fill}))
+        }))));
+    }''', wire)
+    assert initial == {'sameSvg': True, 'rings': [{'connected': True, 'fill': 'none'}] * 2}
+    page.set_viewport_size({'width': 820, 'height': 844})
+    page.wait_for_function('''() => {
+        const plot = document.querySelector('.mmb-v-plot'), svg = plot.querySelector('svg');
+        return svg && Number(svg.getAttribute('width')) === Math.floor(plot.getBoundingClientRect().width);
+    }''')
+    assert page.locator('svg').get_attribute('width') == '788'
+    assert page.locator('svg circle').evaluate_all('(items) => items.every(e => e.isConnected && getComputedStyle(e).fill === "none")')
+    assert 'known values only' in page.locator('figure').inner_text()
+
+
 def test_csv_download_keeps_utf8_bom_and_escaped_values(page, tmp_path):
     assert mount(page, sample('table', columns=['标签', 'Value'], rows=[['=1+1', -2.25], ['已知', None]]))
     page.locator('summary').click()

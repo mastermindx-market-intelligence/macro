@@ -1,0 +1,84 @@
+{
+  "started_at": "2026-10-20T00:21:37.856998+00:00",
+  "mode": "immutable remote-head reconciliation on original writer",
+  "head": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "status": "",
+  "main": "a3817230e8bc849159b06d81c87ffb4a072ca86b",
+  "remote_branch": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "immutable_fetch": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "common_tracking_ref_observed": "424cdcdab864e1ae89cde8b04dde956ee0bb93e6",
+  "merge_base": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "new_main_path_count": 6,
+  "new_main_paths_sha256": "e1247c3704d8f86a75fc23db164f0b05bb8aaf90ae2566a2869d3a42ca72e6ad",
+  "material_blobs": {
+    ".github/ci/legacy-jobs.yml": {
+      "previous": "883b92777d236c81dc60b82915429d289bf9bf49",
+      "current": "883b92777d236c81dc60b82915429d289bf9bf49"
+    },
+    "app/deploy/Caddyfile": {
+      "previous": "4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d",
+      "current": "4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d"
+    },
+    "app/deploy/update.sh": {
+      "previous": "d168d6c4c5906387cc58ac49ce0ed8cedfdd30a6",
+      "current": "d168d6c4c5906387cc58ac49ce0ed8cedfdd30a6"
+    },
+    "site/etfs.html": {
+      "previous": "b8d1809081df4e7006760544e77f96ceccb1bff4",
+      "current": "b8d1809081df4e7006760544e77f96ceccb1bff4"
+    },
+    "site/us_stocks.html": {
+      "previous": "2a7633efd420607c9db2f8f263f2f9257ac08847",
+      "current": "2a7633efd420607c9db2f8f263f2f9257ac08847"
+    },
+    "AGENTS.md": {
+      "previous": "7aa82fbb309081c6d1297ee35405507d30e7d3c6",
+      "current": "7aa82fbb309081c6d1297ee35405507d30e7d3c6"
+    },
+    "CLAUDE.md": {
+      "previous": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419",
+      "current": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419"
+    },
+    "docs/agent_guides/CODEX_WORKSPACE.md": {
+      "previous": "d3d4ab2c049a8cd963c0333322d4e59563120b82",
+      "current": "d3d4ab2c049a8cd963c0333322d4e59563120b82"
+    },
+    "docs/agent_guides/CODEX_DELIVERY.md": {
+      "previous": "220d23a9728f0ec1917f2255fd78fa7bbb67877d",
+      "current": "220d23a9728f0ec1917f2255fd78fa7bbb67877d"
+    },
+    "scripts/run_ci_pack.py": {
+      "previous": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "current": "f92be10fc37455fd427829f0f964c5ef581b3a80"
+    },
+    "scripts/capture_page_evidence.py": {
+      "previous": "6f184c6469f6fd653d003716ad96605055e71f56",
+      "current": "6f184c6469f6fd653d003716ad96605055e71f56"
+    },
+    ".github/workflows/ci-authority.yml": {
+      "previous": "d80eb2497d5f2e0c5de4e1051bfaa8be2db3ce40",
+      "current": "d80eb2497d5f2e0c5de4e1051bfaa8be2db3ce40"
+    },
+    ".github/workflows/engine-render.yml": {
+      "previous": "071763bec708c8b596d2ef7f958242cfda73b127",
+      "current": "071763bec708c8b596d2ef7f958242cfda73b127"
+    },
+    ".github/workflows/render.yml": {
+      "previous": "54d1e69add408cd3532451f85b355626c78c451a",
+      "current": "54d1e69add408cd3532451f85b355626c78c451a"
+    }
+  },
+  "merge_tree": {
+    "exit": 1,
+    "stdout": "24414194883c1d56612e232c69d25febf36ceca6\n100644 3a4cf83d05ced9b974d7a3b4bec99ca0b7128c13 1\t.github/ci/legacy-jobs.yml\n100644 880ab70cc0e2093b1b42bc944f90350e0b9e312b 2\t.github/ci/legacy-jobs.yml\n100644 883b92777d236c81dc60b82915429d289bf9bf49 3\t.github/ci/legacy-jobs.yml\n100644 2db815f91be506a7744aec17eedcf43b1717c9d1 1\tapp/deploy/Caddyfile\n100644 873b40f8742cd8b22528a01cd51132023fb53f78 2\tapp/deploy/Caddyfile\n100644 4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d 3\tapp/deploy/Caddyfile\n100755 e882221ee481467e1645aa295ea391549fc22e3d 1\tapp/deploy/update.sh\n100755 3fa8a0b1043b52fcdba5fa869adb540ccefb12bf 2\tapp/deploy/update.sh\n100755 d168d6c4c5906387cc58ac49ce0ed8cedfdd30a6 3\tapp/deploy/update.sh\n100644 fbe7561c17c773b04128b59c4534e7d16a855267 1\tsite/etfs.html\n100644 16a0e41725b2d0dfeefd7642749094423c01b3c0 2\tsite/etfs.html\n100644 b8d1809081df4e7006760544e77f96ceccb1bff4 3\tsite/etfs.html\n100644 c51d59bc0b3e5a1b3feb001e82bb8b916f3c44d7 1\tsite/us_stocks.html\n100644 5556125a618429abb40e6be61fe4292d914b7aa3 2\tsite/us_stocks.html\n100644 2a7633efd420607c9db2f8f263f2f9257ac08847 3\tsite/us_stocks.html\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging app/deploy/Caddyfile\nCONFLICT (content): Merge conflict in app/deploy/Caddyfile\nAuto-merging app/deploy/update.sh\nCONFLICT (content): Merge conflict in app/deploy/update.sh\nAuto-merging config/site_access.yml\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (e22e1c33c810da99f7389f5069dd2ee045270c85 vs. a3817230e8bc849159b06d81c87ffb4a072ca86b)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/finance_intelligence.js\nAuto-merging site/fundamental_forensics.js\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/news.html\nAuto-merging site/reference.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nAuto-merging site/tech_lab.html\nwarning: Cannot merge binary files: site/us_stocks.html (e22e1c33c810da99f7389f5069dd2ee045270c85 vs. a3817230e8bc849159b06d81c87ffb4a072ca86b)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAuto-merging templates/finance_intelligence.js\nAuto-merging templates/fundamental_forensics.js\nAuto-merging templates/tech_lab.html.j2\nAuto-merging tests/test_regwall_json_gate.py\n",
+    "stderr": "",
+    "sha256": "ab620171ff2dc1dcdf62490c6977870778b9ce33fc21f0cc0af95dfd77d22112"
+  },
+  "post_head": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "post_status": "",
+  "finished_at": "2026-10-20T00:22:16.054018+00:00"
+}

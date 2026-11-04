@@ -1070,6 +1070,114 @@ datasets:
       remain operative; a private pointer cannot grant itself authority.
 
 
+  - dataset_id: company_intelligence.relationship_observation_package
+    layer: L3
+    status: PRODUCED
+    owner: company-intelligence
+    producer: scripts/build_relationship_observations.py
+    storage: data/company_intelligence/relationships/observation_package.v2.json
+    format: json
+    grain: [package_id, observation_id]
+    temporal_profile: DERIVED
+    timezone: UTC
+    frequency: on_demand
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [referential, uniqueness, temporal_integrity]
+    version: "2.0.0"
+    basis: not_applicable
+    clocks: [derived]
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    schema:
+      schema: {dtype: string, nullable: false, value: company_intelligence.relationship_observation_package/v2}
+      package_id: {dtype: string, nullable: false}
+      as_of: {dtype: RFC3339_UTC, nullable: false}
+      computed_at: {dtype: RFC3339_UTC, nullable: false, note: "== as_of; the producer has no wall clock"}
+      manifest_version: {dtype: string, nullable: false, note: "sha256 of the pinned UNIVERSE_MANIFEST"}
+      adoption_state: {dtype: string, nullable: false, note: "proposed until an adoption decision; never serving by itself"}
+      observations: {dtype: object, nullable: false}
+      non_edges: {dtype: object, nullable: false}
+      coverage: {dtype: object, nullable: false}
+      assessments: {dtype: object, nullable: false}
+      magnitude_revisions: {dtype: object, nullable: false}
+      inputs: {dtype: object, nullable: false, note: "source documents by accession with sha256"}
+      warnings: {dtype: object, nullable: false}
+      purpose: {dtype: object, nullable: false}
+      authority: {dtype: object, nullable: false, note: "gate/rank/size/trade/prediction all false"}
+      content_boundary: {dtype: object, nullable: false}
+    code_consumers:
+      - engine/company_intelligence/relationships/package_v2.py
+      - engine/company_intelligence/relationships/replay.py
+      - scripts/relationship_m2_envelope.py
+      - scripts/relationship_m3_describe.py
+    notes: >
+      GMI ORCH-REL M2 (2026-10-21..23): descriptive, source-backed economic
+      relationship OBSERVATIONS (supplier_customer, contract_manufacturing,
+      licensing, distribution, component_dependency) extracted from public SEC
+      filings of the pinned coverage_20261019 universe, D1 + D2 domains, judged
+      by the M2 judging lanes and folded by the producer. Off-render; the
+      producer is fail-open (a contract violation warns and does not write).
+      adoption_state is `proposed`; purpose.source_purpose_permission is
+      NOT_ESTABLISHED and content_boundary says source text may be present and
+      the payload is NOT certified public-safe or quote-free, so redistribution
+      is affirmatively not_granted and no page may serve excerpts from it.
+      Authority is descriptive only: no gate, rank, size, trade or prediction.
+      §8.2 envelope on this package (research/theme_graph/gmi_relationships_20261021/
+      m2_integration/envelope_print.txt): E4 recall 83/238 = 0.349 [0.291,0.411],
+      E5 precision 67/100 = 0.67 [0.573,0.754], weighted 0.662 [0.560,0.765]
+      (owner review by a blind non-authoring Opus reviewer, 25 decoys 0 accepted;
+      m2_precision_owner/precision_report.json; supersedes the glm re-read 49/100
+      weighted 0.498) — neither 0.80 target met nor ratified.
+      Measured on integ head 8a1fee67; superseded and never served: 603c3551.
+
+  - dataset_id: company_intelligence.relationship_edges
+    layer: L3
+    status: PRODUCED
+    owner: company-intelligence
+    producer: scripts/build_relationship_observations.py
+    storage: data/company_intelligence/relationships/relationship_edges.json
+    format: json
+    grain: [package_id, edge_id]
+    temporal_profile: DERIVED
+    timezone: UTC
+    frequency: on_demand
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [referential, uniqueness]
+    version: "1.0.0"
+    basis: not_applicable
+    clocks: [derived]
+    point_in_time_corporate_actions: false
+    inputs: [company_intelligence.relationship_observation_package]
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    schema:
+      schema: {dtype: string, nullable: false, value: company_intelligence.relationship_edges/v1}
+      package_id: {dtype: string, nullable: false}
+      package_sha256: {dtype: string, nullable: false, note: "sha256 of the package it was folded from"}
+      as_of: {dtype: RFC3339_UTC, nullable: false}
+      manifest_version: {dtype: string, nullable: false}
+      adoption_state: {dtype: string, nullable: false}
+      edges: {dtype: object, nullable: false, note: "248 at 8a1fee67; from/to roles per species"}
+      non_edges: {dtype: object, nullable: false}
+      coverage: {dtype: object, nullable: false}
+      counts: {dtype: object, nullable: false}
+      authority: {dtype: object, nullable: false}
+    code_consumers:
+      - engine/company_intelligence/relationships/package_v2.py
+      - scripts/relationship_m3_describe.py
+      - scripts/gmi_explorer/model.py   # GMI Explorer S3 reader (PR #10099)
+    notes: >
+      The edge/non-edge fold of company_intelligence.relationship_observation_package
+      (same producer run, bound by package_sha256). Consumed by the GMI Explorer
+      S3 relationships surface as display-tier descriptive context only. Same
+      rights, purpose and authority boundary as the package it is folded from;
+      adoption_state `proposed`.
+
   # EOD/fundamentals have authenticated, completed research-corpus receipts.
   # PRODUCED records their existence, not full history or L2/PIT admission.
   # BOATS keeps its separate live-integration gate below.
@@ -1393,9 +1501,11 @@ datasets:
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, completeness, temporal_integrity]
     version: "0.1.0"
-    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    licensing: chairman_attested_special_forex_r26_product_use_approved_2026_10_22
     code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
     notes: >
+      Forex R26 licensing/product use is complete under Chairman special approval,
+      Macro PR 9996 comment 6331071428 (2026-10-22); technical admission remains pending.
       Research-only source history, not an active production dataset. Raw response
       availability, exact source context, dated identity and actual upstream clocks
       remain unqualified. Vendor prices/units are not executable or canonical price
@@ -1415,10 +1525,12 @@ datasets:
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, completeness, temporal_integrity]
     version: "0.1.0"
-    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    licensing: chairman_attested_special_forex_r26_product_use_approved_2026_10_22
     code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
     inputs: [vendor.tiingo.raw.forex_bars]
     notes: >
+      Forex R26 licensing/product use is complete under Chairman special approval,
+      Macro PR 9996 comment 6331071428 (2026-10-22); technical admission remains pending.
       Research-only source history, not an active production dataset. Raw response
       availability, exact source context, dated identity and actual upstream clocks
       remain unqualified. Vendor prices/units are not executable or canonical price

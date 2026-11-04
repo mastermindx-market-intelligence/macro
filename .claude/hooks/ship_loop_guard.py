@@ -748,6 +748,76 @@ def _fabric_lane_admission(root: Path) -> str:
     return run_id
 
 
+def _fabric_existing_lane_completion(root: Path) -> dict[str, Any] | None:
+    """Recognize a bounded return to the existing native Fabric controller.
+
+    This is completion metadata, NEVER authentication or tool admission. The
+    caller must separately pass the unchanged delivery-root admission. Unlike a
+    newly minted lane, a repair may reuse its parent's linked claude/* worktree;
+    its working-tree name therefore need not equal the new attempt id. Bind the
+    original executor's run, lease, usage/outcome paths and root in this hook's
+    existing session state, rather than inventing a queue or completion receipt.
+    """
+    env = os.environ
+    run_id = env.get("REMOTE_SUB_RUN_ID", "")
+    if not _FABRIC_LANE_RUN_ID.fullmatch(run_id):
+        return None
+    if env.get("POOL_USAGE_RUN_ID") != run_id:
+        return None
+    complexity = env.get("POOL_TASK_COMPLEXITY")
+    task_class = env.get("POOL_TASK_CLASS", "")
+    if complexity not in {"C0_MECHANICAL", "C1_ROUTINE_BOUNDED", "C2_COMPLEX_BOUNDED"}:
+        return None
+    if task_class not in {"", "mechanical", "fix_build", "review", "census",
+                          "audit", "verify", "execute", "build", "fix"}:
+        return None
+    if not task_class and complexity == "C2_COMPLEX_BOUNDED":
+        return None
+    if env.get("FABRIC_OPERATOR_CAPSULE") or env.get("FABRIC_OPERATOR_CAPABILITY"):
+        return None
+    scope: dict[str, Any] = {"version": 1, "run_id": run_id,
+                             "task_class": task_class, "complexity": complexity}
+    for field, variable in (("root_id", "POOL_ORCHESTRATOR_ID"),
+                            ("lease_id", "POOL_LEASE_ID"),
+                            ("host", "LANE_REMOTE_HOST")):
+        value = env.get(variable, "")
+        if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value) is None:
+            return None
+        scope[field] = value
+    parent = env.get("POOL_PARENT_RUN_ID") or None
+    if parent is not None and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", parent) is None:
+        return None
+    scope["parent_run_id"] = parent  # Legacy direct controllers have no parent id.
+    try:
+        if root.is_symlink() or (root / ".git").is_symlink() or not (root / ".git").is_file():
+            return None
+        resolved = root.resolve()
+        lane_root = (Path.home() / "lanes" / "wt").resolve()
+        if resolved.parent != lane_root or not _FABRIC_LANE_RUN_ID.fullmatch(resolved.name):
+            return None
+        expected = Path.home() / "lanes" / "ext" / "lanes" / (run_id + ".provider.json")
+        output = Path(env.get("POOL_OUTCOME_FILE", ""))
+        if not output.is_absolute() or output.is_symlink() or output.resolve() != expected.resolve():
+            return None
+    except (OSError, RuntimeError, ValueError):
+        return None
+    scope["workspace"] = str(resolved)
+    scope["outcome_path"] = str(expected.resolve())
+    return scope
+
+
+def _fabric_completion_matches(root: Path, state: dict[str, Any]) -> bool:
+    """The guard and its hold adapter share one stop-only scope decision."""
+    recorded = state.get("fabric_completion_scope")
+    return bool(
+        state.get("root_admission_v") == _ROOT_ADMISSION_VERSION
+        and state.get("root_admitted") is True
+        and isinstance(recorded, dict)
+        and recorded == _fabric_existing_lane_completion(root)
+        and _delivery_root_admission(root)[0]
+    )
+
+
 # Claude Code's native worktree flow -- and every copy of the WorktreeCreate hook
 # older than its 2026-10-09 BRANCH NAME switch -- mints `.claude/worktrees/<name>`
 # on `worktree-<name>`. Hooks launch from $CLAUDE_PROJECT_DIR, so a host checkout
@@ -4775,7 +4845,28 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
         state["fabric_lane_run_id"] = lane_run_id
     else:
         state.pop("fabric_lane_run_id", None)
+    completion_scope = _fabric_existing_lane_completion(root) if admitted else None
+    if completion_scope is not None:
+        state["fabric_completion_scope"] = completion_scope
+    else:
+        state.pop("fabric_completion_scope", None)
     _save(path, state)
+
+    if completion_scope is not None:
+        _emit({"hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": (
+                "FABRIC BOUNDED WORKER: run " + completion_scope["run_id"]
+                + " is executing a commission in an existing linked lane. "
+                "Do only the assigned work and return its evidence to the existing "
+                "controller. Commit or push only when the commission permits it; "
+                "do not inherit the principal's PR, merge, deployment or waiting "
+                "duties. A worker return is not acceptance, not SHIPPED and not "
+                "permission to retry. Existing tool, source-custody and hold "
+                "controls remain unchanged."
+            ),
+        }})
+        return
 
     if lane_run_id:
         _emit(
@@ -5194,6 +5285,19 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
         state.get("root_admission_v") == _ROOT_ADMISSION_VERSION
         and state.get("root_admitted") is False
     ):
+        return
+
+    # Existing-worktree Fabric repairs are bounded children too. Their source
+    # admission remains independent and is rechecked here. Return to the SAME
+    # controller captured at SessionStart; never infer acceptance, merge proof,
+    # permission to retry, or a new parent from an environment marker alone.
+    if _fabric_completion_matches(root, state):
+        _emit({"systemMessage": (
+            "FABRIC WORKER RETURN: the bounded commission may return its result "
+            "to its existing controller. This is not acceptance, not SHIPPED, "
+            "not merge/deployment proof and not retry authority. The parent "
+            "still owns review, integration and the program's completion."
+        )})
         return
 
     # A session's OWN declared end state is the single continuation fact this guard

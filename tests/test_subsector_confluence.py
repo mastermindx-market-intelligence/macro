@@ -13,6 +13,33 @@ from engine import subsector_confluence as sc
 
 # ----------------------------------------------------------------- pure logic ----
 
+def test_us_subsector_js_honesty_has_no_live_or_shishi():
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    text = (root / "templates" / "subsectors.js").read_text(encoding="utf-8")
+    assert "实时" not in text
+    assert "deep live coverage" not in text
+    assert "enough live data" not in text
+    assert "have enough data to time" in text
+    assert "有足够数据可计时" in text
+    assert "High confidence — deep coverage" in text
+
+
+def test_us_subsector_js_hero_denominator_falls_back_to_n_listed_for_baskets():
+    """R3A-66 / P20 (2026-11-02): the basket universe's coverage carries n_listed, not
+    n_subsectors (engine.subsector_confluence.compute_basket_confluence, SIC-D-B03), so the
+    shared honesty line must take the denominator per universe — never print "of undefined".
+    Pinned as the expression itself: dropping the fallback, or reading cov.n_subsectors
+    straight into the line again, fails this test."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    text = (root / "templates" / "subsectors.js").read_text(encoding="utf-8")
+    assert "var covTotal = cov.n_subsectors != null ? cov.n_subsectors : cov.n_listed;" in text
+    assert "cov.n_gateable != null && covTotal != null" in text
+    assert "cov.n_subsectors + '</span>" not in text
+    assert text.count("' + covTotal + '</span>") == 2  # EN "of N" and ZH "/N 个"
+
+
 def test_slug():
     assert sc._slug("Software - Infrastructure") == "software-infrastructure"
     assert sc._slug("Diagnostics & Research") == "diagnostics-research"
@@ -162,3 +189,104 @@ def test_china_ths_score_group_is_bilingual_and_uses_csi300():
     assert g["regime"]["rs_60d"] is not None           # measured vs CSI 300, not SPY
     # at least one member carries a Chinese name (the funnel/detail bilingual join key)
     assert any(m.get("name_zh") for m in g["members"])
+
+
+def test_china_board_js_paints_sleeve_and_semis_from_record():
+    """China board reads stored sleeve and semis sentences from the record."""
+    from pathlib import Path
+    js = Path(__file__).resolve().parents[1].joinpath(
+        "templates", "subsectors_china.js").read_text(encoding="utf-8")
+    assert "sleeve_chip" in js
+    assert "ai_semis_confirmer" in js
+    assert "label_zh" in js
+    assert "-0.1874" not in js
+    assert "1.00" not in js
+    card = js.split("function cardHTML", 1)[1].split("function cardDeck", 1)[0]
+    render = js.split("function render()", 1)[1].split("function boot", 1)[0]
+    assert "sleeve_chip" in render
+    assert "g.ai_semis_confirmer" in card
+
+
+def _china_board_js_parts():
+    """The script, its two text helpers, and the chip function, in the file's own bytes."""
+    from pathlib import Path
+
+    js = Path(__file__).resolve().parents[1].joinpath(
+        "templates", "subsectors_china.js"
+    ).read_text(encoding="utf-8")
+    helpers = "\n".join(
+        line for line in js.splitlines()
+        if line.startswith("  var L = function") or line.startswith("  function esc(")
+    )
+    chip = "function storedChip" + js.split("function storedChip", 1)[1].split("function render()", 1)[0]
+    return js, helpers + "\n" + chip + "\n"
+
+
+def _run_node(source):
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    done = subprocess.run([node, "-e", source], capture_output=True, text=True, timeout=30, check=True)
+    return json.loads(done.stdout)
+
+
+def test_china_board_stored_chip_prints_the_sentence_and_its_date():
+    _js, prelude = _china_board_js_parts()
+    out = _run_node(prelude + """
+console.log(JSON.stringify({
+  none: storedChip(null, '2026-10-30'),
+  blank: storedChip({label_en: ''}, '2026-10-30'),
+  full: storedChip({label_en: 'a<b', label_zh: '\u7532<\u4e59'}, '<d>'),
+  undated: storedChip({label_en: 'a'}, ''),
+}));
+""")
+    assert out["none"] == ""
+    assert out["blank"] == ""
+    assert out["full"] == (
+        '<div><span class="l-en">a&lt;b</span><span class="l-zh">\u7532&lt;\u4e59</span>'
+        ' <span class="l-en">as of &lt;d&gt;</span><span class="l-zh">\u622a\u81f3 &lt;d&gt;</span></div>'
+    )
+    assert out["undated"] == '<div><span class="l-en">a</span><span class="l-zh">a</span></div>'
+
+
+def test_china_board_header_prints_each_check_with_its_own_date():
+    js, prelude = _china_board_js_parts()
+    render = js.split("function render()", 1)[1]
+    block = "var host" + render.split("var host", 1)[1].split("app.innerHTML", 1)[0]
+    out = _run_node(prelude + """
+var hostEl = {innerHTML: 'X'};
+var document = {getElementById: function () { return hostEl; }};
+var DATA = {
+  sleeve_chip: {label_en: 'S', label_zh: 'S2', radar_as_of: '2026-10-30', as_of: 'WRONG'},
+  ai_semis_confirmer: {label_en: 'G', label_zh: 'G2', as_of: '2026-10-29', radar_as_of: 'WRONG'},
+};
+""" + block + "\nconsole.log(JSON.stringify(hostEl.innerHTML));\n")
+    assert out.startswith("X")
+    assert "WRONG" not in out
+    assert out.index(">S<") < out.index("2026-10-30") < out.index(">G<") < out.index("2026-10-29")
+
+
+def test_china_board_card_pill_prints_only_when_the_card_has_the_sentence():
+    js, prelude = _china_board_js_parts()
+    card = js.split("function cardHTML", 1)[1].split("function cardDeck", 1)[0]
+    assert "+ semiPill" in card
+    pill = "var semi =" + card.split("var semi =", 1)[1].split("    }\n", 1)[0] + "    }\n"
+    out = _run_node(prelude + "function pillOf(g) {\n" + pill + """
+return semiPill;
+}
+console.log(JSON.stringify({
+  none: pillOf({}),
+  blank: pillOf({ai_semis_confirmer: {}}),
+  full: pillOf({ai_semis_confirmer: {label_en: 'a<b', label_zh: '\u7532<\u4e59'}}),
+}));
+""")
+    assert out["none"] == ""
+    assert out["blank"] == ""
+    assert out["full"] == (
+        '<span class="pill"><span class="l-en">a&lt;b</span>'
+        '<span class="l-zh">\u7532&lt;\u4e59</span></span>'
+    )

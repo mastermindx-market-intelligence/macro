@@ -1897,3 +1897,149 @@ def cohort_integrity_block(
                                         "每份均为 descriptive_only 并显式声明不携带任何晋升权力；"
                                         "各时代绝不合并、不共用任何分母、不做跨时代比较。")
     return block
+
+
+def classify_source_findings(view: Mapping[str, Any]) -> dict[str, Any]:
+    """Project T4 source/data observations without evaluating any episode outcome.
+
+    The caller owns the supplied snapshot's identity/freshness. Exact canonical parser
+    diagnostics are an allowlist, not a prose heuristic: T4's generic parse-error code
+    also covers size caps and unreadable content. Strong stale-input attribution needs
+    the upstream's own content clock in this same snapshot. Neither counts nor classes
+    confer causal, independent-trial, evaluation-tier or execution authority.
+    """
+    from copy import deepcopy
+
+    if (not isinstance(view, Mapping)
+            or view.get("schema") != "mastermind.output_health.v1"
+            or not isinstance(view.get("outputs"), list)
+            or not isinstance(view.get("generated"), Mapping)):
+        raise ValueError("a canonical output-health snapshot is required")
+    rows = view["outputs"]
+    if any(not isinstance(row, Mapping) for row in rows):
+        raise ValueError("output-health outputs must be records")
+    observed_at = view["generated"].get("observed_at")
+    def usable_clock(value, *, naive_allowed=False):
+        if not isinstance(value, str) or not value.strip():
+            return False
+        try:
+            parsed = datetime.datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+        except ValueError:
+            return False
+        # Date-only clocks cannot earn T4's stale content verdict without a calendar.
+        return (len(value.strip()) > 10
+                and (parsed.utcoffset() is not None or naive_allowed))
+
+    if not usable_clock(observed_at):
+        raise ValueError("output-health observation time is required")
+
+    fields = ("engine_id", "artifact_id", "path", "state", "assessment_status",
+              "decided_by", "observed_at", "source_asof", "age_hours",
+              "freshness_sla_hours", "dependency_bound", "required_inputs",
+              "reason_codes", "evidence", "reader_observation")
+    def retained(row):
+        return deepcopy({key: row.get(key) for key in fields})
+
+    by_id: dict[str, list[Mapping[str, Any]]] = {}
+    for row in rows:
+        aid = row.get("artifact_id")
+        if isinstance(aid, str) and aid:
+            by_id.setdefault(aid, []).append(row)
+
+    def identified(row):
+        return (all(isinstance(row.get(key), str) and row[key].strip()
+                    for key in ("artifact_id", "engine_id", "path"))
+                and len(by_id.get(row["artifact_id"], [])) == 1
+                and row.get("observed_at") == observed_at)
+
+    # These are exact diagnostics emitted by build_output_health._read_watermark.
+    # No match on arbitrary error prose, caps, empty stores, or malformed timestamps.
+    parser_defects = {
+        f"{location} ({error})"
+        for location in ("content does not parse", "last jsonl row does not parse",
+                         "envelope sidecar does not parse")
+        for error in ("JSONDecodeError", "ValueError")
+    }
+    def content_stale(row):
+        age, sla = row.get("age_hours"), row.get("freshness_sla_hours")
+        clock = row.get("source_asof")
+        codes = row.get("reason_codes")
+        valid_codes = isinstance(codes, list) and all(isinstance(c, str) and c for c in codes)
+        numeric = lambda value: (type(value) in (int, float)
+                                 and math.isfinite(value))
+        return (identified(row) and row.get("state") == "stale"
+                and row.get("assessment_status") in ("complete", "partial")
+                and row.get("decided_by") == "content_watermark"
+                and valid_codes and usable_clock(clock, naive_allowed=(
+                    "naive_watermark_coerced_utc" in codes))
+                and numeric(age) and numeric(sla) and sla > 0 and age > sla)
+
+    observations, unaffected = [], []
+    for index, row in enumerate(rows):
+        valid_identity = identified(row)
+        if (valid_identity and row.get("state") == "healthy"
+                and row.get("assessment_status") == "complete"):
+            unaffected.append({"classification": None,
+                               "disposition": "no_failure_observed",
+                               "output": retained(row)})
+            continue
+        raw_codes = row.get("reason_codes")
+        codes = sorted(set(raw_codes)) if (isinstance(raw_codes, list)
+                    and all(isinstance(code, str) and code for code in raw_codes)) else []
+        for code in codes or ["no_supported_reason"]:
+            classification, eligibility, source, source_id = (
+                "unclassified", "unsupported_or_insufficient_evidence", None, None)
+            if not valid_identity:
+                eligibility = "missing_ambiguous_or_mismatched_snapshot_identity"
+            elif code == "content_parse_error":
+                evidence = row.get("evidence")
+                if isinstance(evidence, list) and any(
+                    isinstance(item, Mapping) and item.get("plane") == "producer"
+                    and item.get("source") == "content"
+                    and isinstance(item.get("detail"), str)
+                    and item["detail"] in parser_defects for item in evidence
+                ):
+                    classification, eligibility = "data_issue", "observed_content_parser_defect"
+                else:
+                    eligibility = "parse_code_does_not_establish_content_defect"
+            elif code.startswith("required_input_stale:"):
+                source_id = code.split(":", 1)[1]
+                candidates = by_id.get(source_id, [])
+                source = candidates[0] if len(candidates) == 1 else None
+                required = row.get("required_inputs")
+                links = [link for link in required if isinstance(link, Mapping)
+                         and link.get("artifact_id") == source_id] if isinstance(required, list) else []
+                if (row.get("dependency_bound") == "exact"
+                        and row.get("state") == "stale"
+                        and row.get("decided_by") == "dependency"
+                        and len(links) == 1 and links[0].get("state") == "stale"
+                        and source is not None and content_stale(source)
+                        and links[0].get("assessment_status") == source.get("assessment_status")):
+                    classification, eligibility = "stale_feature", "observed_required_input_content_sla_exceeded"
+                else:
+                    eligibility = "exact_required_input_content_clock_not_established"
+            observations.append({
+                "observation_id": f"{index}:{code}",
+                "engine_id": row.get("engine_id"), "artifact_id": row.get("artifact_id"),
+                "classification": classification, "reason_code": code,
+                "eligibility": eligibility, "source_artifact_id": source_id,
+                "output": retained(row), "source": retained(source) if source is not None else None,
+            })
+    grouped: dict[tuple[str, str, str | None], list[str]] = {}
+    for item in observations:
+        key = (item["classification"], item["reason_code"], item["source_artifact_id"])
+        grouped.setdefault(key, []).append(item["observation_id"])
+    groups = [{"classification": key[0], "reason_code": key[1],
+               "source_artifact_id": key[2], "observation_ids": members,
+               "observation_count": len(members), "count_unit": "health_observations"}
+              for key, members in sorted(grouped.items(), key=lambda pair: (
+                  pair[0][0], pair[0][1], pair[0][2] or ""))]
+    return {
+        "schema": "postmortem.source_findings.v1", "scope": "source_data_observations",
+        "evaluation_status": "not_assessed", "observed_at": observed_at,
+        "count_unit": "health_observations", "observation_unit": "output_reason_pair_in_supplied_snapshot",
+        "observation_identity_scope": "this_snapshot_only", "n_outputs": len(rows),
+        "unavailable_output_count": sum(row.get("state") == "unavailable" for row in rows),
+        "unclassified_observation_count": sum(item["classification"] == "unclassified" for item in observations),
+        "observations": observations, "groups": groups, "unaffected_outputs": unaffected,
+    }
