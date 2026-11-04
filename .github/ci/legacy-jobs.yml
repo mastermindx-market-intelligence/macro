@@ -22850,6 +22850,10 @@ jobs:
         run: pip install pytest pandas pyarrow jinja2 pyyaml
       - name: basket staleness warn tests
         run: python -m pytest tests/test_basket_staleness_warn.py -q
+      - name: regional basket detail source identity and unavailable counts
+        run: |
+          node --version
+          python -m pytest tests/test_theme_detail_cycles.py -q
 
   sector-basket-links:
     if: ${{ false }}
