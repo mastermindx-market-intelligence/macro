@@ -244,8 +244,12 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
 
     if qualification:
         context["clock_qualification"] = qualification
+        context["clock_reading_note"] = _pair(
+            "The reported period does not verify how recent these readings are.",
+            "参考期不能证明这些读数的时效性。")
         if state == "CURRENT":
-            context["state_label"] = dict(qualification["label"])
+            context["state_label"] = _pair(
+                "Source present; age unverified", "来源已提供；时效性未核实")
             context["state_tone"] = "neutral"
         if availability.get("worst_freshness") == "CURRENT":
             context["worst_freshness"] = business_unverified_label()
@@ -888,7 +892,7 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
     if business:
         for row, metric in zip(rows, (snapshot.get("metrics") or {}).get("items") or []):
             if metric.get("freshness") == "CURRENT":
-                row["freshness"] = business_unverified_label()
+                row["freshness"] = _pair("Source age unverified", "时效性未核实")
                 row["freshness_tone"] = "neutral"
     return rows
 
