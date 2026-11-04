@@ -131,4 +131,19 @@ All seven comments were persisted and their complete bodies read back exactly. D
 
 At the readback boundary, no later owner response was observed on these requests, and no answer followed the existing P00 original-receipt request. Exact identities, body hashes and readback state are durable in [CANDIDATE4_COORDINATION_RECEIPTS.json](evidence/CANDIDATE4_COORDINATION_RECEIPTS.json). No response, runtime START, background executor or automatic continuation is presumed.
 
+## Latest publication and owner delivery — 4 November 2026
+
+The source/evidence/native follow-up is frozen at **0763afb2cb7e9916a720c879a8721d4dd487b5cd**, with163 package members and aggregateb4e24bd13521542670d645dbe247377fd5372e51dcdef696dc5bcb82e6d66c25. Exact return, manifest, F image and unchanged joint-contract Git blobs were read back. A later enclosing metadata-only commit adds these delivery receipts and updates the package inventory; it changes no joint semantics or native pixels.
+
+| Existing carrier | Exact new material update | Meaning |
+| --- | --- | --- |
+| F02 #10630 | [6618980254](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6618980254) | Existing candidate.4 request, actual source approval and exact incumbent resume gap; source concurrence can progress separately from its native footer hold |
+| P00 #10626 | [6618980611](https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6618980611) | Actual read-only host/log evidence and original receipt classification still required; no replay/cutover |
+| F03 #10631 | [6618981006](https://github.com/mastermindx-market-intelligence/macro/pull/10631#issuecomment-6618981006) | Actual12-match universe, explicit pending four-item facet and retained exporter/domain qualification |
+| Existing F01 reviewer #10645 | [6618981402](https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6618981402) | Bounded evidence/F-only amendment returned to the existing review path; earlier approval not extended |
+| D06 #10655 | [6618981875](https://github.com/mastermindx-market-intelligence/macro/pull/10655#issuecomment-6618981875) | Actual F01 named-return observations and unchanged reader/lifecycle interface |
+| Programme #10617 | [6618982328](https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6618982328) | Waiting domains may consume the source-approved versioned Phase2A packet provisionally; final foundation gates remain |
+
+All six complete comment bodies and the updated PR description were read back exactly. The source carrier remains Draft, same author and base. These are actual delivery receipts, not new author concurrence, native START or final design approval. They extend the existing [coordination evidence](evidence/CANDIDATE4_COORDINATION_RECEIPTS.json) without replacing its earlier records. No watcher or unattended continuation is armed.
+
 **FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED for remaining final qualification.** The authorized source specification, actual beta follow-up, disjoint native repairs, isolated critique/follow-up, read-only original-host investigation, publication and incumbent-owner coordination are delivered. The remaining design qualification depends on the original-effect disposition, affected-owner concurrence and independent complete-set/QA01/RIG evidence. The final F interaction and full accessibility cases are unexecuted and cannot be marked passed by a static capture. Already assigned domains may use the independently source-approved versioned Phase2A packet provisionally under their existing gates. **Acceptance remains PARTIAL; final joint v1 unreleased; MISSION_COMPLETE: false.**
