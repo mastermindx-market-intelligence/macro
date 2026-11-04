@@ -1481,6 +1481,21 @@ def _brain_module():
         raise HTTPException(503, "brain service unavailable") from exc
 
 
+def _brain_fabric_selection(request: Request) -> dict:
+    """Server startup injection only; never derive a binding from request content.
+
+    Production installs no default. Explicit selection without a factory is
+    forwarded intact so the gateway refuses instead of using legacy credentials.
+    """
+    selected = getattr(request.app.state, "fabric_selected", False)
+    if selected is False:
+        return {}
+    return {
+        "fabric_selected": selected,
+        "fabric_provider_factory": getattr(request.app.state, "fabric_provider_factory", None),
+    }
+
+
 # ── Brain security: burst throttle + device-linked identity (PART A/B) ─────────
 # Burst throttle: an in-memory per-user sliding window shared across chat + stream.
 # max 10 requests / 60s → 429. Applied BEFORE the quota check so a throttled request
@@ -1695,6 +1710,7 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         # F11-6 (Sol 5967105152 item 5): the caller's own verified token, already injected
         # by require_user as `_access_token`; a guest has none. Never re-extracted here.
         user_jwt="" if is_guest else (user.get("_access_token") or ""),
+        **_brain_fabric_selection(request),
     )
 
     if result.get("quota_exhausted"):
@@ -1745,6 +1761,7 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
     # Resolved OUTSIDE the generator so it is computed on this request's thread, not on the
     # brain_runs pump thread that may outlive the socket.
     account_prefs = user_prefs.read_user_prefs(user)
+    fabric_selection = _brain_fabric_selection(request)
 
     def _gen():
         yield from gw.chat_stream(
@@ -1766,6 +1783,7 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             account_prefs=account_prefs,
             # F11-6 (Sol 5967105152 item 5): same caller-token pass-through as chat().
             user_jwt="" if is_guest else (user.get("_access_token") or ""),
+            **fabric_selection,
         )
 
     # The turn is registered as a server-side RUN before a single byte goes out.

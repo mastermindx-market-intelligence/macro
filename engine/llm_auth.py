@@ -52,7 +52,9 @@ import os
 import re
 import threading
 import time
+from contextlib import contextmanager
 from typing import Any, Callable
+from types import SimpleNamespace
 
 log = logging.getLogger(__name__)
 
@@ -338,6 +340,270 @@ def _cool_pool_key(p: dict, kind: str) -> None:
 #                      pool key (enables ledger cooling/accounting)
 
 
+class FabricProviderError(ValueError):
+    """Bounded consumer refusal; never include a binding or transport exception."""
+
+    def __init__(self, code: str, *, effect_unknown: bool = False):
+        super().__init__(code)
+        self.code = code
+        self.effect_unknown = effect_unknown
+
+
+_FABRIC_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")
+_FABRIC_BINDING_KEYS = frozenset({"client", "model", "provider", "cost_basis", "cap_id"})
+_FABRIC_CALL_KEYS = frozenset({
+    "model", "system", "messages", "tools", "tool_choice", "max_tokens",
+    "temperature", "stop_sequences",
+})
+
+
+def is_fabric_provider(provider: dict) -> bool:
+    return provider.get("name") == "fabric" and provider.get("exclusive") is True
+
+
+def is_fabric_selection(providers: list[dict]) -> bool:
+    if any(p.get("name") == "fabric" for p in providers):
+        if len(providers) != 1 or not is_fabric_provider(providers[0]):
+            raise FabricProviderError("fabric_mixed_providers")
+        return True
+    return False
+
+
+def build_fabric_provider(factory, *, request_id: str) -> dict:
+    """Compose one server-injected, turn-scoped client without discovering keys.
+
+    The existing service container owns the immutable factory. It must construct a
+    fresh client for each turn: the transport's uncertainty latch cannot be shared
+    across users. This is dependency injection, not entitlement, account selection,
+    a quota claim, or a second binding registry. No default factory is installed.
+    """
+    if not isinstance(request_id, str) or not _FABRIC_ID.fullmatch(request_id) or len(request_id) > 96:
+        raise FabricProviderError("fabric_request_identity_invalid")
+    # The incumbent workload guard has not yet qualified this transport. A host
+    # floor must never be bypassed by injecting a client before build_providers.
+    if "MM_PROVIDER_WORKLOAD_PROFILE" in os.environ:
+        raise FabricProviderError("fabric_workload_policy_unqualified")
+    if not callable(factory):
+        raise FabricProviderError("fabric_binding_missing")
+    try:
+        bound = factory()
+    except Exception:
+        raise FabricProviderError("fabric_binding_unavailable") from None
+    if not isinstance(bound, dict) or set(bound) != _FABRIC_BINDING_KEYS:
+        raise FabricProviderError("fabric_binding_invalid")
+    for name in ("model", "provider", "cap_id"):
+        if not isinstance(bound[name], str) or not _FABRIC_ID.fullmatch(bound[name]):
+            raise FabricProviderError("fabric_binding_invalid")
+    if (not isinstance(bound["cost_basis"], str)
+            or bound["cost_basis"] not in {"metered", "subscription", "local", "unknown"}):
+        raise FabricProviderError("fabric_binding_invalid")
+    if not callable(getattr(getattr(bound["client"], "messages", None), "create", None)):
+        raise FabricProviderError("fabric_binding_invalid")
+    provider = {
+        **bound, "name": "fabric", "exclusive": True, "cred": "server-injected",
+        "env_var": "", "_fabric_request_id": request_id, "_fabric_step": 0,
+        "_fabric_pending": False, "_fabric_failure": None,
+        "_fabric_usage_known": True, "_fabric_input": 0, "_fabric_output": 0,
+        "_fabric_known_responses": 0,
+    }
+    provider["client"] = _FabricConsumerClient(bound["client"], provider)
+    return provider
+
+
+def _fabric_plain(value):
+    if callable(getattr(value, "model_dump", None)):
+        value = value.model_dump()
+    if isinstance(value, dict):
+        return {k: _fabric_plain(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_fabric_plain(v) for v in value]
+    return value
+
+
+def fabric_request_kwargs(provider: dict, kwargs: dict) -> dict:
+    """Identify an intentional step before I/O; never mint identity in recovery."""
+    if provider.get("_fabric_failure") is not None:
+        raise provider["_fabric_failure"]
+    if provider.get("_fabric_pending"):
+        raise FabricProviderError("fabric_step_unsettled", effect_unknown=True)
+    if set(kwargs) - _FABRIC_CALL_KEYS or kwargs.get("model") != provider["model"]:
+        raise FabricProviderError("fabric_request_invalid")
+    if provider["_fabric_step"] >= 256:
+        raise FabricProviderError("fabric_step_bound")
+    out = _fabric_plain(kwargs)
+    # Remove only known Anthropic cache hints at their protocol positions. Never
+    # alter tool inputs/results or strip unknown semantic request parameters.
+    for item in out.get("tools") or []:
+        if isinstance(item, dict):
+            item.pop("cache_control", None)
+    system = out.get("system")
+    if isinstance(system, list):
+        for item in system:
+            if isinstance(item, dict):
+                item.pop("cache_control", None)
+    for message in out.get("messages") or []:
+        content = message.get("content") if isinstance(message, dict) else None
+        if isinstance(content, list):
+            for block in content:
+                if isinstance(block, dict):
+                    block.pop("cache_control", None)
+    out["request_id"] = f"{provider['_fabric_request_id']}:brain:{provider['_fabric_step']}"
+    provider["_fabric_step"] += 1
+    provider["_fabric_pending"] = True
+    return out
+
+
+def fabric_failure(provider: dict, exc: Exception) -> FabricProviderError:
+    """Stop this turn without poisoning a process-wide account or another turn."""
+    if provider.get("_fabric_failure") is not None:
+        return provider["_fabric_failure"]
+    unknown = bool(getattr(exc, "effect_unknown", provider.get("_fabric_pending", False)))
+    if unknown:
+        provider["_fabric_usage_known"] = False
+    else:
+        provider["_fabric_pending"] = False
+    error = FabricProviderError(
+        "fabric_effect_unknown" if unknown else "fabric_unavailable",
+        effect_unknown=unknown,
+    )
+    provider["_fabric_failure"] = error
+    return error
+
+
+def fabric_response(provider: dict, response) -> None:
+    """Validate before tools and retain real completed-step usage for settlement."""
+    if not provider.get("_fabric_pending"):
+        raise FabricProviderError("fabric_response_without_request")
+    if getattr(response, "model", None) != provider["model"]:
+        raise FabricProviderError("fabric_response_model_mismatch", effect_unknown=True)
+    content = getattr(response, "content", None)
+    stop = getattr(response, "stop_reason", None)
+    if not isinstance(content, list) or stop not in {"end_turn", "max_tokens", "tool_use"}:
+        raise FabricProviderError("fabric_response_invalid", effect_unknown=True)
+    text_present = False
+    tools = []
+    for block in content:
+        kind = getattr(block, "type", None)
+        if kind == "text" and isinstance(getattr(block, "text", None), str):
+            text_present |= bool(block.text.strip())
+        elif kind == "tool_use":
+            if (not isinstance(getattr(block, "input", None), dict)
+                    or not isinstance(getattr(block, "id", None), str)
+                    or not _FABRIC_ID.fullmatch(block.id)
+                    or not isinstance(getattr(block, "name", None), str)
+                    or not _FABRIC_ID.fullmatch(block.name)):
+                raise FabricProviderError("fabric_tool_response_invalid", effect_unknown=True)
+            tools.append(block.id)
+        else:
+            raise FabricProviderError("fabric_response_invalid", effect_unknown=True)
+    if len(tools) != len(set(tools)) or bool(tools) != (stop == "tool_use"):
+        raise FabricProviderError("fabric_tool_response_invalid", effect_unknown=True)
+    usage = getattr(response, "usage", None)
+    values = [getattr(usage, name, None) for name in ("input_tokens", "output_tokens")]
+    if all(type(value) is int and value >= 0 for value in values):
+        provider["_fabric_input"] += values[0]
+        provider["_fabric_output"] += values[1]
+        provider["_fabric_known_responses"] += 1
+    else:
+        provider["_fabric_usage_known"] = False
+    provider["_fabric_pending"] = False
+    # Keep usage from a completed empty response, but prohibit hidden recovery.
+    if not text_present and not tools:
+        raise FabricProviderError("fabric_empty_response")
+
+
+def fabric_usage(provider: dict) -> dict:
+    known = provider["_fabric_usage_known"] and not provider["_fabric_pending"]
+    return {
+        "input_tokens": provider["_fabric_input"] if known else None,
+        "output_tokens": provider["_fabric_output"] if known else None,
+        "usage_state": "known" if known else "unknown",
+        "completed_input_tokens": provider["_fabric_input"],
+        "completed_output_tokens": provider["_fabric_output"],
+    }
+
+
+def _fabric_usage_delta(provider, before):
+    if provider["_fabric_known_responses"] == before[2]:
+        return None
+    return SimpleNamespace(
+        input_tokens=provider["_fabric_input"] - before[0],
+        output_tokens=provider["_fabric_output"] - before[1],
+        partial_unknown=fabric_usage(provider)["usage_state"] != "known",
+    )
+
+
+class _FabricStream:
+    """Turn context around the transport stream; no buffering or second request."""
+
+    def __init__(self, stream, provider):
+        self._stream = stream
+        self._provider = provider
+        self._final = None
+        self.exhausted = False
+
+    @property
+    def current_message_snapshot(self):
+        return self._stream.current_message_snapshot
+
+    @property
+    def text_stream(self):
+        try:
+            yield from self._stream.text_stream
+            self.exhausted = True
+        except Exception as exc:
+            raise fabric_failure(self._provider, exc) from None
+
+    def get_final_message(self):
+        if self._final is None:
+            try:
+                response = self._stream.get_final_message()
+                fabric_response(self._provider, response)
+                self._final = response
+            except Exception as exc:
+                raise fabric_failure(self._provider, exc) from None
+        return self._final
+
+
+class _FabricMessages:
+    def __init__(self, client, provider):
+        self._client = client
+        self._provider = provider
+
+    def create(self, **kwargs):
+        try:
+            call = fabric_request_kwargs(self._provider, kwargs)
+            response = self._client.messages.create(**call)
+            fabric_response(self._provider, response)
+            return response
+        except Exception as exc:
+            raise fabric_failure(self._provider, exc) from None
+
+    @contextmanager
+    def stream(self, **kwargs):
+        view = None
+        try:
+            call = fabric_request_kwargs(self._provider, kwargs)
+            with self._client.messages.stream(**call) as stream:
+                view = _FabricStream(stream, self._provider)
+                yield view
+                if view.exhausted:
+                    view.get_final_message()
+        except Exception as exc:
+            raise fabric_failure(self._provider, exc) from None
+        finally:
+            if self._provider.get("_fabric_pending"):
+                # A consumer may intentionally abandon a stream, e.g. the existing
+                # leak filter. Closing its socket is not proof of provider cancel.
+                fabric_failure(self._provider, FabricProviderError(
+                    "fabric_stream_abandoned", effect_unknown=True))
+
+
+class _FabricConsumerClient:
+    def __init__(self, client, provider):
+        self.messages = _FabricMessages(client, provider)
+
+
 def make_call(
     providers: list[dict],
     call_fn: Callable[[Any, str], tuple[str | None, str | None]],
@@ -378,6 +644,7 @@ def make_call(
                          "anthropic", "deepseek", or "ollama"),
                          or None when no provider could serve.
     """
+    is_fabric_selection(providers)  # Reject mixed lists before any legacy effect.
     last_auth_reason: str | None = None
     saw_rate_limit = False
     last_exc: BaseException | None = None
@@ -432,7 +699,7 @@ def make_call(
         if not cred or client is None:
             continue  # provider not configured / no key
 
-        if is_dead(name, env_var):
+        if not is_fabric_provider(p) and is_dead(name, env_var):
             log.debug("llm_auth[%s]: skipping dead provider '%s' (env=%s)",
                       context, name, env_var)
             # A SKIP IS A RUNG OUTCOME, and it is the one that hid the longest.
@@ -446,6 +713,8 @@ def make_call(
 
         any_tried = True
         _t0 = time.time()
+        _fabric_before = (p.get("_fabric_input", 0), p.get("_fabric_output", 0),
+                          p.get("_fabric_known_responses", 0))
         try:
             result = call_fn(client, model)
             text, reason = result[0], result[1]
@@ -460,14 +729,27 @@ def make_call(
             # return 2-tuples; they are unaffected (len check is backward-compat).
             _resp_obj = result[2] if len(result) > 2 else None
             _usage_obj = getattr(_resp_obj, "usage", None) if _resp_obj is not None else None
+            if is_fabric_provider(p):
+                if p.get("_fabric_failure") is not None or p.get("_fabric_pending"):
+                    raise fabric_failure(p, FabricProviderError(
+                        "fabric_callback_unsettled", effect_unknown=True))
+                _usage_obj = _fabric_usage_delta(p, _fabric_before)
+                if not text:
+                    raise fabric_failure(p, FabricProviderError("fabric_empty_result"))
             _capture_usage(p, _usage_obj, context)
             # -------------------------------------------------------------------
             in_tok = int(getattr(_usage_obj, "input_tokens", 0) or 0)
             out_tok = int(getattr(_usage_obj, "output_tokens", 0) or 0)
-            _note_pool_success(p, context, est_tokens=in_tok + out_tok)
+            if not is_fabric_provider(p):
+                _note_pool_success(p, context, est_tokens=in_tok + out_tok)
             _note(p, ok=True, t0=_t0)
             return text, reason, name
         except Exception as exc:  # noqa: BLE001
+            if is_fabric_provider(p):
+                error = fabric_failure(p, exc)
+                _capture_usage(p, _fabric_usage_delta(p, _fabric_before), context)
+                _note(p, ok=False, t0=_t0, error_class="transport", detail=error.code)
+                raise error from None
             _note(p, ok=False, t0=_t0,
                   error_class=_error_class(exc), detail=f"{type(exc).__name__}: {exc}")
             if _is_auth_error(exc):
@@ -588,7 +870,7 @@ def _capture_usage(p: dict, usage_obj, context: str) -> None:
         # it succeeded on), so the ledger names the real provider — never a lane
         # default.  See LEDGER_PROVIDER for why the old `else` branch was a bug.
         name = p.get("name", "unknown")
-        ai_provider, cost_basis = ledger_provider_for(name)
+        ai_provider, cost_basis = (p["provider"], p["cost_basis"]) if is_fabric_provider(p) else ledger_provider_for(name)
 
         lane = p.get("usage_lane") or p.get("_usage_lane") or "unknown"
         cap_id = p.get("cap_id")
@@ -617,6 +899,8 @@ def _capture_usage(p: dict, usage_obj, context: str) -> None:
             cost_basis=cost_basis,
             cycle_id=cycle_id,
             stage=stage,
+            note=("partial_known_usage; turn_total_unknown"
+                  if getattr(usage_obj, "partial_unknown", False) else ""),
             # A free rung states $0.00 outright; leaving it to the pricing table
             # would emit null ("unpriced"), which is not the same claim.
             **({"est_cost_usd": 0.0} if cost_basis in _FREE_COST_BASES else {}),
@@ -955,6 +1239,9 @@ def build_providers(
     opus_model: str | None = None,
     deepseek_model: str | None = None,
     extra_headers: dict | None = None,
+    fabric_selected: bool = False,
+    fabric_provider_factory=None,
+    request_id: str | None = None,
 ) -> list[dict]:
     """Build a provider list from a brain's config dict.
 
@@ -1001,6 +1288,15 @@ def build_providers(
     extra_headers:
         Additional headers to attach to every client (merged with oauth beta).
     """
+    if type(fabric_selected) is not bool:
+        raise FabricProviderError("fabric_selection_invalid")
+    if fabric_selected:
+        if "workload_profile" in cfg:
+            raise FabricProviderError("fabric_workload_policy_unqualified")
+        return [build_fabric_provider(fabric_provider_factory, request_id=request_id)]
+    if "fabric" in (cfg.get("provider_order") or []):
+        raise FabricProviderError("fabric_binding_not_selected")
+
     from lib import config as _config
 
     OAUTH_BETA = "oauth-2025-04-20"

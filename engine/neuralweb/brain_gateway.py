@@ -9695,8 +9695,25 @@ def _lane_client_tuning(lane_cfg: dict) -> dict:
             if lane_cfg.get(k) is not None}
 
 
-def _build_lane_providers(lane: str, root: Path | None = None) -> list[dict]:
+def _build_lane_providers(lane: str, root: Path | None = None, *,
+                          fabric_selected: bool = False, fabric_provider_factory=None,
+                          request_id: str | None = None) -> list[dict]:
     """Build the provider list for a lane using config/brain.yml + llm_auth.build_providers."""
+    from engine import llm_auth  # noqa: PLC0415
+    if type(fabric_selected) is not bool:
+        raise llm_auth.FabricProviderError("fabric_selection_invalid")
+    if fabric_selected:
+        cfg = _load_brain_config(root)
+        lane_cfg = (cfg.get("lanes") or {}).get(lane) or {}
+        # Preserve presence, including null/empty, for the incumbent workload
+        # policy's migration boundary; the Fabric transport is not qualified yet.
+        fabric_cfg = dict(lane_cfg)
+        if "workload_profile" in cfg:
+            fabric_cfg["workload_profile"] = cfg["workload_profile"]
+        return llm_auth.build_providers(
+            fabric_cfg, fabric_selected=True, fabric_provider_factory=fabric_provider_factory,
+            request_id=request_id,
+        )
     cfg = _load_brain_config(root)
     lanes = cfg.get("lanes") or {}
     lane_cfg = lanes.get(lane) or {}
@@ -9961,6 +9978,9 @@ def _vision_providers(lane: str, providers: list[dict], root: Path | None) -> li
     image turns work regardless of lane. Multiple entries also enable OAuth-token
     failover on 429. [] when nothing vision-capable exists anywhere.
     """
+    from engine import llm_auth  # noqa: PLC0415
+    if llm_auth.is_fabric_selection(providers):
+        return []  # The installed text/tool transport has no image contract yet.
     chain = _vision_capable(providers)
     if lane != "pro" and not any(_is_claude_provider(p) for p in chain):
         try:
@@ -10185,6 +10205,9 @@ def _turn_providers(client: Any, model: str, providers: list[dict] | None) -> li
     them would leave nothing, in which case the full list is kept (never blank a lane
     that still has a usable client)."""
     if providers:
+        from engine import llm_auth  # noqa: PLC0415
+        if llm_auth.is_fabric_selection(providers):
+            return providers
         cands = [p for p in providers if p.get("client") is not None]
         try:
             from engine import llm_auth  # noqa: PLC0415
@@ -10209,17 +10232,22 @@ def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> t
     per_model_kwargs(model) -> dict lets the caller add PER-CANDIDATE create kwargs that
     only some models accept (e.g. effort/adaptive-thinking for Claude, omitted for
     DeepSeek/Haiku) — merged over the shared kwargs for each candidate's own model."""
+    from engine import llm_auth  # noqa: PLC0415
+    exclusive = llm_auth.is_fabric_selection(cands)
     last: Exception | None = None
     for i, p in enumerate(cands):
         cl = p.get("client")
         if cl is None:
             continue
         try:
-            _mk = per_model_kwargs(p.get("model")) if per_model_kwargs else {}
+            _mk = per_model_kwargs(p.get("model")) if per_model_kwargs and not exclusive else {}
             resp = cl.messages.create(model=p.get("model"), **{**kwargs, **_mk})
-            _pool_record_success(p, resp)  # load-balancing ledger
+            if not exclusive:
+                _pool_record_success(p, resp)  # load-balancing ledger
             return resp, (p.get("model") or "")
         except Exception as exc:  # noqa: BLE001
+            if exclusive:
+                raise llm_auth.fabric_failure(p, exc) from None
             last = exc
             _mark_provider_dead_if_auth(p, exc)
             _pool_cool_for_exc(p, exc)  # cool a rate-limited/dead pool key for the next turn
@@ -10230,6 +10258,65 @@ def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> t
     if last:
         raise last
     raise RuntimeError("brain_gateway: no usable provider")
+
+
+def _selected_turn_providers(lane, root, selected, factory, request_id, images):
+    """Keep private server selection separate from browser context and lane config."""
+    if selected is False:
+        return _build_lane_providers(lane, root)
+    from engine import llm_auth  # noqa: PLC0415
+    if images:
+        return []  # Never borrow a native vision account for a Fabric request.
+    try:
+        return _build_lane_providers(
+            lane, root, fabric_selected=selected, fabric_provider_factory=factory,
+            request_id=request_id,
+        )
+    except llm_auth.FabricProviderError as exc:
+        log.warning("brain_gateway: selected Fabric unavailable (%s)", exc.code)
+        return []
+
+
+def _settle_fabric_usage(provider, *, usage_lane, stage, user_id, lane):
+    """Use incumbent writers once, retaining known usage when a later step is unknown."""
+    from engine import llm_auth  # noqa: PLC0415
+    from lib import ai_costs  # noqa: PLC0415
+    usage = llm_auth.fabric_usage(provider)
+    if provider["_fabric_known_responses"]:
+        try:
+            ai_costs.record_usage(
+                lane=usage_lane, provider=provider["provider"], model=provider["model"],
+                key_id=provider["cap_id"], cost_basis=provider["cost_basis"], stage=stage,
+                input_tokens=usage["completed_input_tokens"],
+                output_tokens=usage["completed_output_tokens"],
+                note="partial_known_usage; turn_total_unknown" if usage["usage_state"] != "known" else "",
+            )
+        except Exception:  # noqa: BLE001 — same best-effort writer boundary as legacy
+            log.warning("brain_gateway: Fabric usage settlement unavailable")
+        _record_token_usage(user_id, lane, usage["completed_input_tokens"],
+                            usage["completed_output_tokens"])
+    return usage
+
+
+def _settle_brain_usage(usage, *, provider, model, usage_lane, stage, user_id, lane):
+    from lib import ai_costs  # noqa: PLC0415
+    if provider is not None:
+        return {**usage, **_settle_fabric_usage(
+            provider, usage_lane=usage_lane, stage=stage, user_id=user_id, lane=lane,
+        )}
+    in_tok = int(usage.get("input_tokens") or 0)
+    out_tok = int(usage.get("output_tokens") or 0)
+    try:
+        ai_costs.record_usage(
+            lane=usage_lane,
+            provider=("codex" if str(model).startswith("gpt-")
+                      else "claude_api" if str(model).startswith("claude") else "deepseek"),
+            model=model, stage=stage, input_tokens=in_tok, output_tokens=out_tok,
+        )
+    except Exception:  # noqa: BLE001
+        pass
+    _record_token_usage(user_id, lane, in_tok, out_tok)
+    return {**usage, "input_tokens": in_tok, "output_tokens": out_tok}
 
 
 # ---------------------------------------------------------------------------
@@ -10905,7 +10992,11 @@ def _run_brain_loop(
     command_seq = 0
     last_resp = None  # track to extract usage from final response
     _cands = _turn_providers(client, model, providers)  # failover order (OAuth tokens)
+    from engine import llm_auth  # noqa: PLC0415
+    exclusive_fabric = llm_auth.is_fabric_selection(_cands)
     def _pmk(m):  # per-candidate model params — Claude-only / DeepSeek-only (see _create_failover)
+        if exclusive_fabric:
+            return {}
         return {**_effort_thinking_params(m, effort, thinking_mode),
                 **_deepseek_extra_params(m, deepseek_thinking)}
 
@@ -10928,7 +11019,7 @@ def _run_brain_loop(
         except Exception as exc:  # noqa: BLE001
             log.warning("brain_gateway: model call failed at turn %d: %s", tool_call_count, exc)
             _timing_round(timing, _ms_since(_round_t0), _round_tools)
-            if not answer_text:
+            if exclusive_fabric or not answer_text:
                 raise
             break
         _round_model_ms = _ms_since(_round_t0)
@@ -11106,6 +11197,8 @@ def _run_brain_loop(
                 if getattr(block, "type", "") == "text":
                     answer_text = block.text
         except Exception as exc:  # noqa: BLE001
+            if exclusive_fabric:
+                raise
             log.warning("brain_gateway: synthesis pass failed (%s) — keeping last text", exc)
         _timing_stamp(timing, "synthesis_ms", _synth_t0)
 
@@ -11136,6 +11229,8 @@ def _run_brain_loop(
         for field in ("input_tokens", "output_tokens"):
             usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
 
+    if exclusive_fabric:
+        usage_dict = llm_auth.fabric_usage(_cands[0])
     # W5 Contract M: the turn's latency record rides the usage dict (see the docstring).
     _timing_stamp(timing, "total_ms", _lt0)
     usage_dict["latency"] = timing
@@ -11934,10 +12029,14 @@ def _run_brain_loop_stream(
 
     # Phase 1: tool-calling turns (streaming since W5.1 — see the round loop below)
     _cands = _turn_providers(client, model, providers)  # failover order (OAuth tokens)
+    from engine import llm_auth  # noqa: PLC0415
+    exclusive_fabric = llm_auth.is_fabric_selection(_cands)
     # High-intensity params (effort + adaptive thinking) added PER-CANDIDATE — Claude-only,
     # so a DeepSeek/Haiku candidate in the same failover chain never receives them; the
     # DeepSeek thinking-disable rides the same channel in the opposite direction.
     def _pmk(m):
+        if exclusive_fabric:
+            return {}
         return {**_effort_thinking_params(m, effort, thinking_mode),
                 **_deepseek_extra_params(m, deepseek_thinking)}
 
@@ -12032,12 +12131,16 @@ def _run_brain_loop_stream(
                             resp = _s.get_final_message()
                 if _gate.leaked:
                     break
-                _pool_record_success(_p, resp)  # load-balancing ledger
+                if not exclusive_fabric:
+                    _pool_record_success(_p, resp)  # load-balancing ledger
                 model = _p.get("model") or model
                 break
             except Exception as exc:  # noqa: BLE001
                 resp = None
                 _round_err = exc
+                if exclusive_fabric:
+                    _round_err = llm_auth.fabric_failure(_p, exc)
+                    break
                 _mark_provider_dead_if_auth(_p, exc)
                 _pool_cool_for_exc(_p, exc)  # cool a rate-limited/dead key for the next turn
                 if _is_failover_error(exc) and _i < len(_cands) - 1:
@@ -12065,7 +12168,7 @@ def _run_brain_loop_stream(
             last_resp_content = []
             break
 
-        if resp is None and not _emitted:
+        if resp is None and not _emitted and not exclusive_fabric:
             # W5.1 SAFETY NET. The round is a STREAMING request now: `stream` + `tools`
             # is a request shape this loop never sent before, and a provider that cannot
             # serve it would black out the whole lane on every turn (the deepseek-chat
@@ -12092,7 +12195,12 @@ def _run_brain_loop_stream(
                 yield _wipe_event()
                 _emitted = ""
             yield _delta_event(_DEGRADED_USER_MSG)
-            yield _done_event(citations=[], quota=meta_event.get("quota", {}), usage={},
+            failed_usage = llm_auth.fabric_usage(_cands[0]) if exclusive_fabric else {}
+            if exclusive_fabric and usage_out is not None:
+                usage_out[:] = [failed_usage]
+            if exclusive_fabric and answer_out is not None:
+                answer_out[:] = [_DEGRADED_USER_MSG]
+            yield _done_event(citations=[], quota=meta_event.get("quota", {}), usage=failed_usage,
                               filtered=False, degraded=True, is_context_only=True)
             return
         _round_model_ms = _ms_since(_round_t0)
@@ -12427,11 +12535,26 @@ def _run_brain_loop_stream(
                             _emitted = ""
                         continue
                 thinking_trace.extend(_cand_thinking)  # only the candidate that SHIPPED
-                _pool_record_success(_p, final_resp)  # load-balancing ledger
+                if not exclusive_fabric:
+                    _pool_record_success(_p, final_resp)  # load-balancing ledger
                 model = _p.get("model") or model
                 break
             except Exception as exc:  # noqa: BLE001
                 _last_err = exc
+                if exclusive_fabric:
+                    _last_err = llm_auth.fabric_failure(_p, exc)
+                    if _emitted:
+                        yield _wipe_event()
+                    failed_usage = llm_auth.fabric_usage(_p)
+                    if usage_out is not None:
+                        usage_out[:] = [failed_usage]
+                    if answer_out is not None:
+                        answer_out[:] = [_DEGRADED_USER_MSG]
+                    yield _delta_event(_DEGRADED_USER_MSG)
+                    yield _done_event(citations=[], quota=meta_event.get("quota", {}),
+                                      usage=failed_usage, filtered=False, degraded=True,
+                                      is_context_only=True)
+                    return
                 _mark_provider_dead_if_auth(_p, exc)
                 _pool_cool_for_exc(_p, exc)  # cool a rate-limited/dead pool key for the next turn
                 if _is_failover_error(exc) and _i < len(_cands) - 1:
@@ -12473,6 +12596,8 @@ def _run_brain_loop_stream(
         for field in ("input_tokens", "output_tokens"):
             usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
 
+    if exclusive_fabric:
+        usage_dict = llm_auth.fabric_usage(_cands[0])
     if need_synthesis and not full_answer.strip():
         # Every candidate came back empty — salvage any text the last tool round wrote
         # rather than degrading a turn whose tool work all succeeded.
@@ -13687,6 +13812,8 @@ def chat(
     guest_ip: str = "",
     account_prefs: dict | None = None,
     user_jwt: str = "",
+    fabric_selected: bool = False,
+    fabric_provider_factory=None,
 ) -> dict:
     """Process a brain chat request (non-streaming).
 
@@ -13966,7 +14093,10 @@ def chat(
         }
 
     # 4. Build providers
-    providers = _build_lane_providers(lane, root)
+    providers = _selected_turn_providers(
+        lane, root, fabric_selected, fabric_provider_factory,
+        _ctx_envelope["request_id"], images,
+    )
     if not providers:
         return {
             "ok": True,
@@ -14044,7 +14174,7 @@ def chat(
     #     text — returns None and the normal loop below runs exactly as it always did;
     #     nothing user-visible has happened, and quota was already debited above the
     #     same way it is for any other turn.
-    if _instant_route_hit is not None:
+    if _instant_route_hit is not None and fabric_selected is False:
         _i_timing = _new_turn_timing("instant")
         _i_res = _instant_answer(
             _instant_route_hit, clean_msg, context, root,
@@ -14125,7 +14255,15 @@ def chat(
             **loop_source_kwargs,
         )
     except Exception as exc:  # noqa: BLE001
-        log.warning("brain_gateway: loop failed (%s) — degraded reply", exc)
+        failed_usage = {}
+        if fabric_selected is True:
+            failed_usage = _settle_fabric_usage(
+                providers[0], usage_lane=usage_lane, stage="brain-chat",
+                user_id=user_id, lane=lane,
+            )
+            log.warning("brain_gateway: Fabric turn failed; no fallback")
+        else:
+            log.warning("brain_gateway: loop failed (%s) — degraded reply", exc)
         return {
             "ok": True,
             "reply": _degraded_reply(lane),
@@ -14137,6 +14275,7 @@ def chat(
             "filtered": False,
             "degraded": True,
             "is_context_only": True,
+            **({"usage": failed_usage} if fabric_selected is True else {}),
         }
 
     # 7. Post-filter, output leak screen, then split off the [NEXT] suggestion block (W6d).
@@ -14171,34 +14310,11 @@ def chat(
                         meta={**_with_retained_context(_bum.assistant_meta(final_messages, answer_text), _ctx_receipt),
                               "visuals": [c for c in charts if c.get("visual")]})
 
-    # 9. Cost settlement from response.usage (fix #1: real tokens, never zeros)
-    in_tok = int(usage_dict.get("input_tokens") or 0)
-    out_tok = int(usage_dict.get("output_tokens") or 0)
-    stream_source_kwargs = (
-        {"source_prompt": source_attachment.resolved.prompt_block,
-         "source_receipt": source_attachment.resolved.receipt}
-        if source_attachment else {}
+    # Settle through the existing writer with the actual bound provider identity.
+    usage_dict = _settle_brain_usage(
+        usage_dict, provider=providers[0] if fabric_selected is True else None,
+        model=model, usage_lane=usage_lane, stage="brain-chat", user_id=user_id, lane=lane,
     )
-    try:
-        _ac.record_usage(
-            lane=usage_lane,
-            # Attribute to the provider that ACTUALLY served the turn, not the lane:
-            # a Fast image turn is served by Haiku (claude_api), not DeepSeek.
-            provider=(
-                "codex" if str(model).startswith("gpt-")
-                else "claude_api" if str(model).startswith("claude")
-                else "deepseek"
-            ),
-            model=model,
-            stage="brain-chat",
-            input_tokens=in_tok,
-            output_tokens=out_tok,
-        )
-    except Exception:  # noqa: BLE001
-        pass
-
-    # Fix #2: accumulate towards the monthly token ceiling backstop
-    _record_token_usage(user_id, lane, in_tok, out_tok)
 
     # Build annotations list from collected annotate_chart payloads
     all_annotations: list[dict] = []
@@ -14222,6 +14338,7 @@ def chat(
         "latency": usage_dict.get("latency") or _new_turn_timing("deep"),
         "context_receipt": _ctx_receipt,
         "exact_source_receipt": source_attachment.resolved.receipt if source_attachment else None,
+        **({"usage": usage_dict} if fabric_selected is True else {}),
     }
     if all_annotations:
         result["annotations"] = all_annotations
@@ -14264,6 +14381,8 @@ def chat_stream(
     guest_ip: str = "",
     account_prefs: dict | None = None,
     user_jwt: str = "",
+    fabric_selected: bool = False,
+    fabric_provider_factory=None,
 ) -> Generator[str, None, None]:
     """Process a brain chat request (streaming). Yields SSE strings per contract.
 
@@ -14505,7 +14624,10 @@ def chat_stream(
         return
 
     # 3. Providers
-    providers = _build_lane_providers(lane, root)
+    providers = _selected_turn_providers(
+        lane, root, fabric_selected, fabric_provider_factory,
+        _ctx_envelope["request_id"], images,
+    )
     if not providers:
         meta = {"type": "meta", "lane": lane, "model": "degraded", "thread_id": None, "quota": quota_info}
         yield f"data: {json.dumps(meta)}\n\n"
@@ -14587,7 +14709,7 @@ def chat_stream(
     #     handles. ANY failure inside _instant_answer returns None and the deep loop
     #     below runs untouched — not one byte has reached the wire at this point, which
     #     is what makes "instant is an optimization, never a new failure mode" true.
-    if _instant_route_hit is not None:
+    if _instant_route_hit is not None and fabric_selected is False:
         _i_timing = _new_turn_timing("instant")
         _i_res = _instant_answer(
             _instant_route_hit, clean_msg, context, root,
@@ -14686,9 +14808,19 @@ def chat_stream(
             **stream_source_kwargs,
         )
     except Exception as exc:  # noqa: BLE001
-        log.warning("brain_gateway: stream loop failed (%s)", exc)
+        failed_usage = {}
+        if fabric_selected is True:
+            from engine import llm_auth  # noqa: PLC0415
+            llm_auth.fabric_failure(providers[0], exc)
+            failed_usage = llm_auth.fabric_usage(providers[0])
+            usage_out[:] = [failed_usage]
+            answer_out[:] = [_DEGRADED_USER_MSG]
+            log.warning("brain_gateway: Fabric stream failed; no fallback")
+            yield _wipe_event()
+        else:
+            log.warning("brain_gateway: stream loop failed (%s)", exc)
         yield f"data: {json.dumps({'type': 'delta', 'text': _DEGRADED_USER_MSG})}\n\n"
-        yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
+        yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': failed_usage, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
 
     # 7. Assistant-turn persistence (best-effort, post-stream) — the streamed text lives
     #    only on the SSE wire otherwise, so reload and multi-turn model context would
@@ -14707,30 +14839,14 @@ def chat_stream(
                         meta={**_with_retained_context(_bum.assistant_meta(None, answer_out[0]), _ctx_receipt),
                               "visuals": visuals_out})
 
-    # 8. Cost record (fix #1: real tokens; fix #2: accumulate ceiling backstop)
-    usage_dict = usage_out[0] if usage_out else {}
-    in_tok = int(usage_dict.get("input_tokens") or 0)
-    out_tok = int(usage_dict.get("output_tokens") or 0)
-    try:
-        _ac.record_usage(
-            lane=usage_lane,
-            # Attribute to the provider that ACTUALLY served the turn, not the lane:
-            # a Fast image turn is served by Haiku (claude_api), not DeepSeek.
-            provider=(
-                "codex" if str(model).startswith("gpt-")
-                else "claude_api" if str(model).startswith("claude")
-                else "deepseek"
-            ),
-            model=model,
-            stage="brain-stream",
-            input_tokens=in_tok,
-            output_tokens=out_tok,
-        )
-    except Exception:  # noqa: BLE001
-        pass
-
-    # Fix #2: accumulate towards the monthly token ceiling backstop
-    _record_token_usage(user_id, lane, in_tok, out_tok)
+    # Settle once for the original run, even when its subscriber detached.
+    usage_dict = _settle_brain_usage(
+        usage_out[0] if usage_out else {},
+        provider=providers[0] if fabric_selected is True else None,
+        model=model, usage_lane=usage_lane, stage="brain-stream", user_id=user_id, lane=lane,
+    )
+    in_tok = usage_dict.get("input_tokens")
+    out_tok = usage_dict.get("output_tokens")
 
     # 9. Response log (evaluation/training corpus) — best-effort, off the wire.
     #    The answer already reached the client (delta/done yielded above); this
@@ -14743,6 +14859,8 @@ def chat_stream(
         is_guest=is_guest, latency_ms=int((time.time() - _t0) * 1000),
         input_tokens=in_tok, output_tokens=out_tok, context=context,
         thinking=(thinking_out[0] if thinking_out else []),
+        provider=providers[0]["provider"] if fabric_selected is True else None,
+        flags={"degraded": bool(providers[0].get("_fabric_failure"))} if fabric_selected is True else None,
         # W5 Contract M: the per-round breakdown behind that one latency_ms number.
         latency=usage_dict.get("latency"),
     )
