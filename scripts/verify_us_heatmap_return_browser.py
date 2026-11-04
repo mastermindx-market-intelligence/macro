@@ -23,6 +23,7 @@ from urllib.parse import urlsplit
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 SITE = ROOT / "site"
 KEY = "mmx.usHeatmap.v1"
 
@@ -389,7 +390,6 @@ def main():
 
     if args.canonical:
         server.reset(); server.canonical = True
-        sys.path.insert(0, str(ROOT))
         from scripts import capture_page_evidence as cap
         canonical = ROOT / "mockups/evidence/d04-us-heatmap-return-20261104"
         canonical.mkdir(parents=True, exist_ok=True)
