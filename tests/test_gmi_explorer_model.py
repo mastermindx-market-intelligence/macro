@@ -187,6 +187,55 @@ def test_micron_issuer(model: dict) -> None:
     assert link["source"]["url_if_public"].startswith("https://")
 
 
+# ------------------------------------------- display names (DEC:GMI-ISSUER-DISPLAY-NAME-SOURCE)
+@pytest.mark.parametrize("node_or_issuer_id, ticker", [
+    ("co:us:MU", "MU"),
+    ("co:us:BRK-B", "BRK-B"),        # last-dash split used to read "B"
+    ("co:us:BF-B", "BF-B"),
+    ("ISS:US-XNAS-NVDA", "NVDA"),
+    ("ISS:US-XNYS-BRK.B", "BRK.B"),  # ListingKey code is the third field
+    ("co:ca:TECK-B.TO", "TECK-B.TO"),
+])
+def test_ticker_of_keeps_the_class_share_code(node_or_issuer_id: str, ticker: str) -> None:
+    assert model_module._ticker_of(node_or_issuer_id) == ticker
+
+
+@pytest.mark.parametrize("security_name, plain", [
+    ("Micron Technology, Inc. - Common Stock", "Micron Technology"),
+    ("Abbott Laboratories Common Stock", "Abbott Laboratories"),
+    ("Crescent Energy Company Class A Common Stock", "Crescent Energy Company"),
+    ("Noble Corporation plc A Ordinary Shares", "Noble Corporation"),
+    ("B2Gold Corp Common shares (Canada)", "B2Gold Corp"),
+    ("Nokia Corporation Sponsored American Depositary Shares", "Nokia"),
+    ("Shell PLC American Depositary Shares (each representing two (2) Ordinary Shares)",
+     "Shell PLC"),
+    ("D/B/A Sibanye-Stillwater Limited ADS", "Sibanye-Stillwater"),
+    ("Boeing Company (The) Common Stock", "The Boeing Company"),
+    ("United Microelectronics Corporation (NEW) Common Stock", "United Microelectronics"),
+    ("Berkshire Hathaway Inc. New Common Stock", "Berkshire Hathaway"),
+    ("Stratasys, Ltd. - Ordinary Shares", "Stratasys"),
+    ("Trade Desk ADS Inc", "Trade Desk ADS Inc"),  # only an END-anchored tail is cut
+    ("Common Stock", ""),                          # nothing left -> caller falls back
+])
+def test_plain_company_name_strips_the_instrument_tail(security_name: str, plain: str) -> None:
+    assert model_module._plain_company_name(security_name) == plain
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_class_share_node_names_its_own_company() -> None:
+    """co:us:BRK-B is Berkshire (directory BRK.B), never the bare-B listing (Barrick)."""
+    asof = "2026-10-21"
+    brk, source = model_module._display_name(
+        ROOT, model_module._ticker_of("co:us:BRK-B"), asof)
+    assert (brk, source) == ("Berkshire Hathaway", "symbol_directory.security_name")
+    bf, _ = model_module._display_name(ROOT, model_module._ticker_of("ISS:US-XNYS-BF.B"), asof)
+    assert bf.startswith("Brown Forman")
+    bare_b, _ = model_module._display_name(ROOT, "B", asof)
+    assert bare_b != brk
+    # A tail outside the node-id grammar (epoch suffix) is looked up exactly, then falls back.
+    assert model_module._display_name(ROOT, "MU#2", asof) == ("MU#2", "ticker")
+
+
 @pytest.mark.needs_full_checkout("data")
 def test_card_payloads(model: dict) -> None:
     cards = model["card_payloads"]

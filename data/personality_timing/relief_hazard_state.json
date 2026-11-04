@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-02",
+  "as_of": "2026-11-03",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -16,13 +16,13 @@
     "count_and_clock_minimums_met": false,
     "note": "No interim effect estimates. Informative strata and outcomes are opened only by the separately reviewed sole adjudication.",
     "observed": {
-      "action_date_span_days": 0,
-      "distinct_action_months": 1,
+      "action_date_span_days": 7,
+      "distinct_action_months": 2,
       "informative_exact_strata": null,
       "level_control_rows": 1,
-      "matured_primary_rows": 1,
-      "relief_hazard_rows": 0,
-      "unique_names": 1
+      "matured_primary_rows": 9,
+      "relief_hazard_rows": 8,
+      "unique_names": 9
     },
     "required": {
       "action_date_span_days": 365,
@@ -38,19 +38,19 @@
   },
   "family": "pss_rh1_relief_hazard_prospective",
   "gate_open": true,
-  "generated_utc": "2026-11-02T07:07:27.667568+00:00",
+  "generated_utc": "2026-11-03T17:18:25.695842+00:00",
   "ledger": {
-    "advanced_today": 1,
-    "appended_today": 68,
+    "advanced_today": 8,
+    "appended_today": 2,
     "earliest_action": "2026-07-29",
-    "events": 306,
-    "latest_action": "2026-10-30",
-    "level_control": 108,
-    "matured": 1,
-    "primary_events": 203,
+    "events": 308,
+    "latest_action": "2026-11-02",
+    "level_control": 110,
+    "matured": 9,
+    "primary_events": 205,
     "rejected_pre_cutoff_today": 0,
     "relief_hazard": 95,
-    "ungraded": 305,
+    "ungraded": 299,
     "weak_level_diagnostic": 103
   },
   "manifest_sha256": "0b07345178592032570aeb57c1c54c1cb24b6463a5836431bc7daf5d44b0cc6b",
@@ -60,15 +60,16 @@
   "program_id": "PSS-RH1",
   "registration_ok": true,
   "scan_census": {
-    "anchors": 9759,
-    "detected_post_cutoff_paths": 302,
+    "anchors": 9769,
+    "detected_post_cutoff_paths": 304,
     "frozen_members": 799,
     "loaded_members": 798,
     "missing_members": 1,
     "prospective_candidate_anchors": 571,
     "reasons": {
+      "incomplete_formation": 10,
       "missing_ohlcv": 1,
-      "no_subject_recovery": 249,
+      "no_subject_recovery": 247,
       "pre_cutoff_action": 20
     }
   },
