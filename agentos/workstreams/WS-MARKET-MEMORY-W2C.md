@@ -1,14 +1,8 @@
 ---
 key: MARKET-MEMORY-W2C
-title: Market Memory W2C prospective activation recovery
+title: Market Memory full programme continuity and contained W2C source history
 objective: >
-  Keep the first honest W2C prospective opportunity on a live, exact activation
-  chain. M0A is complete. M0B classified v1 as A — SOURCE_CLOCK_IMPOSSIBLE.
-  M0C froze v2 on single-ticker REST daily plus a hybrid RTH-price/full-day-
-  activity technical contract. M0D-0 PASS / Sol GO_M0D froze readiness on the
-  D+1 04:00–04:05Z source seal, not first REST availability. v1 stays an
-  immutable evidence/control arm. First v2 admit now waits on the bounded M0D
-  runtime vertical slice.
+  Complete the original Market Memory point-in-time replay, qualified analogue retrieval, separate outcomes and evidence-consumer programme across 28 tasks, 49 acceptance cases and 11 parent waves. Preserve the contained W2C activation history and accepted ABSTAINED gate; source, installed/browser and scientific acceptance remain distinct.
 status: active
 program: market-memory
 p0: US_PROPHET_ENTRY_TIMING
@@ -50,11 +44,8 @@ waves:
     status: in_progress
     depends_on: [M0C]
     next_action: >
-      Namespace repair for experience-v2 is in this change. Do not start
-      experience-v2 by hand. Tuesday 2026-08-25 04:00–04:32Z is the first
-      natural PROVEN_LIVE gate. M0D remains BUILT_NOT_PROVEN until that
-      natural admit authenticates. Do not mix D-class R2 coherence into this
-      wave.
+      Historical August gate accepted ABSTAINED under #6589; no rerun. Later natural
+      receipts are separately scoped and do not waive original programme acceptance.
   - id: V1-CONTEXT-AUDIT-DECOUPLE
     title: Restore v1 owner replay by decoupling trusted context from Options audit
     status: done
@@ -64,13 +55,83 @@ waves:
       Trusted context completes independently. Do not recouple the Options
       audit. v1 experience.timer still waits on technicals freshness, which
       waits on massive_stock_day.
+  - id: MM-F00
+    title: 'Original programme MM-F00: R0, Z0'
+    status: in_progress
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
+  - id: MM-G0
+    title: 'Original programme MM-G0: R0, R1'
+    status: todo
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
+  - id: MM-S1
+    title: 'Original programme MM-S1: R1, C0, G0, G1'
+    status: todo
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
+  - id: MM-M1
+    title: 'Original programme MM-M1: C1, P0, D1'
+    status: todo
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
+  - id: MM-R1
+    title: 'Original programme MM-R1: P0, P1, P2, R2, L0; B0 economics'
+    status: todo
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
+  - id: MM-C1
+    title: 'Original programme MM-C1: N1'
+    status: done
+    pr: 9170
+    next_action: Retain accepted bounded context-reader/lifecycle integration. Full evidence usefulness
+      and scientific acceptance remain in MM-C3/MM-E1/MM-A1; do not repeat this accepted reader.
+  - id: MM-C2
+    title: 'Original programme MM-C2: N2'
+    status: done
+    pr: 9259
+    next_action: Retain accepted bounded context-reader/lifecycle integration. Full evidence usefulness
+      and scientific acceptance remain in MM-C3/MM-E1/MM-A1; do not repeat this accepted reader.
+  - id: MM-C3
+    title: 'Original programme MM-C3: N0, N3'
+    status: todo
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
+  - id: MM-E1
+    title: 'Original programme MM-E1: E0, A0, E1, E2'
+    status: todo
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
+  - id: MM-P1
+    title: 'Original programme MM-P1: U0, U1, U2'
+    status: todo
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
+  - id: MM-A1
+    title: 'Original programme MM-A1: A1, A2, Z0; D0 authorization/privacy'
+    status: todo
+    pr: 6528
+    next_action: Consume source-linked original-task dispositions in research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+      and supported existing-buffer selector. Preserve accepted sub-results and exact holds; no automatic
+      runtime permission.
 next_action: >
-  Do not start experience-v2 or v1 writers by hand. Tuesday 2026-08-25
-  04:00–04:32Z is the first natural M0D PROVEN_LIVE gate after the
-  experience-v2 tmpfs/InaccessiblePaths namespace repair. M0D remains
-  BUILT_NOT_PROVEN. If v1 is unrestored by then, grade v2 as
-  v1_control_unavailable. Do not implement Options Audit preregistration v2
-  here. Do not open R2.
+  Consume the full-programme continuity map and supported market-memory next --explain selector. Complete the records-only continuity release; remaining original product tasks retain exact authentic-input, admission/review and UNKNOWN-effect holds. E0 diagnostic/owner-search is CLOSED; no probe/review/fit/capture replay. Reopen only on new applicable evidence or separately authorized substantive scope change.
 decisions:
   - "DEC:W2C-M0B-V1-SOURCE-WINDOW-UNACHIEVABLE"
   - "DEC:W2C-M0C-V2-REST-SINGLE-TICKER-DAILY"
@@ -117,6 +178,8 @@ do_not_redo:
   - Do not treat stock-day unpublished-today 403 as a Massive stock entitlement regression or flatten it to no_entitled_date.
   - Do not restore mandatory InaccessiblePaths for tmpfs-hidden unbound v1 siblings on experience-v2; that combination is 226/NAMESPACE (DSC:W2C-M0D-EXPERIENCE-V2-TMPFS-OPTIONAL-V1-INACCESSIBLE).
   - Do not start experience-v2 by hand to manufacture the Tuesday natural admit.
+  - Preserve the full 28-task/49-case/11-wave programme; W2C is a contained history, not programme acceptance.
+  - E0 diagnostic and owner-search are closed; retain NO_VERDICT/NOT_RETAINED without repeated probes.
 landmines:
   - Nested-path admission must round-trip artifact_relative_path. Any slash, mixed-case nested name, or hex that decodes to an uppercase ticker reopens traversal and identity-fold bugs.
   - Experience timer enabled-but-inactive is not armed. Armed means enabled plus active/waiting with a future NextElapse.
@@ -161,6 +224,8 @@ artifacts:
   - agentos/discoveries/DSC-W2C-M0D0-SPY-REST-FORMING-BAR-SEAL-STABLE.md
   - agentos/discoveries/DSC-OPTIONS-CONTEXT-AUDIT-V1-TIMEOUT-PRECEDES-4096-REFUSAL.md
   - research/market_memory/W2C_M0D0_SPY_REST_REVISION_TRAJECTORY_2026-08-20.tsv
+  - research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md
+  - agentos/handoffs/MARKET-MEMORY-W2C-2026-11-03-full-programme-continuity.md
 ---
 
 M0A first-cause repair: PR #5805, merged as `e1ec8865ac92`.
@@ -169,3 +234,5 @@ M0B clock forensics: `agentos/handoffs/MARKET-MEMORY-W2C-2026-08-20-m0b.md`.
 M0C source freeze: `agentos/handoffs/MARKET-MEMORY-W2C-2026-08-20-m0c.md` plus hybrid-scope addendum #6083.
 Sol M0C ratification: `agentos/handoffs/MARKET-MEMORY-W2C-2026-08-20-m0c-sol-ratification.md`.
 M0D-0 PASS / Sol GO_M0D: `agentos/handoffs/MARKET-MEMORY-W2C-2026-08-21-m0d0.md`.
+
+Full-programme continuity source: `research/market_memory/FULL_PROGRAMME_CONTINUITY_2026-11-03.md`. Historical W2C remains contained; commission: Mastermind #1842 comment6621763091.
