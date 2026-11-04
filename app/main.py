@@ -1719,7 +1719,13 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             user_jwt="" if is_guest else (user.get("_access_token") or ""),
         )
 
-    # The turn is registered as a server-side RUN before a single byte goes out.
+    # Options questions are request-scoped: neither OFF refusals nor answers enter
+    # the generic recoverable-run registry. The gateway still buffers and checks
+    # the complete answer before yielding; disconnect does not authorize a retry.
+    if body.options_question_reference is not None:
+        return StreamingResponse(_gen(), media_type="text/event-stream", headers=_SSE_BRAIN_HEADERS)
+
+    # The ordinary turn is registered as a server-side RUN before a byte goes out.
     # brain_runs pumps the generator on its own thread into an ordered event buffer,
     # so the answer is produced (and persisted to the thread) whether or not this
     # socket survives — a backgrounded tab, a slept laptop or a culled connection no

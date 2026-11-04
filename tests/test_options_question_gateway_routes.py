@@ -81,3 +81,49 @@ def test_known_off_path_does_not_debit_quota(state,monkeypatch):
     def forbidden(*a,**kw):raise AssertionError('OFF feature consumed quota')
     monkeypatch.setattr(gw,'_check_and_increment_quota',forbidden)
     assert gw.chat(**state)['error']=='options_question_unavailable'
+
+
+@pytest.mark.parametrize('reference', [{}, {'selection': 'dated'}, None])
+def test_outer_stream_options_never_registers_recoverable_run(reference):
+    """Execute the actual HTTP function without importing unrelated API jobs."""
+    from types import SimpleNamespace as NS
+    tree = ast.parse(Path('app/main.py').read_text())
+    fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'brain_stream')
+    fn.decorator_list = []
+    fn.returns = None
+    for arg in fn.args.args:
+        arg.annotation = None
+    fn.args.defaults = []
+    registrations, calls = [], []
+
+    def stream(**kwargs):
+        calls.append(kwargs)
+        yield 'data: {"type":"done","error":"options_question_unavailable"}\n\n'
+
+    def start(generator, **kwargs):
+        registrations.append(kwargs)
+        return generator
+
+    scope = dict(
+        _brain_module=lambda: NS(chat_stream=stream),
+        _brain_throttle_check=lambda _: None,
+        _brain_identity=lambda _: ('aid', 'ip', 'device'),
+        _brain_track_event=lambda *a: None,
+        user_prefs=NS(read_user_prefs=lambda _: {}), REPO=Path('.'),
+        brain_runs=NS(start=start, run_event=lambda _: 'run', follow=lambda run: run),
+        StreamingResponse=lambda content, **kwargs: content, _SSE_BRAIN_HEADERS={},
+    )
+    exec(compile(ast.fix_missing_locations(ast.Module(body=[fn], type_ignores=[])),
+                 'actual-brain-stream', 'exec'), scope)
+    body = NS(mode='chat', lane='fast', history=None, thread_id=None,
+              message='Explain membership', context=None, company_source_span=None,
+              options_question_reference=reference, images=None)
+    response = scope['brain_stream'](
+        body, NS(app=NS(state=NS())), NS(add_task=lambda *a: None),
+        {'id': 'verified-user', '_access_token': 'inert-verified-token'})
+    events = list(response)
+    assert len(registrations) == (1 if reference is None else 0)
+    assert (events[0] == 'run') is (reference is None)
+    assert len(calls) == 1
+    assert calls[0]['options_question_reference'] is reference
+    assert calls[0]['user_jwt'] == 'inert-verified-token'
