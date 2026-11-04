@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/us_stocks_v2.html.j2
+manifest: mockups/refs/d03-v2-source-availability-20261104/manifest-populated.json

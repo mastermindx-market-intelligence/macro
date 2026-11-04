@@ -4,7 +4,7 @@
   "fixture_build_clock": "2026-11-04T06:00:00Z",
   "source_sha256": {
     "scripts/build_stock_board_v2.py": "c23250ab4d920bf9ce41b46325979aa8f10d7fadb79c7f63781a07391b27ae46",
-    "templates/us_stocks_v2.html.j2": "53324d1c77f841e13dcd2ef8085e3a4ae74f5b87b3343400ccf87452a7d7e6d6",
+    "templates/us_stocks_v2.html.j2": "f5a4b80cf66757620791f3c6e80b208a9fbe6abd00b3fff57d3151dacb8667a7",
     "tests/test_stock_board_v2_availability.py": "72f0f6e6d9e7789fa4235314cb98780278bd9205d5c148b336171854be627027",
     "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
     "templates/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",

@@ -93,6 +93,19 @@ python3 research/design_candidates/production_design_20261102/evidence/d03-v2-t4
 
 The runner uses actual builder/template/write_page/assets, not replacement engine or HTML mocks. It patches only synthetic data roots and time, and serves the generated fixtures into network-isolated Chromium. It does not prove production authentication, runtime navigation to stock detail, server routing, deployed freshness or atomic JSON/HTML publication.
 
+## Hosted-governance repair and canonical visual receipt
+
+Hosted CI41799598090 at tested merge78f29b4f7046efafc31b161a37e8dfcbc1eda4b4 (candidate5797058 plus201e94) exposed two introduced failures: the new source panel's bare13px radius, and two sector copy-deck citations still carrying obsolete source lines/title. Ten packs and contract-delta passed; this was not dependency or packing failure. The candidate visual-evidence step had not run after the radius failure.
+
+The original branch now uses the incumbent `var(--r-card,12px)` scale. The two dependent copy-deck rows cite the current complete-input zero-state and zero-fill sentences; the title truthfully says “in the published inputs,” not “today.” No engine, ranking, source-coverage semantics or CI check changed.
+
+- **218 focused tests passed**: four existing sector reference suites, the design-system suite and all84 source-availability cases.
+- The actual forward-only design ratchet passes with0blocking findings.
+- All **64 actual-builder browser cases and83screenshots** were regenerated against the tokenized template; minimum source-text contrast remains5.4267:1, no JS errors or external requests.
+- The repository's existing `scripts/capture_page_evidence.py` (module SHA256 `9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42`) additionally produced the canonical `mastermind.p0_evidence.v2` receipts under `mockups/refs/d03-v2-source-availability-20261104/`:16unavailable captures and24populated captures, including real source-summary focus and candidate-card hover in both themes. Each manifest has the complete8-cell desktop/mobile×EN/ZH×light/dark rest matrix. The owned `EVIDENCE.yml` points to the populated manifest, which includes both required interactions.
+- Those captures use synthetic outputs from the same actual builder; the capture tool correctly reports no Git directory for the temporary served site. Source identity is bound by the supplementary64-case proof's actual source hashes and the retained captured HTML, not a fabricated deployed commit.
+- Canonical screenshot self-QA checks hierarchy, focus, wrapping and source-state meaning. This is real browser evidence of a candidate, not production release or user acceptance.
+
 ## CI and remaining acceptance
 
 The new suite is registered in the existing code-gated `unrun-template-chips` job. Three adjacent hermetic pytest invocations are consolidated with it; every pre-existing suite/path/selector/dependency/gate remains. Computed job weight is **31 → 31**, with two fewer pytest processes. No packing ceiling or observed-weight override changes. Manifest validation remains 312 logical jobs / 12 packs.
