@@ -2652,6 +2652,76 @@ jobs:
           echo "accepted_blob=$(git rev-parse "$ACCEPTED_LEADER_SHA:$LEADER_PATH")" >> "$GITHUB_OUTPUT"
       - name: timings band — engine-core (W2)
         run: python3 scripts/nightly_timings.py mark --band engine-core || echo "::warning::timings band mark failed (non-fatal)"
+      - name: refresh regime inputs for AI briefs (engine.run)
+        id: regime_inputs
+        if: steps.leader_accepted_source.outputs.ready == 'true'
+        continue-on-error: true
+        # Preserve the original engine environment, but keep OAuth/model-pool
+        # credentials confined to the separate synthesis step below.
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+          LIVE_QUOTES_WORKER_URL: ${{ vars.LIVE_QUOTES_WORKER_URL }}
+        run: python -m engine.run
+      - name: master brain scorer (durability loop; deterministic, resilient)
+        if: steps.regime_inputs.outcome == 'success'
+        # Grades the brain's own past-due cross-asset leans in data/master_brain/theses.jsonl
+        # against realized closes (reuses engine.desk_scorer) -> data/master_brain/
+        # {scored.jsonl,track_record.json}. Runs BEFORE the master_brain generator so today's
+        # brief reflects the freshest track record. Deterministic, no API key, never aborts.
+        run: |
+          set +e
+          python -m engine.master_brain_scorer > "$RUNNER_TEMP/mb_score.log" 2>&1; rc=$?
+          cat "$RUNNER_TEMP/mb_score.log"
+          if [ "$rc" -ne 0 ]; then echo "::warning title=master_brain_scorer::rc=$rc (non-fatal)"; fi
+          exit 0
+      - name: master brain (multi-lens LLM synthesis; default-off, resilient)
+        id: master_brain
+        if: steps.regime_inputs.outcome == 'success'
+        timeout-minutes: 20
+        continue-on-error: true
+        # Generate once, before the pages that embed these briefs and before the
+        # long regional/tail band. Read refreshed macro + accepted regional inputs;
+        # each source retains its own as-of date. No force or alternate provider.
+        # A failed input refresh leaves the last committed briefs in place. The
+        # deadline prevents a provider stall from starving the dashboard builders.
+        env:
+          # PROVIDER LADDER (config.yml master_brain.provider_order):
+          # codex → oauth pool → ANTHROPIC_API_KEY → DeepSeek. This step used to pass
+          # DEEPSEEK_API_KEY and nothing else, so DeepSeek was not merely first — it was
+          # the ONLY rung that existed at runtime, and the day its balance ran out the
+          # brief stopped rendering entirely. Codex needs no secret (it reads the
+          # runner's attached ~/.codex login), but the Claude rungs are invisible
+          # without these, so a ladder that omits them silently collapses back to
+          # DeepSeek-only. Mirrors the Narrative Brain step below.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN_1: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_1 }}
+          CLAUDE_CODE_OAUTH_TOKEN_2: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_2 }}
+          CLAUDE_CODE_OAUTH_TOKEN_3: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_3 }}
+          CLAUDE_CODE_OAUTH_TOKEN_4: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_4 }}
+          CLAUDE_CODE_OAUTH_TOKEN_5: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_5 }}
+          CLAUDE_CODE_OAUTH_TOKEN_6: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_6 }}
+          CLAUDE_CODE_OAUTH_TOKEN_7: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_7 }}
+          METAB_KEYS_ENABLED: ${{ vars.METAB_KEYS_ENABLED }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Metered floor, deliberately LAST — the only pay-per-use rung.
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          set +e
+          python -m engine.master_brain > "$RUNNER_TEMP/mb.log" 2>&1; rc=$?
+          cat "$RUNNER_TEMP/mb.log"
+          if [ "$rc" -ne 0 ]; then echo "::warning title=master_brain::rc=$rc (non-fatal)"; fi
+          exit 0
+      - name: AI Daily Brief page (build_aibrief)
+        if: steps.regime_inputs.outcome == 'success'
+        # Server-render the current briefs before the durable core checkpoint.
+        # Supplementary panels retain their own source clocks and last-good data.
+        run: python -m scripts.build_aibrief
       - name: run regime engine + build dashboard + daily brief (resilient)
         id: regime_dashboard
         if: steps.leader_accepted_source.outputs.ready == 'true'
@@ -2661,9 +2731,8 @@ jobs:
         # but NEVER aborts the job — so the site still deploys (via the always()
         # artifact upload) and one broken builder can't 404 the whole dashboard.
         env:
-          # catalyst_tone (Tier-A FOMC/dislocation digest) runs INSIDE engine.run, so it
-          # needs the DeepSeek key here too — not only on the master_brain step below.
-          # No-op (degrades to neutral) when the secret is absent.
+          # Preserve the existing builder environment after splitting engine.run
+          # into the earlier input step. Model-pool keys remain synthesis-only.
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           # W-L1 confirmation receipt: build_site GETs the evening board
           # (live_flow/us_board_provisional.json) to grade tonight's board against it
@@ -2687,7 +2756,8 @@ jobs:
           # quotes-worker URL to turn ON browser live prices — build_site bakes it into
           # site/live_config.js. Empty -> live layer stays dormant (no-op). No code edit needed.
           LIVE_QUOTES_WORKER_URL: ${{ vars.LIVE_QUOTES_WORKER_URL }}
-        # Body extracted verbatim to scripts/ci/daily_engine_regime_dashboard.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
+        # The first-class input step already attempted engine.run; this helper
+        # renders from those inputs and never runs a second input refresh.
         run: bash scripts/ci/daily_engine_regime_dashboard.sh
       - name: publish the provisional → nightly confirmation delta (R2 artifact)
         # W-L1. Runs HERE, after the build step, because that is the first moment
@@ -3898,52 +3968,6 @@ jobs:
         # BTC authority contract consumed by H6, then this class-level hub reads
         # it alongside the additive universe and market-state engines.
         run: python -m scripts.build_crypto
-      - name: master brain scorer (durability loop; deterministic, resilient)
-        # Grades the brain's own past-due cross-asset leans in data/master_brain/theses.jsonl
-        # against realized closes (reuses engine.desk_scorer) -> data/master_brain/
-        # {scored.jsonl,track_record.json}. Runs BEFORE the master_brain generator so today's
-        # brief reflects the freshest track record. Deterministic, no API key, never aborts.
-        run: |
-          set +e
-          python -m engine.master_brain_scorer > "$RUNNER_TEMP/mb_score.log" 2>&1; rc=$?
-          cat "$RUNNER_TEMP/mb_score.log"
-          if [ "$rc" -ne 0 ]; then echo "::warning title=master_brain_scorer::rc=$rc (non-fatal)"; fi
-          exit 0
-      - name: master brain (multi-lens LLM synthesis; default-off, resilient)
-        # Runs LAST among the builders — it reads EVERY dashboard's latest.json
-        # (macro/china/hk/commodity/forex + BTC) plus the catalyst digest, and writes
-        # one brief per configured lens (master_brain.lenses, default macro+china+btc):
-        #   site/master_brief.json (US dashboard) · site/china_brief.json (china.html)
-        #   · site/btc_brief.json (vector.html) — each client-fetched by its AI brief
-        # panel. NO-OP unless config master_brain.enabled is true AND at least one
-        # rung of the ladder below can serve. Self-sufficient; never aborts the deploy.
-        env:
-          # PROVIDER LADDER (config.yml master_brain.provider_order):
-          # codex → oauth pool → ANTHROPIC_API_KEY → DeepSeek. This step used to pass
-          # DEEPSEEK_API_KEY and nothing else, so DeepSeek was not merely first — it was
-          # the ONLY rung that existed at runtime, and the day its balance ran out the
-          # brief stopped rendering entirely. Codex needs no secret (it reads the
-          # runner's attached ~/.codex login), but the Claude rungs are invisible
-          # without these, so a ladder that omits them silently collapses back to
-          # DeepSeek-only. Mirrors the Narrative Brain step below.
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          CLAUDE_CODE_OAUTH_TOKEN_1: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_1 }}
-          CLAUDE_CODE_OAUTH_TOKEN_2: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_2 }}
-          CLAUDE_CODE_OAUTH_TOKEN_3: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_3 }}
-          CLAUDE_CODE_OAUTH_TOKEN_4: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_4 }}
-          CLAUDE_CODE_OAUTH_TOKEN_5: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_5 }}
-          CLAUDE_CODE_OAUTH_TOKEN_6: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_6 }}
-          CLAUDE_CODE_OAUTH_TOKEN_7: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_7 }}
-          METAB_KEYS_ENABLED: ${{ vars.METAB_KEYS_ENABLED }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Metered floor, deliberately LAST — the only pay-per-use rung.
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-        run: |
-          set +e
-          python -m engine.master_brain > "$RUNNER_TEMP/mb.log" 2>&1; rc=$?
-          cat "$RUNNER_TEMP/mb.log"
-          if [ "$rc" -ne 0 ]; then echo "::warning title=master_brain::rc=$rc (non-fatal)"; fi
-          exit 0
       - name: AI desk scorer (durability loop; deterministic, resilient)
         # Grades past-due theses in data/ai_desk/theses.jsonl against realized closes,
         # appends data/ai_desk/scored.jsonl, and writes data/ai_desk/track_record.json
@@ -4419,11 +4443,6 @@ jobs:
         # flags (stealth_accumulation / early_edge / crowded_top / …), and the sector heat.
         # The US analogue of the China intel hub; pure, resilient, never aborts.
         run: python -m scripts.build_intel_hub || echo "intel hub skipped (additive)"
-      - name: AI Daily Brief page (build_aibrief)
-        # consolidated page (site/aibrief.html) surfacing the three client-fetched AI
-        # briefs (master/china/btc) as toggle tabs. Pure render — order-independent;
-        # resilient (returns 0). Replaces the retired deterministic daily_brief.
-        run: python -m scripts.build_aibrief
       - name: AM Edition producer (build_am_edition)
         # Deterministic since-prior-close artifact (site/am_edition.json) with
         # per-source clocks. Reads committed artifacts only; never breaks the run.

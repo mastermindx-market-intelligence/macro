@@ -1184,3 +1184,192 @@ jobs:
             '(check_theme_graph_contracts)" scripts.check_theme_graph_contracts'
             in helper
         )
+
+
+# AI Brief recovery: execute the real workflow shell against hermetic module and
+# Git fixtures. No model calls, production writes, or render dispatches occur.
+def _brief_workflow(name):
+    import yaml
+
+    return yaml.safe_load((REPO_ROOT / ".github/workflows" / name).read_text())
+
+
+def test_ai_brief_precedes_embedded_pages_and_durable_checkpoint():
+    workflow = _brief_workflow("daily.yml")
+    steps = workflow["jobs"]["engine"]["steps"]
+    by_id = {step["id"]: step for step in steps if "id" in step}
+    refresh = by_id["regime_inputs"]
+    brain = by_id["master_brain"]
+    core = by_id["regime_dashboard"]
+    scorer = next(s for s in steps if s.get("name", "").startswith("master brain scorer"))
+    page = next(s for s in steps if s.get("name") == "AI Daily Brief page (build_aibrief)")
+    checkpoint = next(s for s in steps if s.get("name", "").startswith("checkpoint core engine outputs"))
+    regional = by_id["regional_desk_builders"]
+
+    assert steps.index(refresh) < steps.index(scorer) < steps.index(brain)
+    assert steps.index(brain) < steps.index(page) < steps.index(core)
+    assert steps.index(core) < steps.index(regional) < steps.index(checkpoint)
+    assert refresh["if"] == core["if"] == "steps.leader_accepted_source.outputs.ready == 'true'"
+    assert refresh["continue-on-error"] is True
+    for step in (scorer, brain, page):
+        assert step["if"] == "steps.regime_inputs.outcome == 'success'"
+    assert brain["continue-on-error"] is True
+    assert 0 < brain["timeout-minutes"] <= 20
+    assert checkpoint["if"] == "always()"
+    assert not any("CLAUDE_CODE_OAUTH" in key for key in refresh["env"])
+    assert not any("CLAUDE_CODE_OAUTH" in key for key in core["env"])
+    assert "CLAUDE_CODE_OAUTH_TOKEN_7" in brain["env"]
+
+    modules = [
+        module
+        for step in steps
+        for module in _extract_modules_from_run(resolve_run_source(step.get("run", ""), REPO_ROOT))
+    ]
+    assert modules.count("engine.run") == 1
+    assert modules.count("engine.master_brain") == 1
+    assert modules.count("engine.master_brain_scorer") == 1
+    assert modules.index("engine.master_brain") < modules.index("scripts.build_site")
+    assert modules.index("engine.master_brain") < modules.index("scripts.build_aibrief")
+
+
+def test_ai_brief_real_shell_runs_engine_once_before_consumers(tmp_path):
+    import os
+    import subprocess
+
+    binary = tmp_path / "bin"
+    binary.mkdir()
+    python = binary / "python"
+    python.write_text(
+        '#!/usr/bin/env bash\n'
+        'printf "%s\\n" "$2" >> "$BRIEF_TEST_CALLS"\n'
+        'case "$2" in\n'
+        '  engine.master_brain) echo current-brief > brief.txt;;\n'
+        '  scripts.build_site|scripts.build_aibrief) cat brief.txt > "$2.html";;\n'
+        'esac\n'
+    )
+    python.chmod(0o755)
+    calls = tmp_path / "calls"
+    env = {
+        **os.environ,
+        "PATH": str(binary) + os.pathsep + os.environ["PATH"],
+        "RUNNER_TEMP": str(tmp_path),
+        "GITHUB_STEP_SUMMARY": str(tmp_path / "summary"),
+        "GITHUB_OUTPUT": str(tmp_path / "output"),
+        "BRIEF_TEST_CALLS": str(calls),
+    }
+    steps = _brief_workflow("daily.yml")["jobs"]["engine"]["steps"]
+    selected = [
+        s for s in steps
+        if s.get("id") in {"regime_inputs", "master_brain", "regime_dashboard"}
+        or s.get("name", "").startswith("master brain scorer")
+        or s.get("name") == "AI Daily Brief page (build_aibrief)"
+    ]
+    for step in selected:
+        if step.get("id") == "regime_dashboard":
+            command = ["bash", str(REPO_ROOT / "scripts/ci/daily_engine_regime_dashboard.sh")]
+        else:
+            command = ["bash", "-e", "-c", step["run"]]
+        result = subprocess.run(command, cwd=tmp_path, env=env, capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+    invoked = calls.read_text().splitlines()
+    assert invoked.count("engine.run") == invoked.count("engine.master_brain") == 1
+    assert invoked.index("engine.run") < invoked.index("engine.master_brain")
+    assert invoked.index("engine.master_brain") < invoked.index("scripts.build_site")
+    assert (tmp_path / "scripts.build_site.html").read_text() == "current-brief\n"
+    assert (tmp_path / "scripts.build_aibrief.html").read_text() == "current-brief\n"
+
+
+def test_brief_completion_handoff_keeps_one_existing_render_queue():
+    render = _brief_workflow("render.yml")
+    triggers = render.get("on", render.get(True))
+    assert triggers["workflow_run"] == {
+        "workflows": ["daily"], "types": ["completed"], "branches": ["main"]
+    }
+    assert "site/china_brief.json" in triggers["push"]["paths"]
+    gate = render["jobs"]["brief_render_gate"]
+    assert gate["if"] == "github.event_name == 'workflow_run'"
+    assert gate["permissions"] == {"contents": "read"}
+    assert gate["steps"][0]["with"]["ref"] == "main"
+    owner = render["jobs"]["render"]
+    assert owner["needs"] == "brief_render_gate"
+    assert "always()" in owner["if"] and "brief_render_gate.outputs.needed" in owner["if"]
+    assert "conclusion" not in owner["if"]  # failed/cancelled daily may have published
+    # A no-op completion gate must not supersede an unrelated pending render.
+    assert "concurrency" not in render
+    assert owner["concurrency"] == {"group": "pipeline-render", "cancel-in-progress": False}
+
+
+def _brief_git(root, *args):
+    import subprocess
+
+    result = subprocess.run(
+        ["git", "-C", str(root), *args], capture_output=True, text=True, check=True
+    )
+    return result.stdout.strip()
+
+
+@pytest.mark.parametrize(
+    "change_brief,change_macro,cover_china,cover_hk,needed,scope",
+    [
+        (False, False, False, False, False, None),
+        (True, False, False, False, True, "china+hk"),
+        (True, True, False, False, True, "macro+china+hk"),
+        (True, False, True, False, True, "hk"),
+        (True, False, False, True, True, "china"),
+        (True, False, True, True, False, None),
+    ],
+)
+def test_published_brief_gate_and_scope_union(
+    tmp_path, change_brief, change_macro, cover_china, cover_hk, needed, scope
+):
+    import os
+    import subprocess
+
+    _brief_git(tmp_path, "init", "-q", "-b", "main")
+    _brief_git(tmp_path, "config", "user.name", "brief-test")
+    _brief_git(tmp_path, "config", "user.email", "brief-test@example.invalid")
+    _brief_git(tmp_path, "config", "commit.gpgsign", "false")
+    (tmp_path / "site").mkdir()
+    (tmp_path / "templates").mkdir()
+    brief = tmp_path / "site/china_brief.json"
+    dashboard = tmp_path / "templates/dashboard.html.j2"
+    brief.write_text('{"state_asof":"2026-10-16"}\n')
+    dashboard.write_text("baseline")
+    _brief_git(tmp_path, "add", ".")
+    _brief_git(tmp_path, "commit", "-qm", "fixture source")
+    source = _brief_git(tmp_path, "rev-parse", "HEAD")
+    _brief_git(tmp_path, "commit", "--allow-empty", "-qm",
+               f"render: site re-render 2026-10-16 (scope=all, from={source})")
+    if change_brief:
+        brief.write_text('{"state_asof":"2026-11-03"}\n')
+    if change_macro:
+        dashboard.write_text("new template")
+    if change_brief or change_macro:
+        _brief_git(tmp_path, "add", ".")
+        _brief_git(tmp_path, "commit", "-qm", "accepted changes")
+    accepted = _brief_git(tmp_path, "rev-parse", "HEAD")
+    for region, covered in (("china", cover_china), ("hk", cover_hk)):
+        if covered:
+            _brief_git(tmp_path, "commit", "--allow-empty", "-qm",
+                       f"render: site re-render 2026-11-04 (scope={region}, from={accepted})")
+
+    workflow = _brief_workflow("render.yml")
+    gate = workflow["jobs"]["brief_render_gate"]["steps"][-1]["run"]
+    output = tmp_path / "gate-output"
+    env = {**os.environ, "GITHUB_OUTPUT": str(output)}
+    result = subprocess.run(["bash", "-e", "-c", gate], cwd=tmp_path, env=env,
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert f"needed={str(needed).lower()}" in output.read_text()
+    if not needed:
+        return
+    picker = next(s for s in workflow["jobs"]["render"]["steps"] if s.get("id") == "pick")
+    # Either event may be the survivor after a pending brief render is superseded.
+    for event in ("workflow_run", "push"):
+        output.write_text("")
+        body = picker["run"].replace("${{ github.event_name }}", event)
+        body = body.replace("${{ github.event.inputs.scope }}", "")
+        result = subprocess.run(["bash", "-e", "-c", body], cwd=tmp_path, env=env,
+                                capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+        assert f"scope={scope}" in output.read_text(), (event, output.read_text())

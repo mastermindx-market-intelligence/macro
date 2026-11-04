@@ -4,6 +4,8 @@
 # 2026-08-12 512KB processing-cap diet (tests/test_workflow_file_size.py).
 # Env comes from the step's `env:` block, which stays in the YAML.
 # Invoked as: bash scripts/ci/daily_engine_regime_dashboard.sh
+# daily.yml runs engine.run and AI synthesis first, so the builders below embed
+# the current brief. This helper no longer refreshes regime inputs a second time.
 set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declares no shell:
 
 set +e
@@ -26,7 +28,6 @@ run_py() {
     { echo "### ❌ $label failed (rc=$rc)"; echo '<details><summary>traceback</summary>'; echo; echo '```'; tail -n 60 "$RUNNER_TEMP/step.log"; echo '```'; echo '</details>'; } >> "$GITHUB_STEP_SUMMARY"
   fi
 }
-run_py "regime engine (engine.run)" engine.run
 # Shock de-escalation protocol (policy-shock W2-E / D3) — must run AFTER engine.run
 # so market_drivers.append_log has written coherence_state to the log.  Writes
 # data/reflexes/shock_deescalation/firings.jsonl (keep-first) + site/live/shock_state.json.

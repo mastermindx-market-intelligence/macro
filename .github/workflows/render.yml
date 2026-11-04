@@ -32,6 +32,12 @@ name: render
 # ~1 min via pages.yml on any push to site/** — you only need THIS workflow for
 # template (.html.j2) fixes that must be re-rendered through a builder.
 on:
+  # The daily can publish at its always() checkpoint and then fail or lose its
+  # runner. Completion checks accepted main even for failed/cancelled runs.
+  workflow_run:
+    workflows: [daily]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       scope:
@@ -46,10 +52,10 @@ on:
         options: [render-heavy, render-linux, macstudio]
   push:
     branches: [main]
-    # A HUMAN pushing a template or builder change auto-renders + deploys. The
-    # nightly bot only ever touches data/ + site/ + reports/, so its commits never
-    # match these paths — no loop, no double-fire. (The site/ commit this workflow
-    # makes triggers pages.yml's committed-tree deploy once more; idempotent.)
+    # Source/template pushes auto-render. Generated pages do not match these
+    # paths; the exact China brief input is the only generated-data exception.
+    # Nightly bot publication reaches this owner through workflow_run above.
+    # Rendering reads the brief without regenerating it, so there is no loop.
     #
     # The POST-RENDER SWEEPS are listed too. They rewrite every page in site/ (shim
     # injection, inline-CSS externalization, ?v= stamping, CSS preload hints), so a
@@ -60,6 +66,9 @@ on:
     # engine/** , so the two lanes never double-fire on one commit. These files
     # change rarely, so this adds no meaningful render load.
     paths:
+      # Human/source pushes may update the brief too. Nightly GITHUB_TOKEN
+      # commits are handled by the completion event below, not push recursion.
+      - "site/china_brief.json"
       - "templates/**"
       # Public/marketing surfaces have a dedicated GitHub-hosted fast lane. These
       # exclusions are ordered after templates/** so they do not occupy the scarce
@@ -238,23 +247,65 @@ on:
 permissions:
   contents: write   # commit the rendered site/ to main; the VPS (Caddy) serves from main
 
-concurrency:
-  # Its OWN lane, isolated from `pipeline-daily` so a render can never starve (or be
-  # starved by) the nightly.
-  # cancel-in-progress: FALSE — do NOT cancel a render that's already running. With many
-  # sessions merging every few minutes, `true` cancelled 27 of 30 renders (each new push
-  # killed the in-flight one) so the site almost never re-rendered. With `false`, a running
-  # render always FINISHES and ships; GitHub still supersedes redundant *pending* runs
-  # (only the latest queued one runs next), so the site stays current without starving.
-  # The COVERAGE half of that supersede behavior lives in the `pick` step (scope-union):
-  # the surviving run diffs against per-region "(scope=X, from=SHA)" render-commit
-  # watermarks, so superseded runs' pages — and merges landing mid-render — are still
-  # rendered by whichever run eventually executes (2026-07-17 starvation postmortem).
-  group: pipeline-render
-  cancel-in-progress: false
 
 jobs:
+  brief_render_gate:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      needed: ${{ steps.brief.outputs.needed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 900
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: .github/workflows/render.yml
+      - name: compare accepted China brief with existing render watermarks
+        id: brief
+        run: |
+          set -euo pipefail
+
+          watermarks=$(git log -n 900 --format=%s | sed -n -E \
+            's/^render: site re-render [0-9-]+ \(scope=([a-z+]+), from=([0-9a-f]{7,40})\)$/\1 \2/p')
+          for region in china hk; do
+            covered_from=""
+            while read -r scope from; do
+              case "+$scope+" in
+                *"+all+"*|*"+$region+"*) covered_from="$from"; break;;
+              esac
+            done <<< "$watermarks"
+            # Missing/expired coverage must render once to establish a real watermark.
+            if [ -z "$covered_from" ] || ! git diff --quiet "$covered_from..HEAD" -- site/china_brief.json; then
+              echo "needed=true" >> "$GITHUB_OUTPUT"
+              echo "::notice::Accepted China brief needs $region render coverage"
+              exit 0
+            fi
+          done
+          echo "needed=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::China and HK already cover the accepted China brief"
   render:
+    needs: brief_render_gate
+    if: ${{ always() && (github.event_name != 'workflow_run' || needs.brief_render_gate.outputs.needed == 'true') }}
+    # No-op completion gates must not supersede a queued source render.
+    concurrency:
+      # Its OWN lane, isolated from `pipeline-daily` so a render can never starve (or be
+      # starved by) the nightly.
+      # cancel-in-progress: FALSE — do NOT cancel a render that's already running. With many
+      # sessions merging every few minutes, `true` cancelled 27 of 30 renders (each new push
+      # killed the in-flight one) so the site almost never re-rendered. With `false`, a running
+      # render always FINISHES and ships; GitHub still supersedes redundant *pending* runs
+      # (only the latest queued one runs next), so the site stays current without starving.
+      # The COVERAGE half of that supersede behavior lives in the `pick` step (scope-union):
+      # the surviving run diffs against per-region "(scope=X, from=SHA)" render-commit
+      # watermarks, so superseded runs' pages — and merges landing mid-render — are still
+      # rendered by whichever run eventually executes (2026-07-17 starvation postmortem).
+      group: pipeline-render
+      cancel-in-progress: false
     # Routine render runs on the physically separate PC render-linux fleet. The
     # dispatch input retains render-heavy as the reserved M2 rollback and macstudio
     # as an explicit shared-Mac fallback; bootstrap remains portable.
@@ -539,6 +590,7 @@ jobs:
           fi
           region_of() {
             case "$1" in
+              site/china_brief.json) echo china+hk;;
               templates/china.html.j2|templates/china_news.html.j2|templates/china_policy_watch.html.j2|scripts/build_china.py|scripts/build_china_policy_watch.py) echo china;;
               templates/china_special_situations.html.j2|templates/_china_special_situations_*.html.j2|scripts/build_china_special_situations.py) echo china;;
               templates/intl.html.j2|scripts/build_intl.py) echo intl;;
@@ -575,13 +627,13 @@ jobs:
           for R in macro intl china hk canada markets gex baskets sits; do
             FR=$(covering_from "$R")
             if [ -z "$FR" ]; then NEED_ALL="no from=-tagged render covers '$R' in the log window"; break; fi
-            CH=$(git diff --name-only "$FR..HEAD" -- templates scripts config.yml lib 2>/dev/null)
+            CH=$(git diff --name-only "$FR..HEAD" -- templates scripts config.yml lib site/china_brief.json 2>/dev/null)
             if [ $? -ne 0 ]; then NEED_ALL="git diff $FR..HEAD failed for '$R' (rewritten/expired watermark)"; break; fi
             while IFS= read -r f; do
               [ -z "$f" ] && continue
-              case "$(region_of "$f")" in
-                "$R") DIRTY="$DIRTY $R"; break;;
-                all)  NEED_ALL="'$f' (shared/unmapped) changed since '$R' watermark $FR"; break;;
+              case "+$(region_of "$f")+" in
+                *"+$R+"*) DIRTY="$DIRTY $R"; break;;
+                *"+all+"*) NEED_ALL="'$f' (shared/unmapped) changed since '$R' watermark $FR"; break;;
               esac
             done <<< "$CH"
             [ -n "$NEED_ALL" ] && break
