@@ -4,7 +4,8 @@
 This verifier does not create, open, modify, restore, or delete Paper files.
 It cannot certify native backup fidelity from metadata or synthetic receipts.
 Actual original-carrier, vendor, canary, history and restore acceptance remain
-separate gates after structural preflight.
+separate from the metadata evidence this verifier can inspect. It reports real
+scoped parity or divergence, never an invented external authorization state.
 """
 from __future__ import annotations
 
@@ -38,6 +39,8 @@ def _file_record(record: object, label: str) -> tuple[list[tuple], dict]:
     pages = record.get("pages")
     if not isinstance(pages, list) or not pages:
         raise EvidenceInvalid(f"{label}: complete page array required")
+    if record.get("truncated") is True:
+        raise EvidenceInvalid(f"{label}: truncated page array")
     if type(record.get("page_count")) is not int or record["page_count"] != len(pages):
         raise EvidenceInvalid(f"{label}: page count conflicts with array")
     tuples = []
@@ -81,6 +84,7 @@ def evaluate_pair(pair: object) -> dict:
     exact_page_metadata_match = source_pages == clone_pages
     oversize_warning = any("file is too large" in w.lower() or "data loss" in w.lower()
                            for w in src["warnings"])
+    metadata_parity = exact_page_metadata_match and tokens_match
     blockers = []
     if missing:
         blockers.append("MISSING_SOURCE_PAGES")
@@ -96,12 +100,13 @@ def evaluate_pair(pair: object) -> dict:
         blockers.append("ORIGINAL_OVERSIZE_DATA_LOSS_WARNING")
     # Metadata, even when equal, contains none of these property-level checks.
     blockers.extend("UNVERIFIED_" + key.upper() for key in REQUIRED_NATIVE_PROPERTIES)
-    blockers.extend(("VENDOR_OVERSIZED_CLONE_SAFETY_NOT_ATTESTED",
-                     "NATIVE_RESOURCE_WRITE_CARRIER_NOT_AUTHORIZED",
-                     "HARMLESS_SCRATCH_CANARY_NOT_PROVEN"))
     return {
         "kind": "F03_native_backup_fail_closed_assessment_v1",
         "decision": "HOLD_NOT_A_NATIVE_BACKUP",
+        "metadata_comparison": ("METADATA_PARITY_OBSERVED" if metadata_parity
+                                else "METADATA_DIVERGENCE_OBSERVED"),
+        "metadata_parity_observed": metadata_parity,
+        "native_restore_status": "NOT_ESTABLISHED_BY_THIS_EVIDENCE",
         "original_file_id": src["file_id"],
         "candidate_file_id": dst["file_id"],
         "source_page_count": len(source_pages),
@@ -112,8 +117,14 @@ def evaluate_pair(pair: object) -> dict:
         "page_metadata_equal": exact_page_metadata_match,
         "token_hash_equal_not_sufficient": tokens_match,
         "original_oversize_warning": oversize_warning,
+        "source_warnings": list(src["warnings"]),
+        "candidate_warnings": list(dst["warnings"]),
         "unverified_native_properties": list(REQUIRED_NATIVE_PROPERTIES),
         "blockers": blockers,
+        "external_gates_not_assessed_by_metadata": [
+            "oversized_file_clone_safety", "authorized_native_test_carrier",
+            "harmless_native_canary",
+        ],
         "paper_mutations": 0,
         "restore_test_executed": False,
         "physical_reorganization_authorized": False,
@@ -123,8 +134,11 @@ def evaluate_pair(pair: object) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("readback", type=Path, help="Immutable normalized native read-only pair")
-    parser.add_argument("--require-restored", action="store_true",
-                        help="Exit nonzero unless an independently certified restore exists")
+    required = parser.add_mutually_exclusive_group()
+    required.add_argument("--require-restored", action="store_true",
+                          help="Compatibility fence: this metadata evidence cannot certify restore; exits 3")
+    required.add_argument("--require-metadata-parity", action="store_true",
+                          help="Exit 0 for exact observed page/token metadata parity, 3 for divergence; not restore")
     args = parser.parse_args()
     try:
         if args.readback.stat().st_size > 4_000_000:
@@ -134,7 +148,8 @@ def main() -> int:
         print(json.dumps({"decision": "INVALID_EVIDENCE", "error": str(exc)}))
         return 2
     print(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True))
-    return 3 if args.require_restored else 0
+    return 3 if (args.require_restored or (args.require_metadata_parity
+                 and not result["metadata_parity_observed"])) else 0
 
 
 if __name__ == "__main__":

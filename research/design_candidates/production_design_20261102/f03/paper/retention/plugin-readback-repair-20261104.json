@@ -1,0 +1,85 @@
+{
+  "kind": "F03_paper_plugin_native_readback_source_repair_v1",
+  "operation": "f03-paper-native-readback-20261104-c2",
+  "protected_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+  "f03_prior_head": "2fe742d23aa44814b110343c568ce095a4b42c71",
+  "source": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "pr": 2058,
+    "head": "f8a5d8941461b5b00799475c0326c292b3c49ae9",
+    "branch": "sol/f03-paper-native-readback-20261104-c2",
+    "draft": true,
+    "guard_blob": "5bb801dd6bea0eaaa7dc9bf45f825a1483f12c4a",
+    "tests_blob": "8d0b6c6701beaadfbd28436d9331ef83cd0ab7c6",
+    "readback_exact": true
+  },
+  "checks": {
+    "guard_passed": 45,
+    "f03_passed": 15,
+    "replay_cli_passed": 4,
+    "guard_identity_scanner_not_run": 1,
+    "identity_scanner_blocker": "Missing unchanged test dependency; git lazy-fetch cancelled by network approval gate; not retried through another route",
+    "supplemental_file_management_setup_errors": 10,
+    "supplemental_blocker": "Absent tests/fixtures/paper_desktop/1b9aff_full_catalog.json in read-only sparse source mirror",
+    "direct_bridge_dispatches": 2,
+    "all_direct_bridge_dispatches_read_only": true,
+    "ci_run_id": 41902730981,
+    "ci_state": "queued",
+    "ci_green": false,
+    "ci_job_states": {
+      "PR test scope": "success",
+      "PR fast checks": "queued",
+      "pytest shard": "skipped"
+    }
+  },
+  "native_observation": {
+    "carrier": "Mastermind Paper direct app",
+    "server": "paper-desktop 0.5.18",
+    "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+    "raw": "paper/retention/plugin-native-comparison-20261104.raw.json",
+    "assessment": "paper/retention/plugin-native-comparison-assessment-20261104.json",
+    "replay": "tools/replay_plugin_native_comparison.py",
+    "reads": 8,
+    "decision": "OBSERVED_SCOPE_DIVERGENCE",
+    "installed_guard_execution": false,
+    "atomic_native_revision_bound": false,
+    "native_clone_created": false,
+    "native_restore_verified": false
+  },
+  "existing_app_refresh_diagnostic": {
+    "purpose": "Inspect same-app approved action-snapshot refresh; no new app, tunnel, deployment or permission change",
+    "browser": "Connected Chrome extension",
+    "attempted_origin": "https://chatgpt.com/",
+    "result": "BROWSER_HOST_RESTRICTION_NO_ACCESS",
+    "reason": "Browser host restrictions did not grant network egress to this origin",
+    "settings_inspected": false,
+    "settings_changed": false,
+    "same_app_refresh_performed": false,
+    "workaround_attempted": false,
+    "required_carrier_evidence": "Authorized existing-app action refresh and fresh published tool-definition readback; no same-turn alternate route"
+  },
+  "effects": {
+    "paper_mutations": 0,
+    "email_sent": false,
+    "merge": false,
+    "enqueue": false,
+    "deploy": false,
+    "ready_or_labels_changed": false,
+    "purchases": false,
+    "physical_proposals_dispatched": 0
+  },
+  "remaining_gates": [
+    "Exact-head hosted CI and unresolved local supplementary test dependencies",
+    "Approved existing-app native file-create/open carrier (current published action excludes these)",
+    "Oversized original clone safety confirmation not established",
+    "Harmless native duplicate/reopen and full-property restore verification",
+    "Physical reorganization remains HOLD"
+  ],
+  "adviser": {
+    "task": "/root/backup_guard_reasoning",
+    "role": "read-only reasoning adviser",
+    "result_consumed": true,
+    "terminal_edge": "ACCEPTED/STOP",
+    "source_or_paper_writes": 0
+  }
+}

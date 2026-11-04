@@ -32,6 +32,8 @@ class TestNativeBackupFailClosed(unittest.TestCase):
     def test_exact_historical_62_vs_57_is_not_backup(self):
         r = evaluate_pair(fixture())
         self.assertEqual(r["decision"], "HOLD_NOT_A_NATIVE_BACKUP")
+        self.assertEqual(r["metadata_comparison"], "METADATA_DIVERGENCE_OBSERVED")
+        self.assertFalse(r["metadata_parity_observed"])
         self.assertEqual(r["missing_source_page_ids"], MISSING)
         self.assertEqual((r["source_page_count"], r["candidate_page_count"]), (62, 57))
         self.assertTrue(r["token_hash_equal_not_sufficient"])
@@ -47,6 +49,9 @@ class TestNativeBackupFailClosed(unittest.TestCase):
         self.assertTrue(r["page_metadata_equal"])
         self.assertTrue(r["token_hash_equal_not_sufficient"])
         self.assertEqual(r["decision"], "HOLD_NOT_A_NATIVE_BACKUP")
+        self.assertEqual(r["metadata_comparison"], "METADATA_PARITY_OBSERVED")
+        self.assertTrue(r["metadata_parity_observed"])
+        self.assertEqual(r["native_restore_status"], "NOT_ESTABLISHED_BY_THIS_EVIDENCE")
         self.assertEqual(r["unverified_native_properties"], list(REQUIRED_NATIVE_PROPERTIES))
         self.assertIn("UNVERIFIED_REVISION_HISTORY", r["blockers"])
 
@@ -109,6 +114,33 @@ class TestNativeBackupFailClosed(unittest.TestCase):
             self.assertEqual(r.returncode, 3)
             self.assertIn("HOLD_NOT_A_NATIVE_BACKUP", r.stdout)
             self.assertEqual(subprocess.run(cmd, capture_output=True).returncode, 0)
+
+    def test_metadata_cannot_assert_external_authorization_absent(self):
+        result = evaluate_pair(fixture())
+        self.assertNotIn("NATIVE_RESOURCE_WRITE_CARRIER_NOT_AUTHORIZED", result["blockers"])
+        self.assertIn("authorized_native_test_carrier", result["external_gates_not_assessed_by_metadata"])
+        self.assertEqual(result["source_warnings"], [WARNING])
+
+    def test_truncated_page_array_is_invalid_even_when_counts_match(self):
+        d = fixture(); d["candidate"]["truncated"] = True
+        with self.assertRaises(EvidenceInvalid):
+            evaluate_pair(d)
+
+    def test_cli_metadata_parity_has_distinct_success_and_failure_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "pair.json"
+            d = fixture()
+            cmd = [sys.executable, str(Path(__file__).with_name("verify_native_backup.py")),
+                   str(path), "--require-metadata-parity"]
+            path.write_text(json.dumps(d))
+            self.assertEqual(subprocess.run(cmd, capture_output=True).returncode, 3)
+            d["candidate"]["pages"] = copy.deepcopy(d["source"]["pages"])
+            d["candidate"]["page_count"] = d["source"]["page_count"]
+            path.write_text(json.dumps(d))
+            r = subprocess.run(cmd, capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0)
+            self.assertIn("METADATA_PARITY_OBSERVED", r.stdout)
+            self.assertFalse(json.loads(r.stdout)["physical_reorganization_authorized"])
 
 
 if __name__ == "__main__":

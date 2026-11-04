@@ -1,0 +1,63 @@
+{
+  "blockers": [
+    "MISSING_SOURCE_PAGES",
+    "PAGE_IDS_OR_ORDER_DIFFER",
+    "PAGE_NAMES_ICONS_OR_ORDER_DIFFER",
+    "ORIGINAL_OVERSIZE_DATA_LOSS_WARNING",
+    "UNVERIFIED_FULL_NATIVE_TREE",
+    "UNVERIFIED_VECTOR_GEOMETRY",
+    "UNVERIFIED_STYLES_AND_FONTS",
+    "UNVERIFIED_EMBEDDED_ASSETS",
+    "UNVERIFIED_PROTOTYPE_LINKS",
+    "UNVERIFIED_COMMENTS_AND_ANNOTATIONS",
+    "UNVERIFIED_SHARING_AND_PERMISSIONS",
+    "UNVERIFIED_REVISION_HISTORY",
+    "UNVERIFIED_VISUAL_READBACK",
+    "UNVERIFIED_REOPEN_AND_RESTORE"
+  ],
+  "candidate_file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+  "candidate_page_count": 57,
+  "candidate_warnings": [],
+  "decision": "HOLD_NOT_A_NATIVE_BACKUP",
+  "external_gates_not_assessed_by_metadata": [
+    "oversized_file_clone_safety",
+    "authorized_native_test_carrier",
+    "harmless_native_canary"
+  ],
+  "kind": "F03_native_backup_fail_closed_assessment_v1",
+  "metadata_comparison": "METADATA_DIVERGENCE_OBSERVED",
+  "metadata_parity_observed": false,
+  "missing_source_page_ids": [
+    "p-27-0",
+    "p-26-1",
+    "p-25-0",
+    "p-29-0",
+    "p-28-0"
+  ],
+  "native_restore_status": "NOT_ESTABLISHED_BY_THIS_EVIDENCE",
+  "ordered_page_ids_equal": false,
+  "original_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "original_oversize_warning": true,
+  "page_metadata_equal": false,
+  "paper_mutations": 0,
+  "physical_reorganization_authorized": false,
+  "restore_test_executed": false,
+  "source_page_count": 62,
+  "source_warnings": [
+    "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+  ],
+  "token_hash_equal_not_sufficient": true,
+  "unexpected_candidate_page_ids": [],
+  "unverified_native_properties": [
+    "full_native_tree",
+    "vector_geometry",
+    "styles_and_fonts",
+    "embedded_assets",
+    "prototype_links",
+    "comments_and_annotations",
+    "sharing_and_permissions",
+    "revision_history",
+    "visual_readback",
+    "reopen_and_restore"
+  ]
+}
