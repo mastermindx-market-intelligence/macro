@@ -75,3 +75,9 @@ def test_transport_unknown_is_not_generic_retry(state,monkeypatch):
     monkeypatch.setattr(G,'answer_question',unknown)
     result=gw.chat(**state)
     assert result['dispatch_state']=='EFFECT_UNKNOWN' and result['retry_allowed'] is False
+
+
+def test_known_off_path_does_not_debit_quota(state,monkeypatch):
+    def forbidden(*a,**kw):raise AssertionError('OFF feature consumed quota')
+    monkeypatch.setattr(gw,'_check_and_increment_quota',forbidden)
+    assert gw.chat(**state)['error']=='options_question_unavailable'

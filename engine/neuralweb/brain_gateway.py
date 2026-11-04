@@ -13799,7 +13799,9 @@ def chat(
         # turn performs no user-plane I/O.
 
     if options_question_reference is not None and (
-            is_guest or not user_jwt or mode != "chat" or _grounded
+            options_question_runtime is None
+            or getattr(options_question_runtime, "enabled", False) is not True
+            or is_guest or not user_jwt or mode != "chat" or _grounded
             or company_source_span is not None or images or history or thread_id):
         return {"ok": False, "error": "options_question_unavailable", "lane": lane,
                 "model": "none", "thread_id": None, "citations": [], "degraded": True}
