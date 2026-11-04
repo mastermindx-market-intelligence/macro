@@ -1,0 +1,108 @@
+{
+  "schema": "d05.ci-closure-repair.v1",
+  "recorded_utc": "2026-11-04T11:46:10.419310+00:00",
+  "status": "LOCAL_MANIFEST_REPRODUCER_PASS_HOSTED_GATE_REQUIRED",
+  "failure": {
+    "head": "1573afdee7f6956968bded3b84e5fd4e25a8c82c",
+    "run": 41820516062,
+    "job": 126542200532,
+    "base": "eb7ebc890073b9498e026e9b2102c4a74fbc9d15",
+    "tested_merge": "ffe0de2b54d0630ad54f1e5b93a178510d65b118",
+    "classification": "introduced CI manifest import-closure omissions",
+    "missing": [
+      "config/theme_crosswalk.yml",
+      "engine/basket_breadth_divergence.py",
+      "engine/basket_history.py",
+      "engine/basket_score.py",
+      "engine/leadership_receipt.py",
+      "engine/market_ontology/theme_research_mounts.py",
+      "engine/signal_archive.py",
+      "engine/theme_alerts.py"
+    ],
+    "first_failure_utc": "2026-11-04T11:39:27.7141661Z",
+    "hosted_gate_seconds": 810.9,
+    "runner": "ubuntu-latest / Python3.12.13"
+  },
+  "changed_jobs": [
+    "sector-cycles-page"
+  ],
+  "job_census_unchanged": 384,
+  "job_steps_gate_and_conditions_unchanged": true,
+  "old_paths_retained": 114,
+  "added_paths": [
+    "config/theme_crosswalk.yml",
+    "engine/basket_breadth_divergence.py",
+    "engine/basket_history.py",
+    "engine/basket_score.py",
+    "engine/leadership_receipt.py",
+    "engine/market_ontology/theme_research_mounts.py",
+    "engine/signal_archive.py",
+    "engine/theme_alerts.py"
+  ],
+  "regressions": [
+    {
+      "changed_path": "config/theme_crosswalk.yml",
+      "before_selected": false,
+      "after_selected": true
+    },
+    {
+      "changed_path": "engine/basket_breadth_divergence.py",
+      "before_selected": false,
+      "after_selected": true
+    },
+    {
+      "changed_path": "engine/basket_history.py",
+      "before_selected": false,
+      "after_selected": true
+    },
+    {
+      "changed_path": "engine/basket_score.py",
+      "before_selected": false,
+      "after_selected": true
+    },
+    {
+      "changed_path": "engine/leadership_receipt.py",
+      "before_selected": false,
+      "after_selected": true
+    },
+    {
+      "changed_path": "engine/market_ontology/theme_research_mounts.py",
+      "before_selected": false,
+      "after_selected": true
+    },
+    {
+      "changed_path": "engine/signal_archive.py",
+      "before_selected": false,
+      "after_selected": true
+    },
+    {
+      "changed_path": "engine/theme_alerts.py",
+      "before_selected": false,
+      "after_selected": true
+    }
+  ],
+  "new_test_owners": {
+    "tests/test_sector_members_return.py": [
+      "sector-cycles-page"
+    ],
+    "tests/test_d05_route_evidence_semantics.py": [
+      "sector-cycles-page"
+    ]
+  },
+  "before": {
+    "bytes": 2590661,
+    "sha256": "8cfc299dcc552ddbdd7f57cfcf6da0f2836d819f9a57540fff17068eb25c7404",
+    "git_blob": "9feb58e44d926a7ffe30f51f598a4c02b2a4fa51"
+  },
+  "after": {
+    "bytes": 2591055,
+    "sha256": "849b88865096aa83c817cb7353caa3cbb783caeadfd189e029cefd1fd4e4f1a6",
+    "git_blob": "01b903b22d441c58acb10f9eb158f5e13fcacd79"
+  },
+  "full_import_closure_gate": "Exact hosted failure diagnosed; full gate not rerun in sparse local workspace. New-head hosted result required.",
+  "product_source_changed": false,
+  "existing_product_proof_binding": "1573afdee7f6956968bded3b84e5fd4e25a8c82c",
+  "local_validation_command": "python3 .pytest_cache/d05-composed-20261104/verify_ci_closure_repair.py",
+  "original_workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/d05-native-source-verification-20261104",
+  "local_validation_exit": 0
+}

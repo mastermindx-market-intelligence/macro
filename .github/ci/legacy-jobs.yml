@@ -7493,6 +7493,15 @@ jobs:
       - "templates/sector_dossier_cycle.css"
       - "tests/test_sector_members_return.py"
       - "tests/test_d05_route_evidence_semantics.py"
+      # D05: hosted import-closure omissions, contract-delta job126542200532.
+      - "config/theme_crosswalk.yml"
+      - "engine/basket_breadth_divergence.py"
+      - "engine/basket_history.py"
+      - "engine/basket_score.py"
+      - "engine/leadership_receipt.py"
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "engine/signal_archive.py"
+      - "engine/theme_alerts.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
