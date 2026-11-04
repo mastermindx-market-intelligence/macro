@@ -1,0 +1,29 @@
+# F01 — Post-first-pass rationale and constraints
+
+This packet is disclosed only after the two artifact-only reports were frozen and published at Macro `09742de176f553bb30e89a0ade95643d76416c30`. Their input was `3ec131bb4b515c5ede76f51e9d8e65f128bc19ae`, manifest SHA-256 `f5092fa6ff999fefb8b00a3ed15d0157756fd5f5fbedeae9fa645e31f113ee1b`. The first-pass reports remain unchanged. This disclosure does not request approval or withdrawal of a finding.
+
+## Source and implementation constraints now disclosed
+
+1. **Direction.** The author proposes A as the default, keeps B as a same-task spatial alternative, and retains H as an explicit compact choice. B has incomplete utility parity and is not an accepted equivalent. The equal 1168px Macro width is acknowledged. No visual preference is a measured usability result.
+2. **Width.** F02's candidate.2 handshake binds a 320px dock plus 24px gap only when at least 640px useful primary content remains; domain objects can require more. At 1024px the expanded navigation leaves 788px useful content, so a dock would leave 444px and fail this rule. The proposed narrow presentation is sequential modal inspection. The agreed overlay is 440px, while native D still draws 400px. At <=600px it becomes full width. This explains the tradeoff; it does not prove that a modal supports simultaneous comparison or that D shows a replacement flow.
+3. **Native/source mismatch.** The source is candidate.3. Native Readme/I metadata still says candidate.1, D still carries an unsupported twelve-field completeness claim, and C/D/E/H still omit the identified controls. These are admitted native defects. Source candidate.3 specifies the real eleven-column Tape and thirty-column CSV, Company depth, selected-object behavior, compact toggle, chart labels, and layer arbitration. A written requirement is not a pixel repair or executed behavior.
+4. **Source ownership.** D07 owns Company parsing, Financials/history and domain selection. D08 owns Options categories/views, data, filters and CSV. F01 retains these contracts without inventing data or a route. D02/D03 own Macro/template content. The five-row Macro example is illustrative; it does not establish full sector coverage or justify unexplained missing rows. Unprovided values must remain absent rather than be invented to fill the composition.
+5. **Layer feasibility.** The proposed candidate.3 policy suspends evidence while the existing Brain singleton is open, preserves context, and avoids two docks. The inspected typed Brain bridge exposes open/mounted/setPrincipal but no qualified close/open-state acknowledgement. D06 must supply that lifecycle binding; F02 must review the added interaction clauses. This is a concrete proposal with an unresolved integration dependency, not working behavior.
+6. **Effect hold.** Native content editing is paused because original operation `F01-20261103-c4-state-8-v1` has no terminal dispatch/effect receipt. A missing row is not proof of no effect. A later metadata operation returned DOCUMENT_CHANGED with retry_allowed:false. Neither was retried or rekeyed. This explains why native fixes remain undone; it does not lower acceptance criteria. The existing Paper owner must reconcile the original operation before lawful continuation.
+7. **Evidence limits.** Beta inspection established bounded Today/US failure/Company observations and Financials route readback, not complete Terminal return or save recovery. The retained p-23-0 state boards are real existing references, not newly completed F01 transitions. The seventy-nine acceptance cases are specifications and all remain NOT_RUN. No formal reviewer-class, QA01 or production qualification is claimed.
+
+## Exact source available for the amendment
+
+- [Product specification at candidate.3](https://github.com/mastermindx-market-intelligence/macro/blob/3ec131bb4b515c5ede76f51e9d8e65f128bc19ae/research/design_candidates/production_design_20261102/f01/PRODUCT_UX_SPEC.md)
+- [Joint shell contract at candidate.3](https://github.com/mastermindx-market-intelligence/macro/blob/3ec131bb4b515c5ede76f51e9d8e65f128bc19ae/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md)
+- [Source/data contract at candidate.3](https://github.com/mastermindx-market-intelligence/macro/blob/3ec131bb4b515c5ede76f51e9d8e65f128bc19ae/research/design_candidates/production_design_20261102/f01/SOURCE_AND_DATA_CONTRACT.md)
+- [Acceptance cases at candidate.3](https://github.com/mastermindx-market-intelligence/macro/blob/3ec131bb4b515c5ede76f51e9d8e65f128bc19ae/research/design_candidates/production_design_20261102/f01/ACCEPTANCE_TESTS.md)
+- [F02 geometry concurrence at its inspected head](https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md)
+
+The corresponding F01 files in the local `f01-drafts` directory are available for this bounded amendment. Do not consult peer reports to converge on a verdict. Identify any source actually read and preserve the exact initial report hash.
+
+## Amendment questions
+
+State separately which first-pass findings stand unchanged; whether any requirement is now specified in source but still open in native/behavioral evidence; and whether the legitimate width constraint changes a recommended remedy. Distinguish sequential inspection from simultaneous comparison. Add any new contradiction exposed by the rationale. Do not infer acceptance from the author accepting findings, source concurrence, an execution hold, or unavailable runtime evidence.
+
+Write a new `CLOSED_PRODUCT_AMENDMENT.md` or `CLOSED_TASTE_AMENDMENT.md` in `f01-review-output/`, leaving every first-pass file untouched. Record actual work and hash the result. These bounded advisory agents are not formal independent design authority or QA01.

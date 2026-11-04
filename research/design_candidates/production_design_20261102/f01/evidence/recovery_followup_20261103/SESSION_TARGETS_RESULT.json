@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"data\":null,\"error\":{\"code\":\"backend_unavailable\",\"message\":\"installed Session Bridge owner is unavailable\"},\"ok\":false,\"schema\":\"mastermind.session_bridge_result.v1\",\"server_version\":\"0.2.0\",\"tool\":\"session_targets\"}"
+    }
+  ],
+  "structuredContent": {
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "isError": true
+}

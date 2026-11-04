@@ -1,0 +1,128 @@
+{
+  "schema": "F01.candidate4_source_receipts.v1",
+  "programmePin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "currentProcedurePin": "9f65957e29eba92245d78609f032aaea523b7cb4",
+  "qualification": "Source/evidence inspection only; no served byte identity, route execution, design acceptance or ownership transfer",
+  "inputs": [
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "2ded360882b9c721e690907ff363b553781fb920",
+      "path": "terminal/components/chrome/shared-shell/ShellSearch.tsx",
+      "blob": "e4e50d27ba25328812233bb90c1f3b536f87219a",
+      "fetchedBytes": 3090,
+      "fetchedContentGitBlobVerified": true,
+      "readScope": "current shared search",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/chrome/shared-shell/ShellSearch.tsx"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "2ded360882b9c721e690907ff363b553781fb920",
+      "path": "terminal/lib/companySearchContext.ts",
+      "blob": "2166bbbccb4d85667acc218ece36b75133c17b14",
+      "fetchedBytes": 8870,
+      "fetchedContentGitBlobVerified": true,
+      "readScope": "current company query/listing context",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/companySearchContext.ts"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "2ded360882b9c721e690907ff363b553781fb920",
+      "path": "terminal/components/SymbolPicker.tsx",
+      "blob": "60219600e56550d7b0089f3300dd27e5496598b9",
+      "fetchedBytes": 9195,
+      "fetchedContentGitBlobVerified": true,
+      "readScope": "current picker host",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/SymbolPicker.tsx"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "2ded360882b9c721e690907ff363b553781fb920",
+      "path": "terminal/components/SearchModal.tsx",
+      "blob": "33ea3fb723bd9034dfc652a9bc07c8ecf893e67f",
+      "fetchedBytes": 62583,
+      "fetchedContentGitBlobVerified": true,
+      "readScope": "current company preview/commit subset",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/SearchModal.tsx"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/StatementsPage.tsx",
+      "blob": "77cbdad052503a5158cae882ad77bd69614abaca",
+      "fetchedBytes": 21380,
+      "fetchedContentGitBlobVerified": true,
+      "readScope": "financial source-cell/history binding",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/fin/StatementsPage.tsx"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "ref": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+      "path": "research/design_candidates/production_design_20261102/d06/BRAIN_SHELL_HANDSHAKE.md",
+      "blob": "3a9e25b59d17f3980eea1b9faedf00a467c9f92b",
+      "fetchedBytes": 18155,
+      "fetchedContentGitBlobVerified": true,
+      "evidenceClass": "Attributed existing consumer source; F01 did not reproduce D06 browser tests",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf/research/design_candidates/production_design_20261102/d06/BRAIN_SHELL_HANDSHAKE.md"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "ref": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+      "path": "research/design_candidates/production_design_20261102/d06/RESPONSIVE_AND_STATE_AUDIT.md",
+      "blob": "a3c67b0542743378bc314d5eab0c118eb9d92f44",
+      "fetchedBytes": 17225,
+      "fetchedContentGitBlobVerified": true,
+      "evidenceClass": "Attributed existing consumer source; F01 did not reproduce D06 browser tests",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf/research/design_candidates/production_design_20261102/d06/RESPONSIVE_AND_STATE_AUDIT.md"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "ref": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+      "path": "research/design_candidates/production_design_20261102/d06/SOURCE_DELTA_20261103.md",
+      "blob": "d5c77d1176e6d5903c3d7022fd89c1e8593d0806",
+      "fetchedBytes": 13823,
+      "fetchedContentGitBlobVerified": true,
+      "evidenceClass": "Attributed existing consumer source; F01 did not reproduce D06 browser tests",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf/research/design_candidates/production_design_20261102/d06/SOURCE_DELTA_20261103.md"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "ref": "e89f527e3267b1d1dd27ac7507e9a25983c0c903",
+      "path": "research/design_candidates/production_design_20261102/d08/SOURCE_MAP.md",
+      "blob": "dc7a280598567daefdcb5ea1e5f72ddc0d7daab8",
+      "fetchedContentGitBlobVerified": true,
+      "readScope": "Exact four directory route families and native IA; attributed D08 source; route execution not repeated"
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "templates/mm_brain.js",
+      "blob": "e4d7bd63261c4065d720430589377ff0a7f758f8",
+      "readScope": "Targeted source excerpts: close/focus/public API and selected keyboard handlers",
+      "fullCopyPersisted": false,
+      "sourceLengthCharacters": 284620
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/TerminalShell.tsx",
+      "blob": "85a2847437d6505f98118e1130806c9aba69e716",
+      "readScope": "Targeted source excerpts: railW default/clamp and mm.railW restore",
+      "fullCopyPersisted": false,
+      "sourceLengthCharacters": 459992
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "templates/mm_brain.js",
+      "blob": "e4d7bd63261c4065d720430589377ff0a7f758f8",
+      "readScope": "Targeted source excerpts: close/focus/public API and selected keyboard handlers",
+      "fullCopyPersisted": false,
+      "sourceLengthCharacters": 284620
+    }
+  ],
+  "negativeRead": {
+    "path": "d06/RETURN_D06.md",
+    "result": "NOT_FOUND; not an input. Actual D06 return is EVIDENCE_AND_RETURN.md as discovered in its README; no guessed file evidence retained."
+  },
+  "correction": "D06 d7d6b7d explicitly supersedes earlier committed-versus-hover reader wording: one current visual inspection cursor, separate AI locked selection."
+}

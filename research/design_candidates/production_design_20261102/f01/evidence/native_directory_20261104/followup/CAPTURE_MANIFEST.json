@@ -1,0 +1,47 @@
+{
+  "schema": "f01.directory-followup-capture.v1",
+  "original_first_pass_commit": "c1fc69b3452b92dff0f1863c1689e18b049cb56f",
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "pageId": "p-27-0",
+  "boardId": "6ZZV-0",
+  "scope": "Two local repair operations only; static capture, not implemented category restoration",
+  "count_row": "72CD-0",
+  "count_text": "72CE-0",
+  "show_all_frame": "72CF-0",
+  "show_all_text": "72CG-0",
+  "scanner_description": "70Q2-0",
+  "members": [
+    {
+      "path": "F.jpg",
+      "bytes": 36775,
+      "sha256": "fe9f3cb3a639f627735afec8021284c19a895f076eee6dd1f5c3dcd19b4a8ba4"
+    },
+    {
+      "path": "F.jsx",
+      "bytes": 12366,
+      "sha256": "53ae430690c7a782b8efe25f52d74a8be7125f3ad4e7a41f0c997d5231f7592d"
+    },
+    {
+      "path": "RAW_REPLY_1.json",
+      "bytes": 43258,
+      "sha256": "5aff1276ffc5c7f1ac007901a59739fbc3556c4c5142eddce5a0719aa398cfb0"
+    },
+    {
+      "path": "RAW_REPLY_2.json",
+      "bytes": 42322,
+      "sha256": "670f18188a8cf5067c4c67b645e6901cc937c0b0897d6bbca20c61aac708415c"
+    },
+    {
+      "path": "REQUEST_1.json",
+      "bytes": 964,
+      "sha256": "6a3f5a3e3502d895a9df306c28d6090abb42b6a306f227b9d2a650860b636a02"
+    },
+    {
+      "path": "REQUEST_2.json",
+      "bytes": 358,
+      "sha256": "bd7c4f9e24839f0cd0e90664a08212f6254bdf9f26d0f82d931dcbccd5c4e8f4"
+    }
+  ],
+  "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline",
+  "aggregate_sha256": "14a09641470f3bbad0cd6d4ed1d6a0335f4ce1299c03d97910ae97a18c5896d2"
+}

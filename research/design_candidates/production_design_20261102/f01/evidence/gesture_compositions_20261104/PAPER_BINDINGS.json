@@ -1,0 +1,229 @@
+{
+  "schema": "F01.paper_readback.v1",
+  "file": "01M2WGNCX9475G79JRKJTCM08P",
+  "page": "p-27-0",
+  "snapshot_sha256": "d420f4ac4dadd7130839792fcad32593b64397b642b4a0c81241ced62defdbc5",
+  "token_hash": "cfd3d65c",
+  "artboard_count": 14,
+  "artboards": [
+    {
+      "id": "6ZY9-0",
+      "name": "A · Macro · Labeled navigation · 1440 EN dark",
+      "childCount": 2,
+      "width": 1440,
+      "height": 960,
+      "worldX": 0,
+      "worldY": 0
+    },
+    {
+      "id": "70WJ-0",
+      "name": "H · Compact navigation · 1280 EN dark",
+      "childCount": 3,
+      "width": 1280,
+      "height": 960,
+      "worldX": 0,
+      "worldY": 1040
+    },
+    {
+      "id": "6ZYA-0",
+      "name": "B · Macro · Horizontal navigation · 1440 EN dark",
+      "childCount": 2,
+      "width": 1440,
+      "height": 960,
+      "worldX": 1520,
+      "worldY": 0
+    },
+    {
+      "id": "6ZYB-0",
+      "name": "C · Company · Inspector · 1280 EN light",
+      "childCount": 2,
+      "width": 1280,
+      "height": 1180,
+      "worldX": 3040,
+      "worldY": 0
+    },
+    {
+      "id": "6ZYC-0",
+      "name": "D · Options · 1024 EN dark · Overlay",
+      "childCount": 4,
+      "width": 1024,
+      "height": 960,
+      "worldX": 4400,
+      "worldY": 0
+    },
+    {
+      "id": "6ZYD-0",
+      "name": "E · Macro · 390 ZH light",
+      "childCount": 3,
+      "width": 390,
+      "height": 1140,
+      "worldX": 5504,
+      "worldY": 0
+    },
+    {
+      "id": "6ZZV-0",
+      "name": "F · Directory · 320 EN dark",
+      "childCount": 3,
+      "width": 320,
+      "height": 960,
+      "worldX": 5974,
+      "worldY": 0
+    },
+    {
+      "id": "6ZZW-0",
+      "name": "G · Drawer · 768 ZH dark",
+      "childCount": 3,
+      "width": 768,
+      "height": 1024,
+      "worldX": 6374,
+      "worldY": 0
+    },
+    {
+      "id": "6ZZX-0",
+      "name": "00 · Read me · F01 joint candidate",
+      "childCount": 4,
+      "width": 1440,
+      "height": 900,
+      "worldX": 7222,
+      "worldY": 0
+    },
+    {
+      "id": "710Z-0",
+      "name": "I · Access, failure and recovery · State atlas",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 8742,
+      "worldY": 0
+    },
+    {
+      "id": "72OR-0",
+      "name": "J · Directory · Intentional dismissal · Contract",
+      "childCount": 2,
+      "width": 1440,
+      "height": 1180,
+      "worldX": 10262,
+      "worldY": 0
+    },
+    {
+      "id": "73G9-0",
+      "name": "K · Focused Terminal · Preserved context · Candidate",
+      "childCount": 3,
+      "width": 1520,
+      "height": 1440,
+      "worldX": 11782,
+      "worldY": 0
+    },
+    {
+      "id": "73VO-0",
+      "name": "L · Public reading · Authored source · Candidate",
+      "childCount": 3,
+      "width": 1520,
+      "height": 1740,
+      "worldX": 13382,
+      "worldY": 0
+    },
+    {
+      "id": "73YM-0",
+      "name": "M · Internal decision · Explicit authority · Candidate",
+      "childCount": 3,
+      "width": 1680,
+      "height": 1460,
+      "worldX": 14982,
+      "worldY": 0
+    }
+  ],
+  "new_boards": [
+    {
+      "letter": "J",
+      "id": "72OR-0",
+      "stem": "J-directory-gesture",
+      "kind": "gesture",
+      "size": "1440×1180",
+      "scope": "Directory gesture contract with an editable clone of F 6ZZV-0; scoped implementation qualified separately."
+    },
+    {
+      "letter": "K",
+      "id": "73G9-0",
+      "stem": "K-focused-terminal",
+      "kind": "focused",
+      "size": "1520×1440",
+      "scope": "Focused Terminal desktop reference, with the complete editable SS06 6O5H-0 clone and ownership notes."
+    },
+    {
+      "letter": "L",
+      "id": "73VO-0",
+      "stem": "L-public-reading",
+      "kind": "public",
+      "size": "1520×1740",
+      "scope": "EN/light desktop public reading excerpt, authored recovery table, actual navigation vocabulary and calculator destination; rail CTA placement is proposed."
+    },
+    {
+      "letter": "M",
+      "id": "73YM-0",
+      "stem": "M-internal-decision",
+      "kind": "internal",
+      "size": "1680×1460",
+      "scope": "Internal decision-required desktop reference re-authored from visible AT20 anatomy; exact revision/audience/access and explicit action labels retained."
+    }
+  ],
+  "held_grid": {
+    "id": "711X-0",
+    "count": 9,
+    "children": [
+      {
+        "id": "715Q-0",
+        "name": "State contract columns"
+      },
+      {
+        "id": "715W-0",
+        "name": "State Guest"
+      },
+      {
+        "id": "7162-0",
+        "name": "State Plan required"
+      },
+      {
+        "id": "7168-0",
+        "name": "State Session expired"
+      },
+      {
+        "id": "716E-0",
+        "name": "State Account unavailable"
+      },
+      {
+        "id": "716K-0",
+        "name": "State Loading"
+      },
+      {
+        "id": "716Q-0",
+        "name": "State Read failed"
+      },
+      {
+        "id": "71A8-0",
+        "name": "State Known route unavailable"
+      },
+      {
+        "id": "71AE-0",
+        "name": "State Unknown route"
+      }
+    ]
+  },
+  "held_effects": [
+    {
+      "operation": "F01-20261103-c4-state-8-v1",
+      "board": "710Z-0",
+      "target": "711X-0",
+      "state": "EFFECT_UNKNOWN",
+      "terminal_receipt_recovered": false
+    },
+    {
+      "operation": "F01-20261103-c4-readme-concurrence-v2",
+      "board": "6ZZX-0",
+      "state": "DOCUMENT_CHANGED",
+      "retry_allowed": false
+    }
+  ],
+  "qualification": "The grid readback preserves the observed nine children; it does not establish terminal no-effect for the original operation. No held node/ancestor, shared token, predecessor or page administration was mutated.",
+  "snapshot_scope": "The adapter wrapper retained this hash and active page p-24-0. Every operation explicitly bound file/page/node; exact target-page readback and actual final screenshots establish the p-27-0 result. The wrapper hash alone is not target-content proof."
+}

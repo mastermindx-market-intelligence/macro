@@ -1,0 +1,156 @@
+{
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "commit": "f9070aebf61ad88883dad441b195e1060c7671b5",
+  "branch": "sol/web-f01-directory-hardening-20261104-c4",
+  "pr": 1264,
+  "draft": true,
+  "owner": "mastermidx4",
+  "prBodyReadBackExact": true,
+  "sourceSpecCommit": "2d1c3e21e58dd895b2282c6d6288e0eee4693c65",
+  "tree": "2153dec79139cc9f98e7b4edc543e739312f680f",
+  "publishedFiles": [
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/raw-evidence.zip",
+      "bytes": 1135169,
+      "sha256": "abeeed2eccdb69a27962d1bbb848e2d0ac5863476f52d7919e7877b6aeece70b",
+      "git_blob_sha": "0f9b38f9250a1f7a4f4289be470448a6c80c52f0",
+      "encoding": "base64",
+      "sha": "0f9b38f9250a1f7a4f4289be470448a6c80c52f0"
+    },
+    {
+      "path": "terminal/components/chrome/shared-shell/ShellDirectory.tsx",
+      "bytes": 15957,
+      "sha256": "0dec62b6bf353d8ec3d28509810c29652a65cb5967cd33a37141d6c50ef52bc0",
+      "git_blob_sha": "995abf9cd65bcfd9d4cf1abf94b8628919ba1cab",
+      "encoding": "utf-8",
+      "sha": "995abf9cd65bcfd9d4cf1abf94b8628919ba1cab"
+    },
+    {
+      "path": "terminal/components/chrome/shared-shell/shared-shell.css",
+      "bytes": 22929,
+      "sha256": "ace6eda93612f229031e426b6246315dd5cdeb49add7ce1d24c45165e7eb2660",
+      "git_blob_sha": "ef4856213dc70f43d3c21b21b47397d92e73165c",
+      "encoding": "utf-8",
+      "sha": "ef4856213dc70f43d3c21b21b47397d92e73165c"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/ENVIRONMENT.json",
+      "bytes": 356,
+      "sha256": "a99d3fe163c56c2d9b604d2a22d1bea9d9fdf479c0c7811d0dd66cb81561d66b",
+      "git_blob_sha": "174e1267975445983739f745f77a79a7777e2c02",
+      "encoding": "utf-8",
+      "sha": "174e1267975445983739f745f77a79a7777e2c02"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/README.md",
+      "bytes": 10869,
+      "sha256": "cce7449062a36bc10e91384d849eb21a30e31416a5ba9f2427bc44c27fb58d3c",
+      "git_blob_sha": "1889d9b350b946a7524abe310c344bd599a79c29",
+      "encoding": "utf-8",
+      "sha": "1889d9b350b946a7524abe310c344bd599a79c29"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/RESULTS.json",
+      "bytes": 28383,
+      "sha256": "b4a6d25db684f71ac7750b3bf84377007e2a69c6c1c6e737e6cb557211a32df7",
+      "git_blob_sha": "a34a87e7731e5e157d156e9046461d5d1697c97c",
+      "encoding": "utf-8",
+      "sha": "a34a87e7731e5e157d156e9046461d5d1697c97c"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/desktop-dark-en.png",
+      "bytes": 130418,
+      "sha256": "16d19899e6911345e6120b6562d1f64932fc78a3342f7775d931d556d3f1c112",
+      "git_blob_sha": "49ee3e64da209ff9451e029b0cebd76723c7fdad",
+      "encoding": "base64",
+      "sha": "49ee3e64da209ff9451e029b0cebd76723c7fdad"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/development-baseline-diagnostic.json",
+      "bytes": 1744,
+      "sha256": "60c334dc749f469b1ec43d4b4871a555b0903f4ff03cc03fb1a2dc71355c3d45",
+      "git_blob_sha": "9b4d4d4dcf28f1206cdc9542a9aaf68d22c2cc94",
+      "encoding": "utf-8",
+      "sha": "9b4d4d4dcf28f1206cdc9542a9aaf68d22c2cc94"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/empty-category-mobile-dark-en.png",
+      "bytes": 53394,
+      "sha256": "70d245aad9fef1959c68518d70196eef986b27488f1fd6434f8fd990c937c6d8",
+      "git_blob_sha": "c9d14a20e8e1a955f6177f2074cd5a21f5f87655",
+      "encoding": "base64",
+      "sha": "c9d14a20e8e1a955f6177f2074cd5a21f5f87655"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/raw-evidence-manifest.json",
+      "bytes": 8560,
+      "sha256": "36f2b5af69cd496e0eda49bbb66e0cdfb12d4400ad4cf11d32262157ff6e1cc0",
+      "git_blob_sha": "8f82ecdf65026348dd392ac3be413093bb47ad71",
+      "encoding": "utf-8",
+      "sha": "8f82ecdf65026348dd392ac3be413093bb47ad71"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/short-320-light-zh.png",
+      "bytes": 23905,
+      "sha256": "003903b8d92185449aad10621069696312e31a52bc5b4dc811cf5976cd7f1950",
+      "git_blob_sha": "8591ac26e30ce85751a0535b19d569be5e56010e",
+      "encoding": "base64",
+      "sha": "8591ac26e30ce85751a0535b19d569be5e56010e"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/source-checks-r4.json",
+      "bytes": 527,
+      "sha256": "1611fa54a3ddc238289ea4b1db6a746519dd27655bfdc3388badb9df213a5103",
+      "git_blob_sha": "81d26ff84958067320bc18915864643fd3164e6a",
+      "encoding": "utf-8",
+      "sha": "81d26ff84958067320bc18915864643fd3164e6a"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/source-inputs-r4.json",
+      "bytes": 885,
+      "sha256": "72c66b4e9be9f47680e94401058fb7725c25e9cbfb1fb4b8ce5fb7e368545d22",
+      "git_blob_sha": "ef4abc2bde7f82a36cab2035ba6b54988d927b7f",
+      "encoding": "utf-8",
+      "sha": "ef4abc2bde7f82a36cab2035ba6b54988d927b7f"
+    },
+    {
+      "path": "terminal/e2e/shared-shell-directory-hardening.spec.ts",
+      "bytes": 12756,
+      "sha256": "a8d2274d3bf08518440d5fde2e5962c27f92dfcc32939a18f9dae715c6a78e1d",
+      "git_blob_sha": "999617858aaa16add0217f522d0bdec4d0e24505",
+      "encoding": "utf-8",
+      "sha": "999617858aaa16add0217f522d0bdec4d0e24505"
+    },
+    {
+      "path": "terminal/lib/__tests__/sharedShellDirectoryConformance.test.tsx",
+      "bytes": 17107,
+      "sha256": "26cba1b11e466e69de34a5cf4cbd366a46a6ca0bc782490e99234c3e504ef589",
+      "git_blob_sha": "6c7bd762c2f28f459c082fa415323a8284adca01",
+      "encoding": "utf-8",
+      "sha": "6c7bd762c2f28f459c082fa415323a8284adca01"
+    },
+    {
+      "path": "terminal/lib/sharedShellCopy.ts",
+      "bytes": 7216,
+      "sha256": "4cef78b0145bc9968cb4fb324ad7f17b3a8a3f631fa62ba9402c0f5701abb2d3",
+      "git_blob_sha": "2a1a22a6db37343abcb2a2df968551a344765960",
+      "encoding": "utf-8",
+      "sha": "2a1a22a6db37343abcb2a2df968551a344765960"
+    }
+  ],
+  "independentImplementationReview": "REQUESTED_NOT_RECEIVED",
+  "workflowObservation": {
+    "workflow_runs": [
+      {
+        "id": 41754795974,
+        "name": "CI",
+        "status": "in_progress",
+        "conclusion": null,
+        "run_number": 5607,
+        "jobs_url": "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41754795974/jobs",
+        "logs_url": "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41754795974/logs",
+        "workflow_id": 311558834
+      }
+    ]
+  }
+}

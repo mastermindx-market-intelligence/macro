@@ -1,0 +1,88 @@
+{
+  "schema": "f01.protected-procedure-refresh.v1",
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "previous_pin": "9f65957e29eba92245d78609f032aaea523b7cb4",
+  "current_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "protected_master_observed": true,
+  "compare_url": "https://github.com/mastermindx-market-intelligence/Mastermind/compare/9f65957e29eba92245d78609f032aaea523b7cb4...910803421beca53ca25145392725ab2d84c7a8e9",
+  "status": "ahead",
+  "ahead_by": 1,
+  "total_commits": 1,
+  "changed_files": [
+    {
+      "filename": "control_plane/github_review_risk_dispatch.py",
+      "status": "added",
+      "sha": "31eed02ce927b264853e8920f617ba9d6f5d1273"
+    },
+    {
+      "filename": "control_plane/github_review_risk_policy.py",
+      "status": "added",
+      "sha": "215f47ec8e36099325a987acb597c9734a2462db"
+    },
+    {
+      "filename": "control_plane/github_review_risk_source.py",
+      "status": "added",
+      "sha": "3de4b0aa5515753f2bc2cda413a7467434070ebd"
+    },
+    {
+      "filename": "docs/DELIVERY_WORKFLOW.md",
+      "status": "modified",
+      "sha": "80728aa8a3f1e6a3399930750ce9c83ea6c12b04"
+    },
+    {
+      "filename": "docs/REVIEW_RISK_POLICY.md",
+      "status": "added",
+      "sha": "a7eb6819274293964ab72a162a734723c0188536"
+    },
+    {
+      "filename": "docs/plans/2026-11-02-risk-tiered-review-relief.md",
+      "status": "added",
+      "sha": "24c6d02eb7f6e95c059cc80fee65674836ff5ff4"
+    },
+    {
+      "filename": "integrations/github_review_risk_reader.py",
+      "status": "added",
+      "sha": "11c5ac57a892f814bcf12d3fa87d99c80c8c57b4"
+    },
+    {
+      "filename": "tests/test_autonomy_release_flow_acceleration.py",
+      "status": "modified",
+      "sha": "dc80bfa87f0720a1f9c388a6bde95ecf339501f9"
+    },
+    {
+      "filename": "tests/test_github_review_risk_dispatch.py",
+      "status": "added",
+      "sha": "2f8406ee0e9569ef6c3d6f5cd6389b2ed3dac3e8"
+    },
+    {
+      "filename": "tests/test_github_review_risk_policy.py",
+      "status": "added",
+      "sha": "3d7319937aded77cf01889fd8a15493f52b6d273"
+    },
+    {
+      "filename": "tests/test_github_review_risk_reader.py",
+      "status": "added",
+      "sha": "d25fe5b705c5db264484725b84fc898ab7598eb4"
+    },
+    {
+      "filename": "tests/test_github_review_risk_source.py",
+      "status": "added",
+      "sha": "44475cc96d636b33c30cbeaac758af3762035be4"
+    }
+  ],
+  "compatible_index": {
+    "schema": "mastermind.sol_skillpack.v1",
+    "version": "1.0.1",
+    "minimum_bootstrap_major": 1
+  },
+  "governing_law_changed": false,
+  "authority_boundaries": {
+    "path": "plugins/mastermind-sol/references/authority-boundaries.md",
+    "blob": "2b08786341924c6402d1c541e61ec33f13f949e9"
+  },
+  "routing_source": {
+    "path": "docs/WORKER_AVENUE_ROUTING.md",
+    "blob": "1a76c65d1737557bb8d040549c01269adc7c227d"
+  },
+  "note": "All needed governing laws were read at the current pin. One-commit delta contained no governing-law changes; the current source did not authorize a new writer, Paper replay, service cutover or acceptance."
+}

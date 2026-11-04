@@ -1,0 +1,54 @@
+{
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "pageId": "p-27-0",
+  "boardId": "6ZZV-0",
+  "guard": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+  "write_binding_ready": true,
+  "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+  "tool_schema": {
+    "name": "set_text_content",
+    "description": "Replace the inner HTML of one or more Text nodes. Omit the node wrapper. The node’s ID and layout are preserved. Inline formatting applied uniformly to all text may become the node’s default styling.\nUse get_jsx first to view current content and node styling context. Inner HTML inherits _only_ from target node, not ancestor layers. Whitespace parsing uses `white-space: pre-wrap`.\nRich text styling via inline styles is supported: text fills (`color`, or `background-color`/`background-image` **only** when combined with `background-clip: text`), font, font-size, letter-spacing, line-height, text-transform, text-decoration, and -webkit-text-stroke. Backgrounds and highlights on individual text spans are not supported. Layout properties such as gap, margins, padding, dimensions, and positioning are ignored.\nUse update_styles to update styles of the whole text node, including styled spans.\nSupports batch updates.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "updates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "nodeId": {
+                "type": "string",
+                "description": "The ID of the Text node to update."
+              },
+              "html": {
+                "type": "string",
+                "description": "The HTML containing the new rich text content."
+              }
+            },
+            "required": [
+              "nodeId",
+              "html"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Array of text updates to apply. Each item specifies a node ID and its new rich text content."
+        },
+        "fileId": {
+          "type": "string",
+          "description": "The file ID that the tool should operate on."
+        }
+      },
+      "required": [
+        "updates",
+        "fileId"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "destructiveHint": true
+    },
+    "bridge_access": "edit"
+  },
+  "note": "Guard is not a page content hash; exact F subtree was separately read and compared byte-for-byte (trimmed enclosing whitespace) with the previous capture. No held target is changed."
+}

@@ -1,0 +1,14 @@
+{
+  "tool": "set_text_content",
+  "arguments": {
+    "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+    "updates": [
+      {
+        "nodeId": "70Q2-0",
+        "html": "Open the options scanner."
+      }
+    ]
+  },
+  "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+  "operation_id": "F01-20261104-F-scanner-task-copy-v1"
+}

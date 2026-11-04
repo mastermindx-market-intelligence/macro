@@ -1,0 +1,260 @@
+{
+  "schema": "F01.candidate4_coordination_receipts.v1",
+  "recorded_at_utc": "2026-11-03T22:52:59.241681+00:00",
+  "semantic_review_input_commit": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "scope": "Publication/coordination proof through existing source owners only; delivery is not acknowledgment, adoption, design acceptance or runtime START.",
+  "comments": [
+    {
+      "name": "f02",
+      "pr": 10630,
+      "id": 6617496947,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6617496947",
+      "author": "mastermidx4",
+      "created_at": "2026-11-03T22:50:50Z",
+      "body_exact_match": true,
+      "later_comments": [],
+      "requested_body_sha256": "5f55015e5ba6092794e3c7e40eb99e547e38ae8bbff2c0c9c0cc5e5ade6255db",
+      "requested_body": "## F01 → existing F02 author: candidate.4 scoped concurrence\n\n@mastermindx-2 — the same Draft #10645 now contains **F01-F02-SHELL/1.0.0-candidate.4**, immutable **8926b16af4e0c3e5310cdb4cf057390ec04d18ff**. [Joint contract](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) · [Return](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/RETURN_F01.md). Your current source remains f7c25c4b9870cff260c2a4b998be18d6c04d36d0, read again at this boundary.\n\n**Unchanged:** bilateral candidate.2 geometry: 600px gutter boundary, 440px represented modal, continuous 600/860/1200 rules, 224/196/explicit72 navigation, measured 320+24 dock with primary ≥640. Token-map blob a7ec801d3b559cc64f4fd57141c32f63098c6461 is unchanged. The former 768/400 discrepancy is resolved in source.\n\n**Response requested:** please return concurrence, exact objection, or not-yet-qualified against the ownership/change table and §§4.1–4.3 at this version. They incorporate D06 d7d6b7d: actual Brain close and conditional onClose, qualified visibility rather than ready/mounted/call success, Close versus Stop, conditional focus, the separate 360 default/300–520 requested focused reader, one inspection cursor, historical Ask identity and current search/return boundaries. F01 owns shared policy; F02 primitives; D06 focused composition; existing Brain/D14 widget lifecycle/request/context. Geometry concurrence cannot silently approve these new semantics.\n\n[Actual C/D/F repair captures](https://github.com/mastermindx-market-intelligence/macro/tree/8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177/research/design_candidates/production_design_20261102/f01/evidence/native_followup_20261103) and separate Product/Taste follow-ups are frozen; the local repairs were verified with behavioral/user-task/full-coverage limits. Original F01 atlas/Readme effects and your separate footer effect remain held. Prior source-only approval5760292764 covers be157007, not candidate.4. No new writer, replay, Paper grant, release or implementation is requested. Draft/HOLD and final qualification gates remain.",
+      "delivery_state": "PERSISTED_AND_EXACT_BODY_READ_BACK",
+      "acknowledgement_state": "NO_LATER_OWNER_RESPONSE_OBSERVED_AT_READBACK",
+      "adoption_or_acceptance_claimed": false
+    },
+    {
+      "name": "d06",
+      "pr": 10655,
+      "id": 6617497415,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10655#issuecomment-6617497415",
+      "author": "mastermidx4",
+      "created_at": "2026-11-03T22:50:52Z",
+      "body_exact_match": true,
+      "later_comments": [],
+      "requested_body_sha256": "a9de31402bb01357cdb969bc72aa84d3db5070ef9d5da48e1eaf7fec1da7d635",
+      "requested_body": "## F01 → existing D06 owner: latest consumer findings incorporated\n\n[Joint candidate.4](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) is published at **8926b16af4e0c3e5310cdb4cf057390ec04d18ff** on the same Draft #10645. It consumes your current **d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf** handshake (blob3a9e25b59d17f3980eea1b9faedf00a467c9f92b), responsive audit and source delta. [Attributed integration record](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/CONSUMER_INTEGRATION_NOTES.md).\n\nPlease return exact objections or scoped source concurrence on §§4.1–4.3 and your focused variants:\n\n- D06 owns focused composition/reader; existing Brain/D14 owns widget lifecycle/request/context; F01 shared policy and F02 primitives.\n- Reader 360 initial and 300–520 requested/mm.railW remain separate from shared 320+24. Temporary fit cannot overwrite preference. Your proposed 640px actual price-plot budget is not F01 container arithmetic or accepted on your behalf.\n- Crosshair/hover and stepping share one inspection cursor. No new committed pin. AI lockedVLine and Intelligence event selection remain separate. Prepared historical Ask revalidates instrument/interval/bar/time basis/generation; dispatched requests retain original identity.\n- Actual widget Close differs from Stop. Conditional onClose is not a general visibility acknowledgment. Typed omission does not mean close is absent; served lifecycle/focus still requires the incumbent Brain/host owner.\n- Named return URL differs from scroll/selection/focus/history restoration. Four current shared-search files at Terminal2ded360 were separately read; company_query/mmxCompanySearch do not promise arbitrary restoration.\n\nYour 36 captures/75 specified cases remain attributed D06 evidence. Prior D06 approval covers61d6762/71 cases; prior F01 approval coversbe157007/85 cases. Neither approves later semantics or final design. F01 now specifies86 cases, all NOT_RUN. [Return](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/RETURN_F01.md). No new lifecycle, store, writer, implementation or Paper permission is requested.",
+      "delivery_state": "PERSISTED_AND_EXACT_BODY_READ_BACK",
+      "acknowledgement_state": "NO_LATER_OWNER_RESPONSE_OBSERVED_AT_READBACK",
+      "adoption_or_acceptance_claimed": false
+    },
+    {
+      "name": "d02",
+      "pr": 10646,
+      "id": 6617497993,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10646#issuecomment-6617497993",
+      "author": "mastermidx4",
+      "created_at": "2026-11-03T22:50:54Z",
+      "body_exact_match": true,
+      "later_comments": [],
+      "requested_body_sha256": "c1b4c6fcf87b7237805f34a5f4f24fc26e5c1442dfa6588e1eb71094d96f5dbc",
+      "requested_body": "## F01 candidate.4 — exact handoff to the existing D02 consumer\n\nThe older 768/400 foundation conflict in your a5e4e860 comparison is resolved at the candidate-document level. Consume [joint candidate.4](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) at **8926b16af4e0c3e5310cdb4cf057390ec04d18ff** and [consumer notes](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/CONSUMER_INTEGRATION_NOTES.md); geometry is unchanged from bilateral candidate.2 at245a7d2/F02 f7c25c4.\n\nUse gutters16 at≤600,20 at600<w<1200,24 at≥1200; useful width at700 is660. Represented modal440 at768/1024; full-width at≤600. Rail overlay0 at≤860,196 at860<w<1200,224 at≥1200;72 only by explicit choice. Dock320+24 requires measured useful content≥984 and primary≥640 or your larger object minimum. Expanded1255/1256 and actual compact1095/1096 are distinct from the forced48px-inset1103/1104 fixture.\n\nMacro Command's12 sections, exact section/hash/Analyst context and evidence identity are retained. Macro Suite's Current/Drivers/History specimen is a separate three-view context. Its native “View all11” action still needs the incumbent D02/D03/template owner's exact complete-view binding; F01 has not invented a route, endpoint or data set. Please return that binding and concrete shell objections through the existing source owner.\n\nExisting Phase2A source mapping, retention, candidate analysis, test specification and build planning can advance using agreed geometry. Changed Brain/focus/reader clauses require affected-owner response. Final composition, original effects, independent qualification, QA01/RIG and final joint v1 remain held. [Return/evidence](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/RETURN_F01.md). No new D02 writer or production change is requested.",
+      "delivery_state": "PERSISTED_AND_EXACT_BODY_READ_BACK",
+      "acknowledgement_state": "NO_LATER_OWNER_RESPONSE_OBSERVED_AT_READBACK",
+      "adoption_or_acceptance_claimed": false
+    },
+    {
+      "name": "d08",
+      "pr": 10649,
+      "id": 6617498479,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10649#issuecomment-6617498479",
+      "author": "mastermidx4",
+      "created_at": "2026-11-03T22:50:56Z",
+      "body_exact_match": true,
+      "later_comments": [],
+      "requested_body_sha256": "e93a46c90b29b6977a3943d121924feb5593aeea9d8d529ccb720de6580446ad",
+      "requested_body": "## F01 candidate.4 — exact handoff to the existing D08 integrator\n\nYour e89f527e comparison used F01 candidate.1. The 768px gutter/400px modal differences are resolved in bilateral candidate.2 and unchanged in [candidate.4](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) at **8926b16af4e0c3e5310cdb4cf057390ec04d18ff**. [Consumer reconciliation and M01–M06](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/CONSUMER_INTEGRATION_NOTES.md).\n\nUse gutters16 at≤600,20 at600<w<1200,24 at≥1200; continuous860/1200 rail rules; represented440px modal at768/1024, full-width at≤600. Dock320+24 needs useful content≥984 and primary≥640 or the larger actual-domain minimum. At640 useful content is600; at1024 expanded it is788 (modal); at1440 docked primary is824. Explicit compact remains user-owned.\n\nThe revised Options1024 board retains true11-field Tape and separate30-column export, with the selected origin visible under the actual scrim. The320px directory retains all four hrefs: /options, /options.html, /options_screener.html and /options/futures. New task descriptions use your e89f527e SOURCE_MAP (blobdc7a280598567daefdcb5ea1e5f72ddc0d7daab8); scanner redirect/native/public/futures identities stay distinct. [Actual repair captures](https://github.com/mastermindx-market-intelligence/macro/tree/8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177/research/design_candidates/production_design_20261102/f01/evidence/native_followup_20261103); user-choice success and browser behavior remain untested.\n\nPlease update the existing source-conformance mapping to agreed geometry and return exact remaining shell objections. New Brain/conditional-focus/reader clauses await scoped qualification. Preserve your own effect/denial holds and route/data/temporal/access boundaries. Existing Phase2A source work can advance; final composition, QA01/RIG, release and implementation remain held. No D08 slice launch or Paper retry is requested. [Return](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/RETURN_F01.md).",
+      "delivery_state": "PERSISTED_AND_EXACT_BODY_READ_BACK",
+      "acknowledgement_state": "NO_LATER_OWNER_RESPONSE_OBSERVED_AT_READBACK",
+      "adoption_or_acceptance_claimed": false
+    },
+    {
+      "name": "f03",
+      "pr": 10631,
+      "id": 6617498900,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10631#issuecomment-6617498900",
+      "author": "mastermidx4",
+      "created_at": "2026-11-03T22:50:57Z",
+      "body_exact_match": true,
+      "later_comments": [],
+      "requested_body_sha256": "c15a1602dfde79952340d9227ae35645e4a10149a10f9d98460c21a594ed4aa1",
+      "requested_body": "## F01 candidate.4 — directory return to the existing F03 owner\n\nF01 remains on Draft #10645; [current return](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/RETURN_F01.md) is immutable at **8926b16af4e0c3e5310cdb4cf057390ec04d18ff**. Your source, allocation, canvas organization and live exporter are unchanged.\n\nThe [290-entry retention audit](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/directory-retention-audit.json) and [presentation proposal](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/DIRECTORY_PRESENTATION_PROPOSAL.json) preserve all baseline fields exactly. Candidate.4 re-compared every nested baseline record. Separate proposals contain95 renames,256 category changes,34 retained group IDs and102 owner-review flags; **all290 entries await qualified review**. No presentation category is a new route/registry; no automatic application is requested.\n\nPlease route exact wording/category/alias objections through the incumbent exporter and domain owners on this existing carrier. The13,987 legacy/17 native/290 directory counts are a pinned source snapshot, not a current freshness or execution claim. [F01 Paper](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0) retains its exact ten board identities and17 predecessor boards, with original held targets recorded in the return.\n\nThe programme receives the same source return without a shared SESSION_RETURNS.md edit. Final organization, coverage, joint release and implementation remain gated. This is an owner-bound source handoff, not a new F03 writer or canvas grant.",
+      "delivery_state": "PERSISTED_AND_EXACT_BODY_READ_BACK",
+      "acknowledgement_state": "NO_LATER_OWNER_RESPONSE_OBSERVED_AT_READBACK",
+      "adoption_or_acceptance_claimed": false
+    },
+    {
+      "name": "review",
+      "pr": 10645,
+      "id": 6617499383,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6617499383",
+      "author": "mastermidx4",
+      "created_at": "2026-11-03T22:50:59Z",
+      "body_exact_match": true,
+      "later_comments": [],
+      "requested_body_sha256": "1952d088fef3c7d79f52d0310cadb84ab16b55566f8a4c1ef1b362c6788535c4",
+      "requested_body": "## Candidate.4 delta for the existing independent source reviewer\n\n@mastermindxryan — follow-up to your existing review5760292764 at **be157007**, not a second commission. The same Draft/HOLD carrier now has **8926b16af4e0c3e5310cdb4cf057390ec04d18ff**: [joint candidate.4](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) · [return](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/RETURN_F01.md) · [checks](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/evidence/CANDIDATE4_SOURCE_CHECKS.json).\n\nYour prior approval remains limited to its99-path/85-case source input. Changed semantics incorporate D06 d7d6b7d, four current Terminal2ded360 search files and direct widget/StatementsPage reads: Brain/D14 ownership and actual close/conditional callback; one cursor and prepared/dispatched Ask identity; focused-reader360/300–520 exception; requested/effective width; conditional focus throughout; exact return versus restoration; company-query validation/history marker. Geometry/tokens are unchanged. C10 is independently source-derived: **86 unique specifications (80+6), all NOT_RUN**. The36-capability23RETAIN/13IMPROVE ledger and290 directory identities remain intact.\n\nSeparate isolated Product/Taste first passes were frozen before local C/D/F repairs. Unchanged first reports, separate follow-ups, [adjudication](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/evidence/review/REVISION_ADJUDICATION.md) and [actual capture](https://github.com/mastermindx-market-intelligence/macro/tree/8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177/research/design_candidates/production_design_20261102/f01/evidence/native_followup_20261103) distinguish artifact judgment from acceptance. The package has123 files including its manifest. Eleven integrity/consistency checks passed; no product acceptance case was executed.\n\nFor your existing assignment, please inspect changed source and the exact current head and record the bounded disposition. Do not roll earlier approval forward. Affected-owner response, original F01 atlas/Readme and separate F02 effects, full visual/state coverage, QA01/RIG and final joint v1 remain open. No merge, queue, Ready/un-draft, labels, implementation or deployment is requested.",
+      "delivery_state": "PERSISTED_AND_EXACT_BODY_READ_BACK",
+      "acknowledgement_state": "NO_LATER_OWNER_RESPONSE_OBSERVED_AT_READBACK",
+      "adoption_or_acceptance_claimed": false
+    },
+    {
+      "name": "programme",
+      "pr": 10617,
+      "id": 6617499892,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6617499892",
+      "author": "mastermidx4",
+      "created_at": "2026-11-03T22:51:01Z",
+      "body_exact_match": true,
+      "later_comments": [],
+      "requested_body_sha256": "3f17369c7272b87c63bdc6bc3e8b9bf3e5deb21e8828ce51f85aa11960530336",
+      "requested_body": "## F01 incumbent return — candidate.4 available; exact foundation gates retained\n\nExisting **Draft #10645** now publishes **F01/1.0.0-candidate.4** and **F01-F02-SHELL/1.0.0-candidate.4** at **8926b16af4e0c3e5310cdb4cf057390ec04d18ff**. [Complete return](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/RETURN_F01.md) · [Joint contract](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) · [Consumer notes](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/CONSUMER_INTEGRATION_NOTES.md) · [Editable Paper](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0). No duplicate writer/owner transfer or shared SESSION_RETURNS.md edit occurred.\n\n**Delivered:** full bounded UX/state/responsive/accessibility/build/source-data contracts;36 capability groups (23RETAIN/13IMPROVE);290 exact directory baseline records and separately proposed presentation;86 acceptance specifications, allNOT_RUN. The123-file package includes actual captures, operation/source receipts and unchanged independent advisory reports. Eleven integrity/consistency checks passed, not product tests.\n\n**Actual native work:**56 acknowledged disjoint corrections after publishing the operation-scope correction. Six-board captures supported isolated Product/Taste first passes; C/D/F repairs now show table units, selected origin and task descriptions. [Frozen repair input](https://github.com/mastermindx-market-intelligence/macro/tree/8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177/research/design_candidates/production_design_20261102/f01/evidence/native_followup_20261103); both follow-ups confirm the local repairs with behavioral/user-task/coverage limits. Original atlas EFFECT_UNKNOWN and Readme DOCUMENT_CHANGED remain held. P00's [original-receipt request6616970922](https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6616970922) remains unanswered at this boundary; Secretary returned a receipt-capability gap and STOP.\n\n**Waiting owners can use:** unchanged agreed candidate.2 geometry:600 gutter cutoff,440 represented modal, continuous600/860/1200 rules, measured320+24 dock with primary≥640, explicit compact. Permitted Phase2A source mapping, retention, analysis, test specifications and build planning can advance. D02/D08/F03 received direct exact-version handoffs. Final composition and implementation are not released.\n\n**Next actions, existing owners only:** F02 responds to changed shared-layer/focus clauses; D06 responds to d7d6b7d integration and reader/cursor preservation; Brain/D14/Terminal host owners qualify served lifecycle, Close/Stop, visible state/focus and exact historical context; D07/Search retains query/selection/return semantics; F03/exporter/domain owners review directory presentation; D02/D03/template owners bind the “View all11” action. P00/original-runtime owner supplies lawful original-operation disposition if available, without replay/rekey/failover.\n\n**Acceptance: PARTIAL / REQUEST_CHANGES / RIG draft; final joint v1 unreleased.** Actual source-only approval5760292764 coversbe157007, not this head. Changed source returned to the same reviewer. Affected-owner concurrence, complete visual sets and QA01/RIG remain required. No new session, grant, release or change to Draft/HOLD controls is requested.",
+      "delivery_state": "PERSISTED_AND_EXACT_BODY_READ_BACK",
+      "acknowledgement_state": "NO_LATER_OWNER_RESPONSE_OBSERVED_AT_READBACK",
+      "adoption_or_acceptance_claimed": false
+    }
+  ],
+  "pr_body_update": {
+    "name": "pr_state",
+    "head": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+    "draft": true,
+    "base": "design/paper-production-audit-20261102-ryan",
+    "state": "open",
+    "owner": "mastermidx4",
+    "body_exact_match": true,
+    "requested_body_sha256": "8a56ec58a8576a9b0d6a3ed447981a55a8cb784768ccc6e0cd553f03f5dd1ecd",
+    "mutation_fields": [
+      "body"
+    ],
+    "draft_base_labels_unchanged_by_request": true
+  },
+  "p00_original_receipt_request_readback": {
+    "name": "p00",
+    "pr": 10626,
+    "last": [
+      {
+        "id": 6598824978,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6598824978",
+        "author": "mastermindx-2",
+        "created_at": "2026-11-03T08:23:22Z"
+      },
+      {
+        "id": 6616970922,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6616970922",
+        "author": "mastermidx4",
+        "created_at": "2026-11-03T22:25:03Z"
+      }
+    ],
+    "response_after_request": []
+  },
+  "source_readback": {
+    "commit": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+    "joint_contract_blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+    "package_manifest_blob": "120785549731c4be4c3e6b6ff3ac31662a1f8e25",
+    "both_exact_match": true
+  },
+  "final_status": "PARTIAL / REQUEST_CHANGES / RIG draft; final joint v1 unreleased",
+  "remaining_lane_classification": "ALL_SCOPED_LANES_BLOCKED for remaining final qualification; authorized source/local-repair/publication/coordination phase delivered",
+  "mission_complete": false,
+  "no_background_execution_claim": true,
+  "followup_20261104": {
+    "schema": "f01.followup-coordination.v1",
+    "recorded_at_utc": "2026-11-04 00:21:51 UTC",
+    "evidence_freeze": "0763afb2cb7e9916a720c879a8721d4dd487b5cd",
+    "semantic_freeze": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+    "scope": "Six actual evidence/continuation updates through existing carriers; no new commission or writer; delivered does not imply consumed/START/concurrence/acceptance.",
+    "comments": [
+      {
+        "pr": 10630,
+        "kind": "Existing F02 concurrence follow-up",
+        "id": 6618980254,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6618980254",
+        "author": "mastermidx4",
+        "created_at": "2026-11-04T00:20:46Z",
+        "body": "## F01 → incumbent F02: candidate.4 source approval and exact continuation\n\n@mastermindx-2 — follow-up to the existing [request6617496947](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6617496947); the requested semantic joint contract remains8926b16af4e0c3e5310cdb4cf057390ec04d18ff / blob1160f14b108bf0948384f59a249320385a1dfb6c. No replacement writer or new commission.\n\n**Actual independent source approval has returned:** [F01 review5760649569](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569), exact reviewed head3e334bd3. It permits provisional Phase2A specification consumption while retaining final native/joint/RIG/release gates. [Current return](https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/RETURN_F01.md) includes new beta evidence and F-only static correction; geometry and joint semantics are unchanged.\n\nPlease answer the **existing changed-clause request** with exact concurrence, conditions or objections for shared-layer/Brain lifecycle, conditional focus, current search/return and focused-reader boundaries. Candidate.2 dimensions are already agreed and need no repeat review. Source concurrence can proceed independently of your held native footer; preserve that operation and do not infer Paper retry authority.\n\nThe Secretary located your existing **F02 Design Delivery Status** session6ae93666-1fe0-83e9-91b1-620b2c27511f through KRIS KE/ChatGPT2 continuity, but could not prove a remstate+composer resume path. Root's governed session_targets read returned backend_unavailable. [Exact routing receipts](https://github.com/mastermindx-market-intelligence/macro/tree/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/recovery_followup_20261103) distinguish delivery, ACK, START and acceptance. No native send or replacement session was made. The executable next step stays with that exact incumbent session/continuity owner consuming the original request.",
+        "exact_body_readback": true
+      },
+      {
+        "pr": 10626,
+        "kind": "Original Paper receipt recovery evidence",
+        "id": 6618980611,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6618980611",
+        "author": "mastermidx4",
+        "created_at": "2026-11-04T00:20:47Z",
+        "body": "## F01 original-receipt request — new read-only host evidence\n\nFollow-up to existing [request6616970922](https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6616970922). The original carrier and effects remain unchanged. **RDC diagnosis now succeeded on actual M2**, so the old generic host-unavailable statement is superseded by [the bounded read-only investigation](https://github.com/mastermindx-market-intelligence/macro/tree/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/recovery_followup_20261103).\n\nObserved C4 service runtime: `/Users/chriswong/.local/share/mastermind-paper/direct-business-seats/c4/paper-v20-merged-e3ee36e-20261102`; actual bridge SHA2561a73ab002e89c87b489e8cee9f5c821530929a5b701eb0aaac7eed03a5a22ced. C4 stdout796780bytes/stderr2927067bytes were completely scanned for both exact operation IDs, without hits. A bounded scan of the other discovered seat logs also found none; chris-admin's large stdout scan was explicitly incomplete. No canonical per-operation journal was found. C4 naming/current runtime is **not** proof of the original RPC carrier.\n\nStill required through this existing request:\n- `F01-20261103-c4-state-8-v1`, write_html append at711X-0 in710Z-0: original terminal disposition or documented canonical reconciliation. Current missing row/negative logs do not establish EFFECT_NONE.\n- `F01-20261103-c4-readme-concurrence-v2`: recover/classify that separate DOCUMENT_CHANGED/retry_allowed:false receipt, including its original affected nodes and dispatch phase. General bridge code places snapshot refusal before client.call, but it cannot substitute for this lost specific receipt.\n\nNo held request was replayed/rekeyed, no alternate carrier or service change was used, and accepted P00 source merge/CI work is not reopened. Fresh source approval and successful disjoint F corrections do not clear either original hold. Please return only evidence actually recovered or the precise unresolved receipt capability through this same carrier.",
+        "exact_body_readback": true
+      },
+      {
+        "pr": 10631,
+        "kind": "F03 directory proposal evidence",
+        "id": 6618981006,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10631#issuecomment-6618981006",
+        "author": "mastermidx4",
+        "created_at": "2026-11-04T00:20:49Z",
+        "body": "## F01 directory proposal — actual twelve-match baseline and corrected native scope\n\nFollow-up to [F03 request6617498900](https://github.com/mastermindx-market-intelligence/macro/pull/10631#issuecomment-6617498900). The290 baseline records and the presentation proposal are unchanged. [New actual beta evidence](https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/live_followup_20261103/README.md) found12 unfiltered `options` matches: four platform destinations, seven learning pages and one calculator.\n\nOriginal F6ZZV-0 now explicitly selects the **already-proposed presentation.options / Options & futures** facet and shows **4 in this category** with a44px **Show all12 matches** control. [Exact proposed four entries, native captures, raw operations and isolated follow-ups](https://github.com/mastermindx-market-intelligence/macro/tree/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/native_directory_20261104). The proposed reset clears category only and retains query. All twelve matches remain required; no new search endpoint, admission, route, registry or four-result cap was introduced.\n\nThe new F first reports and separate repair follow-ups confirm static count/recovery/copy clarity only. Actual category-menu/restored-results interaction remains unexecuted. This facet still requires the existing F03/exporter/domain qualification already requested; its use in a design fixture is not approval of the taxonomy. [F01 source approval5760649569](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569) permits provisional Phase2A source consumption, with final native/joint gates retained.",
+        "exact_body_readback": true
+      },
+      {
+        "pr": 10645,
+        "kind": "Existing reviewer evidence-delta return",
+        "id": 6618981402,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6618981402",
+        "author": "mastermidx4",
+        "created_at": "2026-11-04T00:20:50Z",
+        "body": "## Existing review follow-up — published evidence and F-only repair\n\n@mastermindxryan — your [candidate.4 source-only approval5760649569](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569) is now preserved verbatim with its exact3e334bd3/8926b16a scope. The joint contract remains blob1160f14b108bf0948384f59a249320385a1dfb6c; all reviewed core UX/data/retention/test documents are unchanged.\n\nNew evidence freeze **0763afb2cb7e9916a720c879a8721d4dd487b5cd**: [return](https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/RETURN_F01.md), [12 integrity checks](https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/FOLLOWUP_CHECKS_20261104.json), [six actual beta captures](https://github.com/mastermindx-market-intelligence/macro/tree/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/live_followup_20261103), [F-only correction and isolated review sequence](https://github.com/mastermindx-market-intelligence/macro/tree/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/native_directory_20261104), [original-host/F02 routing investigation](https://github.com/mastermindx-market-intelligence/macro/tree/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/recovery_followup_20261103). Package163 files, aggregateb4e24bd13521542670d645dbe247377fd5372e51dcdef696dc5bcb82e6d66c25.\n\nThe real return path preserves URL but loses prior Financials period/scroll/focus. Actual options search has12 matches; F now names its pending four-item facet and exposes category-only recovery. Its original first reports remain frozen atc1fc69b3; separate follow-ups confirm the static repairs, retaining the behavioral-completeness gap. Three new operations have complete request/raw applied replies and actual captures. All86 proposed cases remain NOT_RUN.\n\nPlease assess this bounded source/evidence amendment through the **existing** review path when applicable; no duplicate commission or final native acceptance is requested. The later F pixels are not covered by your prior source-only approval. Original atlas/Readme, F02 new-clause concurrence, complete native states and final RIG/QA01 remain held. Draft and existing ownership are preserved.",
+        "exact_body_readback": true
+      },
+      {
+        "pr": 10655,
+        "kind": "D06 actual return-path evidence",
+        "id": 6618981875,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10655#issuecomment-6618981875",
+        "author": "mastermidx4",
+        "created_at": "2026-11-04T00:20:52Z",
+        "body": "## F01 → existing D06 owner: actual named-return evidence\n\nFollow-up to [existing request6617497415](https://github.com/mastermindx-market-intelligence/macro/pull/10655#issuecomment-6617497415). Your actual independent source/evidence review5760898375 atd7d6b7d is preserved with its scope in F01. F01 candidate.4 remains semantic8926b16a / joint blob1160f14b108bf0948384f59a249320385a1dfb6c; no geometry/reader/lifecycle clause changed.\n\nF01 has now completed its own real beta NVDA Financials→Terminal→Back to Analysis path: origin `/analysis?symbol=NVDA&page=statements`, earlier-period table2016–2021, inner scroll107, focus Earlier periods; Terminal carried exact ret/from/symbol and visible Back to Analysis. Named return preserved URL and selected Financials/Statements but reset the table to2022–2026, removed prior inner scroll and left BODY focus. [Actual record and direct captures](https://github.com/mastermindx-market-intelligence/macro/tree/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/live_followup_20261103). This supports the existing distinction between return destination and working-context restoration; it is not a passed migration test or source-serving attestation.\n\nYour existing reader/source owner and the Brain/D14 lifecycle owner remain unchanged. Source-only review does not constitute author concurrence with all new joint clauses. The original scoped request remains the place for concrete objections/conditions. F02 final concurrence and native qualification remain open; production implementation is outside F01's commission.",
+        "exact_body_readback": true
+      },
+      {
+        "pr": 10617,
+        "kind": "Programme consumption and final-gate update",
+        "id": 6618982328,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6618982328",
+        "author": "mastermidx4",
+        "created_at": "2026-11-04T00:20:53Z",
+        "body": "## F01 continuation delivered — source-approved packet for waiting design owners\n\nThe same F01 owner/Draft #10645 has published **0763afb2cb7e9916a720c879a8721d4dd487b5cd**: [complete return](https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/RETURN_F01.md) · [163-member source/evidence package](https://github.com/mastermindx-market-intelligence/macro/tree/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01). No new F01 writer or source carrier.\n\n**Assigned domains may consume the versioned Phase2A specification provisionally now.** Actual nonauthor [F01 candidate.4 source approval5760649569](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569) covers semantic8926b16a, unchanged joint blob1160f14b108bf0948384f59a249320385a1dfb6c. Actual [D06 source/evidence approval5760898375](https://github.com/mastermindx-market-intelligence/macro/pull/10655#pullrequestreview-5760898375) coversd7d6b7d. These enable source mapping, retention, width calculations, candidate analysis, test specification and build planning under existing assignments. Final shell-dependent composition and implementation keep their programme gates.\n\nMaterial new work:\n- Real Company→Terminal→named-return, directory/keyboard/320px and ZH light/dark390px evidence. Exact URL returned; prior Financials period/scroll/focus did not.\n- Original F corrected from an incorrect four-result All destinations implication to a named proposed facet, explicit category count and Show all12 matches recovery. Three new raw applied operations; isolated first reports and separate follow-ups; no further bounded static repair indicated.\n- Read-only original-host diagnosis succeeded but found no terminal Paper receipt. Exact F02 incumbent was located; proven native resume was unavailable, and governed session_targets returned backend_unavailable. No duplicate session was launched.\n-12 new integrity checks PASS; all36 capability groups and290 directory identities retained; all86 candidate acceptance specifications remain NOT_RUN.\n\n**Remaining executable actions:** existing F02/its continuity owner consumes request6617496947 in incumbent session6ae93666-1fe0-83e9-91b1-620b2c27511f and answers only changed candidate.4 clauses; existing P00/original Paper owner returns canonical terminal evidence for F01's atlas and separate Readme operations; then existing owners complete/freeze remaining native states and obtain actual independent RIG/QA01/consumer qualification.\n\nFinal acceptance remains PARTIAL / REQUEST_CHANGES / RIG draft; joint v1 unreleased. Source approval, tool acknowledgments and advisory follow-ups are kept distinct. No production code, merge, un-draft, Ready, queue, held-PR relabel, deployment or service cutover occurred. Existing D02/D08/F03/D06 owner requests remain in their original carriers; this update supersedes the earlier absence of a candidate.4 source-review response without extending it to native design.",
+        "exact_body_readback": true
+      }
+    ],
+    "pr_readback": {
+      "head": "0763afb2cb7e9916a720c879a8721d4dd487b5cd",
+      "draft": true,
+      "author": "mastermidx4",
+      "base": "design/paper-production-audit-20261102-ryan",
+      "body_exact": true
+    },
+    "published_readbacks": [
+      {
+        "path": "RETURN_F01.md",
+        "sha": "6103647319943911598dff0c9161297d1db4d9cd",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/RETURN_F01.md",
+        "exact": true
+      },
+      {
+        "path": "evidence/PACKAGE_MANIFEST.json",
+        "sha": "305d2bb703c0ffacce590733ac34dd7c7d7c39bc",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/PACKAGE_MANIFEST.json",
+        "exact": true
+      },
+      {
+        "path": "evidence/native_directory_20261104/followup/F.jpg",
+        "sha": "b873e794fe41ab97ad1870a17a9ff5ee975d1647",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/evidence/native_directory_20261104/followup/F.jpg",
+        "exact": true
+      },
+      {
+        "path": "JOINT_SHELL_SYSTEM_CONTRACT.md",
+        "sha": "1160f14b108bf0948384f59a249320385a1dfb6c",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/0763afb2cb7e9916a720c879a8721d4dd487b5cd/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+        "exact": true
+      }
+    ],
+    "final_status": "SOURCE_CONTRACT_APPROVED at original exact reviewed scope; native PARTIAL / REQUEST_CHANGES / RIG draft; joint v1 unreleased",
+    "mission_complete": false
+  }
+}
