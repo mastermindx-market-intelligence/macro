@@ -56,7 +56,20 @@ else assert.equal(publishedCompanyLinks.length, 0, "unqualified company link was
 
 // Exercise the same runtime return-link binder in the absence of source-backed
 // links, with a separate test-only fixture. It is never emitted to the page.
-const syntheticCompanyReturn = !d.querySelector('[data-cw-chain-asset="gold"] a[data-cw-company-href]');
+// Gold evidence is independently qualified. A link on another chain cannot
+// conceal a missing Gold continuation behind the test-only fallback.
+function assertGoldCompanyCoverage(source, documentRoot) {
+  const linkedGold = source.chains.some(chain =>
+    chain.id === "real_rate_peak_gold_rerate" && (chain.cohorts || []).some(
+      cohort => (cohort.companies?.linked || []).length > 0));
+  const anchors = documentRoot.querySelectorAll(
+    '#cw-panel-relationships [data-cw-chain-asset="gold"] a[data-cw-company-href]');
+  if (linkedGold) assert.ok(anchors.length > 0, "Gold owner-backed company links omitted");
+  else assert.equal(anchors.length, 0, "unqualified Gold company link was published");
+  return anchors.length;
+}
+const realGoldCompanyLinks = assertGoldCompanyCoverage(data, d);
+const syntheticCompanyReturn = realGoldCompanyLinks === 0;
 if (syntheticCompanyReturn) {
   const goldChain = q('#cw-panel-relationships [data-cw-chain-asset="gold"]');
   const fixture = d.createElement("a");
@@ -79,6 +92,35 @@ if (syntheticCompanyReturn) {
   check("source-backed company links obey the publisher's honest absence",()=>{
     assert.equal(publishedCompanyLinks.length > 0, ownerLinked);
     assert.equal(d.querySelectorAll('[data-cw-test-fixture]').length, syntheticCompanyReturn ? 1 : 0);
+  });
+  check("mixed-chain missing Gold company links fail before fixture",()=>{
+    const forgedData = {...data, chains:data.chains.map(chain =>
+      chain.id === "real_rate_peak_gold_rerate"
+        ? {...chain, cohorts:[{id:"qualified-gold-negative-fixture",companies:{linked:[{symbol:"A"}]}}]}
+        : chain)};
+    const isolated = d.createElement("div");
+    isolated.appendChild(q("#cw-panel-relationships").cloneNode(true));
+    const gold = isolated.querySelector('[data-cw-chain-asset="gold"]');
+    assert.ok(gold);
+    isolated.querySelectorAll('[data-cw-chain-asset="gold"] a[data-cw-company-href]')
+      .forEach(a => a.removeAttribute('data-cw-company-href'));
+    const oil = isolated.querySelector('[data-cw-chain-asset="oil"]');
+    assert.ok(oil);
+    const other = d.createElement("a");
+    other.dataset.cwCompanyHref = "https://app.mastermind-x.com/analysis?symbol=OIL&page=intelligence";
+    oil.appendChild(other);
+    assert.equal(isolated.querySelectorAll('a[data-cw-company-href]').length, 1);
+    assert.throws(() => assertGoldCompanyCoverage(forgedData, isolated),
+      /Gold owner-backed company links omitted/);
+  });
+  check("unqualified Gold company links reject before fixture",()=>{
+    const noGold = {...data, chains:data.chains.map(chain =>
+      chain.id === "real_rate_peak_gold_rerate" ? {...chain,cohorts:[]} : chain)};
+    const isolated = d.createElement("div");
+    isolated.appendChild(q("#cw-panel-relationships").cloneNode(true));
+    assert.ok(isolated.querySelector('[data-cw-chain-asset="gold"] a[data-cw-company-href]'));
+    assert.throws(() => assertGoldCompanyCoverage(noGold, isolated),
+      /unqualified Gold company link was published/);
   });
   check("default overview and dated evidence",()=>{
     assert.equal(q('#cw-panel-overview').hidden,false);
