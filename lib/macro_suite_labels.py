@@ -384,6 +384,11 @@ BASIS: dict[str, dict[str, str]] = {
 
 # --- owner categorical readings ---------------------------------------------
 OWNER_VALUE: dict[str, dict[str, str]] = {
+    # Existing business-cycle owner's four closed phase labels; no reclassification.
+    "expansion": _pair("Expansion", "扩张"),
+    "slowdown": _pair("Slowdown", "放缓"),
+    "contraction": _pair("Contraction", "收缩"),
+    "recovery": _pair("Recovery", "复苏"),
     "contracting": _pair("Contracting", "收缩"),
     "expanding": _pair("Expanding", "扩张"),
     "benign_expansion": _pair("Benign expansion", "良性扩张"),
@@ -1839,6 +1844,27 @@ def producer_trips_copy_guard(text: str) -> bool:
     return bool(machine_text_hits(text))
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
+    (
+        "The leading tier's 6-month momentum has crossed the calibrated recession-risk DEPTH",
+        _pair(
+            "The six-month momentum of leading indicators has crossed the model's calibrated "
+            "recession-risk threshold, but the share of indicators confirming weakness has not. "
+            "Deterioration is concentrated rather than widespread. Both conditions are required "
+            "before this model can flag recession risk.",
+            "领先指标的六个月动量已越过模型校准的衰退风险阈值，但确认走弱的指标占比尚未达标。"
+            "走弱集中，并未广泛扩散。这两项条件须同时满足，模型才会发出衰退风险信号。",
+        ),
+    ),
+    (
+        "BREADTH (the share of leading legs weakening) has crossed the calibrated recession-risk",
+        _pair(
+            "The share of leading indicators that are weakening has crossed the model's calibrated "
+            "recession-risk threshold, but their six-month momentum has not. Weakness is widespread "
+            "but shallow. Both conditions are required before this model can flag recession risk.",
+            "走弱的领先指标占比已越过模型校准的衰退风险阈值，但领先指标的六个月动量尚未达标。"
+            "走弱范围广，但程度较浅。这两项条件须同时满足，模型才会发出衰退风险信号。",
+        ),
+    ),
     (
         "US labor-market state cannot be classified: axis coverage is below the "
         "disclosed floor. No quadrant is asserted rather than defaulting to a "
