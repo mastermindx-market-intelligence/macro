@@ -5461,10 +5461,14 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
+# T007.S5: the genuine Macro policy-preview API suite adds exactly two estimated
+# weight units to research-vault-api (12 -> 14). Canonical paired measurements
+# retain 137/137/131 selected jobs and ten packs; account for that new suite only.
+# Job/pack ceilings, selection rules and actual serving-API checks are unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_670),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
