@@ -48,7 +48,7 @@ _PAD_B = 8.0     # bottom breathing room
 # helpers
 # --------------------------------------------------------------------------- #
 def _clean(dates, vals):
-    """Zip -> drop pairs where the value is None/NaN, keep order."""
+    """Zip -> omit non-finite observations, keep valid values in order."""
     out = []
     for d, v in zip(dates or [], vals or []):
         if v is None:
@@ -57,7 +57,7 @@ def _clean(dates, vals):
             fv = float(v)
         except (TypeError, ValueError):
             continue
-        if fv != fv:  # NaN
+        if not math.isfinite(fv):  # NaN and ±inf are not chart coordinates
             continue
         out.append((d, fv))
     return out
@@ -163,6 +163,83 @@ def _d_line(xy):
     return "M" + " L".join(f"{x} {y}" for x, y in xy)
 
 
+def _line_geometry_with_gaps(dates, vals, height, *, max_points, reference=None):
+    """Break a display line at missing observations without compressing its x axis.
+
+    Returns None for complete series, preserving the existing fast path byte-for-byte.
+    For sparse series, valid values retain their original ordered slot positions;
+    separate runs become separate SVG subpaths. Long histories are sampled within
+    runs, never joined across absent values.
+    """
+    raw = list(zip(dates or [], vals or []))
+    slots = []
+    missing = 0
+    for idx, (d, v) in enumerate(raw):
+        try:
+            fv = float(v) if v is not None else float("nan")
+        except (TypeError, ValueError, OverflowError):
+            fv = float("nan")
+        if not math.isfinite(fv):
+            slots.append(None)
+            missing += 1
+        else:
+            slots.append((idx, fv, d))
+
+    if not missing:
+        return None
+    valid = [p for p in slots if p is not None]
+    if len(valid) < 4:
+        return None
+
+    runs, current = [], []
+    for point in slots:
+        if point is None:
+            if current:
+                runs.append(current)
+                current = []
+        else:
+            current.append(point)
+    if current:
+        runs.append(current)
+
+    limit = max(4, int(max_points))
+    max_runs = max(1, limit // 2)
+    if len(runs) > max_runs:
+        # Very sparse long histories remain discontinuous and bounded. Even a
+        # one-point run is never connected to another run to manufacture data.
+        indices = ([0] if max_runs == 1 else
+                   [round(i * (len(runs) - 1) / (max_runs - 1))
+                    for i in range(max_runs)])
+        runs = [runs[i] for i in sorted(set(indices))]
+
+    spare = max(0, limit - 2 * len(runs))
+    weights = [max(0, len(run) - 2) for run in runs]
+    total_weight = sum(weights)
+    sampled_runs = []
+    for run, weight in zip(runs, weights):
+        budget = 2 + (spare * weight // total_weight if total_weight else 0)
+        sampled_runs.append(_downsample(run, max(2, min(len(run), budget))))
+
+    # Reuse the ordinary vertical scale, including its explicit reference rule.
+    # Unlike _scale's positional x values, the sparse x coordinate uses the
+    # full original observation slots, leaving a visible hole for absent data.
+    _xy, _y0, (lo, hi, top, bot), _vmin, _vmax = _scale(
+        [(d, v) for _i, v, d in valid], height, reference=reference
+    )
+    last_slot = max(1, len(raw) - 1)
+    xy_runs = [[
+        (round(i / last_slot * _VBW, 2),
+         round(bot - (v - lo) / (hi - lo) * (bot - top), 2))
+        for i, v, _d in run
+    ] for run in sampled_runs]
+    xy = [point for run in xy_runs for point in run]
+    path_d = " ".join(_d_line(run) for run in xy_runs if run)
+    stroke_len = sum(
+        _path_len(run) for run in xy_runs if len(run) >= 2
+    )
+    return xy, path_d, round(stroke_len, 1) or 1.0, missing
+
+
 def _d_area(xy, y0):
     if not xy:
         return ""
@@ -257,9 +334,9 @@ def _null_fragment(accent, height, aria_en):
 # --------------------------------------------------------------------------- #
 # per-kind SVG bodies
 # --------------------------------------------------------------------------- #
-def _svg_line(xy, uid):
+def _svg_line(xy, uid, path_d=None):
     """Plain single ink stroke + settle dot. (area/baseline/drawdown have own builders.)"""
-    body = f'<path class="ilx-path" d="{_d_line(xy)}"/>'
+    body = f'<path class="ilx-path" d="{path_d if path_d is not None else _d_line(xy)}"/>'
     dot = f'<circle class="ilx-dot" cx="{xy[-1][0]}" cy="{xy[-1][1]}" r="3.2"/>'
     return "", "", body, dot
 
@@ -643,6 +720,9 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
     if len(pairs) < 4:
         return _null_fragment(accent, height, aria_en)
 
+    line_gap = (_line_geometry_with_gaps(series.get("dates"), series.get("vals"),
+                                        height, max_points=max_points, reference=reference)
+                if kind == "line" else None)
     uid = _hash_id(kind, pairs, extra=f"{accent}{baseline}{reference}")
 
     if kind == "bars":
@@ -661,7 +741,10 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
             zero_floor=zero_floor,
         )
         plen = _path_len(xy)
-        if kind == "area":
+        if kind == "line" and line_gap is not None:
+            xy, path_d, plen, _gap_count = line_gap
+            defs, mid, body, dot = _svg_line(xy, uid, path_d=path_d)
+        elif kind == "area":
             defs, mid, body, dot = _svg_area(xy, height - _PAD_B, uid)
         elif kind == "baseline":
             defs, mid, body, dot = _svg_baseline(xy, y0, uid, height)
@@ -719,15 +802,22 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
         mid = band_rects + mid  # bands sit UNDER the ink
 
     style = (f"color:{escape(accent)};" if accent else "") + f"--ilx-len:{plen};--ilx-h:{height}px"
-    aria = escape(aria_en or f"{kind} chart")
+    gap_attr = f' data-gap-count="{line_gap[3]}"' if line_gap is not None else ""
+    gap_description = (f"; {line_gap[3]} missing observation"
+                       f"{'' if line_gap[3] == 1 else 's'}, line interrupted"
+                       if line_gap is not None else "")
+    gap_html = (f'<span class="ilx-gap-note"><span class="l-en">Gap: {line_gap[3]} missing</span>'
+                f'<span class="l-zh">缺失 {line_gap[3]} 条</span></span>'
+                if line_gap is not None else "")
+    aria = escape((aria_en or f"{kind} chart") + gap_description)
     svg = (
         f'<svg viewBox="0 0 {int(_VBW)} {height}" preserveAspectRatio="none" '
         f'aria-hidden="true"><defs>{defs}</defs>{mid}{body if kind != "bars" else ""}'
         f'{dot if kind != "bars" else ""}</svg>'
     )
     return (
-        f'<figure class="ilx ilx-{escape(kind)}" style="{style}" '
-        f'role="img" aria-label="{aria}">{svg}{band_html}{ref_html}{corners}{end}</figure>'
+        f'<figure class="ilx ilx-{escape(kind)}"{gap_attr} style="{style}" '
+        f'role="img" aria-label="{aria}">{svg}{band_html}{ref_html}{corners}{end}{gap_html}</figure>'
     )
 
 
