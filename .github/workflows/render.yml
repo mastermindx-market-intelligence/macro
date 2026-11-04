@@ -641,6 +641,10 @@ jobs:
           DIRTY=$(echo $DIRTY | tr ' ' '\n' | awk 'NF && !s[$0]++' | paste -sd+ -)
           N=$(echo "$DIRTY" | tr '+' '\n' | grep -c .)
           if [ -n "$NEED_ALL" ]; then S=all; echo "::notice::scope=all ($NEED_ALL)"
+          elif [ "$N" -eq 0 ] && [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::All pending render work was covered while this job queued"
+            exit 0
           elif [ "$N" -eq 0 ]; then S=all; echo "::notice::scope=all (push fired but no region resolved dirty — defensive full render)"
           elif [ "$N" -ge 4 ]; then S=all; echo "::notice::scope=all ($N regions dirty [$DIRTY] — full render is comparable cost)"
           else S="$DIRTY"; echo "::notice::dirty since last covering renders -> scope=$S"
@@ -831,6 +835,7 @@ jobs:
       # rebuilt in the same pass as the shell it pairs with.
       - name: re-render pages from committed data (resilient; no collect / no LLM / no EDGAR)
         id: render_pages
+        if: steps.pick.outputs.skip != 'true'
         # Mirrors the RENDER steps of daily.yml's `engine` job, minus the collectors,
         # engine.run, the LLM brains + their scorers/ledgers, the EDGAR special-sits
         # sweep, notify and archive_signals. Each builder is individually resilient
@@ -1359,6 +1364,7 @@ jobs:
         run: |
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
+          python -m scripts.check_aibrief_publication --scope "${{ steps.pick.outputs.scope }}"
           python scripts/inject_shared_shell.py --check --site-dir site || exit 1
       # Protected-main freeze (2026-08-15): OrganizationAdmin is the only working
       # bypass. GITHUB_TOKEN cannot push site/ to main (GH013, run 31876500631).
@@ -1530,6 +1536,10 @@ jobs:
                 git update-ref -d "$PUBLISH_REF"
                 exit 1
               fi
+              if ! python -m scripts.check_aibrief_publication --scope "${{ steps.pick.outputs.scope }}" --candidate-ref "$PUBLISH_COMMIT"; then
+                git update-ref -d "$PUBLISH_REF"
+                exit 1
+              fi
               python -m scripts.check_government_revenue_projection
               python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if push_do origin "$PUBLISH_REF:refs/heads/main"; then
@@ -1646,6 +1656,7 @@ jobs:
               python -m scripts.check_government_revenue_projection
               # Worktree healing cannot certify an older committed candidate.
               python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref HEAD || exit 1
+              python -m scripts.check_aibrief_publication --scope "${{ steps.pick.outputs.scope }}" --candidate-ref HEAD || exit 1
               # A skipped or failed optional heal commit must not leave the checker
               # proving working-tree pages while an older HEAD is pushed.
               if ! git diff --quiet HEAD -- site/ templates/; then

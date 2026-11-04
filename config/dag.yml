@@ -3340,6 +3340,8 @@ lanes:
           content-derived workspace identity, compact-shell semantic equality,
           required UI markers, and the raw first-paint byte budget. Repeated
           immediately before every render commit or push after any rebase/heal.
+      - id: aibrief_worktree_candidate
+        module: scripts.check_aibrief_publication
       - id: check_template_site_sync_fix
         module: scripts.check_template_site_sync
         args: [--fix]
@@ -3355,6 +3357,9 @@ lanes:
       - id: commodity_metadata_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$PUBLISH_COMMIT"]
+      - id: aibrief_metadata_candidate
+        module: scripts.check_aibrief_publication
+        args: [--candidate-ref, "$PUBLISH_COMMIT"]
       - id: metadata_government_revenue_projection
         module: scripts.check_government_revenue_projection
       - id: commodity_postrebase_recovery
@@ -3379,6 +3384,9 @@ lanes:
       - id: commodity_committed_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, HEAD]
+      - id: aibrief_committed_candidate
+        module: scripts.check_aibrief_publication
+        args: [--candidate-ref, HEAD]
 
   # ── intraday.yml / bars ─────────────────────────────────────────────────
   - workflow: .github/workflows/intraday.yml

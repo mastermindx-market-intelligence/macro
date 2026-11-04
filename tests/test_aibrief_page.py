@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 
+import pytest
 import jinja2
 
 from engine import i18n
@@ -151,3 +152,123 @@ def test_no_template_links_deleted_brief_pages():
             if needle in src:
                 offenders.append(f"{path.name}: {needle}")
     assert not offenders, "templates still link retired brief pages: " + "; ".join(offenders)
+
+
+# Publication must prove modal content, not just a date or a render watermark.
+def _publication_fixture(root):
+    from pathlib import Path
+
+    payload = {"lens": "china", "state_asof": "2026-11-03",
+               "summary": "Growth & demand have cooled.", "regime_read": "Liquidity is tight.",
+               "confidence": "medium", "conflicts": ["Credit: demand remains weak"],
+               "watch_items": ["Policy: watch the next release"],
+               "zh": {"summary": "增长与需求降温。", "regime_read": "流动性收紧。"}}
+    (root / "templates").mkdir()
+    (root / "site").mkdir()
+    template = (Path(config.ROOT) / "templates/_aibrief_body.html.j2").read_text()
+    (root / "templates/_aibrief_body.html.j2").write_text(template)
+    _publication_pages(root, payload)
+    (root / "site/china_brief.json").write_text(json.dumps(payload))
+    return payload
+
+
+def _publication_pages(root, payload):
+    for region, prefix in (("china", "cnx"), ("hk", "hkx")):
+        source = (
+            '{% import "_aibrief_body.html.j2" as aib %}'
+            '<section id="' + prefix + '-dlg-aibrief">'
+            '{% call aib.aibrief_body(brief, "china", show_catalysts=False) %}'
+            '<div class="' + prefix + '-receipt">Caller-owned receipt <a href="aibrief.html">link</a></div>'
+            '{% endcall %}</section>'
+        )
+        (root / ("site/" + region + ".html")).write_text(_env().from_string(source).render(brief=payload))
+
+
+def test_brief_publication_compares_bilingual_component_with_footer_variations(tmp_path):
+    from scripts import check_aibrief_publication as pub
+
+    _publication_fixture(tmp_path)
+    china = tmp_path / "site/china.html"
+    html = china.read_text().replace('class="aib2"', 'class="aib2 css-generated"')
+    html = html.replace("Growth & demand", "Growth &amp; demand")
+    html = html.replace("Caller-owned receipt", "A different nightly footer")
+    china.write_text(html)
+    assert pub.check(tmp_path, "china+hk") == ["china", "hk"]
+
+
+@pytest.mark.parametrize("same_date", [True, False])
+def test_brief_publication_refuses_old_content_even_with_a_new_date(tmp_path, same_date):
+    from scripts import check_aibrief_publication as pub
+
+    payload = _publication_fixture(tmp_path)
+    payload["summary"] = "The latest narrative is materially different."
+    payload["zh"]["summary"] = "最新解读已经变化。"
+    if not same_date:
+        payload["state_asof"] = "2026-11-04"
+        for region in ("china", "hk"):
+            page = tmp_path / ("site/" + region + ".html")
+            page.write_text(page.read_text().replace("2026-11-03", "2026-11-04"))
+    (tmp_path / "site/china_brief.json").write_text(json.dumps(payload))
+    with pytest.raises(pub.PublicationError, match="does not match"):
+        pub.check(tmp_path, "china+hk")
+
+
+@pytest.mark.parametrize("mutation", ["wrong_lens", "missing", "old_chinese"])
+def test_brief_publication_refuses_incomplete_modal_adoption(tmp_path, mutation):
+    from scripts import check_aibrief_publication as pub
+
+    _publication_fixture(tmp_path)
+    page = tmp_path / "site/hk.html"
+    html = page.read_text()
+    if mutation == "wrong_lens":
+        html = html.replace('data-lens="china"', 'data-lens="macro"')
+    elif mutation == "missing":
+        html = "<div>Previous page without its brief</div>"
+    else:
+        html = html.replace("增长与需求降温。", "旧的中文解读。")
+    page.write_text(html)
+    assert pub.check(tmp_path, "china") == ["china"]
+    with pytest.raises(pub.PublicationError):
+        pub.check(tmp_path, "all")
+
+
+def test_brief_publication_checks_commit_after_replay_not_only_worktree(tmp_path):
+    import subprocess
+    from scripts import check_aibrief_publication as pub
+
+    def git(*args):
+        return subprocess.run(["git", "-C", str(tmp_path), *args],
+                              capture_output=True, text=True, check=True).stdout.strip()
+
+    payload = _publication_fixture(tmp_path)
+    git("init", "-q", "-b", "main")
+    git("config", "user.name", "brief-test")
+    git("config", "user.email", "brief-test@example.invalid")
+    git("config", "commit.gpgsign", "false")
+    git("add", ".")
+    git("commit", "-qm", "first complete brief")
+    assert pub.check(tmp_path, "all", "HEAD") == ["china", "hk"]
+    payload["summary"] = "A newer accepted brief landed during publication."
+    (tmp_path / "site/china_brief.json").write_text(json.dumps(payload))
+    git("add", "site/china_brief.json")
+    git("commit", "-qm", "replayed candidate has a new input and old pages")
+    _publication_pages(tmp_path, payload)  # correct worktree must not certify stale HEAD
+    assert pub.check(tmp_path, "all") == ["china", "hk"]
+    with pytest.raises(pub.PublicationError, match="does not match"):
+        pub.check(tmp_path, "all", "HEAD")
+
+
+def test_brief_publication_is_wired_to_both_exact_push_candidates():
+    from pathlib import Path
+    import yaml
+
+    root = Path(config.ROOT)
+    workflow = yaml.safe_load((root / ".github/workflows/render.yml").read_text())
+    steps = workflow["jobs"]["render"]["steps"]
+    publisher = next(s["run"] for s in steps if s.get("name", "").startswith("commit rendered site"))
+    replay = 'scripts.check_aibrief_publication --scope "${{ steps.pick.outputs.scope }}" --candidate-ref "$PUBLISH_COMMIT"'
+    committed = 'scripts.check_aibrief_publication --scope "${{ steps.pick.outputs.scope }}" --candidate-ref HEAD'
+    assert publisher.index(replay) < publisher.index('if push_do origin "$PUBLISH_REF:refs/heads/main"')
+    assert publisher.index(committed) < publisher.index("if push_do;")
+    guard = next(s["run"] for s in steps if s.get("name") == "guard — finalized site has no dead references")
+    assert "scripts.check_aibrief_publication" in guard

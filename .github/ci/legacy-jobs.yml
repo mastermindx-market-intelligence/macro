@@ -9744,6 +9744,7 @@ jobs:
       - "templates/navigation-refresh.css"
       - "templates/theme.css"
       - "tests/test_aibrief_page.py"
+      - "scripts/check_aibrief_publication.py"
       - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"

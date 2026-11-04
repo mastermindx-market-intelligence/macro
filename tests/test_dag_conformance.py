@@ -1317,6 +1317,7 @@ def _brief_git(root, *args):
         (True, False, True, False, True, "hk"),
         (True, False, False, True, True, "china"),
         (True, False, True, True, False, None),
+        (True, True, True, True, False, "macro"),
     ],
 )
 def test_published_brief_gate_and_scope_union(
@@ -1361,8 +1362,6 @@ def test_published_brief_gate_and_scope_union(
                             capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert f"needed={str(needed).lower()}" in output.read_text()
-    if not needed:
-        return
     picker = next(s for s in workflow["jobs"]["render"]["steps"] if s.get("id") == "pick")
     # Either event may be the survivor after a pending brief render is superseded.
     for event in ("workflow_run", "push"):
@@ -1372,4 +1371,7 @@ def test_published_brief_gate_and_scope_union(
         result = subprocess.run(["bash", "-e", "-c", body], cwd=tmp_path, env=env,
                                 capture_output=True, text=True)
         assert result.returncode == 0, result.stderr
-        assert f"scope={scope}" in output.read_text(), (event, output.read_text())
+        if scope is None and event == "workflow_run":
+            assert "skip=true" in output.read_text()
+        else:
+            assert f"scope={scope or 'all'}" in output.read_text(), (event, output.read_text())
