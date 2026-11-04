@@ -295,6 +295,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/provider_production_modes.py"
+      - "config/provider_production_modes.v1.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2463,6 +2465,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/provider_production_modes.py"
+      - "config/provider_production_modes.v1.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3538,6 +3542,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/provider_production_modes.py"
+      - "config/provider_production_modes.v1.json"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -27529,6 +27535,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/provider_production_modes.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -28380,6 +28387,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/provider_production_modes.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -44883,6 +44891,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/provider_production_modes.py"
+      - "config/provider_production_modes.v1.json"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
