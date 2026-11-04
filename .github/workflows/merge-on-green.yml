@@ -217,6 +217,52 @@ jobs:
 
       # The same serialized job owns every stage. Upload boundaries seal
       # immutable original-attempt bytes before their dependent hosted effect.
+      - name: prepare original legacy migration
+        id: migration_prepare
+        if: >-
+          !cancelled() && (github.event_name != 'workflow_run'
+          || github.event.workflow_run.name == 'ci'
+          || github.event.workflow_run.conclusion == 'success')
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 -I scripts/ci_admission_stages.py migration-prepare
+
+      - name: seal original legacy migration intent
+        id: migration_intent
+        if: steps.migration_prepare.outputs.prepared == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-migration-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.migration_prepare.outputs.generation }}-intent
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/migration-intent/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: apply original legacy migration
+        id: migration_apply
+        if: steps.migration_intent.outcome == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.migration_intent.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py migration-apply
+
+      - name: seal original legacy migration outcome
+        id: migration_outcome
+        if: steps.migration_apply.outputs.settled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-migration-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.migration_apply.outputs.generation }}-outcome
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/migration-outcome/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
       - name: reconcile original admitted completion
         if: >-
           github.event_name != 'workflow_run' || github.event.workflow_run.name == 'ci'

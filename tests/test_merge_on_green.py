@@ -25,6 +25,13 @@ import yaml
 import scripts.merge_on_green as MOG
 
 
+@pytest.fixture(autouse=True)
+def legacy_cases_without_migration_intent(monkeypatch):
+    # These existing lease/merge cases predate migration. Its real original
+    # intent/refusal boundary is covered in test_ci_admission_stages.py.
+    monkeypatch.setattr(MOG, 'legacy_migration_pending', lambda *args: False)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 REAL_IN_FLIGHT_PR_PROOFS = MOG.in_flight_pr_proofs
 REAL_REFRESH_LEASE_RESERVATION_COUNT = MOG.refresh_lease_reservation_count
@@ -10088,3 +10095,73 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# ci-trigger-closure: data — changed-file names only; no fixture path is opened.
+_SIGNAL_SANITY_BAKE_FILES = [
+    "reports/signal-sanity.md", "data/signal_sanity/signal_sanity.json",
+    "data/signal_sanity/baseline.jsonl", "site/foresight.html",
+]
+_SIGNAL_SANITY_BAKE_MESSAGE = "engine: regime update 2026-11-04"
+
+
+def test_engine_signal_sanity_companion_does_not_stale_site_proof():
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, _SIGNAL_SANITY_BAKE_FILES, _SIGNAL_SANITY_BAKE_MESSAGE)],
+        gates=[{"workflow": "ci.yml", "patterns": ["site/**", "reports/**"]}],
+        pull_files={4242: ["site/chart.js"]},
+    )
+    stale, reason = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+    assert stale is False, reason
+
+
+@pytest.mark.parametrize("extra", [
+    "templates/dashboard.html.j2", "engine/signal_quality.py", "tests/test_signal_sanity.py",
+    "scripts/signal_sanity.py", ".github/ci/legacy-jobs.yml", ".github/workflows/ci.yml",
+    "agentos/workstreams/WS-REAL.md", "reports/authored.md", "reports/signal-sanity.md/source.py",
+    "engine/marketing/hot_tape.py", "engine/marketing/hot_tape_llm.py", "scripts/hot_tape_radar.py",
+])
+def test_engine_signal_sanity_companion_refuses_mixed_authored_commit(extra):
+    files = [*_SIGNAL_SANITY_BAKE_FILES, extra]
+    assert not MOG.is_skip_ci_noise(_SIGNAL_SANITY_BAKE_MESSAGE, files)
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, files, _SIGNAL_SANITY_BAKE_MESSAGE)],
+        gates=[{"workflow": "ci.yml", "patterns": ["site/**"]}],
+        pull_files={4242: ["site/chart.js"]},
+    )
+    stale, _ = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+    assert stale is True
+
+
+@pytest.mark.parametrize("message,files", [
+    ("docs: authored report", _SIGNAL_SANITY_BAKE_FILES),
+    ("engine: regime update", _SIGNAL_SANITY_BAKE_FILES),
+    ("engine: regime update 2026-11-04 + source", _SIGNAL_SANITY_BAKE_FILES),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, ["reports/signal-sanity.md"]),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, _SIGNAL_SANITY_BAKE_FILES[:2]),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, [_SIGNAL_SANITY_BAKE_FILES[0], *_SIGNAL_SANITY_BAKE_FILES[2:]]),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, [*_SIGNAL_SANITY_BAKE_FILES, ""]),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, None),
+    (_SIGNAL_SANITY_BAKE_MESSAGE, []),
+])
+def test_engine_signal_sanity_companion_requires_exact_complete_shape(message, files):
+    assert not MOG.is_skip_ci_noise(message, files)
+
+
+def test_engine_signal_sanity_companion_does_not_relax_truncated_inventory():
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, _SIGNAL_SANITY_BAKE_FILES, _SIGNAL_SANITY_BAKE_MESSAGE)],
+        gates=[{"workflow": "ci.yml", "patterns": ["site/**"]}],
+        pull_files={4242: ["site/chart.js"]},
+    )
+    freshness._commit_files[freshness.commits[0]["sha"]] = (_SIGNAL_SANITY_BAKE_FILES, True)
+    stale, reason = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+    assert stale is True and "too many files" in reason
+    assert not MOG.is_skip_ci_path("reports/signal-sanity.md")
+    assert MOG.PIPELINE_TREES == ("data/", "site/")

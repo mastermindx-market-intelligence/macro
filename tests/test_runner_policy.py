@@ -1486,3 +1486,20 @@ def test_admission_full_policy_rejects_execution_modifier(tmp_path, workflow, jo
     else: step["working-directory"] = "untrusted"
     path.write_text(yaml.safe_dump(doc, sort_keys=False))
     assert policy.evaluate(root, registry, workflows), (workflow, job_id, mutation)
+
+
+def test_original_migration_workflow_exact_boundary_rejects_rogue_modifiers():
+    import copy
+    from scripts import check_runner_policy as policy
+    import yaml
+    from pathlib import Path
+    path=Path(__file__).resolve().parents[1]/'.github/workflows/merge-on-green.yml'
+    original=yaml.safe_load(path.read_text())
+    assert not policy._shared_admission_controller_r2_findings('.github/workflows/merge-on-green.yml',original)
+    for target,field,value in [('migration_apply','continue-on-error',True),
+            ('migration_apply','if','always()'),('migration_intent','with',{'overwrite':True}),
+            ('migration_outcome','if',"steps.migration_apply.outcome == 'failure'")]:
+        candidate=copy.deepcopy(original)
+        step=next(s for s in candidate['jobs']['sweep']['steps'] if s.get('id')==target)
+        step[field]=value
+        assert policy._shared_admission_controller_r2_findings('.github/workflows/merge-on-green.yml',candidate)

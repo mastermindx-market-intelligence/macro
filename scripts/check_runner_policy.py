@@ -379,6 +379,51 @@ def _shared_admission_controller_r2_findings(relative: str, document: dict) -> l
     if job.get("concurrency") != {"group": expected_group, "cancel-in-progress": False}:
         return bad
     steps = job.get("steps") or []
+    if len(steps) != 16 or any(not isinstance(s, dict) for s in steps):
+        return bad
+    migration_steps = [{'name': 'prepare original legacy migration',
+      'id': 'migration_prepare',
+      'if': "!cancelled() && (github.event_name != 'workflow_run' || github.event.workflow_run.name == 'ci' || "
+            "github.event.workflow_run.conclusion == 'success')",
+      'env': {'GH_REPO': '${{ github.repository }}',
+              'READ_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+              'MERGE_TOKEN': '${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}',
+              'CI_ADMISSION_STAGE_DIR': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}'},
+      'run': 'python3 -I scripts/ci_admission_stages.py migration-prepare'},
+     {'name': 'seal original legacy migration intent',
+      'id': 'migration_intent',
+      'if': "steps.migration_prepare.outputs.prepared == 'true'",
+      'uses': 'actions/upload-artifact@v4',
+      'with': {'name': 'ci-proof-migration-${{ github.run_id }}-${{ github.run_attempt }}-${{ '
+                       'steps.migration_prepare.outputs.generation }}-intent',
+               'path': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt '
+                       '}}/migration-intent/ci-proof-admission.json',
+               'if-no-files-found': 'error',
+               'retention-days': 90,
+               'overwrite': False}},
+     {'name': 'apply original legacy migration',
+      'id': 'migration_apply',
+      'if': "steps.migration_intent.outcome == 'success'",
+      'env': {'GH_REPO': '${{ github.repository }}',
+              'READ_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+              'MERGE_TOKEN': '${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}',
+              'CI_ADMISSION_STAGE_DIR': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}',
+              'ARTIFACT_ID': '${{ steps.migration_intent.outputs.artifact-id }}'},
+      'run': 'python3 -I scripts/ci_admission_stages.py migration-apply'},
+     {'name': 'seal original legacy migration outcome',
+      'id': 'migration_outcome',
+      'if': "steps.migration_apply.outputs.settled == 'true'",
+      'uses': 'actions/upload-artifact@v4',
+      'with': {'name': 'ci-proof-migration-${{ github.run_id }}-${{ github.run_attempt }}-${{ '
+                       'steps.migration_apply.outputs.generation }}-outcome',
+               'path': '${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt '
+                       '}}/migration-outcome/ci-proof-admission.json',
+               'if-no-files-found': 'error',
+               'retention-days': 90,
+               'overwrite': False}}]
+    if steps[2:6] != migration_steps:
+        return bad
+    steps = steps[:2] + steps[6:]
     if len(steps) != 12 or any(not isinstance(s, dict) for s in steps):
         return bad
     checkout = steps[0]

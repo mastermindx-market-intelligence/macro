@@ -246,14 +246,18 @@ class IndexState:
     intent: int = 0
     not_before: int = 0
 
+    migration_root: int = 0
+
     def text(self):
-        return f'a2 b={self.artifact} p={self.anchor} i={self.intent} t={self.not_before} s=indexing'
+        return mog.shared_register_text(f'a2 b={self.artifact} p={self.anchor} i={self.intent} t={self.not_before} s=indexing',self.migration_root)
 
     @classmethod
     def parse(cls, value):
+        try:value,root=mog.shared_register_parts(value)
+        except ValueError:return None
         match=re.fullmatch(r'a2 b=([1-9][0-9]*) p=([1-9][0-9]*) i=(0|[1-9][0-9]*) t=([0-9]+) s=indexing',str(value))
         if not match:return None
-        return cls(*(int(v) for v in match.groups()))
+        return cls(*(int(v) for v in match.groups()),migration_root=root)
 
 
 class AnchorIndexer:
@@ -285,11 +289,24 @@ class AnchorIndexer:
         delay=max(0,state.not_before-self.clock())
         if self.clock()+delay+1>=self.deadline:return False
         if delay:self.sleep(delay)
-        return True
+        return self.clock()<self.deadline
+
+    def mutate(self,method,url,payload=None):
+        expected=getattr(self,'_expected_register',None)
+        if expected is None or self.read()!=expected:
+            raise ValueError('original index pointer/root changed before effect')
+        if self.clock()>=self.deadline:
+            raise ValueError('original index deadline expired; custody retained')
+        return self.mog._shared_admission_effect(method,url,self.token,payload)
 
     def store(self,state):
-        code,_=self.mog._request('PATCH',self.label,self.token,{'description':state.text()})
+        original=self.read()
+        root=self.mog.authenticated_migration_root(self.repo,self.token,original,
+            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+        if root!=state.migration_root or self.read()!=original:raise ValueError('index migration root changed')
+        code,_=self.mutate('PATCH',self.label,{'description':state.text()})
         if code!=200 or self.read()!=state.text():raise RuntimeError('UNKNOWN original indexing custody write')
+        self._expected_register=state.text()
         return state
 
     def authenticate(self,state):
@@ -335,10 +352,15 @@ class AnchorIndexer:
 
     def start(self,artifact_id,anchor):
         self.authority()
-        if self.read()!='a2 idle':raise ValueError('original singleton occupied')
-        state=IndexState(artifact_id,anchor,not_before=int(self.clock())+10)
+        original=self.read()
+        self._expected_register=original
+        if not self.mog.migration_register_is_idle(self.repo,self.token,original,
+                repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha']):
+            raise ValueError('original singleton occupied')
+        state=IndexState(artifact_id,anchor,not_before=int(self.clock())+10,migration_root=self.mog.shared_register_parts(original)[1])
         self.authenticate(state)
         if self.clock()+1>=self.deadline:return {'disposition':'deferred'}
+        if self.read()!=original:raise ValueError('original singleton changed')
         self.store(state)  # Durable artifact discovery precedes the first POST.
         return {'disposition':'indexing','state':state}
 
@@ -365,8 +387,11 @@ class AnchorIndexer:
         """Finish only the original anchor comment/association; never select."""
         from dataclasses import replace
         self.authority()
-        state=IndexState.parse(self.read())
+        self._expected_register=self.read()
+        state=IndexState.parse(self._expected_register)
         if state is None:raise ValueError('no original indexing batch')
+        self.mog.authenticated_migration_root(self.repo,self.token,self.read(),
+            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
         ref,demands=self.authenticate(state)
         if state.intent==3:
             url=self.root+f'/issues/{state.anchor}/labels'
@@ -375,8 +400,8 @@ class AnchorIndexer:
             if any(isinstance(v,dict) and v.get('name')==self.mog.REFRESH_LEASE_LABEL for v in labels):
                 return {'disposition':'unknown','detail':'original retirement not positively observed'}
             if not self.wait_write(state):return {'disposition':'partial'}
-            code,_=self.mog._request('PATCH',self.label,self.token,{'description':'a2 idle'})
-            if code!=200 or self.read()!='a2 idle':raise RuntimeError('UNKNOWN retirement finalization')
+            code,_=self.mutate('PATCH',self.label,{'description':self.mog.shared_register_text('a2 idle',state.migration_root)})
+            if code!=200 or self.read()!=self.mog.shared_register_text('a2 idle',state.migration_root):raise RuntimeError('UNKNOWN retirement finalization')
             return {'disposition':'indexed','artifact_id':state.artifact,'anchor':state.anchor}
         body=self.mog.DEMAND_COMMENT_PREFIX+json.dumps(ref,sort_keys=True,separators=(',',':'))
         comments=self.mog.fetch_issue_comments(self.repo,state.anchor,self.token,strict=True)
@@ -393,7 +418,7 @@ class AnchorIndexer:
             state=self.store(replace(state,intent=1,not_before=int(self.clock())+10))
             if not self.wait_write(state):return {'disposition':'partial'}
             try:
-                code,c=self.mog._request('POST',self.root+f'/issues/{state.anchor}/comments',self.token,{'body':body})
+                code,c=self.mutate('POST',self.root+f'/issues/{state.anchor}/comments',{'body':body})
             except Exception:
                 return {'disposition':'unknown','detail':'original anchor POST response lost'}
             if code!=201 or not isinstance(c,dict) or self.exact_comment(state.anchor,body,[c]) is None:
@@ -412,7 +437,7 @@ class AnchorIndexer:
             state=self.store(replace(state,intent=2,not_before=int(self.clock())+10))
             if not self.wait_write(state):return {'disposition':'partial'}
             try:
-                code,_=self.mog._request('POST',url,self.token,{'labels':[self.mog.REFRESH_LEASE_LABEL]})
+                code,_=self.mutate('POST',url,{'labels':[self.mog.REFRESH_LEASE_LABEL]})
                 status,labels=self.mog._request('GET',url,self.token)
             except Exception:
                 return {'disposition':'unknown','detail':'original association response lost'}
@@ -420,13 +445,16 @@ class AnchorIndexer:
                 return {'disposition':'unknown','detail':'original association readback unsettled'}
             state=replace(state,not_before=int(self.clock())+10)
         if not self.wait_write(state):return {'disposition':'partial'}
-        code,_=self.mog._request('PATCH',self.label,self.token,{'description':'a2 idle'})
-        if code!=200 or self.read()!='a2 idle':raise RuntimeError('UNKNOWN indexing finalization')
+        code,_=self.mutate('PATCH',self.label,{'description':self.mog.shared_register_text('a2 idle',state.migration_root)})
+        if code!=200 or self.read()!=self.mog.shared_register_text('a2 idle',state.migration_root):raise RuntimeError('UNKNOWN indexing finalization')
         return {'disposition':'indexed','artifact_id':state.artifact,'anchor':state.anchor}
 
     def retire_covered_anchor(self,new_reference):
         self.authority()
-        if self.read()!='a2 idle':return {'disposition':'held'}
+        original=self.read()
+        self._expected_register=original
+        if not self.mog.migration_register_is_idle(self.repo,self.token,original,
+                repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha']):return {'disposition':'held'}
         inventory=self.mog.shared_admission_inventory(self.repo,self.token)
         snapshot,_=self.mog.read_age_frontier(self.repo,self.token,
             repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'],inventory=inventory)
@@ -448,16 +476,16 @@ class AnchorIndexer:
             # authenticated successor. Other PR admission records stay intact.
             if self.clock()+31>=self.deadline:return {'disposition':'partial'}
             self.sleep(10)
-            state=IndexState(new_reference['artifact_id'],number,3,int(self.clock())+10)
+            state=IndexState(new_reference['artifact_id'],number,3,int(self.clock())+10,self.mog.shared_register_parts(original)[1])
             actual,_=self.authenticate(state)
             if actual!=new_reference:raise ValueError('retirement successor reference mismatch')
             self.store(state)
             if not self.wait_write(state):return {'disposition':'partial'}
             url=self.root+f'/issues/{number}/labels/'+urllib.parse.quote(self.mog.REFRESH_LEASE_LABEL,safe='')
-            try:code,_=self.mog._request('DELETE',url,self.token)
+            try:code,_=self.mutate('DELETE',url)
             except Exception:return {'disposition':'unknown','detail':'original retirement response lost'}
             if code not in {200,204}:return {'disposition':'unknown','detail':'original retirement unresolved'}
-            state=IndexState(state.artifact,state.anchor,state.intent,int(self.clock())+10)
+            state=IndexState(state.artifact,state.anchor,state.intent,int(self.clock())+10,state.migration_root)
             # advance performs readback only; even a missing DELETE response
             # can never cause a second DELETE on a future sweep.
             self.sleep(10)
@@ -497,6 +525,20 @@ def write_once(path, data):
     return hashlib.sha256(payload).hexdigest()
 
 
+def controller_read_scope(function):
+    # Same-job local entry custody survives fixed upload/process boundaries;
+    # immutable byte reuse is limited to this invocation, never mutable reads.
+    from functools import wraps
+    @wraps(function)
+    def wrapped(self, *args, **kwargs):
+        identity=dict(repo=self.repo, **self.context)
+        with mog.migration_read_scope(self.repo,self.read,identity=identity,directory=self.directory) as scope:
+            if (self.directory/'migration-budget.json').exists():
+                scope.require_budget()
+            return function(self,*args,**kwargs)
+    return wrapped
+
+
 class Stages:
     def __init__(self, repo, read_token, write_token, checks_token, context, directory):
         self.repo, self.read, self.write, self.checks = repo, read_token, write_token, checks_token
@@ -525,7 +567,8 @@ class Stages:
     def receipt(self, kind, value, suffix, *, covered_comments=None):
         schema = {'admission': 'mastermind.ci-proof-admission.v1',
                   'demands': 'mastermind.ci-proof-demands.v1',
-                  'checkpoint': 'mastermind.ci-proof-checkpoint.v1'}[kind]
+                  'checkpoint': 'mastermind.ci-proof-checkpoint.v1',
+                  'migration': 'mastermind.ci-proof-migration.v1'}[kind]
         data = dict(schema=schema, repository_id=self.context['repository_id'],
                     controller_run_id=int(self.context['current_run_id']),
                     controller_run_attempt=self.context['current_run_attempt'])
@@ -534,6 +577,8 @@ class Stages:
             data['schema']='mastermind.ci-proof-demands.v2'
             data['covered_comments']=[dict(pr_number=n,through_comment_id=c) for n,c in sorted(covered_comments.items())]
             if len(data['covered_comments'])>1000:raise ValueError('existing age coverage bound exceeded')
+        if kind=='migration' and len(json.dumps(data,sort_keys=True,separators=(',',':')).encode())>32768:
+            raise ValueError('migration receipt exceeds original member bound')
         digest = write_once(self.directory / suffix / 'ci-proof-admission.json', data)
         self.save(suffix + '-digest', digest)
 
@@ -546,27 +591,258 @@ class Stages:
                     controller_sha=self.context['protected_controller_sha'],
                     payload_sha256=self.load(suffix + '-digest'))
 
+    @controller_read_scope
     def initialize_empty_register(self):
-        """Only a positively idle legacy register with no owners may migrate."""
+        """Read-only gate. Migration effects require immutable original custody."""
+        root=f'{mog.GITHUB_API}/repos/{self.repo}'
+        code,row=mog._request('GET',root+'/labels/'+urllib.parse.quote(mog.REFRESH_LEASE_LABEL,safe=''),self.read)
+        description=row.get('description') if isinstance(row,dict) else None
+        if code!=200 or not isinstance(description,str) or not description.startswith('a2 '):
+            raise ValueError('legacy/default register requires qualified original migration; no inline write')
+        mog.authenticated_migration_root(self.repo,self.read,description,
+            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+        inventory=mog.shared_admission_inventory(self.repo,self.read)
+        if not inventory.complete:raise ValueError('migration/association custody incomplete')
+        for issue in inventory.issues:
+            comments=mog.fetch_issue_comments(self.repo,issue['number'],self.read,strict=True)
+            mog.migration_history(self.repo,self.read,issue['number'],comments,
+                repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+        if inventory.migration is not None and not mog.migration_register_is_idle(self.repo,self.read,description,
+                repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha']):
+            raise ValueError('UNKNOWN original migration outcome; no successor write')
+
+    def migration_budget(self):
+        return mog.migration_budget(self.read)
+
+    def migration_history_fence(self, acquired_at, budget):
+        """No earlier original apply invocation may be silently replayed.
+
+        This deliberately refuses truncated/expired controller history. The
+        serialized workflow and original job records, not an absent PR comment,
+        establish that no previous migration apply step started.
+        """
         root = f'{mog.GITHUB_API}/repos/{self.repo}'
-        url = root + '/labels/' + urllib.parse.quote(mog.REFRESH_LEASE_LABEL, safe='')
-        status, label = mog._request('GET', url, self.read)
-        if status == 200 and isinstance(label, dict) and str(label.get('description', '')).startswith('a2 '):
-            return
-        if status != 200 or not isinstance(label, dict) or label.get('description') != mog.REFRESH_LEASE_DESCRIPTION:
-            raise ValueError('legacy register missing, occupied or unknown; no migration')
-        # Complete state=all associations, not just the open queue. An old m1
-        # association is never interpreted as empty because its PR closed.
-        query = urllib.parse.urlencode(dict(state='all', labels=mog.REFRESH_LEASE_LABEL, per_page=100))
-        code, rows = mog._request('GET', root + '/issues?' + query, self.read)
-        if code != 200 or rows != []:
-            raise ValueError('legacy owner association remains; no migration')
-        code, _ = mog._request('PATCH', url, self.write, {'description': 'a2 idle'})
-        if code != 200:
-            raise RuntimeError('UNKNOWN original register migration')
-        code, observed = mog._request('GET', url, self.read)
-        if code != 200 or not isinstance(observed, dict) or observed.get('description') != 'a2 idle':
-            raise RuntimeError('UNKNOWN original register migration readback')
+        query = urllib.parse.urlencode(dict(created='>=' + acquired_at, per_page=100))
+        code, listing = mog._request('GET', root + '/actions/workflows/merge-on-green.yml/runs?' + query, self.read)
+        rows = listing.get('workflow_runs') if isinstance(listing, dict) else None
+        if (code != 200 or not isinstance(rows, list) or type(listing.get('total_count')) is not int
+                or listing['total_count'] != len(rows) or len(rows) > 100):
+            raise ValueError('migration original controller history incomplete')
+        seen = set()
+        for row in rows:
+            if (not isinstance(row, dict) or not positive(row.get('id')) or row['id'] in seen
+                    or row.get('run_attempt') != 1 or type(row.get('run_attempt')) is not int
+                    or (row.get('repository') or {}).get('id') != self.context['repository_id']
+                    or row.get('path') != '.github/workflows/merge-on-green.yml'):
+                raise ValueError('migration controller history identity unknown')
+            seen.add(row['id'])
+            if row['id'] == int(self.context['current_run_id']):
+                continue
+            allowed, _ = budget.may_continue(0)
+            if not allowed or time.time() >= self.load('migration-deadline'):
+                raise ValueError('migration history budget/deadline boundary')
+            if row.get('status') != 'completed':
+                raise ValueError('prior controller original still active')
+            code, jobs = mog._request('GET', root + f'/actions/runs/{row["id"]}/attempts/1/jobs?per_page=100', self.read)
+            values = jobs.get('jobs') if isinstance(jobs, dict) else None
+            if (code != 200 or not isinstance(values, list) or not values
+                    or type(jobs.get('total_count')) is not int or jobs['total_count'] != len(values)
+                    or len(values) > 100):
+                raise ValueError('migration original job history incomplete')
+            for job in values:
+                if (not isinstance(job, dict) or job.get('run_id') != row['id']
+                        or job.get('run_attempt') != 1 or not isinstance(job.get('steps'), list)):
+                    raise ValueError('migration original job identity unknown')
+                for step in job['steps']:
+                    if not isinstance(step, dict) or not isinstance(step.get('name'), str):
+                        raise ValueError('migration original step history incomplete')
+                    if step['name'] == 'apply original legacy migration' and (
+                            step.get('started_at') is not None or step.get('conclusion') != 'skipped'):
+                        raise ValueError('UNKNOWN earlier migration apply original; no successor write')
+
+    def migration_settlement(self, expected=None, *, allow_indexed=False, expected_reference=None, budget=None):
+        """Affirm exact advanced owner proof, never infer settlement from age."""
+        budget=budget or self.migration_budget()
+        deadline=self.load('migration-deadline') if (self.directory/'migration-deadline.json').exists() else time.time()+240
+        root = f'{mog.GITHUB_API}/repos/{self.repo}'
+        label_url = root + '/labels/' + urllib.parse.quote(mog.REFRESH_LEASE_LABEL, safe='')
+        code, label = mog._request('GET', label_url, self.read)
+        description = label.get('description') if isinstance(label, dict) else None
+        generation = mog.parse_refresh_lease_record(description)
+        if code != 200 or generation is None:
+            raise ValueError('no exact original m1 generation')
+        number, pre, acquired, gid = generation
+        code, p = mog._request('GET', root + f'/pulls/{number}', self.read)
+        head = (p.get('head') or {}).get('sha') if isinstance(p, dict) else None
+        if (code != 200 or p.get('number') != number or p.get('state') not in {'open','closed'}
+                or not contract._hex(head,40) or head == pre
+                or (p.get('base') or {}).get('ref') != 'main'
+                or ((p.get('base') or {}).get('repo') or {}).get('id') != self.context['repository_id']
+                or ((p.get('head') or {}).get('repo') or {}).get('id') != self.context['repository_id']
+                or (not allow_indexed and mog.REFRESH_LEASE_LABEL in mog.label_names(p))):
+            raise ValueError('original legacy owner not affirmatively released/advanced')
+        code, commit = mog._request('GET', root + f'/git/commits/{head}', self.read)
+        parents = commit.get('parents') if isinstance(commit, dict) else None
+        if (code != 200 or commit.get('sha') != head or not isinstance(parents,list)
+                or len(parents)!=2 or parents[0].get('sha') != pre
+                or not contract._hex(parents[1].get('sha'),40)):
+            raise ValueError('advanced legacy head does not bind original pre-update parent')
+        checks = mog.head_check_runs(self.repo,head,self.read)
+        if (any(not isinstance(r,dict) or r.get('head_sha')!=head or not positive(r.get('id')) for r in checks)
+                or mog.proof_anchor_verdict(checks)[0] != 'clean' or mog.proof_anchor_work_is_active(checks)):
+            raise ValueError('original advanced generation anchors incomplete')
+        code, workflow = mog._request('GET',root+'/actions/workflows/ci.yml',self.read)
+        if code != 200 or not positive(workflow.get('id')) or workflow.get('path') != '.github/workflows/ci.yml':
+            raise ValueError('original CI definition unavailable')
+        query=urllib.parse.urlencode(dict(head_sha=head,event='pull_request',per_page=100))
+        code, listing=mog._request('GET',root+'/actions/workflows/ci.yml/runs?'+query,self.read)
+        runs=listing.get('workflow_runs') if isinstance(listing,dict) else None
+        if (code!=200 or not isinstance(runs,list) or listing.get('total_count')!=len(runs)
+                or type(listing.get('total_count')) is not int or len(runs)!=1):
+            raise ValueError('original legacy proof missing or ambiguous')
+        run=runs[0]
+        if not isinstance(run,dict) or not positive(run.get('id')):
+            raise ValueError('original proof identity unavailable')
+        code, original=mog._request('GET',root+f'/actions/runs/{run["id"]}/attempts/1',self.read)
+        associations=original.get('pull_requests') if isinstance(original,dict) else None
+        required={'ci-plan','ci-gate'}
+        anchors=[r for r in checks if r.get('name') in required]
+        if (code!=200 or original.get('id')!=run['id'] or original.get('run_attempt')!=1
+                or original.get('workflow_id')!=workflow['id'] or original.get('event')!='pull_request'
+                or original.get('status')!='completed' or original.get('conclusion')!='success'
+                or original.get('head_sha')!=head or original.get('path')!='.github/workflows/ci.yml'
+                or (original.get('repository') or {}).get('id')!=self.context['repository_id']
+                or (original.get('head_repository') or {}).get('id')!=self.context['repository_id']
+                or not isinstance(associations,list) or len(associations)!=1
+                or associations[0].get('number')!=number
+                or (associations[0].get('head') or {}).get('sha')!=head
+                or (associations[0].get('base') or {}).get('sha')!=parents[1]['sha']
+                or ((associations[0].get('base') or {}).get('repo') or {}).get('id')!=self.context['repository_id']
+                or ((associations[0].get('head') or {}).get('repo') or {}).get('id')!=self.context['repository_id']
+                or not positive(original.get('check_suite_id'))
+                or {r.get('name') for r in anchors}!=required
+                or any((r.get('check_suite') or {}).get('id')!=original['check_suite_id'] for r in anchors)
+                or mog._parse_dt(original.get('created_at')) is None
+                or mog._parse_dt(original['created_at']) <= mog._parse_dt(acquired)):
+            raise ValueError('original legacy run/attempt/subject/proof binding unavailable')
+        intent=contract.LegacyMigration(number,gid,pre,head,acquired,run['id'],1,'intent')
+        if expected is not None and intent != contract.LegacyMigration(expected.pr_number,expected.generation,expected.pre_head_sha,expected.head_sha,expected.acquired_at,expected.proof_run_id,expected.proof_run_attempt,'intent'):
+            raise ValueError('original migration generation changed')
+        comments=mog.fetch_issue_comments(self.repo,number,self.read,strict=True)
+        if comments is None:raise ValueError('original owner history incomplete')
+        control_prefixes=(mog.ADMISSION_COMMENT_PREFIX,mog.DEMAND_COMMENT_PREFIX,mog.CHECKPOINT_COMMENT_PREFIX,mog.MIGRATION_COMMENT_PREFIX)
+        own_indexes=0
+        for c in comments:
+            if str(c.get('body','')).startswith(control_prefixes) and mog.admission_index_writer(c):
+                expected_body=mog.MIGRATION_COMMENT_PREFIX+json.dumps(expected_reference,sort_keys=True,separators=(',',':'))
+                if not allow_indexed or c.get('body')!=expected_body:
+                    raise ValueError('existing original control custody; no new migration')
+                own_indexes+=1
+        if allow_indexed and own_indexes!=1:
+            raise ValueError('original migration index absent or ambiguous before PATCH')
+        # Existing all-state association custody is serialized independently of
+        # mutable open-PR discovery. Closed nonowners need explicit classification.
+        rows=[];seen=set()
+        for page in range(1,mog.OPEN_PULL_PAGE_CAP+1):
+            query=urllib.parse.urlencode(dict(state='all',labels=mog.REFRESH_LEASE_LABEL,per_page=100,page=page))
+            code,batch=mog._request('GET',root+'/issues?'+query,self.read)
+            if code!=200 or not isinstance(batch,list):raise ValueError('legacy association inventory incomplete')
+            for row in batch:
+                if (not isinstance(row,dict) or not positive(row.get('number')) or row['number'] in seen
+                        or not isinstance(row.get('pull_request'),dict) or not isinstance(row.get('labels'),list)
+                        or mog.REFRESH_LEASE_LABEL not in mog.label_names(row)):
+                    raise ValueError('legacy association inventory malformed')
+                seen.add(row['number']);rows.append(row)
+            if len(batch)<100:break
+        else:raise ValueError('legacy association inventory exceeds existing bound')
+        residuals=[]
+        for index,row in enumerate(rows):
+            allowed,_=budget.may_continue(index)
+            if not allowed or budget.last_seen is None or time.time()>=deadline:
+                raise ValueError('migration residual budget/deadline boundary')
+            if row['number']==number:
+                if not allow_indexed:raise ValueError('legacy owner still associated')
+                continue
+            residuals.append(mog.legacy_residual_fact(self.repo,self.read,row['number'],repository_id=self.context['repository_id'],allowed_reference=expected_reference if allow_indexed else None))
+        from dataclasses import replace
+        intent=replace(intent,residuals=tuple(sorted(residuals,key=lambda r:r['pr_number'])))
+        if expected is not None and intent!=expected:raise ValueError('legacy residual custody changed')
+        code, observed=mog._request('GET',label_url,self.read)
+        if code!=200 or observed.get('description')!=description:
+            raise ValueError('legacy register changed during proof')
+        return intent,description
+
+    @controller_read_scope
+    def migration_prepare(self):
+        self.authority()
+        if self.context['current_run_attempt'] != 1:
+            raise ValueError('migration supports only original attempt')
+        if not mog.installed_admitted_dispatch_ready(self.repo,self.context['protected_controller_sha']):
+            return dict(prepared=False)
+        root=f'{mog.GITHUB_API}/repos/{self.repo}'
+        code,row=mog._request('GET',root+'/labels/'+urllib.parse.quote(mog.REFRESH_LEASE_LABEL,safe=''),self.read)
+        if code==200 and isinstance(row,dict) and str(row.get('description','')).startswith('a2 '):
+            self.initialize_empty_register()
+            return dict(prepared=False)
+        budget=self.migration_budget()
+        self.save('migration-deadline',budget.deadline)
+        intent,description=self.migration_settlement(budget=budget)
+        self.migration_history_fence(intent.acquired_at,budget)
+        self.save('migration-original-register',description)
+        self.receipt('migration',asdict(intent),'migration-intent')
+        return dict(prepared=True,generation=intent.generation)
+
+    @controller_read_scope
+    def migration_apply(self,artifact_id):
+        self.authority()
+        if self.context['current_run_attempt']!=1:
+            raise ValueError('migration supports only original attempt')
+        budget=self.migration_budget()
+        if time.time()>=self.load('migration-deadline'):
+            raise ValueError('original migration deadline expired')
+        ref=self.reference('migration-intent',artifact_id)
+        intent=mog.authenticated_migration_from_ref(self.repo,self.read,ref,
+            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
+        if intent.phase!='intent':raise ValueError('not an original migration intent')
+        self.migration_settlement(intent,budget=budget)
+        self.migration_history_fence(intent.acquired_at,budget)
+        # Same-attempt process reentry is also forbidden before any POST/PATCH.
+        self.save('migration-apply-started',dict(artifact_id=artifact_id))
+        for number in [intent.pr_number]+[r['pr_number'] for r in intent.residuals]:
+            allowed,_=budget.may_continue(0)
+            if not allowed or time.time()+31>=self.load('migration-deadline'):
+                raise ValueError('migration index budget/deadline boundary; original custody retained')
+            self.index(number,mog.MIGRATION_COMMENT_PREFIX,ref)
+        _,description=self.migration_settlement(intent,allow_indexed=True,expected_reference=ref,budget=budget)
+        if description!=self.load('migration-original-register'):
+            raise ValueError('original register changed before migration')
+        allowed,_=budget.may_continue(0)
+        if not allowed or time.time()>=self.load('migration-deadline'):
+            raise ValueError('migration budget/deadline boundary; indexed intent retained')
+        pointer=contract.migration_pointer(intent,artifact_id)
+        root=f'{mog.GITHUB_API}/repos/{self.repo}'
+        url=root+'/labels/'+urllib.parse.quote(mog.REFRESH_LEASE_LABEL,safe='')
+        self.migration_wait_write()
+        budget.require()
+        code,row=mog._request('GET',url,self.read)
+        status,current=mog._request('GET',root+f'/pulls/{intent.pr_number}',self.read)
+        if (code!=200 or row.get('description')!=description or status!=200
+                or current.get('number')!=intent.pr_number or (current.get('head') or {}).get('sha')!=intent.head_sha):
+            raise ValueError('original register/head changed immediately before PATCH')
+        budget.require()
+        # One effect, no retry, no clear. Uncertain response leaves original
+        # controller job + positively indexed immutable intent as sticky custody.
+        code,ack=mog._shared_admission_effect('PATCH',url,self.write,{'description':pointer})
+        if code!=200 or not isinstance(ack,dict) or ack.get('description')!=pointer:
+            raise RuntimeError('UNKNOWN original migration PATCH acknowledgement')
+        code,observed=mog._request('GET',url,self.read)
+        if code!=200 or observed.get('description')!=pointer:
+            raise RuntimeError('UNKNOWN original migration PATCH readback')
+        from dataclasses import replace
+        outcome=replace(intent,phase='outcome',intent_artifact_id=artifact_id,
+                        acknowledged=True,observed_register=pointer)
+        self.receipt('migration',asdict(outcome),'migration-outcome')
+        return dict(settled=True,generation=intent.generation)
 
     def history(self, pull, comments=None):
         if comments is None:
@@ -585,7 +861,11 @@ class Stages:
             age_snapshot=getattr(self,"_age_snapshot",None))
 
     def anchor_indexer(self):
-        return AnchorIndexer(mog,self.repo,self.read,self.context,deadline=time.time()+240)
+        deadline=time.time()+240
+        scope=mog._MIGRATION_READ_SCOPE.get()
+        if scope is not None and scope.budget is not None:
+            deadline=min(deadline,scope.budget.deadline)
+        return AnchorIndexer(mog,self.repo,self.read,self.context,deadline=deadline)
 
     def age_witnesses(self, inventory, facts):
         retention={}
@@ -653,6 +933,7 @@ class Stages:
             return 'unknown', None
         return ('eligible', 'refresh') if stale is True else ('ineligible', None)
 
+    @controller_read_scope
     def prepare(self, *, native_pr_enabled, freshness):
         self.authority()
         # Readiness is the actual protected caller/callee contract, not a flag
@@ -667,11 +948,12 @@ class Stages:
         if inventory.indexing is not None:
             self.save('resume-index',list(inventory.indexing))
             return dict(ready=True,changed=False,count=0)
-        budget = mog.SweepBudget(self.read)
+        scope=mog._MIGRATION_READ_SCOPE.get()
+        budget = scope.require_budget() if scope is not None and scope.budget is not None else mog.SweepBudget(self.read)
         if not budget.preflight()[0]:
             raise ValueError('insufficient original budget for complete demand census')
         pulls = mog.open_pulls(self.repo, self.read)
-        deadline=time.monotonic()+300
+        deadline=time.monotonic()+min(300,max(0,budget.deadline-time.time())) if hasattr(budget,'deadline') else time.monotonic()+300
         reader=BulkReader(mog,self.repo,self.read,deadline=deadline)
         facts=reader.facts(pulls)
         ages=self.age_witnesses(inventory,facts)
@@ -823,13 +1105,27 @@ class Stages:
                 publish_demands = True
         return dict(ready=True, changed=publish_demands, count=len(demands))
 
+    def migration_wait_write(self):
+        now=time.time()
+        wait=max(0,getattr(self,'_migration_next_write',now)-now)
+        if now+wait+31>=self.load('migration-deadline'):
+            raise ValueError('migration mutation deadline; original intent retained')
+        if wait:time.sleep(wait)
+        self._migration_next_write=time.time()+10
+
+    def migration_mutation(self,method,url,token,payload):
+        self.migration_wait_write()
+        self.migration_budget().require()
+        return mog._shared_admission_effect(method,url,token,payload)
+
     def index(self, number, prefix, reference):
         if prefix not in {mog.DEMAND_COMMENT_PREFIX, mog.ADMISSION_COMMENT_PREFIX,
-                          mog.CHECKPOINT_COMMENT_PREFIX}:
+                          mog.CHECKPOINT_COMMENT_PREFIX, mog.MIGRATION_COMMENT_PREFIX}:
             raise ValueError('unrecognized original receipt namespace')
         body = prefix + json.dumps(reference, sort_keys=True, separators=(',', ':'))
         root = f'{mog.GITHUB_API}/repos/{self.repo}'
-        code, result = mog._request('POST', root + f'/issues/{number}/comments', self.read, {'body': body})
+        request=self.migration_mutation if prefix==mog.MIGRATION_COMMENT_PREFIX else mog._shared_admission_effect
+        code, result = request('POST', root + f'/issues/{number}/comments', self.read, {'body': body})
         if code != 201 or not isinstance(result, dict) or type(result.get('id')) is not int or result.get('body') != body or not mog.admission_index_writer(result):
             raise RuntimeError('UNKNOWN original receipt index')
         code, observed = mog._request('GET', root + f"/issues/comments/{result['id']}", self.read)
@@ -841,13 +1137,14 @@ class Stages:
         # shared owner inventory before any proof slot has been reserved.
         if prefix == mog.DEMAND_COMMENT_PREFIX:
             return
-        code, _ = mog._request('POST', root + f'/issues/{number}/labels', self.write, {'labels': [mog.REFRESH_LEASE_LABEL]})
+        code, _ = request('POST', root + f'/issues/{number}/labels', self.write, {'labels': [mog.REFRESH_LEASE_LABEL]})
         if code != 200:
             raise RuntimeError('UNKNOWN original receipt association')
         code, observed = mog._request('GET', root + f'/issues/{number}/labels', self.read)
         if code != 200 or not isinstance(observed, list) or mog.REFRESH_LEASE_LABEL not in {x.get('name') for x in observed if isinstance(x, dict)}:
             raise RuntimeError('UNKNOWN original receipt association readback')
 
+    @controller_read_scope
     def reserve(self, demand_artifact_id=None):
         self.authority()
         if (self.directory/'resume-index.json').exists():
@@ -906,6 +1203,7 @@ class Stages:
             return dict(prepared=True, generation=result.admission.generation, pr_number=demand.pr_number)
         return dict(prepared=False)
 
+    @controller_read_scope
     def dispatch(self, prepared_artifact_id, checkpoint_artifact_id):
         self.authority()
         checkpoint_ref = self.reference('checkpoint', checkpoint_artifact_id)
@@ -928,6 +1226,7 @@ class Stages:
         self.receipt('admission', asdict(result.admission), 'bound')
         return dict(bound=True, generation=result.admission.generation)
 
+    @controller_read_scope
     def finalize(self, bound_artifact_id):
         self.authority()
         ref = self.reference('bound', bound_artifact_id)
@@ -937,6 +1236,7 @@ class Stages:
             raise RuntimeError('original finalization did not settle: ' + result.disposition)
         return dict(finalized=True)
 
+    @controller_read_scope
     def complete(self, run_id=None, attempt=None):
         """Reconcile current original terminal records, including coalesced wakes.
 
@@ -948,6 +1248,8 @@ class Stages:
         inventory = mog.shared_admission_inventory(self.repo, self.read)
         if not inventory.complete or inventory.mode != 'shared':
             return dict(disposition='not_shared')
+        mog.authenticated_migration_root(self.repo,self.read,mog.shared_register_text('a2 idle',inventory.migration_root),
+            repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'])
         if inventory.indexing is not None:
             return dict(disposition='held',detail='original demand indexing custody retained')
         # The complete association read retains closed PRs precisely because
@@ -1018,12 +1320,14 @@ class Stages:
                 observed = mog._read_admitted_run(self.repo, self.read, a, self.context['repository_id'])
                 if observed.status != 'completed':
                     continue
-                description = f'a2 p={a.pr_number} g={a.generation} s=completing'
+                description = mog.shared_register_text(f'a2 p={a.pr_number} g={a.generation} s=completing',inventory.migration_root)
                 code, register = mog._request('GET', register_url, self.read)
                 if code != 200 or not isinstance(register, dict):
                     raise ValueError('completion custody unavailable')
                 continuing = register.get('description') == description
-                if register.get('description') not in {'a2 idle', description}:
+                original_register=register.get('description')
+                if not continuing and not mog.migration_register_is_idle(self.repo,self.read,original_register,
+                        repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha']):
                     return dict(disposition='held', detail='original launch or completion owns pointer')
                 if continuing:
                     try:
@@ -1042,7 +1346,10 @@ class Stages:
                     except Exception:
                         outcomes.append('held')  # no intent/effect: independent originals may proceed
                         continue
-                    code, _ = mog._request('PATCH', register_url, self.write, {'description': description})
+                    code,fenced=mog._request('GET',register_url,self.read)
+                    if code!=200 or fenced.get('description')!=original_register:
+                        return dict(disposition='held',detail='completion register changed')
+                    code, _ = mog._shared_admission_effect('PATCH', register_url, self.write, {'description': description})
                     if code != 200:
                         return dict(disposition='unknown', detail='completion intent write unsettled')
                     code, register = mog._request('GET', register_url, self.read)
@@ -1056,11 +1363,11 @@ class Stages:
                 code, register = mog._request('GET', register_url, self.read)
                 if code != 200 or register.get('description') != description:
                     return dict(disposition='unknown', detail='completion custody changed')
-                code, _ = mog._request('PATCH', register_url, self.write, {'description': 'a2 idle'})
+                code, _ = mog._shared_admission_effect('PATCH', register_url, self.write, {'description': mog.shared_register_text('a2 idle',inventory.migration_root)})
                 if code != 200:
                     return dict(disposition='unknown', detail='completion finalization unsettled')
                 code, register = mog._request('GET', register_url, self.read)
-                if code != 200 or register.get('description') != 'a2 idle':
+                if code != 200 or register.get('description') != mog.shared_register_text('a2 idle',inventory.migration_root):
                     return dict(disposition='unknown', detail='completion finalization readback unsettled')
                 outcomes.append(result['disposition'])
         return dict(disposition='reconciled', count=sum(x != 'held' for x in outcomes), held=outcomes.count('held'))
@@ -1068,7 +1375,7 @@ class Stages:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('stage', choices=['prepare', 'reserve', 'dispatch', 'finalize', 'complete'])
+    parser.add_argument('stage', choices=['prepare', 'reserve', 'dispatch', 'finalize', 'complete', 'migration-prepare', 'migration-apply'])
     args = parser.parse_args()
     context = dict(repository_id=int(os.environ['GITHUB_REPOSITORY_ID']),
                    protected_controller_sha=os.environ['GITHUB_SHA'],
@@ -1076,7 +1383,11 @@ def main():
                    current_run_attempt=int(os.environ['GITHUB_RUN_ATTEMPT']))
     stages = Stages(os.environ['GH_REPO'], os.environ['READ_TOKEN'], os.environ['MERGE_TOKEN'],
                     os.environ.get('CHECKS_TOKEN', ''), context, os.environ['CI_ADMISSION_STAGE_DIR'])
-    if args.stage == 'prepare':
+    if args.stage == 'migration-prepare':
+        result=stages.migration_prepare()
+    elif args.stage == 'migration-apply':
+        result=stages.migration_apply(int(os.environ['ARTIFACT_ID']))
+    elif args.stage == 'prepare':
         import yaml
         workflow = yaml.safe_load((Path(__file__).resolve().parents[1] / '.github/workflows/ci.yml').read_text())
         triggers = workflow.get('on', workflow.get(True, {}))

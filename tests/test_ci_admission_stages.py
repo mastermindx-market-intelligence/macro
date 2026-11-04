@@ -1873,3 +1873,820 @@ def test_missing_prior_deadline_cannot_retire_or_select(controller,monkeypatch):
     with pytest.raises(ValueError,match='deadline'):
         controller.prepare(native_pr_enabled=False,freshness=None)
     assert not (controller.directory/'census.json').exists()
+
+
+@pytest.fixture
+def legacy_migration(monkeypatch, tmp_path):
+    """Original-shaped provider facts; all identifiers are test-owned, no network."""
+    import copy
+    pre, head, base = '1' * 40, '2' * 40, '3' * 40
+    stamp = '2026-10-01T00:00:00Z'
+    description = mog.refresh_lease_record(7, pre, stamp, 'a' * 12)
+    repository = {'id': 17, 'full_name': 'acme/widgets'}
+    pr = dict(number=7, state='open', draft=False,
+        labels=[{'name': mog.MERGE_ON_GREEN_LABEL}, {'name': mog.REFRESH_LEASE_LABEL}],
+        head={'sha': head, 'ref': 'owned-source', 'repo': repository},
+        base={'sha': base, 'ref': 'main', 'repo': repository})
+    run = dict(id=81, run_attempt=1, workflow_id=91, check_suite_id=101,
+        status='completed', conclusion='success', event='pull_request', name='ci',
+        path='.github/workflows/ci.yml', head_sha=head, head_branch='owned-source',
+        repository=repository, head_repository=repository,
+        created_at='2026-10-01T00:01:00Z', run_started_at='2026-10-01T00:01:01Z',
+        updated_at='2026-10-01T00:02:00Z',
+        pull_requests=[{'number':7, 'url':mog.GITHUB_API+'/repos/acme/widgets/pulls/7',
+            'head':{'sha':head,'ref':'owned-source','repo':{'id':17}},
+            'base':{'sha':base,'ref':'main','repo':{'id':17}}}])
+    checks = [dict(id=201+i, name=name, head_sha=head, status='completed',
+        conclusion='success', app={'slug':'github-actions','id':15368},
+        check_suite={'id':101 if name!='fence-pack' else 102},
+        started_at='2026-10-01T00:01:01Z',completed_at='2026-10-01T00:02:00Z')
+        for i,name in enumerate(['ci-plan','ci-pack-0','ci-gate','fence-pack'])]
+    state = dict(description=description, pull=pr, run=run, checks=checks,
+        associations=[{'number':7,'state':'open','labels':pr['labels'],'pull_request':{}}],
+        calls=[], comments=[], patch_lost=False, readback_lost=False, after_read=None)
+    root=mog.GITHUB_API+'/repos/acme/widgets'
+    label=root+'/labels/'+mog.REFRESH_LEASE_LABEL
+    def request(method,url,token,payload=None):
+        state['calls'].append((method,url,copy.deepcopy(payload)))
+        if method=='GET' and url==label:
+            if state['readback_lost'] and state['description']=='a2 idle':
+                raise ConnectionError('test-owned readback response lost')
+            row={'name':mog.REFRESH_LEASE_LABEL,'description':state['description']}
+        elif method=='DELETE' and url==root+'/issues/7/labels/'+mog.REFRESH_LEASE_LABEL:
+            state['associations']=[]
+            state['pull']['labels']=[{'name':mog.MERGE_ON_GREEN_LABEL}]
+            return 204,None
+        elif method=='PATCH' and url==label:
+            state['description']=payload['description']
+            if state['patch_lost']:raise ConnectionError('test-owned PATCH response lost')
+            return 200,{'name':mog.REFRESH_LEASE_LABEL,'description':state['description']}
+        elif method=='GET' and url.startswith(root+'/issues?'):
+            row=state['associations']
+        elif method=='GET' and url.startswith(root+'/issues/7/comments?'):row=state['comments']
+        elif method=='GET' and url==root+'/pulls/7':row=state['pull']
+        elif method=='GET' and url==root+'/git/commits/'+head:
+            row={'sha':head,'parents':[{'sha':pre},{'sha':base}]}
+        elif method=='GET' and url==root+'/actions/workflows/ci.yml':
+            row={'id':91,'path':'.github/workflows/ci.yml','state':'active'}
+        elif method=='GET' and '/actions/workflows/ci.yml/runs?' in url:
+            row={'total_count':1 if state['run'] else 0,'workflow_runs':[state['run']] if state['run'] else []}
+        elif method=='GET' and url in {root+'/actions/runs/81',root+'/actions/runs/81/attempts/1'}:
+            if state['run'] is None:return 404,{}
+            row=state['run']
+        elif method=='GET' and '/commits/'+head+'/check-runs?' in url:
+            row={'total_count':len(state['checks']),'check_runs':state['checks']}
+        else:raise AssertionError('unexpected test-owned provider operation '+method+' '+url)
+        result=copy.deepcopy(row)
+        if state['after_read'] is not None:state['after_read'](url,state)
+        return 200,result
+    monkeypatch.setattr(mog,'_request',request)
+    monkeypatch.setattr(mog,'core_rate_limit',lambda token:(1000-len(state['calls']),1000))
+    instance=stages.Stages('acme/widgets','read','write','checks',CTX,tmp_path)
+    def release():
+        lease=mog.RefreshLease('acme/widgets','read','write',owner_number=7,
+            owner_updated_at=stamp,generation_head_sha=pre,generation_id='a'*12)
+        assert lease.release(copy.deepcopy(state['pull']),'test-owned terminal original generation')
+        assert not state['associations'] and state['description']==description
+        return lease
+    return instance,state,release
+
+
+def test_settled_m1_adoption_after_real_legacy_release(legacy_migration):
+    instance,state,release=legacy_migration
+    release()
+    # Inline initialization is forbidden; the original intent/upload/apply
+    # boundaries separately test the supported transition.
+    with pytest.raises(ValueError):instance.initialize_empty_register()
+    intent,description=instance.migration_settlement()
+    assert intent.head_sha==state['pull']['head']['sha'] and intent.proof_run_id==81
+    assert description==state['description']
+    assert not [c for c in state['calls'] if c[0]=='PATCH']
+
+
+@pytest.mark.parametrize('kind',['owned_m1','malformed','default_with_closed_owner'])
+def test_migration_existing_custody_refuses_without_writes(legacy_migration,kind):
+    instance,state,release=legacy_migration
+    if kind=='malformed':state['description']='m1 malformed'
+    if kind=='default_with_closed_owner':
+        state['description']=mog.REFRESH_LEASE_DESCRIPTION
+        state['associations'][0]['state']='closed'
+    with pytest.raises(ValueError):instance.initialize_empty_register()
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','DELETE','PUT'}]
+
+
+def test_migration_no_owner_default_holds_without_unguarded_transition(legacy_migration):
+    instance,state,release=legacy_migration
+    state['description']=mog.REFRESH_LEASE_DESCRIPTION
+    state['associations']=[]
+    with pytest.raises(ValueError):instance.initialize_empty_register()
+    assert not [c for c in state['calls'] if c[0]=='PATCH']
+
+
+@pytest.mark.parametrize('fault',['prehead','nonterminal','missing_original','foreign','wrong_attempt','incomplete_anchor','changed_register','residual_closed'])
+def test_migration_original_settlement_refuses_unqualified_generation(legacy_migration,fault):
+    instance,state,release=legacy_migration
+    release();state['calls'].clear()
+    if fault=='prehead':state['pull']['head']['sha']='1'*40
+    elif fault=='nonterminal':state['run']['status']='in_progress'
+    elif fault=='missing_original':state['run']=None
+    elif fault=='foreign':state['run']['repository']={'id':99}
+    elif fault=='wrong_attempt':state['run']['run_attempt']=2
+    elif fault=='incomplete_anchor':state['checks']=[r for r in state['checks'] if r['name']!='ci-gate']
+    elif fault=='residual_closed':state['associations']=[dict(number=9,state='closed')]
+    elif fault=='changed_register':
+        def change(url,s):
+            if '/actions/runs/81/' in url:s['description']='a2 idle'
+        state['after_read']=change
+    with pytest.raises(ValueError):instance.migration_settlement()
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','DELETE','PUT'}]
+
+@pytest.fixture
+def migration_server(legacy_migration,monkeypatch):
+    """Test-owned original provider responses and actual immutable ZIP bytes."""
+    import copy,io,zipfile,hashlib
+    s,state,release=legacy_migration
+    release();state['calls'].clear()
+    monkeypatch.delenv('GITHUB_SHA',raising=False)
+    monkeypatch.setattr(s,'authority',lambda:None)
+    monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',lambda *a:True)
+    original=mog._request
+    state.update(artifacts={},archives={},next_artifact=500,next_comment=1000,
+                 old_apply=False,lose_index=False,lose_outcome=False,provider_requests=0)
+    root=mog.GITHUB_API+'/repos/acme/widgets'
+    label=root+'/labels/'+mog.REFRESH_LEASE_LABEL
+    clock=[1790812800.0]
+    monkeypatch.setattr(stages.time,'time',lambda:clock[0])
+    monkeypatch.setattr(stages.time,'sleep',lambda seconds:clock.__setitem__(0,clock[0]+seconds))
+    controller=dict(id=70,run_attempt=1,repository={'id':17},path='.github/workflows/merge-on-green.yml',
+                    head_branch='main',head_sha='4'*40,event='schedule',status='in_progress')
+    def request(method,url,token,payload=None):
+        state['provider_requests']+=1
+        if '/actions/workflows/merge-on-green.yml/runs?' in url:
+            return 200,dict(total_count=1,workflow_runs=[{**controller,'status':'completed' if state['old_apply'] else 'in_progress'}])
+        if '/actions/runs/70/attempts/1/jobs?' in url:
+            return 200,dict(total_count=1,jobs=[dict(run_id=70,run_attempt=1,steps=[dict(name='apply original legacy migration',started_at='2026-10-01T00:03:00Z',conclusion='failure')])])
+        if url==root+'/actions/runs/70/attempts/1':return 200,copy.deepcopy(controller)
+        if url.startswith(root+'/actions/runs/70/artifacts?'):
+            rows=list(state['artifacts'].values())
+            return 200,dict(total_count=len(rows),artifacts=copy.deepcopy(rows))
+        if url.startswith(root+'/actions/artifacts/'):
+            aid=int(url.rsplit('/',1)[1]);return (200,copy.deepcopy(state['artifacts'][aid])) if aid in state['artifacts'] else (404,{})
+        if method=='POST' and url==root+'/issues/7/comments':
+            state['calls'].append((method,url,copy.deepcopy(payload)))
+            c=dict(id=state['next_comment'],body=payload['body'],user={'id':41898282,'login':'github-actions[bot]','type':'Bot'})
+            state['next_comment']+=1;state['comments'].append(c)
+            if state['lose_index']:raise ConnectionError('original index response lost')
+            return 201,copy.deepcopy(c)
+        if method=='GET' and '/issues/comments/' in url:
+            cid=int(url.rsplit('/',1)[1]);return 200,copy.deepcopy(next(c for c in state['comments'] if c['id']==cid))
+        if url==root+'/issues/7/labels':
+            if method=='POST':
+                state['calls'].append((method,url,copy.deepcopy(payload)))
+                state['pull']['labels']=[{'name':mog.MERGE_ON_GREEN_LABEL},{'name':mog.REFRESH_LEASE_LABEL}]
+                state['associations']=[dict(number=7,state='open',pull_request={},labels=state['pull']['labels'])]
+            return 200,copy.deepcopy(state['pull']['labels'])
+        if url==root+'/issues/7':return 200,dict(number=7,state='open',pull_request={},labels=state['pull']['labels'])
+        return original(method,url,token,payload)
+    monkeypatch.setattr(mog,'_request',request)
+    def download(url,token):
+        state['provider_requests']+=1
+        return state['archives'][int(url.split('/')[-2])]
+    monkeypatch.setattr(mog,'_download_semantic_artifact',download)
+    monkeypatch.setattr(mog,'core_rate_limit',lambda *_:(1000-state['provider_requests'],1000))
+    def upload(kind):
+        raw=(s.directory/kind/'ci-proof-admission.json').read_bytes()
+        buffer=io.BytesIO()
+        with zipfile.ZipFile(buffer,'w') as z:z.writestr('ci-proof-admission.json',raw)
+        archive=buffer.getvalue();aid=state['next_artifact'];state['next_artifact']+=1
+        phase=kind.split('-')[-1]
+        state['artifacts'][aid]=dict(id=aid,name=f'ci-proof-migration-70-1-aaaaaaaaaaaa-{phase}',expired=False,expires_at='2026-12-30T00:00:00Z',
+            digest='sha256:'+hashlib.sha256(archive).hexdigest(),workflow_run={'id':70,'repository_id':17,'head_sha':'4'*40})
+        state['archives'][aid]=archive
+        return aid
+    return s,state,upload
+
+
+def test_migration_original_release_upload_apply_outcome_and_rooted_idle(migration_server):
+    s,state,upload=migration_server
+    assert s.migration_prepare()==dict(prepared=True,generation='a'*12)
+    aid=upload('migration-intent')
+    result=s.migration_apply(aid)
+    assert result==dict(settled=True,generation='a'*12)
+    pointer=state['description']
+    assert pointer==f'a2 p=7 i={aid} s=migrating r={aid}'
+    # Local ack is insufficient until the original outcome upload is readable.
+    with pytest.raises(ValueError):s.initialize_empty_register()
+    upload('migration-outcome')
+    s.initialize_empty_register()
+    assert mog.migration_register_is_idle(s.repo,s.read,pointer,repository_id=17,protected_controller_sha='4'*40)
+    assert len([c for c in state['calls'] if c[0]=='PATCH'])==1
+    # Two ordinary index generations conserve the same authenticated root.
+    indexer=stages.AnchorIndexer(mog,s.repo,s.read,s.context,deadline=stages.time.time()+240)
+    for artifact in (900,901):
+        state['description']=mog.shared_register_text('a2 idle',aid)  # modeled prior positive finalization
+        next_state=stages.IndexState(artifact,7,migration_root=aid)
+        indexer._expected_register=state['description']
+        indexer.store(next_state)
+        assert stages.IndexState.parse(state['description']).migration_root==aid
+    assert state['description'].endswith(f' r={aid}')
+    assert state['provider_requests']<1000-mog.RATE_LIMIT_RESERVE
+    print('test-owned migration and two index stores provider reads/writes:',state['provider_requests'])
+
+
+@pytest.mark.parametrize('fault',['patch_lost','index_lost','outcome_lost','root_lost','root_changed','pointer_owner_changed','expired_root'])
+def test_migration_uncertain_original_never_authorizes_successor_write(migration_server,fault):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent')
+    if fault=='patch_lost':state['patch_lost']=True
+    if fault=='index_lost':state['lose_index']=True
+    if fault in {'patch_lost','index_lost'}:
+        with pytest.raises(ConnectionError):s.migration_apply(aid)
+    else:
+        s.migration_apply(aid)
+        if fault!='outcome_lost':upload('migration-outcome')
+    if fault=='root_lost':state['description']='a2 idle'
+    if fault=='root_changed':state['description']='a2 idle r=9999'
+    if fault=='pointer_owner_changed':state['description']=f'a2 p=999 i={aid} s=migrating r={aid}'
+    if fault=='expired_root':state['artifacts'][aid]['expired']=True
+    original_count=len([c for c in state['calls'] if c[0] in {'POST','PATCH','DELETE','PUT'}])
+    state['old_apply']=True
+    successor=stages.Stages(s.repo,s.read,s.write,s.checks,{**CTX,'current_run_id':'71'},s.directory/'successor')
+    successor.authority=lambda:None
+    with pytest.raises((ValueError,RuntimeError)):
+        successor.migration_prepare()
+    assert len([c for c in state['calls'] if c[0] in {'POST','PATCH','DELETE','PUT'}])==original_count
+
+
+def test_migration_prior_started_apply_refuses_even_when_comment_index_absent(migration_server):
+    s,state,upload=migration_server
+    state['old_apply']=True;s.context={**CTX,'current_run_id':'71'}
+    with pytest.raises(ValueError,match='earlier migration apply'):
+        s.migration_prepare()
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','DELETE','PUT'}]
+
+
+def test_migration_register_length_and_root_are_fail_closed():
+    for value in ['a2 idle','a2 idle r=0','a2 idle r=wrong','a2 idle r=1 r=2','a2 '+'x'*100+' r=1']:
+        with pytest.raises(ValueError):mog.shared_register_parts(value)
+    with pytest.raises(ValueError):mog.shared_register_text('a2 '+'x'*100,1)
+
+@pytest.fixture
+def migration_residual(migration_server,monkeypatch):
+    import copy
+    s,state,upload=migration_server
+    root=mog.GITHUB_API+'/repos/acme/widgets'
+    residual=dict(number=9,state='closed',head={'sha':'9'*40},base={'repo':{'id':17}},
+                  labels=[{'name':mog.REFRESH_LEASE_LABEL}])
+    state['residual']=residual;state['residual_comments']=[];state['residual_runs']=[]
+    issue=dict(number=9,state='closed',pull_request={},labels=residual['labels'])
+    state['associations']=[issue]
+    original=mog._request
+    def request(method,url,token,payload=None):
+        if ('/pulls/9' in url or '/issues/9/' in url or '/issues/comments/2000' in url
+                or '9'*40 in url):state['provider_requests']+=1
+        if url==root+'/pulls/9':return 200,copy.deepcopy(residual)
+        if '/commits/'+('9'*40)+'/check-runs?' in url:return 200,dict(total_count=0,check_runs=[])
+        if '/actions/workflows/ci.yml/runs?' in url and 'head_sha='+('9'*40) in url:
+            return 200,dict(total_count=len(state['residual_runs']),workflow_runs=state['residual_runs'])
+        if method=='GET' and url.startswith(root+'/issues/9/comments?'):return 200,copy.deepcopy(state['residual_comments'])
+        if method=='POST' and url==root+'/issues/9/comments':
+            state['calls'].append((method,url,copy.deepcopy(payload)))
+            c=dict(id=2000,body=payload['body'],user={'id':41898282,'login':'github-actions[bot]','type':'Bot'})
+            state['residual_comments'].append(c);return 201,copy.deepcopy(c)
+        if url==root+'/issues/comments/2000':return 200,copy.deepcopy(state['residual_comments'][-1])
+        if url==root+'/issues/9/labels':
+            if method=='POST':state['calls'].append((method,url,copy.deepcopy(payload)))
+            return 200,copy.deepcopy(residual['labels'])
+        result=original(method,url,token,payload)
+        if method=='POST' and url==root+'/issues/7/labels':state['associations'].append(copy.deepcopy(issue))
+        return result
+    monkeypatch.setattr(mog,'_request',request)
+    return s,state,upload
+
+
+def test_migration_closed_residual_has_scoped_index_no_delete_and_revalidates(migration_residual):
+    s,state,upload=migration_residual
+    s.migration_prepare();aid=upload('migration-intent');s.migration_apply(aid);upload('migration-outcome')
+    s.initialize_empty_register()
+    current,demands=mog.pr_admission_history(s.repo,s.read,9,state['residual_comments'],
+        repository_id=17,protected_controller_sha='4'*40)
+    assert current==[] and demands==[]
+    assert not [c for c in state['calls'] if c[0]=='DELETE']
+    assert state['provider_requests']<1000-mog.RATE_LIMIT_RESERVE
+    print('test-owned residual migration provider reads/writes:',state['provider_requests'])
+    state['residual']['state']='open'
+    before=len(state['calls'])
+    with pytest.raises(ValueError):s.initialize_empty_register()
+    assert not [c for c in state['calls'][before:] if c[0] in {'PATCH','POST','DELETE','PUT'}]
+
+
+@pytest.mark.parametrize('fault',['reopened','active','unknown','shared','malformed'])
+def test_migration_residual_owning_or_unknown_refuses_before_intent(migration_residual,fault):
+    s,state,upload=migration_residual
+    if fault=='reopened':state['residual']['state']='open'
+    if fault=='active':state['residual_runs']=[dict(status='in_progress',head_sha='9'*40,repository={'id':17})]
+    if fault=='unknown':state['residual_comments']=[dict(body='EFFECT_UNKNOWN original label',user={'id':1,'type':'User','login':'owner'})]
+    if fault=='shared':state['residual_comments']=[dict(body=mog.ADMISSION_COMMENT_PREFIX+'{}',user={'id':41898282,'type':'Bot','login':'github-actions[bot]'})]
+    if fault=='malformed':state['associations'][0].pop('pull_request')
+    with pytest.raises(ValueError):s.migration_prepare()
+    assert not [c for c in state['calls'] if c[0] in {'PATCH','POST','DELETE','PUT'}]
+    assert not (s.directory/'migration-intent').exists()
+
+@pytest.fixture(autouse=True)
+def existing_shared_baseline_is_a_separate_authenticated_fixture(request,monkeypatch):
+    """Pre-existing stage cases assume initialized custody, not bootstrap.
+
+    Their API fixtures intentionally contain no migration provider responses.
+    Preserve those assertions at that boundary; migration_* and settled_m1 cases
+    above exercise the real new root verifier and original upload/index chain.
+    """
+    if request.node.name.startswith(('test_migration','test_settled_m1')):
+        return
+    monkeypatch.setattr(mog,'authenticated_migration_root',lambda *a,**k:0)
+    monkeypatch.setattr(mog,'shared_register_parts',lambda value:(value,0))
+    monkeypatch.setattr(mog,'shared_register_text',lambda body,root:body)
+    monkeypatch.setattr(mog,'migration_register_is_idle',lambda repo,token,value,**k:value=='a2 idle')
+
+
+def test_migration_delayed_original_patch_cannot_be_overtaken(migration_server,monkeypatch):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent')
+    original=mog._request;pending=[]
+    def delay(method,url,token,payload=None):
+        if method=='PATCH':
+            pending.append(dict(payload));raise TimeoutError('original server result not yet observed')
+        return original(method,url,token,payload)
+    monkeypatch.setattr(mog,'_request',delay)
+    with pytest.raises(TimeoutError):s.migration_apply(aid)
+    state['old_apply']=True
+    successor=stages.Stages(s.repo,s.read,s.write,s.checks,{**CTX,'current_run_id':'71'},s.directory/'later')
+    successor.authority=lambda:None
+    before=len(state['calls'])
+    with pytest.raises(ValueError):successor.migration_prepare()
+    assert len(pending)==1 and not [c for c in state['calls'][before:] if c[0] in {'POST','PATCH'}]
+    # Model completion of that SAME provider operation; never issue another PATCH.
+    state['description']=pending[0]['description']
+    with pytest.raises(ValueError):successor.initialize_empty_register()
+    assert len(pending)==1
+
+
+@pytest.mark.parametrize('fault',['low_quota','unreadable_quota','deadline'])
+def test_migration_budget_refuses_before_original_apply_effect(migration_server,monkeypatch,fault):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent')
+    if fault=='low_quota':monkeypatch.setattr(mog,'core_rate_limit',lambda *_:(1,1000))
+    elif fault=='unreadable_quota':monkeypatch.setattr(mog,'core_rate_limit',lambda *_:None)
+    else:(s.directory/'migration-deadline.json').write_text('0')
+    with pytest.raises(ValueError):s.migration_apply(aid)
+    assert not [c for c in state['calls'] if c[0] in {'PATCH','POST','DELETE','PUT'}]
+
+
+def test_migration_root_change_during_index_authentication_refuses_write(migration_server,monkeypatch):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent');s.migration_apply(aid);upload('migration-outcome')
+    state['description']=mog.shared_register_text('a2 idle',aid)
+    indexer=stages.AnchorIndexer(mog,s.repo,s.read,s.context,deadline=stages.time.time()+240)
+    indexer._expected_register=state['description']
+    original=mog.authenticated_migration_root
+    def changed(*args,**kwargs):
+        result=original(*args,**kwargs);state['description']='a2 idle r=9999';return result
+    monkeypatch.setattr(mog,'authenticated_migration_root',changed)
+    before=len(state['calls'])
+    with pytest.raises(ValueError):indexer.store(stages.IndexState(900,7,migration_root=aid))
+    assert not [c for c in state['calls'][before:] if c[0] in {'PATCH','POST','DELETE'}]
+
+
+def test_migration_legacy_writer_refuses_original_pending_index(legacy_migration,monkeypatch):
+    instance,state,release=legacy_migration
+    monkeypatch.delenv('GITHUB_SHA',raising=False)
+    state['comments']=[dict(id=1000,body=mog.MIGRATION_COMMENT_PREFIX+'{}',
+        user={'id':41898282,'login':'github-actions[bot]','type':'Bot'})]
+    monkeypatch.setattr(mog,'open_refresh_lease_issues',lambda *a:state['associations'])
+    lease,_=mog.prepare_refresh_lease(instance.repo,instance.read,instance.write,[state['pull']])
+    assert not lease.readable
+    assert not [c for c in state['calls'] if c[0] in {'PATCH','POST','DELETE','PUT'}]
+
+
+def test_migration_head_change_during_content_pacing_refuses_patch(migration_server,monkeypatch):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent')
+    sleep=stages.time.sleep
+    def change_head(seconds):
+        sleep(seconds)
+        if any(c[0]=='POST' and c[1].endswith('/labels') for c in state['calls']):
+            state['pull']['head']['sha']='6'*40
+    monkeypatch.setattr(stages.time,'sleep',change_head)
+    with pytest.raises(ValueError,match='register/head changed'):s.migration_apply(aid)
+    assert not [c for c in state['calls'] if c[0]=='PATCH']
+
+
+def test_migration_index_disappears_after_positive_postread_no_patch(migration_server):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent')
+    count=[0]
+    def omit(url,provider):
+        if url.endswith('/actions/runs/81/attempts/1'):
+            count[0]+=1
+            if count[0]==2:provider['comments']=[]
+    state['after_read']=omit
+    with pytest.raises(ValueError,match='index absent'):s.migration_apply(aid)
+    assert not [c for c in state['calls'] if c[0]=='PATCH']
+
+
+@pytest.fixture
+def migration_five_residuals(migration_server,monkeypatch):
+    """Five exact closed nonowners plus a real authored candidate provider."""
+    import copy,re
+    from urllib.parse import urlparse,parse_qs
+    s,state,upload=migration_server
+    root=mog.GITHUB_API+'/repos/acme/widgets'
+    ns=(9,10,11,12,13)
+    prs={n:dict(number=n,state='closed',head={'sha':f'{n:040x}'},base={'repo':{'id':17}},labels=[{'name':mog.REFRESH_LEASE_LABEL}]) for n in ns}
+    comments={n:[] for n in ns}
+    issues=[dict(number=n,state='closed',pull_request={},labels=prs[n]['labels']) for n in ns]
+    state['associations']=copy.deepcopy(issues)
+    candidate=pull(20)
+    original_server=OriginalServer()
+    bulk=BulkProvider(0);bulk.pulls={20:candidate};bulk.comments={20:original_server.comments};bulk.labels={20:[]}
+    original=mog._request
+    def request(method,url,token,payload=None):
+        path=urlparse(url).path.removeprefix('/repos/acme/widgets');query=parse_qs(urlparse(url).query)
+        intercepted=True
+        def answer():
+            nonlocal intercepted
+            for n in ns:
+                if path==f'/pulls/{n}':return 200,copy.deepcopy(prs[n])
+                if f'{n:040x}' in url and '/check-runs' in path:return 200,dict(total_count=0,check_runs=[])
+                if query.get('head_sha')==[f'{n:040x}']:return 200,dict(total_count=0,workflow_runs=[])
+                if path==f'/issues/{n}/comments':
+                    if method=='POST':
+                        comments[n].append(dict(id=2000+n,body=payload['body'],user={'id':41898282,'login':'github-actions[bot]','type':'Bot'}))
+                        return 201,copy.deepcopy(comments[n][-1])
+                    return 200,copy.deepcopy(comments[n])
+                if path==f'/issues/comments/{2000+n}':return 200,copy.deepcopy(comments[n][-1])
+                if path==f'/issues/{n}/labels':return 200,copy.deepcopy(prs[n]['labels'])
+            if path=='/pulls':return 200,[copy.deepcopy(candidate)] if query.get('page')==['1'] else []
+            if path=='/pulls/20':return 200,copy.deepcopy(candidate)
+            if path=='/graphql':return 200,bulk.gql(payload['query'])
+            if path=='/rate_limit':return 200,{'resources':{'graphql':{'remaining':bulk.points,'limit':1000}}}
+            if path=='/branches/main':return 200,{'commit':{'sha':'4'*40}}
+            if path=='/git/commits/'+'3'*40:return 200,{'sha':'3'*40,'parents':[{'sha':'4'*40},{'sha':'1'*40}]}
+            if path.startswith('/actions/runs/') and not path.endswith('/artifacts') and int(path.split('/')[3]) in original_server.controllers:
+                return 200,copy.deepcopy(original_server.controllers[int(path.split('/')[3])])
+            if path.startswith('/actions/artifacts/') and int(path.split('/')[3]) in original_server.artifacts:
+                return 200,copy.deepcopy(original_server.artifacts[int(path.split('/')[3])])
+            if path=='/actions/workflows/ci.yml/runs' and 'status' in query:
+                rows=[r for r in original_server.runs.values() if r['status']==query['status'][0]]
+                return 200,dict(total_count=len(rows),workflow_runs=rows)
+            if path=='/actions/workflows/ci.yml/dispatches':
+                assert method=='POST' and ' s=started r=' in state['description']
+                assert any(c['body'].startswith(mog.ADMISSION_COMMENT_PREFIX) for c in original_server.comments)
+                original_server.runs[99]=dict(id=99,run_attempt=1,status='queued',head_sha='4'*40,
+                    repository={'id':17},head_branch='main',event='workflow_dispatch',path='.github/workflows/ci.yml')
+                return 200,{'workflow_run_id':99}
+            if path.startswith('/actions/runs/') and int(path.split('/')[3]) in original_server.runs:
+                return 200,copy.deepcopy(original_server.runs[int(path.split('/')[3])])
+            if path.startswith('/issues/20/') or (path.startswith('/issues/comments/') and int(path.rsplit('/',1)[-1])<1000):
+                mapped=url.replace('/issues/20/','/issues/7/')
+                result=original_server.request(method,mapped,token,payload)
+                if path=='/issues/20/comments' and method=='POST':
+                    original_server.comments[-1]['created_at']='2026-10-01T00:05:00Z'
+                if path=='/issues/20/labels' and method=='POST':
+                    candidate['labels']=copy.deepcopy(original_server.labels)
+                    if not any(i['number']==20 for i in state['associations']):
+                        state['associations'].append(dict(number=20,state='open',pull_request={},labels=candidate['labels']))
+                return result
+            if path=='/issues/20':return 200,dict(number=20,state='open',pull_request={},labels=candidate['labels'])
+            intercepted=False
+            return original(method,url,token,payload)
+        result=answer()
+        if intercepted:
+            state['provider_requests']+=1;state['calls'].append((method,url,copy.deepcopy(payload)))
+        if method=='POST' and path=='/issues/7/labels':state['associations']+=copy.deepcopy(issues)
+        return result
+    old_download=mog._download_semantic_artifact
+    def download(url,token):
+        aid=int(url.split('/')[-2])
+        if aid in original_server.archives:
+            state['provider_requests']+=1
+            return original_server.archives[aid]
+        return old_download(url,token)
+    monkeypatch.setattr(mog,'_request',request)
+    monkeypatch.setattr(mog,'_download_semantic_artifact',download)
+    monkeypatch.setattr(mog,'last_response_headers',lambda:{})
+    real_indexer=stages.AnchorIndexer
+    monkeypatch.setattr(stages,'AnchorIndexer',lambda *a,**kw:real_indexer(*a,**{**kw,'clock':lambda:stages.time.time(),'sleep':lambda t:stages.time.sleep(t)}))
+    monkeypatch.setattr(mog,'serialized_refresh_authority',lambda *args:True)
+    # Authority source predicate retains its separate exact-source tests; original
+    # run/repository/attempt binding and every receipt reader execute here.
+    return s,state,upload,original_server,prs,comments
+
+
+def test_migration_fresh_quota_loss_before_next_effect(migration_server,monkeypatch):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent');state['calls'].clear()
+    reads=[]
+    def quota(_):
+        reads.append(1)
+        return (1000,1000) if len(reads)==1 else None
+    monkeypatch.setattr(mog,'core_rate_limit',quota)
+    with pytest.raises(ValueError,match='quota'):
+        s.migration_apply(aid)
+    assert len(reads)>=2
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','PUT','DELETE'}]
+
+
+def test_migration_five_residuals_fresh_original_learning_then_reservation(migration_five_residuals,tmp_path):
+    s,state,upload,provider,prs,comments=migration_five_residuals
+    counts=[]
+    def next_process(instance):
+        # Each production YAML step launches a fresh Python process. Prove no
+        # receipt cache survives that boundary; only the exact local budget
+        # handoff is reused by this new adapter instance.
+        assert mog._MIGRATION_READ_SCOPE.get() is None
+        return stages.Stages(instance.repo,instance.read,instance.write,instance.checks,instance.context,instance.directory)
+    s.migration_prepare();counts.append(('migration_prepare',state['provider_requests']))
+    aid=upload('migration-intent');s=next_process(s)
+    s.migration_apply(aid);counts.append(('migration_apply',state['provider_requests']))
+    upload('migration-outcome');s=next_process(s)
+    assert s.complete()['disposition']=='reconciled';counts.append(('complete',state['provider_requests']))
+    s=next_process(s)
+    assert s.prepare(native_pr_enabled=False,freshness=None)==dict(ready=True,changed=True,count=0)
+    counts.append(('learn',state['provider_requests']))
+    print('before-age-index',counts,'clock',stages.time.time(),'deadline',s.load('migration-deadline'))
+    s=next_process(s)
+    try:
+        assert s.reserve(provider.upload(s,'demands','ci-proof-demands-70-1'))==dict(prepared=False)
+    finally:
+        print('after-age-index',state['provider_requests'],'clock',stages.time.time())
+    counts.append(('index',state['provider_requests']))
+    assert state['provider_requests']<=1000-mog.RATE_LIMIT_RESERVE
+    first=s.load('census');assert not first['eligibility']['discovery_complete']
+    # A new original, with provider replenishment, not a reset inside one sweep.
+    state['provider_requests']=0
+    provider.controllers[71]=dict(provider.control,id=71)
+    s=stages.Stages(s.repo,s.read,s.write,s.checks,{**CTX,'current_run_id':'71'},tmp_path/'original-71')
+    assert s.migration_prepare()==dict(prepared=False);s=next_process(s)
+    assert s.complete()['disposition']=='reconciled';s=next_process(s)
+    assert s.prepare(native_pr_enabled=False,freshness=None)==dict(ready=True,changed=False,count=1)
+    s=next_process(s);result=s.reserve()
+    assert result['prepared'] and result['pr_number']==20
+    assert state['provider_requests']<=1000-mog.RATE_LIMIT_RESERVE
+    assert state['description'].endswith(' r='+str(aid))
+    assert all(len(comments[n])==1 for n in prs)
+    assert not [c for c in state['calls'] if c[0]=='DELETE']
+    counts.append(('next-original-reserved',state['provider_requests']))
+    generation=result['generation']
+    prepared=provider.upload(s,'prepared',f'ci-proof-admission-71-1-{generation}-prepared')
+    checkpoint=provider.upload(s,'checkpoint','ci-proof-checkpoint-71-1-20')
+    s=next_process(s)
+    assert s.dispatch(prepared,checkpoint)==dict(bound=True,generation=generation)
+    counts.append(('next-original-dispatched',state['provider_requests']))
+    bound=provider.upload(s,'bound',f'ci-proof-admission-71-1-{generation}-bound')
+    s=next_process(s)
+    assert s.finalize(bound)==dict(finalized=True)
+    counts.append(('next-original-finalized',state['provider_requests']))
+    assert state['provider_requests']<=1000-mog.RATE_LIMIT_RESERVE
+    assert state['description']==f'a2 idle r={aid}'
+    assert sum(method=='POST' and url.endswith('/dispatches') for method,url,_ in state['calls'])==1
+    assert json.loads((s.directory/'bound/ci-proof-admission.json').read_text())['admission']['run_id']==99
+    print('migration-budget-counts',counts)
+
+
+@pytest.mark.parametrize('fault',['unreadable','reserve','deadline'])
+def test_migration_continuation_keeps_fresh_reserve_and_original_deadline(migration_server,monkeypatch,fault):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent');state['calls'].clear()
+    if fault=='unreadable':monkeypatch.setattr(mog,'core_rate_limit',lambda *_:None)
+    elif fault=='reserve':monkeypatch.setattr(mog,'core_rate_limit',lambda *_:(259,1000))
+    else:monkeypatch.setattr(stages.time,'time',lambda:s.load('migration-deadline')+1)
+    replacement=stages.Stages(s.repo,s.read,s.write,s.checks,s.context,s.directory)
+    replacement.authority=s.authority  # preserve fixture's independently qualified caller
+    with pytest.raises(ValueError,match='quota|deadline'):
+        replacement.migration_apply(aid)
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','PUT','DELETE'}]
+
+
+def test_migration_budget_entry_handoff_cannot_cross_original(migration_server):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent');state['calls'].clear()
+    replacement=stages.Stages(s.repo,s.read,s.write,s.checks,{**s.context,'current_run_id':'71'},s.directory)
+    replacement.authority=lambda:None  # isolate the additional local handoff fence
+    with pytest.raises(ValueError,match='custody'):
+        replacement.migration_apply(aid)
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','PUT','DELETE'}]
+
+
+@pytest.mark.parametrize('fault',['unreadable','reopen','index','wrong-reference','expired','metadata-next-process'])
+def test_migration_cached_bytes_never_replace_live_custody(migration_five_residuals,monkeypatch,fault):
+    s,state,upload,provider,prs,comments=migration_five_residuals
+    s.migration_prepare();aid=upload('migration-intent');s.migration_apply(aid);upload('migration-outcome')
+    args=dict(repository_id=17,protected_controller_sha='4'*40)
+    with mog.migration_read_scope(s.repo,s.read,identity=dict(repo=s.repo,**s.context),directory=s.directory):
+        assert mog.authenticated_migration_root(s.repo,s.read,state['description'],**args)==aid
+        state['calls'].clear()
+        if fault=='unreadable':
+            original=mog._request
+            def request(method,url,token,payload=None):
+                result=original(method,url,token,payload)
+                if '/issues/9/comments?' in url:monkeypatch.setattr(mog,'core_rate_limit',lambda *_:None)
+                return result
+            monkeypatch.setattr(mog,'_request',request)
+        elif fault=='reopen':prs[9]['state']='open'
+        elif fault=='index':comments[9].clear()
+        elif fault=='wrong-reference':
+            wrong=s.reference('migration-intent',aid);wrong['payload_sha256']='0'*64
+            with pytest.raises(ValueError,match='reference'):
+                mog.authenticated_migration_from_ref(s.repo,s.read,wrong,**args)
+            return
+        elif fault=='expired':
+            monkeypatch.setattr(stages.time,'time',lambda:mog._parse_dt(state['artifacts'][aid]['expires_at']).timestamp()+1)
+        else:
+            state['artifacts'][aid]['expired']=True
+        if fault!='metadata-next-process':
+            with pytest.raises(ValueError):
+                if fault=='expired':
+                    mog.migration_from_artifact(s.repo,s.read,aid,**args)
+                else:
+                    mog.authenticated_migration_root(s.repo,s.read,state['description'],**args)
+            assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','PUT','DELETE'}]
+            return
+    # New invocation: no cached archive/metadata authority survives. For mutable
+    # residual cases this also exercises actual current comments/head/work reads.
+    with pytest.raises(ValueError):
+        mog.authenticated_migration_root(s.repo,s.read,state['description'],**args)
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','PUT','DELETE'}]
+
+
+@pytest.mark.parametrize('expiry',[None,'not-a-clock','2026-09-30T00:00:00Z'])
+def test_migration_authentication_requires_original_server_expiry(migration_server,expiry):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent')
+    state['artifacts'][aid]['expires_at']=expiry;state['calls'].clear()
+    with pytest.raises(ValueError,match='expiry'):
+        s.migration_apply(aid)
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','PUT','DELETE'}]
+
+
+def test_migration_quota_loss_after_original_comment_retains_intent_no_replay(migration_server,monkeypatch):
+    s,state,upload=migration_server
+    s.migration_prepare();aid=upload('migration-intent');state['calls'].clear()
+    original=mog._request
+    def request(method,url,token,payload=None):
+        result=original(method,url,token,payload)
+        if method=='POST' and url.endswith('/comments'):
+            monkeypatch.setattr(mog,'core_rate_limit',lambda *_:None)
+        return result
+    monkeypatch.setattr(mog,'_request',request)
+    with pytest.raises(ValueError,match='quota'):s.migration_apply(aid)
+    writes=[(method,url) for method,url,_ in state['calls'] if method in {'POST','PATCH','PUT','DELETE'}]
+    assert len(writes)==1 and writes[0][1].endswith('/comments')
+    assert s.load('migration-apply-started')=={'artifact_id':aid}
+    assert state['description'].startswith('m1 ')
+    monkeypatch.setattr(mog,'core_rate_limit',lambda *_:(1000,1000))
+    with pytest.raises((FileExistsError,ValueError)):s.migration_apply(aid)
+    assert [(m,u) for m,u,_ in state['calls'] if m in {'POST','PATCH','PUT','DELETE'}]==writes
+
+
+@pytest.mark.parametrize('fault',['entry-floor','extended-deadline','foreign-binding'])
+def test_migration_budget_handoff_never_raises_original_allowance(migration_server,monkeypatch,fault):
+    s,state,upload=migration_server
+    if fault=='entry-floor':
+        monkeypatch.setattr(mog,'core_rate_limit',lambda *_:(mog.RATE_LIMIT_FLOOR-1,1000))
+        with pytest.raises(ValueError,match='quota'):s.migration_prepare()
+        assert not (s.directory/'migration-budget.json').exists()
+    else:
+        s.migration_prepare();aid=upload('migration-intent')
+        row=s.load('migration-budget')
+        if fault=='extended-deadline':row['deadline']+=1
+        else:row['identity']['protected_controller_sha']='5'*40
+        (s.directory/'migration-budget.json').write_text(json.dumps(row))
+        with pytest.raises(ValueError,match='custody'):s.migration_apply(aid)
+    assert not [c for c in state['calls'] if c[0] in {'POST','PATCH','PUT','DELETE'}]
+
+
+def migration_deadline_learning(fixture):
+    s,state,upload,provider,prs,comments=fixture
+    def next_stage(instance):
+        return stages.Stages(instance.repo,instance.read,instance.write,instance.checks,instance.context,instance.directory)
+    s.migration_prepare();aid=upload('migration-intent');s=next_stage(s)
+    s.migration_apply(aid);upload('migration-outcome');s=next_stage(s)
+    s.complete();s=next_stage(s);s.prepare(native_pr_enabled=False,freshness=None)
+    artifact=provider.upload(s,'demands','ci-proof-demands-70-1')
+    return s,state,provider,artifact,aid,next_stage
+
+
+@pytest.mark.parametrize('boundary',['near-entry','prior-intent'])
+def test_migration_inherited_deadline_stops_age_post_preserves_intent(migration_five_residuals,monkeypatch,tmp_path,boundary):
+    s,state,provider,artifact,aid,next_stage=migration_deadline_learning(migration_five_residuals)
+    deadline=s.load('migration-budget')['deadline']
+    stages.time.sleep(deadline-(15 if boundary=='near-entry' else 60)-stages.time.time())
+    original_sleep=stages.time.sleep
+    def slow_sleep(seconds):
+        pending=stages.IndexState.parse(state['description'])
+        if boundary=='prior-intent' and pending is not None and pending.intent==1:
+            original_sleep(deadline+1-stages.time.time())
+        else:original_sleep(seconds)
+    monkeypatch.setattr(stages.time,'sleep',slow_sleep)
+    original=mog._request;writes=[]
+    def request(method,url,token,payload=None):
+        if method in {'POST','PATCH','DELETE','PUT'}:
+            writes.append((method,url,stages.time.time()))
+        return original(method,url,token,payload)
+    monkeypatch.setattr(mog,'_request',request)
+    try:result=next_stage(s).reserve(artifact)
+    except ValueError:result=None
+    assert not [w for w in writes if w[2]>=deadline],writes
+    pointer=stages.IndexState.parse(state['description'])
+    assert pointer is not None and pointer.intent==(0 if boundary=='near-entry' else 1) and pointer.migration_root==aid
+    assert not provider.comments  # no original comment POST occurred
+    if boundary=='near-entry':
+        assert result==dict(prepared=False,disposition='partial')
+        return
+    count=len(writes)
+    # A later original may reconcile that intent, never POST from its absence.
+    state['provider_requests']=0
+    provider.controllers[72]=dict(provider.control,id=72)
+    later=stages.Stages(s.repo,s.read,s.write,s.checks,{**CTX,'current_run_id':'72'},tmp_path/'later-original')
+    assert later.prepare(native_pr_enabled=False,freshness=None)==dict(ready=True,changed=False,count=0)
+    assert later.reserve()==dict(prepared=False,disposition='unknown')
+    assert len(writes)==count and stages.IndexState.parse(state['description'])==pointer
+    print('deadline-no-replay',dict(deadline=deadline,writes=writes,result=result))
+
+
+@pytest.mark.parametrize('boundary',['reserve','dispatch-index','dispatch-send','finalize-index','finalize-idle'])
+def test_migration_scope_refuses_effect_after_slow_final_read(migration_five_residuals,monkeypatch,tmp_path,boundary):
+    s,state,provider,artifact,aid,next_stage=migration_deadline_learning(migration_five_residuals)
+    assert next_stage(s).reserve(artifact)==dict(prepared=False)
+    state['provider_requests']=0;provider.controllers[71]=dict(provider.control,id=71)
+    s=stages.Stages(s.repo,s.read,s.write,s.checks,{**CTX,'current_run_id':'71'},tmp_path/'selection-original')
+    s.migration_prepare();s=next_stage(s);s.complete();s=next_stage(s)
+    assert s.prepare(native_pr_enabled=False,freshness=None)==dict(ready=True,changed=False,count=1)
+    deadline=s.load('migration-budget')['deadline']
+    prepared=checkpoint=bound=None
+    if boundary!='reserve':
+        result=next_stage(s).reserve();g=result['generation']
+        prepared=provider.upload(s,'prepared',f'ci-proof-admission-71-1-{g}-prepared')
+        checkpoint=provider.upload(s,'checkpoint','ci-proof-checkpoint-71-1-20')
+        if boundary.startswith('finalize'):
+            assert next_stage(s).dispatch(prepared,checkpoint)==dict(bound=True,generation=g)
+            bound=provider.upload(s,'bound',f'ci-proof-admission-71-1-{g}-bound')
+    original=mog._request;download=mog._download_semantic_artifact;writes=[];expired=[];posted=[False]
+    def expire():
+        if not expired:
+            stages.time.sleep(deadline+1-stages.time.time());expired.append(True)
+    def request(method,url,token,payload=None):
+        if method in {'POST','PATCH','PUT','DELETE'}:writes.append((method,url,stages.time.time()))
+        row=original(method,url,token,payload)
+        if boundary=='reserve' and url.endswith('/branches/main'):expire()
+        if boundary=='dispatch-send' and method=='GET' and '/labels/' in url and ' s=started r=' in state['description']:expire()
+        if boundary=='finalize-index' and url.endswith('/actions/runs/99'):expire()
+        if boundary=='finalize-idle':
+            if method=='POST' and url.endswith('/issues/20/comments'):posted[0]=True
+            if method=='GET' and '/labels/' in url and posted[0]:expire()
+        return row
+    def archive(url,token):
+        data=download(url,token)
+        if boundary=='dispatch-index' and url.endswith(f'/{checkpoint}/zip'):expire()
+        return data
+    monkeypatch.setattr(mog,'_request',request);monkeypatch.setattr(mog,'_download_semantic_artifact',archive)
+    try:
+        instance=next_stage(s)
+        if boundary=='reserve':result=instance.reserve()
+        elif boundary.startswith('dispatch'):result=instance.dispatch(prepared,checkpoint)
+        else:result=instance.finalize(bound)
+    except (ValueError,RuntimeError):result=None
+    assert expired,'fixture did not reach the actual dependent-read boundary'
+    assert not [w for w in writes if w[2]>=deadline],writes
+    if boundary=='dispatch-send':
+        assert ' s=started r=' in state['description'] and 99 not in provider.runs
+    if boundary.startswith('finalize'):
+        assert ' s=started r=' in state['description'] and provider.runs[99]['status']=='queued'
+    print('slow-read-no-effect',boundary,result,writes)
+
+
+@pytest.mark.parametrize('boundary',['before-first','after-first'])
+def test_migration_scoped_completion_publisher_retains_partial_on_deadline(monkeypatch,boundary):
+    clock=[1800000000.0];writes=[]
+    monkeypatch.setattr(stages.time,'time',lambda:clock[0])
+    monkeypatch.setattr(mog,'core_rate_limit',lambda *_:(1000,1000))
+    admission=pa.Admission('a'*12,20,'1'*40,'4'*40,'3'*40,'4'*40,99,1)
+    ref=dict(artifact_id=80,controller_run_id=71,controller_attempt=1,controller_sha='4'*40,payload_sha256='5'*64)
+    monkeypatch.setattr(mog,'admitted_completion_proof',lambda *a,**kw:dict(admission=admission,jobs={n:'success' for n in mog.ADMITTED_SUBJECT_CHECK_NAMES}))
+    def inventory(*args):
+        if boundary=='before-first':clock[0]+=241
+        return []
+    monkeypatch.setattr(mog,'_admitted_check_inventory',inventory)
+    def request(method,url,token,payload=None):
+        assert method=='POST' and url.endswith('/check-runs')
+        writes.append((method,url,clock[0]))
+        if boundary=='after-first':clock[0]+=241
+        return 201,dict(payload,id=100+len(writes))
+    monkeypatch.setattr(mog,'_request',request)
+    with mog.migration_read_scope('acme/widgets','read') as scope:
+        scope.require_budget();deadline=scope.budget.deadline
+        result=mog.publish_admitted_subject_checks('acme/widgets','read','checks',ref,
+            expected_run_id=99,expected_run_attempt=1,protected_controller_sha='4'*40)
+    assert result['disposition']=='unknown'
+    assert len(writes)==len(result['published'])==(0 if boundary=='before-first' else 1)
+    assert not [w for w in writes if w[2]>=deadline]

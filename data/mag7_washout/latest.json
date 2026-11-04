@@ -6,23 +6,23 @@
   "stoch2w_k": 40.7,
   "stoch2w_d": 71.0,
   "rsi_macd_1w": {
-   "line": -0.18,
-   "sig": 0.59
+   "line": -0.11,
+   "sig": 0.61
   },
   "rsi_macd_3d": {
-   "line": -0.74,
-   "sig": 1.07
+   "line": -0.67,
+   "sig": 1.08
   }
  },
  "members_washed": 2,
  "members": {
-  "AAPL": 47.9,
-  "MSFT": 89.6,
+  "AAPL": 47.8,
+  "MSFT": 92.6,
   "NVDA": 24.5,
-  "AMZN": 11.4,
+  "AMZN": 13.6,
   "GOOGL": 5.6,
-  "META": 48.6,
-  "TSLA": 69.8
+  "META": 50.1,
+  "TSLA": 68.8
  },
  "armed": false,
  "triggers_today": [],

@@ -653,3 +653,16 @@ def test_bootstrap_missing_yaml_dependency_is_not_readiness(monkeypatch):
         return original(name, *args, **kwargs)
     monkeypatch.setattr(builtins, '__import__', without_yaml)
     assert not mog.installed_admitted_dispatch_ready('acme/widgets', '4'*40)
+
+
+@pytest.fixture(autouse=True)
+def existing_initialized_shared_register_fixture(monkeypatch):
+    """These admission cases start after authenticated bootstrap.
+
+    Keep their original custody/capacity/dispatch assertions. The actual root
+    archive/index/outcome chain is exercised in test_ci_admission_stages.py.
+    """
+    monkeypatch.setattr(mog,'authenticated_migration_root',lambda *a,**k:0)
+    monkeypatch.setattr(mog,'shared_register_parts',lambda value:(value,0))
+    monkeypatch.setattr(mog,'shared_register_text',lambda body,root:body)
+    monkeypatch.setattr(mog,'migration_register_is_idle',lambda repo,token,value,**k:value=='a2 idle')

@@ -80,9 +80,9 @@ def test_incumbent_controller_serializes_receipt_upload_before_each_effect():
     assert "github.event.workflow_run.name == 'ci'" in text
     jobs=doc['jobs'];sweep=jobs['sweep'];steps=sweep['steps']
     commands=[(i,s) for i,s in enumerate(steps) if 'ci_admission_stages.py' in s.get('run','')]
-    assert len(commands)==5
+    assert len(commands)==7
     previous=-1
-    for action in ['complete','prepare','reserve','dispatch','finalize']:
+    for action in ['migration-prepare','migration-apply','complete','prepare','reserve','dispatch','finalize']:
         entries=[(i,s) for i,s in commands if ' '+action in s['run']]
         assert len(entries)==1
         assert entries[0][0]>previous;previous=entries[0][0]
@@ -239,3 +239,19 @@ def test_hosted_cutover_natural_fences_wake_source_contract(event,name,branch,co
             assert (job_ready and source_bool(step['if'])) is stage_ready
     assert job['concurrency']['cancel-in-progress'] is False
     assert job['steps'][0]['with']['ref']=='${{ github.workflow_sha }}'
+
+
+def test_migration_workflow_retains_original_intent_apply_outcome_boundaries():
+    doc=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
+    steps=doc['jobs']['sweep']['steps'];by_id={s.get('id'):s for s in steps}
+    assert doc['jobs']['sweep']['timeout-minutes']==15
+    assert by_id['migration_prepare']['run']=='python3 -I scripts/ci_admission_stages.py migration-prepare'
+    assert by_id['migration_apply']['if']=="steps.migration_intent.outcome == 'success'"
+    assert by_id['migration_apply']['env']['ARTIFACT_ID']=='${{ steps.migration_intent.outputs.artifact-id }}'
+    assert by_id['migration_outcome']['if']=="steps.migration_apply.outputs.settled == 'true'"
+    for kind in ('intent','outcome'):
+        step=by_id['migration_'+kind]
+        assert step['uses']=='actions/upload-artifact@v4'
+        assert step['with']['overwrite'] is False
+        assert step['with']['retention-days']==90
+    assert steps.index(by_id['migration_intent'])<steps.index(by_id['migration_apply'])<steps.index(by_id['migration_outcome'])

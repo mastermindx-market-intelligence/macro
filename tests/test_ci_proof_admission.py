@@ -352,3 +352,36 @@ def test_checkpoint_keeps_unserved_identity_until_actual_admission(change):
     admitted=replace(record(generation=d.demand_id,run_id=None),head_sha=d.head_sha)
     served=replace(new,demands=(),admissions=(admitted,))
     assert admission.select_checkpoint([old,served],123)==served
+
+
+def migration_fixture(phase='intent'):
+    import io,json,zipfile,hashlib
+    from dataclasses import asdict,replace
+    record=admission.LegacyMigration(7,'a'*12,'1'*40,'2'*40,'2026-10-01T00:00:00Z',81,1,'intent')
+    if phase=='outcome':record=replace(record,phase=phase,intent_artifact_id=80,acknowledged=True,observed_register=admission.migration_pointer(record,80))
+    args=anchor_fixture()
+    data=dict(schema='mastermind.ci-proof-migration.v1',repository_id=17,controller_run_id=70,controller_run_attempt=1,migration=asdict(record))
+    raw=json.dumps(data,sort_keys=True).encode();output=io.BytesIO()
+    with zipfile.ZipFile(output,'w') as archive:archive.writestr('ci-proof-admission.json',raw)
+    args['archive']=output.getvalue();args['payload_sha256']=hashlib.sha256(raw).hexdigest()
+    args['artifact']['digest']='sha256:'+hashlib.sha256(args['archive']).hexdigest()
+    args['artifact']['name']='ci-proof-migration-70-1-aaaaaaaaaaaa-'+phase
+    return record,args
+
+
+@pytest.mark.parametrize('phase',['intent','outcome'])
+def test_migration_receipt_actual_archive_binds_original_phase(phase):
+    record,args=migration_fixture(phase)
+    assert admission.authenticate_migration(**args)==record
+
+
+@pytest.mark.parametrize('fault',['expired','wrong_controller','wrong_repo','substituted_archive','wrong_phase','replayed_attempt'])
+def test_migration_receipt_rejects_unqualified_original(fault):
+    record,args=migration_fixture('outcome')
+    if fault=='expired':args['artifact']['expired']=True
+    elif fault=='wrong_controller':args['controller']['head_sha']='d'*40
+    elif fault=='wrong_repo':args['repository_id']=18
+    elif fault=='substituted_archive':args['archive']=migration_fixture()[1]['archive']
+    elif fault=='wrong_phase':args['artifact']['name']='ci-proof-migration-70-1-aaaaaaaaaaaa-intent'
+    elif fault=='replayed_attempt':args['controller']['run_attempt']=2
+    with pytest.raises(ValueError):admission.authenticate_migration(**args)

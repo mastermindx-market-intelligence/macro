@@ -796,7 +796,21 @@ def is_skip_ci_noise(message: str, files: list[str] | None) -> bool:
         return True
     if files is None or not files:
         return False
-    return all(is_skip_ci_path(name) for name in files if name)
+    if all(is_skip_ci_path(name) for name in files if name):
+        return True
+    # The daily engine emits this one Markdown companion beside its machine
+    # report and baseline. Keep the exception at the COMPLETE commit boundary:
+    # no reports/ root exemption, no mixed source/definition edits, and no
+    # promotion of the message's producer shape into authenticated provenance.
+    companions = {"reports/signal-sanity.md", "data/signal_sanity/signal_sanity.json",
+                  "data/signal_sanity/baseline.jsonl"}
+    subject = str(message or "").split("\n", 1)[0]
+    return (
+        re.fullmatch(r"engine: regime update [0-9]{4}-[0-9]{2}-[0-9]{2}", subject) is not None
+        and all(isinstance(name, str) and name for name in files)
+        and companions.issubset(files)
+        and all(name == "reports/signal-sanity.md" or name.startswith(("data/", "site/")) for name in files)
+    )
 
 
 def is_base_branch_modified(detail: str) -> bool:
@@ -1650,7 +1664,7 @@ def publish_admitted_subject_checks(repo, read_token, checks_token, bound_refere
             "output": {"title": "Authenticated original PR proof", "summary":
                 f"Original run {admitted.run_id}, attempt {admitted.run_attempt}; admission {admitted.generation}."}}
         try:
-            status, check = _request("POST", f"{GITHUB_API}/repos/{repo}/check-runs", checks_token, payload)
+            status, check = _shared_admission_effect("POST", f"{GITHUB_API}/repos/{repo}/check-runs", checks_token, payload)
             if (status != 201 or not isinstance(check, dict) or type(check.get("id")) is not int
                     or check["id"] <= 0 or any(check.get(k) != payload[k] for k in
                         ("name", "head_sha", "external_id", "status", "conclusion"))):
@@ -3496,6 +3510,12 @@ def shared_proof_workload(repo: str, token: str, *, repository_id: int,
     inventory = shared_admission_inventory(repo, token)
     if inventory.mode != "shared" or not inventory.complete or inventory.indexing is not None:
         return SharedProofWorkload(False)
+    try:
+        authenticated_migration_root(repo, token,
+            shared_register_text('a2 idle',inventory.migration_root),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+    except Exception:
+        return SharedProofWorkload(False)
     runs = indexed_active_ci_runs(repo, token)
     if runs is None:
         return SharedProofWorkload(False)
@@ -3757,8 +3777,11 @@ def reserve_shared_admission(repo, read_token, write_token, demand, *, repositor
         root = f"{GITHUB_API}/repos/{repo}"
         register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
         status, register = _request("GET", register_url, read_token)
-        if status != 200 or not isinstance(register, dict) or register.get("description") != "a2 idle":
+        if (status != 200 or not isinstance(register, dict)
+                or not migration_register_is_idle(repo, read_token, register.get("description"),
+                    repository_id=repository_id, protected_controller_sha=protected_controller_sha)):
             return AdmissionDispatchResult("held", detail="launch register occupied or unqualified")
+        original_register = register.get("description")
         status, pull = _request("GET", root + f"/pulls/{demand.pr_number}", read_token)
         if status == 200 and isinstance(pull, dict) and pull.get("number") == demand.pr_number:
             if (pull.get("state") == "closed" or pull.get("mergeable") is False
@@ -3791,9 +3814,12 @@ def reserve_shared_admission(repo, read_token, write_token, demand, *, repositor
             return AdmissionDispatchResult("held", detail="protected dispatch definition moved")
     except Exception:
         return AdmissionDispatchResult("held", detail="preparation evidence unreadable or inconsistent")
-    description = f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared"
+    status, fenced = _request("GET", register_url, read_token)
+    if status != 200 or not isinstance(fenced, dict) or fenced.get("description") != original_register:
+        return AdmissionDispatchResult("held", detail="original launch register changed")
+    description = shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared",shared_register_parts(original_register)[1])
     try:
-        status, _ = _request("PATCH", register_url, write_token, {"description": description})
+        status, _ = _shared_admission_effect("PATCH", register_url, write_token, {"description": description})
         if status != 200:
             return AdmissionDispatchResult("unknown", admitted, "original reservation write unsettled")
         status, register = _request("GET", register_url, read_token)
@@ -3813,7 +3839,7 @@ def _publish_admission_reference(repo, read_token, write_token, admitted, refere
     """
     body = ADMISSION_COMMENT_PREFIX + json.dumps(reference, sort_keys=True, separators=(",", ":"))
     root = f"{GITHUB_API}/repos/{repo}"
-    status, result = _request("POST", root + f"/issues/{admitted.pr_number}/comments", read_token, {"body": body})
+    status, result = _shared_admission_effect("POST", root + f"/issues/{admitted.pr_number}/comments", read_token, {"body": body})
     if (status != 201 or not isinstance(result, dict) or type(result.get("id")) is not int
             or result["id"] <= 0 or result.get("body") != body
             or not admission_index_writer(result)):
@@ -3846,8 +3872,10 @@ def publish_prepared_shared_admission(repo, read_token, write_token, reference, 
             return AdmissionDispatchResult("held", admitted, "not original prepared identity")
         root = f"{GITHUB_API}/repos/{repo}"
         register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
-        prepared = f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared"
         status, register = _request("GET", register_url, read_token)
+        migration_root = authenticated_migration_root(repo,read_token,register.get('description'),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        prepared = shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared",migration_root)
         if status != 200 or not isinstance(register, dict) or register.get("description") != prepared:
             return AdmissionDispatchResult("held", admitted, "original preparation pointer differs")
     except Exception:
@@ -3855,7 +3883,7 @@ def publish_prepared_shared_admission(repo, read_token, write_token, reference, 
     try:
         if not _publish_admission_reference(repo, read_token, write_token, admitted, reference):
             return AdmissionDispatchResult("unknown", admitted, "original prepared index unsettled")
-        status, _ = _request("POST", root + f"/issues/{admitted.pr_number}/labels", write_token,
+        status, _ = _shared_admission_effect("POST", root + f"/issues/{admitted.pr_number}/labels", write_token,
                              {"labels": [REFRESH_LEASE_LABEL]})
         if status != 200:
             return AdmissionDispatchResult("unknown", admitted, "prepared association unsettled")
@@ -3892,7 +3920,9 @@ def finalize_shared_admission(repo, read_token, write_token, reference, *, repos
         root = f"{GITHUB_API}/repos/{repo}"
         register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
         status, register = _request("GET", register_url, read_token)
-        started = f"a2 p={admitted.pr_number} g={admitted.generation} s=started"
+        migration_root = authenticated_migration_root(repo,read_token,register.get('description'),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        started = shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=started",migration_root)
         if status != 200 or not isinstance(register, dict) or register.get("description") != started:
             return AdmissionDispatchResult("held", admitted, "not original started generation")
         status, run = _request("GET", root + f"/actions/runs/{admitted.run_id}", read_token)
@@ -3912,7 +3942,7 @@ def finalize_shared_admission(repo, read_token, write_token, reference, *, repos
     try:
         if not _publish_admission_reference(repo, read_token, write_token, admitted, reference):
             return AdmissionDispatchResult("unknown", admitted, "original bound index publication unsettled")
-        status, _ = _request("POST", root + f"/issues/{admitted.pr_number}/labels", write_token,
+        status, _ = _shared_admission_effect("POST", root + f"/issues/{admitted.pr_number}/labels", write_token,
                              {"labels": [REFRESH_LEASE_LABEL]})
         if status != 200:
             return AdmissionDispatchResult("unknown", admitted, "original capacity association unsettled")
@@ -3923,11 +3953,11 @@ def finalize_shared_admission(repo, read_token, write_token, reference, *, repos
         status, register = _request("GET", register_url, read_token)
         if status != 200 or not isinstance(register, dict) or register.get("description") != started:
             return AdmissionDispatchResult("unknown", admitted, "launch custody changed before finalization")
-        status, _ = _request("PATCH", register_url, write_token, {"description": "a2 idle"})
+        status, _ = _shared_admission_effect("PATCH", register_url, write_token, {"description": shared_register_text("a2 idle",migration_root)})
         if status != 200:
             return AdmissionDispatchResult("unknown", admitted, "original pointer finalization unsettled")
         status, register = _request("GET", register_url, read_token)
-        if status != 200 or not isinstance(register, dict) or register.get("description") != "a2 idle":
+        if status != 200 or not isinstance(register, dict) or register.get("description") != shared_register_text("a2 idle",migration_root):
             return AdmissionDispatchResult("unknown", admitted, "pointer finalization readback unavailable")
     except Exception:
         return AdmissionDispatchResult("unknown", admitted, "original finalization effect unresolved")
@@ -3976,10 +4006,12 @@ def dispatch_admitted_pr_proof(
         return AdmissionDispatchResult("held", admitted, "reserved workload no longer fits true cap8")
     encoded = urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
     register_url = f"{GITHUB_API}/repos/{repo}/labels/{encoded}"
-    prepared = f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared"
-    started = f"a2 p={admitted.pr_number} g={admitted.generation} s=started"
     try:
         status, register = _request("GET", register_url, read_token)
+        migration_root=authenticated_migration_root(repo,read_token,register.get('description'),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        prepared=shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared",migration_root)
+        started=shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=started",migration_root)
         if status != 200 or not isinstance(register, dict) or register.get("description") != prepared:
             return AdmissionDispatchResult("held", admitted, "launch not affirmatively unstarted")
         status, pull = _request("GET", f"{GITHUB_API}/repos/{repo}/pulls/{admitted.pr_number}", read_token)
@@ -3993,7 +4025,10 @@ def dispatch_admitted_pr_proof(
     except Exception:
         return AdmissionDispatchResult("held", admitted, "pre-dispatch live read unavailable")
     try:
-        status, _ = _request("PATCH", register_url, write_token, {"description": started})
+        status, fenced = _request("GET", register_url, read_token)
+        if status != 200 or fenced.get("description") != prepared:
+            return AdmissionDispatchResult("held", admitted, "original root/pointer changed")
+        status, _ = _shared_admission_effect("PATCH", register_url, write_token, {"description": started})
         if status != 200:
             return AdmissionDispatchResult("unknown", admitted, "start-intent write not settled")
         status, register = _request("GET", register_url, read_token)
@@ -4010,7 +4045,7 @@ def dispatch_admitted_pr_proof(
         "expected_workflow_definition_sha": admitted.workflow_sha,
     }
     try:
-        status, result = _request("POST", f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/dispatches",
+        status, result = _shared_admission_effect("POST", f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/dispatches",
                                  write_token, {"ref": "main", "inputs": inputs, "return_run_details": True})
     except Exception:
         return AdmissionDispatchResult("unknown", admitted, "original dispatch response lost")
@@ -4072,6 +4107,374 @@ def authenticated_checkpoint_from_ref(repo, token, reference, *, repository_id, 
         repo, token, reference, repository_id=repository_id, protected_controller_sha=protected_controller_sha))
 
 
+
+MIGRATION_COMMENT_PREFIX = "<!-- merge-on-green:proof-migration:v1 -->\n"
+
+
+# One protected stage invocation owns this ephemeral read scope. Immutable
+# receipts are authenticated once against original server metadata/expiry in that
+# invocation; expiry is checked on reuse. No cache crosses a process boundary.
+# Register, indexes, residual applicability and final effect fences stay live.
+from contextvars import ContextVar
+from contextlib import contextmanager
+from functools import wraps
+
+_MIGRATION_READ_SCOPE = ContextVar('migration_read_scope', default=None)
+
+
+class MigrationReadScope:
+    def __init__(self, repo, token, identity=None, directory=None):
+        self.repo, self.token = repo, token
+        self.identity, self.directory = identity, directory
+        self.budget = None
+        self.archives, self.controllers, self.receipts = {}, {}, {}
+        self.deadline = None
+
+    def require_budget(self):
+        if self.budget is None:
+            self.budget = MigrationBudget(self.token, self.identity, self.directory)
+            self.deadline = self.budget.deadline
+        self.budget.require()
+        return self.budget
+
+
+class MigrationBudget:
+    """Strict migration continuation; ordinary SweepBudget is unchanged.
+
+    The protected job's existing stage directory conserves its entry observation
+    across Python processes. This local handoff is not admission authority. Every
+    continuation observes quota anew and retains the original 260 reserve and
+    240-second deadline; only the original entry uses the 700 floor.
+    """
+    def __init__(self, token, identity=None, directory=None):
+        self.original = SweepBudget(token)
+        self.deadline = time.time() + 240
+        marker = Path(directory) / 'migration-budget.json' if directory is not None else None
+        if marker is not None and marker.exists():
+            row = json.loads(marker.read_text(), object_pairs_hook=proof_admission._unique_object)
+            if (not isinstance(row, dict) or set(row) != {'identity','started','deadline'}
+                    or row['identity'] != identity or type(row['started']) not in {int,float}
+                    or type(row['deadline']) not in {int,float}
+                    or row['deadline'] != row['started'] + 240
+                    or not row['started'] <= time.time() < row['deadline']):
+                raise ValueError('original migration budget/deadline custody unavailable')
+            self.deadline = row['deadline']
+            self.require()
+        else:
+            self.require(entry=True)
+            if marker is not None:
+                marker.parent.mkdir(parents=True, exist_ok=True)
+                with marker.open('x') as stream:
+                    json.dump(dict(identity=identity, started=self.deadline-240,
+                                   deadline=self.deadline), stream, sort_keys=True)
+
+    @property
+    def last_seen(self):
+        return self.original.last_seen
+
+    def require(self, *, entry=False):
+        reading = self.original._poll()
+        if (time.time() >= self.deadline or reading is None
+                or type(reading[0]) is not int or type(reading[1]) is not int
+                or reading[1] <= 0 or reading[0] < (self.original.floor if entry else self.original.reserve)):
+            raise ValueError('migration quota/deadline unavailable; original custody retained')
+        return True, ''
+
+    def preflight(self):
+        return self.require()
+
+    def may_continue(self, evaluated):
+        # Every required migration recheck is fresh, including non-poll multiples.
+        return self.require()
+
+
+@contextmanager
+def migration_read_scope(repo, token, *, identity=None, directory=None):
+    current = _MIGRATION_READ_SCOPE.get()
+    if current is not None:
+        if current.repo != repo or current.token != token:
+            raise ValueError('foreign migration read scope')
+        yield current
+        return
+    scope = MigrationReadScope(repo, token, identity, directory)
+    handle = _MIGRATION_READ_SCOPE.set(scope)
+    try:
+        yield scope
+    finally:
+        _MIGRATION_READ_SCOPE.reset(handle)
+
+
+def _migration_read_operation(function):
+    @wraps(function)
+    def scoped(repo, token, *args, **kwargs):
+        with migration_read_scope(repo, token):
+            return function(repo, token, *args, **kwargs)
+    return scoped
+
+
+def migration_budget(token):
+    scope = _MIGRATION_READ_SCOPE.get()
+    if scope is None or scope.token != token:
+        return MigrationBudget(token)
+    return scope.require_budget()
+
+
+def _shared_admission_effect(method, url, token, payload=None):
+    """Fence the dependent effect after all reads/waits in this original scope.
+
+    A refusal never clears an already-written index/start/completion intent.
+    Outside the newly scoped controller path, existing behavior is unchanged.
+    """
+    scope = _MIGRATION_READ_SCOPE.get()
+    if scope is not None and scope.budget is not None:
+        scope.budget.require()
+    return _request(method, url, token, payload)
+
+
+def _migration_control_ancestor(repo, token, control, protected):
+    if not isinstance(control, str) or not re.fullmatch('[0-9a-f]{40}', control):
+        raise ValueError('migration controller missing')
+    if control == protected:
+        return
+    code, row = _request('GET', f'{GITHUB_API}/repos/{repo}/compare/{control}...{protected}?per_page=1', token)
+    if (code != 200 or not isinstance(row, dict) or row.get('status') not in {'identical','ahead'}
+            or (row.get('base_commit') or {}).get('sha') != control
+            or (row.get('merge_base_commit') or {}).get('sha') != control):
+        raise ValueError('migration controller lacks protected ancestry')
+
+
+@_migration_read_operation
+def authenticated_migration_from_ref(repo, token, reference, *, repository_id, protected_controller_sha):
+    if (not isinstance(reference, dict) or set(reference) != {'artifact_id', 'controller_run_id',
+            'controller_attempt', 'controller_sha', 'payload_sha256'}):
+        raise ValueError('invalid original migration reference')
+    record, actual = migration_from_artifact(repo, token, reference['artifact_id'],
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if reference != actual or any(type(reference[k]) is not type(actual[k]) for k in actual):
+        raise ValueError('original migration reference mismatch')
+    return record
+
+
+@_migration_read_operation
+def migration_from_artifact(repo, token, artifact_id, *, repository_id, protected_controller_sha):
+    """Recover only original server-bound bytes; absence never means settled."""
+    import copy, hashlib, io, zipfile
+    if type(artifact_id) is not int or artifact_id <= 0:
+        raise ValueError('invalid migration artifact')
+    scope = _MIGRATION_READ_SCOPE.get()
+    key = (repository_id, protected_controller_sha, artifact_id)
+    cached = scope.receipts.get(key)
+    if cached is not None:
+        expiry, record, reference = cached
+        if expiry <= time.time():
+            raise ValueError('original migration artifact expired within invocation')
+        return copy.deepcopy((record, reference))
+    code, artifact = _request('GET', f'{GITHUB_API}/repos/{repo}/actions/artifacts/{artifact_id}', token)
+    if code != 200 or not isinstance(artifact, dict):
+        raise ValueError('original migration artifact unavailable')
+    name = re.fullmatch(r'ci-proof-migration-([1-9][0-9]*)-1-([0-9a-f]{12})-(intent|outcome)',
+                        str(artifact.get('name')))
+    control = (artifact.get('workflow_run') or {}).get('head_sha')
+    if not name:
+        raise ValueError('unqualified migration artifact name')
+    expiry = _parse_dt(artifact.get('expires_at'))
+    if expiry is None or expiry.timestamp() <= time.time() or artifact.get('expired') is not False:
+        raise ValueError('original migration artifact expiry unavailable')
+    _migration_control_ancestor(repo, token, control, protected_controller_sha)
+    scope = _MIGRATION_READ_SCOPE.get()
+    controller_key = (int(name[1]), control)
+    controller = scope.controllers.get(controller_key)
+    if controller is None:
+        code, controller = _request('GET', f'{GITHUB_API}/repos/{repo}/actions/runs/{name[1]}/attempts/1', token)
+        if code != 200:
+            raise ValueError('original migration controller unavailable')
+    archive_key = (artifact_id, artifact.get('digest'))
+    archive = scope.archives.get(archive_key)
+    if archive is None:
+        archive = _download_semantic_artifact(f'{GITHUB_API}/repos/{repo}/actions/artifacts/{artifact_id}/zip', token)
+    if not isinstance(archive, bytes) or len(archive) > 1048576:
+        raise ValueError('oversized migration archive')
+    with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
+        entries = bundle.infolist()
+        if (len(entries) != 1 or entries[0].filename != 'ci-proof-admission.json'
+                or entries[0].is_dir() or entries[0].file_size > 32768):
+            raise ValueError('invalid migration member')
+        with bundle.open(entries[0]) as member:
+            payload = member.read(32769)
+        if len(payload) > 32768:
+            raise ValueError('oversized migration member')
+    ref = dict(artifact_id=artifact_id, controller_run_id=int(name[1]), controller_attempt=1,
+               controller_sha=control, payload_sha256=hashlib.sha256(payload).hexdigest())
+    record = proof_admission.authenticate_migration(archive=archive, repository_id=repository_id,
+        artifact=artifact, controller=controller, **ref)
+    scope.controllers[controller_key] = controller
+    scope.archives[archive_key] = archive
+    # Only two original migration members are normally needed. Eviction changes
+    # cost only, never authority; no new archive/member or request cap is added.
+    if len(scope.receipts) >= 2:
+        scope.receipts.pop(next(iter(scope.receipts)))
+    scope.receipts[key] = (expiry.timestamp(), copy.deepcopy(record), dict(ref))
+    if len(scope.archives) > 2:
+        scope.archives.pop(next(iter(scope.archives)))
+    if len(scope.controllers) > 2:
+        scope.controllers.pop(next(iter(scope.controllers)))
+    return record, ref
+
+
+def migration_outcome(repo, token, intent_ref, intent, *, repository_id, protected_controller_sha):
+    """Only an immutable positive original ack/postread unblocks a successor."""
+    from dataclasses import replace
+    run_id = intent_ref['controller_run_id']
+    code, listing = _request('GET', f'{GITHUB_API}/repos/{repo}/actions/runs/{run_id}/artifacts?per_page=100', token)
+    rows = listing.get('artifacts') if isinstance(listing, dict) else None
+    if (code != 200 or not isinstance(rows, list) or type(listing.get('total_count')) is not int
+            or listing['total_count'] != len(rows) or len(rows) > 100
+            or any(not isinstance(row, dict) for row in rows)):
+        raise ValueError('incomplete original migration outcome inventory')
+    name = f"ci-proof-migration-{run_id}-1-{intent.generation}-outcome"
+    found = [row for row in rows if row.get('name') == name]
+    if len(found) != 1:
+        raise ValueError('UNKNOWN original migration outcome absent or ambiguous; no replay')
+    outcome, ref = migration_from_artifact(repo, token, found[0].get('id'),
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if (outcome.phase != 'outcome' or outcome.intent_artifact_id != intent_ref['artifact_id']
+            or any(ref[k] != intent_ref[k] for k in ('controller_run_id','controller_attempt','controller_sha'))
+            or replace(outcome, phase='intent', intent_artifact_id=None,
+                       acknowledged=False, observed_register=None) != intent):
+        raise ValueError('original migration outcome does not bind its intent')
+    return outcome
+
+
+def legacy_residual_fact(repo, token, number, *, repository_id, comments=None, allowed_reference=None):
+    """A scoped closed legacy association, never a universal closed-PR waiver."""
+    code,pull=_request('GET',f'{GITHUB_API}/repos/{repo}/pulls/{number}',token)
+    head=(pull.get('head') or {}).get('sha') if isinstance(pull,dict) else None
+    if (code!=200 or pull.get('number')!=number or pull.get('state')!='closed'
+            or not proof_admission._hex(head,40)
+            or ((pull.get('base') or {}).get('repo') or {}).get('id')!=repository_id):
+        raise ValueError('legacy residual reopened, changed or unavailable')
+    comments=fetch_issue_comments(repo,number,token,strict=True) if comments is None else comments
+    if comments is None:raise ValueError('legacy residual comments incomplete')
+    own_indexes=0
+    for c in comments:
+        if not isinstance(c,dict):raise ValueError('legacy residual comment malformed')
+        body=str(c.get('body',''))
+        if body.startswith((ADMISSION_COMMENT_PREFIX,DEMAND_COMMENT_PREFIX,CHECKPOINT_COMMENT_PREFIX)) and admission_index_writer(c):
+            raise ValueError('legacy residual has later shared custody')
+        if body.startswith(MIGRATION_COMMENT_PREFIX) and admission_index_writer(c):
+            if allowed_reference is None or body!=MIGRATION_COMMENT_PREFIX+json.dumps(allowed_reference,sort_keys=True,separators=(',',':')):
+                raise ValueError('legacy residual has different or unresolved migration custody')
+            own_indexes+=1
+        if 'EFFECT_UNKNOWN' in body:
+            raise ValueError('legacy residual explicit unresolved effect')
+    if allowed_reference is not None and own_indexes!=1:
+        raise ValueError('legacy residual migration index absent or ambiguous')
+    runs=head_check_runs(repo,head,token)
+    if any(not isinstance(r,dict) or r.get('head_sha')!=head
+           or r.get('status')!='completed' for r in runs):
+        raise ValueError('legacy residual proof work active or unavailable')
+    # Explicit run index covers a check-registration gap. No absence of check
+    # anchors is promoted to a success or original-generation settlement.
+    query=urllib.parse.urlencode(dict(head_sha=head,per_page=100))
+    code,listing=_request('GET',f'{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}',token)
+    rows=listing.get('workflow_runs') if isinstance(listing,dict) else None
+    if (code!=200 or not isinstance(rows,list) or type(listing.get('total_count')) is not int
+            or listing['total_count']!=len(rows) or len(rows)>100
+            or any(not isinstance(r,dict) or r.get('status')!='completed'
+                or r.get('head_sha')!=head or (r.get('repository') or {}).get('id')!=repository_id for r in rows)):
+        raise ValueError('legacy residual original work inventory incomplete or active')
+    return dict(pr_number=number,head_sha=head,state='closed')
+
+
+@_migration_read_operation
+def migration_history(repo, token, number, comments, *, repository_id, protected_controller_sha):
+    """Migration indexes grant no proof/age; every applicable intent must settle."""
+    if not isinstance(comments, list):
+        raise ValueError('migration history unavailable')
+    intents = []
+    ids = set()
+    for comment in comments:
+        if not isinstance(comment, dict):
+            raise ValueError('incomplete migration comment history')
+        body = comment.get('body')
+        if not isinstance(body, str) or not body.startswith(MIGRATION_COMMENT_PREFIX):
+            continue
+        if not admission_index_writer(comment):
+            continue
+        cid = comment.get('id')
+        if type(cid) is not int or cid <= 0 or cid in ids or len(body) > 4096:
+            raise ValueError('invalid migration index identity')
+        ids.add(cid)
+        ref = json.loads(body[len(MIGRATION_COMMENT_PREFIX):], object_pairs_hook=proof_admission._unique_object)
+        record = authenticated_migration_from_ref(repo, token, ref,
+            repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        residual=next((r for r in record.residuals if r['pr_number']==number),None)
+        if record.phase != 'intent' or (record.pr_number != number and residual is None):
+            raise ValueError('foreign migration index')
+        if residual is not None and legacy_residual_fact(repo,token,number,repository_id=repository_id,comments=comments,allowed_reference=ref)!=residual:
+            raise ValueError('legacy residual applicability changed')
+        if any(old.generation == record.generation for old, _ in intents):
+            raise ValueError('UNKNOWN conflicting migration intents')
+        migration_outcome(repo, token, ref, record,
+            repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        intents.append((record, ref))
+    return intents
+
+
+def shared_register_parts(description):
+    """The existing 100-character register conserves its immutable migration root."""
+    match = re.fullmatch(r'(a2 .+) r=([1-9][0-9]*)', str(description))
+    if not match or len(description) > 100 or ' r=' in match[1]:
+        raise ValueError('shared register migration root missing or malformed')
+    return match[1], int(match[2])
+
+
+def shared_register_text(body, root):
+    if not isinstance(body, str) or not body.startswith('a2 ') or not proof_admission._positive(root):
+        raise ValueError('invalid shared register identity')
+    value = f'{body} r={root}'
+    if len(value) > 100 or ' r=' in body:
+        raise ValueError('shared register exceeds original description bound')
+    return value
+
+
+@_migration_read_operation
+def authenticated_migration_root(repo, token, description, *, repository_id, protected_controller_sha):
+    _, artifact_id = shared_register_parts(description)
+    budget=migration_budget(token)
+    deadline=budget.deadline
+    intent, reference = migration_from_artifact(repo, token, artifact_id,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if intent.phase != 'intent':
+        raise ValueError('migration root is not an original intent')
+    body,_=shared_register_parts(description)
+    if body.endswith(' s=migrating') and description!=proof_admission.migration_pointer(intent,artifact_id):
+        raise ValueError('migration pointer differs from original root owner')
+    comments = fetch_issue_comments(repo, intent.pr_number, token, strict=True)
+    originals = migration_history(repo, token, intent.pr_number, comments,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if not any(r == intent and ref == reference for r, ref in originals):
+        raise ValueError('migration root lacks positively indexed original custody')
+    for index,residual in enumerate(intent.residuals):
+        allowed,_=budget.may_continue(index)
+        if not allowed or time.time()>=deadline:
+            raise ValueError('migration root residual budget/deadline boundary')
+        rows=fetch_issue_comments(repo,residual['pr_number'],token,strict=True)
+        indexed=migration_history(repo,token,residual['pr_number'],rows,repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        if not any(r==intent and ref==reference for r,ref in indexed):
+            raise ValueError('migration residual index absent or inconsistent')
+    return artifact_id
+
+
+def migration_register_is_idle(repo, token, description, *, repository_id, protected_controller_sha):
+    body, root = shared_register_parts(description)
+    authenticated_migration_root(repo, token, description,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if body == 'a2 idle':return True
+    match=re.fullmatch(r'a2 p=([1-9][0-9]*) i=([1-9][0-9]*) s=migrating',body)
+    return bool(match and int(match[2])==root)
+
+
 def admission_index_writer(comment):
     """Classify server provenance before parsing untrusted comment bodies.
 
@@ -4105,6 +4508,8 @@ def read_age_frontier(repo, token, *, repository_id, protected_controller_sha,
     inventory=inventory or shared_admission_inventory(repo,token)
     if not inventory.complete or inventory.indexing is not None:
         raise ValueError('age inventory incomplete or original index unsettled')
+    authenticated_migration_root(repo,token,shared_register_text('a2 idle',inventory.migration_root),
+        repository_id=repository_id,protected_controller_sha=protected_controller_sha)
     comments=dict(comments_by_pr or {})
     for issue in inventory.issues:
         number=issue['number']
@@ -4216,6 +4621,8 @@ def pr_admission_history(repo, token, number, comments, *, repository_id, protec
                   "checkpoint": authenticated_checkpoint_from_ref}[kind]
         return loader(repo, token, reference, repository_id=repository_id, protected_controller_sha=control_sha)
 
+    migrations = migration_history(repo, token, number, comments,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
     checkpoint = None
     checkpoints = []
     for comment_id, (kind, reference) in sorted(entries, reverse=True):
@@ -4246,7 +4653,7 @@ def pr_admission_history(repo, token, number, comments, *, repository_id, protec
             if not matching:
                 raise ValueError("PR demand index lacks its own demand")
             demands.extend(matching)
-    if checkpoint is None and not records and not demands and not allow_empty:
+    if checkpoint is None and not records and not demands and not allow_empty and not migrations:
         raise ValueError("associated PR lacks authenticated records")
     return proof_admission.merge_records(records), demands
 
@@ -4264,6 +4671,8 @@ class SharedAdmissionInventory:
     launch: tuple[int, str] | None = None
     launch_started: bool = False
     indexing: tuple[int, int, int, int] | None = None
+    migration: tuple[int, int] | None = None
+    migration_root: int | None = None
 
 
 def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventory:
@@ -4284,11 +4693,16 @@ def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventor
         if (description == REFRESH_LEASE_DESCRIPTION
                 or parse_refresh_lease_record(description) is not None):
             return SharedAdmissionInventory("legacy", False)
+        description, migration_root = shared_register_parts(description)
         launch = None
         launch_started = False
         indexing = None
+        migration = None
+        migration_match = re.fullmatch(r"a2 p=([1-9][0-9]*) i=([1-9][0-9]*) s=migrating", str(description))
         index_match=re.fullmatch(r"a2 b=([1-9][0-9]*) p=([1-9][0-9]*) i=([0123]) t=([0-9]+) s=indexing",str(description))
-        if index_match:
+        if migration_match:
+            migration = tuple(map(int, migration_match.groups()))
+        elif index_match:
             indexing=tuple(int(v) for v in index_match.groups())
         elif description != "a2 idle":
             match = re.fullmatch(r"a2 p=([1-9][0-9]*) g=([0-9a-f]{12}) s=(prepared|started|completing)", str(description))
@@ -4316,7 +4730,7 @@ def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventor
                 break
         else:
             return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
-        owner=launch[0] if launch else indexing[1] if indexing else None
+        owner=launch[0] if launch else indexing[1] if indexing else migration[0] if migration else None
         if owner is not None and owner not in issues:
             status, issue = _request("GET", f"{GITHUB_API}/repos/{repo}/issues/{owner}", token)
             if (status != 200 or not isinstance(issue, dict)
@@ -4325,7 +4739,7 @@ def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventor
                     or not isinstance(issue.get("pull_request"), dict)):
                 return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
             issues[owner] = issue
-        return SharedAdmissionInventory("shared", True, tuple(issues.values()), launch, launch_started, indexing)
+        return SharedAdmissionInventory("shared", True, tuple(issues.values()), launch, launch_started, indexing, migration, migration_root)
     except RateLimited:
         raise
     except Exception:
@@ -4986,6 +5400,14 @@ class RefreshLease:
         return True
 
 
+def legacy_migration_pending(repo, token, number):
+    """An old writer may never release/overwrite an indexed migration intent."""
+    comments=fetch_issue_comments(repo,number,token,strict=True)
+    if comments is None:raise ValueError('legacy migration history unavailable')
+    return any(isinstance(c,dict) and str(c.get('body','')).startswith(MIGRATION_COMMENT_PREFIX)
+               and admission_index_writer(c) for c in comments)
+
+
 def prepare_refresh_lease(
     repo: str,
     read_token: str,
@@ -4993,6 +5415,11 @@ def prepare_refresh_lease(
     pulls: list[dict[str, Any]],
 ) -> tuple[RefreshLease, list[dict[str, Any]]]:
     """Load/clean the durable owner and inject it when the pull page omitted it."""
+    # Once this exact protected source supports shared admission, the legacy
+    # writer cannot race/overwrite migration custody after a failed early stage.
+    protected=os.environ.get('GITHUB_SHA','')
+    if re.fullmatch('[0-9a-f]{40}',protected) and installed_admitted_dispatch_ready(repo,protected):
+        return RefreshLease(repo,read_token,write_token,readable=False),pulls
     try:
         issues = open_refresh_lease_issues(repo, read_token)
     except Exception as exc:
@@ -5025,6 +5452,11 @@ def prepare_refresh_lease(
             "refreshes paused rather than assuming no prior owner.",
         )
         return RefreshLease(repo, read_token, write_token, readable=False), pulls
+    if generation is not None:
+        try: migration_pending=legacy_migration_pending(repo,read_token,generation[0])
+        except Exception: migration_pending=True
+        if migration_pending:
+            return RefreshLease(repo, read_token, write_token, readable=False), pulls
     if generation is not None and not any(
         str(issue.get("number")) == str(generation[0]) for issue in issues
     ):

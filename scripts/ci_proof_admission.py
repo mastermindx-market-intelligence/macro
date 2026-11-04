@@ -319,6 +319,78 @@ def authenticate_receipt(**context):
 
 
 @dataclass(frozen=True)
+class LegacyMigration:
+    """A controller migration fact, never an Admission or an age witness."""
+    pr_number: int
+    generation: str
+    pre_head_sha: str
+    head_sha: str
+    acquired_at: str
+    proof_run_id: int
+    proof_run_attempt: int
+    phase: str
+    residuals: tuple = ()
+    intent_artifact_id: int | None = None
+    acknowledged: bool = False
+    observed_register: str | None = None
+
+
+def migration_pointer(record, artifact_id):
+    if not _positive(record.pr_number) or not _positive(artifact_id):
+        raise ValueError('invalid migration pointer identity')
+    value = f'a2 p={record.pr_number} i={artifact_id} s=migrating r={artifact_id}'
+    if len(value)>100:raise ValueError('migration pointer exceeds existing description bound')
+    return value
+
+
+def authenticate_migration(**context):
+    """Same original-controller archive binding/limits; strictly separate type."""
+    from dataclasses import fields
+    data = _controller_receipt_data(**context)
+    if (set(data) != {'schema', 'repository_id', 'controller_run_id',
+                     'controller_run_attempt', 'migration'}
+            or data['schema'] != 'mastermind.ci-proof-migration.v1'
+            or not isinstance(data['migration'], dict)
+            or set(data['migration']) != {f.name for f in fields(LegacyMigration)}):
+        raise ValueError('migration receipt schema mismatch')
+    raw=data['migration'].copy()
+    if not isinstance(raw['residuals'],list) or len(raw['residuals'])>1000:
+        raise ValueError('migration residual inventory malformed')
+    raw['residuals']=tuple(raw['residuals'])
+    result = LegacyMigration(**raw)
+    numbers=set()
+    for row in result.residuals:
+        if (not isinstance(row,dict) or set(row)!={'pr_number','head_sha','state'}
+                or not _positive(row['pr_number']) or row['pr_number']==result.pr_number
+                or row['pr_number'] in numbers or not _hex(row['head_sha'],40) or row['state']!='closed'):
+            raise ValueError('migration residual identity invalid')
+        numbers.add(row['pr_number'])
+    try:
+        when = datetime.fromisoformat(result.acquired_at.replace('Z', '+00:00'))
+    except (AttributeError, TypeError, ValueError):
+        raise ValueError('migration acquisition clock invalid')
+    if (not _positive(result.pr_number) or not _hex(result.generation, 12)
+            or not _hex(result.pre_head_sha, 40) or not _hex(result.head_sha, 40)
+            or result.pre_head_sha == result.head_sha or when.tzinfo is None
+            or not _positive(result.proof_run_id) or type(result.proof_run_attempt) is not int
+            or result.proof_run_attempt != 1 or type(result.acknowledged) is not bool
+            or context['controller_attempt'] != 1):
+        raise ValueError('migration original generation invalid')
+    if result.phase == 'intent':
+        valid = (result.intent_artifact_id is None and not result.acknowledged
+                 and result.observed_register is None)
+    elif result.phase == 'outcome':
+        valid = (_positive(result.intent_artifact_id) and result.acknowledged
+                 and result.observed_register == migration_pointer(result, result.intent_artifact_id))
+    else:
+        valid = False
+    expected = (f"ci-proof-migration-{context['controller_run_id']}-"
+                f"{context['controller_attempt']}-{result.generation}-{result.phase}")
+    if not valid or context['artifact'].get('name') != expected:
+        raise ValueError('migration phase/acknowledgement mismatch')
+    return result
+
+@dataclass(frozen=True)
 class AgeSnapshot:
     demands: tuple[Demand, ...]
     # Exact per-PR comment coverage, not a global time or a transitive ref list.
