@@ -16408,6 +16408,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
      Until 2026-10-02 this include sat inside the macro-only block behind `mode != 'macro'`
      and therefore rendered on no page (MO-PAID-001_FIX_R1). Stocks mode is its host;
      `_regime_read_panel.html.j2` hides itself unless latest.base_effect carries both axes. #}
+  {# A selected Sector Central handoff belongs before its destination board,
+     including the empty board. It is distinct from the market context below. #}
+  {% if mode == "stocks" %}{% include "_sector_prophet_context.html.j2" %}{% endif %}
   {# The named navigation landing remains useful when the board has no artifact. #}
   {% if not ((us_standouts and us_standouts.buy) or (action_board and action_board.notable)) %}
   <section class="panel span12 prophet-empty-workspace" id="us-standouts">
@@ -17936,7 +17939,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     <a href="macro.html">{{ t('Open market outlook', '查看市场展望') }} <span aria-hidden="true">↗</span></a>
   </div>
   {% include "_regime_read_panel.html.j2" %}
-  {% if mode == "stocks" %}{% include "_sector_prophet_context.html.j2" %}{% endif %}
   {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% endif %}
   {% endif %}{# /mode != macro — action board #}
 

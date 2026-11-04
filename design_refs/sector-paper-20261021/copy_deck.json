@@ -119,7 +119,7 @@
   },
   "research": {
     "title": {"en": "Research", "zh": "研究", "role": "h1", "source": "templates/sector_central.html.j2:1498"},
-    "tagline": {"en": "Ask a research question. It comes back with a full write-up…", "zh": "提出一个研究问题。将返回完整研判…", "role": "subtitle", "source": "templates/mm_brain.js:3450"},
+    "tagline": {"en": "Ask a research question. It comes back with a full write-up…", "zh": "提出一个研究问题。将返回完整研判…", "role": "subtitle", "source": "templates/mm_brain.js:3457"},
     "prepare_h2": {"en": "Prepare research question", "zh": "准备研究问题", "role": "h2", "source": "NEW"},
     "subject_label": {"en": "Subject", "zh": "研究标的", "role": "label", "source": "NEW"},
     "question_label": {"en": "Question", "zh": "研究问题", "role": "label", "source": "NEW"},
