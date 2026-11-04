@@ -360,6 +360,24 @@
   {%- else -%}
   <p class="po-missing po-terms-missing" data-po-field="terms"><span class="l-en">Terms unavailable</span><span class="l-zh">条款暂缺</span></p>
   {%- endif -%}
+  {#- ── 7b. comparison-only same-source price boundaries (study scope) ───────
+      Renders ONLY for native cards whose read model carries a
+      comparison_facts mapping (the presenter always supplies one). The
+      workspace stylesheet keeps the group hidden until the existing study
+      owner marks the parent grid .pvs-study-active, so ordinary cards keep
+      their current geometry and content and non-native previews never see
+      the facts at all. Three DIFFERENT existing facts are restated side by
+      side; none is a target, a recommendation or a clock of its own. -#}
+  {%- set _cf = v.get('comparison_facts') if v.get('comparison_facts') is mapping else none -%}
+  {%- if native and _cf -%}
+  <div class="po-cf" data-po-field="comparison_facts">
+    <span class="po-cf-title">{{ _po_text({'en': 'Same-source price boundaries', 'zh': '同源价格边界'}, _DASH, _DASH) }}</span>
+    <span class="po-cf-row"><span class="po-cf-key">{{ _po_text({'en': 'Base invalidation', 'zh': '基准失效位'}, _DASH, _DASH) }}</span><span class="po-cf-val fig">{{ _cf.get('base_invalidation') if _po_has_amount(_cf.get('base_invalidation')) else _DASH }}</span></span>
+    <span class="po-cf-row"><span class="po-cf-key">{{ _po_text({'en': 'Entry-method stop', 'zh': '入场方法止损'}, _DASH, _DASH) }}</span><span class="po-cf-val fig">{{ _cf.get('entry_stop') if _po_has_amount(_cf.get('entry_stop')) else _DASH }}</span></span>
+    <span class="po-cf-row"><span class="po-cf-key">{{ _po_text({'en': 'Chase boundary', 'zh': '追高边界'}, _DASH, _DASH) }}</span><span class="po-cf-val fig">{{ _cf.get('chase_above') if _po_has_amount(_cf.get('chase_above')) else _DASH }}</span></span>
+    <p class="po-cf-note">{{ _po_text({'en': 'The entry-method stop and the base invalidation are different exits; a chase boundary is a ceiling, not a target.', 'zh': '入场方法止损与基准失效位是不同的退出条件；追高边界是上限，并非目标价。'}, _DASH, _DASH) }}</p>
+  </div>
+  {%- endif -%}
   {#- ── 8. quiet action footer: compare left, View setup right ─────────────── #}
   <footer class="po-foot{% if native %} po-footer{% endif %}" data-po-field="actions">
     {%- if v.get('compare_enabled') is sameas true -%}

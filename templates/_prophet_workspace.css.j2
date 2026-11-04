@@ -63,6 +63,39 @@ html[data-theme="light"] #us-standouts .pvcard.po-card {
 #us-standouts .po-terms-value { font-size: 12px; text-align: right; }
 #us-standouts .po-terms-asof { margin: 0; text-align: right; font-size: 11px; }
 #us-standouts .po-terms .pv-added { grid-column: 1 / -1; font-size: 11px; white-space: normal; margin: 0; }
+/* Comparison-only same-source price boundaries (T004.S2). The group is part of
+   the native card markup, but visible ONLY while the existing Packet2 study
+   owner has marked the parent grid .pvs-study-active; ordinary cards keep
+   their current geometry and content, and non-native previews never render
+   the group at all. Dark graphite / light white research surfaces and neutral
+   hairlines only — no new palette, no decorative colored edge. */
+#us-standouts .po-card .po-cf { display: none; }
+#us-standouts :is(#us-today-grid, #us-cand-grid).pvs-study-active .po-card .po-cf {
+  display: grid;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--r-ctl, 8px) / 2);
+  background: var(--panel2);
+  color: var(--text);
+  font-size: 12px;
+}
+html[data-theme="light"] #us-standouts :is(#us-today-grid, #us-cand-grid).pvs-study-active .po-card .po-cf {
+  background: var(--panel);
+  box-shadow: var(--card-shadow);
+}
+#us-standouts .po-cf-title { font-weight: 700; color: var(--text); min-width: 0; overflow-wrap: anywhere; }
+#us-standouts .po-cf-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; min-width: 0; }
+#us-standouts .po-cf-key { color: var(--muted); min-width: 0; overflow-wrap: anywhere; }
+#us-standouts .po-cf-val { color: var(--text); font-variant-numeric: tabular-nums; text-align: right; min-width: 0; overflow-wrap: anywhere; }
+#us-standouts .po-cf-note { margin: 4px 0 0; padding-top: 8px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.5; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 639px) {
+  /* Mobile keeps readable labelled rows inside the existing selected-card
+     composition: label above value, never a squeezed side-by-side pair. */
+  #us-standouts .po-cf-row { flex-direction: column; align-items: flex-start; gap: 1px; }
+  #us-standouts .po-cf-val { text-align: left; }
+}
 #us-standouts .po-footer { padding-top: 6px; gap: 6px; }
 #us-standouts .po-footer .pv-setup-inline { order: 1; margin: 0 0 0 auto; position: static; z-index: auto; }
 #us-standouts .po-footer .pv-setup-inline > summary { background: transparent; border: 0; padding: 8px 0 8px 8px; min-height: 36px; font-size: 12px; color: var(--link); }

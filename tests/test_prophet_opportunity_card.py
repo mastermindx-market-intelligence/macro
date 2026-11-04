@@ -751,3 +751,103 @@ def test_rendered_card_has_no_scripts_buttons_or_images():
     root = render_card(rich_card())
     for tag in ("script", "button", "img", "iframe", "style", "form"):
         assert find_all(root, tag=tag) == [], tag
+
+
+# ── 15. comparison-only same-source price boundaries (native study scope) ────
+# T004.S2 additive facts group: rendered only for native cards, revealed only
+# inside the grid the existing Packet2 study owner marks .pvs-study-active.
+WORKSPACE = "_prophet_workspace.css.j2"
+WORKSPACE_TEXT = (TEMPLATES / WORKSPACE).read_text(encoding="utf-8")
+
+NATIVE = {"ticker": "NVDA", "market": "US", "stage_key": "base"}
+
+
+def render_raw_native(v: dict) -> str:
+    env = Environment(loader=FileSystemLoader(str(TEMPLATES)),
+                      autoescape=True, undefined=StrictUndefined)
+    return env.from_string(f"{_IMPORT}{{{{ opportunity_card(v, native) }}}}").render(v=v, native=NATIVE)
+
+
+def render_native(v: dict) -> _Node:
+    return parse(render_raw_native(v))
+
+
+def cf_card(**facts) -> dict:
+    v = rich_card()
+    v["comparison_facts"] = {"base_invalidation": None, "entry_stop": None, "chase_above": None}
+    v["comparison_facts"].update(facts)
+    return v
+
+
+def test_native_card_renders_three_distinct_boundaries_bilingually():
+    root = render_native(cf_card(base_invalidation="$95.50", entry_stop="$97.25", chase_above="$104.00"))
+    group = find(root, cls="po-cf")
+    assert group.attrs.get("data-po-field") == "comparison_facts"
+    assert "Same-source price boundaries" in text_of(find(group, cls="po-cf-title"))
+    assert "同源价格边界" in text_of(find(group, cls="po-cf-title"))
+    rows = find_all(group, cls="po-cf-row")
+    assert len(rows) == 3
+    assert [text_of(find(r, cls="po-cf-val")) for r in rows] == ["$95.50", "$97.25", "$104.00"]
+    assert [text_of(find(r, cls="po-cf-key")) for r in rows] == [
+        "Base invalidation基准失效位", "Entry-method stop入场方法止损", "Chase boundary追高边界"]
+    note = find(group, cls="po-cf-note")
+    assert "not a target" in text_of(note) and "并非目标价" in text_of(note)
+    assert "基准失效" in text_of(note) and "入场方法止损" in text_of(note)
+    # the group carries no clock of its own and sits inside the card anatomy
+    assert "As of" not in text_of(group) and group.attrs.get("data-po-clock") is None
+    card = find(root, cls="po-card")
+    assert any(group is child for child in element_children(card))
+
+
+def test_comparison_facts_never_render_in_a_non_native_preview():
+    root = render_card(cf_card(base_invalidation="$95.50", entry_stop="$97.25", chase_above="$104.00"))
+    assert find_all(root, cls="po-cf") == []
+    assert "Base invalidation" not in text_of(root)
+    assert "$95.50" not in text_of(root)
+    assert "comparison_facts" not in render_raw(cf_card())
+
+
+def test_absent_or_mistyped_comparison_facts_record_renders_no_group():
+    assert find_all(render_native(rich_card()), cls="po-cf") == []
+    assert find_all(render_native(rich_card(comparison_facts="facts")), cls="po-cf") == []
+    assert find_all(render_native(rich_card(comparison_facts=42)), cls="po-cf") == []
+
+
+def test_incomplete_or_boolean_facts_render_the_absence_dash_never_a_number():
+    root = render_native(cf_card(base_invalidation="$95.50"))
+    assert [text_of(n) for n in find_all(root, cls="po-cf-val")] == ["$95.50", "—", "—"]
+    root = render_native(cf_card(base_invalidation=True, entry_stop=False, chase_above=5))
+    assert [text_of(n) for n in find_all(root, cls="po-cf-val")] == ["—", "—", "5"]
+
+
+def test_comparison_facts_values_are_autoescaped():
+    v = cf_card(base_invalidation='"><script>alert(1)</script>', entry_stop="$97.25")
+    out = render_raw_native(v)
+    assert "<script" not in out
+    root = parse(out)
+    assert find_all(root, tag="script") == []
+    vals = [text_of(n) for n in find_all(root, cls="po-cf-val")]
+    assert vals[0] == '"><script>alert(1)</script>'
+    assert vals[1] == "$97.25"
+
+
+def test_workspace_css_hides_the_group_outside_the_existing_study_grid():
+    assert "#us-standouts .po-card .po-cf { display: none; }" in WORKSPACE_TEXT
+    reveals = re.findall(r"[^\n]*\.pvs-study-active[^\n]*\.po-cf\s*\{[^}]*\}", WORKSPACE_TEXT)
+    base = [r for r in reveals if r.lstrip().startswith("#us-standouts")]
+    light = [r for r in reveals if r.lstrip().startswith("html")]
+    assert base and light
+    for rule in base + light:
+        assert "#us-today-grid" in rule and "#us-cand-grid" in rule
+    assert all("display: grid" in r for r in base)
+    # light keeps the white research surface and the existing shadow token
+    assert all('html[data-theme="light"]' in r and "var(--panel)" in r for r in light)
+    assert all("var(--card-shadow)" in r for r in light)
+    start = WORKSPACE_TEXT.index("#us-standouts .po-card .po-cf")
+    end = WORKSPACE_TEXT.index("#us-standouts .po-footer { padding-top: 6px")
+    region = WORKSPACE_TEXT[start:end]
+    assert re.search(r"#[0-9a-fA-F]{3,8}\b", region) is None      # no new palette
+    assert "position:fixed" not in region and "!important" not in region
+    for line in region.splitlines():
+        if ".po-cf" in line and "{" in line:
+            assert line.lstrip().startswith(("#us-standouts", "html[data-theme"))

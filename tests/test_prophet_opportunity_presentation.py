@@ -210,3 +210,85 @@ def test_native_wait_states_are_named_without_becoming_unknown(status):
     v = present(source)
     assert v["stance"] == "wait"
     assert v["stance_label"]["en"] != "Assessment unavailable"
+
+
+# ── T004.S2: comparison-only same-source price boundaries ────────────────────
+def comparison_row():
+    source = row()
+    source["hold"] = {"invalidation": 95.5}
+    source["entry_signal"]["stop"] = 97.25
+    source["entry_signal"]["chase_above"] = 104
+    return source
+
+
+def test_comparison_facts_expose_three_distinct_same_source_boundaries():
+    source = comparison_row(); original = deepcopy(source)
+    v = present(source)
+    facts = v["comparison_facts"]
+    assert facts["base_invalidation"] == "$95.50"
+    assert facts["entry_stop"] == "$97.25"
+    assert facts["chase_above"] == "$104.00"
+    assert len(set(facts.values())) == 3                      # three different things
+    assert v["source_fields"]["comparison_facts.base_invalidation"] == "hold.invalidation"
+    assert v["source_fields"]["comparison_facts.entry_stop"] == "entry_signal.stop"
+    assert v["source_fields"]["comparison_facts.chase_above"] == "entry_signal.chase_above"
+    assert source == original                                 # no source mutation
+
+
+def test_comparison_facts_gain_no_clock_and_no_new_authority():
+    v = present(comparison_row(), board_asof="2026-09-29")
+    assert set(v["comparison_facts"]) == {"base_invalidation", "entry_stop", "chase_above"}
+    assert not any("asof" in k or "date" in k for k in v["comparison_facts"])
+    # the three existing independent clocks are untouched by the new group
+    assert v["quote"]["asof"] == "2026-09-28T16:00:00-04:00"
+    assert v["signal_asof"] == "2026-09-25"
+    assert v["terms"]["asof"] == "2026-09-29"
+    assert v["chart"]["asof"] is None
+    # no target, recommendation, strategy, horizon or assessment date is minted
+    assert v["strategy"] is None and v["horizon"] is None
+    assert v["assessment_asof"] is None
+    assert "target" not in " ".join(v["comparison_facts"].values())
+
+
+def test_partial_comparison_facts_map_only_present_boundaries():
+    source = row(); source["entry_signal"]["chase_above"] = 108.13
+    v = present(source)
+    assert v["comparison_facts"] == {"base_invalidation": None, "entry_stop": None,
+                                     "chase_above": "$108.13"}
+    assert v["source_fields"]["comparison_facts.chase_above"] == "entry_signal.chase_above"
+    assert v["source_fields"]["comparison_facts.base_invalidation"] is None
+    assert v["source_fields"]["comparison_facts.entry_stop"] is None
+
+
+@pytest.mark.parametrize("value", [None, True, False, float("nan"), float("inf"), float("-inf"),
+                                   "97.25", "", 10 ** 400, [], {"low": 1}])
+def test_malformed_boundaries_stay_unavailable_in_facts_and_source_map(value):
+    source = row()
+    source["hold"] = {"invalidation": value}
+    source["entry_signal"]["stop"] = value
+    source["entry_signal"]["chase_above"] = value
+    v = present(source)
+    assert v["comparison_facts"] == {"base_invalidation": None, "entry_stop": None,
+                                     "chase_above": None}
+    for key in ("comparison_facts.base_invalidation", "comparison_facts.entry_stop",
+                "comparison_facts.chase_above"):
+        assert v["source_fields"][key] is None
+
+
+def test_missing_hold_record_and_minimal_row_keep_the_group_honest():
+    assert present(row())["comparison_facts"] == {"base_invalidation": None,
+                                                  "entry_stop": None, "chase_above": None}
+    source = row(); source["hold"] = "not-a-mapping"
+    source["entry_signal"] = None
+    source["entry_signal_null_reason"] = "lane_not_stamped"
+    v = present(source)
+    assert v["comparison_facts"] == {"base_invalidation": None, "entry_stop": None,
+                                     "chase_above": None}
+    assert v["stance"] == "unknown"
+
+
+def test_zero_boundary_is_a_real_value_and_maps_to_its_source():
+    source = row(); source["hold"] = {"invalidation": 0}
+    v = present(source)
+    assert v["comparison_facts"]["base_invalidation"] == "$0.00"
+    assert v["source_fields"]["comparison_facts.base_invalidation"] == "hold.invalidation"

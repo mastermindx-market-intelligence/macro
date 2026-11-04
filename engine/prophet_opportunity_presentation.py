@@ -193,6 +193,13 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
     disclosures, not a second computation of those rules. ``board_asof`` labels
     the current zone snapshot; signal_asof and price_as_of stay independent.
     Missing strategy, horizon, quote change and exact plan relation remain absent.
+
+    ``comparison_facts`` restates three DIFFERENT existing same-source price
+    boundaries side by side for the comparison study: ``hold.invalidation`` as the
+    base invalidation, ``entry_signal.stop`` as the entry-method stop and
+    ``entry_signal.chase_above`` as the chase boundary. None of them is a target,
+    a recommendation or a new clock, and each keeps the existing money helper's
+    absence semantics.
     """
     if not isinstance(row, Mapping):
         raise TypeError("one source row is required")
@@ -247,6 +254,15 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
                 supplied_marks.append(words)
     chart = _chart_geometry(row.get("spark_svg"))
     ticker = _text(row.get("ticker"))
+    # Comparison-only restatement of three DIFFERENT existing same-source
+    # boundaries. No computation beyond the existing money helper, no clock,
+    # no target and no new action authority: malformed input simply stays absent.
+    hold = _mapping(row.get("hold"))
+    comparison_facts = {
+        "base_invalidation": _money(hold.get("invalidation")),
+        "entry_stop": _money(es.get("stop")),
+        "chase_above": _money(es.get("chase_above")),
+    }
     return {
         "id": occurrence_id, "stance": stance, "stance_label": _words(label, label_zh),
         "assessment_asof": None,
@@ -266,7 +282,7 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
         "cautions": caution_rows, "stages": stages,
         "marks": supplied_marks, "added_date": _session_date(row.get("added_date")),
         "context": {"href": link, "label": _words(context.get("en"), context.get("zh"))} if link else None,
-        "terms": terms, "setup_href": _href(setup_href),
+        "terms": terms, "comparison_facts": comparison_facts, "setup_href": _href(setup_href),
         "memory_href": _memory_href(ticker),
         "compare_enabled": compare_enabled is True and bool(ticker),
         "source_fields": {"stance": "entry_signal.status", "assessment_asof": None, "signal_asof": "signal_asof",
@@ -275,6 +291,9 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
                           "priority": priority_path if priority else None,
                           "terms.value": "entry_signal.buy_zone" if valid_zone else None,
                           "terms.asof": "board envelope as_of" if valid_zone and _text(board_asof) else None,
+                          "comparison_facts.base_invalidation": "hold.invalidation" if comparison_facts["base_invalidation"] else None,
+                          "comparison_facts.entry_stop": "entry_signal.stop" if comparison_facts["entry_stop"] else None,
+                          "comparison_facts.chase_above": "entry_signal.chase_above" if comparison_facts["chase_above"] else None,
                           "observation": "entry_signal.headline", "assessment_detail": "entry_signal.action",
                           "evidence_profile": "prophet.fusion", "strategy": None, "horizon": None},
     }
