@@ -195,11 +195,12 @@ def test_current_fact_changes_fail_closed_and_remove_stale_issuer(current_model,
     assert not BeautifulSoup(pages["gmi-companies.html"], "html.parser").select("[data-company-card]")
 
 
-def test_stale_issuer_prune_refuses_symlink(current_model, tmp_path):
+@pytest.mark.parametrize("name", ["gmi-issuer-zz.html", "gmi-issuer-mu.html"])
+def test_issuer_output_refuses_symlink(current_model, tmp_path, name):
     """No generated-page pruning may follow a symlink into unrelated output."""
     target = tmp_path / "unrelated-original.html"
     target.write_text("SENTINEL-UNTOUCHED")
-    (tmp_path / "gmi-issuer-zz.html").symlink_to(target)
+    (tmp_path / name).symlink_to(target)
     with pytest.raises(RuntimeError, match="nonregular GMI issuer output"):
         render_site(current_model, tmp_path)
     assert target.read_text() == "SENTINEL-UNTOUCHED"

@@ -106,10 +106,10 @@ def _remove_stale_issuer_pages(site: Path, public_model: dict) -> None:
     current = {f"gmi-issuer-{issuer['ticker'].lower()}.html"
                for issuer in public_model["issuers"]}
     for old in site.glob("gmi-issuer-*.html"):
-        if old.name in current:
-            continue
         if old.is_symlink() or not old.is_file():
             raise RuntimeError(f"refusing to replace nonregular GMI issuer output: {old.name}")
+        if old.name in current:
+            continue
         old.unlink()
 
 
