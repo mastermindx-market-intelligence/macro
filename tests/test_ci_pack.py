@@ -4501,6 +4501,11 @@ CURATED_EXCLUSIVE = {
     # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
     # so the job's paths must cover its own import closure.
     "consumer-cyclical-economic-change",
+    # 2026-10-12 #7891 Technology ex-Semis: the registration shell loader's
+    # import_module(name) is an opaque dynamic import, so inferred scope rode the
+    # whole-tree fallback tier onto both code probes (+1 job each, fallback tier
+    # only). Curated to the measured closure plus the pending #7870 modules.
+    "technology-ex-semis-boundary",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
@@ -4586,6 +4591,10 @@ CURATED_EXCLUSIVE = {
     # the transport suites import app.main, whose closure smears whole-tree
     # scan roots onto all three packing probes (+1 job each) when inferred.
     "semiconductor-b-boundary",
+    # PR-S shared theme-research shell. Exclusive so the composer's
+    # company-intelligence / theme-graph fallback reads are not declared
+    # and the packing probes stay unselected. Paths are the owned closure.
+    "theme-research-shared-shell",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
@@ -4990,6 +4999,12 @@ CURATED_EXCLUSIVE = {
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-12 Robotics re-land (#7908 after #8013, stacked on #7870).
+    # One exclusive gate:code job for the eight Robotics suites. The declaration
+    # is their measured import closure (including the #7870 shared shell);
+    # exclusivity keeps that closure off the packing probes. The
+    # cover-their-own-import-closure test keeps the list honest.
+    "robotics-theme-research",
     # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
     # the frozen stage-1 runner, whose lazy risk_radar closure made inference
     # select the job on the plan_book (130 > 129) and build_free_content
@@ -5155,6 +5170,13 @@ CURATED_EXCLUSIVE = {
     # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
     # suite reads by name; the curated-closure guard audits it like its parent.
     "ew-p4-descriptive-ui",
+    # GLT T22 (2026-11-03): tests/test_global_liquidity_views.py reaches the
+    # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
+    # inference smeared this job's scan roots onto templates/index.html (138
+    # jobs / 5,919 s against the 137 / 5,909 probe ceilings). Exclusive with the
+    # exact 55-file non-wildcard import closure plus the eight Jinja templates the
+    # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
+    "global-liquidity-transmission",
 }
 
 
@@ -5444,9 +5466,10 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Measured index137/5915, free137/5930, plan131/5671, each ten packs.
 # Fund those six units only. Job, runtime and pack limits remain fixed.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_930),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_671),
+    ("templates/index.html", 137, 5_918),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_674),
+    # Combined ceilings: fixed-base 3-unit basket increment + WMKO 6 units.
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5454,6 +5477,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
+    candidate 5f0f047b160b against real base b4df44260aef, using the same
+    run_ci_pack blob 3cbed589. Comparison SHA256
+    18c613726a07f17a5484f76639079111ef7b69306f3d0360754c69fea2525888:
+    index137jobs/5909->5912, free137jobs/5924->5927, Prophet131jobs/5665->5668,
+    all ten packs, identical selected IDs with no entrants or exits. The sole
+    definition/selected-weight delta is existing basket-staleness-warn4->7
+    from its regional coverage step. Raise only those three estimated-weight
+    ceilings to the measured values. These are planner estimates, not runtime
+    evidence; job-count, pack, timeout and admission bounds remain unchanged.
 
     2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
     ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``

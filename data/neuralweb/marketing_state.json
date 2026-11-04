@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 217,
+    "opportunity_queue_depth": 235,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 217,
-      "scored": 331,
+      "open": 235,
+      "scored": 349,
       "newest": [
         {
           "id": "radar-earnings-AAOI-2026-11-03",
           "problem_or_desire": "$AAOI: earnings 2026-11-05 after hours",
           "expected_value": 0.5,
-          "score": 0.372035,
+          "score": 0.260469,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-earnings-ABNB-2026-11-03",
           "problem_or_desire": "$ABNB: earnings 2026-11-05 after hours",
           "expected_value": 0.5,
-          "score": 0.372035,
+          "score": 0.260469,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-earnings-ACAD-2026-11-03",
           "problem_or_desire": "$ACAD: earnings 2026-11-04 after hours",
           "expected_value": 0.5,
-          "score": 0.372035,
+          "score": 0.260469,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 2280,
-      "receipts": 2280,
+      "total": 2305,
+      "receipts": 2305,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-11-03-1cebf5cce8",
-          "channel": "x",
-          "account": "flagship",
-          "status": "clean",
-          "published_at": "2026-11-03T01:21:00Z"
-        },
-        {
-          "id": "pub-ob-2026-11-03-30ca7d38dc",
-          "channel": "x",
-          "account": "flagship",
-          "status": "clean",
-          "published_at": "2026-11-03T01:21:00Z"
-        },
-        {
-          "id": "pub-ob-2026-11-03-cea9c92e21",
+          "id": "pub-ob-2026-11-03-2f3404ac50",
           "channel": "x",
           "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-11-03T01:21:00Z"
+          "published_at": "2026-11-03T20:54:43Z"
+        },
+        {
+          "id": "pub-ob-2026-11-03-6dd4dafbc1",
+          "channel": "x",
+          "account": "mastermind_news",
+          "status": "clean",
+          "published_at": "2026-11-03T20:48:39Z"
+        },
+        {
+          "id": "pub-ob-2026-11-03-c3772a83a7",
+          "channel": "x",
+          "account": "mastermind_news",
+          "status": "clean",
+          "published_at": "2026-11-03T20:48:39Z"
         }
       ]
     },
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 30,
+    "total_posts": 34,
     "signal_posts": 3,
-    "charts": 181,
+    "charts": 170,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-11-03"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-11-03T10:14:09Z",
-  "inputs_hash": "sha256:d948247edcc5bd5b7823648bb2cb35d004f26b03dbe377113877ed753093a984",
+  "produced_at": "2026-11-03T22:34:47Z",
+  "inputs_hash": "sha256:01e8b69a400945175ff22980d549a18bb0afad7c81f7e1441c3f57bb43d01c22",
   "tier": "display"
 }

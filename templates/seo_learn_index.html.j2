@@ -35,7 +35,7 @@
   @media (max-width:640px){ .lh-flag{grid-template-columns:1fr;} .lh-flag .fg-btn{justify-self:start;} .lh-flag .fg-plot{display:none;} }
 
   /* tracks — each header wears the regime rail */
-  .lh-track{margin-top:38px;}
+  .lh-track{margin-top:38px; scroll-margin-top:84px;} /* #track-* breadcrumb anchors land clear of the sticky header */
   .lh-track-h{display:flex; align-items:center; gap:11px; margin:0 0 16px;
     padding:0 0 var(--sp-3); border-bottom:1px solid var(--hair-strong);}
   .lh-track-h::before{content:""; flex:none; align-self:center; width:3px; height:18px; border-radius:2px;
@@ -92,7 +92,7 @@
   {% endif %}
 
   {% for tr in tracks %}
-  <div class="lh-track">
+  <div class="lh-track" id="track-{{ tr.key }}" tabindex="-1">
     <h2 class="lh-track-h"><span class="n">{{ '%02d' % loop.index }}</span> <span class="lbl">{{ tr.label }}</span></h2>
     <div class="lh-lessons">
       {% for ls in tr.lessons %}

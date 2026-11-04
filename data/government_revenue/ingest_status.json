@@ -233,7 +233,7 @@
     "event_eligible_action_versions_seen": 34618,
     "event_eligible_snapshots_seen": 168,
     "full_receipt_bound_baseline_this_run": true,
-    "last_observed_at": "2026-11-03T02:30:53.471227+00:00",
+    "last_observed_at": "2026-11-03T12:47:38.540459+00:00",
     "projection_generation_id": "award-event-62c64f112430dbf5246e6265",
     "projection_semantic_sha256": "62c64f112430dbf5246e6265672fc0b65206b30f72f97a949d36900f990eae28",
     "schema_version": "government_revenue.award_event_projection_state.v1",
@@ -479,10 +479,10 @@
     "new_receipts_this_run": 376,
     "path": "collection_receipts.jsonl",
     "raw_response_bodies_persisted": false,
-    "receipt_payloads_sha256": "035b537bedb5d195d1b1c050e59c17fb3c1d6332ffdd775d280580fdd7baec58",
-    "receipts_total": 31315,
+    "receipt_payloads_sha256": "d7445d251dc74484225510173d2ee8507299d87ae26e615cbab56e86931096f9",
+    "receipts_total": 31691,
     "response_receipts_this_run": 376,
-    "run_id": "usaspending-02b984ce2a025639e66bc621",
+    "run_id": "usaspending-7c83fdc370038384bf524be6",
     "schema_version": "government_revenue.collection_receipt.v1"
   },
   "coverage_scope": "bounded recipient-query award data plus bounded award-detail/action sample; not full USAspending coverage",
@@ -613,7 +613,7 @@
   "lookback_days": 1826,
   "max_action_pages_per_award": 100,
   "max_pages_per_entity": 2,
-  "observed_at": "2026-11-03T02:30:53.471227+00:00",
+  "observed_at": "2026-11-03T12:47:38.540459+00:00",
   "page_size": 100,
   "partial": true,
   "rails": {
@@ -746,7 +746,7 @@
     }
   },
   "schema_version": "government_revenue.ingest_status.v2",
-  "snapshots_total": 6725,
+  "snapshots_total": 6726,
   "source_urls": [
     "https://api.usaspending.gov/api/v2/search/spending_by_award/",
     "https://api.usaspending.gov/api/v2/awards/{award_id}/",

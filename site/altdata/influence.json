@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-11-03T05:48:30.353759+00:00",
+  "generated_utc": "2026-11-04T02:10:40.318441+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -799,12 +799,11 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.15,
+      "alt_score": 3,
+      "alt_weighted": 0.95,
       "alt_channels": [
         "affiliation",
         "lobbying",
-        "special_situation",
         "stocktwits_bull"
       ],
       "top_holder": {
@@ -1679,6 +1678,14 @@
   "n_candidates": 0,
   "filings": [
     {
+      "date": "2026-11-03",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926034541/djt20261103_425.htm"
+    },
+    {
       "date": "2026-10-28",
       "form": "6-K",
       "company": "SunScout Holding Ltd",
@@ -1740,7 +1747,7 @@
       "company": "New America Acquisition I Corp.",
       "ticker": null,
       "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/form8-k.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/ex10-1.htm"
     },
     {
       "date": "2026-10-15",
@@ -1748,7 +1755,7 @@
       "company": "New America Acquisition I Corp.",
       "ticker": null,
       "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/ex10-1.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/form8-k.htm"
     },
     {
       "date": "2026-10-01",
@@ -1764,15 +1771,7 @@
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020582.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020752.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020799.htm"
     }
   ]
 }

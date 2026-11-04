@@ -91,13 +91,15 @@ waves:
     status: in_progress
     depends_on: [W-LIQ.1, W-LIQ.2]
     next_action: >
-      As of 2026-10-19, T01-T16 and T21/T23 are merged in both repos (table under
-      "Current result (2026-10-19)"). T17 (Mastermind #1641) and T18+T19 (Mastermind
-      #1639) are green and in the Mastermind merge queue. Next: T22 after #1639
-      lands; the read-only T20/T24 audit after #1639 and #1641 land; the T25
-      exact-head review after T22; then T26 (prospective issue or a qualified
-      durable wait), T27 (browser-observed production journey) and T28 (scoped
-      closure). Handoff: agentos/handoffs/GLOBAL-LIQUIDITY-TRANSMISSION-2026-10-19.md.
+      As of 2026-11-04 every carrier T01-T19 and T21-T23 is merged (table under
+      "Current result (2026-11-04)"); T20/T24 accepted 2026-10-19; T25 ruled
+      2026-11-04 (macro REJECT at the exact head for a CI-wiring-only defect,
+      repaired on main as 796ffbf1; Mastermind ACCEPT-EXACT-HEAD as a review
+      verdict only); T26 is a
+      qualified durable wait. Remaining: consume the non-claude review lanes into
+      the T25 record, the T27 production observation once the publication outage
+      clears, and the T28 report. Handoff:
+      agentos/handoffs/GLOBAL-LIQUIDITY-TRANSMISSION-2026-11-04.md.
 landmines:
   - "The existing engine/global_liquidity.py uses JPNASSETS provider labels directly; do not reuse its monthly timestamp kernel for causal work."
   - "Availability lag is not a vintage archive: ECB and BoJ historical revisions remain a declared limitation."
@@ -116,11 +118,13 @@ do_not_redo:
   - "Do not cite Mastermind #117 as merged or protected law: it closed unmerged on 2026-09-24 and is historical architecture only."
   - "Do not rebuild accepted #6296, replace #124, weaken Executive security checks to green a native fixture, or call CI/merge a production outcome. (Carried from macro #7191.)"
 next_action: >
-  After Mastermind #1639 (T18+T19) lands, prove its blobs on master and commission
-  T22 (the accepted product surface, macro). After #1639 and #1641 (T17) both land,
-  commission the read-only T20/T24 audit against the two pinned heads. Open the T25
-  exact-head review once T22 merges. The handoff dated 2026-10-19 holds the ordered
-  steps.
+  Scoped commission closed 2026-11-04 (handoff of that date). Open items: hand the
+  four non-claude T25 review returns to the integrator for its final C43 table;
+  observe production for T27 once the sibling-owned publication outage clears
+  (never dispatch daily.yml from this workstream); keep T26 as a durable wait owned
+  by the Mastermind liquidity_lab job. ORIGINAL_W_LIQ_COMPLETE stays false while
+  the #124 lab body and prospective accrual remain open and the point-in-time
+  rights facts stay human-gated.
 ---
 
 ## Boundary
@@ -130,7 +134,76 @@ authority. Display tier only (`validated=False`). Observed state, the future-liq
 outlook and asset responses are separate capabilities with separate clocks; none
 infers authority from the presence of another's artifact.
 
-## Current result (2026-10-19)
+## Current result (2026-11-04)
+
+Each merge below was checked against its repository's default-branch history. A
+merge is a source fact; production behaviour is T27's job and is reported
+separately. Rows added since 2026-10-19 are the last four.
+
+| Tasks | Carrier | Squash on default branch |
+|---|---|---|
+| T01 + T02 + T06 | macro #9145 | `5a47995fd05d` |
+| T02 carve-out (19 lab paths) | Mastermind #1412 | `5bcc656bbe04` |
+| T03 + T04 + T05 | macro #9157 | `eb57d3db6448` |
+| T07 + T12 | Mastermind #1444 | `3a265caa9b0f` |
+| T08 | macro #9532 | `919711cb463b` |
+| T10 | macro #9647 | `41428a110bb8` |
+| T11 + T13 | Mastermind #1578 | `5a58243ac` |
+| T14 | Mastermind #1633 | `2d7021dd8` |
+| T21 + T23 | macro #9657 | `1390debab5e7` |
+| T15 + T16 | Mastermind #1635 | `0c8cb6b46` |
+| T09 | macro #9729 | `0221d6e17175` |
+| T18 + T19 | Mastermind #1639 | `c9192be4fd29` |
+| T17 | Mastermind #1641 | `6b5081a1ffbd` |
+| T22 (accepted product surface) | macro #10516 | `e8d2d1d3f88d` (2026-11-03 13:18Z) |
+| T25 finding A1 repair (CI wiring only) | macro #10681 | `796ffbf1581d` (2026-11-04 01:13Z) |
+
+**T20 + T24 (read-only audit, accepted 2026-10-19):** K1 supported_for_context
+(synthetic H.4.1 fixture scope), K2 rejected, K3/K6 not_identified, K4/K5/K7/K8
+insufficient. No capability reaches untouched_confirmation, prospective_accrual
+or production_proof.
+
+**T25 (exact-head release review, ruled 2026-11-04 01:43Z):** macro
+`REJECT 3bd363b6 (squash e8d2d1d3): A1 MAJOR`: the exclusive CI job omitted the
+eight Jinja templates the render tests load at runtime, so a template-only PR
+would have skipped the seven acceptance-rule render guards. No product-behaviour
+defect was found by any reader. Repaired on main by #10681 (`796ffbf1`); the
+forward advisory for main at or after that commit stays INSUFFICIENT until the
+release identity (T27), the independent render re-shoot and the independent
+review of the CI hunk are consumed. Four non-claude lanes (grok, minimax) ran
+once fleet DNS returned (02:37-02:45Z): A1 independently re-found and its repair
+judged additive; presenter wording clean; Mastermind rows clean; render matrix
+clean (58 tests, 16 frames, 320-px, focus, contrast). The integrator's final
+section (02:58Z) keeps the macro exact-head REJECT (now independence-met),
+narrows the forward advisory to the T27 release identity plus an independent
+closure-completeness check, and moves Mastermind to
+`ACCEPT-EXACT-HEAD 6b5081a1` as a T25 review verdict only: not reserved
+acceptance, not promotion, not production proof, no advisory/validated
+authority granted. Macro is never ACCEPT. Obligations O1-O8 (section 16.4) plus
+B1 and the minor test-claim gaps carry to the follow-up PR.
+
+**T26:** QUALIFIED ABSTAIN / durable wait. No owned issuer exists; Mastermind
+master carries no GLT drift since `6b5081a1` (checked 2026-11-03 15:51Z). Any
+future issuance belongs to the Mastermind liquidity_lab job owner.
+
+**T27:** production www.mastermind-x.com returned 502/503 at 01:30Z and 524 at
+02:33Z on 2026-11-04 (publication outage owned by sibling #9556). The
+unauthenticated contract endpoint is member-gated (401), so the view facts need an
+authenticated browser load after a render that follows the ~03:30-04:00Z producer.
+Pre-launch baseline 2026-11-02: page 200, `?v=` 071ef720/3c193891/432f6a45, no
+view labels, no forward-performance claim.
+
+Scientific state (unchanged): T09 issues zero forecast cells. T17 is
+NOT_IDENTIFIED. T18 abstains. No GLT surface makes a positive forward-performance
+claim.
+
+Human gates, named once: Yahoo/EURUSD/USDJPY/peer-ETF point-in-time facts (rights
+covered by the 2026-10-23 Chairman attestation, vintages unproven); HY OAS
+BLANK_RIGHTS; a rights-proven point-in-time policy-surprise tape for T17; ocfree
+key rotation (Chairman-only); the sibling-owned nightly publication outage; the
+fleet DNS gateway block (restored ~02:30Z 2026-11-04 by infra).
+
+## Result as of 2026-10-19 (historical)
 
 Each merge below was checked against its repository's default-branch history on
 2026-10-19. A merge is a source fact. It does not prove production behaviour, which
