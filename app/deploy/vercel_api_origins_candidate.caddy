@@ -1,0 +1,44 @@
+# SOURCE CANDIDATE ONLY — not imported into the production Caddyfile.
+# Serve existing Terminal API versions from distinct origins after Vercel takes
+# over the browser-facing app/beta hostnames. Dark until DNS/TLS and owner proof.
+terminal-origin.mastermind-x.com {
+  encode zstd gzip
+  handle /api/* {
+    header Cache-Control "private, no-store, max-age=0"
+    reverse_proxy 127.0.0.1:3000 {
+      header_up Host app.mastermind-x.com
+      header_up X-Forwarded-Host app.mastermind-x.com
+    }
+  }
+  handle {
+    header Cache-Control "private, no-store"
+    respond "Not Found" 404
+  }
+  header {
+    X-Content-Type-Options "nosniff"
+    X-Robots-Tag "noindex, nofollow, noarchive"
+    -Server
+  }
+  tls internal
+}
+
+beta-origin.mastermind-x.com {
+  encode zstd gzip
+  handle /api/* {
+    header Cache-Control "private, no-store, max-age=0"
+    reverse_proxy 127.0.0.1:3001 {
+      header_up Host beta.mastermind-x.com
+      header_up X-Forwarded-Host beta.mastermind-x.com
+    }
+  }
+  handle {
+    header Cache-Control "private, no-store"
+    respond "Not Found" 404
+  }
+  header {
+    X-Content-Type-Options "nosniff"
+    X-Robots-Tag "noindex, nofollow, noarchive"
+    -Server
+  }
+  tls internal
+}
