@@ -80,12 +80,14 @@ def answer_question(*, reference, message, access_token, user_id, providers,
     prepared = prepare_matrix_question(
         reference, access_token=access_token, expected_user_id=user_id,
         runtime=runtime.matrix, processor=destination, channel=channel,
-        policy=matches[0],
+        policy=matches[0], clock=runtime.matrix.clock,
     )
-    from engine.neuralweb.options_question_transport import MatrixQuestionTransport
+    from engine.neuralweb.options_question_transport import OptionsQuestionTransport
     # No ambient proxies, redirects or SDK retries can evade the final-byte guard.
     observed = _ObservedTransport(httpx.HTTPTransport(retries=0))
-    guard = MatrixQuestionTransport(prepared, destination, channel, observed)
+    guard = OptionsQuestionTransport(prepare=prepared, destination=destination,
+                                     channel=channel, endpoint=destination.endpoint,
+                                     model=destination.model, inner=observed)
     try:
         with httpx.Client(transport=guard, follow_redirects=False, trust_env=False,
                           timeout=httpx.Timeout(60.0, connect=5.0)) as wire:

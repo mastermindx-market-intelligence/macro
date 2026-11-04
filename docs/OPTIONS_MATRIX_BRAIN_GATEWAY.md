@@ -44,3 +44,23 @@ qualified OFF deployment; subsequent authorized activation and authenticated EN/
 Matrix→Brain selection behavior with real clocks and explicit missing data.
 No provider probe, live send, account enrollment or new scheduler is authorized by
 this source candidate. IW2 remains the sole Plan Save/reopen implementation.
+
+## Retained qualification and limitations
+
+Parent qualification found and reproduced two failures in the raw Fabric wire
+candidate: a mutable request stream could change after authorization, and an
+endpoint literal was normalized. The parent repaired both, rebuilding a fresh
+HTTPX request from returned checked bytes and rejecting normalized endpoint
+substitutions. Closing or an unsupported async attempt also consumes the guard.
+The raw worker candidate is REPAIR_REQUIRED, not independently approved.
+
+The installed Anthropic 0.86.0 / HTTPX 0.28.1 combination is exercised with real
+SDK serialization and inert transport. The worker used a different HTTPX2 SDK;
+that runtime is not claimed supported by this candidate. The existing Brain CI
+job pins Anthropic0.86.0 and runs the three added suites; no workflow is added.
+Native Lab4bda8a8f + producer + SDK composition passed both chat/stream channels:
+one exact1984-byte inert request per channel and zero additional requests after
+fresh entitlement revocation. Each channel performed8Auth/4entitlement reads.
+A fixture-clock omission initially refused rights; the gateway now passes the
+trusted native capture clock (production None remains actual UTC). These are
+source fixtures, not real customer authorization or production observations.
