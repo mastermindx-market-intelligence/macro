@@ -9,7 +9,7 @@ The #10634 managed publication refusal is unrelated and is not retried here.
 
 - Exact producer dependency: Macro `4bde86ddc8916c9bc5e6e670805ed2a76ca92e18`
   (#10126). This branch is based on it for source composition, not approval.
-- Lab adapter: #10710 `0e87a5917ac5c614e09f0c882e252885fc3a722f`,
+- Lab adapter: #10710 `4bda8a8fbd0d85ac63ff67eb999fb5268e037edb`,
   `engine/neuralweb/options_selection_context.py`. The Lab owns that file/tests.
 - Existing gateway: #10634 `09865cef3d4b49563e5739684d59a37ab9ecc4a5`.
   Its HTTP routes are `/api/brain/chat` and `/api/brain/stream`; provider selection
@@ -76,7 +76,14 @@ Actual dispatcher extraction/injection and immediate transport integration remai
 unmounted. There is no claim that an unaudited caller obeys the protocol. Tests
 use inert send spies and synthetic policy/capture/Auth, never a provider call.
 The actual source-path composition was also exercised with the immutable Lab
-adapter, not just its callback-signature fixture.
+adapter, not just its callback-signature fixture. The newer Lab revision rejects
+both evidence-block delimiters in receipt fields. Its exact SHA256 is
+`addeaccb3fcc5ac4f12701bc056bcf4e7655599db356e8c2419b58dc802b7d77`;
+parent source integration verified an inert send, fresh revocation refusal and
+both delimiter refusals. Lab remains the sole author of that repair.
+
+The incumbent `options-matrix-code` job runs both new test files and includes
+their exact source paths; no second workflow or CI dispatch is introduced.
 
 ## Acceptance remaining
 
