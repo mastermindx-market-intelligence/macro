@@ -247,9 +247,9 @@ def _return_url_ok(return_url, contract):
     """True only for a canonical International product URL.
 
     The URL must be absolute, canonical, credential-free and free of control
-    characters and backslashes; its path must name one of the two admitted
-    International product pages; its query must be an ordinary application
-    query; and its fragment must be an ordinary product anchor.
+    characters and backslashes; its path must be the admitted intl.html page;
+    its complete application query must select Macro or Risk with no group;
+    and it must have no fragment or percent-encoded inner-query bytes.
     """
     if type(return_url) is not str or not return_url:
         return False

@@ -72,3 +72,12 @@ test('native return clears navigation-only group and fragment without changing c
   assert.equal(ret.searchParams.get('pins'),'JP,GB');assert.equal(ret.href.includes('%2C'),false);assert.ok(result.href.length<=2048);
  },()=>{cfg.library_group_ids=['rates'];history.replaceState(null,'',location.href.replace('group=','group=rates'));});
 });
+
+test('no-focus Macro return keeps present-empty market without inventing focus',async()=>{
+ await fixture(async page=>{
+  const result=await page.evaluate(()=>({state:handle.getState(),href:document.querySelector('#macro a').getAttribute('href')}));
+  const target=new URL(result.href,'https://www.mastermind-x.com');const ret=new URL(target.searchParams.get('intl_return'));
+  assert.equal(result.state.selected_market,null);assert.equal(ret.searchParams.has('market'),true);assert.equal(ret.searchParams.get('market'),'');
+  assert.equal(target.searchParams.get('intl_field'),'EZ.policy_rate');assert.equal(ret.hash,'');assert.equal(ret.searchParams.get('group'),'');
+ },()=>{history.replaceState(null,'',location.href.replace('market=JP','market='));});
+});
