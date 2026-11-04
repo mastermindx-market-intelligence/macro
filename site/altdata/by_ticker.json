@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-04",
-  "generated_utc": "2026-11-04T11:54:44.757111+00:00",
-  "n_tickers": 2872,
+  "generated_utc": "2026-11-04T13:51:58.157877+00:00",
+  "n_tickers": 2865,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -650,9 +650,10 @@
       "channels": [
         "affiliation",
         "lobbying",
+        "special_situation",
         "stocktwits_bull"
       ],
-      "weighted_score": 0.95,
+      "weighted_score": 1.15,
       "lobbying_usd": 6922500.0,
       "hf_downloads_30d": 58894929.0,
       "days_to_earnings": 0,
@@ -661,7 +662,7 @@
       "github_stars": 251905,
       "stocktwits_bull_ratio": 0.67,
       "stocktwits_watchers": 601506,
-      "convergence_score": 3,
+      "convergence_score": 4,
       "trump_linked": false,
       "affiliated": true
     },
@@ -960,8 +961,8 @@
     "GME": {
       "ticker": "GME",
       "channels": [
-        "activist_13d",
-        "insider_cluster"
+        "insider_cluster",
+        "special_situation"
       ],
       "weighted_score": 1.2,
       "insider_net_usd": 119282220.0,
@@ -6464,16 +6465,6 @@
     },
     "AIB": {
       "ticker": "AIB",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "ADTX": {
-      "ticker": "ADTX",
       "channels": [
         "special_situation"
       ],
@@ -18464,16 +18455,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "MSPR": {
-      "ticker": "MSPR",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "RENX": {
       "ticker": "RENX",
       "channels": [
@@ -20174,8 +20155,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "FITB-PK": {
-      "ticker": "FITB-PK",
+    "FITB-PA": {
+      "ticker": "FITB-PA",
       "channels": [
         "special_situation"
       ],
@@ -20254,8 +20235,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "YHNAR": {
-      "ticker": "YHNAR",
+    "YHNUF": {
+      "ticker": "YHNUF",
       "channels": [
         "special_situation"
       ],
@@ -20664,8 +20645,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "RILYZ": {
-      "ticker": "RILYZ",
+    "RILYG": {
+      "ticker": "RILYG",
       "channels": [
         "special_situation"
       ],
@@ -22324,8 +22305,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "IPST": {
-      "ticker": "IPST",
+    "CASK": {
+      "ticker": "CASK",
       "channels": [
         "special_situation"
       ],
@@ -22994,16 +22975,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "DEVSF": {
-      "ticker": "DEVSF",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "DYNCW": {
       "ticker": "DYNCW",
       "channels": [
@@ -23014,8 +22985,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "QETAU": {
-      "ticker": "QETAU",
+    "QETAR": {
+      "ticker": "QETAR",
       "channels": [
         "special_situation"
       ],
@@ -23266,16 +23237,6 @@
     },
     "AVEX": {
       "ticker": "AVEX",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "ATIIW": {
-      "ticker": "ATIIW",
       "channels": [
         "special_situation"
       ],
@@ -24064,16 +24025,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "GME-WT": {
-      "ticker": "GME-WT",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "SBXUF": {
       "ticker": "SBXUF",
       "channels": [
@@ -24384,8 +24335,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "TDS-PV": {
-      "ticker": "TDS-PV",
+    "TDS-PU": {
+      "ticker": "TDS-PU",
       "channels": [
         "special_situation"
       ],
@@ -26884,16 +26835,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "MYCB": {
-      "ticker": "MYCB",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "YYAI": {
       "ticker": "YYAI",
       "channels": [
@@ -27346,16 +27287,6 @@
     },
     "NCMI": {
       "ticker": "NCMI",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "EMCGF": {
-      "ticker": "EMCGF",
       "channels": [
         "special_situation"
       ],
@@ -29326,6 +29257,16 @@
     },
     "RXO": {
       "ticker": "RXO",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "QSPC": {
+      "ticker": "QSPC",
       "channels": [
         "special_situation"
       ],
