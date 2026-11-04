@@ -37,30 +37,34 @@ PAGE_ASSETS = ("sector_cycles.css", "sector_cycles.js")   # SHARED with the US/C
 SHARED_ASSETS = ("mm_charts.js", "cycle.css")             # the shared cycle design system
 
 
-def _load_narratives(root: Path) -> dict:
+def _load_narratives(root: Path, receipt: dict | None = None) -> dict:
     """NARR keyed by the chart series id: countries by ticker.lower() (ewj…), aggregates
     likewise (efa…). Merges the file's `sectors` + `baskets` maps. Optional.
 
     W2.1: epoch-aware — resolves narratives.<epoch>.json for the engine's current epoch,
     falling back to the legacy un-suffixed file (tagged tr_v0). Country baskets keep their
     un-prefixed keying. Zero behaviour change today."""
-    from scripts._narrative_epoch import resolve_narratives
+    from scripts._narrative_epoch import resolve_narratives, publication_receipt
     res = resolve_narratives("country_cycles", root / "data" / "country_cycles", "narratives")
     if res["stale_quarantined"]:
         log.warning("country_cycles: narratives stale-quarantined (epoch %s) — rendering without",
                     res["epoch"])
+    if receipt is not None:
+        receipt.update(publication_receipt(res))
     return res["map"]
 
 
-def _load_dna(root: Path) -> dict:
+def _load_dna(root: Path, receipt: dict | None = None) -> dict:
     """SECTOR_DNA cycle-cause profiles, same id keying as narratives (ticker.lower()).
 
     W2.1: epoch-aware (resolves cycle_dna.<epoch>.json, falls back to legacy cycle_dna.json)."""
-    from scripts._narrative_epoch import resolve_narratives
+    from scripts._narrative_epoch import resolve_narratives, publication_receipt
     res = resolve_narratives("country_cycles", root / "data" / "country_cycles", "cycle_dna")
     if res["stale_quarantined"]:
         log.warning("country_cycles: cycle_dna stale-quarantined (epoch %s) — rendering without DNA",
                     res["epoch"])
+    if receipt is not None:
+        receipt.update(publication_receipt(res))
     return res["map"]
 
 
@@ -291,8 +295,9 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         log.warning("country_cycles: forward log append skipped: %s", e)
 
-    narr = _load_narratives(root)
-    dna = _load_dna(root)
+    sources = {"narr": {}, "dna": {}}
+    narr = _load_narratives(root, sources["narr"])
+    dna = _load_dna(root, sources["dna"])
 
     # W3.4: enrich NARR map with TTL / staleness / archetype-check metadata
     try:
@@ -310,20 +315,11 @@ def main() -> int:
     #                                    hydrated AFTER first paint by sector_cycles.js)
     #   country_cycles_narr_data.js   -> SECTOR_NARR (lazy, only needed in focus panels)
     #   country_cycles_dna_data.js    -> SECTOR_DNA  (lazy, only needed in dnaHTML())
-    from scripts._cycles_payload import split_cycles_payload
-    core, series = split_cycles_payload(data)   # does not mutate `data` (features json stays full)
-    (site / "country_cycles_data.js").write_text(
-        "window.SECTOR_CYCLES=" + json.dumps(core, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
-    (site / "country_cycles_series_data.js").write_text(
-        "window.SECTOR_CYCLES_SERIES=" + json.dumps(series, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
-    (site / "country_cycles_narr_data.js").write_text(
-        "window.SECTOR_NARR=" + json.dumps(narr, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
-    (site / "country_cycles_dna_data.js").write_text(
-        "window.SECTOR_DNA=" + json.dumps(dna, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
+    from scripts._cycles_payload import publication_scripts
+    publication = publication_scripts(data, narr, dna, sources=sources)
+    for kind, suffix in (("core", "data"), ("series", "series_data"), ("narr", "narr_data"), ("dna", "dna_data")):
+        (site / ("country_cycles_" + suffix + ".js")).write_text(publication[kind], encoding="utf-8")
+
 
     # also publish the raw model for external consumers / debugging
     fdir = site / "countrycyclesdata"

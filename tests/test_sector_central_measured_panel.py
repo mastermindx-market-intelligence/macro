@@ -170,6 +170,13 @@ var FIX = __FIXTURE__;
 var CFG = __CFG__;
 var MR = JSON.parse(JSON.stringify(FIX));
 if (CFG.mr) { Object.keys(CFG.mr).forEach(function (k) { MR[k] = CFG.mr[k]; }); }
+// This UI harness supplies an explicitly accepted source receipt. The real
+// emitter/receiver integrity checks run in test_cycles_publication.py.
+var __spine={schema:'sector_cycles.sector_spine.v1',scope:'us_sectors_11',sha256:'a'.repeat(64)};
+MR.generation.cycle_spine=__spine;
+__window.SectorCyclesEvidence=function(){return CFG.proof===false?null:(CFG.proof||{
+  status:'verified',spine:__spine,parts:{core:'verified',series:__window.SC_SERIES_DATA&&!__window.SECTOR_CYCLES_SERIES?'pending':'verified'}
+});};
 var D0 = null;
 if (CFG.central !== 'none' && CFG.central !== 'absent') {
   D0 = { as_of: CFG.as_of || '2026-10-09', measured_read: MR };
@@ -253,6 +260,42 @@ def _run(body: str = "show();", fixture: dict | None = None, cfg: dict | None = 
 
 def _all_text(out: dict) -> str:
     return " ".join(str(v) for v in out.values())
+
+
+@needs_node
+def test_entry_specific_history_lens_restores_with_generation_validation():
+    out = _run(body="""
+        obsClick();
+        var saved=__window.SectorMeasuredCapture();
+        __window.SectorMeasuredApply(Object.assign({},saved,{historyMode:'recon'}));
+        var recon=segState();
+        __history.state={siWorkspace:{schema:'sector_central.entry.v1',href:location.pathname+location.search+location.hash,measured:saved}};
+        dispatchWin('popstate',{});
+        var observed=segState();
+        __window.SectorMeasuredApply(Object.assign({},saved,{generation:'older-same-date'}));
+        show({recon:recon,observed:observed,stale:segState(),saved:saved});
+    """, cfg={"search":"?g=XLE","cycles":CYC})
+    assert out["recon"]["recon"] == "true"
+    assert out["observed"]["obs"] == "true"
+    assert out["stale"]["recon"] == "true"
+    assert out["saved"]["groupId"] == "XLE"
+
+
+@needs_node
+@pytest.mark.parametrize("state", ["legacy_unverified", "superseded", "mismatch", "integrity_failed"])
+def test_history_rejects_unverified_or_different_evidence_even_with_present_points(state):
+    proof = {"status":"verified","spine":{"schema":"sector_cycles.sector_spine.v1",
+             "scope":"us_sectors_11","sha256":"a"*64},"parts":{"series":"verified"}}
+    if state == "mismatch":
+        proof["spine"]["sha256"] = "b"*64
+    elif state == "integrity_failed":
+        proof["parts"]["series"] = state
+    else:
+        proof["status"] = state
+    out = _run(cfg={"search":"?g=XLE","cycles":CYC,"proof":proof})
+    assert "polyline" not in out["hist"]
+    assert "mx-error" in out["hist"]
+    assert "+4.1%" in out["list"], "the independent current reading must survive"
 
 
 def _button(html: str, ticker: str) -> str:

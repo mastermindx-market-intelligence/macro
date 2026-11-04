@@ -19,15 +19,32 @@ const results=[];
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.route('**/*',r=>new URL(r.request().url()).origin===new URL(base).origin&&r.request().method()==='GET'?r.continue():r.abort());
    await page.goto(base+'/sector_central.html?g=XLE#map',{waitUntil:'networkidle'});
-   assert.equal(await page.locator('body').getAttribute('data-d05-fixture'),'archived-source');
+   const fixture=await page.locator('body').getAttribute('data-d05-fixture');
+   assert(['archived-source','synthetic-coherent','synthetic-same-date-mismatch','synthetic-mixed-series','synthetic-missing-extras'].includes(fixture));
    await page.locator('#mr-cycle-link').waitFor();
+   const duplicateIds=await page.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(el=>el.id);return [...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))];});
+   assert.deepEqual(duplicateIds,[],'rendered host IDs must be unique');
+   await page.locator('#si-map-tabs [data-fam="sectors"]').click();
+   assert.equal(await page.evaluate(()=>window.__siScope()),'sectors');
+   const assertMapCohort=async()=>{
+    const population=await page.evaluate(()=>({
+     expected:window.BASKETS.theme_intel.themes.filter(row=>row.id.startsWith('us_sector_')).map(row=>row.id).sort(),
+     marks:[...document.querySelectorAll('#rvx-rmap .dot')].map(el=>el.dataset.id).sort(),
+     rows:[...document.querySelectorAll('#rvx-board .rvx-brow')].map(el=>decodeURIComponent(el.getAttribute('href').split('/').pop().replace(/\.html$/,'')))
+    }));
+    assert.equal(population.expected.length,11,'the frozen fixture has eleven native equal-weight sector groups');
+    assert.deepEqual(population.marks,population.expected,'rendered marks must follow the selected cohort');
+    assert.ok(population.rows.length>0&&population.rows.every(id=>population.expected.includes(id)),'rendered list must follow the selected cohort');
+   };
+   await assertMapCohort();
    assert.equal(await page.locator('#sc-chart svg').count(),0,'map must not create the hidden native chart');
    await page.locator('.mr-segbtn[data-h="obs"]').click();
    await page.locator('#mr-cycle-link').click();
    await page.waitForFunction(()=>['applied','source_mismatch','source_unavailable','unsupported'].includes(document.querySelector('#sc-cycle-status').dataset.state));
    const sourceState=await page.locator('#sc-cycle-status').getAttribute('data-state');
-   if(sourceState==='source_mismatch') {
+   if(sourceState==='source_mismatch'||sourceState==='source_unavailable') {
     assert.equal(await page.locator('#sc-native-study').isVisible(),false);
+    assert.equal(await page.locator('#sc-cycle-latest').isVisible(),true,'only a readable own snapshot can be opened');
     await page.screenshot({path:path.join(out,`${width}-${theme}-${lang}-mismatch.jpg`),type:'jpeg',quality:80});
     await page.locator('#sc-cycle-latest').click();
    }
@@ -38,7 +55,8 @@ const results=[];
    assert.equal(await page.locator('#sc-chart svg').count(),1);
    assert.ok((await page.locator('#sc-chart').boundingBox()).width>200);
    assert.equal(await page.locator('.cyc-chip[data-id="xle"]').getAttribute('class').then(c=>c.includes('on')),true);
-   await page.locator('#sc-adv-toggle').click();
+   if(await page.locator('#sc-adv-toggle').isVisible()) await page.locator('#sc-adv-toggle').click();
+   assert.equal(await page.locator('#sc-modes [data-mode="price"]').isVisible(),true,'chart options must be reachable at this viewport');
    await page.locator('#sc-modes [data-mode="price"]').click();
    await page.locator('#sc-scale [data-scale="linear"]').click();
    await page.locator('#sc-zoom [data-i="3"]').click();
@@ -49,18 +67,45 @@ const results=[];
    await page.locator('#sc-cycle-heading').scrollIntoViewIfNeeded();
    await page.screenshot({path:path.join(out,`${width}-${theme}-${lang}.jpg`),type:'jpeg',quality:85});
    await page.locator('#sc-tabs [data-fam="baskets"]').click();
+   assert.equal(await page.evaluate(()=>window.__siScope()),'sectors','Cycles family changes must not change the Market map universe');
+   await assertMapCohort();
    assert.equal(new URL(page.url()).searchParams.get('cycleFamily'),'baskets');
    assert.equal(new URL(page.url()).searchParams.has('cycle'),false);
+   const saved=await page.evaluate(()=>window.SectorCyclesCapture());
    await page.locator('#sc-cycle-return').click();
    await page.waitForURL('**/sector_central.html?g=XLE#map');
+   await assertMapCohort();
    assert.equal(await page.locator('.mr-segbtn[data-h="obs"]').getAttribute('aria-pressed'),'true');
    await page.waitForFunction(()=>document.activeElement.id==='mr-cycle-link');
-   await page.goForward();
+   await page.goBack(); // explicit Return is a validated local navigation; Back revisits Cycles
    await page.waitForURL('**#cycles');
    assert.equal(await page.locator('#sc-tabs [data-fam="baskets"]').getAttribute('aria-pressed'),'true');
    assert.equal(await page.locator('#sc-chart svg').count(),1);
+   if(fixture==='synthetic-coherent') {
+    const restored=await page.evaluate(()=>window.SectorCyclesCapture());
+    for(const key of ['publicationId','family','focus','mode','scale','range','phases','selectedIds','leg']) assert.deepEqual(restored[key],saved[key],`restored ${key}`);
+    await page.reload({waitUntil:'networkidle'});
+    await page.waitForFunction(()=>document.querySelector('#sc-cycle-status').dataset.state==='applied');
+    const reloaded=await page.evaluate(()=>window.SectorCyclesCapture());
+    for(const key of ['publicationId','family','focus','mode','scale','range','phases','selectedIds','leg']) assert.deepEqual(reloaded[key],saved[key],`reload ${key}`);
+   }
+   await page.locator('.si-side [data-view="moving"]').click();
+   await page.locator('#rc-events').waitFor({state:'visible'});
+   const disclosure=page.locator('#rc-early-context details > summary').first();
+   await disclosure.waitFor({state:'visible'});
+   await disclosure.scrollIntoViewIfNeeded();
+   await disclosure.focus();
+   await page.keyboard.press('Shift+Tab');
+   await page.keyboard.press('Tab');
+   assert.equal(await disclosure.evaluate(el=>el===document.activeElement),true,'rotation evidence disclosure remains in the Tab order');
+   await page.keyboard.press('Enter');
+   assert.equal(await disclosure.evaluate(el=>el.parentElement.open),true);
+   await page.screenshot({path:path.join(out,`${width}-${theme}-${lang}-moving.jpg`),type:'jpeg',quality:85});
+   await page.locator('.si-side [data-view="cycles"]').click();
+   await page.locator('.si-side [data-view="moving"]').click();
+   assert.equal(await disclosure.isVisible(),true,'Cycles must not hide or obstruct the rotation evidence');
    assert.deepEqual(errors,[],'page exceptions must be resolved or explicitly classified');
-   results.push({width,height,theme,lang,sourceState,status:'passed'});
+   results.push({width,height,theme,lang,fixture,sourceState,status:'passed'});
    await context.close();
   }
  } finally { await browser.close(); }

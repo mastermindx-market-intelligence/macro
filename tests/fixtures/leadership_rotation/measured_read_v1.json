@@ -104,6 +104,11 @@
  "generation": {
   "benchmark": "SPY",
   "cohort_id": "us_sectors_11",
+  "cycle_spine": {
+   "schema": "sector_cycles.sector_spine.v1",
+   "scope": "us_sectors_11",
+   "sha256": "ae5f5030fa01d123049cff780709cf9b4f584ad4b9c5e6f908df5ad81db4b2e9"
+  },
   "history_as_of": "2026-10-09",
   "history_schema": "sector_cycles.rs_history.v1",
   "id": "2026-10-09|SPY|us_sectors_11",

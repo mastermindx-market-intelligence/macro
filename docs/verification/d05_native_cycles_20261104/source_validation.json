@@ -1,11 +1,11 @@
 {
   "schema": "d05.native_cycles.source_validation.v1",
   "status": "SOURCE_TESTED_BROWSER_ACCEPTANCE_HELD",
-  "law_pin": "33aec27fff672a4f334cb79b3b2604156401597d",
+  "law_pin": "b5e8a9682f72b1bf802e50cf16f77f878ce596f3",
   "source_base": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03",
   "branch": "claude/d05-native-cycles-20261104",
   "test_result": {
-    "passed": 273,
+    "passed": 462,
     "skipped": 3,
     "failed": 0,
     "skip_reasons": [
@@ -13,13 +13,24 @@
       "No local promises_price_v1_zz14_v0.json scorecard (one test)"
     ]
   },
-  "test_command": ".venv/bin/python -m pytest -q -rs tests/test_sector_central_history.py tests/test_si_workspace_shell.py tests/test_sector_cycles.py tests/test_sector_paper_cycles_ia.py tests/test_sector_central_contract.py tests/test_xpv2_sector_r3_fixture.py tests/test_cycles_payload_split.py --tb=short",
+  "test_command": ".venv/bin/python -m pytest -q -rs tests/test_sector_central_history.py tests/test_si_workspace_shell.py tests/test_sector_cycles.py tests/test_sector_paper_cycles_ia.py tests/test_sector_central_contract.py tests/test_xpv2_sector_r3_fixture.py tests/test_cycles_payload_split.py tests/test_cycles_publication.py tests/test_cycles_entry_state.py tests/test_sector_generation_guard.py tests/test_leadership_measured_read.py tests/test_sector_central_measured_panel.py tests/test_rekey_narratives.py tests/test_narrative_ttl.py --tb=short tests/test_sector_paper_copy_deck.py",
   "additional_checks": {
     "javascript_syntax": "passed",
     "diff_whitespace": "passed",
     "paired_assets": "byte-identical",
     "preview_template_render": "passed",
-    "7595_router_patch_check": "passed; code hunks only; no mutation"
+    "7595_router_patch_check": "passed; code hunks only; no mutation",
+    "rendered_inline_javascript": "9 nonempty inline executable scripts checked in the current rendered fixture",
+    "preview_scenarios": [
+      "archive",
+      "coherent",
+      "same-date-mismatch",
+      "mixed-series",
+      "missing-extras"
+    ],
+    "design_system_enforce_added": "passed; 0 new blocking findings",
+    "runtime_style_guard": "not executed: sparse site tree refused; full checkout/browser host owed",
+    "general_visual_evidence_guard": "not executed: sparse mockups tree refused; canonical capture owed"
   },
   "browser": {
     "status": "NOT_PROVEN",
@@ -41,21 +52,52 @@
     "No uncertain Paper retries"
   ],
   "file_sha256": {
-    "docs/verification/d05_native_cycles_20261104/README.md": "674bd77b733bc3a98279c314afd7b288501ec44d13416179b60efd2d90bebf42",
-    "docs/verification/d05_native_cycles_20261104/prepare_preview.py": "6bdc89da08fbf0e18d871f1fe5b1fc02cb7a1581e3918964289882f813dda2b5",
-    "docs/verification/d05_native_cycles_20261104/verify_browser.cjs": "5eca7d273c300f53b9fd0a3f438d1a7af34cc5d8e1a69443fef438c293721a95",
-    "research/sector_completion_20261021/INTEGRATION_CONTRACT.md": "0e1f869e855bbe9de7b1821a3eaaea59db2bbb9ec03d2c1eb562dfbaad602779",
-    "site/sector_cycles.css": "58add77781d6c038537456d9844904768fff74a1c621aee19b95d17cd07b3077",
-    "site/sector_cycles.js": "63a33883debca483c87bd2b53a39060a253074d905a052a639af1dc7bd4123f7",
-    "site/si_workspace.js": "7cf62494e046a9fbec3af843e410281c7fa28b982975301dec846faf77bab67b",
-    "templates/sector_central.html.j2": "de7a15967913a80aac6723c2f7cc20eb3a860bffd5b5d67edcca394ceb1fdce4",
-    "templates/sector_cycles.css": "58add77781d6c038537456d9844904768fff74a1c621aee19b95d17cd07b3077",
-    "templates/sector_cycles.js": "63a33883debca483c87bd2b53a39060a253074d905a052a639af1dc7bd4123f7",
-    "templates/si_workspace.js": "7cf62494e046a9fbec3af843e410281c7fa28b982975301dec846faf77bab67b",
-    "tests/test_sector_central_contract.py": "d94e5823bdad90d09e2945a05aa770772a4892fb5bd631756a5953b0f43b65f3",
-    "tests/test_sector_central_history.py": "9fa838d33cb20bf821e3d487847f9c0f1c655616985408762520b41560a7113d",
-    "tests/test_sector_cycles.py": "0f29db7ef2c1b82ff07e360d449f5d6049312991e1b07fff2b85eb4c9f29a9f1",
-    "tests/test_si_workspace_shell.py": "df51144beb5d573762320b52f6f59f518e4f60a56661160e1aa74724b685d984",
-    "tests/test_xpv2_sector_r3_fixture.py": "b97d0c841bb56996b0242ed4f30445a59dfa5a088c463df1b567c0083810597e"
+    "design_refs/sector-paper-20261021/copy_deck.json": "29013d96309b6fab83c3a364871305c206d6f97120c7d44d3d22e59200942722",
+    "docs/verification/d05_native_cycles_20261104/README.md": "fce6e0db6fb4144c1edd757f8f9f89864c38e68ddb239195f7fb55f8a280b3a9",
+    "docs/verification/d05_native_cycles_20261104/SOURCE_CONTRACT.md": "1447785589d2a1e5e0b3daf2329084542e65d85a3959c2643acf0c374c73497e",
+    "docs/verification/d05_native_cycles_20261104/prepare_preview.py": "b82914e4b8de0f1ff9d18d07a15c4d3cf3c7499e2a729017910d10529a23c762",
+    "docs/verification/d05_native_cycles_20261104/verify_browser.cjs": "683dcc03134335701ebb45a628944410fb07c0a15e485735fdaeb22062d3a11b",
+    "engine/leadership_rotation_context.py": "637ad1e50132086b848a1221103e19b8f530dd1b5cbc9a312ccc23015faab49c",
+    "engine/sector_generation_guard.py": "c16d0c74fb35f2c19a5ffda816f988e8435b5b6608690d1df53f871319417ae3",
+    "scripts/_cycles_payload.py": "261fd72e212f241c9fdef07d5ef507b83866c2af0ccfebef1843cf3ca4d0c24f",
+    "scripts/_narrative_epoch.py": "922356c4c03cd8ccc908be690077ad2fac366fdc7abf01afe040812acedd0abf",
+    "scripts/build_china_sector_cycles.py": "7069d02408a2b7962f46bf9aca7a6087a8bbae906df6efb08d52461ce592e69e",
+    "scripts/build_country_cycles.py": "00501db4028990403813e345fe61ca8e997858dcb0c458f4088677496642bad3",
+    "scripts/build_sector_cycles.py": "187d5d17948712260c1ac5a0861e4b43e5e1926a6af5e9ec143c4c67556804d4",
+    "site/sector_cycles.css": "e255e69f2a695aca594f6cbeb3f2464cd9c8bf356050b38239f94465f95ab886",
+    "site/sector_cycles.js": "34176d7d7f056b4096959b6677419a778ea2e777fc94b191c34aae73476b9dcc",
+    "site/si_workspace.js": "674a592d2d82b9b347e190727eed71bfc2abdf4a9d53ddaa8415b81c6a030bdf",
+    "templates/sector_central.html.j2": "fd4f75c8825d3bb4c16f537e71cb1fa14799a17b334a829ea733a9c016809241",
+    "templates/sector_cycles.css": "e255e69f2a695aca594f6cbeb3f2464cd9c8bf356050b38239f94465f95ab886",
+    "templates/sector_cycles.js": "34176d7d7f056b4096959b6677419a778ea2e777fc94b191c34aae73476b9dcc",
+    "templates/si_workspace.js": "674a592d2d82b9b347e190727eed71bfc2abdf4a9d53ddaa8415b81c6a030bdf",
+    "tests/fixtures/leadership_rotation/measured_read_v1.json": "a468e4f0a132cedb8ebaebe0a66528446df22582b976a8e5a8c58ae44ba05c3a",
+    "tests/test_cycles_entry_state.py": "193c608abadab8e32f4a4d0abf90103160a669efaca24f617bd36f4ff9e66932",
+    "tests/test_cycles_publication.py": "a8bca2922ecf77d47d9c34f68f4d69f119e014adcf16f374fb2461bf2a389015",
+    "tests/test_sector_central_history.py": "b33d86358af005f2ac6fd4950487628b01fe7da122fc86c1ba2fa4a2531787ec",
+    "tests/test_sector_central_measured_panel.py": "50d1084f0d3d193312ba050e934294239e97628cf3c245970c57fb417a9d505c",
+    "tests/test_sector_cycles.py": "00300be2697fc81a607308d067973fb0f10ab80039a76b6956441885b2d5b460",
+    "tests/test_sector_paper_copy_deck.py": "9f76fd5e8cbf0933beb4a746276f8398d06105fb45fe179f442be082537de817",
+    "tests/test_si_workspace_shell.py": "39636918d97c7e0ce309ad3f28946d1acd1f8991a7ffa980befd63896ae5d497"
+  },
+  "source_parent": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
+  "ci": {
+    "prior_head": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
+    "run": 41773065024,
+    "status": "completed",
+    "failed_packs": [
+      "ci-pack-0",
+      "ci-pack-9"
+    ],
+    "disposition": "reference-integrity copy-deck cause repaired and source-tested; EW-P4 immutable-source recapture still owed; no CI success claimed; inactive merge-queue context separate"
+  },
+  "paper": {
+    "file": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "page": "p-3-0",
+    "boards": 12,
+    "nodes": 1448,
+    "token_hash": "811c9dc5",
+    "write_schema_accepted": false,
+    "catalog": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4"
   }
 }

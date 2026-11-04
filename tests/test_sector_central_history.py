@@ -443,7 +443,7 @@ context={document:doc,history,URL,URLSearchParams,scrollY:650,scrollTo(){},
  SECTOR_CENTRAL:{measured_read:{generation:{session_end:'2026-10-30'}}},
  SectorCyclesApply:c=>{applied.push(c);return {status:c.asOf&&c.asOf!=='2026-11-02'?'source_mismatch':'applied',asOf:'2026-11-02',series:'ready'}}};
 context.window=context;vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),context);
-const opener=node('mr-cycle-link');context.SectorCentralOpenCycle('xle',opener);
+const opener=node('mr-cycle-link');nodes['mr-cycle-link']=opener;context.SectorCentralOpenCycle('xle',opener);
 assert.strictEqual(url.hash,'#cycles');assert.strictEqual(url.searchParams.get('g'),'XLE');
 assert.strictEqual(url.searchParams.get('universe'),'us');assert.strictEqual(history.state.originNav.source,'market');
 assert.strictEqual(nodes['sc-cycle-status'].dataset.state,'source_mismatch');assert.strictEqual(nodes['sc-native-study'].hidden,true);
@@ -454,7 +454,7 @@ assert.strictEqual(nodes['sc-native-study'].hidden,false);assert.strictEqual(app
 context.SectorCyclesHost.onFocus(null,'baskets');assert.strictEqual(url.searchParams.get('cycleFamily'),'baskets');assert.strictEqual(url.searchParams.has('cycle'),false);
 context.__siRoute();assert.strictEqual(applied.at(-1).family,'baskets');
 click('sc-cycle-return');assert.strictEqual(url.href,entries[0].url);assert.strictEqual(url.hash,'#map');
-frames.splice(0).forEach(f=>f());assert.strictEqual(doc.activeElement.id,'mr-cycle-link');
+while(frames.length)frames.splice(0).forEach(f=>f());assert.strictEqual(doc.activeElement.id,'mr-cycle-link');
 context.SectorCentralOpenCycle('xlk',opener);assert.strictEqual(url.searchParams.has('cycleSource'),false);
 assert.strictEqual(url.searchParams.has('cycleFamily'),false);
 history.replaceState({...history.state,siCyclesOrigin:{href:'https://unrelated.example/'}},'',url.href);

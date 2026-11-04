@@ -15,7 +15,8 @@
 (function () {
   "use strict";
 
-  var DATA = window.SECTOR_CYCLES, NARR = window.SECTOR_NARR || {};
+  var DATA = window.SECTOR_CYCLES, PUB = window.SECTOR_CYCLES_PUBLICATION || null;
+  var NARR = PUB ? {} : (window.SECTOR_NARR || {}), DNA = PUB ? {} : (window.SECTOR_DNA || {});
   if (!DATA || !DATA.sectors) return;
 
   /* FIX 1b — strip "(Equal-Weight)" / "（等权）" suffixes from all string values at boot */
@@ -31,7 +32,7 @@
   }
   deepStrip(DATA);
   deepStrip(NARR);
-  if (window.SECTOR_DNA) { deepStrip(window.SECTOR_DNA); }
+  deepStrip(DNA);
   var META = DATA.meta, PHASES = DATA.phases, SECTORS = DATA.sectors;
   var BASKETS = DATA.baskets || [];
   var NASDAQ = DATA.nasdaq || [];
@@ -64,13 +65,83 @@
   // "YYYY-MM" -> decimal year (for the forecast band guides)
   function ymToX(t) { if (!t) return null; var p = String(t).split("-"); return (+p[0]) + ((+p[1] || 1) - 1) / 12; }
 
-  var byId = {};
+  var byId = Object.create(null);
   ALL.forEach(function (s) { byId[s.id] = s; });
+
+  /* The publication belongs to the existing split-data producer. Exact JSON
+     bytes are hashed before use; session equality alone is never coherence. */
+  var publicationState = PUB ? 'pending' : 'legacy_unverified';
+  var partStates = {core:publicationState, series:'pending', narr:'pending', dna:'pending'};
+  var partEpoch = {series:0, narr:0, dna:0};
+  var SHA = /^[a-f0-9]{64}$/;
+  function activePublication() {
+    return window.SECTOR_CYCLES === DATA && (!PUB || window.SECTOR_CYCLES_PUBLICATION === PUB);
+  }
+  function hashText(raw) {
+    if (!window.crypto || !window.crypto.subtle || typeof TextEncoder !== 'function') return Promise.reject(new Error('verification_unavailable'));
+    return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw)).then(function(bytes) {
+      return Array.from(new Uint8Array(bytes)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    });
+  }
+  function validManifest() {
+    return PUB && PUB.schema==='sector_cycles.publication.v1' && /^cycp1-[a-f0-9]{64}$/.test(PUB.id||'') &&
+      PUB.region===(META.region||'us') && PUB.namespace==='sector_cycles:'+(META.region||'us') &&
+      cycleSession(PUB.as_of) && PUB.as_of===META.asOf && PUB.benchmark===(META.benchmark||null) &&
+      PUB.basis==='current_reconstruction' && typeof PUB.payload_json==='string' && typeof PUB.manifest_json==='string' &&
+      PUB.payload_sha256 && ['core','series','narr','dna'].every(function(k){ return SHA.test(PUB.payload_sha256[k]||''); });
+  }
+  function publicationNotice() {
+    var host=document.getElementById('sc-native-study') || document.querySelector('.sc-chartwrap');
+    if (!host) return;
+    var note=document.getElementById('sc-publication-status');
+    if (!note) { note=el('p','sc-publication-status');note.id='sc-publication-status';note.setAttribute('role','status');host.insertBefore(note,host.firstChild); }
+    var text=publicationState==='verified' ? L('Core evidence verified', '基础证据已核验') :
+      publicationState==='legacy_unverified' ? L('Unverified archive — split-file identity is unavailable.', '未核验归档 — 分拆数据文件身份不可用。') :
+      publicationState==='pending' ? L('Verifying source integrity…', '正在核验来源完整性…') :
+      L('Source integrity could not be verified. This publication is unavailable.', '无法核验来源完整性。本发布版本不可用。');
+    var extra=['narr','dna'].filter(function(k){ return partStates[k]!=='pending' && partStates[k]!=='verified' && partStates[k]!=='legacy_unverified'; });
+    if (extra.length) text+=L(' · Some historical annotations are unavailable.', ' · 部分历史注释不可用。');
+    note.textContent=text;
+    note.dataset.state=publicationState;
+  }
+  function evidenceReceipt() {
+    var status=activePublication()?publicationState:'superseded';
+    return {schema:'sector_cycles.evidence.v1', status:status, publicationId:PUB&&PUB.id||null,
+      asOf:META.asOf||null, region:META.region||'us', spine:status==='verified'?PUB.sector_spine:null,
+      parts:Object.assign({},partStates), sources:PUB&&PUB.sources||null};
+  }
+  window.SectorCyclesEvidence=evidenceReceipt;
+  function verifyCore() {
+    if (!PUB) return Promise.resolve('legacy_unverified');
+    if (!validManifest()) return Promise.resolve('invalid_payload');
+    return Promise.all([hashText(PUB.payload_json),hashText(PUB.manifest_json)]).then(function(digests) {
+      if (!activePublication()) return 'superseded';
+      if (digests[0]!==PUB.payload_sha256.core || 'cycp1-'+digests[1]!==PUB.id) return 'integrity_failed';
+      var manifest=JSON.parse(PUB.manifest_json);
+      var keys=['schema','region','namespace','as_of','benchmark','basis','sector_spine','sources','payload_sha256'];
+      if (!manifest || Object.keys(manifest).length!==keys.length || !keys.every(function(k){
+        return Object.prototype.hasOwnProperty.call(manifest,k) && JSON.stringify(manifest[k])===JSON.stringify(PUB[k]);
+      })) return 'integrity_failed';
+      var parsed=JSON.parse(PUB.payload_json);deepStrip(parsed);
+      return JSON.stringify(parsed)===JSON.stringify(DATA)?'verified':'integrity_failed';
+    }).catch(function(){ return 'verification_unavailable'; });
+  }
+  function verifyPart(kind,envelope) {
+    if (publicationState!=='verified') return Promise.resolve({status:'source_unavailable'});
+    if (!envelope || envelope.schema!=='sector_cycles.part.v1' || envelope.kind!==kind || typeof envelope.payload_json!=='string') return Promise.resolve({status:'invalid_payload'});
+    if (envelope.publication_id!==PUB.id || envelope.namespace!==PUB.namespace || envelope.sha256!==PUB.payload_sha256[kind]) return Promise.resolve({status:'incompatible_publication'});
+    return hashText(envelope.payload_json).then(function(digest) {
+      if (digest!==envelope.sha256) return {status:'integrity_failed'};
+      var value=JSON.parse(envelope.payload_json);
+      return value && typeof value==='object' && !Array.isArray(value) ? {status:'verified',value:value} : {status:'invalid_payload'};
+    }).catch(function(){ return {status:'verification_unavailable'}; });
+  }
 
   /* ---- view state -------------------------------------------------------- */
   // family = which independent SECTION is active: the 11 sector ETFs (clean default)
   // or the 34 thematic baskets (their own space). Only one family is ever on screen.
   var state = { mode: "osc", scale: "log", focus: null, family: "sectors" };
+  var restoring = false, stateReady = false, selectedLeg = null, appliedEntry = null, entryRestoration = null;
   // A host owns navigation explicitly. The two older embedding signals remain
   // defensive guards for hosts (including China) that predate this contract.
   function embedded() {
@@ -79,6 +150,57 @@
   function notifyHostFocus(id) {
     var host = window.SectorCyclesHost;
     if (host && typeof host.onFocus === "function") host.onFocus(id, state.family);
+  }
+  function notifyState() {
+    if (!stateReady || restoring) return;
+    var host=window.SectorCyclesHost;
+    if (host && typeof host.onState==='function') host.onState(captureView());
+  }
+  function captureView() {
+    return {schema:'sector_cycles.view.v1', publicationId:publicationState==='verified'?PUB.id:null,
+      region:META.region||'us', family:state.family, focus:state.focus, mode:state.mode, scale:state.scale,
+      range:(heroChart?heroChart.getView():curView).slice(),
+      phases:PHASE_FILTER.filter(function(p){return !!phaseState[p.key];}).map(function(p){return p.key;}),
+      selectedIds:activeList().filter(function(s){return isBasketRec(s)&&basketShown[s.id];}).map(function(s){return s.id;}),
+      mobileSelection:{mode:mobileShowAll?'all':mobileSel?'explicit':'leaders', ids:mobileSel?Object.keys(mobileSel).filter(function(id){return mobileSel[id];}):[]},
+      leg:selectedLeg?Object.assign({},selectedLeg):null};
+  }
+  window.SectorCyclesCapture=captureView;
+  function validView(s, family, id) {
+    if (!s || s.schema!=='sector_cycles.view.v1' || s.publicationId!== (PUB&&PUB.id) || publicationState!=='verified') return 'source_changed';
+    if (s.region!==(META.region||'us') || s.family!==family || s.focus!==id || !FAM[s.family] ||
+        ['osc','price'].indexOf(s.mode)<0 || ['log','linear'].indexOf(s.scale)<0) return 'invalid_state';
+    var range=s.range, minSpan=Math.min(0.5,(META.xDomain[1]-META.xDomain[0])/40);
+    if (!Array.isArray(range) || range.length!==2 || !range.every(function(x){return typeof x==='number'&&isFinite(x);}) ||
+        range[0]<META.xDomain[0] || range[1]>META.xDomain[1] || range[1]-range[0]<minSpan-1e-8) return 'invalid_state';
+    if (!Array.isArray(s.phases) || s.phases.length>5 || s.phases.some(function(k){return !PHASE_FILTER.some(function(p){return p.key===k;});})) return 'invalid_state';
+    function validIds(ids) {return Array.isArray(ids)&&ids.length<=ALL.length&&ids.every(function(key){return typeof key==='string'&&byId[key]&&isFamilyId(key,family);})&&new Set(ids).size===ids.length;}
+    if (!validIds(s.selectedIds) || !s.mobileSelection || ['leaders','all','explicit'].indexOf(s.mobileSelection.mode)<0 || !validIds(s.mobileSelection.ids)) return 'invalid_state';
+    if (s.leg && (!id || typeof s.leg.start!=='string' || typeof s.leg.end!=='string' || s.leg.start.length>32 || s.leg.end.length>32)) return 'invalid_state';
+    return null;
+  }
+  function isFamilyId(id,family) { return byId[id] && byId[id].kind===FAM[family].kind; }
+  function applyView(s,family,id) {
+    restoring=true;
+    if (reTimer) {clearTimeout(reTimer);reTimer=null;}
+    // MMChart's current nonanimated setView does not cancel its existing tween.
+    // Cancel this owned chart's pending frame before applying a traversed range.
+    if (heroChart && heroChart._tw) {cancelAnimationFrame(heroChart._tw);heroChart._tw=null;}
+    switchFamily(family);
+    var defaults=activeList().slice().sort(function(a,b){return (a.now.rs_rank||999)-(b.now.rs_rank||999);}).slice(0,6).map(function(x){return x.id;});
+    ALL.forEach(function(row){if(isBasketRec(row)) basketShown[row.id]=(s?s.selectedIds:defaults).indexOf(row.id)>=0;});
+    PHASE_FILTER.forEach(function(p){phaseState[p.key]=s?s.phases.indexOf(p.key)>=0:true;});
+    state.mode=s?s.mode:'osc'; state.scale=s?s.scale:'log';
+    mobileShowAll=!!(s&&s.mobileSelection.mode==='all');mobileSel=null;
+    if (s&&s.mobileSelection.mode==='explicit') {mobileSel={};s.mobileSelection.ids.forEach(function(key){mobileSel[key]=true;});}
+    selectedLeg=s&&s.leg?Object.assign({},s.leg):null;
+    state.focus=id; // setFocus must not clear the incoming stable leg identity
+    setFocus(id,true);
+    syncGroups();syncHeroControls();
+    curView=(s?s.range:DEFAULT_VIEW).slice();
+    if (heroChart) heroChart.setView(curView.slice(),false);
+    rebuildHero(false);remountSparks();
+    restoring=false;
   }
   function activeList() { return FAM[state.family] ? FAM[state.family].list() : SECTORS; }
   function isActive(s) { return s.kind === (FAM[state.family] || FAM.sectors).kind; }
@@ -506,6 +628,7 @@
   var reTimer = null;
   function scheduleReanchor(domain) {
     curView = domain.slice();
+    notifyState();
     if (state.mode !== "price" || !heroChart) return;
     if (reTimer) clearTimeout(reTimer);
     reTimer = setTimeout(function () { reTimer = null; rebuildHero(false); }, 130);
@@ -621,6 +744,7 @@
         state.mode = m;
         syncHeroControls();
         rebuildHero(true); remountSparks();
+        notifyState();
       });
     });
     if (scale) scale.querySelectorAll(".sc-sbtn").forEach(function (b) {
@@ -629,6 +753,7 @@
         state.scale = sc;
         syncHeroControls();
         rebuildHero(true); remountSparks();
+        notifyState();
       });
     });
   }
@@ -786,6 +911,7 @@
     updateChartHint();
     updateSeriesCount();  // keep the mobile Series(n) trigger badge honest
     if (heroChart) { heroChart.setHidden(chartHidden); rebuildHero(false); }
+    notifyState();
   }
   // visually-hidden live region near the phase chips — created once, lazily
   function srStatus(msg) {
@@ -840,7 +966,7 @@
   }
   function switchFamily(fam) {
     if (!FAM[fam] || fam === state.family) return;
-    state.family = fam; state.focus = null;
+    state.family = fam; state.focus = null; selectedLeg = null;
     mobileSel = null; mobileShowAll = false;   // each family opens on its own leaders default
     if (heroChart) heroChart.focus(null);
     // for basket-like families, initialise basketShown for the new active list — default-select
@@ -1151,10 +1277,12 @@
     clearFirstHint();                              // any focus change = the user has engaged
     if (id && window.SC_LAZY_EXTRAS) _scheduleExtras();  // host deferred extras — load on first focus
     // focusing a basket-like record implies selecting it onto the chart
-    if (id && byId[id] && isBasketRec(byId[id]) && !basketShown[id]) {
-      basketShown[id] = true; updateBasketSel(); applyVisibility();
-    }
+    if (id && byId[id] && isBasketRec(byId[id]) && !basketShown[id]) basketShown[id] = true;
+    if (id!==state.focus) selectedLeg=null;
     state.focus = id;
+    // The selected instrument overrides a phase facet. Recompute only after
+    // assigning focus, otherwise a valid host receipt can name a hidden line.
+    applyVisibility();
     if (heroChart) { heroChart.focus(id); rebuildHero(false); }   // refresh narrative bands
     document.querySelectorAll(".cyc-chip").forEach(function (b) {
       b.classList.toggle("on", b.getAttribute("data-id") === id);
@@ -1177,6 +1305,7 @@
       if (embedded()) notifyHostFocus(id);
       else try { history.replaceState(history.state, "", id ? "#" + id : location.pathname + location.search); if (_navDedupeReset) _navDedupeReset(); } catch (e) {}
     }
+    notifyState();
   }
 
   /* ---- detail panel ------------------------------------------------------ */
@@ -1184,15 +1313,37 @@
     var def = document.getElementById("sc-panel-default"), foc = document.getElementById("sc-panel-focus");
     if (!def || !foc) return;
     if (!id) { foc.classList.remove("show"); def.classList.add("show"); return; }
+    // Async annotations and language changes replace the detail markup. Keep
+    // keyboard focus on the same semantic control, never on a detached node.
+    var active=document.activeElement, focusKey=null;
+    if (foc.getAttribute('data-entity')===id && active && foc.contains(active)) {
+      var legNode=active.closest('.sc-leg');
+      if (legNode) focusKey={kind:'leg',start:legNode.getAttribute('data-start'),end:legNode.getAttribute('data-end')};
+      else if (active.closest('.cyc-back')) focusKey={kind:'back'};
+      else if (active.closest('.sc-dna-more')) focusKey={kind:'dna'};
+    }
     foc.innerHTML = focusHTML(byId[id]);
+    foc.setAttribute('data-entity',id);
     var back = foc.querySelector(".cyc-back");
     if (back) back.addEventListener("click", function () { setFocus(null); });
+    var panelLegs=legsOf(byId[id]);
     foc.querySelectorAll(".sc-leg").forEach(function (row) {
+      var leg=panelLegs.find(function(item){return item.i===+row.getAttribute('data-i');});
+      if (leg) { row.setAttribute('data-start',leg.start.date||leg.start.t);row.setAttribute('data-end',leg.end.date||leg.end.t); }
       row.addEventListener("click", function () { openLeg(byId[id], +row.getAttribute("data-i"), row); });
       keyActivate(row);
     });
     def.classList.remove("show"); foc.classList.add("show");
     _initDnaToggle(foc);
+    restoreLegDOM();
+    if (focusKey) {
+      var restored=null;
+      if (focusKey.kind==='leg') foc.querySelectorAll('.sc-leg').forEach(function(row){
+        if(row.getAttribute('data-start')===focusKey.start&&row.getAttribute('data-end')===focusKey.end)restored=row;
+      });
+      else restored=foc.querySelector(focusKey.kind==='back'?'.cyc-back':'.sc-dna-more');
+      if (restored && !restored.hidden) restored.focus({preventScroll:true});
+    }
   }
 
   // washout↔euphoria state signature (the Phase-0-stable read) — rendered when present
@@ -1480,7 +1631,6 @@
   // What STRUCTURALLY drives this series to cycle, what marks its tops vs troughs, and which
   // past leg today most rhymes with — researched against the 15y dated turns. Hidden if absent.
   function dnaHTML(s) {
-    var DNA = window.SECTOR_DNA || {};
     var d = DNA[s.id]; if (!d) return "";
     var sum = curLang() === "zh" ? (d.summary_zh || d.summary) : d.summary;
     var drv = (curLang() === "zh" && d.drivers_zh) ? d.drivers_zh : (d.drivers || []);
@@ -1709,12 +1859,28 @@
     var body = row.querySelector(".sc-leg-body"), wasOpen = body.classList.contains("show");
     foc.querySelectorAll(".sc-leg").forEach(function (r) { r.classList.remove("open"); r.querySelector(".sc-leg-body").classList.remove("show"); });
     if (!wasOpen) {
+      var leg=legsOf(s)[i];
+      selectedLeg=leg?{start:leg.start.date||leg.start.t,end:leg.end.date||leg.end.t}:null;
       row.classList.add("open"); body.classList.add("show");
-      row.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      row.scrollIntoView({ block: "nearest", behavior: REDUCE?"auto":"smooth" });
       // zoom the chart to this leg for context
       var g = legsOf(s)[i];
       if (g && heroChart) heroChart.setView([Math.max(META.xDomain[0], g.x0 - 0.15), Math.min(META.xDomain[1], g.x1 + 0.15)], true);
-    }
+    } else selectedLeg=null;
+    restoreLegDOM();notifyState();
+  }
+  function restoreLegDOM() {
+    var panel=document.getElementById('sc-panel-focus'), rec=byId[state.focus];
+    if (!panel || !rec) return false;
+    var legs=legsOf(rec), found=false;
+    panel.querySelectorAll('.sc-leg').forEach(function(row) {
+      var leg=legs[+row.getAttribute('data-i')];
+      var on=!!(selectedLeg&&leg&&(leg.start.date||leg.start.t)===selectedLeg.start&&(leg.end.date||leg.end.t)===selectedLeg.end);
+      row.classList.toggle('open',on);row.setAttribute('aria-expanded',on?'true':'false');
+      var body=row.querySelector('.sc-leg-body');if(body) body.classList.toggle('show',on);
+      found=found||on;
+    });
+    return found;
   }
 
   /* ---- default panel: cross-sector map + leadership + how-to -------------- */
@@ -2106,7 +2272,7 @@
     syncGroups(); syncHeroControls();              // re-localize the mode-aware legend on language flip
     if (heroChart) rebuildHero(false);
     if (savedFocus) setFocus(savedFocus, true); else renderPanel(null);
-    renderContext(); loadRotation();
+    renderContext(); loadRotation(); publicationNotice();
   }
 
   /* ---- guided first-load: highlight ONE line + a tap hint (novice entry) --- */
@@ -2169,21 +2335,38 @@
 
   var _extrasInjected = false;
   function hydrateExtras() {
-    NARR = window.SECTOR_NARR || {};
-    deepStrip(NARR);
-    if (window.SECTOR_DNA) { deepStrip(window.SECTOR_DNA); }
-    // Re-render the open focus panel so narr legs, analyst note, and DNA card appear.
-    if (state.focus) { renderPanel(state.focus); }
-    document.dispatchEvent(new CustomEvent('sc:extras-ready'));
+    function apply(kind,result,token) {
+      if (!activePublication() || token!==partEpoch[kind]) return;
+      var source=PUB && PUB.sources && PUB.sources[kind];
+      partStates[kind]=result.status;
+      if (result.status==='verified' && (!source || source.status!=='available')) {
+        partStates[kind]=source && source.status==='quarantined'?'quarantined':'source_unavailable';
+      }
+      var value=(partStates[kind]==='verified'||partStates[kind]==='legacy_unverified')?result.value:{};
+      if (kind==='narr') NARR=value||{}; else DNA=value||{};
+      deepStrip(value);
+      if (state.focus) renderPanel(state.focus);
+      publicationNotice();
+      document.dispatchEvent(new CustomEvent('sc:extras-ready',{detail:evidenceReceipt()}));
+    }
+    return Promise.all(['narr','dna'].map(function(kind) {
+      var key=kind==='narr'?'SECTOR_NARR':'SECTOR_DNA', token=++partEpoch[kind];
+      if (!PUB) { apply(kind,{status:'legacy_unverified',value:window[key]||{}},token);return; }
+      return verifyPart(kind,window[key+'_PUBLICATION']).then(function(result){apply(kind,result,token);});
+    }));
   }
   window.SectorCyclesHydrateExtras = hydrateExtras;
 
   // After boot(), if SC_EXTRA_DATA is set and either global is still absent,
   // inject those script URLs in order (async=false) then call hydrateExtras().
   function _scheduleExtras() {
+    if (PUB && publicationState!=='verified') return;
+    if (window.SECTOR_NARR !== undefined && window.SECTOR_DNA !== undefined) {
+      if (!_extrasInjected) { _extrasInjected=true;hydrateExtras(); }
+      return;
+    }
     var urls = window.SC_EXTRA_DATA;
     if (!Array.isArray(urls) || !urls.length) return;
-    if (window.SECTOR_NARR !== undefined && window.SECTOR_DNA !== undefined) return;
     if (_extrasInjected) return;
     _extrasInjected = true;
     function injectAll() {
@@ -2217,11 +2400,10 @@
      (the pre-split monolith still ships everything inline). */
   var _seriesInjected = false;
   var seriesState = window.SC_SERIES_DATA ? "pending" : "ready";
-  function hydrateSeries() {
-    var series = window.SECTOR_CYCLES_SERIES;
+  function applySeries(series, verified) {
     var heavyKeys = ['price','osc','turns','fx','usd_record','rs_history'];
     var ids = series && typeof series === 'object' && !Array.isArray(series) ? Object.keys(series) : [];
-    var valid = ids.length && ids.every(function(id) {
+    var valid = (verified || ids.length) && ids.every(function(id) {
       var part=series[id];
       return byId[id] && part && typeof part==='object' && !Array.isArray(part) &&
         Object.keys(part).length>0 && Object.keys(part).every(function(key){
@@ -2229,7 +2411,7 @@
         });
     });
     if (!valid) {
-      seriesState='unavailable';
+      seriesState='unavailable'; partStates.series='invalid_payload';
       document.dispatchEvent(new CustomEvent('sc:series-error'));
       return;
     }
@@ -2241,6 +2423,7 @@
       if (byId[id]) { Object.assign(byId[id], series[id]); }
     });
     seriesState = "ready";
+    partStates.series=verified?"verified":"legacy_unverified";
     // Re-render whatever the heavy arrays now unlock: a non-sectors family (its chart+cards were
     // empty), or price mode (all families' price arrays were absent). mountCards()+rebuildHero()
     // is the same idempotent redraw path rerender()/loadRotation() use.
@@ -2252,6 +2435,19 @@
     if (state.focus && series[state.focus]) { renderPanel(state.focus); }
     document.dispatchEvent(new CustomEvent('sc:cycles-data'));   // sector_central mini-cyc board listens
     document.dispatchEvent(new CustomEvent('sc:series-ready'));
+    publicationNotice();
+  }
+  function hydrateSeries() {
+    if (!PUB) { applySeries(window.SECTOR_CYCLES_SERIES,false);return Promise.resolve(); }
+    var token=++partEpoch.series, envelope=window.SECTOR_CYCLES_SERIES_PUBLICATION;
+    return verifyPart('series',envelope).then(function(result) {
+      if (!activePublication() || token!==partEpoch.series) return;
+      if (result.status!=='verified') {
+        partStates.series=result.status;seriesState='unavailable';
+        document.dispatchEvent(new CustomEvent('sc:series-error',{detail:evidenceReceipt()}));return;
+      }
+      applySeries(result.value,true);
+    });
   }
   window.SectorCyclesHydrateSeries = hydrateSeries;
 
@@ -2266,7 +2462,7 @@
     s.src = vUrl(name);       // reuse the preloaded/prefetched, ?v=-stamped, immutable-cached URL
     s.onload = hydrateSeries;
     s.onerror = function () {
-      seriesState = "unavailable";
+      seriesState = "unavailable"; partStates.series="unavailable";
       document.dispatchEvent(new CustomEvent('sc:series-error'));
     };
     document.head.appendChild(s);
@@ -2340,10 +2536,22 @@
     loadRotation();
     renderContext();
     document.addEventListener('si:view', function (e) {
-      if (e.detail !== 'cycles') return;
+      var chartNode=document.getElementById('sc-chart');
+      var ownerView=chartNode&&chartNode.closest?chartNode.closest('.si-view'):null;
+      var chartView=ownerView?ownerView.getAttribute('data-view'):'cycles';
+      if (e.detail !== chartView) {
+        if (embedded()) {
+          var picker=document.getElementById('sc-series-ov');
+          if (picker&&picker.classList.contains('open')) closeSeriesPicker();
+          var full=document.querySelector('.sc-chartwrap.sc-fs');if(full) toggleChartFs(false);
+          if (isCnMobile()&&sheetDetent!=='hidden') closeSheet();
+        }
+        return;
+      }
       mountHero(); mountCards();
       if (heroChart) rebuildHero(false);
     });
+    stateReady=true;
     document.dispatchEvent(new CustomEvent('sc:cycles-ready'));
   }
   // Consume the producer's aligned snapshot. A later raw marketdata fetch
@@ -2377,7 +2585,7 @@
   // sector/basket by id, switching family + scrolling the chart into view. Returns false
   // if the id is unknown so the caller can fall back to a normal link.
   window.SectorCyclesFocus = function (id) {
-    if (!id || !byId[id]) return false;
+    if (!id || !byId[id] || !activePublication() || (PUB && publicationState!=='verified')) return false;
     var s = byId[id];
     switchFamily(isBasketRec(s) ? (FAM[s.kind] ? s.kind : "baskets") : "sectors");
     setFocus(id);
@@ -2396,24 +2604,56 @@
     context = context || {};
     var id = context.id || null, node = document.getElementById("sc-chart");
     var sourceDate=cycleSession(META.asOf);
-    var receipt = {status:"pending", id:id, asOf:sourceDate, series:seriesState};
+    var receipt = {status:"pending", id:id, asOf:sourceDate, series:seriesState, publication:evidenceReceipt()};
     if (id && !byId[id]) { receipt.status="unsupported"; return receipt; }
     if (!sourceDate || (context.requireSourceDate && !context.asOf) || (context.asOf && !cycleSession(context.asOf))) { receipt.status="source_unavailable"; return receipt; }
     if (context.asOf && context.asOf !== sourceDate) { receipt.status="source_mismatch"; return receipt; }
+    if (!activePublication()) { receipt.status="source_mismatch"; return receipt; }
+    if (PUB && publicationState==='pending') return receipt;
+    if (PUB && publicationState!=='verified') { receipt.status="source_unavailable";return receipt; }
+    if (context.requirePublication || context.spine) {
+      var expected=context.spine, actual=receipt.publication.spine;
+      // This receipt fingerprints the sector cohort only. A theme can keep
+      // the same sector spine while its membership or history changes.
+      if (id && byId[id].kind!=='sector') { receipt.status='source_unavailable';receipt.reason='unverified_family';return receipt; }
+      if (!expected || !actual) { receipt.status="source_unavailable";return receipt; }
+      if (expected.schema!==actual.schema || expected.scope!==actual.scope || expected.sha256!==actual.sha256) { receipt.status="source_mismatch";return receipt; }
+    }
     if (!node || !node.getBoundingClientRect().width) return receipt;
     mountHero();
     if (!heroChart) return receipt;
-    if (id) {
-      var s = byId[id];
-      switchFamily(isBasketRec(s) ? (FAM[s.kind] ? s.kind : "baskets") : "sectors");
-    } else switchFamily(FAM[context.family] ? context.family : 'sectors');
-    if (id !== state.focus) setFocus(id, true);
+    var family=id?(isBasketRec(byId[id])?(FAM[byId[id].kind]?byId[id].kind:'baskets'):'sectors'):(FAM[context.family]?context.family:'sectors');
+    var fresh=context.entryKey && context.entryKey!==appliedEntry;
+    if (fresh || context.restore) {
+      var invalid=context.snapshot?validView(context.snapshot,family,id):null;
+      entryRestoration=invalid || (context.snapshot?'restored':'defaults');
+      applyView(invalid?null:context.snapshot,family,id);
+      appliedEntry=context.entryKey||null;
+    } else {
+      restoring=true;
+      switchFamily(family);
+      if (id !== state.focus) setFocus(id, true);
+      restoring=false;
+    }
     receipt.status = "applied";
+    receipt.restoration=entryRestoration;
     receipt.family = state.family;
     var selected = id && byId[id];
     if (seriesState === 'ready' && selected && (!Array.isArray(selected.price) || !selected.price.length)) receipt.series='unavailable';
+    if (selectedLeg && !restoreLegDOM()) receipt.leg=seriesState==='pending'?'pending':'unavailable';
+    else receipt.leg=selectedLeg?'restored':'closed';
     return receipt;
   };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-  else boot();
+  function start() {
+    if (!PUB) { boot();publicationNotice();return; }
+    verifyCore().then(function(status) {
+      if (!activePublication()) return;
+      publicationState=status;partStates.core=status;
+      if (status==='verified') boot();
+      publicationNotice();
+      document.dispatchEvent(new CustomEvent('sc:publication-ready',{detail:evidenceReceipt()}));
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 })();

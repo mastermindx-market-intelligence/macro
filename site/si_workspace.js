@@ -313,12 +313,80 @@ var current=null;
 var SCROLL_MEM={};
 var FOCUS_MEM={};
 var cycleOpening=false;
+var entrySeq=0, activeEntryId=null, cycleApplied=false, savingEntry=false;
+function localHref(){return location.pathname+location.search+location.hash;}
+function entryId(){return window.crypto&&window.crypto.randomUUID?window.crypto.randomUUID():Date.now().toString(36)+'-'+String(++entrySeq);}
+function currentEntry(){
+  var e=(history.state||{}).siWorkspace;
+  return e&&e.schema==='sector_central.entry.v1'&&typeof e.entryId==='string'&&e.entryId.length<=80&&e.href===localHref()&&VIEWS.indexOf(e.view)>=0?e:null;
+}
+function focusLocator(node){
+  node=node||document.activeElement;
+  if(!node||!node.getAttribute||!node.closest||!node.closest('.si-view')) return null;
+  var keys=[['cycle-opener','data-cycle-id'],['board-cycle-opener','data-focus'],['measured','data-g'],['family','data-fam'],['mode','data-mode'],['scale','data-scale'],['entity','data-id']];
+  for(var i=0;i<keys.length;i++){var value=node.getAttribute(keys[i][1]);if(value&&value.length<=100)return {kind:keys[i][0],id:value};}
+  if(['mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(node.id)>=0)return {kind:'element',id:node.id};
+  return null;
+}
+function resolveFocus(f){
+  if(!f||typeof f.id!=='string'||f.id.length>100)return null;
+  if(f.kind==='element'&&['mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(f.id)>=0)return document.getElementById(f.id);
+  var attrs={'cycle-opener':'data-cycle-id','board-cycle-opener':'data-focus',measured:'data-g',family:'data-fam',mode:'data-mode',scale:'data-scale',entity:'data-id'};
+  var attr=attrs[f.kind];if(!attr)return null;
+  var nodes=document.querySelectorAll('.si-view.on ['+attr+']');
+  for(var i=0;i<nodes.length;i++)if(nodes[i].getAttribute(attr)===f.id&&nodes[i].getBoundingClientRect().width)return nodes[i];
+  return null;
+}
+function saveEntry(snapshot){
+  if(savingEntry||!current)return;
+  var old=currentEntry();
+  if(!old||old.entryId!==activeEntryId||old.view!==current)return;
+  var next=Object.assign({},old,{viewport:{scrollY:Math.max(0,Math.min(100000,window.scrollY||0)),focus:focusLocator()}});
+  if(window.SectorMeasuredCapture)next.measured=window.SectorMeasuredCapture();
+  if(current==='cycles'&&cycleApplied&&window.SectorCyclesCapture)next.cycles=snapshot||window.SectorCyclesCapture();
+  savingEntry=true;
+  try{history.replaceState(Object.assign({},history.state,{siWorkspace:next}),'',localHref());}finally{savingEntry=false;}
+}
+window.SectorWorkspaceCapture=function(){saveEntry();};
+function prepareEntry(view){
+  var e=currentEntry();
+  if(!e||e.view!==view){
+    e={schema:'sector_central.entry.v1',entryId:entryId(),href:localHref(),view:view,cycles:null};
+    if(window.SectorMeasuredCapture)e.measured=window.SectorMeasuredCapture();
+    history.replaceState(Object.assign({},history.state,{siWorkspace:e}),'',localHref());
+  }
+  activeEntryId=e.entryId;
+  if(window.SectorMeasuredApply)window.SectorMeasuredApply(e.measured||null);
+  return e;
+}
+function restoreViewport(e,gen){
+  if(!e||!e.viewport)return false;
+  var viewport=e.viewport;
+  if(typeof viewport.scrollY!=='number'||!isFinite(viewport.scrollY)||viewport.scrollY<0||viewport.scrollY>100000)return false;
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    var live=currentEntry();if(gen!==SCROLL_GEN||!live||live.entryId!==e.entryId)return;
+    if(window.scrollY!==viewport.scrollY)window.scrollTo(0,viewport.scrollY);
+    var focus=resolveFocus(viewport.focus);
+    if(focus&&focus.getBoundingClientRect().width)focus.focus({preventScroll:true});
+  });});
+  return true;
+}
+var viewportQueued=false;
+function scheduleEntrySave(){
+  if(viewportQueued)return;viewportQueued=true;
+  var captured=activeEntryId,href=localHref();
+  requestAnimationFrame(function(){viewportQueued=false;if(captured===activeEntryId&&href===localHref())saveEntry();});
+}
+window.addEventListener('scroll',scheduleEntrySave,{passive:true});
+document.addEventListener('focusin',scheduleEntrySave);
+window.addEventListener('pagehide',function(){saveEntry();});
 var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes any
                        still-pending replay frame from an earlier activation — a stale
                        frame must not scroll a view that is no longer on screen */
 function activate(view,target){
   if(VIEWS.indexOf(view)<0) view='overview';
   var gen=++SCROLL_GEN;   /* every activation invalidates pending replay frames */
+  var entry=prepareEntry(view);
   /* capture BEFORE the .on swap: the section about to be hidden still owns the viewport */
   if(current) SCROLL_MEM[current]=window.scrollY;
   var active=document.activeElement;
@@ -371,6 +439,8 @@ function activate(view,target){
     var el=document.getElementById(target);
     if(el){ try{ el.scrollIntoView({block:'start'}); }catch(e){ el.scrollIntoView(); } }
     else if(history.replaceState) history.replaceState(history.state,'','#'+view);
+  }else if(!cycleOpening && restoreViewport(entry,gen)){
+    // Exact entry state precedes the legacy per-view fallback.
   }else if(typeof SCROLL_MEM[view]==='number' && !cycleOpening){
     /* hashchange path with no explicit target (Back/Forward between views): replay where
        this view was last left, one frame after the section swap so the layout has settled.
@@ -402,14 +472,13 @@ function route(){
 /* Cycles is a view of this router, not an entity-hash router inside it. The
    query preserves the measured selection (?g), shell origin and every other
    existing parameter. No receiver applies an older cutoff to latest evidence. */
-var cycleEntrySeq=0, cycleEntries={};
 function cycleMessage(en,zh){ return isZh()?zh:en; }
 function cycleOrigin(){
   var origin=(history.state||{}).siCyclesOrigin;
   if(!origin || !origin.href) return null;
   try{
     var u=new URL(origin.href,location.href), h=u.hash.slice(1);
-    if(u.origin!==location.origin || u.pathname!==location.pathname) return null;
+    if(u.origin!==location.origin || u.pathname!==location.pathname || u.username || u.password || h==='cycles' || h==='sc-cyclemap') return null;
     if(VIEWS.indexOf(h)<0 && !LEGACY_ANCHORS[h]) return null;
     return u.pathname+u.search+u.hash;
   }catch(e){ return null; }
@@ -417,6 +486,9 @@ function cycleOrigin(){
 function cycleSourceDate(){
   var m=(window.SECTOR_CENTRAL||{}).measured_read||{};
   return (m.generation||{}).session_end||null;
+}
+function cycleSourceSpine(){
+  return (((window.SECTOR_CENTRAL||{}).measured_read||{}).generation||{}).cycle_spine||null;
 }
 function syncCycleContext(){
   if(current!=='cycles') return;
@@ -427,18 +499,21 @@ function syncCycleContext(){
   var latest=document.getElementById('sc-cycle-latest');
   var useLatest=u.searchParams.get('cycleSource')==='latest';
   var origin=cycleOrigin();
+  var entry=currentEntry();
   if(back) back.href=origin||'#map';
   // Allow layout before asking the receiver. A rejected context is hidden
   // immediately afterwards, so no current detail masquerades as requested history.
   if(study) study.hidden=false;
-  var receipt=window.SectorCyclesApply ? window.SectorCyclesApply({id:id,family:u.searchParams.get('cycleFamily'),asOf:id&&!useLatest?cycleSourceDate():null,requireSourceDate:!!id&&!useLatest}) : {status:'pending'};
+  var receipt=window.SectorCyclesApply ? window.SectorCyclesApply({id:id,family:u.searchParams.get('cycleFamily'),asOf:id&&!useLatest?cycleSourceDate():null,requireSourceDate:!!id&&!useLatest,spine:id&&!useLatest?cycleSourceSpine():null,requirePublication:!!id&&!useLatest,entryKey:entry&&entry.entryId,snapshot:entry&&entry.cycles}) : {status:'pending'};
+  cycleApplied=receipt.status==='applied';
   var messages={
     pending:['Loading cycle evidence…','正在载入周期证据…'],
     unsupported:['This instrument has no cycle record in this source. Return to the market map.','该数据源没有此标的的周期记录。请返回市场图谱。'],
-    source_unavailable:['The cycle source date is unavailable. This selection cannot be verified.','周期数据日期不可用，无法核对此选择。'],
-    source_mismatch:['Cycle and sector evidence have different dates. This selection is withheld until the sources align.','周期与板块证据日期不同。来源对齐前暂不显示该选择。']
+    source_unavailable:['The cycle source identity is unavailable or could not be verified. This selection is withheld.','周期来源身份不可用或无法核验，暂不显示此选择。'],
+    source_mismatch:['Cycle and sector evidence come from different source snapshots. This selection is withheld until the sources align.','周期与板块证据来自不同来源快照。来源对齐前暂不显示该选择。']
   };
   var message=messages[receipt.status];
+  if(receipt.reason==='unverified_family')message=['This theme uses a separate Cycles source snapshot. Open its dated snapshot to inspect it.','该主题使用独立的周期来源快照。请打开其自身日期的快照进行查看。'];
   if(receipt.status==='applied') {
     message=receipt.series==='unavailable' ? ['Detailed price history could not load. The core cycle view remains available.','详细价格历史载入失败，基础周期视图仍可使用。'] :
       receipt.series==='pending' ? ['Cycle evidence loaded; detailed price history is loading.','周期证据已载入，详细价格历史正在载入。'] :
@@ -446,33 +521,53 @@ function syncCycleContext(){
   }
   if(note){ note.dataset.state=receipt.status; note.textContent=cycleMessage.apply(null,message||messages.source_unavailable); }
   if(note && receipt.status==='applied' && useLatest && cycleSourceDate()!==receipt.asOf) note.textContent+=cycleMessage(' Sector origin: '+(cycleSourceDate()||'date unavailable')+'.',' 板块原始日期：'+(cycleSourceDate()||'日期不可用')+'。');
-  if(latest) latest.hidden=!(receipt.asOf && (receipt.status==='source_mismatch'||receipt.status==='source_unavailable'));
+  if(note && receipt.status==='applied' && receipt.publication && receipt.publication.status==='legacy_unverified') note.textContent+=cycleMessage(' Unverified archive; publication alignment is unavailable.',' 未核验归档；无法核验发布版本对齐。');
+  if(note && receipt.restoration==='source_changed')note.textContent+=cycleMessage(' Saved chart settings belong to an older publication; current defaults are shown.',' 已保存图表设置属于旧发布版本；现显示当前默认设置。');
+  if(note && receipt.restoration==='invalid_state')note.textContent+=cycleMessage(' Saved chart settings could not be restored; current defaults are shown.',' 无法恢复已保存图表设置；现显示当前默认设置。');
+  var readable=receipt.publication&&['verified','legacy_unverified'].indexOf(receipt.publication.status)>=0;
+  if(latest) latest.hidden=!(readable && receipt.asOf && (receipt.status==='source_mismatch'||receipt.status==='source_unavailable'));
   if(study) study.hidden=receipt.status!=='applied' && receipt.status!=='pending';
 }
 window.SectorCyclesHost={onFocus:function(id,family){
   if(current!=='cycles') return;
   var u=new URL(location.href);
+  // This is a user action on an already admitted Cycles canvas. Its own
+  // dated snapshot remains the source on later hydration/language events.
+  // Central handoffs use SectorCentralOpenCycle and clear this explicit mode.
+  if(cycleApplied) u.searchParams.set('cycleSource','latest');
   if(id) u.searchParams.set('cycle',id); else u.searchParams.delete('cycle');
   u.searchParams.set('cycleFamily',family||'sectors');
-  history.replaceState(history.state,'',u.pathname+u.search+u.hash);
-}};
+  var e=currentEntry(),href=u.pathname+u.search+u.hash;
+  history.replaceState(Object.assign({},history.state,{siWorkspace:e?Object.assign({},e,{href:href}):null}),'',href);
+  saveEntry();
+  syncCycleContext();
+},onState:function(snapshot){saveEntry(snapshot);}};
 window.SectorCentralOpenCycle=function(id,trigger){
   if(!id) return false;
+  saveEntry();
   var u=new URL(location.href), origin=u.pathname+u.search+u.hash;
+  var originEntry=currentEntry();
+  if(originEntry&&trigger){
+    originEntry=Object.assign({},originEntry,{viewport:Object.assign({},originEntry.viewport,{focus:focusLocator(trigger)})});
+    history.replaceState(Object.assign({},history.state,{siWorkspace:originEntry}),'',origin);
+  }
   u.searchParams.delete('cycleSource');
   u.searchParams.delete('cycleFamily');
   u.searchParams.set('cycle',id); u.hash='cycles';
   if(current!=='cycles') {
     if(trigger) FOCUS_MEM[current]=trigger;
-    var token=String(++cycleEntrySeq);
-    history.pushState(Object.assign({},history.state,{siCyclesOrigin:{href:origin},siCyclesEntry:token}),'',u.pathname+u.search+u.hash);
-    cycleEntries[token]={origin:origin,length:history.length};
-  } else history.replaceState(history.state,'',u.pathname+u.search+u.hash);
+    var href=u.pathname+u.search+u.hash;
+    history.pushState(Object.assign({},history.state,{siCyclesOrigin:{href:origin,entry:originEntry},siWorkspace:{schema:'sector_central.entry.v1',entryId:entryId(),href:href,view:'cycles',measured:originEntry&&originEntry.measured,cycles:null}}),'',href);
+  } else {
+    var next=u.pathname+u.search+u.hash;
+    history.replaceState(Object.assign({},history.state,{siWorkspace:{schema:'sector_central.entry.v1',entryId:entryId(),href:next,view:'cycles',cycles:null}}),'',next);
+  }
   cycleOpening=true;
   activate('cycles',null);
   cycleOpening=false;
   var heading=document.getElementById('sc-cycle-heading');
   if(heading) heading.focus({preventScroll:true});
+  saveEntry();
   return true;
 };
 document.addEventListener('click',function(e){
@@ -480,23 +575,28 @@ document.addEventListener('click',function(e){
   var a=e.target.closest('a[data-cycle-id]');
   if(a && window.SectorCentralOpenCycle(a.getAttribute('data-cycle-id'),a)) e.preventDefault();
   var back=e.target.closest('#sc-cycle-return');
-  var token=(history.state||{}).siCyclesEntry;
-  var owned=token&&cycleEntries[token];
-  // A later push can copy history.state. Conservatively use the local origin
-  // link instead of assuming the previous entry is still our opener.
-  if(back && owned && owned.origin===cycleOrigin() && owned.length===history.length) { e.preventDefault(); history.back(); }
+  if(back){
+    var destination=cycleOrigin()||location.pathname+location.search+'#map';
+    var source=(history.state||{}).siCyclesOrigin, prior=source&&source.entry;
+    saveEntry();
+    var restored=prior&&prior.schema==='sector_central.entry.v1'&&prior.href===destination?Object.assign({},prior,{entryId:entryId()}):null;
+    history.pushState(Object.assign({},history.state,{siWorkspace:restored,siCyclesOrigin:null}),'',destination);
+    e.preventDefault();route();return;
+  }
   if(e.target.closest('#sc-cycle-latest')) {
     var u=new URL(location.href);u.searchParams.set('cycleSource','latest');
-    history.replaceState(history.state,'',u.pathname+u.search+u.hash);
+    var currentState=currentEntry(),newHref=u.pathname+u.search+u.hash;
+    history.replaceState(Object.assign({},history.state,{siWorkspace:currentState?Object.assign({},currentState,{href:newHref}):null}),'',newHref);
     syncCycleContext();
     var heading=document.getElementById('sc-cycle-heading');
     if(heading) heading.focus({preventScroll:true});
+    saveEntry();
   }
+  var nav=e.target.closest('a.si-view-btn');
+  if(nav)saveEntry(); // capture the origin before the browser creates its hash entry
 });
-['sc:cycles-ready','sc:series-ready','sc:series-error'].forEach(function(name){ document.addEventListener(name,syncCycleContext); });
-window.addEventListener('popstate',function(){
-  if(current==='cycles' && location.hash==='#cycles') syncCycleContext();
-});
+['sc:cycles-ready','sc:series-ready','sc:series-error','sc:publication-ready'].forEach(function(name){ document.addEventListener(name,syncCycleContext); });
+window.addEventListener('popstate',route);
 
 window.__siViewReads=reads;
 window.__siRoute=route;

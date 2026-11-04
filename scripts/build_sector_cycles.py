@@ -120,31 +120,35 @@ def backtest_turn_record(scorecard_path: Path) -> dict | None:
     }
 
 
-def _load_narratives(root: Path) -> dict:
+def _load_narratives(root: Path, receipt: dict | None = None) -> dict:
     """NARR keyed by the chart's series id: sectors by ticker.lower() (xlk…), baskets
     by the engine's "b-"+membership-key (b-mag7…). Merges the file's sectors+baskets.
 
     W2.1: epoch-aware — resolves narratives.<epoch>.json for the engine's current epoch,
     falling back to the legacy un-suffixed file (tagged tr_v0). Zero behaviour change
     today (no flip → legacy file resolves exactly as before)."""
-    from scripts._narrative_epoch import resolve_narratives
+    from scripts._narrative_epoch import resolve_narratives, publication_receipt
     res = resolve_narratives("sector_cycles", root / "data" / "sector_cycles", "narratives")
     if res["stale_quarantined"]:
         log.warning("sector_cycles: narratives stale-quarantined (epoch %s) — page renders without",
                     res["epoch"])
+    if receipt is not None:
+        receipt.update(publication_receipt(res))
     return res["map"]
 
 
-def _load_dna(root: Path) -> dict:
+def _load_dna(root: Path, receipt: dict | None = None) -> dict:
     """SECTOR_DNA (the front-loaded "history rhymes" / cycle-cause profiles), same id keying as
     narratives: sectors by ticker.lower(), baskets by "b-"+key. Optional — page renders without.
 
     W2.1: epoch-aware (resolves cycle_dna.<epoch>.json, falls back to legacy cycle_dna.json)."""
-    from scripts._narrative_epoch import resolve_narratives
+    from scripts._narrative_epoch import resolve_narratives, publication_receipt
     res = resolve_narratives("sector_cycles", root / "data" / "sector_cycles", "cycle_dna")
     if res["stale_quarantined"]:
         log.warning("sector_cycles: cycle_dna stale-quarantined (epoch %s) — rendering without DNA",
                     res["epoch"])
+    if receipt is not None:
+        receipt.update(publication_receipt(res))
     return res["map"]
 
 
@@ -264,8 +268,9 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         log.warning("sector_cycles: forward log append skipped: %s", e)
 
-    narr = _load_narratives(root)
-    dna = _load_dna(root)
+    sources = {"narr": {}, "dna": {}}
+    narr = _load_narratives(root, sources["narr"])
+    dna = _load_dna(root, sources["dna"])
 
     # W3.4: enrich NARR map with TTL / staleness / archetype-check metadata
     try:
@@ -288,24 +293,13 @@ def main() -> int:
     #   sector_cycles_dna_data.js    -> SECTOR_DNA  (lazy, only needed in dnaHTML())
     # The CORE keeps sectors' osc+turns (default sectors-osc first paint) but strips
     # price everywhere and osc/turns from baskets/nasdaq/russell — see split_cycles_payload.
-    from scripts._cycles_payload import split_cycles_payload
-    core, series = split_cycles_payload(data)   # does not mutate `data` (features json stays full)
+    from scripts._cycles_payload import publication_scripts
     turn_rec = backtest_turn_record(
         root / "data" / "sector_cycles" / "scorecards" / "promises_price_v1_zz14_v0.json")
-    if turn_rec is not None:
-        core["turn_record"] = turn_rec
-    (site / "sector_cycles_data.js").write_text(
-        "window.SECTOR_CYCLES=" + json.dumps(core, separators=(",", ":")) + ";\n",
-        encoding="utf-8")
-    (site / "sector_cycles_series_data.js").write_text(
-        "window.SECTOR_CYCLES_SERIES=" + json.dumps(series, separators=(",", ":")) + ";\n",
-        encoding="utf-8")
-    (site / "sector_cycles_narr_data.js").write_text(
-        "window.SECTOR_NARR=" + json.dumps(narr, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
-    (site / "sector_cycles_dna_data.js").write_text(
-        "window.SECTOR_DNA=" + json.dumps(dna, separators=(",", ":"), ensure_ascii=False) + ";\n",
-        encoding="utf-8")
+    publication = publication_scripts(data, narr, dna, sources=sources, core_extra={"turn_record": turn_rec} if turn_rec is not None else None)
+    for kind, suffix in (("core", "data"), ("series", "series_data"), ("narr", "narr_data"), ("dna", "dna_data")):
+        (site / ("sector_cycles_" + suffix + ".js")).write_text(publication[kind], encoding="utf-8")
+
 
     # also publish the raw model for external consumers / debugging
     fdir = site / "sectordata"

@@ -1837,6 +1837,8 @@ def measured_group_read(cycles_payload, *, rotation_payload=None, research_estim
     if rotation_payload is not None:
         roots.add("engine.rotation_events")
 
+    from engine.sector_generation_guard import cycle_spine_identity
+
     return {
         "schema": MEASURED_READ_SCHEMA,
         "definition_id": DEFINITION_ID,
@@ -1851,6 +1853,7 @@ def measured_group_read(cycles_payload, *, rotation_payload=None, research_estim
             "price_basis": price_basis,
             "history_schema": history_schema,
             "history_as_of": history_as_of,
+            "cycle_spine": cycle_spine_identity(payload),
         },
         "cohort": {
             "horizon": horizon,

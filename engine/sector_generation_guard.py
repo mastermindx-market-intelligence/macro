@@ -12,6 +12,9 @@ silently dropped.  Mirrors the as_of discipline of
 from __future__ import annotations
 
 import datetime as _dt
+import hashlib
+import json
+from collections.abc import Mapping
 
 # Typed reasons, in evaluation order of session_alignment().
 REASONS = (
@@ -26,6 +29,45 @@ REASONS = (
 )
 
 _CLOCK = "settled_daily_session"
+
+
+def cycle_spine_identity(payload) -> dict | None:
+    """Fingerprint the actual sector spine consumed by a projection.
+
+    This is content identity, not a point-in-time vintage or an approval. The
+    existing Central producer and Cycles publisher call the same pure function
+    on their own inputs. Unrelated basket-family changes do not invalidate the
+    sector cohort; sector values, history, methodology and parity changes do.
+    """
+    if not isinstance(payload, Mapping):
+        return None
+    meta, sectors = payload.get("meta"), payload.get("sectors")
+    if not isinstance(meta, Mapping) or not isinstance(sectors, list) or not sectors:
+        return None
+    session = meta.get("asOf")
+    parsed_session = parse_session(session)
+    if not isinstance(session, str) or not parsed_session or session != parsed_session.isoformat():
+        return None
+    ids = [row.get("id") if isinstance(row, Mapping) else None for row in sectors]
+    if any(not isinstance(eid, str) or not eid for eid in ids) or len(set(ids)) != len(ids):
+        return None
+    tickers = [row.get("ticker") for row in sectors if row.get("ticker") is not None]
+    if any(not isinstance(ticker, str) or not ticker for ticker in tickers) or len(set(tickers)) != len(tickers):
+        return None
+    region = meta.get("region") or "us"
+    scope = "us_sectors_11" if region == "us" else str(region) + ":sectors"
+    spine = {
+        "schema": "sector_cycles.sector_spine.v1", "scope": scope,
+        "meta": {k: v for k, v in meta.items() if k not in {"n_baskets", "families", "publication"}},
+        "phases": payload.get("phases"),
+        "sectors": sorted(sectors, key=lambda row: row["id"]),
+    }
+    try:
+        raw = json.dumps(spine, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=False, allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError):
+        return None
+    return {"schema": spine["schema"], "scope": scope, "sha256": hashlib.sha256(raw).hexdigest()}
 
 
 def parse_session(value) -> "_dt.date | None":

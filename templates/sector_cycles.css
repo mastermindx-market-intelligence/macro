@@ -577,3 +577,7 @@ html[data-theme="light"] .sc-openpage { color: #fff; }
 .sc-native-provenance { margin-top:12px; color:var(--muted); font-size:12px; line-height:1.6; }
 .sc-native-provenance summary { cursor:pointer; min-height:44px; align-content:center; }
 .sc-hazard-qualification { flex-basis:100%; margin:8px 0 0; color:var(--muted); font-size:12px; line-height:1.6; }
+.sc-publication-status { margin:0 0 12px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r-ctl,8px);
+  background:var(--panel2); color:var(--muted); font-size:12px; line-height:1.55; overflow-wrap:anywhere; }
+.sc-publication-status[data-state="integrity_failed"], .sc-publication-status[data-state="invalid_payload"],
+.sc-publication-status[data-state="verification_unavailable"] { border-color:var(--warn); color:var(--text); }

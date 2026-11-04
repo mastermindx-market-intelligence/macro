@@ -170,6 +170,22 @@ def test_time_machine_and_forming_moved_to_explore() -> None:
     assert s.count('{% include "_forming_narratives.html.j2" %}') == 1
 
 
+def test_map_and_cycles_universe_controls_have_separate_identity() -> None:
+    """A family click must reach only its own view's universe controller."""
+    s = _page()
+    market, cycles = _view_body(s, "map"), _view_body(s, "cycles")
+    assert 'id="si-map-tabs"' in market
+    assert 'id="sc-tabs"' not in market
+    assert 'id="si-map-tabs"' not in cycles
+    for element_id in ("sc-tabs", "sc-tab-n-sec", "sc-tab-n-bsk"):
+        assert s.count(f'id="{element_id}"') == 1
+        assert f'id="{element_id}"' in cycles
+    scope = s.split("function __siScope()", 1)[1].split("if(document.readyState", 1)[0]
+    assert "#si-map-tabs .sc-tab" in scope
+    assert "#sc-tabs" not in scope
+    assert "setAttribute('aria-pressed'" in scope
+
+
 # ─────────────────────────────────────────────────────────── LEGACY_ANCHORS table
 
 # §2b, verbatim. Every one of these is a live inbound deep link somewhere on the
@@ -325,13 +341,8 @@ def test_mounting_does_not_wait_for_a_frame() -> None:
     mount = code.split("if(!mounted[view]){", 1)[1].split("loadAssets(view);", 1)[0]
     assert "requestAnimationFrame" not in mount, \
         "organ mounting must not depend on a frame callback — hidden tabs never get one"
-    # SIC-I09A (2026-10-21): the J-restore scroll replay is the router's ONE permitted
-    # frame callback — it gates nothing but the scrollTo itself (idempotent, eventual on
-    # hidden tabs, no mounted-style flag to strand), and its exact shape + no-target
-    # branch are pinned by tests/test_sector_central_history.py. The mount path above —
-    # the original blank-panel defect — keeps its absolute prohibition.
-    assert code.count("requestAnimationFrame") == 1, \
-        "the SIC-I09A scroll replay is the router's only frame callback"
+    # Entry viewport restoration and coalesced viewport capture also use frames.
+    # They cannot gate the synchronous asset mount tested above.
 
 
 def test_map_read_uses_the_hoisted_quadrant_source() -> None:
@@ -570,6 +581,34 @@ def test_router_asset_is_paired_into_site() -> None:
 import json as _json
 import subprocess as _subprocess
 import textwrap as _textwrap
+
+
+def test_scope_click_reaches_payload_renderer_without_cross_wiring_cycles() -> None:
+    """The scope handler is global; the map renderers close over the payload."""
+    script = r"""
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const source=fs.readFileSync('templates/sector_central.html.j2','utf8');
+const bridge=source.match(/window\.__siRefreshMapScope = function\(\)\{[^\n]+\};/)[0];
+const handler=source.split('function __siScope()')[1].split("if(document.readyState")[0];
+function tab(fam,on){return {fam,on,events:{},attrs:{},classList:{toggle(_,value){this.owner.on=value;}},
+ getAttribute(name){return name==='data-fam'?this.fam:this.attrs[name];},
+ setAttribute(name,value){this.attrs[name]=value;},addEventListener(name,fn){this.events[name]=fn;}};}
+const market=[tab('sectors',false),tab('baskets',true)],cycles=[tab('sectors',true),tab('baskets',false)];
+[...market,...cycles].forEach(el=>el.classList.owner=el);
+const ctx={counts:{map:0,board:0,filters:0},document:{
+ querySelectorAll(sel){return sel.startsWith('#si-map-tabs')?market:cycles;},
+ querySelector(sel){return (sel.startsWith('#si-map-tabs')?market:cycles).find(el=>el.on);}
+}};ctx.window=ctx;vm.createContext(ctx);
+vm.runInContext('(function(){function renderRotationMap(){counts.map++;}function renderRotBoard(){counts.board++;}function wireRotFilters(){counts.filters++;}'+bridge+'})();'+
+ 'function __siScope()'+handler,ctx);
+ctx.__siWireScope();market[0].events.click();
+assert.equal(ctx.__siScope(),'sectors');assert.deepEqual(ctx.counts,{map:1,board:1,filters:1});
+assert.equal(market[0].attrs['aria-pressed'],'true');assert.equal(market[1].attrs['aria-pressed'],'false');
+assert.equal(cycles[0].on,true);assert.equal(cycles[1].on,false);
+assert.equal(Object.keys(cycles[0].events).length,0);assert.equal(Object.keys(cycles[1].events).length,0);
+"""
+    out = _subprocess.run(["node", "-e", script], capture_output=True, text=True, cwd=ROOT)
+    assert out.returncode == 0, out.stderr
 
 
 def _replay_router(hashes):

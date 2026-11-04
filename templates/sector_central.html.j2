@@ -2162,9 +2162,9 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     </div>
     <div class="scc-universe" style="margin:2px 0 10px">
       <span class="scc-universe-lab"><span class="l-en">Viewing</span><span class="l-zh">查看</span></span>
-      <div class="sc-tabs" id="sc-tabs" role="tablist" aria-label="Sectors or themes">
-        <button class="sc-tab" data-fam="sectors" role="tab">🧭 <span class="l-en">Sectors</span><span class="l-zh">板块</span> <i id="sc-tab-n-sec"></i></button>
-        <button class="sc-tab on" data-fam="baskets" role="tab">🧺 <span class="l-en">Themes</span><span class="l-zh">主题</span> <i id="sc-tab-n-bsk"></i></button>
+      <div class="sc-tabs" id="si-map-tabs" role="group" aria-label="Market map universe">
+        <button type="button" class="sc-tab" data-fam="sectors" aria-pressed="false"><span class="l-en">Sectors</span><span class="l-zh">板块</span></button>
+        <button type="button" class="sc-tab on" data-fam="baskets" aria-pressed="true"><span class="l-en">Themes</span><span class="l-zh">主题</span></button>
       </div>
     </div>
     <p class="rvx-sec-sub">{{ t('Right = strong vs the S&P. Up = gaining speed this week. Leaders sweep from Leading into Weakening as they tire; laggards turn up through Improving. Hover any dot — click through for members.', '右 = 相对标普强。上 = 本周加速。领涨者会从「领先」滑向「走弱」；落后者经「改善」重新转强。悬停查看，点击进入成分页。') }}</p>
@@ -2968,7 +2968,7 @@ function renderRotBoard(){
       +'<span class="spark">'+rvxSpark(d.id,(d.r20||0)>=0)+'</span>'
       +'<span class="rvx-vel '+(d.vel>=0?'rvx-up':'rvx-dn')+'">'+(d.vel>=0?'▲':'▼')+Math.abs(Math.round(d.vel))+'</span></a>';
   }).join('');
-  const cnt=document.getElementById('rvx-count'); if(cnt) cnt.textContent=rows.length+(zh?' 个主题':' themes');
+  const cnt=document.getElementById('rvx-count'); if(cnt) cnt.textContent=rows.length+(__siScope()==='sectors'?(zh?' 个板块':' sectors'):(zh?' 个主题':' themes'));
   const sa=document.getElementById('rvx-showall'); if(sa){ sa.style.display=rows.length>10?'':'none';
     sa.textContent=RVX_SHOWALL?(zh?'收起 ▴':'Show fewer ▴'):(zh?('显示全部 '+rows.length+' ▾'):('Show all '+rows.length+' ▾')); }
 }
@@ -3036,6 +3036,9 @@ try{ __siWireScope(); __siWireTrace(); }catch(e){ console.warn('si glue', e); }
    strength/velocity split itself — a second implementation would drift the moment
    either one is tuned, and it would be originating a classification (A7). */
 window.__siRvxData = rvxData;
+/* The global scope controls cannot call functions closed over this payload.
+   Publish one renderer bridge; the existing data projection remains the owner. */
+window.__siRefreshMapScope = function(){ renderRotationMap(); renderRotBoard(); wireRotFilters(); };
 /* the workspace view reads are composed from this payload (§1b) */
 try{ if(window.__siViewReads) window.__siViewReads(BASKETS); }catch(e){ console.warn('si reads', e); }
 }
@@ -3064,12 +3067,12 @@ function __siWireTrace(){
     row.after(d); if(window.__siTraceHydrate) window.__siTraceHydrate(d);
   });
 }
-function __siScope(){ var on=document.querySelector('#sc-tabs .sc-tab.on'); return (on&&on.getAttribute('data-fam'))==='sectors'?'sectors':'themes'; }
+function __siScope(){ var on=document.querySelector('#si-map-tabs .sc-tab.on'); return (on&&on.getAttribute('data-fam'))==='sectors'?'sectors':'themes'; }
 function __siWireScope(){
-  var tabs=document.querySelectorAll('#sc-tabs .sc-tab'); if(!tabs.length) return;
+  var tabs=document.querySelectorAll('#si-map-tabs .sc-tab'); if(!tabs.length) return;
   tabs.forEach(function(t){ t.addEventListener('click', function(){
-    tabs.forEach(function(x){ x.classList.toggle('on', x===t); });
-    try{ renderRotationMap(); renderRotBoard(); wireRotFilters(); }catch(e){}
+    tabs.forEach(function(x){ x.classList.toggle('on', x===t); x.setAttribute('aria-pressed', x===t?'true':'false'); });
+    if(typeof window.__siRefreshMapScope==='function') window.__siRefreshMapScope();
   }); });
 }
 if(document.readyState!=='loading') __siBoot(); else document.addEventListener('DOMContentLoaded',__siBoot);
@@ -3125,8 +3128,21 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   }
 
   /* ---- mini cycle chart ---- */
-  var _cycSeriesCache = {};
+  var _cycSeriesCache = {}, _cycPublication = null;
+  function _cycProof(id) {
+    var p=window.SectorCyclesEvidence?window.SectorCyclesEvidence():null;
+    if (!p || p.status!=='verified') return null;
+    var sector=(D.sectors||[]).some(function(s){return s.id===id;});
+    if (sector) {
+      var gen=D.measured_read&&D.measured_read.generation, expected=gen&&gen.cycle_spine;
+      if (!expected || !p.spine || p.asOf!==gen.session_end || expected.schema!==p.spine.schema ||
+          expected.scope!==p.spine.scope || expected.sha256!==p.spine.sha256) return null;
+    } else if (!p.parts || p.parts.series!=='verified') return null;
+    return {publicationId:p.publicationId,asOf:p.asOf,separate:!sector};
+  }
   function _cycSeries(id) {
+    var proof=_cycProof(id); if (!proof) return null;
+    if (_cycPublication!==proof.publicationId) {_cycSeriesCache={};_cycPublication=proof.publicationId;}
     if (_cycSeriesCache[id]) return _cycSeriesCache[id];
     var cyc = window.SECTOR_CYCLES; if (!cyc) return null;
     var today = (cyc.meta && cyc.meta.today) || null;
@@ -3140,7 +3156,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
         var cutoff = (today || raw[raw.length-1].x) - 5;
         var pts = raw.filter(function(p){ return p.x >= cutoff; });
         if (!pts.length) pts = raw.slice(-2);
-        var result = { pts: pts, accent: s.accent || null };
+        var result = { pts: pts, accent: s.accent || null, proof:proof };
         _cycSeriesCache[id] = result;
         return result;
       }
@@ -3149,7 +3165,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   }
   function miniCycChart(s) {
     var id = s.id;
-    var ser = _cycSeries(id); if (!ser || !ser.pts.length) return '<div class="mini-cyc-slot" data-id="'+id+'"></div>';
+    var ser = _cycSeries(id); if (!ser || !ser.pts.length) return '<div class="mini-cyc-slot" data-id="'+id+'"><span class="mini-cyc-cap">'+L('Cycle evidence unavailable or not yet verified','周期证据不可用或尚未核验')+'</span></div>';
     var pts = ser.pts;
     var accent = ser.accent || 'var(--link)';
     var last = pts[pts.length-1];
@@ -3169,7 +3185,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     var dotTopPct  = (ey/H*100).toFixed(3)+'%';
     var readTransform = ex > W-28 ? 'translate(-100%,-50%)' : 'translate(4px,-50%)';
     return '<div class="mini-cyc" data-id="'+id+'">'+
-      '<div class="mini-cyc-cap">'+L('cycle position','周期位置')+'</div>'+
+      '<div class="mini-cyc-cap">'+(ser.proof.separate ? L('Separate Cycles snapshot · '+esc(ser.proof.asOf),'独立周期快照 · '+esc(ser.proof.asOf)) : L('cycle position','周期位置'))+'</div>'+
       '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="'+ariaLabel+'">'+
         '<rect x="0" y="'+((1-0.25)*H).toFixed(2)+'" width="'+W+'" height="'+(0.25*H).toFixed(2)+'" fill="color-mix(in srgb, var(--up) 10%, transparent)"/>'+
         '<rect x="0" y="0" width="'+W+'" height="'+(0.25*H).toFixed(2)+'" fill="color-mix(in srgb, var(--warn) 12%, transparent)"/>'+
@@ -3187,14 +3203,13 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     for (var i=0; i<all.length; i++) { m[all[i].id] = all[i]; } return m;
   }
   function hydrateMiniCycs() {
-    if (!window.SECTOR_CYCLES) return;
-    var slots = document.querySelectorAll('#board .mini-cyc-slot, .si-trace .mini-cyc-slot');
+    var slots = document.querySelectorAll('#board .mini-cyc-slot, .si-trace .mini-cyc-slot, #board .mini-cyc, .si-trace .mini-cyc');
     if (!slots.length) return;
     var sById = _buildSById();
     for (var i=0; i<slots.length; i++) {
       var slot = slots[i], id = slot.getAttribute('data-id');
       var rec = sById[id]; if (!rec) continue;
-      var html = miniCycChart(rec); if (!html || html.indexOf('mini-cyc-slot')!==-1) continue;
+      var html = miniCycChart(rec); if (!html) continue;
       slot.outerHTML = html;
     }
   }
@@ -3399,6 +3414,9 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   };
   window.__siTraceHydrate = function(){ if(window.SECTOR_CYCLES){ try{ hydrateMiniCycs(); }catch(e){} } };
   document.addEventListener('sc:cycles-data', hydrateMiniCycs);
+  document.addEventListener('sc:publication-ready', hydrateMiniCycs);
+  document.addEventListener('sc:series-ready', hydrateMiniCycs);
+  document.addEventListener('sc:series-error', hydrateMiniCycs);
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 </script>
@@ -3798,6 +3816,30 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     if (SC.meta.rs_history.as_of !== (GEN.history_as_of || GEN.session_end)) {
       return mrGen(SC.meta.rs_history.as_of, GEN.session_end);
     }
+    var proof = window.SectorCyclesEvidence ? window.SectorCyclesEvidence() : null;
+    if (!proof || proof.status === 'pending') {
+      return '<div class="skel mr-skel-spark"></div><p class="mr-hist-cap">' +
+        esc(L('Verifying history source…', '正在核验历史来源…')) + '</p>';
+    }
+    if (proof.status !== 'verified' || !GEN.cycle_spine || !proof.spine) {
+      return mxError(L('History source cannot be verified', '无法核验历史来源'),
+        L('The current sector reading remains available. Open Cycles explicitly to inspect its own dated snapshot.',
+          '当前板块读数仍可使用。请明确打开周期页面以查看其自身日期的快照。'));
+    }
+    if (GEN.cycle_spine.schema !== proof.spine.schema || GEN.cycle_spine.scope !== proof.spine.scope ||
+        GEN.cycle_spine.sha256 !== proof.spine.sha256) {
+      return mxError(L('History belongs to a different source snapshot', '历史来自不同来源快照'),
+        L('A matching date does not establish matching evidence.', '日期相同不代表证据相同。'));
+    }
+    if (proof.parts.series !== 'verified') {
+      if (proof.parts.series === 'pending' && SERIES_STATE !== 'failed') {
+        armSeriesTimer();
+        return '<div class="skel mr-skel-spark"></div><p class="mr-hist-cap">' +
+          esc(L('Loading history…', '历史加载中…')) + '</p>';
+      }
+      return mxError(L('History unavailable right now', '历史暂不可用'),
+        L('the current read above is unaffected', '上方的当前读数不受影响'));
+    }
     var series = [], rec = null, sc = SC.sectors, i;
     if (sc) {
       for (i = 0; i < sc.length; i++) {
@@ -3810,11 +3852,11 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     // the producer told us where the series lives, wait (or fail) like the
     // CYCLES_STATE branch does.
     if (rec && rec.rs_history === undefined && typeof window.SC_SERIES_DATA === 'string') {
-      if (SERIES_STATE === 'failed') {
+      if (SERIES_STATE === 'failed' || (proof.parts.series !== 'pending' && proof.parts.series !== 'verified')) {
         return mxError(L('History unavailable right now', '历史暂不可用'),
                        L('the current read above is unaffected', '上方的当前读数不受影响'));
       }
-      if (window.SECTOR_CYCLES_SERIES === undefined) {
+      if (proof.parts.series === 'pending') {
         armSeriesTimer();
         return '<div class="skel mr-skel-spark"></div><p class="mr-hist-cap">' +
           esc(L('Loading history…', '历史加载中…')) + '</p>';
@@ -3944,6 +3986,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   }
 
   function select(g, o) {
+    if (o && o.push && window.SectorWorkspaceCapture) window.SectorWorkspaceCapture();
     var found = null, i;
     if (M) {
       for (i = 0; i < M.groups.length; i++) {
@@ -3958,6 +4001,8 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       var u = new URL(location.href);
       u.searchParams.set('g', SEL);
       history.pushState(Object.assign({}, history.state, { mr: SEL }), '', u.pathname + u.search + u.hash);
+      if (window.__siRoute) window.__siRoute();
+      if (window.SectorWorkspaceCapture) window.SectorWorkspaceCapture();
     }
     if (o && o.user && SEL != null) {
       try {
@@ -3977,6 +4022,8 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     var u = new URL(location.href);
     u.searchParams.delete('g');
     history.replaceState(Object.assign({}, history.state, { mr: null }), '', u.pathname + u.search + u.hash);
+    if (window.__siRoute) window.__siRoute();
+    if (window.SectorWorkspaceCapture) window.SectorWorkspaceCapture();
     if (prev != null) {
       var r = root.querySelectorAll('.mr-row');
       for (var i = 0; i < r.length; i++) {
@@ -3984,6 +4031,19 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       }
     }
   }
+
+  function measuredGeneration() { return GEN.cycle_spine ? GEN.cycle_spine.sha256 : GEN.id || null; }
+  window.SectorMeasuredCapture = function() {
+    return {schema:'sector_central.measured_view.v1', groupId:SEL, historyMode:MODE, generation:measuredGeneration()};
+  };
+  window.SectorMeasuredApply = function(saved) {
+    var g=new URLSearchParams(location.search).get('g');
+    var mode=saved && saved.schema==='sector_central.measured_view.v1' && saved.groupId===g &&
+      saved.generation===measuredGeneration() && (saved.historyMode==='obs'||saved.historyMode==='recon') ? saved.historyMode : 'recon';
+    var changed=MODE!==mode;MODE=mode;
+    if(g!==SEL) select(g,{user:false,push:false});
+    else if(changed){renderDetail();renderHist();}
+  };
 
   function armTimer() {
     if (CYCLES_STATE !== 'wait' || PENDING_TIMER) return;
@@ -4003,7 +4063,8 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     PENDING_SERIES_TIMER = true;
     setTimeout(function () {
       PENDING_SERIES_TIMER = false;
-      if (SERIES_STATE !== 'failed' && window.SECTOR_CYCLES_SERIES === undefined) {
+      var proof = window.SectorCyclesEvidence ? window.SectorCyclesEvidence() : null;
+      if (SERIES_STATE !== 'failed' && (!proof || proof.parts.series === 'pending')) {
         SERIES_STATE = 'failed';
         renderHist();
       }
@@ -4023,6 +4084,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
         btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-h') === dh ? 'true' : 'false');
       }
       renderHist();
+      if (window.SectorWorkspaceCapture) window.SectorWorkspaceCapture();
     }
   });
 
@@ -4049,6 +4111,9 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     CYCLES_STATE = window.SECTOR_CYCLES ? 'ready' : 'failed';
     renderHist();
   });
+  ['sc:publication-ready','sc:series-ready','sc:series-error'].forEach(function(name) {
+    document.addEventListener(name, function() { renderHist(); });
+  });
 
   window.addEventListener('error', function (e) {
     var t = e && e.target;
@@ -4072,9 +4137,9 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
 
   window.addEventListener('popstate', function () {
     var g = new URLSearchParams(location.search).get('g');
-    // Returning from Cycles with the same measured selection must retain the
-    // history lens and its DOM/focus origin. Rebuild only if the selection changed.
-    if (g !== SEL) select(g, { user: false, push: false });
+    var entry=(history.state||{}).siWorkspace;
+    var exact=entry&&entry.schema==='sector_central.entry.v1'&&entry.href===location.pathname+location.search+location.hash;
+    window.SectorMeasuredApply(exact?entry.measured:null);
   });
 
   document.addEventListener('langchange', function () { render(); });
@@ -4089,7 +4154,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     }
   }
   if (valid0 && location.hash === '') {
-    history.replaceState(null, '', location.pathname + location.search + '#map');
+    history.replaceState(history.state, '', location.pathname + location.search + '#map');
   }
   DEEP_G = valid0 ? G0 : null;
   render();

@@ -1795,13 +1795,16 @@ def test_main_writes_turn_record_into_the_core_file(monkeypatch, tmp_path):
         "load",
         lambda: {"storage": {"site_dir": "site"}},
     )
-    monkeypatch.setattr(sc, "compute", lambda: {"sectors": [{"id": "xlk"}]})
+    monkeypatch.setattr(sc, "compute", lambda: {"meta":{"asOf":"2026-07-02","benchmark":"SPY"},"sectors": [{"id": "xlk"}]})
     assert build_sector_cycles.main() == 0
     path = root / "site" / "sector_cycles_data.js"
     text = path.read_text(encoding="utf-8")
-    body = text.split("=", 1)[1]
-    assert body.endswith(";\n")
-    core = json.loads(body[:-2])
+    # Execute the emitted compatibility global; the publication envelope must
+    # not change its native shape or lose the validated turn record.
+    import subprocess
+    result = subprocess.run(["node", "-e", "global.window={};require(process.argv[1]);process.stdout.write(JSON.stringify(window.SECTOR_CYCLES));", str(path)],
+                            capture_output=True, text=True, check=True)
+    core = json.loads(result.stdout)
     got = core["turn_record"]
     assert got["funds"] == ["xle", "xlk"]
     assert got["turns"] == 28
