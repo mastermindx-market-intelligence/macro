@@ -159,15 +159,15 @@ def _specimen_panel():
     return panel
 
 
-def render_specimen_page():
-    """The board-11 Brazil specimen page through the SAME dossier template."""
+def _render_panel(panel, title="INTL-GS dossier specimen"):
+    """One dossier panel through the REAL dossier template, standalone page."""
     template = _env().from_string(
         '<!DOCTYPE html>\n'
         '<html lang="en" data-theme="dark">\n'
         '<head>\n'
         '<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-        '<title>INTL-GS dossier specimen</title>\n'
+        f'<title>{title}</title>\n'
         '<link rel="stylesheet" href="theme.css">\n'
         '<link rel="stylesheet" href="intl_workspace.css">\n'
         '<link rel="stylesheet" href="intl_workspace_surveillance.css">\n'
@@ -179,7 +179,56 @@ def render_specimen_page():
         '</div>\n'
         '</body>\n'
         '</html>\n')
-    return template.render(panel=_specimen_panel())
+    return template.render(panel=panel)
+
+
+def render_specimen_page():
+    """The board-11 Brazil specimen page through the SAME dossier template."""
+    return _render_panel(_specimen_panel())
+
+
+def graph_boundary_panel(market_id, edges):
+    """Fixture-only §14 chip injection (DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP).
+
+    A real abstain-variant 1m/usd_unhedged panel whose one market carries a
+    graph_boundary computed from FIXTURE-INJECTED edges through the REAL
+    engine market_summary -> graph_boundary_label and the REAL builder
+    footnote composition. Production wiring never passes edges; only this
+    fixture does (edge_basis still states the production truth).
+    """
+    import lib.intl_gs_dossier_view as dossier
+    from engine import intl_global_universe as _universe
+    from engine.intl_global_graph_boundary import graph_boundary_label
+    from engine.intl_transmission_evidence import market_summary
+    from engine.intl_workspace_overview import build_workspace_overviews
+    from lib.intl_macro_mount import _contexts
+    from lib.intl_workspace_binding import binding_version
+
+    universe = _universe.load_universe()
+    rights = _universe.load_rights_matrix()
+    workspace = build_workspace_overviews(None)
+    version, generation = binding_version(workspace)
+    contexts = _contexts(workspace["panels"], workspace["config"], version, generation)
+    panels = dossier.build_view(universe=universe, rights=rights, contexts=contexts,
+                                workspace=workspace, observations=None)
+    panel = deepcopy(next(p for p in panels
+                          if p["context"]["horizon"] == "1m"
+                          and p["context"]["currency_basis"] == "usd_unhedged"))
+    summary = market_summary(market_id, edges=list(edges or []),
+                             observations=[], universe=universe)
+    boundary = {**graph_boundary_label(summary),
+                "edge_basis": dossier.EDGE_BASIS_NO_ADMITTED}
+    market = next(m for m in panel["payload"]["markets"] if m["id"] == market_id)
+    market["graph_boundary"] = boundary
+    market["graph_boundary_footnote"] = dossier.graph_boundary_footnote(boundary)
+    panel["context_id"] = "im-gs-dossier-gb-fixture"
+    return panel
+
+
+def render_graph_boundary_page(market_id, edges):
+    """The §14 fixture-injection page through the SAME dossier template."""
+    return _render_panel(graph_boundary_panel(market_id, edges),
+                         title="INTL-GS dossier graph-boundary fixture")
 
 
 def write_site(out_dir, data_root):

@@ -11,6 +11,15 @@
 <p class="intl-gs__abstainnote" data-abstain-token="{{ token|e }}">{{ gs.gs_chip(t('Abstain', '弃权'), 'muted-dashed') }} <span class="intl-gs__abstainnote__copy">{{ t(pair[0], pair[1]) }}</span></p>
 {%- endmacro %}
 
+{# §14 graph-boundary footnote text (DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP):
+   joins the builder's (EN, ZH) copy pairs — edge basis, engine reasons, the
+   FIRST interpretation limit — with a middle dot; every pair wraps once
+   through t() with plain-string arguments, so no twin markup is nested and no
+   pair is ever typed in a template. #}
+{% macro ds_pairs_text(pairs) -%}
+{% for pair in pairs %}{{ t(pair[0], pair[1]) }}{% if not loop.last %} · {% endif %}{% endfor %}
+{%- endmacro %}
+
 {# §1.3 composite hero: label + 38/700 numeral + unit + basis + clock + tier
    chip in ONE block. An abstaining or absent observation renders the §7
    state with its reason copy and NO numeral (L10). #}

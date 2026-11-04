@@ -23,8 +23,12 @@ from __future__ import annotations
 from engine.intl_global_acceptance_matrix import acceptance_matrix
 from engine.intl_global_dollar_credit import (
     ABSTAIN_REASONS as _DOLLAR_ABSTAIN_REASONS, jurisdiction_assessments)
+from engine.intl_global_graph_boundary import (
+    INTERPRETATION_LIMITS, GraphBoundaryError, graph_boundary_label)
 from engine.intl_global_observation import REQUIRED_CLOCKS
 from engine.intl_global_universe import CAPABILITIES
+from engine.intl_transmission_evidence import TransmissionError, load_channels
+from engine.intl_transmission_evidence import market_summary
 from lib.intl_gs_display import (
     CAPABILITY_DISPLAY, CAPABILITY_LABELS, COVERAGE_FIELDS, EVIDENCE_TIER_SOURCE,
     REASON_COPY, REGION_GROUPS, VIEW_ABSTAIN_TOKENS, format_clock, horizon_label,
@@ -73,6 +77,29 @@ for _field_id, _en, _zh, _capability in COVERAGE_FIELDS:
 assert set(_BOARD_ROW_LABELS) == {"yield_10y", "cds_5y", "usd_funding"}
 assert set(IM16_REASON_COPY) <= set(_DOLLAR_ABSTAIN_REASONS)
 assert tuple(key for key, _en, _zh in _CLOCK_LABELS) == REQUIRED_CLOCKS
+
+#: §14 graph-boundary chip (seat ruling DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP):
+#: copy tokens registered in lib.intl_gs_display.REASON_COPY, delivered
+#: through the payload abstain_copy registry exactly like
+#: evidence_tier_undefined (VIEW_ABSTAIN_TOKENS stays pinned by the frozen
+#: foundation test, so these ride the same comprehension instead).
+GRAPH_BOUNDARY_TOKENS = (
+    "no_candidate_evidence",
+    "no_structural_research",
+    "no_admitted_edge_set",
+    "graph_boundary_unavailable",
+    "graph_boundary_limit_research_labeling",
+)
+
+#: Honest edge basis: no production edge producer is admitted today (the W4B
+#: transmission tab is deliberately not_built), so production wiring passes NO
+#: edges and every rendered §14 label states this basis.
+EDGE_BASIS_NO_ADMITTED = "no_admitted_edge_set"
+
+assert set(GRAPH_BOUNDARY_TOKENS) <= set(REASON_COPY)
+# drift guard: the registered ZH-limit token's EN leg IS the engine's first
+# interpretation limit, verbatim.
+assert reason_copy("graph_boundary_limit_research_labeling")[0] == INTERPRETATION_LIMITS[0]
 
 
 def _im16_reason_copy(token):
@@ -293,11 +320,66 @@ def _peers(row, rows_by_id, order, horizon, basis, index):
     return peers
 
 
+def graph_boundary_payload(summary):
+    """Engine §14 payload plus the one honest ``edge_basis`` key, or None.
+
+    ``graph_boundary_label`` refuses malformed/aggregate-shaped receipts
+    (GraphBoundaryError): the chip is then omitted entirely — never a default
+    label, never a crash. The engine payload passes through unchanged apart
+    from the single ``edge_basis`` stamp; ``contract_version`` stays the
+    engine's ``intl-global-graph-boundary-v1``.
+    """
+    try:
+        payload = graph_boundary_label(summary)
+    except GraphBoundaryError:
+        return None
+    return {**payload, "edge_basis": EDGE_BASIS_NO_ADMITTED}
+
+
+def graph_boundary_footnote(boundary):
+    """(EN, ZH) pairs for the ONE footnote beneath the edge table.
+
+    Order: the edge-basis sentence, the engine ``reasons``, then exactly the
+    FIRST engine interpretation limit (engine EN verbatim; the ZH leg is the
+    registered token's). Every pair is composed through
+    ``lib.intl_gs_display.reason_copy`` / the engine payload — nothing is
+    hand-typed here and the template re-types nothing.
+    """
+    if not boundary:
+        return None
+    pairs = [reason_copy(boundary["edge_basis"])]
+    pairs.extend(reason_copy(token) for token in boundary["reasons"])
+    limit_zh = reason_copy("graph_boundary_limit_research_labeling")[1]
+    pairs.append((boundary["interpretation_limits"][0], limit_zh))
+    return pairs
+
+
+def _graph_boundary(market_id, universe, observations, channels):
+    """(chip payload, footnote pairs) for one dossier market row.
+
+    Production wiring passes NO edges — there is no admitted production edge
+    producer, so ``edges=[]`` always here; only the test fixture injects
+    edges, through its own path. A refused row (unknown market, aggregate or
+    shape error) returns (None, None) and renders the abstain note.
+    """
+    flat = [entry for entries in ((observations or {}).get("bases") or {}).values()
+            for entry in entries if isinstance(entry, dict)]
+    try:
+        summary = market_summary(market_id, edges=[], observations=flat,
+                                 universe=universe, channels=channels)
+        boundary = graph_boundary_payload(summary)
+    except (TransmissionError, GraphBoundaryError):
+        return None, None
+    return boundary, graph_boundary_footnote(boundary)
+
+
 def build_view(*, universe, rights, contexts, workspace, observations=None):
     """One dossier panel per (horizon, basis) context the mount passes.
 
     Never usd_hedged (Wave 1: hedged abstains basis_unsupported and is never a
-    panel context). Pure: reads only the passed documents; no IO, no store.
+    panel context). Pure over the passed documents plus the engine-owned
+    frozen transmission-channels config (read once for the §14 chip); no
+    store.
     """
     rows = jurisdiction_rows(universe)
     order = [row["id"] for row in rows]
@@ -308,7 +390,12 @@ def build_view(*, universe, rights, contexts, workspace, observations=None):
     assessments = jurisdiction_assessments(universe)["claims"]
     snapshot = snapshot_display(_snapshot_clocks(observations))
     abstain_copy = {token: reason_copy(token)
-                    for token in (*VIEW_ABSTAIN_TOKENS, "evidence_tier_undefined")}
+                    for token in (*VIEW_ABSTAIN_TOKENS, "evidence_tier_undefined",
+                                  *GRAPH_BOUNDARY_TOKENS)}
+    # The engine-owned frozen transmission-channels document, read once per
+    # build: the §14 chip reads market summaries from the engine, which owns
+    # this config (the only IO this module performs).
+    channels = load_channels()
 
     groups = []
     for key, _regions, en, zh in REGION_GROUPS:
@@ -337,11 +424,15 @@ def build_view(*, universe, rights, contexts, workspace, observations=None):
             capability_entry = ((universe.get("jurisdictions") or {}).get(row["id"])
                                 or (universe.get("aggregates") or {}).get(row["id"])
                                 or {}).get("capabilities", {}).get("equity_index_fx") or {}
+            boundary, boundary_note = _graph_boundary(row["id"], universe,
+                                                      observations, channels)
             markets.append({
                 "id": row["id"], "kind": row["kind"],
                 "name_en": row["name_en"], "name_zh": row["name_zh"],
                 "region_group": row["region_group"],
                 "hero": _hero(row, observation),
+                "graph_boundary": boundary,
+                "graph_boundary_footnote": boundary_note,
                 "decomposition": _decomposition(row, usd_observation),
                 "clocks": _clocks(observation),
                 "rights": rights_view(universe, rights, row["id"], "equity_index_fx"),

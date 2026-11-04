@@ -13,8 +13,12 @@ const root = path.resolve(__dirname, '..');
 function fixtureHtml(stub) {
   const args = [path.join(__dirname, 'intl_gs_fixture_site.py'), '--print-html'];
   if (stub) args.push('--stub-coverage');
+  // 32 MiB (was 16): the page grows past 16 MiB once more than one view
+  // family attaches (dossier+dislocations on main print 16,477,487 bytes;
+  // W2A's scanner+coverage on top print 19,541,611) — a world-state size, not
+  // an invariant. Matches tests/intl_gs_scanner_browser.test.cjs.
   return execFileSync(process.env.INTL_TEST_PYTHON || 'python3', args,
-    {cwd: root, env: {...process.env, PYTHONPATH: root}, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024});
+    {cwd: root, env: {...process.env, PYTHONPATH: root}, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024});
 }
 
 // DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT: the TRUE
@@ -180,6 +184,10 @@ test('coverage tab is enabled, clickable, shows its panel and empties issues', a
 });
 
 test('?view=scanner without a panel behaves like an unsupported view', async () => {
+  // DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT: the
+  // negative branch runs in the TRUE no-payload world (every builder module
+  // absent), where ?view=scanner behaves exactly like a legacy unsupported
+  // view — the W2F assertion unchanged.
   await withPage(async page => {
     const issues = await page.locator('[data-im-issues]');
     await issues.waitFor({state: 'visible'});
@@ -192,7 +200,26 @@ test('?view=scanner without a panel behaves like an unsupported view', async () 
     assert.equal(visible, 0, 'no panel may be shown for an unbuilt view');
     const scanner = page.locator('.intl-workspace__view-nav button[data-im-view="scanner"]');
     assert.equal(await scanner.isDisabled(), true, 'scanner button stays disabled');
-  }, {query: '?view=scanner'});
+    // The toolbar <fieldset> starts disabled, which alone would satisfy
+    // isDisabled(); the button's OWN server-rendered attribute must carry the
+    // no-panel state (honesty mutant: a mount that marks a view available
+    // with no panel must redden this, fieldset aside).
+    assert.notEqual(await scanner.getAttribute('disabled'), null,
+      'the scanner button itself renders disabled in the no-payload world');
+  }, {query: '?view=scanner', stub: false, noPayload: true});
+  // Invariant branch — a tab is enabled iff its builder produced a panel:
+  // this branch ships the scanner builder, so the real page must enable the
+  // scanner tab and show its panel.
+  await withPage(async page => {
+    const scanner = page.locator('.intl-workspace__view-nav button[data-im-view="scanner"]');
+    assert.equal(await scanner.isDisabled(), false,
+      'scanner tab is enabled because its builder produced a panel');
+    assert.equal(await scanner.getAttribute('disabled'), null,
+      'no disabled attribute on the scanner tab once its panel exists');
+    await page.locator('[data-im-panel][data-view="scanner"]').first().waitFor({state: 'visible'});
+    assert.equal(await page.locator('[data-im-unavailable]').isHidden(), true,
+      'no unavailable banner once the scanner panel exists');
+  }, {query: '?view=scanner', stub: false});
 });
 
 test('legacy views still switch while the surveillance seam exists', async () => {
