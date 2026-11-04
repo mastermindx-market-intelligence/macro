@@ -7465,16 +7465,35 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # D05: actual split-publication receiver and native Central history tests.
+      - "config/sector_legs.json"
+      - "engine/leadership_rotation_context.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_legs.py"
+      - "scripts/build_china_sector_cycles.py"
+      - "scripts/build_country_cycles.py"
+      - "templates/sector_central.html.j2"
+      - "templates/si_workspace.js"
+      - "tests/test_cycles_publication.py"
+      - "tests/test_cycles_entry_state.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install minimal deps
         run: pip install pytest numpy pandas pyyaml jinja2
-      - name: sector cycles page and RS arithmetic
-        run: python -m pytest tests/test_sector_cycles.py -q
+      - name: sector cycles page, publication coherence and native entry restoration
+        run: node --version && python -m pytest tests/test_sector_cycles.py tests/test_cycles_publication.py tests/test_cycles_entry_state.py -q
 
   regwall-boundary:
     if: ${{ false }}
@@ -22372,6 +22391,7 @@ jobs:
       - "engine/rotation_universe.py"
       - "engine/rotation_velocity.py"
       - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
       - "engine/sector_legs.py"
       - "engine/session_anchor.py"
       - "engine/technicals.py"
@@ -22457,6 +22477,7 @@ jobs:
       - "engine/rotation_universe.py"
       - "engine/rotation_velocity.py"
       - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
       - "engine/sector_legs.py"
       - "engine/session_anchor.py"
       - "engine/technicals.py"

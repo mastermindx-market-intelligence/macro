@@ -230,3 +230,41 @@ def test_main_free_js_and_json_carry_same_as_of_and_no_locked_rows(tmp_path, mon
 
     # absent si_handoff is recorded as absent (not malformed)
     assert free["publication"]["secondary_sources"]["si_handoff"]["status"] == "absent"
+
+
+@pytest.mark.parametrize("source_available", [True, False])
+def test_main_emits_relative_trend_to_its_existing_sector_output(tmp_path, monkeypatch, source_available):
+    """Exercise the actual builder hook; an unbound output directory used to
+    be swallowed before the source loader was ever reached. All data and output
+    are isolated here; the existing real emitter retains its fail-soft behavior.
+    """
+    import pandas as pd
+    from engine import inputs, sector_cycles
+
+    dates = pd.date_range("2023-01-02", periods=800, freq="B")
+    closes = pd.DataFrame({
+        symbol: [100.0 + i * (0.10 if symbol == "SPY" else 0.15) for i in range(len(dates))]
+        for symbol in ("SPY", *sector_cycles.SECTORS)
+    }, index=dates)
+    reads = []
+
+    def prices(*, basis):
+        reads.append(basis)
+        if not source_available:
+            raise RuntimeError("isolated price source unavailable")
+        return closes.copy()
+
+    monkeypatch.setattr(inputs, "yahoo_closes", prices)
+    assert _run_main(monkeypatch, tmp_path, si_handoff_bytes=None) == 0
+    assert reads == ["tr"], "the real relative-trend emitter must be reached exactly once"
+    output = tmp_path / "site" / "sectordata" / "sector_rotation_relative_trend.json"
+    assert (tmp_path / "site" / "sectordata" / "sector_central.json").exists()
+    if not source_available:
+        assert not output.exists(), "an unavailable source must not fabricate a feed"
+        return
+    feed = json.loads(output.read_text(encoding="utf-8"))
+    assert feed["meta"]["asOf"] == dates[-1].date().isoformat()
+    assert [(r["id"], r["ticker"]) for r in feed["sectors"]] == [
+        (ticker.lower(), ticker) for ticker in sector_cycles.SECTORS
+    ]
+    assert all(r["observations"] for r in feed["sectors"])

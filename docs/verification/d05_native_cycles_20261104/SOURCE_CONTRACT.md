@@ -210,3 +210,53 @@ from matching sector input before an aligned production journey is possible.
 Partial publication remains fail-closed. The original route, Company, regional,
 scientific, auth, foundation, CI and release owners retain their acceptance
 conditions. No release action is authorized by this file.
+
+## 8. Company receiver: verified boundary and joint integration requirements
+
+Receiver inspection is pinned to **mastermind-terminal #1244** at
+`624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9`, in repository
+`mastermindx-market-intelligence/mastermind-terminal`. Earlier `/terminal`
+repository links in the design packet were stale aliases, not evidence that a
+receiver or permission was absent.
+
+The current Macro `MDXTerminal` / `terminal_overlay.js` owner intercepts native
+stock links and builds its existing `/terminal?sym=...&from=macro&ret=...`
+handoff. In standalone Macro the overlay keeps the source document mounted;
+the shared-shell path delegates to its admitted native route. Preserve this
+carrier until its receiver-qualified replacement exists. Directly substituting
+`/analysis` links would bypass that existing lifecycle.
+
+At the inspected Terminal head, Company accepts exact dotted/dashed listing
+syntax through `/analysis?symbol=...`. Syntax acceptance does not prove source
+resolution. Preserve `CNQ.TO`, `300308.SZ` and `9988.HK` exactly; do not substitute
+an ADR, invent venue/currency metadata or treat quote and statement currency as
+one field. Ordinary constituent navigation must omit `company_query`; that
+parameter describes an actual Company search, and an empty value still creates
+search provenance in the current receiver.
+
+The current cross-product return is incomplete:
+
+| Existing owner | Verified limitation |
+|---|---|
+| `sharedShellContracts` | `VIEW_STATE` is closed to `{x, y, focusId?}`. It does not accept D05 analytical entry state. |
+| `LegacyPageHost` | Native Company navigation removes the legacy iframe. Parent scroll/focus snapshots do not preserve the child `siWorkspace` / `siCyclesOrigin` state. |
+| `originNav` | A safe `ret` URL is retained; assigning that URL creates navigation, not proof that an earlier analytical entry was restored. Its hook reads origin on mount. |
+| `AppShell` | Existing desktop/mobile Macro return affordances are hidden under shared-shell mode. |
+| Shared-shell receipts | `READY` means document/context readiness; `LOCATION_ACCEPTED` acknowledges same-document location. Neither means Company data loaded or D05 analytical state applied. |
+
+The joint increment belongs in these existing owners. It must provide a named
+return action and preserve a bounded, entry-specific snapshot through the
+existing parent/child navigation ownership, without a second return store,
+router or protocol. Its receive/apply distinction must bind document/context
+generation, account/access scope, exact local return route and actual source
+publication. Same-date source replacement must not restore old analytical
+settings. Late callbacks from the departed iframe must not repopulate a new
+entry or account. Invalid, expired, incompatible or missing state needs a
+truthful URL-only fallback; it must not report an exact analytical restoration.
+
+Prove constituent → exact Company → named return separately from browser
+Back/Forward. Include two same-URL investigations, reload, modified/new-tab
+navigation, regional listings, account/access change, publication correction,
+late source arrival and keyboard focus. The existing local D05 entry tests do
+not establish this cross-product outcome. F01/F02 acceptance and release holds
+remain in force while incumbent source custody is reconciled.

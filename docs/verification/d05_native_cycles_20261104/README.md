@@ -112,8 +112,8 @@ phase age retains measured, lower-bound and unknown trading-session semantics.
 
 ## Executed source verification
 
-The final pre-publication focused run completed **462 passed / 3 skipped /
-0 failed** across the 15 suites recorded in `source_validation.json`. The three
+The completion follow-through run completed **485 passed / 3 skipped /
+0 failed** across the 17 suites recorded in `source_validation.json`. The three
 skips require absent local sector data (two) or the absent legacy price scorecard
 (one). Required committed narrative inputs were materialized without changing
 their bytes; sparse-checkout absence was not misclassified as a product defect.
@@ -143,6 +143,45 @@ match the implemented research-stance and historical-calibration wording. The
 English/CJK falsifiers use fixed real-file counterexamples, while the unchanged
 deck audit still checks every live production citation. The EW receipt still
 requires an actual current-source recapture; no hash-only restamp is accepted.
+
+## Completion follow-through
+
+The exact `2e6c4589` CI contract-delta log identified four omissions: the new
+publication and entry-state suites were unregistered, and the two curated
+leadership jobs did not include `engine/sector_generation_guard.py`. Both
+suites now run in the existing `sector-cycles-page` owner with explicit Node 20;
+that owner and the two leadership scopes include their actual source closure.
+The canonical inference functions found zero uncovered concrete dependencies
+for these three owners (103 / 82 / 72 respectively), and each new suite has one
+CI owner. The existing packing-budget test passed. The full-tree exclusive
+scope test refused an unrelated omitted research job in this sparse checkout;
+that refusal is not a full-gate pass. Hosted CI remains separate evidence.
+
+The source audit's relative-trend defect was reproduced through the actual
+Central builder: its additive call referenced `fdir` before assignment, caught
+the resulting exception and never reached the price loader. The existing call
+now passes its known `site / "sectordata"` destination directly. Two regression
+cases exercise the real emitter with isolated input: the available source
+publishes the native 11-sector feed with its own source date; source failure
+still completes the main page without fabricating the additive feed. The
+builder/publication and relative-trend suites pass all 23 cases. No market
+engine, production refresh or forward-log write was performed.
+
+`regional_archive_serialization.json` records the actual committed US, China
+and international model snapshots passing through the new serializer. Their
+source dates, source hashes, 11/31/24 sector-or-country populations and distinct
+spines remain explicit. NARR/DNA were deliberately marked missing in this smoke
+check. It proves archived payload compatibility, not live regional data,
+point-in-time history, entitlement or browser acceptance.
+
+Companion Draft #10707 at `672bae2b85dd0101ed8185644e63c3af008e4759`
+retains an opt-in US Dossier Cycle presentation component. It is not mounted in
+this candidate. Its current date-only alignment, per-family history readiness,
+callback identity/focus and older Dossier host custody were returned to its
+active owner for qualification. `SectorCyclesHost` remains the singleton native
+chart owner. The verified Company receiver gap and joint requirements are in
+section 8 of `SOURCE_CONTRACT.md`; the original shared-shell source carrier and
+its uncommitted work are preserved.
 
 ## Browser fixtures and proof boundary
 
@@ -198,8 +237,17 @@ reconciled clean at the previous candidate. Browser-worker ingress initially
 rejected `/root` as invalid metadata. Native exact-run status returned NOT_FOUND;
 both running facade sources validate this field before reserve/dispatch, one
 matching the protected blob exactly. No START or browser result is claimed by
-that diagnostic. The exact original recovery request remains the carrier until
-any lawful same-operation requalification is recorded.
+that diagnostic. After installed-source and original-effect reconciliation,
+one schema correction retained the same run under conserved root/parent
+`6aea7863-bef8-83e9-bb5b-47850ca7132b`: browser run
+`d05-native-browser-proof-20261104-01`, controller 85044, admitted ubuntu0.
+A disjoint State-of-Themes absence repair has run
+`d05-theme-falsifier-absence-20261104-01`, controller 5795, admitted ubuntu3.
+At 06:30 UTC both controllers had retained launch/poll observations but native
+status still reported unverified lineage and unknown worker state. No START,
+result consumption, replay or background completion is claimed. Their original
+handles remain under read-only owner reconciliation; their granted files and
+browser effects are not duplicated.
 
 ## Paper and remaining acceptance
 

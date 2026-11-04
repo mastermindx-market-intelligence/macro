@@ -504,7 +504,7 @@ def main(*, strict: bool = False) -> int:
         from engine.rotation_relative_trend import emit_relative_trend_additive
         from engine.sector_cycles import SECTORS as _W2A_SECTOR_FUNDS
         emit_relative_trend_additive(
-            fdir, sectors=[(tk.lower(), tk) for tk in _W2A_SECTOR_FUNDS], log=log)
+            site / "sectordata", sectors=[(tk.lower(), tk) for tk in _W2A_SECTOR_FUNDS], log=log)
     except Exception as e:  # noqa: BLE001
         log.warning("sector_central: relative trend feed skipped: %s", e)
 

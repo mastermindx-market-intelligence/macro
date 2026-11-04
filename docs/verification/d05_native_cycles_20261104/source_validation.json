@@ -5,7 +5,7 @@
   "source_base": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03",
   "branch": "claude/d05-native-cycles-20261104",
   "test_result": {
-    "passed": 462,
+    "passed": 485,
     "skipped": 3,
     "failed": 0,
     "skip_reasons": [
@@ -13,7 +13,7 @@
       "No local promises_price_v1_zz14_v0.json scorecard (one test)"
     ]
   },
-  "test_command": ".venv/bin/python -m pytest -q -rs tests/test_sector_central_history.py tests/test_si_workspace_shell.py tests/test_sector_cycles.py tests/test_sector_paper_cycles_ia.py tests/test_sector_central_contract.py tests/test_xpv2_sector_r3_fixture.py tests/test_cycles_payload_split.py tests/test_cycles_publication.py tests/test_cycles_entry_state.py tests/test_sector_generation_guard.py tests/test_leadership_measured_read.py tests/test_sector_central_measured_panel.py tests/test_rekey_narratives.py tests/test_narrative_ttl.py --tb=short tests/test_sector_paper_copy_deck.py",
+  "test_command": ".venv/bin/python -m pytest -q -rs tests/test_sector_central_history.py tests/test_si_workspace_shell.py tests/test_sector_cycles.py tests/test_sector_paper_cycles_ia.py tests/test_sector_central_contract.py tests/test_xpv2_sector_r3_fixture.py tests/test_cycles_payload_split.py tests/test_cycles_publication.py tests/test_cycles_entry_state.py tests/test_sector_generation_guard.py tests/test_leadership_measured_read.py tests/test_sector_central_measured_panel.py tests/test_rekey_narratives.py tests/test_narrative_ttl.py --tb=short tests/test_sector_paper_copy_deck.py tests/test_sector_central_publication.py tests/test_rotation_relative_trend.py",
   "additional_checks": {
     "javascript_syntax": "passed",
     "diff_whitespace": "passed",
@@ -30,7 +30,26 @@
     ],
     "design_system_enforce_added": "passed; 0 new blocking findings",
     "runtime_style_guard": "not executed: sparse site tree refused; full checkout/browser host owed",
-    "general_visual_evidence_guard": "not executed: sparse mockups tree refused; canonical capture owed"
+    "general_visual_evidence_guard": "not executed: sparse mockups tree refused; canonical capture owed",
+    "relative_trend_builder_regression": "reproduced two failures before repair; actual builder and real emitter pass available/source-error fixtures; 23 focused tests passed",
+    "focused_ci_scope": {
+      "sector-cycles-page": {
+        "concrete_dependencies": 103,
+        "missing": []
+      },
+      "leadership-rotation-contract": {
+        "concrete_dependencies": 82,
+        "missing": []
+      },
+      "leadership-rotation-science": {
+        "concrete_dependencies": 72,
+        "missing": []
+      },
+      "new_suites_single_owner": true
+    },
+    "ci_packing_budget": "passed unchanged test_exclusive_curation_narrows_ordinary_code_prs",
+    "ci_full_exclusive_scope": "refused: information-to-price-eval-receipts derives no closure in sparse checkout; not a gate pass",
+    "regional_archive_serialization": "three actual committed dated payloads serialized; see regional_archive_serialization.json"
   },
   "browser": {
     "status": "NOT_PROVEN",
@@ -53,8 +72,8 @@
   ],
   "file_sha256": {
     "design_refs/sector-paper-20261021/copy_deck.json": "29013d96309b6fab83c3a364871305c206d6f97120c7d44d3d22e59200942722",
-    "docs/verification/d05_native_cycles_20261104/README.md": "fce6e0db6fb4144c1edd757f8f9f89864c38e68ddb239195f7fb55f8a280b3a9",
-    "docs/verification/d05_native_cycles_20261104/SOURCE_CONTRACT.md": "1447785589d2a1e5e0b3daf2329084542e65d85a3959c2643acf0c374c73497e",
+    "docs/verification/d05_native_cycles_20261104/README.md": "acd25643bf70e51969800f36deaeed627c37dc686e9d91151789a24905be691b",
+    "docs/verification/d05_native_cycles_20261104/SOURCE_CONTRACT.md": "f4bd07c995b261bd07e2773930e0526f20c30b882675cfce15c9108ce2210236",
     "docs/verification/d05_native_cycles_20261104/prepare_preview.py": "b82914e4b8de0f1ff9d18d07a15c4d3cf3c7499e2a729017910d10529a23c762",
     "docs/verification/d05_native_cycles_20261104/verify_browser.cjs": "683dcc03134335701ebb45a628944410fb07c0a15e485735fdaeb22062d3a11b",
     "engine/leadership_rotation_context.py": "637ad1e50132086b848a1221103e19b8f530dd1b5cbc9a312ccc23015faab49c",
@@ -78,9 +97,13 @@
     "tests/test_sector_central_measured_panel.py": "50d1084f0d3d193312ba050e934294239e97628cf3c245970c57fb417a9d505c",
     "tests/test_sector_cycles.py": "00300be2697fc81a607308d067973fb0f10ab80039a76b6956441885b2d5b460",
     "tests/test_sector_paper_copy_deck.py": "9f76fd5e8cbf0933beb4a746276f8398d06105fb45fe179f442be082537de817",
-    "tests/test_si_workspace_shell.py": "39636918d97c7e0ce309ad3f28946d1acd1f8991a7ffa980befd63896ae5d497"
+    "tests/test_si_workspace_shell.py": "39636918d97c7e0ce309ad3f28946d1acd1f8991a7ffa980befd63896ae5d497",
+    ".github/ci/legacy-jobs.yml": "18b1e3469834b20999bcd1344dee4a782fd4308e0256582a4695258065d24cc4",
+    "scripts/build_sector_central.py": "c530afe662a74f3881001731d48e42a39e755f17fdcfae8acf121f47d3a79625",
+    "tests/test_sector_central_publication.py": "14de9559feb3b3891ad97c1b73e27b2cfe6ddc09720cdbee2c6702cc7ba8616a",
+    "docs/verification/d05_native_cycles_20261104/regional_archive_serialization.json": "ac3944195bfa170207af3bcd18fff8d9bd2469a04f10b71939bca5d0cceb7476"
   },
-  "source_parent": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
+  "source_parent": "2e6c45899a9aeb7f90f03f85272aaff3ca42f4eb",
   "ci": {
     "prior_head": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
     "run": 41773065024,
@@ -99,5 +122,24 @@
     "token_hash": "811c9dc5",
     "write_schema_accepted": false,
     "catalog": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4"
+  },
+  "ci_followthrough": {
+    "head": "2e6c45899a9aeb7f90f03f85272aaff3ca42f4eb",
+    "contract_delta_job": 126417079002,
+    "introduced_findings": 4,
+    "disposition": "four source registrations/closures repaired and locally checked; no hosted CI success claimed; packs last observed queued"
+  },
+  "worker_operations": {
+    "root_id": "6aea7863-bef8-83e9-bb5b-47850ca7132b",
+    "observed_utc": "2026-11-04T06:30:00Z",
+    "browser": {
+      "run_id": "d05-native-browser-proof-20261104-01",
+      "controller_pid": 85044
+    },
+    "theme_absence": {
+      "run_id": "d05-theme-falsifier-absence-20261104-01",
+      "controller_pid": 5795
+    },
+    "status": "ACTIVE_OR_WAITING; lineage unverified; worker state unknown; original effects under reconciliation"
   }
 }
