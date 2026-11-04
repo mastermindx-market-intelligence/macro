@@ -5466,10 +5466,12 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # c166bb33 measured 137/5924, 137/5939 and 131/5680 (jobs/weight seconds).
 # The added production, gateway and authenticated Admin coverage costs exactly
 # 12 weight seconds above protected ec67; job and ten-pack ceilings are unchanged.
+# Trusted application-owner composition at 26f62c1a adds six measured weight
+# seconds: 137/5930, 137/5945, 131/5686; all ten packs, no new selected jobs.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_924),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_939),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_680),
+    ("templates/index.html", 137, 5_930),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_686),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5477,6 +5479,13 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Fabric application owner (2026-11-04): canonical contract-delta at
+    26f62c1a against protected ec67 measured index137/5930, free137/5945,
+    Prophet131/5686, ten packs each, with no selected-job entrants. The new
+    owner/startup proof adds six planner weight seconds above the prior
+    consumer composition. Fund only these measured six seconds; preserve
+    job-count, pack, runtime, admission and all required test bounds.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
