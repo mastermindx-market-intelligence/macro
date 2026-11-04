@@ -1,0 +1,165 @@
+{
+  "kind": "illustrative_design_fixture",
+  "sourceNamespace": "D08B:fixture",
+  "securityId": "FIXTURE:US-ARCX-SPY",
+  "root": "SPY",
+  "spot": 752.1,
+  "spotAt": "2026-11-02T16:00:02-05:00",
+  "sourceSession": "2026-11-02",
+  "oiPositionSession": "2026-10-30",
+  "oiReportDate": "2026-11-02",
+  "availableAt": "2026-11-03T03:52:00-05:00",
+  "builtAt": "2026-11-03T04:10:00-05:00",
+  "unit": "USD per +1% spot",
+  "displayScale": 1000000,
+  "definitionKey": "fixture-call-plus-put-minus-v1",
+  "expiries": [
+    "2026-11-06",
+    "2026-11-13",
+    "2026-11-20",
+    "2026-11-27",
+    "2026-12-04",
+    "2026-12-18"
+  ],
+  "strikes": [
+    775,
+    770,
+    765,
+    760,
+    755,
+    750,
+    745,
+    740,
+    735
+  ],
+  "netGammaMillions": [
+    [
+      25,
+      18,
+      12,
+      6,
+      4,
+      3
+    ],
+    [
+      34,
+      20,
+      13,
+      8,
+      5,
+      4
+    ],
+    [
+      65,
+      42,
+      24,
+      16,
+      10,
+      8
+    ],
+    [
+      128,
+      57,
+      36,
+      28,
+      20,
+      12
+    ],
+    [
+      94,
+      27,
+      15,
+      25,
+      14,
+      12
+    ],
+    [
+      268,
+      74,
+      52,
+      61,
+      33,
+      37
+    ],
+    [
+      -201,
+      -58,
+      -39,
+      -47,
+      -26,
+      -29
+    ],
+    [
+      -121,
+      -37,
+      -27,
+      -33,
+      -19,
+      -18
+    ],
+    [
+      -71,
+      -23,
+      -18,
+      -17,
+      -12,
+      -14
+    ]
+  ],
+  "knownNetGammaSubtotalMillions": 500,
+  "population": {
+    "reported": 112,
+    "qualified": 108,
+    "excluded": 4,
+    "marketCoverage": null
+  },
+  "selection": {
+    "strike": 750,
+    "expiry": "2026-11-06",
+    "right": "aggregate:call+put",
+    "callGammaMillions": 400,
+    "putGammaMillions": -132,
+    "priorCallGammaMillions": 380,
+    "priorPutGammaMillions": -156
+  },
+  "volatility": {
+    "expiryDays": [
+      4,
+      11,
+      18,
+      25,
+      32,
+      46
+    ],
+    "atmIvPercent": [
+      14.8,
+      null,
+      17.2,
+      18.0,
+      18.4,
+      19.1
+    ],
+    "selectedExpiry": "2026-11-20",
+    "smileStrikes": [
+      730,
+      740,
+      750,
+      760,
+      770
+    ],
+    "callIvPercent": [
+      22.8,
+      19.1,
+      17.6,
+      null,
+      18.4
+    ],
+    "putIvPercent": [
+      23.5,
+      19.8,
+      17.8,
+      18.1,
+      19.0
+    ]
+  }
+}
