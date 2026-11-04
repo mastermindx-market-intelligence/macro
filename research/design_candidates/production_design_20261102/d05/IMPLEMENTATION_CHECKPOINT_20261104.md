@@ -1,5 +1,8 @@
 # D05 implementation checkpoint — 2026-11-04
 
+**Terminal CI update — 12:58 UTC:** all12 packs finished: eight passed and four failed. The final ci-gate also failed on the already-diagnosed semantic checks; the contract-delta repair passed. [Exact terminal receipt](verification/ci_terminal_0c4493.json). The12:50 snapshots below remain dated history, not the final run status.
+
+
 ## Latest verification boundary — 12:50 UTC
 
 Current source 0c4493 has seven passing CI packs, four failed packs and one running pack. The contract-delta repair passed. The [CI and contrast addendum](CI_AND_CONTRAST_FOLLOWTHROUGH_20261104.md) binds every failure to its exact job, reproduces the router-host issue without source edits, and records the real Members accessible-name defect and generated-style drift. The incumbent source lead owns the repairs; this lane remains source-frozen.

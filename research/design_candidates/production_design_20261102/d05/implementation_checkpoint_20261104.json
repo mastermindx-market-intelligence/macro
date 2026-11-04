@@ -224,13 +224,15 @@
     "additional_blanket_review_required": false
   },
   "current_ci": {
-    "observed_utc": "2026-11-04 12:50:53 UTC",
+    "observed_utc": "2026-11-04T12:58:04Z",
     "run": 41824389478,
     "head": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
-    "packs_passed": 7,
+    "packs_passed": 8,
     "packs_failed": 4,
-    "packs_running": 1,
-    "record": "verification/ci_failure_triage_0c4493.json",
+    "packs_running": 0,
+    "ci_gate": "failure",
+    "contract_delta": "success",
+    "record": "verification/ci_terminal_0c4493.json",
     "full_ci_claimed": false
   },
   "painted_contrast": {

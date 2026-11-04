@@ -1,5 +1,8 @@
 # Review, owner gates and final acceptance boundary
 
+**Terminal CI update — 12:58 UTC:** all12 packs finished: eight passed and four failed. The final ci-gate also failed on the already-diagnosed semantic checks; the contract-delta repair passed. [Exact terminal receipt](verification/ci_terminal_0c4493.json). The12:50 snapshots below remain dated history, not the final run status.
+
+
 ## Current implementation and admission — 2026-11-04
 
 The Chairman has authorized continued implementation. The qualified Macro Draft #10703 continuation is **0c4493c7025f7c1c0f9e558860d5e4ba33457cd1**, incorporating original product source1573afde and CI-closure repair4802d1b1. The original source lead retains Macro follow-through; this programme/Dossier lane does not publish competing source changes. The [implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) binds source, exact component and receiver identities, local proof, owner overlap and remaining effects. The original design-only scope below is historical; it does not revoke the later implementation mandate.

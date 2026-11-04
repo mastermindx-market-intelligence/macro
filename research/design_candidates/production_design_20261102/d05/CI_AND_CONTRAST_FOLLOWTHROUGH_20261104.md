@@ -1,5 +1,8 @@
 # D05 — current CI and painted-contrast follow-through
 
+**Terminal CI update — 12:58 UTC:** all12 packs finished: eight passed and four failed. The final ci-gate also failed on the already-diagnosed semantic checks; the contract-delta repair passed. [Exact terminal receipt](verification/ci_terminal_0c4493.json). The12:50 snapshots below remain dated history, not the final run status.
+
+
 ## Outcome and ownership
 
 The D05 source implementation remains at **0c4493c7025f7c1c0f9e558860d5e4ba33457cd1** in [Draft #10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703). The two nine-step composed Company-return journeys and separate Nasdaq/Russell proofs remain qualified at that exact source. This addendum records newly observed failures rather than treating the implementation as accepted.

@@ -1,0 +1,232 @@
+{
+  "schema": "d05.hosted-ci-terminal.v1",
+  "observed_utc": "2026-11-04T12:58:04Z",
+  "head": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
+  "tested_merge": "969df7bda4f3db57e25e5c2abdd3f4175e3fb28a",
+  "base": "56868dfeb13821d583e8a83a213d4cef0ba89423",
+  "run": 41824389478,
+  "ci_gate": {
+    "job": 126586854310,
+    "status": "completed",
+    "conclusion": "failure",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126586854310",
+    "semantic_evidence_sha256": "9b44f9c8d617b1d8288e0ec6feef3835637a2e2eeacc28e577c0896644e5b994",
+    "semantic_status": "failure",
+    "infrastructure": []
+  },
+  "packs": [
+    {
+      "name": "ci-pack-2",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066508"
+    },
+    {
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066460"
+    },
+    {
+      "name": "ci-pack-11",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066440"
+    },
+    {
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066428"
+    },
+    {
+      "name": "ci-pack-6",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066404"
+    },
+    {
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066371"
+    },
+    {
+      "name": "ci-pack-0",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066369"
+    },
+    {
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066358"
+    },
+    {
+      "name": "ci-pack-8",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066357"
+    },
+    {
+      "name": "ci-pack-4",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066337"
+    },
+    {
+      "name": "ci-pack-3",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066329"
+    },
+    {
+      "name": "ci-pack-10",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066296"
+    }
+  ],
+  "failed_semantic_steps": [
+    {
+      "job": "design-governance",
+      "pack": 2,
+      "steps": [
+        {
+          "proof": "forward-only design ratchet (new forbidden decisions on changed lines)",
+          "outcome": "failed",
+          "classification": "pr_regression",
+          "detail": "same semantic proof passes on exact base",
+          "failure_signature": {
+            "atoms": [
+              "github_error:6538e9d26a88918219507b239db367f1aef17b81b9297068321f7060e77d0eba",
+              "github_error:a71dc0b66494df4ea78fd69d4981796ff45a676ab29e20c8986ea704c3ce9798",
+              "github_error:b4a70e008b4575dd61ab4a7035a41112b1f71e0bd671bdc3ae6023a5a91ee5f3"
+            ],
+            "sha256": "244bf0d8efeea0abd79df21d31355d25f141d0295805434b0570dc1d808dcce5"
+          }
+        },
+        {
+          "proof": "visual evidence required for a material UI change",
+          "outcome": "not_run_prior_failure",
+          "classification": "unknown",
+          "detail": "an earlier semantic step did not pass",
+          "failure_signature": null
+        }
+      ]
+    },
+    {
+      "job": "basket-staleness-warn",
+      "pack": 3,
+      "steps": [
+        {
+          "proof": "regional basket detail source identity and unavailable counts",
+          "outcome": "failed",
+          "classification": "pr_regression",
+          "detail": "same semantic proof passes on exact base",
+          "failure_signature": {
+            "atoms": [
+              "pytest:failed:tests/test_theme_detail_cycles.py::test_missing_theme_counts_render_as_unavailable_with_real_members:reason=8a289f154ccefc2812d98812335b529f0e6c3e07629f55f765fe27acf43946af"
+            ],
+            "sha256": "78f4128f3f3fa58cc5da651001246b988eea172f06010e638d403f98546c4818"
+          }
+        }
+      ]
+    },
+    {
+      "job": "ftr-tape-surfaces",
+      "pack": 6,
+      "steps": [
+        {
+          "proof": "FTR tape-surface template guards",
+          "outcome": "failed",
+          "classification": "pr_regression",
+          "detail": "same semantic proof passes on exact base",
+          "failure_signature": {
+            "atoms": [
+              "pytest:failed:tests/test_ftr_w3_ui.py::test_all_basket_sort_artifacts_keep_semantics_and_static_styles:reason=9df8de6fe05f537fb5869e0274a52ad8827572c1dab094637e7705a7acfe990a",
+              "pytest:failed:tests/test_ftr_w3_ui.py::test_basket_holdings_use_canonical_scroll_wrapper_before_late_load:reason=74fec452b458e2b456f5131773a087b167a657d37524bf2776ca12b595be3d55"
+            ],
+            "sha256": "0555523a7c33aa00ed06de710aac9ca495b0a8d0d6dd29193e38fa1913fb75b2"
+          }
+        }
+      ]
+    },
+    {
+      "job": "public-render-fastlane",
+      "pack": 4,
+      "steps": [
+        {
+          "proof": "public fastlane split + rendered pricing copy pins",
+          "outcome": "failed",
+          "classification": "pr_regression",
+          "detail": "same semantic proof passes on exact base",
+          "failure_signature": null
+        },
+        {
+          "proof": "US Regime History table wiring",
+          "outcome": "not_run_prior_failure",
+          "classification": "unknown",
+          "detail": "an earlier semantic step did not pass",
+          "failure_signature": null
+        }
+      ]
+    },
+    {
+      "job": "reference-integrity",
+      "pack": 3,
+      "steps": [
+        {
+          "proof": "XPV2-SC-R3A binding pack — fixture/routing/access mutation-armor",
+          "outcome": "failed",
+          "classification": "pr_regression",
+          "detail": "same semantic proof passes on exact base",
+          "failure_signature": {
+            "atoms": [
+              "pytest:failed:tests/test_xpv2_sector_r3_fixture.py::TestThinButListedWording::test_en_and_zh_wording_present:reason=b475a876aa669c5719e33fb23bbe8dfdd91be7aba3ad6de842b836e2188f9930"
+            ],
+            "sha256": "15d066a3dee2a64c400b0925475c14360cac71a42c1cef291e0b3bb106328b80"
+          }
+        },
+        {
+          "proof": "Sector Paper design-reference guards (components, copy deck, cycles IA, state matrix)",
+          "outcome": "not_run_prior_failure",
+          "classification": "unknown",
+          "detail": "an earlier semantic step did not pass",
+          "failure_signature": null
+        }
+      ]
+    },
+    {
+      "job": "ew-p4-descriptive-ui",
+      "pack": 3,
+      "steps": [
+        {
+          "proof": "EW-P4 descriptive observation UI — Radar band, Sector Central glance mirror, shot receipt",
+          "outcome": "failed",
+          "classification": "pr_regression",
+          "detail": "same semantic proof passes on exact base",
+          "failure_signature": {
+            "atoms": [
+              "pytest:failed:tests/test_ew_p4_descriptive_ui.py::test_receipt_shots_depict_the_source_under_test:reason=8681dc8faf67d58706c7dc72f9bdfff4d99a36f4c78ad83e340a17c815a1094f"
+            ],
+            "sha256": "10dd0dfd515b97529d9105e9eab74e65dce397e9b00656953e4d6710cfbea6a6"
+          }
+        }
+      ]
+    }
+  ],
+  "contract_delta": "success",
+  "full_ci_claimed": false,
+  "manual_reruns": [],
+  "owner": "Incumbent Macro source lead; this programme/Dossier lane remains source-frozen.",
+  "diagnosis": "CI_AND_CONTRAST_FOLLOWTHROUGH_20261104.md",
+  "publisher_dependency": {
+    "pr": "mastermindx-market-intelligence/Mastermind#1979",
+    "head": "b742aa06ffb9d2c7541f7aa5dbfd2df0d3eb21bf",
+    "draft": true,
+    "merged": false,
+    "original_publisher_gates_retained": true
+  }
+}

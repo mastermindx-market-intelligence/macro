@@ -1,5 +1,8 @@
 # D05 — Sectors, Themes & Rotation
 
+**Terminal CI update — 12:58 UTC:** all12 packs finished: eight passed and four failed. The final ci-gate also failed on the already-diagnosed semantic checks; the contract-delta repair passed. [Exact terminal receipt](verification/ci_terminal_0c4493.json). The12:50 snapshots below remain dated history, not the final run status.
+
+
 **Audit, specification and editable candidate package complete; implementation and local browser proof now advanced. Final shared design acceptance HELD.** The qualified implementation is published in Macro Draft #10703 through0c4493c7: original product increment1573afde, exact CI-closure repair4802d1b1 and the incumbent source lead's contract/preview follow-through0c4493c7. Terminal and compact-component publication remain gated. No release action occurred. See [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md).
 
 Original design-package freeze: **22f6a887a621e82497ea256611835cee2ba6f079**. [Delivery receipt](DELIVERY_RECEIPT.md) records the verified source scope, evidence, limits and exact continuation.
