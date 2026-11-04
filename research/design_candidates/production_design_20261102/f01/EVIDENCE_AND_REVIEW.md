@@ -67,7 +67,7 @@ At the candidate.2 freeze, D still drew400px while the joint source specified440
 
 At protected pin9f65957e29eba92245d78609f032aaea523b7cb4, action/target-scoped law was applied and the overbroad pause explicitly corrected in source at2d008bf91ccff696a3490e5d45eb9bc8d721ec9a before further native work. Existing disjoint A/C/D/E/F/H boards were corrected through the same app; D now measures440. I/grid, Readme and dependent/shared/page effects remain held. The exact boundary and Secretary/P00 capability result are in CAPABILITY_AND_EFFECT_BOUNDARY.md.
 
-Current selected-direction native evidence is A/E/H from the six-board be157007 capture, and the later C/D/F local repair capture at8ee1a8d1. B remains a historical alternative, G a retained drawer reference; neither is represented as a newly reviewed current variant. Ten original board IDs and17 predecessor references remain. The source page name was not changed.
+Current selected-direction native evidence is A/E/H from the six-board be157007 capture, C/D from the later8ee1a8d1 repair capture, and F from the separate2026-11-04 filtered-directory correction. B remains a historical alternative, G a retained drawer reference; neither is represented as a newly reviewed current variant. Ten original board IDs and17 predecessor references remain. The source page name was not changed.
 
 ## 5. Uncertain Paper operation — preserve the original effect
 
@@ -119,9 +119,9 @@ The complete [directory presentation proposal](DIRECTORY_PRESENTATION_PROPOSAL.j
 
 The final package inventory hashes the cumulative source/evidence/return files. It is a persistence inventory, not a repaired-native freeze. Original CAPTURE_MANIFEST, REPAIR_MANIFEST and artifact-only INPUT_MANIFEST retain their original immutable input scopes. No later documentation supplement retroactively expands a critic's reviewed set.
 
-## 10. Latest source, native correction and independent review evidence
+## 10. Prior continuation: source, native correction and review evidence
 
-The current compatible protected pin is Mastermind9f65957e29eba92245d78609f032aaea523b7cb4. Current direct catalog03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4 remains tool-scoped compatible with Paper0.5.18; it supplies no new permission or operation-status reader. Exact background-file reads and fresh per-operation guards were used; no prepare/focus change, shared-token mutation or page administration occurred.
+That continuation used protected pin Mastermind9f65957e29eba92245d78609f032aaea523b7cb4. Direct catalog03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4 remains tool-scoped compatible with Paper0.5.18; it supplies no new permission or operation-status reader. Exact background-file reads and fresh per-operation guards were used; no prepare/focus change, shared-token mutation or page administration occurred.
 
 The resumed native phase produced52 APPLIED_RESPONSE_OBSERVED corrections in six existing boards, frozen atbe157007. Its acknowledgment inventory explicitly states that older raw in-memory envelopes were unavailable during persistence; the actual captures and observed-response inventory are retained without pretending to be a full raw archive. A later four-operation correction has complete request/raw reply files and actual C/D/F captures frozen at8ee1a8d1. No original held operation was retried.
 
@@ -132,3 +132,16 @@ Actual independent nonauthor GitHub reviewer mastermindxryan submitted [APPROVED
 D06's later d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf handshake/responsive/source delta are incorporated as attributed consumer evidence:36 beta captures and75 specified-not-executed cases belong to D06. The prior D06 independent review applies only to61d6762 and71 cases. Root additionally verified current ShellSearch/SymbolPicker/SearchModal/companySearchContext blobs at Terminal2ded360 and the Statements source at3cc8. Exact inputs and read scopes are in [CANDIDATE4_INPUT_RECEIPTS.json](evidence/source/CANDIDATE4_INPUT_RECEIPTS.json). The single-cursor correction supersedes any earlier advisory suggestion of a separate committed/hover pin.
 
 The Secretary's actual ACK/RESULT returned CAPABILITY_GAP_ON_ORIGINAL_PAPER_RECEIPT then STOP. The existing P00 owner received [comment6616970922](https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6616970922), asking only for authorized original-request terminal/canonical reconciliation evidence. No original receipt, new runtime START, alternate carrier or effect resolution is inferred.
+
+
+## 11. Current follow-up: actual source approval and new baseline evidence
+
+The protected source was refreshed to **910803421beca53ca25145392725ab2d84c7a8e9**; the exact comparison and governing-source receipts are in [PROCEDURE_REFRESH_20261104.json](evidence/source/PROCEDURE_REFRESH_20261104.json). F01 remains under the existing owner/Draft10645 branch. The new F-only repair was grounded in an unchanged pre-edit subtree, actual live result set and existing pending presentation proposal. No other source owner, shared token, page administration or held target was modified.
+
+**Actual independent source review returned:** F01 [review5760649569](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569) covers exact3e334bd3 and semantic8926b16a; D06 [review5760898375](https://github.com/mastermindx-market-intelligence/macro/pull/10655#pullrequestreview-5760898375) covers its d7d6b7d source/measurement delta. The [verbatim receipts](evidence/review/CANDIDATE4_SOURCE_APPROVALS_20261103.json) explicitly permit provisional Phase2A source consumption and preserve every final native/consumer/RIG/implementation/release gate. These reviews do not approve the later changed F pixels.
+
+**Actual beta paths:** [the follow-up record](evidence/live_followup_20261103/README.md) and six direct PNGs establish the completed NVDA Financials→Terminal→named-return path, twelve unfiltered options matches, desktop-to320 directory query retention, and390px ZH light/dark global/local navigation. URL and selected page returned; prior period/inner scroll/focus did not. Global-drawer Escape returned focus correctly; the cross-breakpoint directory close did not, and the local modal opened with focus remaining on its trigger. All are current-beta observations, not execution of candidate acceptance tests. The full keyboard trap and accessibility remain unqualified.
+
+**Original effects and F02 continuation:** [read-only host and routing evidence](evidence/recovery_followup_20261103/README.md) replaces the old general RDC-unavailable claim. Actual M2 runtime/log inspection found no original per-operation receipt in the bounded scans; it did not clear either hold. The Secretary identified the incumbent F02 session and returned a precise resume-capability gap. The governed session_targets read returned backend_unavailable, not an addressable target. No replacement session, service or native send was created; the routing child has an explicit terminal STOP.
+
+The semantic joint contract remains Git blob1160f14b108bf0948384f59a249320385a1dfb6c. The80 main and6 consumer cases remain NOT_RUN. The original11 source checks remain bound to their historical hashes; new artifact-integrity checks are kept separate from product qualification.
