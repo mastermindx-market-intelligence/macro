@@ -1632,8 +1632,18 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(res, 200 if res.get("ok") else 400)
 
             if path == "/api/orchestrator/chat":
-                return self._json(orchestrator_chat.chat(b.get("message", ""),
-                                                         history=b.get("history")))
+                # The Fabric binding is SERVER-owned dependency injection: it is
+                # read from the server object alone.  The request body, its
+                # headers and the connection context can never supply or
+                # override it — b["fabric_selected"], b["fabric_provider_factory"]
+                # and b["request_id"] are ignored here by construction.
+                return self._json(orchestrator_chat.chat(
+                    b.get("message", ""),
+                    history=b.get("history"),
+                    fabric_selected=getattr(self.server, "fabric_selected", False),
+                    fabric_provider_factory=getattr(self.server, "fabric_provider_factory", None),
+                    request_id=orchestrator_chat.new_request_id(),
+                ))
 
             if path == "/api/orchestrator/wake":
                 return self._json(orchestrator_chat.wake())
@@ -2036,7 +2046,23 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"ok": False, "error": str(e)}, 500)
 
 
-def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
+def _build_server(host: str, port: int, *, fabric_selected=False,
+                  fabric_provider_factory=None):
+    """Create the admin HTTP server and attach its TRUSTED server-side inputs.
+
+    The Fabric composition is dependency injection from the process that owns
+    this admin: whoever can call serve() can already reach this process, so the
+    binding is not an entitlement check.  It is stored on the server object and
+    the Handler reads it from there — never from the request.
+    """
+    httpd = ThreadingHTTPServer((host, port), Handler)
+    httpd.fabric_selected = fabric_selected
+    httpd.fabric_provider_factory = fabric_provider_factory
+    return httpd
+
+
+def serve(host: str = "127.0.0.1", port: int = 8787, *, fabric_selected=False,
+          fabric_provider_factory=None) -> None:
     # Always bind loopback: in deployed mode Caddy reverse-proxies the public
     # host to 127.0.0.1, so the panel itself never needs a routable socket.
     # Refusing a non-loopback bind keeps the unauthenticated-by-mistake failure
@@ -2047,7 +2073,8 @@ def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
             "127.0.0.1 and is exposed via a reverse proxy (Caddy) + auth, never "
             "directly. For remote access use admin.mastermind-x.com or an SSH tunnel.")
     settings.startup_check()
-    httpd = ThreadingHTTPServer((host, port), Handler)
+    httpd = _build_server(host, port, fabric_selected=fabric_selected,
+                           fabric_provider_factory=fabric_provider_factory)
     mode = "DEPLOYED (auth required)" if settings.deployed() else (
         "local + auth" if settings.auth_enabled() else "local (open)")
     print(f"  Macro Admin → http://{host}:{port}   [{mode}]")

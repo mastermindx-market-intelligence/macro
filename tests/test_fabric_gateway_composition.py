@@ -224,3 +224,131 @@ def test_gateway_auth_refusal_does_not_reserve_or_contact_upstream(gateway_modul
         snapshot = status(asgi)
     assert result["degraded"] and len(wire) == 1 and calls == []
     assert snapshot["shared_used_in_window"] == 0 and not costs and tool.call_count == 0
+
+# The Admin HTTP surface uses its own existing auth/session/CSRF owner. These
+# cases exercise that surface plus its real read tool, adapter and gateway.
+@pytest.fixture
+def authenticated_admin(monkeypatch, tmp_path):
+    from collections import deque
+    from admin import orchestrator_chat as admin_chat
+    monkeypatch.delenv("MM_PROVIDER_WORKLOAD_PROFILE", raising=False)
+    monkeypatch.setenv("ADMIN_DEPLOYED", "0")
+    monkeypatch.setenv("ADMIN_PASSWORD", "synthetic-admin-composition-password")
+    monkeypatch.setenv("ADMIN_SESSION_SECRET", "synthetic-admin-composition-session-secret")
+    monkeypatch.delenv("AI_COSTS_SHARD", raising=False)
+    monkeypatch.delenv("AI_COSTS_STATE_ROOT", raising=False)
+    monkeypatch.setattr(admin_chat, "ROOT", tmp_path)
+    monkeypatch.setattr(admin_chat, "_RATE_EVENTS", deque())
+    for name in ("_resolve_candidates", "_discover_pool_candidates", "_build_client"):
+        monkeypatch.setattr(admin_chat, name, Mock(side_effect=AssertionError("legacy admin inference")))
+    health = tmp_path / "data/neuralweb/health.json"
+    health.parent.mkdir(parents=True)
+    health.write_text(json.dumps({"overall_status": "composition-fixture",
+        "as_of": "2026-11-04", "lobes": [], "cortex": {"run_status": "fixture"}}))
+    return admin_chat
+
+
+@contextmanager
+def admin_surface(factory):
+    from admin import server
+    httpd = server._build_server("127.0.0.1", 0, fabric_selected=True,
+                                 fabric_provider_factory=factory)
+    httpd.daemon_threads = True
+    thread = threading.Thread(target=lambda: httpd.serve_forever(poll_interval=0.01), daemon=True)
+    thread.start()
+    try:
+        with httpx.Client(base_url=f"http://127.0.0.1:{httpd.server_port}",
+                          trust_env=False, timeout=10) as client:
+            yield client
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        thread.join(2)
+
+
+def admin_factory(url):
+    return Mock(side_effect=lambda: {
+        "client": FabricInferenceClient(base_url=url, proxy_token=PROXY_TOKEN, model=MODEL),
+        "model": MODEL, "provider": "experiential_labs", "cost_basis": "metered",
+        "cap_id": "fabric_admin_composition_fixture"})
+
+
+def admin_login(client):
+    from admin import auth
+    response = client.post("/api/login", json={"password": "synthetic-admin-composition-password"})
+    assert response.status_code == 200 and response.json()["ok"]
+    client.headers[auth.CSRF_HEADER] = client.cookies[auth.CSRF_COOKIE]
+
+
+@pytest.mark.parametrize("second_usage", [False, True])
+def test_authenticated_admin_tool_turn_uses_actual_gateway(gateway_module, tmp_path,
+                                                         authenticated_admin, second_usage):
+    first = packet(tool=True)
+    first["choices"][0]["message"]["tool_calls"][0]["function"]["name"] = "read_health"
+    with owner_gateway(gateway_module, tmp_path, [first, packet(usage=second_usage)]) as (url, calls, wire, asgi):
+        factory = admin_factory(url)
+        with admin_surface(factory) as client:
+            admin_login(client)
+            response = client.post("/api/orchestrator/chat", json={
+                "message": "Read the service health.", "history": [],
+                "fabric_selected": False, "fabric_provider_factory": "forged",
+                "request_id": "forged-request"})
+            assert response.status_code == 200
+            result = response.json()
+        snapshot = status(asgi)
+    assert not result["degraded"] and result["mode"] == "live"
+    assert result["provider"] == "experiential_labs" and result["model"] == MODEL
+    assert result["usage_state"] == ("known" if second_usage else "unknown")
+    assert result["input_tokens"] == (22 if second_usage else None)
+    assert factory.call_count == 1 and len(calls) == len(wire) == 2
+    assert snapshot["shared_used_in_window"] == 2 and snapshot["pending"] == 0
+    assert all(slot["inflight"] == 0 for slot in snapshot["slots"])
+    ids = [call["headers"]["idempotency-key"] for call in calls]
+    assert ids == [f"{result['request_id']}:orchestrator:{n}" for n in range(2)]
+    assert "forged" not in ids[0]
+    tool_result = next(m for m in calls[1]["body"]["messages"] if m["role"] == "tool")
+    assert json.loads(tool_result["content"])["overall_status"] == "composition-fixture"
+    usage_path = tmp_path / "data/ai_costs/usage.jsonl"
+    rows = [json.loads(line) for line in usage_path.read_text().splitlines()]
+    assert len(rows) == 1 and rows[0]["provider"] == "experiential_labs"
+    assert rows[0]["input_tokens"] == (22 if second_usage else 11)
+    if not second_usage:
+        assert "partial known usage" in rows[0]["note"]
+
+
+@pytest.mark.parametrize("failure", [429, httpx.ReadError("synthetic interruption")])
+def test_admin_later_gateway_failure_preserves_completed_usage(gateway_module, tmp_path,
+                                                               authenticated_admin, failure):
+    first = packet(tool=True)
+    first["choices"][0]["message"]["tool_calls"][0]["function"]["name"] = "read_health"
+    with owner_gateway(gateway_module, tmp_path, [first, failure]) as (url, calls, wire, asgi):
+        with admin_surface(admin_factory(url)) as client:
+            admin_login(client)
+            response = client.post("/api/orchestrator/chat", json={"message": "Read service health."})
+            result = response.json()
+        snapshot = status(asgi)
+    assert result["degraded"] and result["reason"] == "fabric_inference_failed"
+    assert result["usage_state"] == "unknown" and result["input_tokens"] is None
+    assert result["completed_step_usage"]["input_tokens"] == 11
+    assert len(calls) == len(wire) == 2 and snapshot["shared_used_in_window"] == 2
+    assert all(slot["inflight"] == 0 for slot in snapshot["slots"])
+    rows = [json.loads(line) for line in (tmp_path / "data/ai_costs/usage.jsonl").read_text().splitlines()]
+    assert len(rows) == 1 and rows[0]["input_tokens"] == 11
+    assert "partial known usage" in rows[0]["note"] and "synthetic" not in result["reply"]
+
+
+@pytest.mark.parametrize("authenticated", [False, True])
+def test_admin_auth_and_csrf_refuse_before_gateway(gateway_module, tmp_path,
+                                                 authenticated_admin, authenticated):
+    with owner_gateway(gateway_module, tmp_path, []) as (url, calls, wire, asgi):
+        factory = admin_factory(url)
+        with admin_surface(factory) as client:
+            if authenticated:
+                admin_login(client)
+                from admin import auth
+                del client.headers[auth.CSRF_HEADER]
+            response = client.post("/api/orchestrator/chat", json={"message": "Read service health."})
+        snapshot = status(asgi)
+    assert response.status_code == (403 if authenticated else 401)
+    assert factory.call_count == 0 and calls == wire == []
+    assert snapshot["shared_used_in_window"] == 0
