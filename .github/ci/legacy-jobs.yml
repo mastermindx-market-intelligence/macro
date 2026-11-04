@@ -21859,9 +21859,9 @@ jobs:
     # sentinel is required by that runner; it prevents duplicate GitHub jobs.
     if: ${{ false }}
     gate: code
-    # These eleven whole-file suites exercise the knowledge compiler and its
-    # committed records. Audit: 43 concrete transitive files plus the complete
-    # Agent OS store and runtime-read source documents. The Git/subprocess and
+    # Complete whole-file suites exercise the knowledge and project compilers
+    # and committed records. Explicit paths include their transitive helpers,
+    # complete Agent OS store and runtime-read source documents. The Git/subprocess and
     # glob edges use temporary fixture repositories or those same declared
     # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
     # No suite or security step is removed; no packing ceiling is raised.
@@ -21897,6 +21897,14 @@ jobs:
       - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
       - scripts/__init__.py
       - scripts/agentos.py
+      - scripts/agentos_direction.py
+      - scripts/agentos_direction_acceptance.py
+      - scripts/agentos_plan_adoption.py
+      - scripts/agentos_project_archive.py
+      - scripts/agentos_project_plan_contract.py
+      - scripts/agentos_project_proposal.py
+      - scripts/agentos_standing_instructions.py
+      - scripts/project_knowledge_recipes.py
       - scripts/agentos_records_draft.py
       - scripts/agentos_ship_capture.py
       - scripts/audit_stranded_work.py
@@ -21913,6 +21921,17 @@ jobs:
       - tests/test_agentos_compile.py
       - tests/test_agentos_records_draft.py
       - tests/test_agentos_schema.py
+      - tests/test_agentos_direction.py
+      - tests/test_agentos_direction_acceptance.py
+      - tests/test_agentos_direction_owner.py
+      - tests/test_agentos_plan_adoption.py
+      - tests/test_agentos_project_archive.py
+      - tests/test_agentos_project_knowledge_owner.py
+      - tests/test_agentos_project_plan_contract.py
+      - tests/test_agentos_project_plan_owner.py
+      - tests/test_agentos_project_proposal.py
+      - tests/test_agentos_standing_instructions.py
+      - tests/test_project_knowledge_recipes.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
@@ -21938,6 +21957,18 @@ jobs:
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
           # Owned, no-network P1 project preflight: explicit run for contract-delta.
           python -m pytest tests/test_linear_projector_p1_offline.py -q
+          # Complete bounded project-source/authoring suites owned by this job.
+          python -m pytest tests/test_agentos_direction.py \
+            tests/test_agentos_direction_acceptance.py \
+            tests/test_agentos_direction_owner.py \
+            tests/test_agentos_plan_adoption.py \
+            tests/test_agentos_project_archive.py \
+            tests/test_agentos_project_knowledge_owner.py \
+            tests/test_agentos_project_plan_contract.py \
+            tests/test_agentos_project_plan_owner.py \
+            tests/test_agentos_project_proposal.py \
+            tests/test_agentos_standing_instructions.py \
+            tests/test_project_knowledge_recipes.py -q
 
   capability-broker:
     if: ${{ false }}
