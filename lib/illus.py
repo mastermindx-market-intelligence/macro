@@ -55,7 +55,7 @@ def _clean(dates, vals):
             continue
         try:
             fv = float(v)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
             continue
         if not math.isfinite(fv):  # NaN and ±inf are not chart coordinates
             continue
