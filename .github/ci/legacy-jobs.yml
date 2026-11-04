@@ -30525,6 +30525,11 @@ jobs:
       # masks no step above.
       - name: US Regime History table wiring
         run: python -m pytest tests/test_regime_history_us_site_wiring.py -q
+      # D03 T43: the actual Winner Health loader/build path uses only temporary
+      # data and this job's minimal deps. Its nightly owner is gate:data, so run
+      # these impossible-date publication regressions on code PRs as well.
+      - name: Winner Health source-date publication safety
+        run: python -m pytest tests/test_winner_health_source_dates.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -42466,6 +42471,7 @@ jobs:
       - tests/test_top_maturation.py
       - tests/test_winner_health_design_freeze.py
       - tests/test_winner_health_page.py
+      - tests/test_winner_health_source_dates.py
       - templates/winner_health.html.j2
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - engine/government_revenue/workspace.py
@@ -42579,7 +42585,8 @@ jobs:
         run: >-
           TZ=UTC python -m pytest
           tests/test_top_maturation.py
-          tests/test_winner_health_page.py -q
+          tests/test_winner_health_page.py
+          tests/test_winner_health_source_dates.py -q
       # Source-template render only; templates/winner_health.html.j2 is declared
       # above because Jinja's runtime template lookup is intentionally not inferred
       # as a Python import edge.

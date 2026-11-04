@@ -149,3 +149,34 @@ This workstream does not replace `research/TOP_ANATOMY_MASTERPLAN_BY_FABLE.md`; 
 current organizational owner for completing the program after W2, Phase-1 and AM-v2. Historical
 research chronology remains in the original masterplan and reports. This record owns current wave
 state, exact next action, collision boundaries and final completion accountability.
+
+## D03 T43 source-date maintenance (2026-11-04 UTC)
+
+The Chairman's D03 implementation continuation repairs the existing Winner Health
+consumer; it does not activate R2-R6, change the frozen OOT ruler, or create a
+separate dashboard. The D03 task tree remains the 78-capability / 53-case Phase 2A
+specification on macro #10617. T43 records the impossible-source-date failure.
+
+Numeric but impossible `asof` dates previously escaped the parser guard and
+aborted the page build, leaving the prior published board untouched. Date
+construction now stays inside that guard so the real loader, builder and CLI
+publish the existing warming state. The >6 calendar-day cutoff, separate
+>5-session tape warning, explicit fixture bypass, template, research populations
+and authority fences are unchanged.
+
+Proof: 34 new deterministic date/loader/build/CLI cases were RED before the fix
+(16 failed / 18 passed); the repair passes 145 focused tests with existing
+maturation, page and design-freeze suites. Register these cases in both the
+existing nightly data owner and the code-gated public-render-fastlane so PRs
+cannot silently omit them. No repository site output or production data was written;
+build publication tests use private temporary roots. The new suite also passes
+34/34 in a clean pytest/PyYAML/Jinja2-only environment; three manifest checks and
+code-gate selection for the suite, builder and template pass.
+
+Continuation receipt: https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6623889088
+Source branch: `claude/ssd-d03-winner-health-source-date-20261104-c2-c1a4065d36e086ff`.
+This is source-level maintenance proof, not merge, deployment, served-page
+acceptance or a new statistical verdict. Preserve Draft/HOLD until the existing
+release gates are lawfully satisfied; after release, verify the normal builder
+and served Winner Health path separately. Original #7073 template work and
+#9495 Prophet work remain untouched.

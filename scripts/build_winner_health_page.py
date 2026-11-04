@@ -37,7 +37,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
 _CONTEXT_REL = Path("top_maturation") / "latest.json"
-#: Sessions after which the read is treated as not landed. The page's own as-of
+#: Calendar days after which the read is treated as not landed. The page's own as-of
 #: stamp is the last PRICED bar, so a stale artifact would otherwise print an old
 #: date beside a live-looking board.
 _MAX_AGE_DAYS = 6
@@ -74,13 +74,16 @@ def _load_context(data_dir: Path, fixture: Path | None = None) -> dict | None:
 
 
 def _is_stale(ctx: dict) -> bool:
-    """True when the read is old enough that showing it would misdate the board."""
+    """True when the source date is invalid or too old to date the board."""
     from datetime import date  # noqa: PLC0415
     try:
         y, m, d = (int(x) for x in str(ctx.get("asof", ""))[:10].split("-"))
+        # Numeric date parts can still describe an impossible calendar day.
+        # Keep construction inside the guard so live reads reach the warm null.
+        asof = date(y, m, d)
     except Exception:  # noqa: BLE001
         return True
-    return (date.today() - date(y, m, d)).days > _MAX_AGE_DAYS
+    return (date.today() - asof).days > _MAX_AGE_DAYS
 
 
 def render(root: Path, fixture: Path | None = None) -> str:
