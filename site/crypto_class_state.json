@@ -73,14 +73,6 @@
         "reason": "OLDER_SNAPSHOT"
       },
       {
-        "file": "market_pump.parquet",
-        "symbol": "PUMP",
-        "id": "pump-fun",
-        "source": "CoinGecko",
-        "as_of": "2026-10-31",
-        "reason": "OLDER_SNAPSHOT"
-      },
-      {
         "file": "market_steth.parquet",
         "symbol": "STETH",
         "id": "steth-lido-staked-ether",
@@ -522,14 +514,14 @@
         "to_label_zh": "直接总量",
         "support_before": 2,
         "support_after": 1,
-        "level_ratio": 1.1332404641361367,
+        "level_ratio": 1.1436946126559548,
         "regime_treatment": "continuity_adjusted"
       }
     ]
   },
   "flows": {
     "etf": "Unavailable",
-    "stablecoins": "Falling",
+    "stablecoins": "Unavailable",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
@@ -540,7 +532,7 @@
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "current",
+      "observation": "stale",
       "expected_cadence": "calendar_day"
     },
     "volume": {
