@@ -17,6 +17,16 @@ Plotly fragments on dashboard surfaces.
   with a *static* glow — never a looping pulse that fakes liveness. An empty or too-
   short series renders an honest null (`No history yet` / `暂无历史`), never a
   fabricated chart. This is the "nulls printed" law applied to pictures.
+- **Missing slots in `line` illustrations.** An explicitly supplied `None`,
+  NaN, infinite, or unrepresentable numeric value is a missing observation: the
+  ink breaks, the original horizontal slot is preserved, and the figure exposes
+  `data-gap-count`, a bilingual gap label, and an accessible EN description.
+  An isolated valid sample is drawn as a point, never joined to its neighbors.
+  Callers must supply aligned date/value slots for missing sessions; omitted
+  dates cannot be inferred as missing. This is a **line-kind implementation**,
+  not a claim that `area`, `baseline`, `drawdown`, `bars`, or `multi` have qualified
+  discontinuity semantics. Do not use their current dropped-null paths to imply
+  an observed continuous interval.
 
 ## Why (vs Plotly)
 
