@@ -46,7 +46,7 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "intl_workspace_surveillance.css")
 
 
-def _ecb_publication_measure(materialized, *, evaluated_at, generation):
+def _ecb_publication_measure(materialized, *, evaluated_at, generation, decision_sink=None):
     """Issue this owner's adopted, byte-bound ECB decision, then qualify it.
 
     The reviewed purchase notices and per-access source notice are publication
@@ -95,6 +95,8 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
                 "value": endpoint, "unit": "percent",
             },
         }
+        if decision_sink is not None:
+            decision_sink["decision"] = decision
         return admit_ecb_deposit_field(
             series, provenance=materialized["provenance"],
             materialized_identity=identity, evaluated_at=evaluated_at,
@@ -128,14 +130,82 @@ def _history_publication_sources(receipts):
     return sources
 
 
+def _project_investigation_sink(*, workspace, request, sink, measures, materialized, decisions):
+    """Project an explicit caller selection against this actual workspace.
+
+    The optional, private result is never rendered or persisted here. Native
+    readers and admission helpers remain the source/store/permission boundary.
+    No URL, receipt nonce or build clock supplies missing owner context.
+    """
+    from lib.intl_investigation_projection import project_intl_resolved_packet
+
+    cfg = workspace["config"]
+    ctx = request.get("context") if type(request) is dict else None
+    if type(ctx) is not dict:
+        raise ValueError("invalid_investigation_context")
+    generation = cfg["source_reference"]
+    if (ctx.get("researchMarket") not in cfg["markets"]
+            or ctx.get("periodIdentity") not in cfg["horizons"]
+            or ctx.get("currencyBasis") not in cfg["bases"]
+            or ctx.get("returnBasis") != "price"
+            or not workspace.get("panels")
+            or any(p.get("generation") != generation for p in workspace["panels"])):
+        raise ValueError("investigation_workspace_scope_mismatch")
+    selected = ctx.get("selectedMeasureIds")
+    if type(selected) is not list or any(type(sid) is not str for sid in selected):
+        raise ValueError("invalid_investigation_selection")
+    selected_measures = {sid: measures[sid] for sid in selected if sid in measures}
+    evidence = {}
+    for sid, measure in selected_measures.items():
+        source = materialized[sid]
+        receipt = source.get("receipt") or {}
+        native = receipt.get("source") or {}
+        if sid == "EZ.policy_rate":
+            identity = source.get("materialized_identity")
+        else:
+            digest = source.get("receipt_sha256")
+            identity = {"receipt_sha256": digest} if digest is not None else None
+        evidence[sid] = {
+            "receipt_identity": identity,
+            "publication_decision": decisions[sid],
+            "clocks": {
+                "observation_at": measure.get("observation_at"),
+                "calculation_at": measure.get("calculation_at"),
+                "period": measure.get("period"),
+                "vintage_at": native.get("publication_at", receipt.get("revision_vintage")),
+                "dataset_updated_at": receipt.get("source_updated"),
+                "source_updated_at": native.get("country_updated_on"),
+                "requested_at": receipt.get("requested_at"),
+                "response_received_at": receipt.get("response_received_at", receipt.get("received_at")),
+                "input_verified_at": receipt.get("input_verified_at"),
+                "committed_at": receipt.get("committed_at"),
+            },
+        }
+    projected = project_intl_resolved_packet(
+        request=request,
+        native_binding={
+            "market": ctx["researchMarket"], "horizon": ctx["periodIdentity"],
+            "currency_basis": ctx["currencyBasis"], "return_basis": "price",
+            "binding_version": workspace.get("binding_version"), "generation": generation,
+        },
+        measures=selected_measures, evidence=evidence,
+    )
+    sink.update(projected)
+
+
 def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
-                           history_sources=None, chart_source_sink=None):
+                           history_sources=None, chart_source_sink=None,
+                           investigation_request=None, investigation_sink=None):
     """Compose independent evidence-qualified views under the narrow EOD grant."""
     from engine.intl_inputs import countries
 
     if chart_source_sink is not None and (
             type(chart_source_sink) is not dict or chart_source_sink):
         raise ValueError("invalid_international_chart_sink")
+    if ((investigation_request is None) != (investigation_sink is None)
+            or (investigation_sink is not None
+                and (type(investigation_sink) is not dict or investigation_sink))):
+        raise ValueError("invalid_international_investigation_sink")
     generation = "im-workspace-generation:" + str(uuid4())
     publication_inputs = None
     eod_rights = (config.load().get("intl") or {}).get("eod_publication", {})
@@ -179,7 +249,10 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
     }
     from lib.intl_yield_publication import read_jp_yield_materialization, admit_jp_yield_field
     from lib.intl_annual_publication import read_current_account_materialization, admit_current_account_field
-    from lib.intl_eurostat_publication import FIELDS as EUROSTAT_FIELDS, read_eurostat_materialization, admit_eurostat_field
+    from lib.intl_eurostat_publication import (
+        FIELDS as EUROSTAT_FIELDS, ANNUAL_FIELD as EUROSTAT_ANNUAL_FIELD,
+        read_eurostat_materialization, admit_eurostat_field, admit_eurostat_annual_field,
+    )
 
     adopted_policies = (config.load().get("intl") or {}).get("field_publication", {})
 
@@ -196,24 +269,55 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
                 "binding": {"field": field, "receipt_sha256": materialized.get("receipt_sha256")}}
 
     jp_yield = read_jp_yield_materialization(data_root=data_root)
+    jp_decision = publication_decision("JP.yield_10y", jp_yield)
     jp_measure = admit_jp_yield_field(
         jp_yield, evaluated_at=evaluated_at,
-        publication_decision=publication_decision("JP.yield_10y", jp_yield))
+        publication_decision=jp_decision)
     annual = read_current_account_materialization(data_root=data_root)
+    annual_decision = publication_decision("JP.annual_current_account", annual)
     annual_field = admit_current_account_field(
         annual, evaluated_at=evaluated_at,
-        publication_decision=publication_decision("JP.annual_current_account", annual))
+        publication_decision=annual_decision)
     eurostat = {}
+    investigation_materialized = {"JP.yield_10y": jp_yield, "JP.annual_current_account": annual}
+    investigation_decisions = {"JP.yield_10y": jp_decision, "JP.annual_current_account": annual_decision}
     for field in EUROSTAT_FIELDS:
         materialized = read_eurostat_materialization(field=field, data_root=data_root)
+        decision = publication_decision(field, materialized)
+        investigation_materialized[field] = materialized
+        investigation_decisions[field] = decision
         eurostat[field] = admit_eurostat_field(
             materialized, field=field, evaluated_at=evaluated_at,
-            publication_decision=publication_decision(field, materialized))
+            publication_decision=decision)
+    ez_annual = read_eurostat_materialization(field=EUROSTAT_ANNUAL_FIELD, data_root=data_root)
+    ez_annual_decision = publication_decision(EUROSTAT_ANNUAL_FIELD, ez_annual)
+    ez_annual_field = admit_eurostat_annual_field(
+        ez_annual, evaluated_at=evaluated_at, publication_decision=ez_annual_decision)
+    investigation_materialized[EUROSTAT_ANNUAL_FIELD] = ez_annual
+    investigation_decisions[EUROSTAT_ANNUAL_FIELD] = ez_annual_decision
     try:
-        measure = _ecb_publication_measure(
-            read_ecb_deposit_materialization(data_root=data_root),
-            evaluated_at=evaluated_at, generation=generation,
+        ecb_materialized = read_ecb_deposit_materialization(data_root=data_root)
+    except Exception as exc:
+        log.error("International ECB source unavailable (%s)", type(exc).__name__)
+        ecb_materialized = {"status": "failed"}
+    ecb_decision = {}
+    measure = _ecb_publication_measure(
+        ecb_materialized, evaluated_at=evaluated_at, generation=generation,
+        decision_sink=ecb_decision if investigation_sink is not None else None,
+    )
+    if investigation_sink is not None:
+        # Capture original admitted contracts before mounts intentionally drop
+        # permissions/support. This transient sink is never put in templates.
+        investigation_materialized["EZ.policy_rate"] = ecb_materialized
+        investigation_decisions["EZ.policy_rate"] = ecb_decision.get("decision")
+        _project_investigation_sink(
+            workspace=workspace, request=investigation_request, sink=investigation_sink,
+            measures={"JP.yield_10y": jp_measure, "JP.annual_current_account": annual_field["measure"],
+                      "EZ.policy_rate": measure, EUROSTAT_ANNUAL_FIELD: ez_annual_field["measure"],
+                      **{field: item["measure"] for field, item in eurostat.items()}},
+            materialized=investigation_materialized, decisions=investigation_decisions,
         )
+    try:
         mounted = attach_macros(
             workspace, registry=registry, measures={"EZ.policy_rate": measure, "JP.yield_10y": jp_measure,
                                                   **{field: item["measure"] for field, item in eurostat.items()}},
@@ -232,9 +336,14 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         # Existing packets supply context, never disclosure or source grants.
         workspace = attach_risks(
             workspace, registry=registry, risk_desk=risk_desk, cgl=cgl,
-            measures={"JP.annual_current_account": annual_field["measure"]},
-            field_support=({"JP.annual_current_account": annual_field["support"]}
-                           if annual_field["support"] is not None else {}),
+            measures={"JP.annual_current_account": annual_field["measure"],
+                      EUROSTAT_ANNUAL_FIELD: ez_annual_field["measure"]},
+            field_support={key: item["support"] for key, item in {
+                "JP.annual_current_account": annual_field,
+                EUROSTAT_ANNUAL_FIELD: ez_annual_field,
+            }.items() if item["support"] is not None},
+            field_evidence=({EUROSTAT_ANNUAL_FIELD: ez_annual_field["evidence"]}
+                            if ez_annual_field["evidence"] is not None else {}),
             summary_eligibility={}, destinations={},
         )
     except Exception as exc:

@@ -1,4 +1,4 @@
-"""Strict Eurostat JSON-stat reader for the two admitted EA21 official series.
+"""Strict Eurostat JSON-stat reader for the three admitted EA21 official series.
 
 WHY THIS MODULE EXISTS (2026-11-03).  The incumbent International collector
 decodes a Eurostat JSON-stat payload with ``_jsonstat_series``::
@@ -31,16 +31,18 @@ This module replaces that path with an explicit, strict decoder:
   * the numbers, the observation flags and the dataset update timestamp are
     carried through exactly as the source stated them.
 
-SCOPE.  Exactly two admitted series are supported: Eurostat ``NAMQ_10_GDP``
-(EA21, quarterly, chain-linked volume year-on-year growth) and Eurostat
-``PRC_HICP_MINR`` (EA21, monthly, annual rate of change).  Every other
+SCOPE.  Exactly three admitted series are supported: Eurostat ``NAMQ_10_GDP``
+(EA21, quarterly, chain-linked volume year-on-year growth), Eurostat
+``PRC_HICP_MINR`` (EA21, monthly, annual rate of change) and Eurostat
+``TIPSBP20`` (EA21, annual, current account as a percentage of GDP against
+the extra-euro-area counterpart).  Every other
 dataset, unit, geography or provider is refused rather than guessed at: this
 file is a reader for an admitted contract, not a general Eurostat client.  It
 performs no network, store, credential, git or publication effect of its own;
 it converts a payload that has already been fetched into plain Python data.
 
 The economic calendar is derived ONLY from the native Eurostat period label
-(``YYYY-Q[1-4]`` or ``YYYY-MM``).  No publication clock, no "latest
+(``YYYY-Q[1-4]``, ``YYYY-MM`` or ``YYYY``).  No publication clock, no "latest
 available" notion and no request clock is invented here -- ``observation_at``
 is the last *civil* day of the economic period itself.
 """
@@ -72,8 +74,9 @@ class EurostatPayloadError(ValueError):
 
 GDP_DATASET = "NAMQ_10_GDP"
 HICP_DATASET = "PRC_HICP_MINR"
+CURRENT_ACCOUNT_DATASET = "TIPSBP20"
 
-#: The two admitted series.  ``axes`` is the exact axis SET the payload must
+#: The admitted series.  ``axes`` is the exact axis SET the payload must
 #: carry (the payload may order them however it likes), ``selectors`` is the
 #: exact code every axis must be pinned to, and ``frequency`` is the native
 #: period grammar of the series.
@@ -99,6 +102,32 @@ SUPPORTED_SERIES: dict[str, dict[str, Any]] = {
         },
         "frequency": "M",
     },
+    CURRENT_ACCOUNT_DATASET: {
+        "axes": (
+            "freq",
+            "unit",
+            "bop_item",
+            "sector10",
+            "sectpart",
+            "stk_flow",
+            "partner",
+            "s_adj",
+            "geo",
+            "time",
+        ),
+        "selectors": {
+            "freq": "A",
+            "unit": "PC_GDP",
+            "bop_item": "CA",
+            "sector10": "S1",
+            "sectpart": "S1",
+            "stk_flow": "BAL",
+            "partner": "EXT_EA21",
+            "s_adj": "NSA",
+            "geo": "EA21",
+        },
+        "frequency": "A",
+    },
 }
 
 _EXPECTED_SOURCE = "ESTAT"
@@ -112,6 +141,7 @@ _MAX_PERIODS = 20_000
 
 _QUARTER_RE = re.compile(r"^(?P<year>[0-9]{4})-Q(?P<quarter>[1-4])$")
 _MONTH_RE = re.compile(r"^(?P<year>[0-9]{4})-(?P<month>0[1-9]|1[0-2])$")
+_ANNUAL_RE = re.compile(r"^(?P<year>[0-9]{4})$")
 
 
 # --- shape helpers ------------------------------------------------------------
@@ -308,7 +338,7 @@ def _period_bounds(label: str, frequency: str) -> tuple[date, date, tuple[int, i
     """Return ``(start, end_exclusive, sort_key)`` for one native period label.
 
     The bounds come from the native Eurostat label alone: ``YYYY-Q[1-4]`` for
-    a quarterly series and ``YYYY-MM`` for a monthly one.  No calendar
+    a quarterly series, ``YYYY-MM`` for a monthly one, or ``YYYY`` for an annual one. No calendar
     library, no publication clock and no "last available" notion is involved.
     """
     if frequency == "Q":
@@ -340,6 +370,16 @@ def _period_bounds(label: str, frequency: str) -> tuple[date, date, tuple[int, i
         else:
             end = _safe_date(year, month + 1, 1, label)
         return start, end, (year, month)
+    if frequency == "A":
+        match = _ANNUAL_RE.match(label)
+        if match is None:
+            raise EurostatPayloadError(
+                f"period label {label!r} is not a native annual label (YYYY)"
+            )
+        year = int(match.group("year"))
+        start = _safe_date(year, 1, 1, label)
+        end = _safe_date(year + 1, 1, 1, label)
+        return start, end, (year, 0)
     raise EurostatPayloadError(f"unsupported frequency {frequency!r}")
 
 

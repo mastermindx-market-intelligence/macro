@@ -340,3 +340,82 @@ unrelated countries. The builder adopts only the explicit source-specific policy
 in `intl.field_publication`; readable data and a successful request are not grants.
 Installation, publisher generation and authenticated Shared Shell acceptance remain
 separate from collector/store and source-composition evidence.
+
+## Optional trusted Investigation packet projection
+
+`_publication_workspace` may receive an explicit `investigation_request` and an
+empty caller-owned `investigation_sink` together. The normal publisher supplies
+neither. The optional sink receives only an in-memory projection; it is never
+inserted into template state, persisted, or used as an Investigation admission.
+The existing `intl_investigation_owner` bridge is reused from the accepted source
+rather than introducing another caller or Saved store.
+
+The request explicitly supplies all nine owner context strings, the exact
+selected measure IDs, requirements/prerequisites, presentation labels, whole-read
+disposition, membership enumeration and any authorized historical prior. Native
+market, horizon, basis, price-return basis and binding version must match the
+actual workspace; the current result preserves its actual generation. Binding
+version is represented as `"2"` and period identity as the native horizon token.
+Missing owner, query, cohort or temporal policy is a contract failure, never a
+value inferred from navigation. An absent prior remains null. Complete membership
+requires an explicit full requested-domain enumeration; partial absence is never
+a removal. Exclusion, correction and tombstones require explicit facts.
+
+The projection captures each reader's original materialization identity and the
+exact publisher decision already passed to field admission before presentation
+mounts remove permission/support metadata. Content identity binds field, source,
+receipt and admitted content. Qualification identity separately binds the actual
+adopted policy/decision and its field/receipt scope. A readable receipt, arbitrary
+hash, generation nonce or nonempty list cannot grant disclosure or readiness.
+Missing policy identity remains null. Only qualified, finite, permitted values
+with an exact supported unit can carry an interpretation. Unsupported is
+unavailable; stale, denied and failed values do not carry a qualified number.
+
+Native typed periods and distinct source clocks remain in the permitted sidecar.
+For compatibility with the accepted bridge's string period slot, a typed period
+uses deterministic JSON serialization; this does not create an observation
+instant. Source update, economic observation, vintage, request, receipt, local
+verification, successful store commit and calculation remain distinct. Missing
+clocks stay null. `observedAtByMeasureId` uses only the qualified admitted field's
+`observation_at`. Caller saved-record and generation/rights clocks must be actual
+supplied values or explicit null; build time is not a substitute. Denied or
+unknown metadata supplies no dynamic source or clock sidecar.
+
+This producer contract supplies no receiver mounting, authentication, International
+Saved admission, durable write, publication permission, installation or activation.
+Those remain separate existing consumer and release obligations.
+
+## Official Eurostat EA21 annual current account
+
+The additional annual Risk source is `TIPSBP20`, selected by the complete native
+identity `A / PC_GDP / CA / S1 / S1 / BAL / EXT_EA21 / NSA / EA21`, in returned
+axis order. `EXT_EA21` is the extra-euro-area21 counterpart; a returned
+`WRL_REST`, `EXT_EU27_2020` or `EXT_EA20` category is not a substitute. EA21 is
+the source's current composition of 21 countries, not a reconstruction of point-in-time
+historical membership. `PC_GDP` already means percentage of GDP. The native annual
+value is passed through without a ratio, annualization or forecast classification.
+
+The native source supplies annual labels and a dataset update timestamp. It does
+not supply an individual observation-release clock, a revision vintage or an
+actual/estimate/projection classification. The accepted support variant therefore
+uses `observation_type=statistical`, `vintage=null` and
+`observation_clock_basis=period_end`. For field year 2025, the economic interval is
+`2025-01-01` to `2026-01-01` and `observation_at=2025-12-31`. Dataset update stays
+a separate offset-aware clock. It is never copied into observation or vintage.
+The original actual/estimate/projection support contract remains unchanged.
+
+This source's explicit application display tolerance is 400 days after the economic
+year end. It is a conservative period-based display policy, not a vendor release
+schedule, freshness promise or latest-vintage claim. Newer dataset metadata cannot
+renew the economic year. Source update, actual request/receipt, local input
+verification, successful canonical commit and evaluation remain separately bound
+and ordered in the immutable materialization. Pass-through calculation time stays
+null. Missing publication policy or denied metadata withholds dynamic source and
+clock evidence through the same existing boundary.
+
+The consumer labels this source as an annual statistic, shows the economic period
+end and explicitly retains an unknown vintage. Permitted disclosure names Eurostat
+and the exact native source; it does not call this an IMF actual, an EA20 statistic,
+a Japan field or a composite country-risk verdict. The exact source-scoped
+Eurostat statistical reuse decision and existing commercial/nonresponsibility
+conditions apply. This branch supplies no permission for the separate IMF field.

@@ -36,13 +36,25 @@ FIELDS = {
 }
 POLICY = "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp"
 SCHEMA = "intl.eurostat_yoy_materialization.v1"
+ANNUAL_FIELD = "EZ.annual_current_account"
+ANNUAL_POLICY = "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-annual-current-account"
+ANNUAL_FIELDS = {
+    ANNUAL_FIELD: {
+        "column": "EZ_current_account_gdp_official", "dataset": "TIPSBP20",
+        "selectors": {"freq": "A", "unit": "PC_GDP", "bop_item": "CA", "sector10": "S1",
+                      "sectpart": "S1", "stk_flow": "BAL", "partner": "EXT_EA21",
+                      "s_adj": "NSA", "geo": "EA21"},
+        "max_age_days": 400, "unit": "percent_gdp", "kind": "current_account",
+        "policy_ref": ANNUAL_POLICY, "schema": "intl.eurostat_annual_materialization.v1",
+    },
+}
 LIMIT = 8 * 1024 * 1024
 
 
 def _spec(field):
-    if type(field) is not str or field not in FIELDS:
+    if type(field) is not str or field not in (FIELDS.keys() | ANNUAL_FIELDS.keys()):
         raise ValueError("unsupported Eurostat field")
-    return FIELDS[field]
+    return FIELDS[field] if field in FIELDS else ANNUAL_FIELDS[field]
 
 
 def instrument_id(field):
@@ -82,6 +94,11 @@ def _source_url(field, value):
         # The actual retained HICP response contains all 555 categories. TOTAL
         # is selected against returned positions, even when not request-filtered.
         if key == "coicop18" and key not in query:
+            continue
+        if (field == ANNUAL_FIELD and key not in query
+                and key in {"bop_item", "sector10", "sectpart", "stk_flow", "partner", "s_adj"}):
+            # The retained official response includes four counterpart areas.
+            # Exact native returned-axis selection, not URL omission, binds it.
             continue
         if query.get(key) != [expected]:
             raise ValueError("requested source dimensions mismatch")
@@ -136,7 +153,7 @@ def capture_eurostat_commit(*, field, data_root, returned, response_bytes,
     saved = _series(field, pd.read_parquet(BytesIO(artifact)))
     if saved.index[-1] != supplied.index[-1] or any(d not in saved or float(saved.loc[d]) != float(v) for d, v in supplied.items()):
         raise ValueError("successful store does not match source coverage")
-    receipt = {"schema": SCHEMA, "field": field, "column": spec["column"],
+    receipt = {"schema": spec.get("schema", SCHEMA), "field": field, "column": spec["column"],
                "dataset": spec["dataset"], "selectors": spec["selectors"],
                "source_url": source_url, "source_sha256": _sha(response_bytes),
                "artifact_sha256": _sha(artifact), "requested_at": requested_at,
@@ -179,7 +196,7 @@ def read_eurostat_materialization(*, field, data_root):
         expected = {"schema", "field", "column", "dataset", "selectors", "source_url", "source_sha256",
                     "artifact_sha256", "requested_at", "input_verified_at", "response_received_at", "committed_at",
                     "source_updated", "observations", "provider_published_at", "revision_vintage"}
-        if (type(receipt) is not dict or set(receipt) != expected or receipt["schema"] != SCHEMA
+        if (type(receipt) is not dict or set(receipt) != expected or receipt["schema"] != spec.get("schema", SCHEMA)
                 or receipt["field"] != field or receipt["column"] != spec["column"]
                 or receipt["dataset"] != spec["dataset"] or receipt["selectors"] != spec["selectors"]
                 or receipt["provider_published_at"] is not None or receipt["revision_vintage"] is not None):
@@ -220,7 +237,7 @@ def admit_eurostat_field(materialized, *, field, evaluated_at, publication_decis
     try:
         d = publication_decision
         if (type(d) is not dict or set(d) != {"owner_ref", "policy_ref", "decision_ref", "metadata", "value_permission", "binding"}
-                or d["owner_ref"] != "scripts/build_intl.py" or d["policy_ref"] != POLICY
+                or d["owner_ref"] != "scripts/build_intl.py" or d["policy_ref"] != spec.get("policy_ref", POLICY)
                 or type(d["decision_ref"]) is not str or not d["decision_ref"]
                 or d["binding"] != {"field": field, "receipt_sha256": materialized["receipt_sha256"]}):
             return result(blank)
@@ -245,8 +262,8 @@ def admit_eurostat_field(materialized, *, field, evaluated_at, publication_decis
             raise ValueError("economic period not completed")
         stale = (e.date() - end).days > spec["max_age_days"]
         out = {**blank, "quality": "stale" if stale else "qualified", "reason": "source_stale" if stale else None,
-               "metadata": metadata, "value_permission": permission, "unit": "percent",
-               "instrument": {"kind": "macro_yoy", "id": instrument_id(field), "market_id": "EZ"},
+               "metadata": metadata, "value_permission": permission, "unit": spec.get("unit", "percent"),
+               "instrument": {"kind": spec.get("kind", "macro_yoy"), "id": instrument_id(field), "market_id": "EZ"},
                "period": {"start": latest["period_start"], "end": latest["period_end_exclusive"], "count": 1, "count_basis": "release_periods"},
                "observation_at": latest["observation_at"], "calculation_at": None,
                "source_reference": r["source_url"], "evidence_key": materialized["receipt_sha256"]}
@@ -266,11 +283,26 @@ def admit_eurostat_field(materialized, *, field, evaluated_at, publication_decis
             quality = "denied" if permission == "denied" else "unknown"
             reason = "value_denied" if permission == "denied" else "disclosure_unknown"
         return result({**blank, "quality": quality, "reason": reason, "metadata": metadata,
-                       "value_permission": permission, **({"unit": "percent", "instrument": {"kind": "macro_yoy", "id": instrument_id(field), "market_id": "EZ"}} if metadata == "allowed" else {})})
+                       "value_permission": permission, **({"unit": spec.get("unit", "percent"), "instrument": {"kind": spec.get("kind", "macro_yoy"), "id": instrument_id(field), "market_id": "EZ"}} if metadata == "allowed" else {})})
+
+
+def admit_eurostat_annual_field(materialized, *, evaluated_at, publication_decision):
+    """Retain an annual statistic without inventing vintage/classification."""
+    result = admit_eurostat_field(materialized, field=ANNUAL_FIELD,
+                                 evaluated_at=evaluated_at, publication_decision=publication_decision)
+    measure = result["measure"]
+    support = None
+    if (measure["quality"] in {"qualified", "stale"}
+            and measure["metadata"] == measure["value_permission"] == "allowed"):
+        support = {"method_ref": ANNUAL_POLICY, "market_id": "EZ",
+                   "field_year": int(measure["period"]["start"][:4]), "vintage": None,
+                   "observation_type": "statistical", "observation_clock_basis": "period_end",
+                   "dataset_updated_at": result["evidence"]["dataset_updated_at"]}
+    return {**result, "support": support}
 
 
 def project_field_evidence(field_evidence, measures):
-    """Narrow additive Macro metadata projection, bound to the typed measure.
+    """Narrow additive metadata projection, bound to the typed measure.
 
     This validates the caller's projection; the actual capture reader establishes
     source/store integrity. Neither dictionaries nor a matching digest authenticate
@@ -278,7 +310,7 @@ def project_field_evidence(field_evidence, measures):
     """
     if field_evidence is None:
         return {}
-    if type(field_evidence) is not dict or not set(field_evidence) <= set(FIELDS):
+    if type(field_evidence) is not dict or not set(field_evidence) <= (FIELDS.keys() | ANNUAL_FIELDS.keys()):
         raise ValueError("invalid Eurostat field evidence")
     keys = {"field", "instrument_id", "source_reference", "evidence_key", "period_label",
             "dataset_updated_at", "observation_status", "requested_at", "response_received_at",
@@ -291,7 +323,7 @@ def project_field_evidence(field_evidence, measures):
         if type(evidence) is not dict or set(evidence) != keys:
             raise ValueError("invalid Eurostat evidence shape")
         if (evidence["field"] != field or evidence["instrument_id"] != instrument_id(field)
-                or measure.get("instrument") != {"kind": "macro_yoy", "id": instrument_id(field), "market_id": "EZ"}
+                or measure.get("instrument") != {"kind": _spec(field).get("kind", "macro_yoy"), "id": instrument_id(field), "market_id": "EZ"}
                 or evidence["source_reference"] != measure.get("source_reference")
                 or evidence["evidence_key"] != measure.get("evidence_key")
                 or type(evidence["evidence_key"]) is not str
@@ -305,6 +337,10 @@ def project_field_evidence(field_evidence, measures):
             year, month = int(label[:4]), (int(label[-1]) - 1) * 3 + 1
             start = date(year, month, 1)
             end = date(year + 1, 1, 1) if month == 10 else date(year, month + 3, 1)
+        elif field == ANNUAL_FIELD:
+            if type(label) is not str or re.fullmatch(r"[0-9]{4}", label) is None:
+                raise ValueError("annual label required")
+            start, end = date(int(label), 1, 1), date(int(label) + 1, 1, 1)
         else:
             if type(label) is not str or re.fullmatch(r"[0-9]{4}-(0[1-9]|1[0-2])", label) is None:
                 raise ValueError("month label required")

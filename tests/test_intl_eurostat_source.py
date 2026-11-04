@@ -312,8 +312,8 @@ def _incumbent_style_decode(payload: dict[str, Any]) -> dict[str, Any]:
 # --- the admitted series ------------------------------------------------------
 
 
-def test_supported_series_are_exactly_the_two_admitted_ones():
-    assert set(SUPPORTED_SERIES) == {GDP, HICP}
+def test_supported_series_are_exactly_the_three_supported_ones():
+    assert set(SUPPORTED_SERIES) == {GDP, HICP, "TIPSBP20"}
     assert SUPPORTED_SERIES[GDP]["axes"] == tuple(GDP_AXES)
     assert SUPPORTED_SERIES[HICP]["axes"] == tuple(HICP_AXES)
 

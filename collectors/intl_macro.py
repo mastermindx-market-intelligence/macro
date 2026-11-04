@@ -52,6 +52,9 @@ class IntlMacroAdapter(Adapter):
     name = "intl_macro"
     group = "intl_macro"
     stale_after_days = 45  # monthly/quarterly OECD releases lag weeks
+    # Native annual period cadence is separate from the 400-day application
+    # display limit. Other monthly/quarterly series retain their existing rule.
+    cadence_days_by_series = {"EZ_current_account_gdp_official": 365}
 
     def __init__(self) -> None:
         icfg = config.load()["intl"]
@@ -84,6 +87,21 @@ class IntlMacroAdapter(Adapter):
             raise ValueError(f"fred {fid}: no numeric rows")
         return pd.DataFrame({"_": s}).sort_index()
 
+    def fetch_result_status(self, frames):
+        """Use the accepted year-end limit only for an annual-only source run.
+
+        Mixed ordinary runs retain the existing adapter-level status rule;
+        each field's publication admission still applies its own period age.
+        A collection timestamp never replaces the economic observation date.
+        """
+        from lib.intl_eurostat_publication import ANNUAL_FIELD, ANNUAL_FIELDS
+        spec = ANNUAL_FIELDS[ANNUAL_FIELD]
+        if type(frames) is not dict or set(frames) != {spec["column"]}:
+            return None
+        last = frames[spec["column"]].dropna(how="all").index.max().date()
+        age = (datetime.now(timezone.utc).date() - last).days
+        return "ok" if 0 <= age <= spec["max_age_days"] else "stale"
+
     def after_store_commit(self, name, returned, merged, *, committed_at):
         pending = getattr(self, "_eurostat_responses", {}).pop(name, None)
         if pending is not None:
@@ -108,10 +126,10 @@ class IntlMacroAdapter(Adapter):
         )
 
     def _fetch_eurostat_yoy(self, field, spec, *, requested_at, retries, timeout):
-        from lib.intl_eurostat_publication import FIELDS, _decode, _sha, _source_url, parse_native_field
+        from lib.intl_eurostat_publication import FIELDS, ANNUAL_FIELDS, _decode, _sha, _source_url, parse_native_field
         from lib.intl_macro_publication import _read_stable_once
 
-        contract = FIELDS[field]
+        contract = FIELDS[field] if field in FIELDS else ANNUAL_FIELDS[field]
         if (spec.get("provider") != "eurostat" or spec.get("dataset") != contract["dataset"]
                 or spec.get("unit") != contract["selectors"]["unit"]):
             raise ValueError("Eurostat configured field contract mismatch")
@@ -137,6 +155,12 @@ class IntlMacroAdapter(Adapter):
             # Original parent receipts omit this clock. Import time is never
             # relabeled as the original HTTP response receipt.
             received = receipt.get("response_received_at")
+            if field in ANNUAL_FIELDS:
+                # This retained acquisition records actual request/receipt
+                # clocks under its original field names. Older two-field
+                # receipts still retain their explicitly unknown HTTP clock.
+                url = receipt.get("response_url", receipt.get("url"))
+                received = receipt.get("response_received_at", receipt.get("received_at"))
         else:
             params = {"lang": "en", **(spec.get("params") or {})}
             if spec.get("since"):
@@ -166,7 +190,9 @@ class IntlMacroAdapter(Adapter):
             "provider": "eurostat", "source_id": contract["dataset"], "source_url": url,
             "requested_at": requested_at, "source_updated": parsed["updated"],
             "last_observation": str(frame.index[-1].date()), "unit": contract["selectors"]["unit"],
-            "release_period_semantics": "Native YoY rate; economic period end, dataset update separately retained",
+            "release_period_semantics": ("Native annual statistical period; vintage/classification not supplied"
+                                         if field in ANNUAL_FIELDS else
+                                         "Native YoY rate; economic period end, dataset update separately retained"),
             "status": "official_pending_store_evidence",
         }
         return frame
@@ -213,9 +239,10 @@ class IntlMacroAdapter(Adapter):
         retries = int(spec.get("retries", self.cfg.get("retries", 3)))
         timeout = int(spec.get("timeout_s", 20))
         requested_at = datetime.now(timezone.utc).isoformat()
-        native_yoy_fields = {"EZ_gdp_yoy_official": "EZ.gdp_yoy", "EZ_hicp_yoy_official": "EZ.cpi_yoy"}
-        if stored_col in native_yoy_fields:
-            return self._fetch_eurostat_yoy(native_yoy_fields[stored_col], spec,
+        native_period_fields = {"EZ_gdp_yoy_official": "EZ.gdp_yoy", "EZ_hicp_yoy_official": "EZ.cpi_yoy",
+                                "EZ_current_account_gdp_official": "EZ.annual_current_account"}
+        if stored_col in native_period_fields:
+            return self._fetch_eurostat_yoy(native_period_fields[stored_col], spec,
                                             requested_at=requested_at, retries=retries, timeout=timeout)
         if provider == "ecb":
             base = str(

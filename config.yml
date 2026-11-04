@@ -7147,6 +7147,11 @@ intl:
       policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
       metadata: allowed
       value_permission: allowed
+    EZ.annual_current_account:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-annual-current-account
+      metadata: allowed
+      value_permission: allowed
 
   # -- Plane A: prices (group=intl) — yfinance indices + vol + FX -------------
   yahoo:
@@ -7201,6 +7206,15 @@ intl:
         timeout_s: 20
         params: {freq: M, unit: RCH_A, coicop18: TOTAL, geo: EA21}
         release_period_semantics: Native harmonized CPI annual rate; economic month end, not publication time
+      EZ_current_account_gdp_official:
+        provider: eurostat
+        dataset: TIPSBP20
+        since: "2023"
+        unit: PC_GDP
+        retries: 1
+        timeout_s: 20
+        params: {freq: A, unit: PC_GDP, bop_item: CA, sector10: S1, sectpart: S1, stk_flow: BAL, partner: EXT_EA21, s_adj: NSA, geo: EA21}
+        release_period_semantics: Native EA21 extra-area annual statistic; economic year end, unknown revision vintage
     extra_series:                  # stored_col: FRED id (Eurozone policy/liquidity, periphery, US anchor)
       ez_depo_rate: ECBDFR         # ECB deposit facility rate (policy)
       ez_refi_rate: ECBMRRFR       # ECB main refinancing rate
