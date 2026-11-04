@@ -237,7 +237,20 @@ DISPLAY_BOARD_PAYLOAD_DIR = "premiumdata"
 # same ~183B/symbol (vs the 500KB budget), <=24 Yahoo batch requests plus <=5
 # Polygon chunks, ~13s at ~37 symbols/s — still cheap for both producers; the
 # orchestrator gate above is unaffected for the same reason.
-# Cap raised 480 -> 640 (2026-11-04): on original CPI/Events #9435\n# exact head 121633b0, hosted ci-pack-5 washout-turn-organ failed the\n# *unchanged* test_the_board_leg_has_headroom_over_the_cap. Actual built-site\n# scan in hosted CI found 415 board symbols / 480 cap = 86.5% (guard max\n# 85%). Nothing is truncated yet; the nightly US board repick can silently\n# drop later-sorting live-change pills if headroom is not restored.\n# At 640, 415/640 = 64.8% (225 spare symbols); quote payload ceiling is\n# ~117KB at the previously observed 183B/symbol (500KB browser budget),\n# <=32 Yahoo batches or <=7 Polygon chunks. Estimated ~17s at the older\n# measured 37 symbols/s vendor rate, NOT a newly measured network latency.\n# The fixed +80 over-cap synthetic fixture and 85% guard remain unchanged;\n# this raises producer capacity without removing coverage checks.\nDISPLAY_BOARD_CAP = 640\n
+# Cap raised 480 -> 640 (2026-11-04): on original CPI/Events #9435
+# exact head 121633b0, hosted ci-pack-5 washout-turn-organ failed the
+# *unchanged* test_the_board_leg_has_headroom_over_the_cap. Actual built-site
+# scan in hosted CI found 415 board symbols / 480 cap = 86.5% (guard max
+# 85%). Nothing is truncated yet; the nightly US board repick can silently
+# drop later-sorting live-change pills if headroom is not restored.
+# At 640, 415/640 = 64.8% (225 spare symbols); quote payload ceiling is
+# ~117KB at the previously observed 183B/symbol (500KB browser budget),
+# <=32 Yahoo batches or <=7 Polygon chunks. Estimated ~17s at the older
+# measured 37 symbols/s vendor rate, NOT a newly measured network latency.
+# The fixed +80 over-cap synthetic fixture and 85% guard remain unchanged;
+# this raises producer capacity without removing coverage checks.
+DISPLAY_BOARD_CAP = 640
+
 
 def payload_html(path: Path) -> str:
     """The concatenated pre-rendered card HTML inside one tier payload, or ``""``.
