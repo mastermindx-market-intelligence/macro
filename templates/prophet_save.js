@@ -42,6 +42,11 @@
     return {row: row, details: details, body: body, link: link, href: href, ticker: ticker,
       occurrence: row.getAttribute('data-po-id') || '', stamp: stamp(row)};
   }
+  function pane(row) {
+    var scope = row.closest('#us-standouts') || row.closest('#us-candidate-pool');
+    return scope ? (scope.getAttribute('data-prophet-src') || '') + '|' +
+      (scope.classList.contains('st-table-mode') ? 'table' : 'grid') : '';
+  }
   function usable(entry, reachable) {
     if (!entry || !entry.row.isConnected || !entry.details.isConnected || !entry.row.contains(entry.details) ||
         !entry.link.isConnected || entry.link.getAttribute('href') !== entry.href || stamp(entry.row) !== entry.stamp ||
@@ -56,7 +61,7 @@
   }
   function current(origin) {
     var s = session();
-    return active === origin && usable(origin.entry, false) && origin.store === window.WatchStore &&
+    return active === origin && usable(origin.entry, false) && origin.pane === pane(origin.entry.row) && origin.store === window.WatchStore &&
       origin.userId === s.userId && origin.generation === s.generation;
   }
   function message(state, en, zh) {
@@ -99,7 +104,7 @@
     var origin = active; active = null; serial++; clearTimeout(readinessTimer);
     if (dialog && dialog.open) dialog.close();
     if (content) content.replaceChildren();
-    if (!restore || !origin || !usable(origin.entry, true)) return;
+    if (!restore || !origin || !usable(origin.entry, true) || origin.pane !== pane(origin.entry.row)) return;
     var s = session();
     if (origin.userId !== s.userId || origin.generation !== s.generation) return;
     window.scrollTo({left: origin.x, top: origin.y, behavior: 'instant'});
@@ -129,7 +134,7 @@
     var s = session(), nativeDialog = document.getElementById('pv-setup-dialog');
     var selected = fromSetup && entry.body.querySelector('[role="tabpanel"]:not([hidden])');
     var origin = {entry: entry, button: trigger, store: window.WatchStore, userId: s.userId,
-      generation: s.generation, fromSetup: !!fromSetup, section: selected && selected.getAttribute('data-pvs-section') || 'structure',
+      generation: s.generation, pane: pane(entry.row), fromSetup: !!fromSetup, section: selected && selected.getAttribute('data-pvs-section') || 'structure',
       dialogScroll: nativeDialog ? nativeDialog.scrollTop : 0, x: window.scrollX, y: window.scrollY};
     if (fromSetup && nativeDialog && nativeDialog.open) {
       var closer = nativeDialog.querySelector('.pvs-close'); if (!closer) return; closer.click();
@@ -248,7 +253,7 @@
     var s = session();
     if (pendingSignIn && s.state === 'ready') {
       var origin = pendingSignIn; pendingSignIn = null;
-      if (usable(origin.entry, true)) show(origin.entry, origin.button, origin.fromSetup);
+      if (usable(origin.entry, true) && origin.pane === pane(origin.entry.row)) show(origin.entry, origin.button, origin.fromSetup);
     } else if (active && !active.attempted) {
       // Client readiness for the SAME account may advance loading, never a write.
       if (active.userId === s.userId && active.generation === s.generation) load(active);
@@ -261,7 +266,8 @@
     mount();
     window.addEventListener('mdx-auth', function (event) {
       var s = session();
-      if (pendingSignIn && (event.detail && event.detail.event === 'SIGNED_OUT' || !usable(pendingSignIn.entry, true))) pendingSignIn = null;
+      if (pendingSignIn && (event.detail && event.detail.event === 'SIGNED_OUT' || !usable(pendingSignIn.entry, true) ||
+          pendingSignIn.pane !== pane(pendingSignIn.entry.row))) pendingSignIn = null;
       if (active && (active.userId !== s.userId || active.generation !== s.generation)) close(false);
       ready(); queue();
     });
@@ -269,7 +275,7 @@
     document.addEventListener('candidate-pool-hydrated', function () { pendingSignIn = null; close(false); queue(); }, true);
     document.addEventListener('wl-auth', ready);
     new MutationObserver(queue).observe(document.documentElement, {childList: true, subtree: true, attributes: true,
-      attributeFilter: ['hidden','aria-hidden','class','id','href','data-ticker','data-setup-ticker','data-po-id','data-source-digest','data-as-of','data-board-asof'].concat(todayKeys)});
+      attributeFilter: ['hidden','aria-hidden','class','id','href','data-ticker','data-setup-ticker','data-po-id','data-prophet-src','data-source-digest','data-as-of','data-board-asof'].concat(todayKeys)});
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
   if (typeof module !== 'undefined' && module.exports) module.exports = {source: source, usable: usable, show: show, close: close, mount: mount, init: init};

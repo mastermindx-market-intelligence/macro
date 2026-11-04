@@ -114,6 +114,26 @@ def test_shared_cache_headers_match_only_reviewed_public_paths():
     assert re.search(r"(?m)^[ \t]*@reg_json[ \t]*\{", text) is None
 
 
+def test_prophet_save_assets_have_exact_public_policy_and_cache_mirrors():
+    """Only the two UI assets bypass static checks; nearby data remains gated."""
+    assets = {"/prophet_save.js", "/prophet_save.css"}
+    protected = {"/premiumdata/us_stocks.json", "/prophet_save.json",
+                 "/prophet_save.js.map", "/prophet_save_private.js"}
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    assert assets <= set(policy["public"]["exact"])
+    text = _read_caddyfile()
+    for matcher in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+        block = _extract_block(text, matcher)
+        paths = _path_tokens(block)
+        assert assets <= paths, matcher
+        assert not any(fnmatchcase(path, pattern) for path in protected for pattern in paths), matcher
+        if matcher == "@public_static":
+            assert "not query v=*" in block
+        if matcher == "@public_versioned":
+            assert "query v=*" in block
+    assert 'header @public_versioned Cache-Control "public, max-age=31536000, immutable"' in text
+
+
 def test_shared_shell_presentation_assets_are_exact_public_paths_in_all_edge_matchers():
     paths = {"/shared_shell_bridge.js", "/shared_shell.css"}
     policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))

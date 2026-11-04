@@ -14,9 +14,11 @@ ROOT = Path(__file__).parents[1]
 
 DOM = r"""
 const assert=require('node:assert/strict');
-const observers=[];let mutationQueued=false;
-function changed(el){if(!el.isConnected||mutationQueued)return;mutationQueued=true;
-  queueMicrotask(()=>{mutationQueued=false;observers.forEach(fn=>fn());});}
+const observers=[],pendingObservers=new Set();let mutationQueued=false;
+function changed(el,attribute){if(!el.isConnected)return;
+  observers.forEach(o=>{if(attribute?o.options.attributes&&(!o.options.attributeFilter||o.options.attributeFilter.includes(attribute)):o.options.childList)pendingObservers.add(o.fn);});
+  if(!pendingObservers.size||mutationQueued)return;mutationQueued=true;
+  queueMicrotask(()=>{mutationQueued=false;const todo=Array.from(pendingObservers);pendingObservers.clear();todo.forEach(fn=>fn());});}
 function simple(el,sel){
   if(!el)return false;
   if(sel===':scope')return true;
@@ -45,10 +47,10 @@ class El{
   get value(){return this._value!==undefined?this._value:this.tag==='select'&&this.children[0]?this.children[0].value:'';}
   set value(v){this._value=v;}
   get hidden(){return this.hasAttribute('hidden');}set hidden(v){if(v)this.setAttribute('hidden','');else this.removeAttribute('hidden');}
-  setAttribute(k,v){if(this.attrs[k]===String(v))return;this.attrs[k]=String(v);changed(this);}
+  setAttribute(k,v){if(this.attrs[k]===String(v))return;this.attrs[k]=String(v);changed(this,k);}
   getAttribute(k){return Object.prototype.hasOwnProperty.call(this.attrs,k)?this.attrs[k]:null;}
   hasAttribute(k){return this.getAttribute(k)!==null;}
-  removeAttribute(k){if(this.hasAttribute(k)){delete this.attrs[k];changed(this);}}
+  removeAttribute(k){if(this.hasAttribute(k)){delete this.attrs[k];changed(this,k);}}
   contains(n){return this===n||this.children.some(c=>c.contains(n));}
   append(...nodes){for(const n of nodes){n.remove();n.parentNode=this;this.children.push(n);}changed(this);}
   replaceChildren(...nodes){this.children.forEach(c=>c.parentNode=null);this.children=[];this._text='';this.append(...nodes);}
@@ -70,7 +72,7 @@ global.document={documentElement:html,body,readyState:'loading',listeners:{},act
  createElement:t=>new El(t),querySelector:s=>html.querySelector(s),querySelectorAll:s=>html.querySelectorAll(s),
  getElementById:id=>html.querySelector('#'+id),addEventListener(t,fn){(this.listeners[t]||=[]).push(fn);},
  dispatchEvent(e){(this.listeners[e.type]||[]).forEach(fn=>fn(e));}};
-global.window=global;global.HTMLDialogElement=El;global.MutationObserver=class{constructor(fn){this.fn=fn;}observe(){observers.push(this.fn);}};
+global.window=global;global.HTMLDialogElement=El;global.MutationObserver=class{constructor(fn){this.fn=fn;}observe(_root,options){observers.push({fn:this.fn,options});}};
 const winEvents={};window.addEventListener=(t,fn)=>(winEvents[t]||=[]).push(fn);
 window.scrollX=0;window.scrollY=500;window.scrollTo=o=>{window.scrollX=o.left;window.scrollY=o.top;};
 const ev=(type,detail)=>{(winEvents[type]||[]).forEach(fn=>fn({type,detail:detail||{}}));};
@@ -137,6 +139,8 @@ def test_waiting_double_click_and_uncertain_membership_read_never_retry():
                                       "panel.setAttribute('data-board-asof','2026-11-04');",
                                       "first.row.classList.add('mx-tier-hidden');",
                                       "first.row.remove();",
+                                      "panel.setAttribute('data-prophet-src','plans');",
+                                      "panel.classList.add('st-table-mode');",
                                       "sess={state:'ready',userId:'u2',generation:2};ev('mdx-auth');",
                                       "ev('mmx-access-tier');",
                                       "document.dispatchEvent({type:'candidate-pool-hydrated'});"])
@@ -158,6 +162,15 @@ def test_signin_resumes_only_the_chooser_and_never_saves_automatically():
       buttons().find(b=>b.textContent.includes('Sign in')).click();assert.equal(signins,1);assert.equal(saveDialog().open,false);
       sess={state:'ready',userId:'u1',generation:2};ev('mdx-auth',{event:'SIGNED_IN'});await flush();
       assert.equal(saveDialog().open,true);assert.equal(state(),'choose');assert.equal(writes,0);
+    """)
+
+
+def test_source_pane_change_refuses_confirmation_before_any_write():
+    run(r"""
+      first.row.querySelector('.pvs-save-pick').click();await flush();const submit=choose();
+      panel.setAttribute('data-prophet-src','plans');
+      submit.click();assert.equal(writes,0,'pane guard applies even before observer delivery');
+      await flush();assert.equal(saveDialog().open,false,'source pane event/attribute closes stale chooser');
     """)
 
 
@@ -221,3 +234,46 @@ def test_static_copy_includes_the_new_production_assets():
                   and isinstance(n.target, ast.Name) and n.target.id == 'asset'
                   and isinstance(n.iter, ast.Tuple) and any(isinstance(e, ast.Constant) and e.value == 'watchstore.js' for e in n.iter.elts))
     assert {'prophet_save.js', 'prophet_save.css'} <= {e.value for e in assets.elts if isinstance(e, ast.Constant)}
+
+
+@pytest.mark.parametrize('rich', [True, False])
+def test_real_production_card_keeps_save_visible_above_the_stock_link(rich):
+    """Real rich/footer and legacy/full-card-link markup, actual Save mount.
+
+    This pins the stacking/source contract rather than inventing a browser hit
+    test: the parent still proves actual pointer activation in original Chrome.
+    In particular, moving Save into closed details content must fail here.
+    """
+    import re
+    from bs4 import BeautifulSoup, Tag
+    from tests.test_dashboard_template_render import _env
+    if rich:
+        from tests.test_prophet_opportunity_integration import _render, _source
+        card = _render([_source(ticker='FLS')]).select_one('.pvcard')
+        assert card.select_one('.po-footer'), 'the real native rich footer exists'
+    else:
+        html = _env().get_template('_prophet_card.html.j2').module.pv_card({
+            'tk': 'FLS', 'href': 'stock.html#FLS', 'verb': 'wait', 'name': 'Flowserve',
+            'setup_detail': '<div class="pv-setup-body">Original source</div>',
+        })
+        card = BeautifulSoup(str(html), 'html.parser').select_one('.pvcard')
+        assert not card.select_one('.po-footer')
+    def tree(tag):
+        return {'tag': tag.name, 'attrs': {k: ' '.join(v) if isinstance(v, list) else v
+                                         for k, v in tag.attrs.items()},
+                'children': [tree(c) for c in tag.children if isinstance(c, Tag)]}
+    run(r"""
+      function original(spec){const e=element(spec.tag);Object.entries(spec.attrs).forEach(([k,v])=>e.setAttribute(k,v));
+        spec.children.forEach(c=>e.append(original(c)));return e;}
+      first.row.remove();second.row.remove();
+      const row=original(""" + json.dumps(tree(card)) + r""");grid.append(row);await flush();
+      const pick=row.querySelector('.pvs-save-pick');assert.ok(pick);
+      assert.equal(pick.closest('details'),null,'a closed details body hides Save');
+      assert.ok(pick.getClientRects().length,'Save remains visible with source details closed');
+      pick.click();await flush();assert.equal(state(),'choose');assert.equal(writes,0);
+    """)
+    css = (ROOT / 'templates/prophet_save.css').read_text()
+    rule = re.search(r'\.pvs-save-pick\s*\{([^}]+)\}', css)
+    assert rule and 'position:relative' in rule[1]
+    assert int(re.search(r'z-index\s*:\s*(\d+)', rule[1])[1]) > 4
+    assert 'box-sizing:border-box' in css, 'preserve the verified mobile dialog containment'

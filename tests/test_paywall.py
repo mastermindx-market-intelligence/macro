@@ -42,6 +42,19 @@ def test_staged_off_allows_premium_but_is_never_cacheable():
     assert r.headers["cache-control"] == "private, no-store"
 
 
+def test_prophet_save_ui_classification_keeps_premium_payloads_protected(monkeypatch):
+    """Runtime policy belongs to this app-native job, not the card/DOM job."""
+    from pathlib import Path
+    monkeypatch.setattr(paywall, "ACCESS_CONFIG", Path(__file__).resolve().parents[1] / "config/site_access.yml")
+    monkeypatch.setattr(paywall, "_CONFIG_CACHE", None)
+    for path in {"/prophet_save.js", "/prophet_save.css"}:
+        assert paywall.classify_path(path) == "public"
+    for path in {"/premiumdata/us_stocks.json", "/prophet_save.json",
+                 "/prophet_save.js.map", "/prophet_save_private.js"}:
+        assert paywall.classify_path(path) == "premium"
+    assert paywall.enforced_early("/premiumdata/us_stocks.json")
+
+
 def test_internal_preview_is_404_even_while_switch_off():
     r = _check("/_mockup_research_vault.html", "document")
     assert r.status_code == 404
