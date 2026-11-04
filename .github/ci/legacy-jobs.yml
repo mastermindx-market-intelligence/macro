@@ -58,6 +58,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -5866,6 +5870,29 @@ jobs:
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
         run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_quote_native_metadata.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
 
+  p08-synthetic-composition:
+    if: ${{ false }}  # executed inside the ordinary PR code pack
+    gate: code
+    scope: exclusive
+    # Research-only fixture composition; does not reopen the Q02 E1/E2 campaign.
+    paths:
+      - "engine/__init__.py"
+      - "engine/options_american_exercise.py"
+      - "research/options_estate/p08_synthetic_composition.py"
+      - "research/options_estate/P08_SYNTHETIC_COMPOSITION.md"
+      - "tests/test_p08_synthetic_composition.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest numpy scipy
+      - name: P08 synthetic composition and adoption boundaries
+        run: python -m pytest tests/test_p08_synthetic_composition.py -q
+
   quant-q02-american-exercise:
     if: ${{ false }}
     gate: code
@@ -6177,6 +6204,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -8111,6 +8140,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9238,6 +9269,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/provider_production_modes.py
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -10619,6 +10651,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -10971,6 +11007,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11342,6 +11382,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -12348,6 +12392,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -16590,6 +16636,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -19061,6 +19109,8 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -21865,9 +21915,9 @@ jobs:
     # sentinel is required by that runner; it prevents duplicate GitHub jobs.
     if: ${{ false }}
     gate: code
-    # These eleven whole-file suites exercise the knowledge compiler and its
-    # committed records. Audit: 43 concrete transitive files plus the complete
-    # Agent OS store and runtime-read source documents. The Git/subprocess and
+    # Complete whole-file suites exercise the knowledge and project compilers
+    # and committed records. Explicit paths include their transitive helpers,
+    # complete Agent OS store and runtime-read source documents. The Git/subprocess and
     # glob edges use temporary fixture repositories or those same declared
     # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
     # No suite or security step is removed; no packing ceiling is raised.
@@ -21903,6 +21953,14 @@ jobs:
       - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
       - scripts/__init__.py
       - scripts/agentos.py
+      - scripts/agentos_direction.py
+      - scripts/agentos_direction_acceptance.py
+      - scripts/agentos_plan_adoption.py
+      - scripts/agentos_project_archive.py
+      - scripts/agentos_project_plan_contract.py
+      - scripts/agentos_project_proposal.py
+      - scripts/agentos_standing_instructions.py
+      - scripts/project_knowledge_recipes.py
       - scripts/agentos_records_draft.py
       - scripts/agentos_ship_capture.py
       - scripts/audit_stranded_work.py
@@ -21919,6 +21977,17 @@ jobs:
       - tests/test_agentos_compile.py
       - tests/test_agentos_records_draft.py
       - tests/test_agentos_schema.py
+      - tests/test_agentos_direction.py
+      - tests/test_agentos_direction_acceptance.py
+      - tests/test_agentos_direction_owner.py
+      - tests/test_agentos_plan_adoption.py
+      - tests/test_agentos_project_archive.py
+      - tests/test_agentos_project_knowledge_owner.py
+      - tests/test_agentos_project_plan_contract.py
+      - tests/test_agentos_project_plan_owner.py
+      - tests/test_agentos_project_proposal.py
+      - tests/test_agentos_standing_instructions.py
+      - tests/test_project_knowledge_recipes.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
@@ -21944,6 +22013,18 @@ jobs:
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
           # Owned, no-network P1 project preflight: explicit run for contract-delta.
           python -m pytest tests/test_linear_projector_p1_offline.py -q
+          # Complete bounded project-source/authoring suites owned by this job.
+          python -m pytest tests/test_agentos_direction.py \
+            tests/test_agentos_direction_acceptance.py \
+            tests/test_agentos_direction_owner.py \
+            tests/test_agentos_plan_adoption.py \
+            tests/test_agentos_project_archive.py \
+            tests/test_agentos_project_knowledge_owner.py \
+            tests/test_agentos_project_plan_contract.py \
+            tests/test_agentos_project_plan_owner.py \
+            tests/test_agentos_project_proposal.py \
+            tests/test_agentos_standing_instructions.py \
+            tests/test_project_knowledge_recipes.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -22957,6 +23038,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "engine/intl_transmission_evidence.py"
       - "config/intl_transmission_channels_v1.json"
       - "tests/test_intl_transmission_evidence.py"
@@ -23113,6 +23198,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -23552,6 +23641,10 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -23887,6 +23980,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -26481,6 +26576,10 @@ jobs:
     # RIC E0 frozen-spec retrospective runners (2026-10-14): M0 coherent requalification (H1, family ric_mri_coherent_requal_v1, n=13) and X0 release reaction (H3, family ric_x0_release_reaction_v1, n=8). Both ran ONCE against frozen protocols; these suites pin the runners' rules, receipts and committed results. Hermetic: synthetic fixtures and committed research/ receipts only, no network, no data/ reads or writes, no ledger writes.
     timeout-minutes: 10
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -26898,6 +26997,8 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - "engine/options_hub_retention.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -30675,6 +30776,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -31751,6 +31854,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -33394,6 +33501,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -34535,6 +34643,10 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -35141,6 +35253,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36625,6 +36739,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/provider_production_modes.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -39765,6 +39880,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -40316,6 +40432,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -41966,6 +42084,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -43631,6 +43753,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -48595,6 +48719,10 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -48862,6 +48990,10 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"
@@ -49669,6 +49801,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/_text_scrub.py
+      - engine/earnings_qual.py
+      - engine/provider_production_modes.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -50099,6 +50235,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - config/provider_production_modes.v1.json
+      - engine/provider_production_modes.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
