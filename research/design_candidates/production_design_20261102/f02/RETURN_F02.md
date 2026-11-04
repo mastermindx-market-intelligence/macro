@@ -1,8 +1,8 @@
 # F02 Design System — current return
 
-**Latest component-proof checkpoint — 4 November 2026, 08:43 UTC:** implementation [#10698](https://github.com/mastermindx-market-intelligence/macro/pull/10698) is at **`6e245059af5870d35eb48e34d641e50f38617cc1`**. The actual changed illustration component now has **8/8 canonical browser captures**, visual self-QA of all eight images, **24/24 normal-scroll/reduced-motion browser checks** at 1440/390/320px, and a matching committed `EVIDENCE.yml`. The repository's visual-evidence gate passes locally against the actual changed CSS diff. All 17 published files read back byte-for-byte. [Exact proof and reproduction](https://github.com/mastermindx-market-intelligence/macro/blob/6e245059af5870d35eb48e34d641e50f38617cc1/mockups/evidence/f02-illus-gap-20261104/README.md).
+**Latest component-proof checkpoint — 4 November 2026, 08:48 UTC:** implementation [#10698](https://github.com/mastermindx-market-intelligence/macro/pull/10698) is at **`6e245059af5870d35eb48e34d641e50f38617cc1`**. The actual changed illustration component now has **8/8 canonical browser captures**, visual self-QA of all eight images, **24/24 normal-scroll/reduced-motion browser checks** at 1440/390/320px, and a matching committed `EVIDENCE.yml`. The repository's visual-evidence gate passes locally against the actual changed CSS diff. All 17 published files read back byte-for-byte. [Exact proof and reproduction](https://github.com/mastermindx-market-intelligence/macro/blob/6e245059af5870d35eb48e34d641e50f38617cc1/mockups/evidence/f02-illus-gap-20261104/README.md).
 
-**Classification: MORE_WORK_EXISTS (active source continuation). MISSION_COMPLETE: false.** Exact-head hosted [CI 41801079017](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801079017) has started: `ci-plan` passed, `contract-delta` is running, and the 12 packs are queued at this read. No hosted PASS, merge or product acceptance is claimed. Paper G15 remains **EFFECT_UNKNOWN** after fresh same-target inspection and recovery of the original caller journal. Both PRs remain Draft/HOLD. The final section supersedes earlier source/browser/catalog observations while preserving their historical evidence and the native/joint/release boundaries.
+**Classification: DURABLE_EXECUTION_RUNNING. MISSION_COMPLETE: false.** Exact-head hosted [CI 41801079017](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801079017) is running: `ci-plan` passed, `contract-delta` and four packs are running, and eight packs are queued at 08:48 UTC. [Fences 41801079069](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801079069) completed successfully. GitHub reports `mergeable:true` at the exact source/base pair; there is no verified conflict to repair. No hosted PASS, merge or product acceptance is claimed. Paper G15 remains **EFFECT_UNKNOWN** after fresh same-target inspection and recovery of the original caller journal. Both PRs remain Draft/HOLD. The final section supersedes earlier source/browser/catalog observations while preserving their historical evidence and the native/joint/release boundaries.
 
 ## Concrete delivery
 
@@ -405,10 +405,19 @@ was in progress at 08:43 UTC, and 12 packs were queued. [Fences 41801079069](htt
 was in progress at the initial read. No manual rerun, queue/Ready action or
 optional external review was dispatched.
 
-Current next source actions are to consume material exact-head CI results and repair
-any reproduced source regression on this same branch. A bounded read-only diagnosis
-is checking GitHub's `mergeable:false` observation; do not infer conflict paths or
-merge permission from that boolean. Preserve held overlap and all actual branch
+At **08:48 UTC**, `ci-plan` is successful; `contract-delta` and packs 0, 6, 8 and 11
+are running; packs 1, 2, 3, 4, 5, 7, 9 and 10 remain queued. Fences **41801079069
+completed successfully** at this exact source head. No aggregate CI success is claimed.
+
+The bounded mergeability diagnosis is complete: GitHub's direct API reports
+`mergeable:true`, `rebaseable:true`, `mergeable_state:unstable` at source
+`6e245059af5870d35eb48e34d641e50f38617cc1` and target
+`4a2291747fd2d8d364a3838e1ed2263636bc64a6`. The previous normalized false was not
+reproduced; its cause is undetermined. No conflict paths are established and no
+merge/rebase is warranted by that earlier observation.
+
+Current next source action is to consume material exact-head CI results and repair
+any reproduced source regression on this same branch. Preserve held overlap and all actual branch
 protection, required CI, formal non-author/release holds. The G05 two-critic/reference
 route applies to final native/reference acceptance; it is not an extra reviewer gate
 for this bug-fix/component-evidence phase under the current Web waiver.
@@ -448,9 +457,15 @@ full-set acceptance is permitted. Other accepted native work and the original
 
 ### Recoverable frontier
 
-- **MISSION_COMPLETE: false.** Bounded result: source component browser proof is
-  published and verified; hosted CI, source integration and final product/native
-  acceptance remain separate.
+- **FINALIZATION_CLASSIFICATION: DURABLE_EXECUTION_RUNNING. MISSION_COMPLETE: false.**
+  Bounded result: source component browser proof is published and verified; hosted
+  aggregate CI and final product/native acceptance remain separate. Actual CI jobs
+  are running with their durable return at run 41801079017, exact source head above.
+  The current attended boundary is external execution with no additional ready
+  independent scoped repair: component proof is complete, no source conflict is
+  established, safe native work is already complete, and dependent native/product
+  work retains its named effect/owner gates. This is not a claim that ChatGPT will
+  automatically resume or monitor after the reply.
 - **DO_NOT_REDO:** the verified eight-cell evidence and 24 browser checks while
   renderer/style/fixture inputs remain unchanged; accepted 59-test source behavior,
   genuine P0B evidence and scoped R3 native/review inputs. Do not replay G15.
@@ -458,7 +473,8 @@ full-set acceptance is permitted. Other accepted native work and the original
   for cumulative design continuity; original Mastermind Paper direct for G15.
   No new identity, effect, retry, state, control or review plane was created.
 - **Exact next action:** consume CI `41801079017` at `6e245059af5870d35eb48e34d641e50f38617cc1`;
-  repair only material failures or verified safe integration conflicts on the original
-  source branch. Paper-dependent work remains fenced by the original terminal/canonical
-  reconciliation gate. No archived author, optional reviewer or imaginary background
-  chat is being awaited.
+  repair material failures on the original source branch when actual results arrive.
+  The original G15 terminal/canonical reconciliation gate independently fences
+  Paper-dependent work. No archived author, optional reviewer or imaginary background
+  chat is being awaited. The three bounded read-only helper assignments have returned
+  and received ACCEPTED / STOP; no watcher was created.
