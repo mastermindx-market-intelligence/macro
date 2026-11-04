@@ -990,6 +990,18 @@ class TestRealMacroValidator(unittest.TestCase):
             problems = agentos.check_decision(rec, __import__("pathlib").Path(path))
         return problems
 
+    def test_multilingual_file_name_utf8_budget_matches_actual_inline_owner(self):
+        agentos = self._load_agentos()
+        with self.assertRaises(pkr.KnowledgeRecipeError):
+            build_file_add(file_request(WS_TEXT, display_name="中" * 50 + ".txt", media_type="text/plain"))
+        recipe = build_file_add(file_request(WS_TEXT, display_name="中" * 40 + ".txt", media_type="text/plain"))
+        image = recipe["postimages"][1]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = __import__("pathlib").Path(tmp) / "WS-SPEC-EDITING.md"
+            path.write_text(image["content_utf8"], encoding="utf-8")
+            rec, _ = agentos.parse_record(path)
+            self.assertEqual(agentos._project_knowledge_problems(rec, path, decision=False), [])
+
     def test_generated_decision_passes_real_validator(self):
         agentos = self._load_agentos()
         dec, _, _ = new_preference_pair()

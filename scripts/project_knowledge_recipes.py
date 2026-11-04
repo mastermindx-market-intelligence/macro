@@ -58,7 +58,7 @@ MAX_PROJECT_FILES = 32
 MAX_ACTOR_REF_CHARS = 256
 MAX_WORKSTREAM_BYTES = 131072
 MAX_DECISION_BYTES = 16384
-MAX_DISPLAY_NAME_CHARS = 128
+MAX_DISPLAY_NAME_BYTES = 128
 MAX_ARTIFACTS = 256
 MAX_EVIDENCE = 64
 MAX_RECIPE_OUTPUT_BYTES = 262144
@@ -433,7 +433,7 @@ def _require_str_list(
 
 def _validate_display_name(name: Any) -> str:
     _require_str(name, "INVALID_PROJECT_FILE")
-    if not name or len(name) > MAX_DISPLAY_NAME_CHARS:
+    if not name or len(name.encode("utf-8")) > MAX_DISPLAY_NAME_BYTES:
         raise KnowledgeRecipeError("INVALID_PROJECT_FILE")
     for char in name:
         if char in _ALLOWED_CONTROLS:
