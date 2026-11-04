@@ -1,0 +1,97 @@
+{
+  "proof_class": "SYNTHETIC_CONFORMANCE",
+  "surface": "actual stocks template",
+  "market_data_proof": false,
+  "production_delivery_proof": false,
+  "access_context": "simulated Pro account; no real authentication",
+  "observations": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "1440-light-en.png",
+      "fold": "PASS",
+      "expiry": "PASS",
+      "history": "PASS",
+      "dialog_focus_escape_access_change": "PASS",
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "1440-light-zh.png",
+      "fold": "PASS",
+      "expiry": "PASS",
+      "history": "PASS",
+      "dialog_focus_escape_access_change": "PASS",
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "1440-dark-en.png",
+      "fold": "PASS",
+      "expiry": "PASS",
+      "history": "PASS",
+      "dialog_focus_escape_access_change": "PASS",
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "1440-dark-zh.png",
+      "fold": "PASS",
+      "expiry": "PASS",
+      "history": "PASS",
+      "dialog_focus_escape_access_change": "PASS",
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "390-light-en.png",
+      "fold": "PASS",
+      "expiry": "PASS",
+      "history": "PASS",
+      "dialog_focus_escape_access_change": "PASS",
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "390-light-zh.png",
+      "fold": "PASS",
+      "expiry": "PASS",
+      "history": "PASS",
+      "dialog_focus_escape_access_change": "PASS",
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "390-dark-en.png",
+      "fold": "PASS",
+      "expiry": "PASS",
+      "history": "PASS",
+      "dialog_focus_escape_access_change": "PASS",
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "390-dark-zh.png",
+      "fold": "PASS",
+      "expiry": "PASS",
+      "history": "PASS",
+      "dialog_focus_escape_access_change": "PASS",
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "proof_class": "SYNTHETIC_CONFORMANCE",
+  "market_data_proof": false,
+  "production_delivery_proof": false,
+  "source_base": "460760a9dde15b9e41e1bb02d8ab353e28b1a089",
+  "tests": {
+    "tests": "291",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "19.301",
+    "timestamp": "2026-11-04T00:22:18.971313-07:00"
+  },
+  "deselected": [
+    "test_universe_is_curated_us_set"
+  ],
+  "deselection_reason": "Sparse worktree omits data/stocks. Baseline and unchanged current _universe both return 40 configured symbols; existing test expects >50.",
+  "source_sha256": {
+    "scripts/build_polygon_intraday.py": "5a2198f6f55fbd9a687fba34b93308c55bd12f4fadc902d86fff006c3f3c0ef4",
+    "scripts/prophet_live_evaluator.py": "d963dda86882cf301bfb75ecff822206700a01aeadbafa064c3de0ecf219422a",
+    "templates/dashboard.html.j2": "28fe419ab38dc81a2fb3516d4dfb16eca64270054a9b4af9fa176f7d873cae56",
+    "templates/_prophet_pivot_checklist.js.j2": "7f19af8e2360dec56af0fc92e106388ed70f0300ae62f774f8d4d974ce6fb49e",
+    "templates/_prophet_pivot_checklist.css.j2": "e162f839212282eafb2c55d765dd51f95ff1908d751b57babd0bf0caa3211780",
+    "tests/test_polygon_intraday_pivot_capture.py": "74180d6963ea56249814b60066aa87f8fc5edb8dca8760bd3c0517e4db6b9136",
+    "tests/test_prophet_pivot_integration.py": "522f745bfaba7c8702721fbfb98edbbafce689232b4b5605286bf79f32210d61",
+    "tests/test_prophet_pivot_surface.py": "4e6194509d49cf115016cfffb95da6dc1031e395e4da77bcdfa1360ccdbfe7e1",
+    "scripts/capture_prophet_pivot_checklist.py": "59ec300a742c943c3baaee1f243c5e58fd1d50fcd67ed65817fa395b19753b2c"
+  },
+  "browser_cases": 8,
+  "runtime_inspection": "SSH_AUTHENTICATION_REFUSED; no runtime facts obtained",
+  "causal_core": "Original paid run unconfirmed; no returned core included at this checkpoint",
+  "supplemental_verification": {
+    "suite": "tests/test_prophet_pivot_surface.py",
+    "passed": 14,
+    "reason": "Executed after the final combined-evidence copy change; other tested source is unchanged."
+  },
+  "test_command": "python3 -m pytest -q tests/test_polygon_intraday_pivot_capture.py tests/test_polygon_intraday.py tests/test_prophet_pivot_integration.py tests/test_prophet_pivot_surface.py tests/test_prophet_live_evaluator.py tests/test_prophet_live_vps_lane.py tests/test_prophet_live_reconcile.py -k not_test_universe_is_curated_us_set",
+  "test_selection_note": "Actual pytest -k expression was: not test_universe_is_curated_us_set",
+  "screenshot_sha256": {
+    "1440-dark-zh.png": "6d9456ea4e0469e25209612cb08c2e362c43e0ee5fbcd33d8792c76bb10b3b9a",
+    "1440-light-zh.png": "1c5ab849176b6726c7ae329c8bc3b4ec53a41ef081eb55bf88b538f915b1ba2c",
+    "1440-dark-en.png": "4dce38818b18436f8447ba9f8989721bed8e12a153b9bb67de5f4ba4ff7ba8ff",
+    "1440-light-en.png": "7adb114977c0d391d9763ed265bcd856a2accf4e1867814d133f7e23f02ee64d",
+    "390-light-zh.png": "cc6abd4371303bc7482a5e523654b0c5df45f325b76d8724d3297b07d04a1308",
+    "390-dark-zh.png": "75c774a54b1cb82b1b608195bd085287946c00ff3d9b515756e4561a2fa353b7",
+    "390-light-en.png": "ddde3e1ac12019a6e790b5acfb51181e7b861dcba1ae4bbaf8c927f823856d12",
+    "390-dark-en.png": "902e02ba19571cbbb3b0e92dfb16599dd00818f11bd1f6a43afe46d983b146ac"
+  }
+}

@@ -1865,7 +1865,14 @@ def test_the_evaluator_module_imports_no_data_writer():
             if isinstance(node, ast.Call):
                 fn = node.func
                 name = fn.attr if isinstance(fn, ast.Attribute) else getattr(fn, "id", "")
-                assert name not in banned_calls, f"{rel}:{node.lineno} calls {name}()"
+                # The optional timing envelope is a bounded local binary read.
+                # Literal read-only mode is permitted; dynamic modes and every
+                # write-capable open remain prohibited by this no-data-writer gate.
+                read_only_open = (name == "open" and isinstance(fn, ast.Attribute)
+                                  and len(node.args) == 1
+                                  and isinstance(node.args[0], ast.Constant)
+                                  and node.args[0].value == "rb" and not node.keywords)
+                assert name not in banned_calls or read_only_open, f"{rel}:{node.lineno} calls {name}()"
             if isinstance(node, ast.Import):
                 for a in node.names:
                     assert a.name not in banned_modules, f"{rel}: imports {a.name}"

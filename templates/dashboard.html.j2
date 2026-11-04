@@ -301,6 +301,10 @@
 {% include "_seo_head.html.j2" %}
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
+{% if mode == 'stocks' %}
+<style>{% include "_prophet_pivot_checklist.css.j2" %}</style>
+<script>{% include "_prophet_pivot_checklist.js.j2" %}</script>
+{% endif %}
 {% if mode != 'stocks' %}{% include "_lazy_heatmap_loader.html.j2" %}{% endif %}
 {# UD-B1 R-L (BLOCKER-1): at ≤640px, remove the server-rendered `open` attribute on
    .ud-watch-details so the <summary> disclosure row takes over (CSS cannot override
@@ -19084,7 +19088,7 @@ function renderMtfTable(mtfUpturn){
     var _bMore=(t.basket_ids&&t.basket_ids.length>3)?'…':'';
     var basketEn=_bids.map(_dtpNameEn).join(', ')+_bMore;
     var basketZh=_bids.map(_dtpNameZh).join('、')+_bMore;
-    html+='<tr>'
+    html+='<tr data-pvt-row="'+esc(sym)+'" data-pvt-context-asof="'+esc(asOf)+'">'
       +'<td><b>'+esc(sym)+'</b></td>'
       +'<td><span class="dash-mtf-badge '+stateCls+'">'+stateLbl+'</span></td>'
       +'<td class="r"><span class="dash-mtf-k">'+(t.k||0)+'</span></td>'
@@ -19110,6 +19114,7 @@ function renderMtfTable(mtfUpturn){
       +'<span class="lm-hide">'+L('Show less &#9652;','收起 &#9652;')+'</span></button>';
   }
   bodyEl.innerHTML=html;
+  document.dispatchEvent(new CustomEvent('prophet:turn-setups-rendered'));
   var _mtfBtn=bodyEl.querySelector('.dash-mtf-more');
   if(_mtfBtn){
     _mtfBtn.addEventListener('click',function(){
@@ -20427,13 +20432,18 @@ function _bsRender(){
 
 /* One paint per data change: the strip and the board state read the same artifact and
    must never disagree about which fetch they are describing. */
-function _plvPaint(){ _bsRender(); _plvRender(); }
+function _plvPaint(){
+  // One transport and one source snapshot for all intraday observations.
+  window._prophetLiveSnapshot = _plvData;
+  document.dispatchEvent(new CustomEvent('prophet:live-update', {detail:_plvData}));
+  _bsRender(); _plvRender();
+}
 
 /* The board-state slots live on #us-standouts, which outlives the strip: the strip hides
    itself after the nightly publishes, and on a page with no strip at all the board is
    still there to be described. So the poll is owned by EITHER panel, and the strip-only
    wiring below stays behind its own guard. */
-if(_plvPanel||_bsPanel){
+if(_plvPanel||_bsPanel||document.getElementById('dash-mtf-section')){
   /* First fetch is UNCONDITIONAL. Never gate the initial paint on document.hidden:
      the preview pane renders with visibility:hidden, so a visibility-gated first
      fetch produces a permanently empty strip in every verification screenshot. */

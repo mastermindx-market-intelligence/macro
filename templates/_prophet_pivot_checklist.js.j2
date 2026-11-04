@@ -1,0 +1,261 @@
+/* Prophet timing evidence. The existing Prophet Live client owns all fetching. */
+(function (root, factory) {
+  'use strict';
+  var api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root && root.document) {
+    root.ProphetPivotChecklist = api;
+    api.attach(root.document);
+  }
+})(typeof window !== 'undefined' ? window : null, function () {
+  'use strict';
+  var current = null;
+  var expireTimer = null;
+  var states = {
+    confirmed: ['Close condition met', '收盘条件满足'],
+    retest_held: ['Retest held', '回测守稳'],
+    testing: ['Testing pivot', '测试拐点'],
+    armed: ['Waiting for trigger', '等待触发'],
+    forming: ['Structure forming', '结构形成中'],
+    invalidated: ['Setup invalidated', '形态已失效'],
+    sequence_unresolved: ['Sequence unclear', '先后顺序不明'],
+    extended: ['Above entry range', '超出入场区间'],
+    expired: ['Window expired', '窗口已过期'],
+    market_closed: ['Market closed', '市场已收盘'],
+    unavailable: ['Awaiting evidence', '等待数据'],
+    stale: ['Update overdue', '更新已延迟'],
+    waiting: ['Waiting for close', '等待收盘'],
+    pass: ['Met', '已满足'],
+    fail: ['Not met', '未满足'],
+    unknown: ['Not available', '暂无数据']
+  };
+  var ruleNames = {
+    parent_valid: ['Larger turn intact', '大级别拐点有效'],
+    h3_complete: ['Full 3-hour bar', '完整3小时K线'],
+    h3_higher_low: ['Higher low', '低点抬高'],
+    h3_reclaim: ['Prior high reclaimed', '收复前高'],
+    m30_close: ['30-minute close above pivot', '30分钟收于拐点上方'],
+    no_chase: ['Within entry range', '处于入场区间'],
+    data_quality: ['Current source evidence', '当前源数据'],
+    invalidation: ['Invalidation intact', '失效位未破'],
+    retest: ['Retest holds pivot', '回测守住拐点']
+  };
+  function esc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
+      return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+    });
+  }
+  function pair(en, zh) {
+    return '<span class="l-en">' + esc(en) + '</span><span class="l-zh">' + esc(zh) + '</span>';
+  }
+  function label(key) { var value = states[key] || states.unknown; return pair(value[0], value[1]); }
+  function combinedLabel(key) { return key === 'confirmed' ? pair('Combined evidence available', '组合证据可用') : label(key); }
+  function numeric(value) { return typeof value === 'number' && Number.isFinite(value); }
+  function instant(value) {
+    return typeof value === 'string' && /(?:Z|[+-]\d{2}:\d{2})$/.test(value) ? Date.parse(value) : NaN;
+  }
+  function price(value) { return numeric(value) && value > 0 ? value.toFixed(2) : '—'; }
+  function stamp(value) {
+    if (typeof value !== 'string' || !Number.isFinite(instant(value))) return '—';
+    return value.replace('T', ' ').replace(/\.\d+Z$/, 'Z').replace('Z', ' UTC');
+  }
+  function stateOf(row, payload, now) {
+    if (!row || !payload || payload.schema !== 'prophet.pivot_checklist/v1') return 'unavailable';
+    if (payload.input_kind !== 'OBSERVED_MARKET' || payload.source_admitted !== true) return 'unavailable';
+    var assessed = instant(row.assessed_at || payload.assessed_at || '');
+    var expires = instant(payload.valid_until || '');
+    if (!Number.isFinite(assessed) || assessed > now || !Number.isFinite(expires) || expires < now) return 'stale';
+    return Object.prototype.hasOwnProperty.call(states, row.state) ? row.state : 'unavailable';
+  }
+  function checksHtml(checks) {
+    if (!Array.isArray(checks) || !checks.length) {
+      return '<li class="pvt-check pvt-check-unknown">' + pair('Evidence not available', '暂无证据') + '</li>';
+    }
+    return checks.slice(0, 12).map(function (check) {
+      var known = check && Object.prototype.hasOwnProperty.call(ruleNames, check.id);
+      var name = known ? ruleNames[check.id] : ['Additional evidence', '补充证据'];
+      var status = check && ['pass', 'fail', 'wait', 'unknown'].indexOf(check.status) >= 0 ? check.status : 'unknown';
+      return '<li class="pvt-check pvt-check-' + status + '"><span class="pvt-check-mark" aria-hidden="true"></span>'
+        + '<span>' + pair(name[0], name[1]) + '</span><span class="pvt-check-status">'
+        + label(status === 'wait' ? 'waiting' : status) + '</span></li>';
+    }).join('');
+  }
+  function tfHtml(name, value) {
+    var section = value && typeof value === 'object' ? value : {};
+    return '<section class="pvt-timeframe"><h4>' + esc(name) + '</h4><ul class="pvt-checks">'
+      + checksHtml(section.checks) + '</ul><p class="pvt-clock">'
+      + pair('Closed bar', '已收盘K线') + ': ' + esc(stamp(section.asof)) + '</p></section>';
+  }
+  function historyHtml(ticker, row, payload, now) {
+    var items = payload && Array.isArray(payload.recent_events) ? payload.recent_events : [];
+    var seen = Object.create(null);
+    items = items.filter(function (event) {
+      if (!event || event.ticker !== ticker || typeof event.event_id !== 'string'
+          || seen[event.event_id] || !Number.isFinite(instant(event.at)) || instant(event.at) > now) return false;
+      seen[event.event_id] = true;
+      return true;
+    }).sort(function (a, b) { return instant(b.at) - instant(a.at); }).slice(0, 6);
+    if (!items.length) return '';
+    return '<section class="pvt-history"><h4>' + pair('Recent observations', '近期观察')
+      + '</h4><ol>' + items.map(function (event) {
+        var note = event.corrected === true ? pair('Evidence corrected', '证据已更正')
+          : (event.pivot_id && row.pivot_id && event.pivot_id !== row.pivot_id
+            ? pair('Earlier pivot', '此前拐点') : '');
+        return '<li><span>' + combinedLabel(event.state) + (note ? ' · ' + note : '')
+          + '</span><time>' + esc(stamp(event.at)) + '</time></li>';
+      }).join('') + '</ol></section>';
+  }
+  function cellHtml(ticker, row, payload, now) {
+    row = row && typeof row === 'object' ? row : {};
+    var state = stateOf(row, payload, now);
+    var sourceQualified = payload && payload.input_kind === 'OBSERVED_MARKET' && payload.source_admitted === true;
+    if (!sourceQualified) row = {};
+    var h3 = row.structure_3h || {};
+    var m30 = row.trigger_30m || {};
+    var usable = state !== 'stale' && payload && payload.input_kind === 'OBSERVED_MARKET' && payload.source_admitted === true;
+    var h3state = usable ? h3.state : 'unknown';
+    var m30state = usable ? m30.state : 'unknown';
+    var distance = numeric(row.distance_pct) ? ((row.distance_pct >= 0 ? '+' : '') + row.distance_pct.toFixed(2) + '%') : '—';
+    var html = '<details class="pvt-detail" data-pvt-symbol="' + esc(ticker) + '"><summary aria-label="'
+      + esc(ticker + ' · 3H / 30m timing evidence · 3小时 / 30分钟时机证据') + '">'
+      + '<span class="pvt-chips"><span class="pvt-chip"><b>3H</b> ' + label(h3state) + '</span>'
+      + '<span class="pvt-chip"><b>30m</b> ' + label(m30state) + '</span></span>'
+      + '<span class="pvt-current pvt-state-' + esc(state) + '">' + combinedLabel(state) + '</span></summary>'
+      + '<div class="pvt-evidence"><header><strong>' + esc(ticker) + ' · ' + pair('Entry timing', '入场时机') + '</strong>'
+      + '<span class="pvt-source">' + (row.live === true && usable ? pair('Monitoring', '监测中') : pair('Observation', '观察')) + '</span></header>';
+    if (payload && numeric(payload.feed_delay_min)) html += '<p class="pvt-clock">' + pair('Declared feed delay', '数据源标示延迟') + ': ' + esc(payload.feed_delay_min) + ' min</p>';
+    if (!usable) html += '<p class="pvt-notice">' + pair(
+      state === 'stale' ? 'The assessment has expired. Evidence below is historical; wait for an updated reading.' : 'Qualified intraday evidence is not available for this setup yet.',
+      state === 'stale' ? '评估已过期。下方仅为历史证据，请等待更新。' : '此形态暂未取得合格的盘中证据。') + '</p>';
+    html += '<div class="pvt-levels"><div><span>' + pair('Pivot', '拐点') + '</span><b>' + price(row.trigger) + '</b></div>'
+      + '<div><span>' + pair('Distance', '距离') + '</span><b>' + esc(distance) + '</b></div>'
+      + '<div><span>' + pair('Invalidation', '失效位') + '</span><b>' + price(row.invalidation) + '</b></div>'
+      + '<div><span>' + pair('Upper limit', '区间上限') + '</span><b>' + price(row.chase_above) + '</b></div></div>'
+      + '<div class="pvt-timeframes">' + tfHtml('3H', h3) + tfHtml('30m', m30) + '</div>'
+      + '<ul class="pvt-checks pvt-parent">' + checksHtml(row.checks) + '</ul>'
+      + '<dl class="pvt-receipts"><div><dt>' + pair('Assessment', '评估时间') + '</dt><dd>' + esc(stamp(row.assessed_at || (payload || {}).assessed_at)) + '</dd></div>'
+      + '<div><dt>' + pair('Price as of', '行情时点') + '</dt><dd>' + esc(stamp(row.quote_asof)) + '</dd></div>';
+    if (row.confirmed_at) html += '<div><dt>' + pair('30m condition at close', '30分钟收盘条件时点') + '</dt><dd>' + esc(stamp(row.confirmed_at)) + '</dd></div>';
+    if (row.confirmed_known_at) html += '<div><dt>' + pair('Combined evidence first known', '组合证据首次可知') + '</dt><dd>' + esc(stamp(row.confirmed_known_at)) + '</dd></div>';
+    html += '</dl>' + (sourceQualified ? historyHtml(ticker, row, payload, now) : '') + '<p class="pvt-footnote">' + pair('Timing evidence supports the larger setup; it does not approve a trade.', '时机证据辅助大级别形态，不代表交易许可。')
+      + '</p></div></details>';
+    return html;
+  }
+  var activeDetail = null;
+  var activeDialog = null;
+  function closeDialog() {
+    var previous = activeDetail;
+    activeDetail = null;
+    if (activeDialog && activeDialog.open) activeDialog.close();
+    if (previous) {
+      previous.open = false;
+      var summary = previous.querySelector('summary');
+      if (summary && summary.isConnected) summary.focus();
+    }
+  }
+  function syncDialog(doc, detail, panel) {
+    if (!detail.open) {
+      if (activeDetail === detail) closeDialog();
+      return;
+    }
+    if (!activeDialog) {
+      activeDialog = doc.createElement('dialog');
+      activeDialog.className = 'pvt-dialog';
+      activeDialog.setAttribute('aria-label', 'Entry timing evidence · 入场时机证据');
+      activeDialog.innerHTML = '<button type="button" class="pvt-close">' + pair('Close', '关闭')
+        + '</button><div class="pvt-dialog-body"></div>';
+      doc.body.appendChild(activeDialog);
+      activeDialog.querySelector('.pvt-close').addEventListener('click', closeDialog);
+      activeDialog.addEventListener('close', closeDialog);
+      activeDialog.addEventListener('cancel', function (event) { event.preventDefault(); closeDialog(); });
+    }
+    if (activeDetail && activeDetail !== detail) activeDetail.open = false;
+    activeDetail = detail;
+    activeDialog.querySelector('.pvt-dialog-body').replaceChildren(panel);
+    if (!activeDialog.open) activeDialog.showModal();
+  }
+  function addParentContext(doc, tr, panel) {
+    // Mirror the already-rendered owner context. No second timeframe scorer or fetch.
+    var section = doc.createElement('section');
+    section.className = 'pvt-context';
+    section.innerHTML = '<h4>' + pair('Larger-timeframe context', '大级别背景') + '</h4>';
+    var band = doc.createElement('div');
+    band.className = 'pvt-context-band';
+    ['.dash-mtf-badge', '.dash-mtf-legs'].forEach(function (selector) {
+      var ownerNode = tr.querySelector(selector);
+      if (ownerNode) band.appendChild(ownerNode.cloneNode(true));
+    });
+    section.appendChild(band);
+    var phase = tr.querySelector('.dash-mtf-phase');
+    if (phase) {
+      var line = doc.createElement('p');
+      line.innerHTML = pair('Monthly phase', '月线阶段') + ': ' + phase.innerHTML;
+      section.appendChild(line);
+    }
+    var clock = doc.createElement('p');
+    clock.className = 'pvt-clock';
+    clock.innerHTML = pair('Nightly context as of', '夜间背景截至') + ': '
+      + esc(tr.getAttribute('data-pvt-context-asof') || '—');
+    section.appendChild(clock);
+    panel.querySelector('header').after(section);
+  }
+  function render(doc, payload, now) {
+    var table = doc.querySelector('#dash-mtf-body .dash-mtf-tbl');
+    if (!table) return;
+    var head = table.querySelector('thead tr');
+    if (head && !head.querySelector('[data-pvt-heading]')) {
+      var th = doc.createElement('th');
+      th.setAttribute('data-pvt-heading', '');
+      th.innerHTML = pair('Entry timing', '入场时机');
+      head.appendChild(th);
+    }
+    var entries = payload && payload.schema === 'prophet.pivot_checklist/v1' && payload.tickers && typeof payload.tickers === 'object' ? payload.tickers : {};
+    table.querySelectorAll('tbody tr[data-pvt-row]').forEach(function (tr, index) {
+      var symbol = tr.getAttribute('data-pvt-row');
+      var cell = tr.querySelector('[data-pvt-cell]');
+      if (!cell) { cell = doc.createElement('td'); cell.setAttribute('data-pvt-cell', ''); tr.appendChild(cell); }
+      var wasOpen = !!(cell.querySelector('details') && cell.querySelector('details').open);
+      var focused = cell.contains(doc.activeElement);
+      var html = cellHtml(symbol, entries[symbol], payload, now);
+      if (cell._pvtHtml === html) return;
+      cell._pvtHtml = html;
+      cell.innerHTML = html;
+      var detail = cell.querySelector('details');
+      var panel = detail.querySelector('.pvt-evidence');
+      addParentContext(doc, tr, panel);
+      detail.open = wasOpen;
+      detail.addEventListener('toggle', function () { syncDialog(doc, detail, panel); });
+      if (wasOpen) syncDialog(doc, detail, panel);
+      if (focused && !wasOpen) detail.querySelector('summary').focus();
+    });
+  }
+  function attach(doc) {
+    if (doc._prophetPivotAttached) return;
+    doc._prophetPivotAttached = true;
+    function paint() {
+      render(doc, current, Date.now());
+      if (expireTimer) clearTimeout(expireTimer);
+      var expiry = current && Date.parse(current.valid_until || '');
+      var remaining = expiry - Date.now();
+      // Presentation-only deadline. The incumbent live client owns every fetch.
+      if (Number.isFinite(remaining) && remaining >= 0) {
+        expireTimer = setTimeout(paint, Math.min(remaining + 1, 2147483647));
+      }
+    }
+    doc.addEventListener('prophet:live-update', function (event) {
+      var artifact = event.detail;
+      current = artifact && artifact.pivot_checklist || null;
+      paint();
+    });
+    doc.addEventListener('prophet:turn-setups-rendered', paint);
+    doc.addEventListener('prophet:live-clock', paint);
+    doc.addEventListener('visibilitychange', paint);
+    doc.addEventListener('DOMContentLoaded', paint, {once: true});
+    if (doc.defaultView) doc.defaultView.addEventListener('mmx-access-tier', closeDialog);
+    if (doc.defaultView && doc.defaultView._prophetLiveSnapshot) {
+      current = doc.defaultView._prophetLiveSnapshot.pivot_checklist || null;
+    }
+    paint();
+  }
+  return {attach: attach, render: render, cellHtml: cellHtml, stateOf: stateOf};
+});

@@ -71,7 +71,7 @@ import logging
 import os
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -125,6 +125,118 @@ LOCAL_QUOTE_PATHS: tuple[str, ...] = (
 #: mismatch by renaming the R2 key (the reconciler and the spool prefix key off it) and
 #: do not move the served path (the P1 consumer is tested against it).
 SERVED_PATH = "/var/lib/macro-live/public/live/prophet_live.json"
+
+
+
+# Prepared by the incumbent input owners, never inferred from hourly chart bars or
+# a quote cross. This reader grants no data/strategy admission. Absent owner facts
+# produce an unavailable checklist while the established quote monitor continues.
+PIVOT_INPUT_PATH = "/var/lib/macro-live/state/prophet_pivot_inputs.json"
+PIVOT_INPUT_MAX_BYTES = 4 * 1024 * 1024
+
+
+def load_pivot_inputs(block: dict[str, Any]) -> tuple[dict | None, str | None]:
+    raw = block.get("pivot_input_path", PIVOT_INPUT_PATH)
+    if not isinstance(raw, str) or not raw.strip():
+        return None, "intraday_input_not_configured"
+    try:
+        with Path(raw).open("rb") as handle:
+            payload = handle.read(PIVOT_INPUT_MAX_BYTES + 1)
+        if len(payload) > PIVOT_INPUT_MAX_BYTES:
+            return None, "intraday_input_too_large"
+        def reject_constant(value):
+            raise ValueError("nonfinite JSON value")
+        value = json.loads(payload, parse_constant=reject_constant)
+        if not isinstance(value, dict) or value.get("schema") != "prophet.pivot_inputs/v1":
+            return None, "intraday_input_schema_mismatch"
+        return value, None
+    except FileNotFoundError:
+        return None, "intraday_input_missing"
+    except (OSError, ValueError, TypeError, UnicodeError):
+        return None, "intraday_input_unreadable"
+
+
+def _assess_pivot(inputs: dict, quotes: dict, prior: dict | None, *, now: datetime) -> dict:
+    # An optional module/import failure must not disable the incumbent quote pass.
+    from engine.prophet_live import pivot_checklist
+    return pivot_checklist.assess(inputs, quotes, prior, now=now)
+
+
+def _unavailable_pivot(reason: str, now: datetime) -> dict:
+    stamp = now.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    expiry = (now + timedelta(minutes=7)).astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    return {"schema": "prophet.pivot_checklist/v1", "status": "unavailable",
+            "reason": reason, "assessed_at": stamp, "valid_until": expiry,
+            "source_asof": None, "input_kind": None, "source_admitted": False,
+            "authority": {"may_rank": False, "may_gate": False,
+                          "may_size": False, "may_trade": False},
+            "tickers": {}, "events": []}
+
+
+def _validated_pivot_result(result: object) -> dict:
+    """Refuse authority drift or a malformed optional value before publication."""
+    authority = {"may_rank": False, "may_gate": False, "may_size": False, "may_trade": False}
+    if not isinstance(result, dict) or result.get("schema") != "prophet.pivot_checklist/v1":
+        raise ValueError("pivot output schema mismatch")
+    if result.get("authority") != authority or any(v is not False for v in result["authority"].values()):
+        raise ValueError("pivot output authority mismatch")
+    if result.get("status") not in {"ok", "partial", "unavailable"}:
+        raise ValueError("pivot output status mismatch")
+    if not isinstance(result.get("tickers"), dict) or len(result["tickers"]) > 2000:
+        raise ValueError("pivot output ticker bounds")
+    events = result.get("events", [])
+    if not isinstance(events, list) or len(events) > 4000:
+        raise ValueError("pivot output event bounds")
+    if any(not isinstance(e, dict) or not isinstance(e.get("event_id"), str)
+           or not e["event_id"] or e.get("kind") != "pivot_checklist" for e in events):
+        raise ValueError("pivot output event identity mismatch")
+    encoded = json.dumps(result, allow_nan=False)
+    if len(encoded.encode("utf-8")) > 8 * 1024 * 1024:
+        raise ValueError("pivot output too large")
+    return json.loads(encoded)
+
+
+def attach_pivot_checklist(artifact: dict, previous: dict | None,
+                          block: dict, now: datetime) -> list[dict]:
+    """Join optional timing evidence to the same pass without hiding core failures.
+
+    Qualified quotes come from the owner envelope. The ordinary quote plane's vendor
+    rung (trade/minute/regular) is not an adjustment basis. No clocks, identity,
+    parent verdict or price levels are manufactured by this integration.
+    """
+    prior = previous.get("pivot_checklist") if isinstance(previous, dict) else None
+    prior = prior if isinstance(prior, dict) else None
+    try:
+        inputs, problem = load_pivot_inputs(block)
+        if problem:
+            result = _unavailable_pivot(problem, now)
+        else:
+            quotes = inputs.get("quotes")
+            quotes = quotes if isinstance(quotes, dict) else {}
+            result = _validated_pivot_result(_assess_pivot(inputs, quotes, prior, now=now))
+    except Exception as exc:  # only this optional feature; core publisher failures still surface
+        log.warning("pivot checklist evaluation failed (%s)", type(exc).__name__, exc_info=True)
+        result = _unavailable_pivot("pivot_evaluation_failed", now)
+    events = result.pop("events", [])
+    # Bounded derived history; this is not another canonical writer. Prior positive
+    # observations remain historical and never replace the current assessment.
+    history = (prior or {}).get("recent_events", [])
+    history = history if isinstance(history, list) else []
+    by_id = {}
+    for event in history[-64:] + events:
+        if not isinstance(event, dict) or not isinstance(event.get("event_id"), str):
+            continue
+        try:
+            encoded = json.dumps(event, allow_nan=False)
+            if len(encoded.encode("utf-8")) <= 8192:
+                by_id[event["event_id"]] = json.loads(encoded)
+        except (TypeError, ValueError, OverflowError):
+            continue
+    result["recent_events"] = list(by_id.values())[-64:]
+    artifact["pivot_checklist"] = result
+    artifact["meta"]["pivot_checklist_status"] = result.get("status")
+    artifact["meta"]["pivot_events_n"] = len(events)
+    return events
 
 
 def cfg_block(conf: dict[str, Any] | None) -> dict[str, Any]:
@@ -418,6 +530,7 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
     # LS.evaluate call, so a globally DARK artifact carries it too — a dark pass is
     # still a pass this lane is accountable for.
     art["meta"]["producer"] = "scripts/prophet_live_evaluator.py"
+    pivot_events = attach_pivot_checklist(art, prev, block, ts)
 
     m = art["meta"]
     if art["status"] == "dark":
@@ -483,7 +596,9 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
 
     events = art.pop("events", [])
     if dry_run:
-        print(json.dumps({"artifact_meta": art["meta"], "events": events}, indent=2,
+        print(json.dumps({"artifact_meta": art["meta"], "events": events,
+                          "pivot_checklist": art["pivot_checklist"],
+                          "pivot_events": pivot_events}, indent=2,
                          default=str), flush=True)
         return 0
 
@@ -530,18 +645,22 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
             print(f"::{'error' if owes_publication else 'warning'} title=prophet-live::"
                   f"served copy {served} could not be written", flush=True)
 
-    if events:
+    if events or pivot_events:
         stamp = LS.et_clock(ts).strftime("%H%M%S")
         key = r2io.events_key(m["session_et"], stamp)
         spool = {"schema": "prophet_live.events/v1", "pass_ts": m["pass_ts"],
                  "session_et": m["session_et"], "pack_as_of": m.get("pack_as_of"),
-                 "quote_asof": m.get("quote_asof"), "events": events}
+                 "quote_asof": m.get("quote_asof"), "events": events,
+                 # Incumbent nightly cross metrics consume only `events`. These
+                 # observations share the spool, but do not enter those metrics.
+                 "pivot_events": pivot_events}
         if r2io.put_json(key, spool, s3=s3):
             published.append(key)
         else:
             unpublished.append(key)
             print(f"::{'error' if owes_publication else 'warning'} title=prophet-live::"
-                  f"event spool PUT {key} failed — {len(events)} transitions are not "
+                  f"event spool PUT {key} failed — {len(events)} incumbent transitions and "
+                  f"{len(pivot_events)} pivot observations are not "
                   "in tonight's evidence", flush=True)
 
     # PARTIAL EFFECT IS REPORTED, NEVER RETRIED HERE. Naming exactly which objects
