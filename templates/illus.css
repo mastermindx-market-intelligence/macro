@@ -55,6 +55,10 @@
 /* soft band zones (fear/euphoria gauge) */
 .ilx-band { opacity: .5; }
 
+/* Interior isolated observations must remain visible without drawing
+   a false line to their neighbors. The last sample uses the settle dot. */
+.ilx-isolate { fill: currentColor; opacity: .65; stroke: var(--panel); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+
 /* end-of-series dot — the settle point */
 .ilx-dot {
   fill: currentColor;
