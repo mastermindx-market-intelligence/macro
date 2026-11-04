@@ -4680,10 +4680,25 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
     # DISPLAY-ONLY — zero effect on selection, rank, or gating. Missing sector or
     # sector_central data -> field absent, chip silently omitted. Ordering: sector_central.json
     # is written by build_sector_rotation before build_site.main() runs (nightly DAG order).
+    # A second attach must not retain a receipt from a missing/replaced sidecar.
+    for _card in (doc.get("buy") or []):
+        if isinstance(_card, dict):
+            _card.pop("sector_stance_source", None)
     _sc_path = site / "sectordata" / "sector_central.json"
     if _sc_path.exists():
         try:
             _sc_doc = json.loads(_sc_path.read_text())
+            # Keep the sidecar's own snapshot clock. It is not the stock signal's
+            # date or an admission/freshness decision; never substitute build time.
+            _sc_stamp = _sc_doc.get("as_of")
+            _sc_date = None
+            if isinstance(_sc_stamp, str) and len(_sc_stamp) == 10:
+                try:
+                    _parsed = datetime.strptime(_sc_stamp, "%Y-%m-%d").date().isoformat()
+                    if _parsed == _sc_stamp:
+                        _sc_date = _parsed
+                except ValueError:
+                    pass
             # Build ETF-ticker -> (label_en, label_zh) from the sectors list
             _sc_by_etf: dict[str, tuple[str, str]] = {}
             for _sec in (_sc_doc.get("sectors") or []):
@@ -4704,6 +4719,11 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
                     _lbl_en, _lbl_zh = _sc_by_etf[_etf]
                     _card["sector_stance"] = _lbl_en
                     _card["sector_stance_zh"] = _lbl_zh
+                    _card["sector_stance_source"] = {
+                        "schema": "sector_stance_source/v1",
+                        "etf": _etf,
+                        "snapshot_as_of": _sc_date,
+                    }
         except Exception as _rlt6e:  # noqa: BLE001 — additive, never fatal
             log.warning("RLT-R6 sector-stance enrich failed (%s)", _rlt6e)
     # OEU M-PRO: display-tier options context → up to two extra ⚠ popover rows per

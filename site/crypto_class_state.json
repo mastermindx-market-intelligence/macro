@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-10-31",
+  "as_of": "2026-11-03",
   "universe_coverage": {
-    "as_of": "2026-10-31",
+    "as_of": "2026-11-03",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -170,7 +170,7 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-10-31",
+      "as_of": "2026-11-03",
       "eligible": 3,
       "required": 10,
       "excluded": 47,
@@ -488,7 +488,33 @@
         "to_label_zh": "直接总量",
         "support_before": 3,
         "support_after": 2,
-        "level_ratio": 0.987300739458698,
+        "level_ratio": 1.001155616247808,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-11-01",
+        "from_basis": "direct",
+        "to_basis": "derived",
+        "from_label_en": "direct total",
+        "from_label_zh": "直接总量",
+        "to_label_en": "derived total",
+        "to_label_zh": "推算总量",
+        "support_before": 2,
+        "support_after": 2,
+        "level_ratio": 1.1218869522468051,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-11-03",
+        "from_basis": "derived",
+        "to_basis": "direct",
+        "from_label_en": "derived total",
+        "from_label_zh": "推算总量",
+        "to_label_en": "direct total",
+        "to_label_zh": "直接总量",
+        "support_before": 2,
+        "support_after": 1,
+        "level_ratio": 1.1436946126559548,
         "regime_treatment": "continuity_adjusted"
       }
     ]
@@ -526,13 +552,13 @@
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "3,805 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,808 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Range",
       "risk": "Stressed",
-      "relative": "Leading Bitcoin",
-      "coverage": "1,963 daily observations from Coinbase daily OHLCV."
+      "relative": "Tracking Bitcoin",
+      "coverage": "1,966 daily observations from Coinbase daily OHLCV."
     }
   }
 }

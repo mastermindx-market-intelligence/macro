@@ -1,0 +1,42 @@
+{
+  "schema": "oif.family_prereg_seal/v1",
+  "family_id": "OIF-PILOT-FAMILY-V1",
+  "stage": "S0_FAMILY_BINDING",
+  "document": "OIF_P1_P6_FAMILY_PREREG_V1.md",
+  "document_sha256": "aea58e59bf9d2af190a603640a7039c35bed5dcb842fc6ec6e77cb0b613fb0cd",
+  "document_bytes": 35641,
+  "sealed_at_utc": "2026-11-01T08:40:21Z",
+  "repository_commit": "021af584204c9fb00ad516c2dbc9467503a84083",
+  "inputs": [
+    {
+      "ref": "R21",
+      "path": "PILOT_STUDY_SPEC_V1.md",
+      "blob": "db8c9ce40b46a1e5cefc7983ded5c6faedc3cfb0"
+    },
+    {
+      "ref": "R22",
+      "path": "pilot-study-spec.v1.json",
+      "blob": "fc00aa33b11c26be9fa0ca6a4b7c0280f73dab81"
+    },
+    {
+      "ref": "R23",
+      "path": "PRINCIPAL_DECISIONS_20261003.md",
+      "blob": "5b5c6e5770481d568f458f867629d6b9ad58465e"
+    }
+  ],
+  "authoring_lane": "oi1-l3a-r1",
+  "blindness": {
+    "method": "Authored blind to outcomes from the INPUTS inlined in the lane packet only (R21 PILOT_STUDY_SPEC_V1.md, R22 pilot-study-spec.v1.json, R23 PRINCIPAL_DECISIONS_20261003.md, all at repository commit 021af584204c9fb00ad516c2dbc9467503a84083); the lane held no repository, data-store or network access and its packet carried no outcome, untouched-test or holdout values.",
+    "forbidden_reads": [
+      "repository source tree, git history, branches, diffs and commit objects",
+      "data stores and any parquet, csv, json result, label or feature file",
+      "outcome, result, report or evaluation tables of any kind",
+      "report artifacts, rendered summaries or incumbent board extracts",
+      "any network resource, including git, gh, curl, wget, pip and package downloads",
+      "any file or directory outside the lane own mktemp -d deliverable directory"
+    ],
+    "audit": "pending ORCH-1 log audit + independent Fabric review"
+  },
+  "empirical_dates_bound": false,
+  "authority_boundary": "This stage-S0 family binding grants no fitting, evaluation, power, promotion or production authority; it binds family identity, stage seals, multiplicity, the holdout boundary and the falsifiers only."
+}

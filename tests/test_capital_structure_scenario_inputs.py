@@ -22,6 +22,7 @@ import io
 import json
 import os
 import sys
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Mapping
@@ -36,7 +37,8 @@ import tests.test_capital_structure_issuer_state_contracts as T
 import tests.test_capital_structure_supply_scenarios as SS
 from engine.capital_structure import rule_applicability as ra
 from engine.capital_structure.funding import project_funding
-from engine.capital_structure.instrument_resolution import resolve_instruments
+from engine.capital_structure.instrument_candidates import candidate_term_id_for
+from engine.capital_structure.instrument_resolution import ResolutionRefusal, resolve_instruments
 from engine.capital_structure.issuer_state_contracts import (
     COMPATIBLE_INPUT_SCHEMAS,
     STATE_CONTRACT_VERSION,
@@ -45,6 +47,7 @@ from engine.capital_structure.issuer_state_contracts import (
     sha256_of,
     stable_id,
 )
+from engine.capital_structure.term_integration import TermIntegrationRefusal
 from engine.capital_structure.scenario_inputs import (
     CAPACITY_INPUTS_FILENAME,
     COMMITMENTS_FAMILY,
@@ -568,6 +571,113 @@ def test_u1b_producer_binds_candidate_terms_when_present(tmp_path: Path) -> None
     )
 
 
+def test_u1b_producer_resolves_each_issuer_from_a_shared_decisions_ledger(
+    tmp_path: Path,
+) -> None:
+    """The decisions ledger is one file for every issuer; each resolution sees its own."""
+    records = _candidate_ledger_rows()
+    root = _served_root(tmp_path)
+    _write_parquet(root / producer.CANDIDATE_TERMS_FILENAME, _to_frame(records))
+    first, second = IR._filing(IR._bundle(), IR.FIRST_ACCESSION), IR._filing(
+        IR._bundle(), IR.SECOND_ACCESSION
+    )
+    foreign = IR._found(
+        IR._ids(first), issuer_id="sec:cik:0000000002", series="other-series"
+    )
+    decisions = IR._decisions(
+        IR._found(IR._ids(first)),
+        foreign,
+        IR._amend(IR._ids(second), IR._supersede_all()),
+        as_of=SERVED_AS_OF,
+    ).decisions
+    (root / producer.DECISIONS_FILENAME).write_text(
+        "".join(_canonical(decision) + "\n" for decision in decisions), encoding="utf-8"
+    )
+
+    producer.build_from_disk(root=root)
+    entry = _read_produced_bundle(root)["issuers"][ISSUER][INSTRUMENTS_FAMILY]
+    assert entry["support"] == "supported"
+    assert entry["reason_codes"] == []
+    assert entry["record"]["unresolved_candidate_ids"] == []
+    assert len(entry["record"]["instruments"]) == 1
+
+    # Unfiltered, the same ledger is refused: the resolver takes one issuer.
+    with pytest.raises(ResolutionRefusal, match="one issuer per resolution"):
+        IR._trace(*decisions)
+
+
+def test_issuer_decisions_drops_only_records_naming_another_issuer() -> None:
+    own = {"issuer_id": ISSUER, "decision_id": "a"}
+    other = {"issuer_id": "sec:cik:0000000002", "decision_id": "b"}
+    missing = {"decision_id": "c"}
+    blank = {"issuer_id": "", "decision_id": "d"}
+    wrong_type = {"issuer_id": 1, "decision_id": "e"}
+    kept = producer._issuer_decisions((own, other, missing, blank, wrong_type), ISSUER)
+    assert kept == (own, missing, blank, wrong_type)
+
+
+def test_u1b_producer_reports_candidates_compiled_after_the_cutoff_as_not_materialized(
+    tmp_path: Path,
+) -> None:
+    # The nightly compiles candidates after the state step, so every row is
+    # stamped available after the served cutoff.  As of that cutoff the issuer
+    # has no candidate terms: unavailable, not a refusal of the whole bundle.
+    def stamped(available_at: str) -> list[dict[str, Any]]:
+        rows = []
+        for row in _candidate_ledger_rows():
+            moved = json.loads(json.dumps(row))
+            moved["point_in_time"]["available_at"] = available_at
+            moved["candidate_term_id"] = candidate_term_id_for(moved)
+            rows.append(moved)
+        return rows
+
+    late = "2026-08-10T00:00:00Z"
+    assert datetime.fromisoformat(late.replace("Z", "+00:00")) > datetime.fromisoformat(
+        SERVED_AS_OF.replace("Z", "+00:00")
+    )
+    root = _served_root(tmp_path)
+    ledger = root / producer.CANDIDATE_TERMS_FILENAME
+    output = root / producer.CAPACITY_INPUTS_FILENAME
+    _write_parquet(ledger, _to_frame(stamped(late)))
+
+    producer.build_from_disk(root=root)
+    entry = _read_produced_bundle(root)["issuers"][ISSUER][INSTRUMENTS_FAMILY]
+    assert entry == {
+        "support": "unavailable",
+        "reason_codes": ["candidate_terms_not_materialized"],
+        "binding": None,
+        "record": None,
+    }
+    good = output.read_bytes()
+
+    # Lateness never hides a tampered row: it refuses as the resolver would,
+    # and the last good bundle stays byte-identical.
+    tampered = stamped(late)
+    tampered[0]["point_in_time"]["available_at"] = "2026-08-11T00:00:00Z"
+    _write_parquet(ledger, _to_frame(tampered))
+    with pytest.raises(TermIntegrationRefusal, match="not the digest of its record"):
+        producer.build_from_disk(root=root)
+    assert output.read_bytes() == good
+
+    # A malformed timestamp is not "late": the resolver still refuses it.
+    _write_parquet(ledger, _to_frame(stamped("not-a-timestamp")))
+    with pytest.raises(ResolutionRefusal, match="not an ISO timestamp"):
+        producer.build_from_disk(root=root)
+    assert output.read_bytes() == good
+
+    # An all-late history that starts after v1 is incomplete, not "late": the
+    # version visible at the cutoff is missing, so the resolver refuses it.
+    truncated = []
+    for row in stamped(late):
+        row["version"]["correction_version"] = 2
+        row["candidate_term_id"] = candidate_term_id_for(row)
+        truncated.append(row)
+    _write_parquet(ledger, _to_frame(truncated))
+    with pytest.raises(ResolutionRefusal, match="lacks the version visible at as_of"):
+        producer.build_from_disk(root=root)
+    assert output.read_bytes() == good
+
+
 #: Before the I0 fixture candidates' 2026-08-08 availability: the nightly
 #: compiles candidates after the state step fixes its cutoff, so an issuer's
 #: first candidates sit on file one night before they are visible.
@@ -600,19 +710,6 @@ def test_u1b_candidates_on_file_but_not_yet_visible_are_typed_unavailability(
         "binding": None,
         "record": None,
     }
-
-
-def test_u1b_visibility_precheck_defers_unreadable_times_to_the_resolver() -> None:
-    later = {"point_in_time": {"available_at": "2026-08-08T00:00:00Z"}}
-    at_cutoff = {"point_in_time": {"available_at": "2026-08-07T00:00:00+00:00"}}
-    assert producer._any_visible([later], EARLY_AS_OF) is False
-    assert producer._any_visible([later, at_cutoff], EARLY_AS_OF) is True
-    # Unreadable times are integrity faults the resolver refuses; the
-    # pre-check never turns one into an unavailability.
-    for bad in ("", "2026-08-08", "not-a-time", None):
-        assert producer._any_visible([{"point_in_time": {"available_at": bad}}], EARLY_AS_OF) is True
-    assert producer._any_visible([later], "2026-08-07") is True
-    assert producer._any_visible([{}], EARLY_AS_OF) is True
 
 
 # ---------------------------------------------------------------------------
