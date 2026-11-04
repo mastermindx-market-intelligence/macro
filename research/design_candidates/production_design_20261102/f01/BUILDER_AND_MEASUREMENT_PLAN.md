@@ -73,3 +73,9 @@ The first slice does not implement the proposed new directory category, Brain li
 ## Current interaction conformance supplement
 
 [INTERACTION_CONFORMANCE.md](INTERACTION_CONFORMANCE.md) makes directory counts, reset/retention, focus/input ownership, responsive recovery and exact return falsifiers concrete against current source. It maps subcases to the existing86-case ledger without claiming extra passes or changing the concurred joint geometry. Its explicit unresolved passive dock-to-modal focus edge requires F01/F02 versioned adjudication and is excluded from the first directory implementation slice.
+
+## Executed slice and current successor
+
+The Harden, Qualify source path, Implement, Verify and Publish/handoff phases above have concrete receipts in [IMPLEMENTATION_HANDOFF.md](IMPLEMENTATION_HANDOFF.md). Source is published on Draft Terminal#1264 at f9070aeb, with84 passing component/neighbor cases,19 browser passes/two intentional skips and passing source checks. All16 published files match the original managed workspace bytes. Independent implementation review has been requested; complete design/native/domain and release gates remain open.
+
+The next action is to consume actual independent review/CI and the specific F02 resize-policy response, repair only findings owned by F01 through the existing workspace/carrier, and version any adopted joint transition change with its required responses. This is not a commission to take over #1244, #1188, Brain, focused Terminal or Company return state. The broader B1–B6 migration remains governed by its listed owner/qualification dependencies.

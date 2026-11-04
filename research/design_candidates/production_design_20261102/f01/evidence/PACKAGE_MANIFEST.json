@@ -1,13 +1,13 @@
 {
   "schema": "F01.cumulative_package_manifest.v1",
   "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
-  "kind": "Candidate.4 source-status correction, executable interaction hardening and exact verified prepublication checkpoint; no final acceptance",
+  "kind": "Published bounded F01 implementation/proof handoff and exact current F02 owner scope; joint operative policy unchanged; independent qualification pending",
   "containing_commit": "The enclosing immutable Git commit binds this manifest; a moving branch name is not the receipt",
-  "parent_before_package": "99df25eec943be94ffdfa46019dee7f510c93b3d",
-  "files_excluding_self": 171,
-  "total_member_bytes": 6306095,
+  "parent_before_package": "2d1c3e21e58dd895b2282c6d6288e0eee4693c65",
+  "files_excluding_self": 176,
+  "total_member_bytes": 6370317,
   "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline for each member",
-  "aggregate_sha256": "4da419d7f4101e1021601e4a1bb5dd2994a1e41e58819877210ecd22fbd86aee",
+  "aggregate_sha256": "8a98fd98adc79430c4d75d26928d00ca7272ca2d43125b16441cb063d1e99d74",
   "historical_review_inputs": {
     "candidate2_capture": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
     "candidate3_source_repair": "b55efe221d16ae5e64935af4c60572701b2a43a0",
@@ -34,7 +34,10 @@
     "joint_blob_at_semantic_review": "1160f14b108bf0948384f59a249320385a1dfb6c",
     "later_status_amendment_changes_document_blob": true,
     "operative_sections_2_through_5_unchanged": true,
-    "administrative_section_6_updated": true
+    "administrative_section_6_updated": true,
+    "implementation_review": "REQUESTED_NOT_RECEIVED",
+    "implementation_commit": "f9070aebf61ad88883dad441b195e1060c7671b5",
+    "latest_consumed_F02_freeze": "6b72172aec810aa7795e5a50d4be9ca2dde5cf5b"
   },
   "files": [
     {
@@ -45,9 +48,9 @@
     },
     {
       "path": "BUILDER_AND_MEASUREMENT_PLAN.md",
-      "bytes": 14038,
-      "sha256": "e6628e1b76507c5880e563557fe7bd3cf8507d9811b1e74025d7696e30c5536e",
-      "git_blob_sha": "c3998326c7a315597340a23146fe210415b7f1af"
+      "bytes": 15042,
+      "sha256": "c97fac3e7a64819a9db15b40c8a84118d5f4b8f9507ac0e55077d9825efe4afc",
+      "git_blob_sha": "d395ca67cdd059ea3c420bfe417d77c35b746eba"
     },
     {
       "path": "CONSUMER_INTEGRATION_NOTES.md",
@@ -80,6 +83,12 @@
       "git_blob_sha": "b876ac6087bb7431d902d8f56224c0f4b618fa2a"
     },
     {
+      "path": "IMPLEMENTATION_HANDOFF.md",
+      "bytes": 10706,
+      "sha256": "20c2654d397cbaf1d9e4f2cbca7a9fb3de2f78e109bbf50190a9560433cac282",
+      "git_blob_sha": "87a4e99e4bfa024df50da21616b45f3385a00698"
+    },
+    {
       "path": "INTERACTION_CONFORMANCE.md",
       "bytes": 19220,
       "sha256": "d501675fa12b40d984ce9aee07d6f2a2df39668909a8e4ed6cd740ebedde4b62",
@@ -87,9 +96,9 @@
     },
     {
       "path": "JOINT_SHELL_SYSTEM_CONTRACT.md",
-      "bytes": 28795,
-      "sha256": "2f5910d5404e8e6f68792893c17dab79b492e486d9f1665f584073a08db94d39",
-      "git_blob_sha": "675be2a865f3caf7951a1ad9398108d7b4a67fed"
+      "bytes": 29310,
+      "sha256": "8af997b5d9cd668ead574a4f96cd47679aca2112e506325feedf8f359bfad846",
+      "git_blob_sha": "653d93bbce70a2515d677ecdb76bb21edfab750c"
     },
     {
       "path": "PRODUCT_UX_SPEC.md",
@@ -99,9 +108,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 12532,
-      "sha256": "389f257c603932267212a8705bca5ed130a9f45b331dffe27b2c5d112dd88823",
-      "git_blob_sha": "a0062b2cb10938ac69618d24b5f3befff96b14e7"
+      "bytes": 13102,
+      "sha256": "6ae6f72a012288b8ca228842065867121660aeee65dca707df1ca1aa095a9ef6",
+      "git_blob_sha": "ed5af249d7118cb286226eab03def70d897a241f"
     },
     {
       "path": "RESIZE_FOCUS_DECISION_PROPOSAL.md",
@@ -111,15 +120,15 @@
     },
     {
       "path": "RETURN_F01.md",
-      "bytes": 28849,
-      "sha256": "cf0ea1adc9ddbfe192330b3138dd7ab9975147eabb600d2544453bca0fa0f42d",
-      "git_blob_sha": "dfe3273a2c34a13277f4144033eb2f4a550b6212"
+      "bytes": 30383,
+      "sha256": "1702045794172881e3873fe7ecbd8e61903bbc585783884075a59095c8aa6add",
+      "git_blob_sha": "a965929aa49340d61ae585c23127a54b54115d25"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
-      "bytes": 56562,
-      "sha256": "b548cb1fe071dc04b0fd24ef311aa19524d4fc5bc89a4e77b7b6aefe7f0c78b2",
-      "git_blob_sha": "4136710c1dbba1c75b16f4b090ee6a9326667685"
+      "bytes": 57492,
+      "sha256": "49f58767e9a8be9e24dbdcca5efcf6c4089a594c4a364aef3144465f4e883175",
+      "git_blob_sha": "c5b153ceb8561f36c779d5a9e352dd3508942fae"
     },
     {
       "path": "directory-retention-audit.json",
@@ -308,10 +317,34 @@
       "git_blob_sha": "1f7e91c4ea1ab53c9c08adc6ec1e9c7f044c2782"
     },
     {
+      "path": "evidence/hardening_20261104/COORDINATION_RECEIPTS.json",
+      "bytes": 9380,
+      "sha256": "cf189db9bb84984680c02110e1ea73805036d0df22d7617f2bb1220803f84d40",
+      "git_blob_sha": "787f7a03020e5a9cef8c1243030b948c47b923b8"
+    },
+    {
+      "path": "evidence/hardening_20261104/F02_CURRENT_SCOPE_6B.json",
+      "bytes": 26734,
+      "sha256": "73cc9e8751a4f35511a3367081914b5522484c318a5e7d161fc409798328b959",
+      "git_blob_sha": "ea42245f945f3915b44452ab22be581f461fbfed"
+    },
+    {
       "path": "evidence/hardening_20261104/IMPLEMENTATION_PREPUBLICATION.json",
       "bytes": 2395,
       "sha256": "56907b5ac5298b88b318583e230b71e338758351962ec6310c2932ead9d65441",
       "git_blob_sha": "d81727dc08b54609048dc43604857ffd5f473a67"
+    },
+    {
+      "path": "evidence/hardening_20261104/IMPLEMENTATION_PUBLICATION.json",
+      "bytes": 6684,
+      "sha256": "41b8a494ebe538713cda9c84261406a5bf8989011dc2046e4e6097bb2b2a896b",
+      "git_blob_sha": "04979f4c3a0d60393c4da4df3a834458f0fd650a"
+    },
+    {
+      "path": "evidence/hardening_20261104/IMPLEMENTATION_SOURCE_READBACK.json",
+      "bytes": 3904,
+      "sha256": "2c3e385228fd302da91cb39d7a6d0cabe75f8e49c76c72f8e055f46b1668f124",
+      "git_blob_sha": "7e549e01b93678be7b94fe0051b17913153c43f3"
     },
     {
       "path": "evidence/hardening_20261104/JOINT_OPERATIVE_EQUALITY.json",
@@ -327,9 +360,9 @@
     },
     {
       "path": "evidence/hardening_20261104/README.md",
-      "bytes": 6725,
-      "sha256": "5dff57d09e304164dedd2977b1ca59387e30c1c25001817c61a7a3309389e22b",
-      "git_blob_sha": "29f0b1216fcdf8b3aeaa431f588f2f04a06973c4"
+      "bytes": 8986,
+      "sha256": "ffec9ddd46e9e1f64c0cc5eae9f1f12d0f648bb89f0e6de236de2d55d0eae560",
+      "git_blob_sha": "88d1709df31f2440a15ce1b5aedaeb2c56625d00"
     },
     {
       "path": "evidence/hardening_20261104/SOURCE_RECEIPTS.json",

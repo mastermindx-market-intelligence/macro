@@ -1,7 +1,7 @@
 # F01 — Shared shell and navigation candidate
 
 **Version:** F01/1.0.0-candidate.4. **Joint interface:** F01-F02-SHELL/1.0.0-candidate.4.  
-**Acceptance:** PARTIAL / REQUEST_CHANGES / RIG draft. The design/research package is delivered for conditional specification consumption. Candidate.2 geometry concurrence is preserved; F02's scoped candidate.4 policy concurrence is now recorded at e6c28413. Actual Brain/host/focused-consumer qualification remains open. Final design acceptance and the joint foundation remain unreleased.
+**Acceptance:** PARTIAL / REQUEST_CHANGES / RIG draft. The design/research package is delivered for conditional specification consumption. Candidate.2 geometry concurrence is preserved; F02's scoped candidate.4 policy concurrence was first received at e6c28413 and is reaffirmed at6b72172a. Actual Brain/host/focused-consumer qualification remains open. Final design acceptance and the joint foundation remain unreleased.
 
 ## Current continuation — 2026-11-04 UTC
 
@@ -9,7 +9,7 @@
 
 ## Current result
 
-The current bounded directory implementation has passed84 component/neighbor tests,19 browser cases and source checks in the existing controlled development fixture. [The exact prepublication checkpoint](evidence/hardening_20261104/IMPLEMENTATION_PREPUBLICATION.json) keeps its source hashes and evidence scope separate from the86 full programme cases and earlier source-only approval.
+The current bounded directory implementation is published on [Terminal Draft#1264](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1264), exact commitf9070aebf61ad88883dad441b195e1060c7671b5. It passes84 component/neighbor tests,19 browser cases/two intentional skips, type and lint checks in the existing controlled development fixture. [Implementation handoff and exact evidence](IMPLEMENTATION_HANDOFF.md) separate those results from the86 full programme cases, the earlier source-only approval and pending independent implementation review.
 
 The existing F01 owner has inspected the real beta, real source and retained Paper work; specified the shared navigation/interaction/data contract; retained36 capability groups and290 directory identities; and revised six existing native boards. Isolated Product and Taste first passes found three bounded clarity/selection concerns. Four further local operations corrected C/D/F; both follow-ups confirm the requested static repairs. The remaining user-choice and behavioral proof limits stay explicit.
 
@@ -21,6 +21,7 @@ The latest continuation completed a real Company→Terminal→Company round trip
 
 | Artifact | Delivered scope |
 | --- | --- |
+| [Implementation handoff](IMPLEMENTATION_HANDOFF.md) | Published code/proof, exact source ownership, actual reviewer/owner delivery and executable continuation |
 | [Current return](RETURN_F01.md) | Exact outcomes, evidence, acceptance, gates, existing owners and next actions |
 | [Product/UX specification](PRODUCT_UX_SPEC.md) | Global/local hierarchy, search, sidepanes, state transitions, deep links/return, desktop/mobile, EN/ZH and theme behavior |
 | [Joint F01/F02 contract](JOINT_SHELL_SYSTEM_CONTRACT.md) | Versioned dimensions, ownership, slots, lifecycle/focus/return clauses, changed-versus-agreed boundaries and consumption/release rules |
@@ -42,7 +43,7 @@ F01 stays on [Draft #10645](https://github.com/mastermindx-market-intelligence/m
 
 All five user-supplied programme documents retain immutable Macro6e1862867193ec6486a22001a0e4fb515da20448. Current compatible protected procedure is Mastermind910803421beca53ca25145392725ab2d84c7a8e9, with no governing-law change from the prior9f65957e pin. Original Terminal source remains3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9; the separately inspected current shared-search subset is pinned to2ded360882b9c721e690907ff363b553781fb920. Source is not served-build attestation.
 
-F02 remains with mastermindx-2 on [#10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), consumed heade6c28413ee74e83950b8c5ff58a34b81e76c1781. F03 retains admission/export/organization; D07 Company and Analysis; D08 Options; D23 saved objects; D25 account/preferences. D06 owns focused Terminal composition/reader and host requirements; the existing Brain/D14 owner retains widget lifecycle, requests and context. F01 owns shared arbitration policy, and F02 owns shared primitives. Shared SESSION_RETURNS.md and every other writer's source/canvas remain untouched.
+F02 remains with mastermindx-2 on [#10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), current consumed freeze6b72172aec810aa7795e5a50d4be9ca2dde5cf5b, reaffirmed in owner response6620137809; first e6c28413 concurrence remains historical evidence. F03 retains admission/export/organization; D07 Company and Analysis; D08 Options; D23 saved objects; D25 account/preferences. D06 owns focused Terminal composition/reader and host requirements; the existing Brain/D14 owner retains widget lifecycle, requests and context. F01 owns shared arbitration policy, and F02 owns shared primitives. Shared SESSION_RETURNS.md and every other writer's source/canvas remain untouched.
 
 ## Exact editable Paper and review freezes
 
@@ -70,7 +71,7 @@ The actual [six-board freeze](https://github.com/mastermindx-market-intelligence
 1. Existing direct-Paper/P00 owner returns terminal/canonical disposition for `F01-20261103-c4-state-8-v1`; same-file missing row is insufficient. Separate Readme disposition and dependent native completion remain held. Secretary returned a specific receipt-capability gap; [P00 request6616970922](https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6616970922) preserves the incumbent and no-replay fence.
 2. F02 candidate.4 policy concurrence is recorded. Existing D06/Brain/host owners qualify actual lifecycle, context and focused variants under the retained conditions. Unchanged candidate.2 geometry can inform specification work now; final shell-dependent composition follows programme gates.
 3. After effects/remaining states are reconciled, freeze the complete native sets and obtain actual independent design/RIG/QA01 qualification. The bounded critiques and source approval cannot satisfy that gate.
-4. The current user has separately authorized F01 hardening followed by scoped implementation. Execute the applicable cases through the existing owners and managed source path; the86 full qualification cases remain NOT_RUN. Merge, Ready, enqueue, un-draft, held-PR relabel and deployment remain outside this authority.
+4. The current user has separately authorized F01 hardening followed by scoped implementation. The directory slice is implemented and published for independent review; consume the exact review/CI and affected-owner responses through the existing source path. The86 full qualification cases remain NOT_RUN. Merge, Ready, enqueue, un-draft, held-PR relabel and deployment remain outside this authority.
 
 **Mission complete: false.** The currently executable source/design repairs are durable; final foundation acceptance remains dependent on the exact gates above. No background watcher or automatic continuation is armed.
 

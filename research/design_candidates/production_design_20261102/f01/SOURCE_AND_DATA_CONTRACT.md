@@ -8,7 +8,7 @@
 | Inspected Terminal source | `mastermindx-market-intelligence/mastermind-terminal@3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9` |
 | Existing F01 carrier | [Macro #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645); the current F01 receiver remains sole source/Paper writer |
 | F02 input | [Macro #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), candidate `c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82`; provisional, not an accepted joint release |
-| Qualification | Source inspection only. No production code changes, executable tests, browser acceptance, independent approval or RIG receipt established by this draft. |
+| Qualification | These source/data clauses do not establish full runtime, native or RIG acceptance. The exact source-only review and separately published directory implementation/test scope are recorded in [IMPLEMENTATION_HANDOFF.md](IMPLEMENTATION_HANDOFF.md); neither extends to untested domain contracts. |
 
 ## 1. Canonical owners and reusable boundaries
 
@@ -311,3 +311,7 @@ Meaningful test specifications are in [ACCEPTANCE_TESTS.md](ACCEPTANCE_TESTS.md)
 ## Existing consumer input supplement
 
 [CONSUMER_INTEGRATION_NOTES.md](CONSUMER_INTEGRATION_NOTES.md) attributes the existing D02 and D08 handoffs to their exact source commits, keeps Macro Command fragments distinct from public documents, and carries domain clock/refusal/region/save semantics unchanged. [CONSUMER_INPUT_RECEIPTS.json](evidence/source/CONSUMER_INPUT_RECEIPTS.json) records the inspected Git blobs. These are consumer-owner source reports; F01 does not claim to have rerun their producer, prototype or served-route tests.
+
+## Bounded implemented directory correspondence — 2026-11-04
+
+[Terminal f9070aeb](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/f9070aebf61ad88883dad441b195e1060c7671b5/terminal) implements only the existing directory's presentation/state/focus/input slice. The local projection still supplies admitted hrefs and legacy fallback; the existing locale/copy owner supplies labels; Next Link and AppShell retain navigation/company handoff. Counts derive from that same matcher, not a new backend endpoint. No auth, route admission, source freshness, save, account, historical identity or Brain lifecycle contract changes. [Exact implementation and evidence](IMPLEMENTATION_HANDOFF.md) report the narrower tests without reclassifying the complete programme cases.

@@ -33,3 +33,17 @@ Original operations `F01-20261103-c4-state-8-v1` and `F01-20261103-c4-readme-con
 The bounded directory source is now implemented in the acquired workspace and verified:84/84 component and neighboring-contract tests,19 passed browser cases with two intentional smaller-viewport new-tab skips, zero flaky cases, and passing type/lint checks. [Exact prepublication source hashes and results](IMPLEMENTATION_PREPUBLICATION.json) bind this historical checkpoint. The actual browser uses the existing development fixture, not production data or design acceptance. The existing Discover development chunk404 reproduced after restoring unchanged protected source; the final hardened production-file hashes were then restored exactly.
 
 The companion Terminal source/proof publication and independent review handoff follow this checkpoint. All86 full programme specifications remain NOT_RUN. The conformance supplement and [resize-focus decision proposal](../../RESIZE_FOCUS_DECISION_PROPOSAL.md) keep the unresolved owner obligations explicit. No release action follows from these tests.
+
+## Published implementation and read-back owner delivery
+
+The prepublication checkpoint above is now superseded for delivery status by [Terminal Draft#1264](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1264), exact commitf9070aebf61ad88883dad441b195e1060c7671b5. [Publication](IMPLEMENTATION_PUBLICATION.json) and [managed source readback](IMPLEMENTATION_SOURCE_READBACK.json) bind the16 source/proof members; [five exact comment readbacks](COORDINATION_RECEIPTS.json) bind delivery to existing F02, shell integration, reviewer, programme and P00 carriers. The prepublication receipt remains an unchanged historical checkpoint.
+
+[The current implementation handoff](../../IMPLEMENTATION_HANDOFF.md) contains the actual outcome, limits and executable successor. Independent review, the new resize-policy response, original Paper effects and complete native/RIG/QA01 remain separate; no final acceptance or release action is implied.
+
+## Later F02 owner response and frozen scope
+
+F02 subsequently returned [actual owner response6620137809](https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6620137809), requesting the exact current dependency binding at **6b72172aec810aa7795e5a50d4be9ca2dde5cf5b**. [Fetched identities, relevant clauses and native continuation](F02_CURRENT_SCOPE_6B.json) record the material delta: the handshake is still blob4f627da; two remaining unconditional-focus formulations are repaired; the source reports32 boards,31 complete capture pairs,640 dispatches/639 observed applied and the same one original held effect.
+
+The31-board scoped freeze contains88 members, aggregatef15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445. It excludes the original partial Chinese comparison and is not the strict32-board/full-set freeze. F02 reports two native C3 Product/Taste advisory first passes underway. F01 has read this source/manifest scope, not independently re-executed or accepted all31 boards. The older23-board numerical checkpoint above remains dated historical evidence.
+
+This reaffirms candidate.4 source-policy concurrence; it does not answer the newly sent passive-resize decision or approve the F01 code. Full joint/native/domain/RIG/QA01 gates remain.

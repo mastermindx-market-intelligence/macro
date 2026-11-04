@@ -1,0 +1,89 @@
+{
+  "publishedCommit": "f9070aebf61ad88883dad441b195e1060c7671b5",
+  "publishedPR": 1264,
+  "localBranch": "sol/web-f01-directory-hardening-20261104-c4",
+  "localBaseHEAD": "2ded360882b9c721e690907ff363b553781fb920",
+  "scope": "Published files match actual managed workspace bytes; local index/HEAD is not represented as advanced to the API-published commit",
+  "checks": [
+    {
+      "path": "terminal/components/chrome/shared-shell/ShellDirectory.tsx",
+      "sha256": "0dec62b6bf353d8ec3d28509810c29652a65cb5967cd33a37141d6c50ef52bc0",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/components/chrome/shared-shell/shared-shell.css",
+      "sha256": "ace6eda93612f229031e426b6246315dd5cdeb49add7ce1d24c45165e7eb2660",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/ENVIRONMENT.json",
+      "sha256": "a99d3fe163c56c2d9b604d2a22d1bea9d9fdf479c0c7811d0dd66cb81561d66b",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/README.md",
+      "sha256": "cce7449062a36bc10e91384d849eb21a30e31416a5ba9f2427bc44c27fb58d3c",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/RESULTS.json",
+      "sha256": "b4a6d25db684f71ac7750b3bf84377007e2a69c6c1c6e737e6cb557211a32df7",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/desktop-dark-en.png",
+      "sha256": "16d19899e6911345e6120b6562d1f64932fc78a3342f7775d931d556d3f1c112",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/development-baseline-diagnostic.json",
+      "sha256": "60c334dc749f469b1ec43d4b4871a555b0903f4ff03cc03fb1a2dc71355c3d45",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/empty-category-mobile-dark-en.png",
+      "sha256": "70d245aad9fef1959c68518d70196eef986b27488f1fd6434f8fd990c937c6d8",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/raw-evidence-manifest.json",
+      "sha256": "36f2b5af69cd496e0eda49bbb66e0cdfb12d4400ad4cf11d32262157ff6e1cc0",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/raw-evidence.zip",
+      "sha256": "abeeed2eccdb69a27962d1bbb848e2d0ac5863476f52d7919e7877b6aeece70b",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/short-320-light-zh.png",
+      "sha256": "003903b8d92185449aad10621069696312e31a52bc5b4dc811cf5976cd7f1950",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/source-checks-r4.json",
+      "sha256": "1611fa54a3ddc238289ea4b1db6a746519dd27655bfdc3388badb9df213a5103",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-hardening-20261104/source-inputs-r4.json",
+      "sha256": "72c66b4e9be9f47680e94401058fb7725c25e9cbfb1fb4b8ce5fb7e368545d22",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/e2e/shared-shell-directory-hardening.spec.ts",
+      "sha256": "a8d2274d3bf08518440d5fde2e5962c27f92dfcc32939a18f9dae715c6a78e1d",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/lib/__tests__/sharedShellDirectoryConformance.test.tsx",
+      "sha256": "26cba1b11e466e69de34a5cf4cbd366a46a6ca0bc782490e99234c3e504ef589",
+      "matchesPublishedInput": true
+    },
+    {
+      "path": "terminal/lib/sharedShellCopy.ts",
+      "sha256": "4cef78b0145bc9968cb4fb324ad7f17b3a8a3f631fa62ba9402c0f5701abb2d3",
+      "matchesPublishedInput": true
+    }
+  ]
+}
