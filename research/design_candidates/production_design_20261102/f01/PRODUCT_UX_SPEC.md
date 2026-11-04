@@ -165,3 +165,8 @@ Final foundation/design acceptance requires frozen F01/F02 references, reconcili
 ## 11. Builder and existing-consumer supplements
 
 The [builder and measurement plan](BUILDER_AND_MEASUREMENT_PLAN.md) supplies the later owner-bound implementation sequence, performance/task measures, compatibility and rollback requirements. [Consumer integration notes](CONSUMER_INTEGRATION_NOTES.md) bind D02’s twelve-section Command and exact hash/Analyst requirements, D08’s conformance input, D06’s later reader/Brain/source response, and the already-resolved candidate.1 geometry discrepancies. Candidate.4 preserves the agreed candidate.2 shared geometry and current ownership; they do not release the foundation.
+
+
+## Current interaction conformance supplement
+
+[INTERACTION_CONFORMANCE.md](INTERACTION_CONFORMANCE.md) makes directory counts, reset/retention, focus/input ownership, responsive recovery and exact return falsifiers concrete against current source. It maps subcases to the existing86-case ledger without claiming extra passes or changing the concurred joint geometry. Its explicit unresolved passive dock-to-modal focus edge requires F01/F02 versioned adjudication and is excluded from the first directory implementation slice.

@@ -1,0 +1,11 @@
+{
+  "comparison": "Exact UTF-8 substring from ## 2. Geometry inclusive to ## 6. Concurrence exclusive; \u00a7\u00a72\u20135",
+  "historicalCommit": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "historicalGitBlob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+  "historicalBlobVerified": true,
+  "policySha256": "c887ab7c2ab9055410ee57fb5a30763b35f509ce3f3a86b6c7a8c1356c982c6e",
+  "policyBytes": 14315,
+  "equal": true,
+  "newDocumentIdentity": "Bound by the enclosing commit and package manifest, not the historical blob",
+  "priorFullTailReceipt": "JOINT_OPERATIVE_EQUALITY.json retained unchanged as historical evidence"
+}

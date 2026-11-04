@@ -177,3 +177,8 @@ D06 HIST01/LAY06 retain the domain test ownership. For an exact historical Ask i
 
 No case is passed by this document. Future implementation-entry evidence must bind the exact F01/F02 source versions, editable Paper candidates, supported captures/exports, actual source/data contracts and independent review findings. Preserve formal RIG state and predecessor conditions. Design acceptance, implemented code, deployment and served-production proof remain separate.
 
+
+
+## Current interaction conformance supplement
+
+[INTERACTION_CONFORMANCE.md](INTERACTION_CONFORMANCE.md) makes directory counts, reset/retention, focus/input ownership, responsive recovery and exact return falsifiers concrete against current source. It maps subcases to the existing86-case ledger without claiming extra passes or changing the concurred joint geometry. Its explicit unresolved passive dock-to-modal focus edge requires F01/F02 versioned adjudication and is excluded from the first directory implementation slice.

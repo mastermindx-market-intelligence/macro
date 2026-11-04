@@ -9,6 +9,8 @@
 
 ## Current result
 
+The current bounded directory implementation has passed84 component/neighbor tests,19 browser cases and source checks in the existing controlled development fixture. [The exact prepublication checkpoint](evidence/hardening_20261104/IMPLEMENTATION_PREPUBLICATION.json) keeps its source hashes and evidence scope separate from the86 full programme cases and earlier source-only approval.
+
 The existing F01 owner has inspected the real beta, real source and retained Paper work; specified the shared navigation/interaction/data contract; retained36 capability groups and290 directory identities; and revised six existing native boards. Isolated Product and Taste first passes found three bounded clarity/selection concerns. Four further local operations corrected C/D/F; both follow-ups confirm the requested static repairs. The remaining user-choice and behavioral proof limits stay explicit.
 
 An actual independent nonauthor [candidate.4 SOURCE-CONTRACT/HANDOFF approval5760649569](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569) now applies to exact head3e334bd3eabf1d6ecc7980845fbd7a813dd023e1 and semantic freeze8926b16af4e0c3e5310cdb4cf057390ec04d18ff. Reviewer mastermindxryan found no blocking source-contract coherence defect and permits already assigned domains to consume the versioned Phase2A specification provisionally. This is not native/design/RIG/final-joint/implementation/release approval. [Actual F01 and D06 review bodies](evidence/review/CANDIDATE4_SOURCE_APPROVALS_20261103.json) retain their exact scopes; earlier approval5760292764 remains bound tobe157007.
@@ -25,7 +27,9 @@ The latest continuation completed a real Company→Terminal→Company round trip
 | [Feature retention ledger](FEATURE_RETENTION_LEDGER.md) |36 existing capabilities:23 RETAIN/13 IMPROVE; no removals/relocations;17 retained shell predecessor boards |
 | [Source/data contract](SOURCE_AND_DATA_CONTRACT.md) | Actual route/Analysis parsers, host/messages/status, identity/preferences/history, Company selection/Financials, Options feed/IA/export and Brain/reader seams |
 | [Acceptance specifications](ACCEPTANCE_TESTS.md) |86 unique cases, all NOT_RUN:80 here and six consumer cases; falsifiers and exact owners |
-| [Builder/measurement plan](BUILDER_AND_MEASUREMENT_PLAN.md) | Future owner-bound implementation sequence, task/performance measures, compatibility and rollback; no implementation performed |
+| [Interaction conformance](INTERACTION_CONFORMANCE.md) | Exact directory count/state/input/focus transitions, responsive recovery and discriminating falsifiers; F01-CONFORMANCE/1.0.0-candidate.1 |
+| [Resize/focus decision proposal](RESIZE_FOCUS_DECISION_PROPOSAL.md) | Concrete F01 proposal for passive dock-to-modal transitions; F02/affected-owner response pending |
+| [Builder/measurement plan](BUILDER_AND_MEASUREMENT_PLAN.md) | Broader owner-bound sequence plus the current authorized directory implementation, verification, compatibility and rollback |
 | [Consumer notes](CONSUMER_INTEGRATION_NOTES.md) | D02/D08 geometry resolution and domain retention; D06 focused-reader/Brain/current-source handoff; work consumers may continue now |
 | [Evidence/review record](EVIDENCE_AND_REVIEW.md) | Real beta observations, native artifact identities, original effects, actual review classes and limits |
 | [Latest review adjudication](evidence/review/REVISION_ADJUDICATION.md) | Unchanged isolated first reports, local repairs and separate follow-up judgments |
@@ -34,7 +38,7 @@ The latest continuation completed a real Company→Terminal→Company round trip
 
 ## Existing source and owners
 
-F01 stays on [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), branch `design/f01-shared-shell-v1-20261103-c4`, under [programme #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). Current receiver: Astra Pro / ChatGPT4, GitHub mastermidx4. Bounded collision checks found no separate modifying F01 claimant; this is not universal liveness proof. No new writer or source carrier was created during this continuation.
+F01 stays on [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), branch `design/f01-shared-shell-v1-20261103-c4`, under [programme #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). Current receiver: Astra Pro / ChatGPT4, GitHub mastermidx4. Bounded collision checks found no separate modifying F01 claimant; this is not universal liveness proof. The design/research carrier remains Draft#10645. The bounded implementation uses its named managed Terminal workspace and companion branch under this same receiver; no other author’s carrier or unpublished work was taken over.
 
 All five user-supplied programme documents retain immutable Macro6e1862867193ec6486a22001a0e4fb515da20448. Current compatible protected procedure is Mastermind910803421beca53ca25145392725ab2d84c7a8e9, with no governing-law change from the prior9f65957e pin. Original Terminal source remains3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9; the separately inspected current shared-search subset is pinned to2ded360882b9c721e690907ff363b553781fb920. Source is not served-build attestation.
 
@@ -72,6 +76,6 @@ The actual [six-board freeze](https://github.com/mastermindx-market-intelligence
 
 ## Published handoff and current review input
 
-The semantic candidate.4 is frozen at [8926b16af4e0c3e5310cdb4cf057390ec04d18ff](https://github.com/mastermindx-market-intelligence/macro/tree/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01). Later coordination metadata does not change that joint contract or extend prior approval. The11 integrity/source consistency checks bind that freeze; subsequent README/return updates are delivery records, not a new product-test result.
+The semantic candidate.4 is frozen at [8926b16af4e0c3e5310cdb4cf057390ec04d18ff](https://github.com/mastermindx-market-intelligence/macro/tree/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01). Later administrative source/status amendments preserve the operative §§2–5 policy and do not extend prior approval to their new complete-document bytes. The11 integrity/source consistency checks bind that freeze; subsequent README/return updates are delivery records, not a new product-test result.
 
 Exact-version handoffs to the existing F02, D06, D02, D08, F03, F01 reviewer and programme carriers were persisted and read back. The actual independent F01 and D06 source-review follow-ups have since returned; affected-author concurrence and complete native qualification remain separate. [Return and executable next actions](RETURN_F01.md#actual-owner-handoffs) · [Original delivery receipts](evidence/CANDIDATE4_COORDINATION_RECEIPTS.json) · [Latest routing evidence](evidence/recovery_followup_20261103/README.md). Remaining final-qualification lanes depend on the named existing owners/effects; current source consumption need not wait for a fictitious final design approval.

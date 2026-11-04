@@ -38,7 +38,7 @@ Preserve lazy `SharedShellRuntime`/toolbar mounting, deferred company-manifest i
 
 ## Compatibility and migration
 
-Treat the later implementation as a presentation migration through the existing components. Keep exact canonical IDs, `/options` versus legacy Options paths, D07 parser behavior, ordinary query/hash semantics, existing host-generation/registry checks, existing browser/history ownership and all stored object identifiers. The known Options-local `URLSearchParams` reserialization issue requires its owner-qualified decision; it must not be hidden by a shell transport test that never exercises the local action.
+Treat the broader shell migration and the current bounded directory implementation as presentation changes through the existing components. Keep exact canonical IDs, `/options` versus legacy Options paths, D07 parser behavior, ordinary query/hash semantics, existing host-generation/registry checks, existing browser/history ownership and all stored object identifiers. The known Options-local `URLSearchParams` reserialization issue requires its owner-qualified decision; it must not be hidden by a shell transport test that never exercises the local action.
 
 Use the existing auth identity and preference owners; email remains presentation. Compact mode remains mounted-instance state unless a separate reviewed migration changes its scope. Theme/locale transitions retain their current persistence semantics and focused Terminal exception. No new save endpoint, retry key, route registry, active-symbol store or global assistant is part of this design.
 
@@ -48,7 +48,7 @@ A directory label proposal is a reviewable presentation input to the incumbent e
 
 A later rollback should restore the previous shell presentation through the existing source/configuration owner while retaining route registry, data schemas, saved objects, request identity and entitlement state. Do not use rollback as an excuse to replay an uncertain write or regenerate user data. Verify that deep links, focused Terminal and legacy direct/original-page recovery remain serviceable after the presentation rollback. This document does not create or name an unverified feature flag.
 
-No rollout percentage, deployment environment, release command or production authority is assigned here. Those belong to the later commissioned implementation/release path. The present useful output is a concrete, source-bound design and builder package with exact held conditions.
+No rollout percentage, deployment environment, release command or production authority is assigned here. Those belong to the later commissioned implementation/release path. The current output includes a source-bound design/builder package and the separately authorized directory implementation, with exact evidence and retained release conditions.
 
 
 ## Current authorized hardening and implementation slice
@@ -65,6 +65,11 @@ No rollout percentage, deployment environment, release command or production aut
 | Verify | Exercise nonempty/zero category, all-zero query, >48 results, close/reopen, query/category-only reset, resize with hidden opener, IME Escape, nested ownership, modified link activation and locale/theme changes | Discriminating component tests plus actual mounted-product browser evidence; record failures and fixture/live basis, not invented production proof |
 | Publish and hand off | Publish within the existing F01 assignment through its admitted source carrier; send exact diff/evidence to affected existing shell owners and F02 | Readback of immutable source, Draft state and unresolved independent/release gates; no automatic acceptance |
 
-**Direct principal work:** PRINCIPAL_JUDGMENT for version/ownership/interaction tradeoffs; LOWER_TOTAL_OVERHEAD for the narrow source-status amendment and adjudication. Routine implementation will use a qualified economical route when one is actually admitted; no native labor child or replacement worker is assumed from tool availability. The active native adviser is a read-only principal-judgment consultation, not a source writer, runtime worker or independent design reviewer.
+**Direct principal work:** PRINCIPAL_JUDGMENT for interface, ownership and interaction tradeoffs; LOWER_TOTAL_OVERHEAD for the bounded existing-component, copy, CSS and regression repair slice. Root remains the sole modifying receiver in the acquired workspace. Native advisers supply read-only principal-judgment and document-consistency advice; they are not source writers, admitted runtime workers or independent design reviewers. Fabric capability discovery succeeded but worker admission/START was not probed or claimed. No denial or capacity failure is invented to justify another carrier.
 
 The first slice does not implement the proposed new directory category, Brain lifecycle coordination, focused reader adaptation, domain return-state restoration or wholesale shell geometry. Those have distinct source owners/qualification dependencies. Accepted source-policy concurrence remains useful to all existing consumers while these narrower implementation obligations proceed.
+
+
+## Current interaction conformance supplement
+
+[INTERACTION_CONFORMANCE.md](INTERACTION_CONFORMANCE.md) makes directory counts, reset/retention, focus/input ownership, responsive recovery and exact return falsifiers concrete against current source. It maps subcases to the existing86-case ledger without claiming extra passes or changing the concurred joint geometry. Its explicit unresolved passive dock-to-modal focus edge requires F01/F02 versioned adjudication and is excluded from the first directory implementation slice.

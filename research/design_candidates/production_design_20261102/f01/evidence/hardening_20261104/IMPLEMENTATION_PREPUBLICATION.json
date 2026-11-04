@@ -1,0 +1,67 @@
+{
+  "status": "Implemented and verified in the acquired workspace; companion source publication pending at this checkpoint",
+  "operation": "f01-directory-hardening-20261104-c4",
+  "sourceInputs": {
+    "createdAt": "2026-11-04T01:19:06.960604+00:00",
+    "base": "2ded360882b9c721e690907ff363b553781fb920",
+    "files": {
+      "components/chrome/shared-shell/ShellDirectory.tsx": "0dec62b6bf353d8ec3d28509810c29652a65cb5967cd33a37141d6c50ef52bc0",
+      "components/chrome/shared-shell/shared-shell.css": "ace6eda93612f229031e426b6246315dd5cdeb49add7ce1d24c45165e7eb2660",
+      "lib/sharedShellCopy.ts": "4cef78b0145bc9968cb4fb324ad7f17b3a8a3f631fa62ba9402c0f5701abb2d3",
+      "lib/__tests__/sharedShellDirectoryConformance.test.tsx": "26cba1b11e466e69de34a5cf4cbd366a46a6ca0bc782490e99234c3e504ef589",
+      "e2e/shared-shell-directory-hardening.spec.ts": "a8d2274d3bf08518440d5fde2e5962c27f92dfcc32939a18f9dae715c6a78e1d",
+      "package-lock.json": "ecb0e5d1f6119efbbbf84ad2058dab315ad1c1326537aff6de7597e4ad5358a9"
+    },
+    "node": "v26.5.0",
+    "NODE_OPTIONS": "--no-experimental-webstorage"
+  },
+  "unit": {
+    "passed": 84,
+    "failed": 0,
+    "newDirectoryCases": 21,
+    "neighborCases": 63
+  },
+  "browser": {
+    "startTime": "2026-11-04T01:19:10.679Z",
+    "duration": 47425.138999999996,
+    "expected": 19,
+    "skipped": 2,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "sourceChecks": [
+    {
+      "command": [
+        "./node_modules/.bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "exit": 0,
+      "log": "source-check-r4-0.log"
+    },
+    {
+      "command": [
+        "./node_modules/.bin/eslint",
+        "components/chrome/shared-shell/ShellDirectory.tsx",
+        "lib/sharedShellCopy.ts",
+        "lib/__tests__/sharedShellDirectoryConformance.test.tsx",
+        "e2e/shared-shell-directory-hardening.spec.ts",
+        "--max-warnings=0"
+      ],
+      "exit": 0,
+      "log": "source-check-r4-1.log"
+    }
+  ],
+  "rawArchive": {
+    "file": "raw-evidence.zip",
+    "bytes": 1135169,
+    "sha256": "abeeed2eccdb69a27962d1bbb848e2d0ac5863476f52d7919e7877b6aeece70b",
+    "members": 46
+  },
+  "baseline404Reproduced": [
+    "404 /_next/static/chunks/components_0jv6p3_._.js"
+  ],
+  "productionCodeRestored": true,
+  "scope": "Existing controlled development fixture; no production acceptance; full programme86 remain NOT_RUN"
+}
