@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-10-30T23:44:12.243943+00:00",
+  "generated_utc": "2026-11-04T20:47:52.644260+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -800,10 +800,10 @@
       "n_actors": 4,
       "alt_corroborated": true,
       "alt_score": 3,
-      "alt_weighted": 0.85,
+      "alt_weighted": 0.95,
       "alt_channels": [
         "affiliation",
-        "special_situation",
+        "lobbying",
         "stocktwits_bull"
       ],
       "top_holder": {
@@ -846,11 +846,13 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.7,
+      "alt_score": 4,
+      "alt_weighted": 1.5,
       "alt_channels": [
         "affiliation",
-        "special_situation"
+        "lobbying",
+        "special_situation",
+        "trump"
       ],
       "top_holder": {
         "owner": "BEZOS JEFFREY P",
@@ -996,14 +998,13 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 7,
-      "alt_weighted": 2.75,
+      "alt_score": 6,
+      "alt_weighted": 2.45,
       "alt_channels": [
         "affiliation",
         "app_demand",
         "github_momentum",
         "hf_model_momentum",
-        "lobbying",
         "patent_cluster",
         "trump"
       ],
@@ -1014,32 +1015,36 @@
       }
     },
     {
-      "ticker": "IEP",
+      "ticker": "ORCL",
       "actors": [
         {
-          "actor": "Carl Icahn",
-          "kind": "fund",
+          "actor": "Larry Ellison",
+          "kind": "exec",
           "rel": "CONTROLS",
           "provenance": "FACT",
           "qualitative": false
         },
         {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
+          "actor": "Larry Ellison",
+          "kind": "exec",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
         }
       ],
       "n_actors": 2,
       "alt_corroborated": true,
       "alt_score": 2,
-      "alt_weighted": 0.7,
+      "alt_weighted": 0.8,
       "alt_channels": [
         "affiliation",
-        "special_situation"
+        "lobbying"
       ],
-      "top_holder": null
+      "top_holder": {
+        "owner": "VANGUARD GROUP INC",
+        "title": "Institution",
+        "shares": 174802084
+      }
     },
     {
       "ticker": "GOOGL",
@@ -1094,12 +1099,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 1.55,
+      "alt_score": 4,
+      "alt_weighted": 1.1,
       "alt_channels": [
         "affiliation",
         "github_momentum",
-        "gov_contract",
         "retail_buzz",
         "stocktwits_bull"
       ],
@@ -1174,10 +1178,10 @@
       "n_actors": 1,
       "alt_corroborated": true,
       "alt_score": 4,
-      "alt_weighted": 1.55,
+      "alt_weighted": 1.9,
       "alt_channels": [
         "affiliation",
-        "gov_grant",
+        "gov_grant_accel",
         "patent_cluster",
         "stocktwits_bull"
       ],
@@ -1226,12 +1230,13 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.45,
+      "alt_score": 7,
+      "alt_weighted": 3.25,
       "alt_channels": [
         "affiliation",
         "analyst_upgrade_cluster",
-        "gov_grant",
+        "congress_buy",
+        "gov_grant_accel",
         "insider_mspr",
         "patent_cluster",
         "stocktwits_bull"
@@ -1240,6 +1245,31 @@
         "owner": "VANGUARD GROUP INC",
         "title": "Institution",
         "shares": 106608094
+      }
+    },
+    {
+      "ticker": "GOOG",
+      "actors": [
+        {
+          "actor": "Dan Crenshaw",
+          "kind": "politician",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 1.0,
+      "alt_channels": [
+        "affiliation",
+        "trump"
+      ],
+      "top_holder": {
+        "owner": "VANGUARD GROUP INC",
+        "title": "Institution",
+        "shares": 421013782
       }
     },
     {
@@ -1301,12 +1331,13 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.45,
+      "alt_score": 4,
+      "alt_weighted": 1.6,
       "alt_channels": [
         "affiliation",
         "material_8k",
-        "patent_cluster"
+        "patent_cluster",
+        "stocktwits_bull"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1339,6 +1370,27 @@
         "title": "Institution",
         "shares": 198470000
       }
+    },
+    {
+      "ticker": "CVI",
+      "actors": [
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.7,
+      "alt_channels": [
+        "affiliation",
+        "special_situation"
+      ],
+      "top_holder": null
     },
     {
       "ticker": "LULU",
@@ -1465,21 +1517,21 @@
       }
     },
     {
-      "ticker": "ORCL",
+      "ticker": "IEP",
       "actors": [
         {
-          "actor": "Larry Ellison",
-          "kind": "exec",
+          "actor": "Carl Icahn",
+          "kind": "fund",
           "rel": "CONTROLS",
           "provenance": "FACT",
           "qualitative": false
         },
         {
-          "actor": "Larry Ellison",
-          "kind": "exec",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
         }
       ],
       "n_actors": 2,
@@ -1489,11 +1541,7 @@
       "alt_channels": [
         "affiliation"
       ],
-      "top_holder": {
-        "owner": "VANGUARD GROUP INC",
-        "title": "Institution",
-        "shares": 174802084
-      }
+      "top_holder": null
     },
     {
       "ticker": "ASML",
@@ -1563,54 +1611,10 @@
       "top_holder": null
     },
     {
-      "ticker": "GOOG",
-      "actors": [
-        {
-          "actor": "Dan Crenshaw",
-          "kind": "politician",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": {
-        "owner": "VANGUARD GROUP INC",
-        "title": "Institution",
-        "shares": 421013782
-      }
-    },
-    {
       "ticker": "OXY",
       "actors": [
         {
           "actor": "Warren Buffett",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": null
-    },
-    {
-      "ticker": "CVI",
-      "actors": [
-        {
-          "actor": "Carl Icahn",
           "kind": "fund",
           "rel": "AFFILIATES_WITH",
           "provenance": "DISCLOSED",
@@ -1675,6 +1679,14 @@
   "n_candidates": 0,
   "filings": [
     {
+      "date": "2026-11-03",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926034541/djt20261103_425.htm"
+    },
+    {
       "date": "2026-10-28",
       "form": "6-K",
       "company": "SunScout Holding Ltd",
@@ -1736,7 +1748,7 @@
       "company": "New America Acquisition I Corp.",
       "ticker": null,
       "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/form8-k.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/ex10-1.htm"
     },
     {
       "date": "2026-10-15",
@@ -1744,7 +1756,7 @@
       "company": "New America Acquisition I Corp.",
       "ticker": null,
       "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/ex10-1.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/form8-k.htm"
     },
     {
       "date": "2026-10-01",
@@ -1760,15 +1772,7 @@
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020582.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020752.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020799.htm"
     }
   ]
 }

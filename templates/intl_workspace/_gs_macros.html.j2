@@ -330,7 +330,7 @@
 {%- endmacro %}
 
 {% macro gs_correction_note(old, new, clock) -%}
-<p class="intl-gs__corr">{{ gs_chip(t('Corrected', '已更正'), 'info') }} <span class="intl-gs__old intl-gs__num">{{ old }}</span> → <span class="intl-gs__num">{{ new }}</span> · <span class="intl-gs__num">{{ clock }}</span></p>
+<p class="intl-gs__corr">{{ gs_chip(t('Corrected', '已更正'), 'info') }} <span class="intl-gs__old intl-gs__num">{{ old }}</span> → <span class="intl-gs__num">{{ new }}</span><span class="intl-gs__corr-when"> · <span class="intl-gs__num">{{ clock }}</span></span></p>
 {%- endmacro %}
 
 {% macro gs_footnote(text) -%}

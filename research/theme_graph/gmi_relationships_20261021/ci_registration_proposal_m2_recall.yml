@@ -1,0 +1,44 @@
+# CI registration PROPOSAL FRAGMENT — GMI ORCH-REL M2 recall (REL-M2-RECALL-BUILD
+# lane, 2026-10-22).
+#
+# A fragment the GMI COMPLETION seat folds into job company-intelligence-relationships
+# of ci_registration_proposal.yml (same gate/scope/runs-on/timeout; no .github/ or
+# config/ path is touched here — registration stays a seat-owned CI-authority
+# change).  `paths_add:` lists the closure paths this lane adds that are NOT
+# already in the M1 `paths:` or the m2_harvest / m2_keys / m2_judge / m2_precision
+# fragments: the suite's full import/read closure is otherwise unchanged (resolve.py
+# arrives with the m2_judge fragment; package_v2/harvest/edgar/precision, the pinned
+# m2_inputs, the manifest, lib/dataos/temporal, conftest.py, scripts/__init__.py and
+# the earlier suites are all already listed).  `steps_add:` runs the new suite.
+# Proven by exporting exactly the union of the M1 paths + all fragments' paths_add
+# at the lane commit and running the suite inside that export (see the lane return).
+#
+# Exported closure for this suite (lane commit, REL-M2-RECALL-BUILD 2026-10-22):
+#   contracts/company_intelligence/relationship_extraction.v1.schema.json
+#   contracts/company_intelligence/relationship_source_excerpt.v1.schema.json
+#   contracts/company_intelligence/relationship_observation_package.v2.schema.json
+#   contracts/company_intelligence/relationship_edges.v1.schema.json
+#   engine/__init__.py, engine/company_intelligence/__init__.py,
+#   engine/company_intelligence/contracts.py, engine/company_intelligence/health.py,
+#   engine/company_intelligence/views.py,
+#   engine/company_intelligence/relationships/{__init__,clock,package_v2,replay,
+#     edgar,harvest,resolve,judge,precision,recall}.py,
+#   lib/__init__.py, lib/dataos/{__init__,identity,nulls,price,quality,registry,
+#     temporal}.py,
+#   scripts/__init__.py, scripts/build_relationship_observations.py,
+#   scripts/relationship_m2_{harvest,judge,precision,recall}.py,
+#   research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl,
+#   research/theme_graph/gmi_relationships_20261021/sources/*.json (3),
+#   research/theme_graph/gmi_relationships_20261021/m2_inputs/*.json (4),
+#   research/theme_graph/gmi_relationships_20261021/m2_recall/recall_corpus_v1.json,
+#   research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json,
+#   data/company_intelligence/relationships/*.json (2),
+#   tests/conftest.py, tests/test_relationship_*.py (all seven suites).
+paths_add:
+  - "engine/company_intelligence/relationships/recall.py"
+  - "scripts/relationship_m2_recall.py"
+  - "tests/test_relationship_m2_recall.py"
+  - "research/theme_graph/gmi_relationships_20261021/m2_recall/recall_corpus_v1.json"
+steps_add:
+  - name: Relationship M2 recall corpus, scan and compare
+    run: python -m pytest tests/test_relationship_m2_recall.py -q

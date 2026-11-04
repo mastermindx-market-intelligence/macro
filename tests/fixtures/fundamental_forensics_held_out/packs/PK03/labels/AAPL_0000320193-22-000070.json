@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000320193-22-000070",
+    "expected_period_end": "2022-06-25",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "13914000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "aapl-20220625.htm | us-gaap:OperatingIncomeLoss @ ib43e87aba6b8472d82ba59a9592f0846_D20220327-20220625 (StatementBusinessSegmentsAxis=aapl:AmericasSegmentMember) | 'Operating income $ 13,914 $ 12,916 $ 48,778 $ 40,751' | Segment operating income for the largest segment, Americas, for the three months ended June 25, 2022; segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000320193-22-000070|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0000320193-22-000070",
+    "expected_period_end": "2022-06-25",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "37472000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "aapl-20220625.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ ib43e87aba6b8472d82ba59a9592f0846_D20220327-20220625 (StatementBusinessSegmentsAxis=aapl:AmericasSegmentMember) | 'Net sales $ 37,472 $ 35,870 $ 129,850 $ 116,486' | Largest reportable segment by net sales for the three months ended June 25, 2022: Americas (vs Europe 19,287; Greater China 14,604); segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000320193-22-000070|extract|segment_revenue"
+  }
+]

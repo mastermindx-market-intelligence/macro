@@ -1,0 +1,336 @@
+{
+  "case_key": "hbm_12h_16h",
+  "expected_regression": "12H reported-shipment and 16H sample remain different configurations",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T07"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "capacity",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_48cd5822fe76159c597e08f2dde45450"
+      ],
+      [
+        "assertion",
+        "gmirca_5920ab75dbde2dd7e31ea9cf15352ee3"
+      ],
+      [
+        "identity",
+        "identity-vintage-001"
+      ],
+      [
+        "interpretation",
+        "interp-kappa-01"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_48cd5822fe76159c597e08f2dde45450",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": "12H",
+              "kind": "configuration",
+              "manufacturer": "Synthetic HBM Assembler Kappa",
+              "model": "KH-12",
+              "selector": "cfg:hbm-12h",
+              "source_label": "12-high stack"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic HBM Assembler Kappa",
+              "model": "KH-module",
+              "selector": "prd:hbm-module",
+              "source_label": "HBM stack module"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly shipment",
+            "wafer_diameter_mm": null
+          },
+          "relation": {
+            "dst_selector": "prd:hbm-module",
+            "kind": "contains",
+            "src_selector": "cfg:hbm-12h"
+          },
+          "stage": "reported_shipment",
+          "stage_source_language": "shipped in volume during the quarter"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "16-high shipment",
+            "customer allocation shares"
+          ],
+          "establishes": [
+            "12-high stacks shipped in volume in the quarter"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": "12H",
+          "source_product_label": "Kappa hybrid memory stack"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_module_per_quarter",
+          "value": 40,
+          "value_high": null
+        },
+        "predicate": "REPORTED_DEPLOYMENT",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "hbm stacking"
+        },
+        "source": {
+          "available_at": "2026-04-10T09:00:00Z",
+          "locator": "para-2",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-04-11T08:00:00Z",
+          "published_at": "2026-04-10",
+          "published_at_grain": "date",
+          "publisher": "Example Trade Wire",
+          "retained_at": "2026-04-11T08:05:00Z",
+          "retention_ref": "retention:hbm/kappa-q2-shipments",
+          "source_uri": "https://example.invalid/hbm/kappa-q2-shipments"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": "12H",
+          "source_business_label": "Synthetic HBM Assembler Kappa",
+          "source_platform_label": null,
+          "source_product_label": "Kappa hybrid memory stack"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_5920ab75dbde2dd7e31ea9cf15352ee3",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": "16H",
+              "kind": "configuration",
+              "manufacturer": "Synthetic HBM Assembler Kappa",
+              "model": "KH-16",
+              "selector": "cfg:hbm-16h",
+              "source_label": "16-high stack"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic HBM Assembler Kappa",
+              "model": "KH-module",
+              "selector": "prd:hbm-module",
+              "source_label": "HBM stack module"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "sample count",
+            "wafer_diameter_mm": null
+          },
+          "relation": {
+            "dst_selector": "prd:hbm-module",
+            "kind": "catalog_compatible",
+            "src_selector": "cfg:hbm-16h"
+          },
+          "stage": "sample",
+          "stage_source_language": "customer samples of the 16-high stack are with two customers"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "16-high volume shipment",
+            "any 12-high stage inheritance"
+          ],
+          "establishes": [
+            "16-high stacks exist at sample stage"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": "16H",
+          "source_product_label": "Kappa 16-high sample stack"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "module",
+          "value": 2,
+          "value_high": null
+        },
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "hbm stacking"
+        },
+        "source": {
+          "available_at": "2026-04-24T09:00:00Z",
+          "locator": "para-5",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-04-25T08:00:00Z",
+          "published_at": "2026-04-24",
+          "published_at_grain": "date",
+          "publisher": "Example Trade Wire",
+          "retained_at": "2026-04-25T08:05:00Z",
+          "retention_ref": "retention:hbm/kappa-16h-sampling",
+          "source_uri": "https://example.invalid/hbm/kappa-16h-sampling"
+        },
+        "statement_mode": "CATALOG_DESCRIPTION",
+        "subject": {
+          "company_node_id": null,
+          "configuration": "16H",
+          "source_business_label": "Synthetic HBM Assembler Kappa",
+          "source_platform_label": null,
+          "source_product_label": "Kappa 16-high sample stack"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_kappa",
+        "source_business_label": "Synthetic HBM Assembler Kappa",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [
+      {
+        "interpretation_id": "interp-kappa-01",
+        "mechanism": "12-high shipments continue while 16-high sampling starts at two customers",
+        "offset": "a customer sample failure would delay the 16-high stage",
+        "missing_measurement": "monthly per-configuration shipment split",
+        "falsifier": "16-high shipments reported with no sample-to-volume transition",
+        "input_revisions": [
+          "gmirca_48cd5822fe76159c597e08f2dde45450",
+          "gmirca_5920ab75dbde2dd7e31ea9cf15352ee3"
+        ],
+        "freshness": "current",
+        "reviewed_at": "2026-05-02T00:00:00Z"
+      }
+    ],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "capacity_rows": [
+      [
+        "12H",
+        "reported_shipment"
+      ],
+      [
+        "16H",
+        "sample"
+      ]
+    ],
+    "configurations_never_merged": true,
+    "no_global_product_id": true
+  }
+}

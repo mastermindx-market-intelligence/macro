@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T21:08:15Z",
+ "accession": "0001193125-26-134908",
+ "cik": "0001323404",
+ "doc_byte_length": 2017216,
+ "doc_sha256": "822fb43ef34e6a54b405c8ce42e572648a199b3a213508b5dbca7fff878e1460",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d56281dex991.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 339473,
+  "byte_start": 338867,
+  "normalized": "On December 13, 2021, the Company entered into a purchase agreement to acquire the existing gold purchase agreement between Artemis and New Gold Inc. (“New Gold”) (the “Blackwater Gold PMPA”) in respect of gold production from the Blackwater mine, located in British Columbia, Canada (the “Blackwater mine”). Under the terms of the Blackwater Gold PMPA, Wheaton is entitled to purchase an amount of gold equal to 8% of the gold production until 279,908 gold ounces have been delivered, after which the stream drops to 4% of the gold production for the life of mine.",
+  "normalized_sha256": "17973aadad9dd02cca3b5d2b0707e61eb0b9fd97c9d2b702980443afff546109",
+  "raw": "On December&nbsp;13, 2021, the Company entered into a purchase agreement to\nacquire the existing gold purchase agreement between Artemis and New Gold Inc. (&#8220;New Gold&#8221;) (the &#8220;Blackwater Gold PMPA&#8221;) in respect of gold production from the Blackwater mine, located in British Columbia, Canada (the\n&#8220;Blackwater mine&#8221;). Under the terms of the Blackwater Gold PMPA, Wheaton is entitled to purchase an amount of gold equal to 8% of the gold production until 279,908 gold ounces have been delivered, after which the stream drops to 4% of\nthe gold production for the life of mine.",
+  "raw_sha256": "57797607ebc9d30480383d405f19b9143e90508c8749a8b18052dfd13221292c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1323404/000119312526134908/d56281dex991.htm",
+ "xbrl_contexts": []
+}

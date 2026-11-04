@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-13T18:25:07Z",
+ "accession": "0001493152-26-016338",
+ "cik": "0000771266",
+ "doc_byte_length": 1805474,
+ "doc_sha256": "7b69216bb04f67b346c897eb5e3a1d8ab835422646f33a0d8e8dca3597c3a549",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "form10-k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 399294,
+  "byte_start": 399057,
+  "normalized": "As consideration for the transaction, the Company received 18,000,000 common shares representing a 20.0% equity stake in LST. The Company will also receive a royalty based on unit sales of products that utilize the technology licensed.",
+  "normalized_sha256": "d15bc7a7062e3f7e2395869c3e7ff1116da5b7ae77bd5e8801ba33854b688e29",
+  "raw": " As consideration for the transaction, the Company\nreceived 18,000,000 common shares representing a 20.0% equity stake in LST. The Company will also receive a royalty based on unit sales of products that utilize the technology licensed. ",
+  "raw_sha256": "26a2de687b1e65959f81239c36b8e0129f1e87722cf138f8d37c00bf2746a6cb"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/771266/000149315226016338/form10-k.htm",
+ "xbrl_contexts": []
+}
