@@ -45,7 +45,8 @@ def test_eligible_source_path_receives_correct_channel_and_caller(state,monkeypa
         calls.append(kw)
         return {'reply':'Membership context only.','model':'model-1',
                 'receipt':{'authority':'context_only'},'usage':{'input_tokens':1,'output_tokens':1}}
-    monkeypatch.setattr(G,'answer_question',answer)
+    from types import SimpleNamespace
+    monkeypatch.setattr(G,'prepare_answer',lambda **kw: SimpleNamespace(dispatch=lambda _:answer(**kw)))
     if stream:
         rows=[json.loads(line[6:]) for line in gw.chat_stream(**state)]
         assert rows[-1]['options_question_receipt']=={'authority':'context_only'}
@@ -65,14 +66,15 @@ def test_http_routes_pass_only_server_runtime():
         assert len(calls)==1
         kw={x.arg:ast.unparse(x.value) for x in calls[0].keywords}
         assert kw['options_question_reference']=='body.options_question_reference'
-        assert kw['options_question_runtime']=="getattr(request.app.state, 'options_question_gateway_runtime', None)"
+        assert 'resolve_options_question_runtime(request.app)' in kw['options_question_runtime']
 
 
 def test_transport_unknown_is_not_generic_retry(state,monkeypatch):
     state['options_question_runtime']=G.OptionsQuestionRuntime(MatrixHTTPRuntime(lambda r:None),(),True)
     monkeypatch.setattr(gw,'_build_lane_providers',lambda *a:[{'test':'inert'}])
     def unknown(**kw):raise G.QuestionDispatchUnknown('question_dispatch_effect_unknown')
-    monkeypatch.setattr(G,'answer_question',unknown)
+    from types import SimpleNamespace
+    monkeypatch.setattr(G,'prepare_answer',lambda **kw: SimpleNamespace(dispatch=lambda _:unknown()))
     result=gw.chat(**state)
     assert result['dispatch_state']=='EFFECT_UNKNOWN' and result['retry_allowed'] is False
 
@@ -106,6 +108,7 @@ def test_outer_stream_options_never_registers_recoverable_run(reference):
 
     scope = dict(
         _brain_module=lambda: NS(chat_stream=stream),
+        resolve_options_question_runtime=lambda app: None,
         _brain_throttle_check=lambda _: None,
         _brain_identity=lambda _: ('aid', 'ip', 'device'),
         _brain_track_event=lambda *a: None,
@@ -127,3 +130,13 @@ def test_outer_stream_options_never_registers_recoverable_run(reference):
     assert len(calls) == 1
     assert calls[0]['options_question_reference'] is reference
     assert calls[0]['user_jwt'] == 'inert-verified-token'
+
+
+def test_source_or_entitlement_refusal_precedes_quota(state,monkeypatch):
+    state['options_question_runtime']=G.OptionsQuestionRuntime(MatrixHTTPRuntime(lambda _:None),(),True)
+    monkeypatch.setattr(gw,'_build_lane_providers',lambda *args: [])
+    def denied(**kwargs):raise ValueError('inert entitlement revoked')
+    def debit(*args,**kwargs):raise AssertionError('denied source charged quota')
+    monkeypatch.setattr(G,'prepare_answer',denied)
+    monkeypatch.setattr(gw,'_check_and_increment_quota',debit)
+    assert gw.chat(**state)['error']=='options_question_unavailable'

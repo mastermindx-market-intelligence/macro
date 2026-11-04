@@ -8,12 +8,14 @@ The unrelated #10634 four-path publisher refusal and locked workspace are untouc
 The existing `/api/brain/chat` and `/api/brain/stream` accept only an
 `options_question_reference`. The request cannot inject policy, provider, runtime,
 capture or source bytes. The existing verified caller token and user id reach the
-native producer. Server app state must explicitly contain an enabled
-`OptionsQuestionRuntime` with a native Matrix capture and exact policy pins;
-there is deliberately no default enrollment or activation. No configuration or
-activation flag is changed by this patch.
+native producer. Startup installs a lazy server-only runtime constructor after the native Matrix
+display constructor. Each Options request resolves the existing Brain configuration
+into a typed runtime; absent, invalid or OFF configuration refuses. No configuration
+or activation flag is changed by this patch. Native source/evidence rights remain
+freshly checked, independently of configuration pins.
 
-Options questions use the existing quota check, then a dedicated stateless path.
+Options questions prepare and validate native source/entitlement/policy before
+the existing quota check, then dispatch through a dedicated stateless path.
 Guest, missing token, research, other source attachment, images, history or thread
 requests refuse. No tool loop, persistent thread, generic source fallback or
 provider fallback runs. The stream endpoint buffers the final checked response
@@ -64,3 +66,43 @@ fresh entitlement revocation. Each channel performed8Auth/4entitlement reads.
 A fixture-clock omission initially refused rights; the gateway now passes the
 trusted native capture clock (production None remains actual UTC). These are
 source fixtures, not real customer authorization or production observations.
+
+
+## Startup and withdrawal (source only)
+
+`app/options_question_runtime.py` installs no reader, credential or policy store.
+It reuses `options_matrix_display_runtime` and the existing Brain config loader.
+The optional server-only `options_question_gateway` block has exactly `enabled`
+(boolean) and `policies` (1–32 exact destination/evidence pin rows). Each row has
+provider, endpoint, model, evidence_sha256, registry_revision and
+required_rights_rationale. Invalid rows, duplicate destinations, nonliteral URLs,
+empty rationale or ambiguous configuration refuse the whole runtime. There are
+no shipped enabled settings or fabricated policy values.
+
+Configuration is resolved for each request and rechecked before/after final native
+wire authorization. OFF, invalid pins, changed capture, or reinstalling/removing the
+runtime source invalidates an earlier prepared turn. Ordinary Brain requests do
+not consult this optional runtime. Options stream responses never register with
+`brain_runs`; they cannot recover through the generic run registry. A prior
+successful request does not authorize a future send. As with all synchronous
+checks, this is not an atomic distributed revocation/remote-effect transaction.
+
+Source qualification executes startup installers, the actual extracted HTTP
+functions, immutable Lab4bda adapter, native source/Auth/policy and Anthropic0.86
+serialization over inert HTTPX. Both routes send once; absent, invalid, OFF and
+preexisting revoked-entitlement cases send and debit zero additional times.
+Configuration withdrawn during final native authorization is also withheld.
+These fixtures do not prove live rights, a real provider response, installation,
+activation, Paper parity, authenticated customer acceptance or persistence.
+
+
+Independent Fabric review of93fd returned REPAIR_REQUIRED: repeated access to a
+mutable dispatch payload property, missing Content-Type, unconstrained headers,
+and unpinned HTTPX. Four inert regressions reproduced the wire/header findings.
+The repaired guard sends the single checked local bytes value, requires JSON
+Content-Type, rejects duplicate/unlisted headers, and retains only the supported
+SDK's header names. CI and runtime qualify Anthropic0.86.0/HTTPX0.28.1 explicitly.
+The SDK's request-options DEBUG logger is suppressed only in the Options send's
+context, with an inert regression proving ordinary logging still works afterward.
+This parent repair is not represented as the earlier independent review's PASS;
+changed startup/withdrawal/pre-quota/wire risk needs scoped review.

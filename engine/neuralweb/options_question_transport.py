@@ -317,9 +317,23 @@ class OptionsQuestionTransport(httpx.BaseTransport):
         payload = reader()
         headers = request.headers.copy()
         if (headers.get("host") != request.url.netloc.decode("ascii")
-                or headers.get("content-type", "application/json") != "application/json"
+                or headers.get("content-type") != "application/json"
                 or "transfer-encoding" in headers or "content-encoding" in headers
                 or headers.get("content-length") != str(len(payload))):
+            _refuse("wire_headers")
+        # Closed names from the supported SDK/HTTPX pair. Authentication headers
+        # remain those of the selected server-owned client; no cookie/custom
+        # routing metadata can ride along with the checked source attachment.
+        allowed_headers = {
+            "host", "content-type", "content-length", "accept", "accept-encoding",
+            "connection", "user-agent", "authorization", "x-api-key",
+            "anthropic-version", "anthropic-beta", "x-stainless-lang",
+            "x-stainless-package-version", "x-stainless-os", "x-stainless-arch",
+            "x-stainless-runtime", "x-stainless-runtime-version", "x-stainless-async",
+            "x-stainless-retry-count", "x-stainless-read-timeout", "x-stainless-timeout",
+        }
+        names = [name.lower() for name, _ in headers.multi_items()]
+        if set(names) - allowed_headers or len(names) != len(set(names)):
             _refuse("wire_headers")
         # Drop arbitrary transport extensions, including SNI overrides. Only
         # the caller's ordinary timeout survives on this fixed destination.
@@ -331,9 +345,9 @@ class OptionsQuestionTransport(httpx.BaseTransport):
             channel=self._channel,
             extract_source_block=extract_source_block,
         )
-        self._verify_dispatch(dispatch, payload)
+        returned = self._verify_dispatch(dispatch, payload)
         return httpx.Request("POST", self._endpoint, headers=headers,
-                             content=dispatch.payload, extensions={"timeout": timeout})
+                             content=returned, extensions={"timeout": timeout})
 
     def _verify_dispatch(self, dispatch, payload):
         """Consume the producer's value only if it re-describes exactly this send."""
@@ -351,3 +365,4 @@ class OptionsQuestionTransport(httpx.BaseTransport):
         channel = getattr(dispatch, "channel", None)
         if type(channel) is not str or channel != self._channel:
             _refuse("dispatch_channel")
+        return returned

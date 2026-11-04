@@ -80,3 +80,43 @@ def test_preparation_gate(setup,change):
     if change=="token":s.args["access_token"]=""
     with pytest.raises(Exception):G.answer_question(**s.args)
     assert not s.sends and not s.checks
+
+
+def test_configuration_withdrawal_after_prepare_blocks_wire(setup):
+    s=setup; current=[True]
+    s.args['runtime']=replace(s.args['runtime'],current=lambda:current[0])
+    args=dict(s.args);args.pop('max_tokens')
+    prepared=G.prepare_answer(**args)
+    current[0]=False
+    with pytest.raises(SourceUseRefused):prepared.dispatch(200)
+    assert not s.sends
+
+
+def test_configuration_withdrawal_during_final_policy_check_blocks_wire(setup,monkeypatch):
+    s=setup; current=[True]
+    s.args['runtime']=replace(s.args['runtime'],current=lambda:current[0])
+    original=G.prepare_matrix_question
+    def prepare(*args,**kwargs):
+        result=original(*args,**kwargs); check=result.authorize_dispatch
+        def withdraw(*a,**k):
+            verified=check(*a,**k);current[0]=False;return verified
+        result.authorize_dispatch=withdraw
+        return result
+    monkeypatch.setattr(G,'prepare_matrix_question',prepare)
+    with pytest.raises(SourceUseRefused):G.answer_question(**s.args)
+    assert len(s.checks)==1 and not s.sends
+
+
+def test_sdk_debug_cannot_persist_source_and_other_context_logging_survives(setup,caplog):
+    import logging
+    with caplog.at_level(logging.DEBUG, logger="anthropic._base_client"):
+        G.answer_question(**setup.args)
+        assert BLOCK not in caplog.text and 'Request options:' not in caplog.text
+        logging.getLogger("anthropic._base_client").debug("ordinary-context-marker")
+        assert 'ordinary-context-marker' in caplog.text
+
+
+def test_unqualified_sdk_version_refuses_before_preparation(setup,monkeypatch):
+    monkeypatch.setattr(anthropic,'__version__','future-unqualified')
+    with pytest.raises(SourceUseRefused):G.answer_question(**setup.args)
+    assert not setup.sends and not setup.checks

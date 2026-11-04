@@ -1628,7 +1628,8 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         context=body.context,
         company_source_span=body.company_source_span,
         options_question_reference=body.options_question_reference,
-        options_question_runtime=getattr(request.app.state, "options_question_gateway_runtime", None),
+        options_question_runtime=(resolve_options_question_runtime(request.app)
+                                      if body.options_question_reference is not None else None),
         root=REPO,
         mode=mode,
         images=body.images,
@@ -1705,7 +1706,8 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             context=body.context,
             company_source_span=body.company_source_span,
             options_question_reference=body.options_question_reference,
-            options_question_runtime=getattr(request.app.state, "options_question_gateway_runtime", None),
+            options_question_runtime=(resolve_options_question_runtime(request.app)
+                                      if body.options_question_reference is not None else None),
             root=REPO,
             mode=mode,
             images=body.images,
@@ -2771,6 +2773,10 @@ from app.options_matrix_http import router as options_matrix_display_router  # n
 app.include_router(options_matrix_display_router)
 from app.options_matrix_runtime import install_matrix_display_runtime  # noqa: E402
 install_matrix_display_runtime(app, repo=REPO)
+from app.options_question_runtime import (  # noqa: E402
+    install_options_question_runtime, resolve_options_question_runtime,
+)
+install_options_question_runtime(app, config_loader=lambda: _brain_module()._load_brain_config(REPO))
 
 # Lifecycle mail sweeper (SEE W3 — app/billing_emails.py): the behaviour-triggered
 # trial-ending T-2 reminder. DEFAULT OFF — register_lifecycle is a no-op unless the

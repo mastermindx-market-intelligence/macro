@@ -166,7 +166,7 @@ def make(*, inner=None, prepare=None, endpoint=ENDPOINT, model=MODEL,
 
 def send(transport, payload, *, endpoint=ENDPOINT, method="POST"):
     return transport.handle_request(
-        httpx.Request(method, endpoint, content=payload))
+        httpx.Request(method, endpoint, content=payload, headers={"content-type":"application/json"}))
 
 
 # --- the one allowed send --------------------------------------------------
@@ -602,7 +602,7 @@ def test_client_redirect_following_is_blocked_by_the_single_attempt():
     transport, _, prepare = make(inner=inner)
     with httpx.Client(transport=transport, follow_redirects=True) as client:
         with pytest.raises(OptionsQuestionTransportError):
-            client.post(ENDPOINT, content=build_payload())
+            client.post(ENDPOINT, content=build_payload(), headers={"content-type":"application/json"})
     assert len(inner.requests) == 1
     assert prepare.authorizations == 1
 
@@ -741,7 +741,7 @@ def test_anthropic_sdk_retry_is_blocked_by_the_single_attempt():
 
 def test_authorization_cannot_swap_wire_stream_after_checked_bytes():
     payload=build_payload()
-    request=httpx.Request('POST',ENDPOINT,content=payload)
+    request=httpx.Request('POST',ENDPOINT,content=payload,headers={'content-type':'application/json'})
     wire=[]
     class Inner(httpx.BaseTransport):
         def handle_request(self,actual):
@@ -777,4 +777,31 @@ def test_async_refusal_consumes_attempt():
     with pytest.raises(OptionsQuestionTransportError):
         asyncio.run(guard.handle_async_request(httpx.Request('POST',ENDPOINT,content=build_payload())))
     with pytest.raises(OptionsQuestionTransportError):send(guard,build_payload())
+    assert not inner.requests
+
+
+def test_dispatch_payload_property_is_read_once_then_exact_bytes_sent():
+    payload=build_payload();p=StubPrepared();original=p.authorize_dispatch
+    class Changing:
+        calls=0
+        @property
+        def payload(self):
+            self.calls+=1
+            return payload if self.calls==1 else b'changed'
+    def changed(*a,**kw):
+        base=original(*a,**kw);r=Changing()
+        r.payload_sha256=base.payload_sha256;r.processor=base.processor;r.channel=base.channel
+        return r
+    p.authorize_dispatch=changed
+    guard,inner,_=make(prepare=p)
+    send(guard,payload)
+    assert inner.requests[0].read()==payload
+
+
+@pytest.mark.parametrize('headers',[{}, {'content-type':'application/json','cookie':'inert'},
+    {'content-type':'application/json','x-evil-redirect':'inert'}])
+def test_missing_content_type_or_unexpected_headers_refuse(headers):
+    guard,inner,_=make()
+    with pytest.raises(OptionsQuestionTransportError):
+        guard.handle_request(httpx.Request('POST',ENDPOINT,content=build_payload(),headers=headers))
     assert not inner.requests

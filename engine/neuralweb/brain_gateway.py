@@ -13806,6 +13806,24 @@ def chat(
         return {"ok": False, "error": "options_question_unavailable", "lane": lane,
                 "model": "none", "thread_id": None, "citations": [], "degraded": True}
 
+    options_answer = None
+    if options_question_reference is not None:
+        # Resolve the actual source, entitlement and policy before charging quota.
+        # Final wire authorization still re-reads them; preparation is no grant.
+        try:
+            from engine.neuralweb.options_question_gateway import prepare_answer
+            if _prescreen_message(clean_msg) is not None:
+                raise ValueError("screened")
+            options_answer = prepare_answer(
+                reference=options_question_reference, message=clean_msg,
+                access_token=user_jwt, user_id=user_id,
+                providers=_build_lane_providers(lane, root),
+                runtime=options_question_runtime, channel=_options_question_channel,
+            )
+        except Exception:
+            return {"ok": False, "error": "options_question_unavailable", "lane": lane,
+                    "model": "none", "thread_id": None, "citations": [], "degraded": True}
+
     # Exact source grounding is a request-scoped authorization + deterministic
     # resolution gate.  It deliberately precedes quota/provider work and keeps
     # resolved source bytes outside `context`, thread persistence, and response logs.
@@ -13868,19 +13886,7 @@ def chat(
         # Dedicated exact-source path. Never fall through to generic context,
         # provider fallback, persistence or tool loops on any failure.
         try:
-            from engine.neuralweb.options_question_gateway import answer_question, OptionsQuestionRuntime
-            if (type(options_question_runtime) is not OptionsQuestionRuntime
-                    or options_question_runtime.enabled is not True):
-                raise ValueError("options question not activated")
-            if _prescreen_message(clean_msg) is not None:
-                raise ValueError("screened")
-            answer = answer_question(
-                reference=options_question_reference, message=clean_msg,
-                access_token=user_jwt, user_id=user_id,
-                providers=_build_lane_providers(lane, root),
-                runtime=options_question_runtime, channel=_options_question_channel,
-                max_tokens=max_tokens,
-            )
+            answer = options_answer.dispatch(max_tokens)
             reply, filtered = _post_filter_advice(answer["reply"], [])
             reply = _leak_screen(reply)
             usage = answer["usage"]

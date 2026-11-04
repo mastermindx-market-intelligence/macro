@@ -7,6 +7,9 @@ The caller supplies trusted runtime configuration, never request policy fields.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from contextlib import contextmanager
+from contextvars import ContextVar
+import logging
 import httpx
 
 from app.options_matrix_http import MatrixHTTPRuntime
@@ -18,11 +21,34 @@ from engine.intelligence_workspace.options_source_use import (
 )
 
 
+_PRIVATE_OPTIONS_SEND = ContextVar("private_options_send", default=False)
+
+
+class _PrivateSDKLogFilter(logging.Filter):
+    def filter(self, record):
+        return not _PRIVATE_OPTIONS_SEND.get()
+
+
+# SDK 0.86 logs serialized options at DEBUG on this logger. Suppress only this
+# request context; do not change shared logger levels or ordinary Brain logging.
+logging.getLogger("anthropic._base_client").addFilter(_PrivateSDKLogFilter())
+
+
+@contextmanager
+def _private_sdk_send():
+    token = _PRIVATE_OPTIONS_SEND.set(True)
+    try:
+        yield
+    finally:
+        _PRIVATE_OPTIONS_SEND.reset(token)
+
+
 @dataclass(frozen=True)
 class OptionsQuestionRuntime:
     matrix: MatrixHTTPRuntime
     policies: tuple[tuple[ProcessorDestination, QuestionPolicyBinding], ...]
     enabled: bool = False
+    current: object = None
 
 
 def _refuse():
@@ -47,8 +73,8 @@ class _ObservedTransport(httpx.BaseTransport):
         self.inner.close()
 
 
-def answer_question(*, reference, message, access_token, user_id, providers,
-                    runtime, channel, max_tokens):
+def prepare_answer(*, reference, message, access_token, user_id, providers,
+                   runtime, channel):
     """One guarded attempt, no retry/failover, history, tools, thread or source cache.
 
     SDK/network failure has uncertain remote effects and is never retried here.
@@ -60,12 +86,15 @@ def answer_question(*, reference, message, access_token, user_id, providers,
             or type(message) is not str or not 0 < len(message) <= 2000
             or not access_token or not user_id or not providers):
         _refuse()
+    _check_current(runtime)
     # Policy is tied to the actual selected candidate, never a configured default
     # or a permissive fallback. Unsupported candidates fail before source capture.
     selected = providers[0]
     if type(selected) is not dict or selected.get("name") not in ("anthropic", "oauth", "deepseek"):
         _refuse()
     import anthropic
+    if anthropic.__version__ != "0.86.0" or httpx.__version__ != "0.28.1":
+        _refuse()
     client = selected.get("client")
     if type(client) is not anthropic.Anthropic:
         _refuse()
@@ -82,6 +111,53 @@ def answer_question(*, reference, message, access_token, user_id, providers,
         runtime=runtime.matrix, processor=destination, channel=channel,
         policy=matches[0], clock=runtime.matrix.clock,
     )
+    return _PreparedAnswer(prepared, runtime, client, destination, channel, message)
+
+
+def _check_current(runtime):
+    if runtime.current is not None:
+        try:
+            if runtime.current() is not True:
+                _refuse()
+        except Exception:
+            _refuse()
+
+
+class _CurrentPreparation:
+    def __init__(self, prepared, runtime):
+        self.prepared, self.runtime = prepared, runtime
+        self.prompt_block, self.receipt = prepared.prompt_block, prepared.receipt
+
+    def authorize_dispatch(self, *args, **kwargs):
+        _check_current(self.runtime)
+        checked = self.prepared.authorize_dispatch(*args, **kwargs)
+        _check_current(self.runtime)
+        return checked
+
+
+class _PreparedAnswer:
+    def __init__(self, prepared, runtime, client, destination, channel, message):
+        self.prepared = _CurrentPreparation(prepared, runtime)
+        self.client, self.destination = client, destination
+        self.channel, self.message = channel, message
+        self.used = False
+
+    def dispatch(self, max_tokens):
+        if self.used:
+            _refuse()
+        self.used = True
+        _check_current(self.prepared.runtime)
+        return _dispatch(self.prepared, self.client, self.destination,
+                         self.channel, self.message, max_tokens)
+
+
+def answer_question(*, max_tokens, **kwargs):
+    """Compatibility entrypoint; Brain prepares before quota, then dispatches."""
+    return prepare_answer(**kwargs).dispatch(max_tokens)
+
+
+@_private_sdk_send()
+def _dispatch(prepared, client, destination, channel, message, max_tokens):
     from engine.neuralweb.options_question_transport import OptionsQuestionTransport
     # No ambient proxies, redirects or SDK retries can evade the final-byte guard.
     observed = _ObservedTransport(httpx.HTTPTransport(retries=0))
