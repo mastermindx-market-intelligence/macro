@@ -1,12 +1,16 @@
 {
   "as_of": "2026-11-04",
   "coverage": {
-    "end": "2026-11-02",
-    "note": "daily rollup covers 10 session-date(s) from 2026-10-20 to 2026-11-02; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-10-20"
+    "end": "2026-11-03",
+    "note": "daily rollup covers 10 session-date(s) from 2026-10-21 to 2026-11-03; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-10-21"
   },
   "schema": "chronicle.rollup.daily/v1",
   "sessions": [
+    {
+      "date": "2026-11-03",
+      "events": []
+    },
     {
       "date": "2026-11-02",
       "events": [
@@ -52,261 +56,257 @@
     },
     {
       "date": "2026-10-21",
-      "events": []
-    },
-    {
-      "date": "2026-10-20",
       "events": [
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-a767b337217c",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-ab3a966b7ca2",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:GPC:2026Q3",
+          "source_ref": "defeatbeta:TDY:2026Q3",
           "tickers": [
-            "GPC"
+            "TDY"
           ],
-          "title": "Earnings call: GPC Q3 FY2026 — mixed",
+          "title": "Earnings call: TDY Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-abe5a4c444d2",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-af17609c827d",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:RLI:2026Q3",
+          "source_ref": "defeatbeta:MCB:2026Q3",
           "tickers": [
-            "RLI"
+            "MCB"
           ],
-          "title": "Earnings call: RLI Q3 FY2026 — steady",
+          "title": "Earnings call: MCB Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-ac595502c14f",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-b54f21e909a9",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:NP:2026Q3",
+          "source_ref": "defeatbeta:TSLA:2026Q3",
           "tickers": [
-            "NP"
+            "TSLA"
           ],
-          "title": "Earnings call: NP Q3 FY2026 — confident",
+          "title": "Earnings call: TSLA Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-afdaf5558fe3",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-bdced4accf44",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:HWC:2026Q3",
+          "source_ref": "defeatbeta:AMX:2026Q3",
           "tickers": [
-            "HWC"
+            "AMX"
           ],
-          "title": "Earnings call: HWC Q3 FY2026 — steady",
+          "title": "Earnings call: AMX Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-b929cb1f1d0c",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-c1b804ee4804",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:AUB:2026Q3",
+          "source_ref": "defeatbeta:WAB:2026Q3",
           "tickers": [
-            "AUB"
+            "WAB"
           ],
-          "title": "Earnings call: AUB Q3 FY2026 — mixed",
+          "title": "Earnings call: WAB Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-bdcf1f84b2c7",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-c5421805ffdb",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:AERO:2026Q3",
+          "source_ref": "defeatbeta:ORRF:2026Q3",
           "tickers": [
-            "AERO"
+            "ORRF"
           ],
-          "title": "Earnings call: AERO Q3 FY2026 — confident",
+          "title": "Earnings call: ORRF Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-bee031e0c1b4",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-c6df17d6af30",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:RBB:2026Q3",
+          "source_ref": "defeatbeta:OZK:2026Q3",
           "tickers": [
-            "RBB"
+            "OZK"
           ],
-          "title": "Earnings call: RBB Q3 FY2026 — confident",
+          "title": "Earnings call: OZK Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-c1f4513362a5",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-c70e83043212",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:LRN:2027Q1",
+          "source_ref": "defeatbeta:ASIC:2026Q3",
           "tickers": [
-            "LRN"
+            "ASIC"
           ],
-          "title": "Earnings call: LRN Q1 FY2027 — defensive",
+          "title": "Earnings call: ASIC Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-c423fa1a5556",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-d595e89ddb53",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:KARO:2027Q2",
+          "source_ref": "defeatbeta:WFRD:2026Q3",
           "tickers": [
-            "KARO"
+            "WFRD"
           ],
-          "title": "Earnings call: KARO Q2 FY2027 — confident",
+          "title": "Earnings call: WFRD Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-d3ccb7e33fd7",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-db5187e32b89",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:KEY:2026Q3",
+          "source_ref": "defeatbeta:IBM:2026Q3",
           "tickers": [
-            "KEY"
+            "IBM"
           ],
-          "title": "Earnings call: KEY Q3 FY2026 — confident",
+          "title": "Earnings call: IBM Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-d5a447962baa",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-dd2add82c7b2",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:NFLX:2026Q3",
+          "source_ref": "defeatbeta:PEGA:2026Q3",
           "tickers": [
-            "NFLX"
+            "PEGA"
           ],
-          "title": "Earnings call: NFLX Q3 FY2026 — mixed",
+          "title": "Earnings call: PEGA Q3 FY2026 — cautious",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-f4fee937e131",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-de030a94bc83",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:HBCP:2026Q3",
+          "source_ref": "defeatbeta:NLY:2026Q3",
           "tickers": [
-            "HBCP"
+            "NLY"
           ],
-          "title": "Earnings call: HBCP Q3 FY2026 — mixed",
+          "title": "Earnings call: NLY Q3 FY2026 — mixed",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-f6c75be4f1fc",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-e15bf86d145b",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:FNB:2026Q3",
+          "source_ref": "defeatbeta:LVS:2026Q3",
           "tickers": [
-            "FNB"
+            "LVS"
           ],
-          "title": "Earnings call: FNB Q3 FY2026 — confident",
+          "title": "Earnings call: LVS Q3 FY2026 — mixed",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-f8990e85ba49",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-e29ff7b25046",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:PAC:2026Q3",
+          "source_ref": "defeatbeta:WGO:2026Q4",
           "tickers": [
-            "PAC"
+            "WGO"
           ],
-          "title": "Earnings call: PAC Q3 FY2026 — cautious",
+          "title": "Earnings call: WGO Q4 FY2026 — guarded",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-fab7a65143c3",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-ed2da10b4ef8",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:VICR:2026Q3",
+          "source_ref": "defeatbeta:QCRH:2026Q3",
           "tickers": [
-            "VICR"
+            "QCRH"
           ],
-          "title": "Earnings call: VICR Q3 FY2026 — confident",
+          "title": "Earnings call: QCRH Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-fb2a2f1cdd9e",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-ef744aed0776",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:HAL:2026Q3",
+          "source_ref": "defeatbeta:LAD:2026Q3",
           "tickers": [
-            "HAL"
+            "LAD"
           ],
-          "title": "Earnings call: HAL Q3 FY2026 — confident",
+          "title": "Earnings call: LAD Q3 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-fc1ce6226572",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-f1827f6e0db2",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:ALLY:2026Q3",
+          "source_ref": "defeatbeta:ABT:2026Q3",
           "tickers": [
-            "ALLY"
+            "ABT"
           ],
-          "title": "Earnings call: ALLY Q3 FY2026 — confident",
+          "title": "Earnings call: ABT Q3 FY2026 — mixed",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-earnings_call-fcdb446c6af4",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-f42e2c363e4f",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:SMBK:2026Q3",
+          "source_ref": "defeatbeta:CASH:2026Q4",
           "tickers": [
-            "SMBK"
+            "CASH"
           ],
-          "title": "Earnings call: SMBK Q3 FY2026 — confident",
+          "title": "Earnings call: CASH Q4 FY2026 — mixed",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-prophet_ledger-415198b32832",
+          "date": "2026-10-21",
+          "id": "cev-earnings_call-ffe889891899",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:ADC:2026Q3",
+          "tickers": [
+            "ADC"
+          ],
+          "title": "Earnings call: ADC Q3 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-21",
+          "id": "cev-prophet_ledger-08eb0ed71b55",
           "kind": "signal_close",
           "source": "prophet_ledger",
-          "source_ref": "KLAC-BULL-20260922",
+          "source_ref": "TBBK-BULL-20260609",
           "tickers": [
-            "KLAC"
+            "TBBK"
           ],
-          "title": "Prophet close: KLAC BULL → INVALIDATED (-13.9% in 25d)",
+          "title": "Prophet close: TBBK BULL → INVALIDATED (-1.3% in 26d)",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-20",
-          "id": "cev-prophet_ledger-8bda09d1b402",
+          "date": "2026-10-21",
+          "id": "cev-prophet_ledger-5670a4decc65",
           "kind": "signal_close",
           "source": "prophet_ledger",
-          "source_ref": "ECG-BULL-20260925",
+          "source_ref": "MAR-BULL-20260922",
           "tickers": [
-            "ECG"
+            "MAR"
           ],
-          "title": "Prophet close: ECG BULL → INVALIDATED (-14.2% in 18d)",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-10-20",
-          "id": "cev-prophet_ledger-d005c5e44d16",
-          "kind": "signal_close",
-          "source": "prophet_ledger",
-          "source_ref": "PVH-BULL-20260925",
-          "tickers": [
-            "PVH"
-          ],
-          "title": "Prophet close: PVH BULL → T1_HIT (+16.8% in 20d)",
+          "title": "Prophet close: MAR BULL → T1_HIT (+14.8% in 26d)",
           "weight_hint": 2
         }
       ]

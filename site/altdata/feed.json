@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-04T12:00:18.808319+00:00",
+  "generated_utc": "2026-11-04T13:51:45.828667+00:00",
   "as_of": "2026-11-04",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -7393,14 +7393,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "ADTX",
-        "category": "Deal Terminations",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Deal Terminations"
-      },
-      {
         "ticker": "ADHC",
         "category": "Spin-Offs",
         "confidence": "high",
@@ -7922,11 +7914,11 @@
       },
       {
         "ticker": "GME",
-        "category": "Activist Campaigns",
+        "category": "Delistings",
         "confidence": "high",
-        "activist": true,
+        "activist": false,
         "filer": null,
-        "detail": "Activist Campaigns"
+        "detail": "Delistings"
       },
       {
         "ticker": "KNG",
@@ -14409,6 +14401,14 @@
         "detail": "M&A / Divestitures"
       },
       {
+        "ticker": "META",
+        "category": "M&A / Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "M&A / Divestitures"
+      },
+      {
         "ticker": "NGRD3",
         "category": "M&A / Divestitures",
         "confidence": "high",
@@ -17449,14 +17449,6 @@
         "detail": "Spin-Offs"
       },
       {
-        "ticker": "MSPR",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "RENX",
         "category": "Issuer Tenders",
         "confidence": "medium",
@@ -18857,7 +18849,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "FITB-PK",
+        "ticker": "FITB-PA",
         "category": "Issuer Tenders",
         "confidence": "high",
         "activist": false,
@@ -18921,7 +18913,7 @@
         "detail": "Issuer Tenders"
       },
       {
-        "ticker": "YHNAR",
+        "ticker": "YHNUF",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -19265,7 +19257,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "RILYZ",
+        "ticker": "RILYG",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -20625,7 +20617,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "IPST",
+        "ticker": "CASK",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -21161,14 +21153,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "DEVSF",
-        "category": "Acquisitions",
-        "confidence": "medium",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "DYNCW",
         "category": "Delistings",
         "confidence": "high",
@@ -21177,7 +21161,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "QETAU",
+        "ticker": "QETAR",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -21391,14 +21375,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "ATIIW",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
       },
       {
         "ticker": "BTOC",
@@ -22049,14 +22025,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "GME-WT",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "SBXUF",
         "category": "Delistings",
         "confidence": "high",
@@ -22321,7 +22289,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "TDS-PV",
+        "ticker": "TDS-PU",
         "category": "Deal Terminations",
         "confidence": "high",
         "activist": false,
@@ -24377,14 +24345,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "MYCB",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "YYAI",
         "category": "Delistings",
         "confidence": "high",
@@ -24767,14 +24727,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "EMCGF",
-        "category": "Deal Terminations",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Deal Terminations"
       },
       {
         "ticker": "STEM",
@@ -26386,6 +26338,14 @@
       },
       {
         "ticker": "RXO",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "QSPC",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -29477,14 +29437,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "MSFT",
-        "mentions": 25,
-        "sentiment": 0.015
-      },
-      {
         "ticker": "QQQ",
         "mentions": 25,
         "sentiment": 0.074
+      },
+      {
+        "ticker": "MSFT",
+        "mentions": 25,
+        "sentiment": 0.015
       },
       {
         "ticker": "OKLO",
@@ -32492,10 +32452,10 @@
         "score": 2,
         "weighted_score": 1.2,
         "channel_list": [
-          "activist_13d",
-          "insider_cluster"
+          "insider_cluster",
+          "special_situation"
         ],
-        "why": "activist_13d: 13D activist campaign \u00b7 insider_cluster: 15 insiders, $119,282,220 net"
+        "why": "insider_cluster: 15 insiders, $119,282,220 net \u00b7 special_situation: Delistings"
       },
       {
         "ticker": "WMT",
