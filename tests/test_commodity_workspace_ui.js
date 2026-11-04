@@ -3,6 +3,8 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const {spawnSync} = require("node:child_process");
+const {createHash} = require("node:crypto");
 const {JSDOM,VirtualConsole} = require("jsdom");
 const root = path.resolve(__dirname,"..");
 const api = require(path.join(root,"templates/commodity-workspace.js"));
@@ -14,6 +16,135 @@ virtual.on("jsdomError",e => consoleErrors.push(e.message));
 const dom = new JSDOM(html,{url:"https://www.mastermind-x.com/commodities.html?ret=https%3A%2F%2Fevil.example",runScripts:"outside-only",pretendToBeVisual:true,virtualConsole:virtual});
 const {window:w} = dom;
 const d = w.document;
+// A normal publication may have zero armed commodity cohorts. Exercise its
+// exact negative state, then use a retained owner-qualified cohort for every
+// positive continuation/security assertion below. This is not current membership.
+const retainedQualifiedOwner = {
+  "source_commit": "719d80a277a4e297e72d1dcb11a5b2e0dd545bf4",
+  "source_path": "site/commodities.html",
+  "page_sha256": "25e9d4b670413151cb7b5192d274f5691c397d60d90ef92ab9b2fbee9d634111",
+  "chain_id": "real_rate_peak_gold_rerate",
+  "cohort": {
+    "companies": {
+      "channel_label": "Real-rate beneficiary",
+      "channel_label_zh": "实际利率受益",
+      "identity_unavailable": false,
+      "linked": [
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=A&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-A",
+          "security_id": "SEC:US-XNYS-A",
+          "symbol": "A"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=AA&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-AA",
+          "security_id": "SEC:US-XNYS-AA",
+          "symbol": "AA"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=AAL&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNAS-AAL",
+          "security_id": "SEC:US-XNAS-AAL",
+          "symbol": "AAL"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=AAP&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-AAP",
+          "security_id": "SEC:US-XNYS-AAP",
+          "symbol": "AAP"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=AAT&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-AAT",
+          "security_id": "SEC:US-XNYS-AAT",
+          "symbol": "AAT"
+        },
+        {
+          "href": "https://app.mastermind-x.com/analysis?symbol=ABBV&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-30&mo_security=SEC%3AUS-XNYS-ABBV",
+          "security_id": "SEC:US-XNYS-ABBV",
+          "symbol": "ABBV"
+        }
+      ],
+      "linked_count": 687,
+      "n_linked": 687,
+      "n_unlinked": 2,
+      "preview_only": true,
+      "ranked": false,
+      "selection": "first_six_alphabetically_from_owner",
+      "unevaluable": 276,
+      "unlinked": [
+        "BLFS",
+        "CWEN-A"
+      ],
+      "unlinked_count": 2
+    },
+    "count": 689,
+    "id": "real_rate_beneficiary",
+    "label": {
+      "en": "Real-rate beneficiary",
+      "zh": "实际利率受益"
+    },
+    "note": {
+      "en": "long-duration names whose discount-rate headwind releases as real yields roll down",
+      "zh": "贴现率逆风随实际收益率回落而释放的长久期名字"
+    },
+    "ranked": false,
+    "unevaluable": 276
+  }
+};
+
+const publishedPageSha = createHash("sha256").update(fs.readFileSync(path.join(root,"site/commodities.html"))).digest("hex");
+const publishedPayload = JSON.parse(d.getElementById("cw-data").textContent);
+const publishedPayloadSerialized = JSON.stringify(publishedPayload);
+
+// Keep a live negative/control journey on the actual current publication too;
+// the retained positive fixture must not hide a broken emitted mount or owner return.
+const currentErrors=[];
+const currentVirtual=new VirtualConsole();currentVirtual.on("jsdomError",error=>currentErrors.push(error.message));
+const currentDOM=new JSDOM(html,{url:"https://www.mastermind-x.com/commodities.html",runScripts:"outside-only",pretendToBeVisual:true,virtualConsole:currentVirtual});
+currentDOM.window.HTMLElement.prototype.scrollIntoView=function(){};
+currentDOM.window.scrollTo=function(){};
+currentDOM.window.eval(fs.readFileSync(path.join(root,"templates/commodity-workspace.js"),"utf8"));
+const currentDocument=currentDOM.window.document;
+const currentPublishedJourney={overviewVisible:!currentDocument.getElementById("cw-panel-overview").hidden};
+currentDocument.querySelector('#cw-panel-overview [data-cw-open="oil"]').click();
+currentDocument.getElementById("cw-tab-relationships").click();
+currentPublishedJourney.relationshipsVisible=!currentDocument.getElementById("cw-panel-relationships").hidden;
+currentPublishedJourney.state=api.readState(currentDOM.window.location.hash,publishedPayload);
+currentPublishedJourney.companyTargets=Array.from(currentDocument.querySelectorAll("a[data-cw-company-href]"),a=>a.dataset.cwCompanyHref);
+currentPublishedJourney.ownerReturns=publishedPayload.chains.map(chain=>!!currentDocument.querySelector('a[href="transmission.html#tx-chain-'+chain.id+'"]'));
+const currentIds=Array.from(currentDocument.querySelectorAll("[id]"),element=>element.id);
+currentPublishedJourney.idsUnique=new Set(currentIds).size===currentIds.length;
+currentDOM.window.close();
+
+const publishedOwnerLinks = publishedPayload.chains.flatMap(chain => chain.cohorts.flatMap(cohort =>
+  (cohort.companies && cohort.companies.linked || []).slice(0,6).map(company => company.href)));
+const publishedDOMLinks = Array.from(d.querySelectorAll("a[data-cw-company-href]"),a => a.dataset.cwCompanyHref);
+// Same canonical template/macro/environment as the incumbent presentation renderer.
+// Only in-memory test copies change; no producer, clock read, raw rewrite or Git fetch.
+const fixtureRender = spawnSync(process.env.PYTHON || "python3", ["-c", String.raw`
+import json,sys
+from copy import deepcopy
+from pathlib import Path
+from jinja2 import Environment,FileSystemLoader,StrictUndefined
+root=Path(sys.argv[1]);sys.path.insert(0,str(root))
+from engine.commodity_decision_workspace import fingerprint
+request=json.load(sys.stdin);published=request["published"]
+env=Environment(loader=FileSystemLoader(root/"templates"),autoescape=True,undefined=StrictUndefined)
+macro='{% macro t(en,zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
+template=env.from_string(macro+'{% include "_commodity_decision_workspace.html.j2" %}')
+def component(value,kind):
+    value["fingerprint"]=fingerprint({"test_fixture":kind,"projection":value})
+    return template.render(commodity_workspace=value)
+qualified=deepcopy(published)
+gold=next(chain for chain in qualified["chains"] if chain["id"]==request["retained"]["chain_id"])
+gold["cohorts"]=[deepcopy(request["retained"]["cohort"])]
+empty=deepcopy(published)
+for chain in empty["chains"]:chain["cohorts"]=[]
+print(json.dumps({"qualified":component(qualified,"retained-qualified-owner"),"empty":component(empty,"no-qualified-owner")}))
+`,root],{input:JSON.stringify({published:publishedPayload,retained:retainedQualifiedOwner}),encoding:"utf8",
+  env:{...process.env,PYTHONDONTWRITEBYTECODE:"1"}});
+assert.equal(fixtureRender.status,0,fixtureRender.stderr || fixtureRender.error && fixtureRender.error.message);
+const qualifiedFixtureComponents=JSON.parse(fixtureRender.stdout);
+const emptyFixtureDOM=new JSDOM(qualifiedFixtureComponents.empty,{runScripts:"outside-only"});
+d.getElementById("commodity-workspace").outerHTML=qualifiedFixtureComponents.qualified;
+
 w.HTMLElement.prototype.scrollIntoView=function(){};
 w.scrollTo=function(){};
 w.Blob=Blob;
@@ -45,6 +176,40 @@ function checkCompanyReturn(selector='[data-cw-company-href]') {
   assert.equal(link.target,"_blank");assert.equal(link.rel,"noopener");
   return current.href;
 }
+
+check("current publication renders only its actual owner-qualified links, including none",()=>{
+  assert.deepEqual(publishedDOMLinks,publishedOwnerLinks);
+  assert.equal(createHash("sha256").update(fs.readFileSync(path.join(root,"site/commodities.html"))).digest("hex"),publishedPageSha);
+});
+check("actual current publication initializes and preserves its source-only relationship fallback",()=>{
+  assert.equal(currentPublishedJourney.overviewVisible,true);
+  assert.equal(currentPublishedJourney.relationshipsVisible,true);
+  assert.equal(currentPublishedJourney.state.asset,"oil");
+  assert.equal(currentPublishedJourney.state.tab,"relationships");
+  assert.deepEqual(currentPublishedJourney.companyTargets,publishedOwnerLinks);
+  assert.ok(currentPublishedJourney.ownerReturns.every(Boolean));
+  assert.equal(currentPublishedJourney.idsUnique,true);
+  assert.deepEqual(currentErrors,[]);
+});
+check("canonical empty-cohort view invents no company and retains each owner continuation",()=>{
+  assert.equal(emptyFixtureDOM.window.document.querySelectorAll("a[data-cw-company-href]").length,0);
+  for(const chain of publishedPayload.chains) {
+    assert.ok(emptyFixtureDOM.window.document.querySelector('a[href="transmission.html#tx-chain-'+chain.id+'"]'));
+  }
+  const emptyData=JSON.parse(emptyFixtureDOM.window.document.getElementById("cw-data").textContent);
+  assert.notEqual(emptyData.fingerprint,publishedPayload.fingerprint);
+  assert.equal(JSON.stringify(publishedPayload),publishedPayloadSerialized);
+  emptyFixtureDOM.window.close();
+});
+check("retained qualified owner is rendered by the canonical template under its own fixture fingerprint",()=>{
+  assert.notEqual(data.fingerprint,publishedPayload.fingerprint);
+  const gold=data.chains.find(chain=>chain.id===retainedQualifiedOwner.chain_id);
+  assert.deepEqual(gold.cohorts[0],retainedQualifiedOwner.cohort);
+  const links=Array.from(d.querySelectorAll('[data-cw-chain-asset="gold"] a[data-cw-company-href]'));
+  assert.equal(links.length,retainedQualifiedOwner.cohort.companies.linked.length);
+  assert.ok(links.length>0);
+  assert.deepEqual(links.map(link=>link.dataset.cwCompanyHref),retainedQualifiedOwner.cohort.companies.linked.map(company=>company.href));
+});
 
 (async()=>{
   check("default overview and dated evidence",()=>{
@@ -250,6 +415,7 @@ function checkCompanyReturn(selector='[data-cw-company-href]') {
     const ids=Array.from(d.querySelectorAll('[id]'),el=>el.id);assert.equal(new Set(ids).size,ids.length);
     assert.deepEqual(consoleErrors,[]);
   });
+  assert.equal(createHash("sha256").update(fs.readFileSync(path.join(root,"site/commodities.html"))).digest("hex"),publishedPageSha);
   fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');
   console.log('RESULT',passed,'rendered-DOM journeys passed; this is not a visual-layout proof.');
   dom.window.close();

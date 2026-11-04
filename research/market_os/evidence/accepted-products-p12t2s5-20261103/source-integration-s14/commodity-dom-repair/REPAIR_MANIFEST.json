@@ -1,0 +1,95 @@
+{
+  "base": "ca66226c42222458a8c9d5f7cbbaa53ea89400f9",
+  "task": "P12.T2.S14.S2",
+  "source": {
+    "tests/test_commodity_workspace_ui.js": {
+      "mode": "100644",
+      "sha256": "ca034153346a67234334f5af0427c71c43d94acd3bd1530280eb42eaa2264f56",
+      "unchanged": false,
+      "blob": "5a4482fa95e5745059f4ac06eebe05cd0ed8b3d5"
+    },
+    "tests/test_commodity_workspace_presentation.js": {
+      "mode": "100644",
+      "sha256": "259f5a47acab488d5b5d3e5a87d1b9d9baf85f5369fe093d063af6b753953db0",
+      "unchanged": true,
+      "blob": "2a637e39b1845a9a9ace6040eac956ab6247cb26"
+    },
+    "tests/test_commodity_workspace_contracts.js": {
+      "mode": "100644",
+      "sha256": "5c26eb02bd6936994342c434c38fd32be30927a775242a62f862ada30071a43a",
+      "unchanged": true,
+      "blob": "33d0ac112003fc1face635503899c999774fbeda"
+    },
+    "templates/_commodity_decision_workspace.html.j2": {
+      "mode": "100644",
+      "sha256": "b88d2ef62b13b47c8c37c7cef2a471db74c6a77b3d9368577761743d32f17db9",
+      "unchanged": true,
+      "blob": "49f843b43ab79c72a4073a2c81a7491e9986a4cc"
+    },
+    "templates/commodity-workspace.js": {
+      "mode": "100644",
+      "sha256": "86374e6d1b60a223196c5464e95e35e22f9ba56d61cecab0b0ca67fd3d21fbb2",
+      "unchanged": true,
+      "blob": "e1e7f6bfb7c19917251c38e144946c8e4cf39cf7"
+    },
+    "site/commodity-workspace.js": {
+      "present": false,
+      "unchanged": true,
+      "reason": "consumer JS is inlined from template, no paired standalone site JS exists"
+    },
+    "site/commodities.html": {
+      "mode": "100644",
+      "sha256": "6b5e90ddf12c10f214c3a63e78e65b9f94e4aad56fcb8f54215f8b91e4397a99",
+      "unchanged": true,
+      "blob": "f5484ed06f9fd49b71978c2d503cf440d16299a1"
+    },
+    "engine/commodity_decision_workspace.py": {
+      "mode": "100644",
+      "sha256": "1e42506edfc861ab7d32feced5f79a6cae507c520993ea56755e4fe07e5febcc",
+      "unchanged": true,
+      "blob": "a43e6cc7fa2dfb2f6ed289b118b002d6520c6c15"
+    },
+    "engine/commodity_workspace_adapter.py": {
+      "mode": "100644",
+      "sha256": "8dd63ca8332cb3c7613e80534efd633b9ec4b3578f09bc17e620687a2ff1c5be",
+      "unchanged": true,
+      "blob": "b1616df3d3d913fe9286b6a4df043b79f746d82d"
+    },
+    "engine/transmission_chains.py": {
+      "mode": "100644",
+      "sha256": "b56b7c112c319c5edc0788a6508171191d3865d0d317188cbb6893098759b8d8",
+      "unchanged": true,
+      "blob": "f1f12b6e594a8198f86907f23c157a96ead1748f"
+    },
+    "engine/transmission_company_continuation.py": {
+      "mode": "100644",
+      "sha256": "e491ce052a1232027567e3f2bfda6ffd245f65dedbfd56df37ab2fdd8bfe1926",
+      "unchanged": true,
+      "blob": "5b29b077c6a60ae371212814476972226ba59c20"
+    },
+    "data/transmission/chain_state.json": {
+      "mode": "100644",
+      "sha256": "71958544a675137e6484b365a5f7d3eb283ae15c0f2e7030954cbfdffa9ee132",
+      "unchanged": true,
+      "blob": "fa94d51b198907edcef2911e94ed697146eb4ccd"
+    },
+    ".github/ci/legacy-jobs.yml": {
+      "mode": "100644",
+      "sha256": "c247e140e5d0020cca1a3ceb9b0fe22d4c73b8f885a2866677614c03695e4cee",
+      "unchanged": true,
+      "blob": "d109553016d33c6c94ae83cf63f48a00b96b7a85"
+    }
+  },
+  "evidence": {
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/S14_COMMODITY_DOM_REPAIR_PACKET.md": "bf0cf2d586cdfb3d3d8a79145184c8f079023a650e34de1fd14ac3f11fd1a951",
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/s14-commodity-empty-cohort-causal.json": "48075bd6cbde937ded52c6028f6b0850e6fa49aa9ee8ae5d740dde5656fb2cb7",
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/s14-retained-qualified-gold-cohort.json": "6cff79e3794c1c029feb7382142ab4fbeb1cf237ae43664835b4e3143c9d0ce6",
+    "research/market_os/evidence/accepted-products-p12t2s5-20261103/source-integration-s14/commodity-dom-repair/CAUSAL_CHECKS.json": "66985351904fb56718612e0cb2d342feeb7ff25fb16e3005fd1bb202154dc81a"
+  },
+  "actualCIfragment": {
+    "path": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-fault-pack10-fragment/pack-10.json",
+    "sha256": "917edd8bb308b80d931de4dcbfc6a767562d85387c15bf51682a56b17770b6c2"
+  },
+  "assembly_adverse": "First manifest assembly required nonexistent site/commodity-workspace.js and stopped. Actual file is inlined from template; now both base/current absence is bound explicitly. No source/test result changed.",
+  "hold": "original87234 remainsowner; no push/newCI untilterminal; scopednonauthorfidelityreview owed"
+}
