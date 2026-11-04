@@ -1814,6 +1814,46 @@
      Plans remains the historical record wall. */
   #us-standouts:not([data-prophet-src="candidates"]) #us-st-view-toggle { display:none; }
   #us-today button.mx-sec-link { border:0; background:transparent; color:var(--link); font:inherit; cursor:pointer; min-height:40px; padding:0 8px; }
+  /* D03 T48: zero public Featured is an ACCESS state, not a claim that the
+     underlying nonempty source population is empty. Scope every new rule to the
+     Today empty card; shared .mx-empty / lifecycle / error states keep owners. */
+  #us-today .mx-today-access-empty {
+    display:flex; flex-direction:column; align-items:flex-start; gap:12px;
+    margin:14px 0 20px; padding:20px; text-align:left;
+    border:1px solid var(--line); border-radius:16px;
+    background:var(--panel); box-shadow:0 8px 24px rgba(0,0,0,.08);
+  }
+  #us-today .mx-today-access-mark {
+    display:inline-flex; align-items:center; border-radius:9px;
+    padding:6px 9px; font-size:var(--fs-label); font-weight:750;
+    letter-spacing:.065em; line-height:1.3; color:var(--text);
+    background:var(--panel2);
+  }
+  #us-today .mx-today-access-empty .mx-empty-line {
+    color:var(--text); font-size:clamp(18px,4.5vw,22px);
+    font-weight:750; line-height:1.25; max-width:28ch;
+  }
+  #us-today .mx-today-access-empty .mx-empty-why {
+    margin:0; max-width:60ch; font-size:var(--fs-body);
+    line-height:1.55; color:var(--muted);
+  }
+  #us-today .mx-today-access-cta {
+    display:inline-flex; align-items:center; justify-content:center;
+    min-height:44px; padding:11px 16px; border:0; border-radius:11px;
+    background:var(--text); color:var(--bg); font:inherit;
+    font-size:var(--fs-body); font-weight:750; cursor:pointer;
+    text-decoration:none;
+  }
+  #us-today .mx-today-access-cta:focus-visible {
+    outline:3px solid var(--link); outline-offset:3px;
+  }
+  #us-today .mx-today-access-caption {
+    margin:0; font-size:var(--fs-sm); line-height:1.5; color:var(--muted);
+  }
+  @media (max-width:420px) {
+    #us-today .mx-today-access-empty { padding:17px; gap:11px; }
+    #us-today .mx-today-access-cta { width:100%; }
+  }
   /* count chips row (id matches stocktable.js hard-coded lookup) */
   #st-count-chips { display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; margin:8px 0; }
   .st-chip { display:inline-block; font-size:10px; font-weight:700; padding:2px 9px;
@@ -17106,7 +17146,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <p class="mx-sec-note us-today-remainder"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票可在筛选器中查看。</span></p>
         {%- endif %}
         {%- elif _today_total > 0 %}
-        <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured setups are outside your current access.', '精选形态尚未包含在当前访问权限内。') }}</div><div class="mx-empty-why">{{ t('Open Screener to browse the candidates available to you.', '打开筛选器，浏览当前可查看的候选股票。') }}</div></div>
+        <div class="mx-empty mx-today-access-empty" role="region" aria-labelledby="us-featured-empty-title">
+          <span class="mx-today-access-mark">{{ t('PUBLIC PREVIEW · ACCESS LEVEL', '公开预览 · 访问权限') }}</span>
+          <div class="mx-empty-line" id="us-featured-empty-title">{{ t('Featured setups are outside this preview.', '精选形态不在当前预览范围内。') }}</div>
+          <div class="mx-empty-why">{{ t('This access level does not display Featured names. It does not mean no setups exist.', '当前访问权限不展示精选股票，但并不意味着没有相关形态。') }}</div>
+          <button type="button" class="mx-today-access-cta" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('Open Screener ↗', '打开筛选器 ↗') }}</button>
+          <p class="mx-today-access-caption">{{ t('Browse available candidates in Screener. Protected setup details and Save remain account-gated.', '前往筛选器浏览可查看的候选股票。受限形态详情和保存功能仍需相应账户权限。') }}</p>
+        </div>
         {%- else %}
         <div class="mx-empty"><div class="mx-empty-line">{{ t('No Featured setups on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Explore all candidates in Screener.', '前往筛选器浏览全部候选股票。') }}</div></div>
         {%- endif %}
