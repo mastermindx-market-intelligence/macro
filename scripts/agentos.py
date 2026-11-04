@@ -1070,10 +1070,88 @@ def _archive_record_problems(rec: dict[str, Any], path: Path) -> list[Problem]:
     return [] if valid else [Problem(path, "bad-archive", "INVALID_ARCHIVE_DECLARATION", hard=True)]
 
 
+def _project_knowledge_problems(rec: dict[str, Any], path: Path, *, decision: bool) -> list[Problem]:
+    """Optional explicit project files/preferences; installed brief needs no helper."""
+    def actor(value: Any) -> bool:
+        return type(value) is str and re.fullmatch(r"workspace:[0-9a-f]{64}", value) is not None
+    def digest(value: Any) -> bool:
+        return type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) is not None
+    def text(value: Any, maximum: int) -> bool:
+        try:
+            return type(value) is str and bool(value.strip()) and len(value.encode("utf-8")) <= maximum
+        except UnicodeError:
+            return False
+    if decision:
+        if "project_preference" not in rec:
+            return []
+        value = rec["project_preference"]
+        valid = type(value) is dict and set(value) == {"schema", "work_ref", "kind", "value", "origin", "last_edit"}
+        if valid:
+            ref = value["work_ref"]
+            valid = (type(ref) is str and ref.startswith("WS:") and 2 <= len(ref[3:]) <= 64
+                     and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", ref[3:]) is not None
+                     and value["schema"] == "agentos.project_preference.v1" and value["kind"] == "COMMUNICATION"
+                     and text(value["value"], 2000) and rec.get("answer") == value["value"]
+                     and rec.get("key") == "PROJECT-COMMUNICATION-PREFERENCE-" + ref[3:]
+                     and type(rec.get("affects")) is list and ref in rec["affects"])
+            origin, edit = value["origin"], value["last_edit"]
+            valid = (valid and type(origin) is dict and set(origin) == {"kind", "actor_ref", "source_ref", "source_revision"}
+                     and origin["kind"] == "USER_EDIT" and actor(origin["actor_ref"])
+                     and origin["source_ref"] is None and origin["source_revision"] is None
+                     and type(edit) is dict and set(edit) == {"actor_ref", "request_sha256"}
+                     and actor(edit["actor_ref"]) and digest(edit["request_sha256"]))
+        return [] if valid else [Problem(path, "bad-project-preference", "INVALID_PROJECT_PREFERENCE", hard=True)]
+    out = []
+    if "standing_instructions" in rec:
+        values = rec["standing_instructions"]
+        valid = type(values) is list and len(values) <= 16
+        refs = set()
+        if valid:
+            for row in values:
+                valid = type(row) is dict and set(row) == {"instruction_ref", "text"}
+                if not valid:
+                    break
+                ref, literal = row["instruction_ref"], row["text"]
+                valid = (type(ref) is str and ref.startswith("INS:") and 2 <= len(ref[4:]) <= 64
+                         and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", ref[4:]) is not None and ref not in refs
+                         and type(literal) is str and bool(literal.strip()) and len(literal) <= 4096)
+                if not valid:
+                    break
+                refs.add(ref)
+        if not valid:
+            out.append(Problem(path, "bad-standing-instructions", "INVALID_STANDING_INSTRUCTIONS", hard=True))
+    if "project_files" not in rec:
+        return out
+    values = rec["project_files"]
+    valid = type(values) is list and len(values) <= 32 and type(rec.get("artifacts")) is list
+    identities = set()
+    if valid:
+        for row in values:
+            valid = type(row) is dict and set(row) == {"file_id", "artifact_ref", "display_name", "media_type", "content_sha256", "origin"}
+            if not valid:
+                break
+            fid, name, media, origin = row["file_id"], row["display_name"], row["media_type"], row["origin"]
+            suffix = {"text/markdown": ".md", "text/plain": ".txt"}.get(media) if type(media) is str else None
+            valid = (digest(fid) and fid not in identities and text(name, 128)
+                     and not any(ord(c) < 32 or ord(c) == 127 or c in "/\\" for c in name)
+                     and suffix is not None and digest(row["content_sha256"])
+                     and row["artifact_ref"] == "agentos/project-files/WS-" + str(rec.get("key")) + "/" + fid + suffix
+                     and row["artifact_ref"] in rec["artifacts"]
+                     and type(origin) is dict and set(origin) == {"kind", "actor_ref", "request_sha256"}
+                     and origin["kind"] == "PRINCIPAL_UPLOAD" and actor(origin["actor_ref"]) and digest(origin["request_sha256"]))
+            if not valid:
+                break
+            identities.add(fid)
+    if not valid:
+        out.append(Problem(path, "bad-project-files", "INVALID_PROJECT_FILES", hard=True))
+    return out
+
+
 def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None) -> list[Problem]:
     out: list[Problem] = _acceptance_contract_problems(rec, path)
     out.extend(_direction_record_problems(rec, path, decision=False))
     out.extend(_archive_record_problems(rec, path))
+    out.extend(_project_knowledge_problems(rec, path, decision=False))
     # `created` / `updated` are DERIVED from git by the generator (see git_dates) and are
     # deliberately NOT required here — see the module docstring on the conflict site.
     for field in ("key", "title", "objective", "status", "program",
@@ -1313,6 +1391,7 @@ def parse_project_plan_proposal(raw_bytes: bytes, *, work_ref: str) -> tuple[dic
 def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
     out.extend(_direction_record_problems(rec, path, decision=True))
+    out.extend(_project_knowledge_problems(rec, path, decision=True))
     for field in ("key", "question", "answer", "rationale", "alternatives",
                   "evidence", "affects", "confidence", "reversibility",
                   "decided_by", "decided_at"):

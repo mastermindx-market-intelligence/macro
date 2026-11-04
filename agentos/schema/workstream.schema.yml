@@ -24,6 +24,8 @@ derived:
   created:      {type: date, source: "git log --diff-filter=A --format=%as -- <path>"}
   updated:      {type: date, source: "git log -1 --format=%as -- <path>"}
 optional:
+  standing_instructions: {type: list, max: 16, closed_fields: [instruction_ref, text], instruction_ref: "INS:UPPER-KEBAB unique key2..64", text: "nonblank literal max4096 codepoints", note: "Absent is NOT_DECLARED; explicit[] is supplied empty. Revision derived from exact ref/text; no authored clock/state/Runtime authority."}
+  project_files: {type: list, max: 32, closed_fields: [file_id, artifact_ref, display_name, media_type, content_sha256, origin], note: "Explicit principal-upload declaration; fixed agentos/project-files/WS-KEY/file_id.md|txt and same artifacts index. Actor workspace:64hex is provenance, never a grant. No generic path writer."}
   archive: {type: object, closed_fields: [schema, state, archived_on, archived_by, reason], schema: agentos.workstream_archive.v1, state: ARCHIVED, archived_on: "YYYY-MM-DD day precision", note: "Explicit declaration only. Absence is no archive declaration; done/parked/killed/history/chat state never implies archive. No action or send authority."}
   p0:           {type: string, note: id from Mastermind config/strategic_state.yml}
   owns_paths:   {type: list, items: glob}

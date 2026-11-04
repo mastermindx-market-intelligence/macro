@@ -17,6 +17,7 @@ required:
   decided_by:    {type: string, note: "seat: chairman | ceo-sol | coo-fable | session id"}
   decided_at:    {type: date}
 optional:
+  project_preference: {type: object, closed_fields: [schema, work_ref, kind, value, origin, last_edit], schema: agentos.project_preference.v1, kind: COMMUNICATION, note: "Explicit fixed-key project decision. Literal value max2000UTF8 equals answer; USER_EDIT origin with null conversation references. Trusted workspace actor and last-edit fingerprint; original origin preserved on CAS edit. No inferred model memory."}
   direction:
     type: object
     closed_fields: [schema, state, work_ref, predecessor]

@@ -715,3 +715,26 @@ source freshness and archived chats never imply this fact. This additive read
 semantics does not implement Archive/Restore, reopen work or grant sending.
 A bounded qualified catalogue read describes its observed coverage; an empty
 sample is never a company-wide claim that no archived projects exist.
+
+### Explicit project files, communication preferences and standing instructions
+
+Optional WS `project_files` indexes at most32 user file declarations. Each closed
+row carries file_id/content_sha256 digests, a fixed per-project artifact_ref also
+in `artifacts`, basename-only display_name≤128UTF8 bytes, media_type exactly
+text/plain or text/markdown, and PRINCIPAL_UPLOAD origin with workspace principal
+actor and original request SHA. User bytes and WS index are published atomically
+by the separately granted typed recipe. A path or actor label alone grants nothing.
+
+A fixed `DEC-PROJECT-COMMUNICATION-PREFERENCE-<WSKEY>` may explicitly declare
+`project_preference` (schema agentos.project_preference.v1, exactWS, COMMUNICATION,
+literal value≤2000UTF8 equal to answer, USER_EDIT origin with null source refs,
+last_edit actor/request SHA). Standard DEC facts and WS decisions/affects joins
+remain required. CAS edits preserve origin. Conversation-derived origin is not
+accepted until its real qualified source-reference contract exists. No generated
+model memory or generic title matching implies a preference.
+
+Optional `standing_instructions` is a literal authored list of at most16 closed
+{instruction_ref,text} rows, unique project-scoped INS:UPPER-KEBAB key2..64 and
+nonblank text≤4096 Unicode codepoints. Absence and supplied-empty are distinct.
+Revision is derived from exact canonical ref/text. No clock, activation, pause,
+scheduler or execution grant is authored here. Runtime admission remains separate.
