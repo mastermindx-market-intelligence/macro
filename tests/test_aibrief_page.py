@@ -272,3 +272,16 @@ def test_brief_publication_is_wired_to_both_exact_push_candidates():
     assert publisher.index(committed) < publisher.index("if push_do;")
     guard = next(s["run"] for s in steps if s.get("name") == "guard — finalized site has no dead references")
     assert "scripts.check_aibrief_publication" in guard
+
+@pytest.mark.parametrize("region,prefix", [("china", "cnx"), ("hk", "hkx")])
+@pytest.mark.parametrize("duplicate_first", [True, False])
+def test_brief_publication_refuses_duplicate_target_dialogs(tmp_path, region, prefix, duplicate_first):
+    from scripts import check_aibrief_publication as pub
+
+    _publication_fixture(tmp_path)
+    page = tmp_path / ("site/" + region + ".html")
+    correct = page.read_text()
+    old = '<section id="' + prefix + '-dlg-aibrief">Old modal without the brief</section>'
+    page.write_text(old + correct if duplicate_first else correct + old)
+    with pytest.raises(pub.PublicationError, match="exactly one target"):
+        pub.check(tmp_path, region)

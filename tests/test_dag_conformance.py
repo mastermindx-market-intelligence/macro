@@ -1373,5 +1373,22 @@ def test_published_brief_gate_and_scope_union(
         assert result.returncode == 0, result.stderr
         if scope is None and event == "workflow_run":
             assert "skip=true" in output.read_text()
+            steps = workflow["jobs"]["render"]["steps"]
+            render = next(s for s in steps if s.get("id") == "render_pages")
+            render_if = render["if"].replace("steps.pick.outputs.skip", repr("true"))
+            assert not eval(render_if, {"__builtins__": {}}, {})
+            # Evaluate the actual workflow conditions: a skipped builder must
+            # reach neither production publisher even when prior steps succeeded.
+            publishers = [s for s in steps if
+                          s.get("name", "").startswith(("publish rebuilt US stockdata",
+                                                        "commit rendered site"))]
+            assert len(publishers) == 2
+            for publisher in publishers:
+                for complete in ("", "false", "true"):
+                    condition = publisher["if"].removeprefix("${{").removesuffix("}}")
+                    condition = condition.replace("success()", "True").replace("&&", "and")
+                    condition = condition.replace("steps.render_pages.outputs.complete",
+                                                  repr(complete))
+                    assert bool(eval(condition, {"__builtins__": {}}, {})) == (complete == "true")
         else:
             assert f"scope={scope or 'all'}" in output.read_text(), (event, output.read_text())

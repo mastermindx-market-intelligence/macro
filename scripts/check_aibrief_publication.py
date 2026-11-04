@@ -30,7 +30,7 @@ class _Component(HTMLParser):
         self.dialog_id = dialog_id
         self.stack = []
         self.dialog_depth = self.component_depth = self.footer_depth = None
-        self.found = self.closed = 0
+        self.found = self.closed = self.dialog_count = 0
         self.tokens = []
 
     def handle_starttag(self, tag, pairs):
@@ -38,6 +38,7 @@ class _Component(HTMLParser):
         classes = set((attrs.get("class") or "").split())
         depth = len(self.stack)
         if self.dialog_id and attrs.get("id") == self.dialog_id:
+            self.dialog_count += 1
             self.dialog_depth = depth
         inside_dialog = self.dialog_id is None or self.dialog_depth is not None
         if (inside_dialog and self.component_depth is None
@@ -93,6 +94,8 @@ def component_tokens(html, dialog_id=None):
     parsed = _Component(dialog_id)
     parsed.feed(html)
     parsed.close()
+    if dialog_id is not None and parsed.dialog_count != 1:
+        raise PublicationError("expected exactly one target AI Brief dialog")
     if (parsed.found, parsed.closed) != (1, 1):
         raise PublicationError("expected exactly one complete China-lens brief component")
     return parsed.tokens

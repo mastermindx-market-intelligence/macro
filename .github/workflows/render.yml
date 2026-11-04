@@ -1298,8 +1298,9 @@ jobs:
         # this lane owns the rebuilt US objects, not the full multi-market manifest.
         # Unlike the nightly's best-effort sync, missing credentials or exhausted
         # retries are a hard red signal: a green express render must mean its browser
-        # data plane advanced too.
-        if: ${{ success() }}
+        # data plane advanced too. An empty completion-triggered scope skips the
+        # builders, so it must never publish checkout-time stockdata to R2.
+        if: ${{ success() && steps.render_pages.outputs.complete == 'true' }}
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
