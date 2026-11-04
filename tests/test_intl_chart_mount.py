@@ -182,6 +182,9 @@ class _ActualCompareTemplate:
         from pathlib import Path
         self.env=Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parents[1]/"templates")),autoescape=True)
+        # The incumbent renderer registers its filters on the template's own
+        # environment, so expose this very environment under that protocol.
+        self.environment=self.env
 
     def render(self, **vm):
         if vm.get("mode")=="stocks":
@@ -193,6 +196,17 @@ class _ActualCompareTemplate:
                 compare_catalogue=c["compare_catalogue"],context_id=c["context_id"]))
         parts.append('</main>')
         return ''.join(parts)
+
+
+def test_fixture_exposes_the_real_jinja_environment_protocol(admitted_pair):
+    """The incumbent renderer registers filters on the rendering environment."""
+    from lib.intl_library_mount import intl_inert_json, render_international_pages
+    template=_ActualCompareTemplate()
+    assert isinstance(template.environment,Environment)
+    assert template.environment is template.env
+    render_international_pages(template,{"intl_workspace":admitted_pair[0]},
+                               chart_sources=(admitted_pair[1],admitted_pair[2]))
+    assert template.environment.filters["intl_inert_json"] is intl_inert_json
 
 
 def test_normal_library_renderer_mounts_optional_qualified_charts_without_raw_policy_fields(admitted_pair):

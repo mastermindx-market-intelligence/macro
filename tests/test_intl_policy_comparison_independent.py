@@ -1,7 +1,8 @@
 """Independent C2 numerical oracle and boundary tests for compare_policy_points.
 
 Oracle arithmetic follows SHARED_CONTRACT Policy preview and the parent API freeze:
-normalize each observation to bp with Fraction, then
+read each admitted float through its decimal serialization, normalize each
+observation to bp with Fraction, then
 gap = A - B, signed_change = end - start, absolute_change = abs(end) - abs(start).
 Does not import parent tests or replace engine arithmetic with stubs.
 """
@@ -13,6 +14,7 @@ import math
 import os
 import time
 from copy import deepcopy
+from decimal import Decimal
 from fractions import Fraction
 from pathlib import Path
 
@@ -94,8 +96,21 @@ def fixture(values=(0.5, 0.5, 3.5, 3.0), *, units=None, period=None, economies=(
     return intent, obs, mapping
 
 
+def exact_input(value):
+    """Exact rational view of an admitted number, read through its decimal text.
+
+    The INPUT contract admits a float as its decimal serialization, so 0.1 means
+    one tenth and not its binary image; an admitted int stays exact as admitted.
+    Decimal(repr(value)) is context-exact and Fraction(Decimal) stays rational,
+    so this reads the input independently of the owner's conversion helper.
+    """
+    if type(value) is int:
+        return Fraction(value)
+    return Fraction(Decimal(repr(value)))
+
+
 def to_bp(value, unit):
-    quantity = Fraction(value)
+    quantity = exact_input(value)
     if unit == "percent":
         return quantity * 100
     if unit == "bp":
@@ -103,7 +118,17 @@ def to_bp(value, unit):
     raise AssertionError("oracle received a unit outside percent/bp")
 
 
-def emit(quantity):
+def emit(quantity, float_derived=False):
+    """Emit one bp quantity.
+
+    A float-derived answer keeps the float range even where the decimal reading
+    makes it integral, so a value beyond the float range stays unrepresentable.
+    """
+    if float_derived:
+        try:
+            float(quantity)
+        except OverflowError:
+            return UNREP
     if quantity.denominator == 1:
         return quantity.numerator
     try:
@@ -121,7 +146,10 @@ def oracle(values, units=("percent",) * 4):
     end = bp[1] - bp[3]
     signed_change = end - start
     absolute_change = abs(end) - abs(start)
-    emitted = [emit(item) for item in (start, end, signed_change, absolute_change)]
+    float_derived = any(type(value) is float for value in values)
+    emitted = [
+        emit(item, float_derived) for item in (start, end, signed_change, absolute_change)
+    ]
     if any(item is UNREP for item in emitted):
         return dict(state="unavailable", reasons=["arithmetic_unrepresentable"])
     if absolute_change < 0:
@@ -238,6 +266,27 @@ def test_oracle_vectors_sign_scale_cancellation_and_subnormals(values, units):
         assert set(result) == UNAVAILABLE_KEYS
         return
     assert_qualified_matches_oracle(result, values, units, identity=intent)
+
+
+def test_decimal_text_input_keeps_equal_gaps_unchanged_and_tiny_changes_nonzero():
+    """Equal decimal gaps cancel exactly; a declared tiny change stays nonzero."""
+    equal = compare(*fixture((0.1, 0.3, 0.2, 0.4)))
+    assert equal["signed_start_bp"] == -10
+    assert equal["signed_end_bp"] == -10
+    assert equal["signed_change_bp"] == 0
+    assert equal["absolute_change_bp"] == 0
+    assert equal["direction"] == "unchanged_at_endpoints"
+    assert equal["crosses_zero"] is False
+    assert_qualified_matches_oracle(equal, (0.1, 0.3, 0.2, 0.4))
+
+    tiny = compare(*fixture((1.0, 1.0000000000000002, 1.0, 1.0)))
+    assert tiny["signed_start_bp"] == 0
+    assert tiny["signed_end_bp"] == 2e-14
+    assert tiny["signed_change_bp"] == 2e-14
+    assert tiny["absolute_change_bp"] == 2e-14
+    assert tiny["signed_change_bp"] != 0
+    assert tiny["direction"] == "widened"
+    assert_qualified_matches_oracle(tiny, (1.0, 1.0000000000000002, 1.0, 1.0))
 
 
 def test_non_integral_overflow_is_unrepresentable_not_inf():
