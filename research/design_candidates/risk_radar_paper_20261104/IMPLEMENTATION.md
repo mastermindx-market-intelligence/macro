@@ -151,3 +151,62 @@ serves both requested consumers. Final delivery still requires the exact-head
 formal non-author approval, independent controller arming, actual merge,
 covering render/publication and successful browser proof on both live paths.
 No merge, deployment, new watcher, or live acceptance is claimed by this record.
+
+
+## P3 — Qualified source and evidence (2026-11-04)
+
+Final presentation source is
+`9b424c673bd5e0d6c5f5aaa48caeca2d130c6134`.
+Its integration parent is
+`734f54bae23cf5ef15c6adecbebe2d018bad1f47`, whose ordered parents are the
+Paper implementation `cefa917e39fc249d8c57dcacab7d4a9ab51d24ae` and main
+`affa0fd2e68723efc9e2cbc0e7c791ab70f5a53d`. The integration tree was verified as
+`cdd27ccb4232d6314aab29d9b9fdd34e5fdac1b6`; this was a local feature-branch
+integration, not a protected-branch release.
+
+Final Chinese visual inspection exposed a native risk-status label still using
+locale-dependent price colors. The bounded final source repair uses stable
+health ink for high/calm labels, matching their risk meaning. Eight additional
+browser assertions distinguish EN/ZH consistency from merely distinct colors.
+
+- **175 browser checks pass**, zero page errors, process exit 0; this includes
+  the last color repair and 200% text/icon separation.
+- **32/32 canonical captures succeed** for the final presentation: eight rest
+  cells and real hover/focus states across desktop/mobile, EN/ZH, dark/light.
+- **134 focused tests pass** at the integration source. The subsequent code
+  delta affects only the two severity-ink CSS rules and their browser tests;
+  bound template/engine inputs are unchanged.
+- The existing **68-case EW-P4 probe** and its 16 keyboard cases were actually
+  recaptured at the integration source. Its original 31 bound render/fixture
+  files remain byte-identical in the final source. The static probe does not
+  execute the workspace enhancement; its evidence is separate from the
+  175-check suite.
+- The final presentation was also exercised with the newer immutable input
+  snapshot at the integration source: November 3, Caution, index 86/100,
+  horizon values 5% / 12% / 22%, all four driver inspectors reachable and no
+  page errors. The canonical reference matrix retains the November 2 input
+  snapshot deliberately; neither fixture is claimed as a live-market read.
+
+Canonical visual receipt and all source/input qualifications are in
+`mockups/evidence/risk-radar-paper-20261104/`. The existing EW-P4 receipt remains
+at `research/evidence/ew_p4_descriptive_ui_20261031/receipt.json`.
+
+A later main observation,
+`9f412ec97085dcd1d90ac11fa712046fcc94af9a`, adds only an unrelated workstream
+document versus the integrated main source. It changes no UI or bound render
+input, so no ancestry-only integration was performed.
+
+Release constraints were materially refreshed against protected Mastermind
+`c7fcb4b8d0ef54bd43767d78d816bdc6667db73d` (compatible INDEX 1.0.1/bootstrap1).
+The accepted attended Web all-tier policy adds no technical-review requirement,
+but DELIVERY_WORKFLOW's Macro-specific release exception still requires an
+exact-head independent native APPROVED review and independent arming of the
+existing controller. The controller blob is unchanged. The current native
+review path will be used once the qualified PR is published; no extra Fabric,
+Dot, old-chat or native reviewer commission is required.
+
+The mission remains incomplete until the existing release path produces the
+actual merge/publication and both requested live consumers pass browser proof.
+No release label, protected-branch merge or deployment has been performed here.
+
+Paid worker return reconciliation is complete: Fabric now reports TERMINAL / ACCEPTED, accepted_by=reviewer, acceptance_reason=VALIDATED_OUTCOME for the original run. The reviewed response digest is a4b78a2f94538b6f6edaa35b976bac1edc5bd16e0af1084f1899c20f4ac8a2b3. Parent acceptance follows the documented repairs and final browser verification; it is not a formal GitHub approval or a release receipt. No replacement run was dispatched.
