@@ -125,7 +125,8 @@ def build_episodes(board_days: Mapping[str, Iterable[str]]) -> list[dict]:
 # --------------------------------------------------------------------------- #
 _PENDING = {"entry": None, "entry_date": None, "n_avail": 0, "matured": False,
             "fill_pending": True, "exit": None, "pnl": None, "excess": None,
-            "held": 0, "exit_reason": None, "mfe": None, "mae": None, "mark": None}
+            "held": 0, "exit_reason": None, "mfe": None, "mae": None, "mark": None,
+            "exit_date": None, "mark_date": None}
 
 
 def score_from_fill(
@@ -182,6 +183,8 @@ def score_from_fill(
         "n_avail": n_avail,
         "matured": n_avail >= horizon,
         "fill_pending": False,
+        "exit_date": None,
+        "mark_date": str(fwd_all.index[-1].date()) if n_avail else None,
     }
     if n_avail == 0:
         return {**base, "exit": None, "pnl": None, "excess": None, "held": 0,
@@ -228,7 +231,7 @@ def score_from_fill(
                 excess = pnl - (b1 / b0 - 1.0) * 100.0
 
     return {**base, "exit": exit_px, "pnl": pnl, "excess": excess, "held": held,
-            "exit_reason": reason,
+            "exit_reason": reason, "exit_date": str(exit_ts.date()),
             "mfe": (float(fwd.max()) / entry - 1.0) * 100.0,
             "mae": (float(fwd.min()) / entry - 1.0) * 100.0,
             "mark": mark}

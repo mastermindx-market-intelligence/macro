@@ -26,6 +26,8 @@ EVENT_KEYS = {
     "entry_basis", "entry_price", "rank", "tier", "state", "maturity",
     "latest_price", "return_pct", "excess_pct", "sessions", "source_artifact",
     "source_as_of", "priced_through",
+    "rank_basis", "rank_as_of", "rank_known_at", "rank_unavailable_reason",
+    "evaluation_type", "evaluation_rule", "exit_date", "exit_reason", "return_end_date",
 }
 
 
@@ -317,3 +319,42 @@ def test_cli_writes_strict_deterministic_json(tmp_path):
     assert json.loads(first)["schema"] == SCHEMA
     assert main(["--site", str(site)]) == 0
     assert out.read_bytes() == first
+
+
+def test_model_outcome_provenance_is_additive_and_identity_is_unchanged():
+    spec = next(s for s in SOURCE_SPECS if s["market"] == "US")
+    raw = _row("AMZN", "2026-07-31", rk=39, m=True, xr="target", ed="2026-08-03")
+    legacy = build_timeline([(spec, _ledger("US", [raw]))])["symbols"]["AMZN"]["events"][0]
+    raw.update(rank_basis="admission_one_based", rank_as_of="2026-07-31", rank_known_at=None,
+               evaluation_type="model_episode", evaluation_rule="us_next_close_stochrsi80_trough97_h10_v1",
+               exit_date="2026-08-12", return_end_date="2026-08-12")
+    modern = build_timeline([(spec, _ledger("US", [raw]))])["symbols"]["AMZN"]["events"][0]
+    assert modern["id"] == legacy["id"]
+    for key in ("rank_basis", "rank_as_of", "rank_known_at", "evaluation_type", "evaluation_rule", "exit_date", "return_end_date"):
+        assert modern[key] == raw[key]
+    assert modern["exit_reason"] == "target"
+    assert modern["authority"] == "candidate"
+    assert legacy["rank_basis"] is None and legacy["rank_known_at"] is None
+    assert legacy["exit_date"] is None and legacy["return_end_date"] is None
+    assert legacy["exit_reason"] == "target", "keep the raw rule without inventing its meaning"
+
+
+def test_new_outcome_fields_survive_checkpoint_without_redating_legacy():
+    spec = next(s for s in SOURCE_SPECS if s["market"] == "US")
+    raw = _row("TEST", "2026-07-31", rk=39, rank_basis="admission_one_based", rank_as_of="2026-07-31",
+               evaluation_type="model_episode", exit_date="2026-08-12", return_end_date="2026-08-12")
+    prior = build_timeline([(spec, _ledger("US", [raw], as_of="2026-09-25", priced_through="2026-09-25"))])
+    current = build_timeline([(spec, _ledger("US", [], as_of="2026-11-03", priced_through="2026-11-03"))])
+    merged = merge_checkpoint(current, prior)
+    event = merged["symbols"]["TEST"]["events"][0]
+    assert event == prior["symbols"]["TEST"]["events"][0]
+    assert event["source_as_of"] == "2026-09-25", "global freshness cannot restamp an older receipt"
+
+
+def test_non_us_rank_is_never_incremented_by_the_projection():
+    for market, ticker in (("CN", "600519.SS"), ("HK", "9988.HK")):
+        spec = next(s for s in SOURCE_SPECS if s["market"] == market)
+        doc = build_timeline([(spec, _ledger(market, [_row(ticker, "2026-07-31", rk=1)]))])
+        event = doc["symbols"][ticker]["events"][0]
+        assert event["rank"] == 1
+        assert event["rank_basis"] is None and event["rank_known_at"] is None

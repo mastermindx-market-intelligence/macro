@@ -67,3 +67,15 @@ Use economical admitted Fabric labor for bounded independent work when available
 ## Current verification
 
 Two workspace acquisition receipts applied at the bases above; Macro workspace was clean. Bounded open-PR census identified Terminal #1252 and #1238 adjacency. No product edits, policy mutations, release or production proof yet. The first full worktree census was terminated after no output; it was read-only and is not evidence that every sibling workspace is inactive.
+
+## Implementation milestone - P1 source qualified
+
+Fabric run `amzn-truth-macro-ledger-20261103-01` returned terminal on its original carrier with root verified. The complete response digest is `57d6a56b184fb70ad613267a71e46e1ecf5643e693e0527c09c8584867ed6a9f`. It ran on ubuntu0, could not access the assigned M2 workspace and explicitly returned no edits, clone, worktree, fetch or running process. The parent verified the original M2 workspace clean at c287500ab7025d43366aa5da2b553cc39d6d8afa before continuing directly. No denied action was replayed or worker replaced. Direct rationale: UNIQUE_APPROVED_ACCESS / LOWER_TOTAL_OVERHEAD.
+
+Implemented P1 on the original workspace: admission-keyed rank/tier/sector, explicit one-based US ordinal and null original knowledge clock, deterministic duplicate-conflict withholding, actual model exit/mark dates and additive opportunity provenance. Existing scoring and episode identities are preserved; no data or site artifact was regenerated. A source-as-of date is not an original delivery receipt: rank_known_at remains null, and the Terminal consumer must withhold that rank in historical replay without a genuine clock.
+
+Verification: `python3 -m pytest tests/test_track_ledger_emitters.py tests/test_track_scoring.py tests/test_opportunity_timeline.py -q` passed 112 tests. The added admission regressions failed before the repair. The first integration exposed an existing continuity dependence on input ordering; sorting a copy of the boards repaired it without mutating callers. Identical duplicate input counts remain disclosed, while episode values and summaries are invariant. `git diff --check` passes. This is source qualification, not release or real-path acceptance.
+
+Independent P2 source workspace: operation amzn-prophet-publication-20261103, branch sol/web-amzn-prophet-publication-20261103, same Macro base. Exact immutable-tree inspection found six current contract-rejected historical explanations (AMZN, EQIX, GOOGL, HST, KMI, MU). Strict publication checks are being qualified, but must not be blindly armed against that known baseline without a safe per-source last-good/withdrawal or correction boundary. Historical marker corrections remain separate from this P1 patch.
+
+Terminal source currently passes 180 focused unit cases with source-date/coordinate separation, qualified ordinal handling, model exit semantics and conservative replay. Browser/CI/release/served-byte proof remain owed. Parent mission remains incomplete.

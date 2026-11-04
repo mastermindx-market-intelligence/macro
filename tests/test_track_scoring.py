@@ -250,3 +250,23 @@ def test_include_fill_bar_shifts_the_window_by_exactly_one():
     incl = ts.score_from_fill(s, _IDX[5], 100.0, horizon=3, include_fill_bar=True)
     assert excl["exit"] == 103.0       # bars 6,7,8 → third is 103
     assert incl["exit"] == 102.0       # bars 5,6,7 → third is 102
+
+
+def test_actual_exit_date_is_not_the_last_pricing_date():
+    s = _flat_then([100.0, 99.0, 98.0, 97.0, 96.0, 95.0])
+    mask = pd.Series(False, index=s.index)
+    mask.loc[_IDX[7]] = True
+    out = ts.score_from_fill(s, _IDX[5], 100.0, horizon=3, early_exit=mask)
+    assert out["exit_reason"] == "target" and out["pnl"] == pytest.approx(-2.0)
+    assert out["exit_date"] == str(_IDX[7].date())
+    assert out["mark_date"] == str(s.index[-1].date())
+    assert out["exit_date"] != out["mark_date"]
+
+
+def test_pending_and_inflight_outcome_dates_do_not_invent_an_exit():
+    s = _flat_then([100.0, 101.0])
+    pending = ts.score_from_fill(s, s.index[-1] + pd.Timedelta(days=1), 100.0)
+    assert pending["exit_date"] is None and pending["mark_date"] is None
+    out = ts.score_from_fill(s, _IDX[5], 100.0, horizon=10)
+    assert out["exit_date"] is None
+    assert out["mark_date"] == str(s.index[-1].date())
