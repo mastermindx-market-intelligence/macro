@@ -1,0 +1,116 @@
+{
+  "status": "SYNTHETIC_DESIGN_FIXTURE_NOT_LIVE",
+  "filter": {
+    "minPremium": 1000000,
+    "expiry": "all"
+  },
+  "sourceSession": "2026-10-30",
+  "selected": {
+    "ownerRecordId": "fixture:event-01",
+    "sourceKey": "fixture/feed",
+    "grain": "coalesced_contract_event",
+    "listing": {
+      "sourceNamespace": "fixture.options",
+      "exactRoot": "NVDA",
+      "currency": "USD"
+    },
+    "contract": {
+      "root": "NVDA",
+      "exp": "2026-11-20",
+      "strike": 210,
+      "right": "C"
+    },
+    "eventAt": "2026-10-30T15:59:00-04:00",
+    "premiumUsd": 1700000,
+    "n_prints": 3,
+    "terms": null,
+    "quote": null,
+    "side": {
+      "ownerValue": "~buy",
+      "method": "last_price_change_proxy",
+      "confidence": null,
+      "coverage": null
+    },
+    "reason": {
+      "ownerField": "repeated",
+      "value": true,
+      "scope": "source session 2026-10-30",
+      "baselineCount": null
+    },
+    "constituentExecutions": null,
+    "size": 2364,
+    "currency": "USD"
+  },
+  "sourceSnapshotAt": "2026-10-30T16:13:23-04:00",
+  "pendingUpdate": {
+    "count": 12,
+    "basis": "buffered source rows",
+    "sourceKey": "fixture/feed",
+    "sourceSession": "2026-10-30",
+    "asof": "2026-10-30T16:14:00-04:00"
+  },
+  "displayRows": [
+    {
+      "identity": "NVDA \u00b7 210 Call",
+      "expiry": "2026-11-20",
+      "premiumDisplay": "$1.70M",
+      "eventClockET": "15:59",
+      "reason": "Publisher repeat"
+    },
+    {
+      "identity": "SPY \u00b7 755 Put",
+      "expiry": "2026-10-30",
+      "premiumDisplay": "$1.32M",
+      "eventClockET": "15:58",
+      "reason": "0DTE flag"
+    },
+    {
+      "identity": "QQQ \u00b7 710 Call",
+      "expiry": "2026-11-06",
+      "premiumDisplay": "$1.12M",
+      "eventClockET": "15:57",
+      "reason": "\u2014"
+    },
+    {
+      "identity": "NVDA \u00b7 215 Put",
+      "expiry": "2026-11-20",
+      "premiumDisplay": "$1.08M",
+      "eventClockET": "15:56",
+      "reason": "Publisher repeat"
+    },
+    {
+      "identity": "IWM \u00b7 240 Call",
+      "expiry": "2026-11-06",
+      "premiumDisplay": "$1.06M",
+      "eventClockET": "15:55",
+      "reason": "\u2014"
+    },
+    {
+      "identity": "AAPL \u00b7 250 Put",
+      "expiry": "2026-11-20",
+      "premiumDisplay": "$1.04M",
+      "eventClockET": "15:54",
+      "reason": "\u2014"
+    },
+    {
+      "identity": "TSLA \u00b7 400 Call",
+      "expiry": "2026-11-20",
+      "premiumDisplay": "$1.02M",
+      "eventClockET": "15:53",
+      "reason": "\u2014"
+    }
+  ],
+  "sourceListCoverage": "qualifying source feed; whole-market coverage not established",
+  "laterBookContext": {
+    "sourceKey": "fixture/book",
+    "contract": {
+      "root": "NVDA",
+      "exp": "2026-11-20",
+      "strike": 210,
+      "right": "C"
+    },
+    "sourceSession": "2026-10-30",
+    "availableAt": "2026-10-30T16:30:00-04:00",
+    "status": "later_context_not_at_event"
+  }
+}

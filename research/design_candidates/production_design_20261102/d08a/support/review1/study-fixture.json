@@ -1,0 +1,29 @@
+{
+  "status": "SYNTHETIC_DESIGN_FIXTURE_NOT_LIVE",
+  "filter": {
+    "minPremium": 1000000,
+    "expiry": "all"
+  },
+  "sourceSession": "2026-10-30",
+  "selected": {
+    "ownerRecordId": "fixture:event-01",
+    "sourceKey": "fixture/feed",
+    "grain": "coalesced_contract_event",
+    "listing": {
+      "sourceNamespace": "fixture.options",
+      "exactRoot": "NVDA",
+      "currency": "USD"
+    },
+    "contract": {
+      "root": "NVDA",
+      "exp": "2026-11-20",
+      "strike": 210,
+      "right": "C"
+    },
+    "eventAt": "2026-10-30T15:59:00-04:00",
+    "premiumUsd": 1700000,
+    "n_prints": 3,
+    "terms": null,
+    "quote": null
+  }
+}

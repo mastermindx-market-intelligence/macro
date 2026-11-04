@@ -1,0 +1,281 @@
+{
+  "kind": "D08A_SOURCE_CHARACTERIZATION",
+  "node": "v24.22.1",
+  "executedAt": "2026-11-04T00:47:02.144Z",
+  "tests": [
+    {
+      "id": "SRC01",
+      "description": "All 34 downloaded audit source files match the recorded Git blob identities",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "T01",
+      "description": "Tape v1 preserves the complete normalized filter/sort state",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "T02",
+      "description": "Tape codec rejects unknown versions, extra keys and oversized input",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "T03",
+      "description": "Tape codec rejects unsupported premium and inferred-side labels",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "S01",
+      "description": "Unusual ranking retains negative absolute extremes and excludes null z",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "S02",
+      "description": "Top premium and explicit group/root filters preserve source population",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "S03",
+      "description": "Selectors do not mutate source order",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "S04",
+      "description": "Fresh means vol_gt_oi, not recency: aggregate only qualifying events",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "S05",
+      "description": "0DTE share denominator is all matching root premium",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "G01",
+      "description": "Current zero-denominator 0DTE screener share becomes 0; design requires unavailable",
+      "status": "PASS",
+      "classification": "EXPECTED_BASELINE_GAP"
+    },
+    {
+      "id": "S06",
+      "description": "OI ranks absolute changes and does not pretend sector filtering is supported",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "G02",
+      "description": "Current ascending OI mid sort treats missing price like zero; design requires missing-last",
+      "status": "PASS",
+      "classification": "EXPECTED_BASELINE_GAP"
+    },
+    {
+      "id": "S07",
+      "description": "Hot contracts retain source list order",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "B01",
+      "description": "Largest equal-premium/time rank is stable by source event ID",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "B02",
+      "description": "Board summary separates events, prints, contracts, roots and premium",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "B03",
+      "description": "Empty board has unknown call share, not a 0% claim",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "G03",
+      "description": "Current 0DTE board trusts flag even when fixture expiry differs; qualification must be separate",
+      "status": "PASS",
+      "classification": "EXPECTED_BASELINE_GAP"
+    },
+    {
+      "id": "C01",
+      "description": "Exact validator preserves adjusted roots and supplied term distinctions",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "C02",
+      "description": "Impossible expiry, zero strike, whitespace root and malformed terms refuse",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "C03",
+      "description": "Duplicate same-list contract identity refuses pinning",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "C04",
+      "description": "A source session is required before pinning",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "C05",
+      "description": "Pin retains source stale flag and a frozen copied row",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "C06",
+      "description": "Shortlist max four refuses a fifth without rotation",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "C07",
+      "description": "Existing pin deduplicates and preserves original frozen pin",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "G04",
+      "description": "Hot by-volume and by-premium source lists share incumbent pin key; D08 must qualify sourceList semantics",
+      "status": "PASS",
+      "classification": "EXPECTED_BASELINE_GAP"
+    },
+    {
+      "id": "C08",
+      "description": "Locate pin distinguishes filtered-away from absent; no row-index substitute",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "G05",
+      "description": "Display projector accepts incomplete/invalid identity and assumes100; never use as exact admission",
+      "status": "PASS",
+      "classification": "EXPECTED_BASELINE_GAP"
+    },
+    {
+      "id": "P01",
+      "description": "Missing size/price remains NaN and quote/receipt stay unknown",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "P02",
+      "description": "Coverage retains unknown classification and excludes invalid premium",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "CSV01",
+      "description": "Tape and Screener have distinct30/38-column contracts",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "CSV02",
+      "description": "CSV hardens formula-like strings while preserving numeric negatives and null",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "CSV03",
+      "description": "Tape CSV preserves caller collection order and explicit source metadata",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "O01",
+      "description": "Observed counts with0%premium coverage remain valid and premium unknown",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "O02",
+      "description": "Valid observed-empty differs from absent/unobserved publisher",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "O03",
+      "description": "Statistics rejects broken count partitions",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "O04",
+      "description": "Statistics rejects wrong population and impossible date",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "O05",
+      "description": "Stats age and cached-fallback independently mark stale",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "O06",
+      "description": "Statistics does not turn unqualified premium into a zero subtotal",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "O07",
+      "description": "Statistics rejects unsafe counters and contradictory source totals",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "F01",
+      "description": "Closed futures parser accepts its existing valid integer cutoff",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    },
+    {
+      "id": "F02",
+      "description": "Futures rejects extra return keys, duplicate keys and proxy instruments",
+      "status": "PASS",
+      "classification": "SOURCE_INVARIANT"
+    }
+  ],
+  "knownBaselineGaps": [
+    {
+      "id": "G01",
+      "description": "Current zero-denominator 0DTE screener share becomes 0; design requires unavailable"
+    },
+    {
+      "id": "G02",
+      "description": "Current ascending OI mid sort treats missing price like zero; design requires missing-last"
+    },
+    {
+      "id": "G03",
+      "description": "Current 0DTE board trusts flag even when fixture expiry differs; qualification must be separate"
+    },
+    {
+      "id": "G04",
+      "description": "Hot by-volume and by-premium source lists share incumbent pin key; D08 must qualify sourceList semantics"
+    },
+    {
+      "id": "G05",
+      "description": "Display projector accepts incomplete/invalid identity and assumes100; never use as exact admission"
+    }
+  ],
+  "summary": {
+    "total": 41,
+    "passed": 41,
+    "failed": 0,
+    "expectedBaselineGaps": 5
+  }
+}
