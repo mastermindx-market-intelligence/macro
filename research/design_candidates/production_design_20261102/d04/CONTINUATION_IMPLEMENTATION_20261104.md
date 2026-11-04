@@ -75,7 +75,7 @@ The bounded implementation is published in [Macro #10719](https://github.com/mas
 
 The initial acquisition was reconciled at the original operation before editing. The official sparse owner materialized `site` and `mockups`; only `data` and `verify_shots` remain omitted. Source assets were generated through existing `lib.site_assets`, `lib.pages` and the asset optimizer. No full site/data rebuild was performed.
 
-- Prepared source/evidence tree: `9f53ed16bd0334ebd2bea929e98dc0ae1c247d1b`, thirty-two scoped files.
+- Prepared source/evidence tree: `9f53ed16bd0334ebd2bea929e98dc0ae1c247d1b`, thirty-two scoped files. GitHub's original Git commit readback independently returned that exact tree and sole parent `bb3b7273f1e9ccb869b6500c97871093eb22005a`; all prepared source/evidence bytes are therefore bound to the published commit.
 - Installed commit receipt: APPLIED; previous head `bb3b7273f1e9ccb869b6500c97871093eb22005a`, current head `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`, clean/index synced.
 - Installed push receipt: APPLIED_AFTER_AMBIGUOUS_PUSH_RETURN. Its own original-operation reconciliation observed local and remote at the same expected head; no caller retry occurred. Later publisher status independently returned APPLIED / clean / local=remote / not ready to push.
 - GitHub readback: both heatmap JS files are blob `67e89d208aa711f0cd04c267fad00ff9fd63ffee`; README `cb1ae26ec1590eef4b5e7a327236b62876efc721` exactly matches the written text; browser report `685fd03460168bf6ff85978f5728b8e536c0ff0a`; canonical manifest `f6094888c41c58fc229cefb33d73dbe31f42d226`.
@@ -124,7 +124,14 @@ A039 account-saved reopening and A044 staged Apply/Cancel/uncertain-save lifecyc
 
 #### Exact-head hosted verification
 
-For `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`, [fences 41800565272](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41800565272) has completed successfully. [CI 41800565111](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41800565111) is in progress at this checkpoint: ci-plan and contract-delta running, no failed step observed. The authority job is queued. Hosted CI success is not yet claimed.
+At **2026-11-04 08:49:37 UTC**, source `5c3195cfb8b9644ce20526e94617ac1cb2268ecc` has:
+
+- [Fences 41800565272](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41800565272): completed successfully.
+- [CI 41800565111](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41800565111): active. ci-plan completed successfully; contract-delta is executing its differential gate.
+- Seven test packs running: **1, 3, 5, 6, 7, 8, 9**. Five queued: **0, 2, 4, 10, 11**. Packs 1/5/6/8 are executing their actual pack command; 3/7/9 are in checkout.
+- No failed step or failed job observed in that read. trusted-ci is intentionally skipped. No success is claimed for an unfinished pack, contract-delta, ci-gate or complete required-check rollup.
+
+This is the actual GitHub CI return path. It is separate from the unverified Fabric commission below and from any claim of continued chat execution.
 
 #### Material dependency refresh and next safe action
 
@@ -134,7 +141,7 @@ For `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`, [fences 41800565272](https://git
 - Adjacent #7967 `a7d07473b030b2b981dedadac3d6ceafa381c34c` and #8144 `537513f60aec40a360c31ea65220de11c0da2e0c` retain their owners. Exact overlapping mount/layout/live-refresh seams are documented in the source evidence README. Future composition must keep access/auth checks, distinguish forced reselection from return intent, and retain one selection guard and proper retirement. No combined-branch acceptance is claimed.
 - The earlier exact D04 Paper read/catalog refusal remains the current D04 runtime evidence. No new canvas write was attempted; another session's source/native progress does not change this adapter's write qualification.
 
-**Next action:** consume exact-head CI #41800565111 and its actual failures, if any, on original source #10719. After that bounded proof closes, retain the two held source deliveries and this domain carrier; proceed to shared-shell/cross-origin/persistence/final Paper composition only against the corresponding qualified owner binding. No previously accepted package, Confluence slice, heatmap tests or visual states need repeating without a relevant change.
+**Next action:** consume exact-head CI #41800565111 and the complete required-check rollup for `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`; repair actual D04 failures, if any, in the original #10719 managed operation, and reconcile any source change with fresh affected proof. Do not relaunch or duplicate the running CI. After that bounded proof closes, retain the two held source deliveries and this domain carrier; proceed to shared-shell/cross-origin/persistence/final Paper composition only against the corresponding qualified owner binding. No previously accepted package, Confluence slice, heatmap tests or visual states need repeating without a relevant change.
 
 #### Separate uncertain Fabric commission
 
@@ -142,4 +149,4 @@ One useful bounded Fabric test-authoring commission was submitted: `d04-us-heatm
 
 A final same-run read still reports ACTIVE_OR_WAITING, root null/unverified, controller return UNCONFIRMED, worker UNKNOWN, result_available false, EXECUTION_NOT_ELIGIBLE and retry/dispatch/result-consumption unauthorized. **EFFECT_UNKNOWN remains confined to that original commission.** No retry, replacement, carrier change, result consumption, acceptance or background-running claim occurred. It did not block root's independent source/browser work. Native reasoning advice was consumed and ACCEPTED/STOP; it is not an implementation worker or formal approval.
 
-**Bounded source delivery: PROVEN_OUTCOME. Hosted-check closeout at this checkpoint: CHECKPOINTED_CONTINUATION.** Whole-D04 acceptance, original external effects and all Chairman release holds remain distinct.
+**Classification: CHECKPOINTED_CONTINUATION.** The bounded source delivery is proven and published; GitHub CI has a verified running state and exact return path, and its remaining checks are the current external boundary. Final composed design, shared persistence and cross-origin delivery still require the named owners' qualified bindings. The source workspace is clean. Whole-D04 acceptance, the unrelated uncertain Fabric effect and all Chairman release holds remain distinct.
