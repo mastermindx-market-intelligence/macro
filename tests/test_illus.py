@@ -76,6 +76,8 @@ def test_line_gap_zero_is_real_and_nonfinite_values_are_missing():
     assert 'data-gap-count="4"' in out
     path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
     assert path.count("M") == 3  # actual runs [0,1], [2], [3]
+    assert 'class="ilx-isolate"' in out  # singleton at [2] is an honest dot
+    assert out.count('class="ilx-isolate"') == 1  # last singleton is settle dot
     assert "nan" not in path.lower() and "inf" not in path.lower()
     assert ">3.0<" in out  # last observed value, not a fabricated replacement
 
