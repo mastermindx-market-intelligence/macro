@@ -1,0 +1,142 @@
+{
+  "kind": "F03_read_only_original_only_T47_JSX_preservation_not_lossless_Paper_backup",
+  "observed_at_utc": "2026-11-04T10:39:04.496Z",
+  "original_source_head": "8702ae87478d5d42890f8347ba4b57ca996f2a70",
+  "procedure_pin": "7aefe3fa3917faecf9b074a3033d37f6a4e7838a",
+  "carrier": "Mastermind Paper direct app",
+  "paper_version": "0.5.18",
+  "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+  "read_operation": "get_basic_info and eight get_jsx; explicit fileId, pageId for basic info and nodeId for JSX; inline-styles, includeNodeIds=true, includeRootPositioning=false",
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "page_id": "p-28-0",
+  "page_name": "DRAFT · T47 · Ranked snapshot search · 2026-11-04",
+  "page_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-28-0",
+  "observed_artboard_count": 8,
+  "observed_page_node_count": 909,
+  "captured_board_count": 8,
+  "captured_board_node_id_occurrences": 908,
+  "items": [
+    {
+      "file": "paper/exports/original-only-t47-20261104/72OX-0.jsx",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-28-0",
+      "board_id": "72OX-0",
+      "board_name": "T47 DRAFT · 1440 · Light · EN · Search",
+      "width": 1440,
+      "save_appended_lf": true,
+      "bytes": 31051,
+      "sha256": "851cad0014e125e2efa10472959bd251224592e327c19baddd660a42bb277d09",
+      "git_blob_sha": "433496a079b1c6a9ebcb40b5004d03a4943bf184",
+      "node_ids": 112
+    },
+    {
+      "file": "paper/exports/original-only-t47-20261104/72TY-0.jsx",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-28-0",
+      "board_id": "72TY-0",
+      "board_name": "T47 DRAFT · 1440 · Light · ZH · Search",
+      "width": 1440,
+      "save_appended_lf": true,
+      "bytes": 30898,
+      "sha256": "968a0ff6b451b81f21d6ff1237daf5532c8674e7f38c6c9055fac6d12f422cdf",
+      "git_blob_sha": "ca1e23815c7bd577463443e6b14d4878de200ec4",
+      "node_ids": 112
+    },
+    {
+      "file": "paper/exports/original-only-t47-20261104/72X3-0.jsx",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-28-0",
+      "board_id": "72X3-0",
+      "board_name": "T47 DRAFT · 1440 · Dark · EN · Search",
+      "width": 1440,
+      "save_appended_lf": true,
+      "bytes": 30925,
+      "sha256": "0c02af821076b92be7a44101b5324f23a1b595e5a817a710565a39bf60db5252",
+      "git_blob_sha": "c5ccefe4b858e55dd962e3d8f208b080bd0c6b03",
+      "node_ids": 112
+    },
+    {
+      "file": "paper/exports/original-only-t47-20261104/7308-0.jsx",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-28-0",
+      "board_id": "7308-0",
+      "board_name": "T47 DRAFT · 1440 · Dark · ZH · Search",
+      "width": 1440,
+      "save_appended_lf": true,
+      "bytes": 30807,
+      "sha256": "502d71f7f5702157fba4526a326974e8497443f26a8e4d77638e79db0335ec1c",
+      "git_blob_sha": "c7c311b9fbf95c1ad96e232daf6c0f78432f882c",
+      "node_ids": 112
+    },
+    {
+      "file": "paper/exports/original-only-t47-20261104/733D-0.jsx",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-28-0",
+      "board_id": "733D-0",
+      "board_name": "T47 DRAFT · 390 · Light · EN · Search",
+      "width": 390,
+      "save_appended_lf": true,
+      "bytes": 31351,
+      "sha256": "8a3583a6d14f8c943d2e1fee208673e6ddea8d5a6cc56d6d8c656df789ab4028",
+      "git_blob_sha": "6943952be651310610f751045595e9e239b8e5e8",
+      "node_ids": 115
+    },
+    {
+      "file": "paper/exports/original-only-t47-20261104/736L-0.jsx",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-28-0",
+      "board_id": "736L-0",
+      "board_name": "T47 DRAFT · 390 · Light · ZH · Search",
+      "width": 390,
+      "save_appended_lf": true,
+      "bytes": 31169,
+      "sha256": "6ffd85087f3655d7408b78c73d4ad3254984c40ed51f9c9d0bad58ec6da3d180",
+      "git_blob_sha": "72cd46c95bddf764cdb7fb47d650fb99d8281bbb",
+      "node_ids": 115
+    },
+    {
+      "file": "paper/exports/original-only-t47-20261104/739T-0.jsx",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-28-0",
+      "board_id": "739T-0",
+      "board_name": "T47 DRAFT · 390 · Dark · EN · Search",
+      "width": 390,
+      "save_appended_lf": true,
+      "bytes": 31225,
+      "sha256": "ac568956f6d562ebcd6cceca39e1931a8fd3a509ed76549ea5e0494c4fc3e379",
+      "git_blob_sha": "9059ff61908851a90c1be76fbe28ece5e7c272b4",
+      "node_ids": 115
+    },
+    {
+      "file": "paper/exports/original-only-t47-20261104/73D1-0.jsx",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-28-0",
+      "board_id": "73D1-0",
+      "board_name": "T47 DRAFT · 390 · Dark · ZH · Search",
+      "width": 390,
+      "save_appended_lf": true,
+      "bytes": 31078,
+      "sha256": "7bd1507e3cb99c92e5ab280762e47ce7542ddfa67fa676dc75f8538cb91716c4",
+      "git_blob_sha": "8fb7e12f72144bcda25cccee98ac68a685e9f95d",
+      "node_ids": 115
+    }
+  ],
+  "warnings": [
+    "Your file is too large. Further changes will result in data loss. Please start a new file."
+  ],
+  "preservation_scope": "Eight complete current visible JSX body exports, names and board roots; Git blobs include one final LF not returned by Paper.",
+  "not_proven": [
+    "Paper-native lossless restore or page/file move",
+    "Embedded asset source bytes, image originals or external links/backlinks",
+    "Historical comments, versions, permissions or ownership",
+    "All other 32 original-only boards, shared-page untested content and future edits",
+    "Formal reference/release/user acceptance"
+  ],
+  "status": {
+    "paper_mutations_this_operation": 0,
+    "resource_actions_not_dispatched": 301,
+    "original_file_at_risk_no_modify": true,
+    "original_copy_not_equivalent": true
+  },
+  "next_action": "Capture and qualify remaining original-only F01/Intraday/Options board bodies and their extant owner source captures; preserve original and historical copy. Require vendor-supported property-preserving remediation before any Paper resource change."
+}

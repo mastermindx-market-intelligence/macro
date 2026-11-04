@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 11678,
-      "sha256": "df3facfe41e0b5e3520a69341ea15ef6a10c796ce71b88985666384807c01e43",
-      "git_blob_sha": "33eeab919228754290407c24ea43715c6a48c7f1"
+      "bytes": 13060,
+      "sha256": "22fc28a43c82116ee502f914e3800ee9019299514c068c5daec0f5cfebe5a78e",
+      "git_blob_sha": "36e4566129cdec1443f1a296591ad2c930e19404"
     },
     {
       "path": "CONTRACT.md",
@@ -41,9 +41,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 14583,
-      "sha256": "7bf6d97a555c0e10cfa337c8a72a1bdcdec6d357d547bdfdcb23ab08319f62fe",
-      "git_blob_sha": "666cb7dff8f628e9176a387a8001b31f05c1304b"
+      "bytes": 15965,
+      "sha256": "f4e2d8ad086d339a705d391ce9c7289500537f1edb7972c04f88d53e7e4e0fb3",
+      "git_blob_sha": "497896516864fa4147128f7f63434f522987a64d"
     },
     {
       "path": "REPRODUCE.md",
@@ -1066,6 +1066,54 @@
       "git_blob_sha": "8ae65e0068b215ae48b4ddd7a4e34bb796ce440a"
     },
     {
+      "path": "paper/exports/original-only-t47-20261104/72OX-0.jsx",
+      "bytes": 31051,
+      "sha256": "851cad0014e125e2efa10472959bd251224592e327c19baddd660a42bb277d09",
+      "git_blob_sha": "433496a079b1c6a9ebcb40b5004d03a4943bf184"
+    },
+    {
+      "path": "paper/exports/original-only-t47-20261104/72TY-0.jsx",
+      "bytes": 30898,
+      "sha256": "968a0ff6b451b81f21d6ff1237daf5532c8674e7f38c6c9055fac6d12f422cdf",
+      "git_blob_sha": "ca1e23815c7bd577463443e6b14d4878de200ec4"
+    },
+    {
+      "path": "paper/exports/original-only-t47-20261104/72X3-0.jsx",
+      "bytes": 30925,
+      "sha256": "0c02af821076b92be7a44101b5324f23a1b595e5a817a710565a39bf60db5252",
+      "git_blob_sha": "c5ccefe4b858e55dd962e3d8f208b080bd0c6b03"
+    },
+    {
+      "path": "paper/exports/original-only-t47-20261104/7308-0.jsx",
+      "bytes": 30807,
+      "sha256": "502d71f7f5702157fba4526a326974e8497443f26a8e4d77638e79db0335ec1c",
+      "git_blob_sha": "c7c311b9fbf95c1ad96e232daf6c0f78432f882c"
+    },
+    {
+      "path": "paper/exports/original-only-t47-20261104/733D-0.jsx",
+      "bytes": 31351,
+      "sha256": "8a3583a6d14f8c943d2e1fee208673e6ddea8d5a6cc56d6d8c656df789ab4028",
+      "git_blob_sha": "6943952be651310610f751045595e9e239b8e5e8"
+    },
+    {
+      "path": "paper/exports/original-only-t47-20261104/736L-0.jsx",
+      "bytes": 31169,
+      "sha256": "6ffd85087f3655d7408b78c73d4ad3254984c40ed51f9c9d0bad58ec6da3d180",
+      "git_blob_sha": "72cd46c95bddf764cdb7fb47d650fb99d8281bbb"
+    },
+    {
+      "path": "paper/exports/original-only-t47-20261104/739T-0.jsx",
+      "bytes": 31225,
+      "sha256": "ac568956f6d562ebcd6cceca39e1931a8fd3a509ed76549ea5e0494c4fc3e379",
+      "git_blob_sha": "9059ff61908851a90c1be76fbe28ece5e7c272b4"
+    },
+    {
+      "path": "paper/exports/original-only-t47-20261104/73D1-0.jsx",
+      "bytes": 31078,
+      "sha256": "7bd1507e3cb99c92e5ab280762e47ce7542ddfa67fa676dc75f8538cb91716c4",
+      "git_blob_sha": "8fb7e12f72144bcda25cccee98ac68a685e9f95d"
+    },
+    {
       "path": "paper/exports/reference-lookup-mobile-20261104-r1.jsx",
       "bytes": 14104,
       "sha256": "e6a44301c9d33632421fc8fa1d2775fd5df3a7e7486d4f7cb6ec20b785f69f86",
@@ -1118,6 +1166,12 @@
       "bytes": 91529,
       "sha256": "fe119a42c1fb11503d1d73e7e171c0f83a5453b69b3e32cc6d15e82ca3458aae",
       "git_blob_sha": "34ff8b099195c36117b8eebe5a8a03728f265833"
+    },
+    {
+      "path": "paper/retention/original-only-t47-20261104.json",
+      "bytes": 6040,
+      "sha256": "6f1bb248c33518309bc2b9303c5f9843fe918d5c480ac11ba8ca77fdf33bd8ad",
+      "git_blob_sha": "f926b7fb41d9abec6dbba5e9fd4e1f1c5accbfde"
     },
     {
       "path": "paper/reviews/bundle-consistency-20261104.md",
@@ -1250,7 +1304,7 @@
   "formal_rig_receipt": null,
   "paper_mutations": 144,
   "source_base_sha": "d0682f23f8a4b2b18ac6e767cdbcaa1cb4b0afb2",
-  "continuation_procedure_sha": "8eb375fe081339be759888f74a7c93d855727190",
+  "continuation_procedure_sha": "7aefe3fa3917faecf9b074a3033d37f6a4e7838a",
   "current_native_capture_set": "paper/continuations/pro-enhancement-20261104-captures-final.json",
   "unresolved_paper_effects": 0,
   "current_lookup_capture_set": "paper/continuations/reference-lookup-20261104-captures-final.json",
@@ -1261,5 +1315,6 @@
     "artboards": 1837,
     "zero_artboard_pages": 12,
     "evidence": "paper/continuations/listed-page-expansion-20261104.json"
-  }
+  },
+  "current_original_only_capture_set": "paper/retention/original-only-t47-20261104.json"
 }
