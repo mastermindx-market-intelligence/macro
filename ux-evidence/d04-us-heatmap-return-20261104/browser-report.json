@@ -1,0 +1,214 @@
+{
+  "observed_at_utc": "2026-11-04T08:23:23.379635+00:00",
+  "browser": "151.0.7922.34",
+  "scope": "Local generated page with synthetic feeds and labelled same-origin detail fixture; bfcache disabled",
+  "passed": 27,
+  "cases": [
+    {
+      "name": "document-return-1365-en-dark",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "document-return-1365-en-light",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "document-return-1365-zh-dark",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "document-return-1365-zh-light",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "overlay-return-390-en-dark",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "overlay-return-390-en-light",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "overlay-return-390-zh-dark",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "overlay-return-390-zh-light",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "per-map-controls-and-class-cleanup",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "A-B-A-delayed-response-single-live-view",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "timeframe-explicit-choice-disabled",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "timeframe-explicit-choice-removed",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "timeframe-explicit-choice-all",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "changed-feed-missing-item-group-fallback",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "late-load-preserves-deliberate-user-focus",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "mobile-retained-query-limitation-visible",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "foreign-history-primitive",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "foreign-history-array",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "foreign-history-malformed",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "return-owner-opt-out-regional",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "return-owner-opt-out-embedded",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "return-owner-opt-out-shared-shell",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "native-fragment-entry-configuration-back-forward",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "document-return-across-responsive-layout",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "unavailable-payload-retains-intent-empty",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "unavailable-payload-retains-intent-error",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "committed-feed-renderer-compatibility",
+      "status": "PASS",
+      "detail": {
+        "sp500": {
+          "tiles": 503,
+          "asof": "2026-11-02",
+          "source": "daily-close"
+        },
+        "themes": {
+          "tiles": 268,
+          "asof": "2026-11-03",
+          "source": "finviz-themes"
+        }
+      }
+    }
+  ],
+  "screenshots": [
+    "document-return-1365-en-dark.png",
+    "document-return-1365-en-light.png",
+    "document-return-1365-zh-dark.png",
+    "document-return-1365-zh-light.png",
+    "overlay-return-390-en-dark.png",
+    "overlay-return-390-en-light.png",
+    "overlay-return-390-zh-dark.png",
+    "overlay-return-390-zh-light.png",
+    "timeframe-disabled.png",
+    "timeframe-removed.png",
+    "timeframe-all.png",
+    "mobile-retained-query.png",
+    "committed-feed-desktop.png"
+  ],
+  "page_errors": [],
+  "sha256": {
+    "templates/heatmap.js": "dacc4201eb4c2d5e5c00c41cdd542001329dc12f1893ac63401b13388b6293e1",
+    "site/heatmap.js": "dacc4201eb4c2d5e5c00c41cdd542001329dc12f1893ac63401b13388b6293e1",
+    "templates/sector_heatmap.html.j2": "22cddce795324ba6268b9d638e5d3c05aa3b1eab646bee821a0ae1dc44094c21",
+    "site/sector_heatmap.html": "f8b94474f3f14eec8b7b417364c4cf7bded206e03e0969b197fa1b7e6b5ddcc1",
+    "scripts/verify_us_heatmap_return_browser.py": "dfa950a28c6e2d17d071b11e2d8d433baa84bda41a20ebd6597d05745de387d9"
+  },
+  "canonical_visual_matrix": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

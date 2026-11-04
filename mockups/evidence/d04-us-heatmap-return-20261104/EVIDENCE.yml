@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/heatmap.js
+  - site/heatmap.js
+  - templates/sector_heatmap.html.j2
+  - site/sector_heatmap.html
+manifest: mockups/evidence/d04-us-heatmap-return-20261104/manifest.json

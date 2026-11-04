@@ -1,0 +1,103 @@
+{
+  "schema": "d04.us_heatmap_return.validation.v1",
+  "recorded_utc": "2026-11-04T08:25:13.061813+00:00",
+  "source_base": "bb3b7273f1e9ccb869b6500c97871093eb22005a",
+  "source_sha256": {
+    "templates/heatmap.js": "dacc4201eb4c2d5e5c00c41cdd542001329dc12f1893ac63401b13388b6293e1",
+    "site/heatmap.js": "dacc4201eb4c2d5e5c00c41cdd542001329dc12f1893ac63401b13388b6293e1",
+    "templates/sector_heatmap.html.j2": "22cddce795324ba6268b9d638e5d3c05aa3b1eab646bee821a0ae1dc44094c21",
+    "site/sector_heatmap.html": "f8b94474f3f14eec8b7b417364c4cf7bded206e03e0969b197fa1b7e6b5ddcc1",
+    "scripts/verify_us_heatmap_return_browser.py": "dfa950a28c6e2d17d071b11e2d8d433baa84bda41a20ebd6597d05745de387d9"
+  },
+  "generated_js_matches_template": true,
+  "matches_browser_run_sha256": true,
+  "checks": [
+    {
+      "name": "design-system-added-lines",
+      "command": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "stdout": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25317 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25317)\n",
+      "stderr": ""
+    },
+    {
+      "name": "runtime-style-ratchet",
+      "command": [
+        "python3",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "exit_code": 0,
+      "stdout": "runtime style injection guard OK (275 .js files scanned, 44 injecting, 88 total hits \u2014 all within frozen allowances)\n",
+      "stderr": ""
+    },
+    {
+      "name": "ui-visual-evidence",
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "shared-heatmap-node",
+      "command": [
+        "node",
+        "--test",
+        "tests/test_china_heatmap_observations_ui.cjs",
+        "tests/test_china_heatmap_refresh.cjs",
+        "tests/test_china_heatmap_observation_refresh.cjs"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 same-minute quote correction updates return, interval disclosure and coverage together (39.553875ms)\n\u2714 old source cannot downgrade an accepted observation-truth contract (3.251ms)\n\u2714 incoherent observation snapshot (missing tile metadata) never partially replaces current (11.19525ms)\n\u2714 incoherent observation snapshot (wrong observation session) never partially replaces current (15.063834ms)\n\u2714 incoherent observation snapshot (non-null return with missing status) never partially replaces current (4.923666ms)\n\u2714 incoherent observation snapshot (numeric return with null status) never partially replaces current (7.667375ms)\n\u2714 incoherent observation snapshot (valid current quote cannot claim a missing current endpoint) never partially replaces current (16.022708ms)\n\u2714 incoherent observation snapshot (missing coverage) never partially replaces current (9.450917ms)\n\u2714 incoherent observation snapshot (invented coverage count) never partially replaces current (3.715375ms)\n\u2714 incoherent observation snapshot (wrong denominator) never partially replaces current (10.860583ms)\n\u2714 incoherent observation snapshot (wrong schema) never partially replaces current (6.616792ms)\n\u2714 incoherent observation snapshot (reference session after observation) never partially replaces current (10.311667ms)\n\u2714 incoherent observation snapshot (unequal reference session) never partially replaces current (3.893125ms)\n\u2714 incoherent observation snapshot (last observation after asof) never partially replaces current (5.406291ms)\n\u2714 legacy payload can upgrade to complete observation metadata (5.911333ms)\n\u2714 missing current quote discloses last observation, never suspended (16.245875ms)\n\u2714 missing reference labels reference rather than assuming missing today (3.714958ms)\n\u2714 valid zero remains a valid interval (1.448875ms)\n\u2714 never observed uses explicit wording (1.431375ms)\n\u2714 invalid prices have unusable quote disclosure (3.3045ms)\n\u2714 unknown schema refuses precision (0.617208ms)\n\u2714 legacy payloads remain untouched (0.558708ms)\n\u2714 other markets remain untouched (0.558583ms)\n\u2714 hostile date content cannot inject HTML (0.613792ms)\n\u2714 malformed valid state with null return cannot claim valid interval (0.641958ms)\n\u2714 selected timeframe uses its own reference (0.800667ms)\n\u2714 coverage exposes member denominator and missing names (0.625584ms)\n\u2714 bad coverage accounting is not displayed as success (0.469583ms)\n\u2714 coverage is not automatically inherited by other markets (0.448834ms)\n\u2714 future last observation cannot be presented as historical evidence (0.498875ms)\n\u2714 reference cannot be after the current endpoint (0.468417ms)\n\u2714 tile session must agree with payload session (6.080167ms)\n\u2714 old session cannot overwrite a newer session even with newer generation stamp (26.680791ms)\n\u2714 same-session correction with equal minute timestamp is rendered (8.422292ms)\n\u2714 older same-session generation cannot overwrite newer accepted content (2.51375ms)\n\u2714 removing optional board breadth really removes it (3.172042ms)\n\u2714 removing optional non-contract metadata does not leave stale data (6.533625ms)\n\u2714 all observers retain root identity and see complete matching snapshot (15.914792ms)\n\u2714 generation-only update does not redraw identical content (1.856416ms)\n\u2714 object property order does not manufacture a semantic revision (7.975291ms)\n\u2714 zero is a real correction and never becomes missing (3.618375ms)\n\u2714 missing observation correction stays null not zero (16.131291ms)\n\u2714 invalid refresh (wrong market) keeps accepted data and emits no repaint (3.856208ms)\n\u2714 invalid refresh (wrong source) keeps accepted data and emits no repaint (7.802375ms)\n\u2714 invalid refresh (wrong map) keeps accepted data and emits no repaint (16.68825ms)\n\u2714 invalid refresh (impossible day) keeps accepted data and emits no repaint (8.529959ms)\n\u2714 invalid refresh (missing generation) keeps accepted data and emits no repaint (4.258541ms)\n\u2714 invalid refresh (invalid generation) keeps accepted data and emits no repaint (3.300042ms)\n\u2714 invalid refresh (generation predates observation) keeps accepted data and emits no repaint (6.711459ms)\n\u2714 invalid refresh (duplicate ticker) keeps accepted data and emits no repaint (4.976959ms)\n\u2714 invalid refresh (empty ticker) keeps accepted data and emits no repaint (1.757958ms)\n\u2714 invalid refresh (missing count) keeps accepted data and emits no repaint (3.006708ms)\n\u2714 invalid refresh (wrong count) keeps accepted data and emits no repaint (1.54625ms)\n\u2714 invalid refresh (numeric text return) keeps accepted data and emits no repaint (4.870208ms)\n\u2714 invalid refresh (boolean return) keeps accepted data and emits no repaint (4.365ms)\n\u2714 invalid refresh (negative tile size) keeps accepted data and emits no repaint (7.070625ms)\n\u2714 invalid refresh (missing performance object) keeps accepted data and emits no repaint (7.806458ms)\n\u2714 invalid refresh (injected client timeframe) keeps accepted data and emits no repaint (1.455917ms)\n\u2714 invalid refresh (injected URL) keeps accepted data and emits no repaint (1.810875ms)\n\u2714 invalid refresh (invalid optional board) keeps accepted data and emits no repaint (6.998042ms)\n\u2714 invalid refresh (prototype key) keeps accepted data and emits no repaint (5.101291ms)\n\u2714 empty replacement retains last-known content without relabelling it (7.090625ms)\n\u2714 a failed initial load does not permanently poison cached promise (5.012ms)\n\u2714 invalid first snapshot is not accepted as China data (1.084334ms)\n\u2714 transient refresh failure is followed by successful later refresh (6.698208ms)\n\u2714 two timer ticks cannot open overlapping China requests (16.234084ms)\n\u2714 hung refresh is aborted, keeps last data, and later tick can recover (8.016458ms)\n\u2714 late response after timeout cannot mutate accepted snapshot (11.738792ms)\n\u2714 one refresher remains owned per URL (1.763084ms)\n\u2714 hidden tabs do not fetch (1.870334ms)\n\u2714 query-string China URL is still identity-validated (3.112917ms)\n\u2714 us legacy refresh remains timestamp-driven and does not use China validation (4.271667ms)\n\u2714 hk legacy refresh remains timestamp-driven and does not use China validation (4.289917ms)\n\u2714 canada legacy refresh remains timestamp-driven and does not use China validation (2.576166ms)\n\u2714 render-critical shape (timeframes is object) is rejected before committing (2.162583ms)\n\u2714 render-critical shape (timeframe has no identity) is rejected before committing (2.746917ms)\n\u2714 render-critical shape (timeframe availability is string) is rejected before committing (3.949583ms)\n\u2714 render-critical shape (duplicate timeframe) is rejected before committing (3.608584ms)\n\u2714 render-critical shape (sectors is object) is rejected before committing (4.3105ms)\n\u2714 render-critical shape (sector has no identity) is rejected before committing (3.912916ms)\n\u2714 render-critical shape (duplicate sector) is rejected before committing (2.344ms)\n\u2714 render-critical shape (default timeframe missing from catalog) is rejected before committing (3.805833ms)\n\u2714 overflow JSON numeric values cannot enter a snapshot (5.642ms)\n\u2714 JSON body read timeout is bounded as well as response headers (7.640083ms)\n\u2714 first-load timeout is evicted and can retry without new timers (5.910792ms)\n\u2714 non-OK status response preserves old data (2.516417ms)\n\u2714 syntax error parsing JSON preserves old data (2.394792ms)\n\u2714 overlapping mounts share one initial request and same state object (2.448666ms)\n\u2714 new payload private arbitrary state is not reflected to client (5.141ms)\n\u2139 tests 89\n\u2139 suites 0\n\u2139 pass 89\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 481.912166\n",
+      "stderr": ""
+    },
+    {
+      "name": "heatmap-and-overlay-pytest",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_heatmap_label_ink.py",
+        "tests/test_china_heatmap_gate.py",
+        "tests/test_terminal_overlay_contract.py"
+      ],
+      "exit_code": 0,
+      "stdout": ".....................................................................    [100%]\n69 passed in 8.74s\n",
+      "stderr": ""
+    },
+    {
+      "name": "diff-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "javascript-syntax",
+      "command": [
+        "node",
+        "--check",
+        "templates/heatmap.js"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_checks_passed": true
+}

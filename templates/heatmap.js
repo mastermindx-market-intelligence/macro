@@ -1091,7 +1091,11 @@
   /* ====================================================================== */
   /*  FULL VIEW — controls + treemap (desktop) / sector list (mobile)        */
   /* ====================================================================== */
-  function createFullView(root, data) {
+  function createFullView(root, data, entry) {
+    // Only the opted-in standalone US page supplies entry callbacks. Embedded
+    // navigation, regional maps, overlays and scorecards retain their owners.
+    var initial = entry && entry.initial || {};
+    var retired = false, layoutFrame = null, layoutRetries = 0;
     // Themes map: two levels (theme → subsector-leaf tile), tiles are subsectors
     // that carry a member list; hover shows members. Default (S&P) is unchanged.
     var IS_THEMES = data.map_type === 'themes';
@@ -1153,8 +1157,10 @@
     var statsEl = root.querySelector('.hx-stats');
     var boardsEl = root.querySelector('.hx-boards');
     var searchEl = root.querySelector('.hm-search input');
-    var _q = '';
-    var firstLayout = true;
+    var _q = (initial.query || '').trim().toLowerCase();
+    if (searchEl) searchEl.value = initial.query || '';
+    if (entry && searchEl) searchEl.maxLength = 160;
+    var firstLayout = !(entry && initial.tf);
     var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function mapHeight() {
       // In the full-page overlay the treemap fills the viewport — the map IS
@@ -1167,12 +1173,34 @@
       return Math.max(560, Math.min(window.innerHeight - 140, 1280));
     }
 
-    var TF = data.default_tf || '1D';
+    var TF = initial.tf || data.default_tf || '1D';
     if (!(data.timeframes || []).some(function (tf) { return tf.key === TF && tf.available; })) {
       var first = (data.timeframes || []).filter(function (tf) { return tf.available; })[0];
-      if (first) TF = first.key;
+      if (first && !(entry && initial.tf)) TF = first.key;
     }
-    var SORT = 'cap';
+    var SORT = initial.sort || 'cap';
+    function timeframeReady() {
+      return !entry || (data.timeframes || []).some(function (tf) { return tf.key === TF && tf.available; });
+    }
+    function viewState() {
+      return { tf: TF, sort: SORT, query: searchEl ? searchEl.value : '',
+        observation: [data.source || '', data.asof || '', data.updated_utc || '', data.generated_utc || ''].join('|').slice(0, 400) };
+    }
+    function changed() { if (entry && !retired) entry.change(viewState()); }
+    function positioned() {
+      if (!entry || retired) return;
+      Array.prototype.forEach.call(tm.querySelectorAll('.hm-tile'), function (el) {
+        var rec = tileEls[+el.getAttribute('data-i')];
+        if (rec) { el.setAttribute('data-hm-key', String(rec.t.t)); el.setAttribute('data-hm-group', rec.t.sector || ''); }
+      });
+      Array.prototype.forEach.call(sortEl.querySelectorAll('button'), function (b) { b.disabled = !timeframeReady(); });
+      if (searchEl) searchEl.disabled = !timeframeReady();
+      entry.layout(viewState(), timeframeReady(), mode, (data.timeframes || []).some(function (tf) { return tf.available; }));
+    }
+    function retryLayout(fn) {
+      if (retired || (entry && layoutRetries++ >= 2)) return;
+      layoutFrame = requestAnimationFrame(function () { layoutFrame = null; if (!retired) fn(); });
+    }
     var tileEls = [];      // {el, pcEl, t}
     var secPc = [];        // {el, tiles}
     var hier = {};         // sector -> {inds, tiles}
@@ -1189,6 +1217,10 @@
         b.type = 'button';
         b.innerHTML = L(tf.en, tf.zh);
         b.setAttribute('data-tf', tf.key);
+        if (entry) {
+          b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', tf.key === TF ? 'true' : 'false');
+          b.disabled = !tf.available;
+        }
         if (!tf.available) b.title = isZh() ? '接入实时/分钟级数据后启用' : 'Lights up with a live feed';
         else b.addEventListener('click', function () { setTf(tf.key); });
         tfsEl.appendChild(b);
@@ -1202,26 +1234,33 @@
         b.className = 'hm-sortb' + (o[0] === SORT ? ' on' : '');
         b.innerHTML = L(o[1], o[2]); b.setAttribute('data-s', o[0]);
         b.addEventListener('click', function () {
+          if (!timeframeReady()) return;
           if (SORT === o[0]) return; SORT = o[0];
           Array.prototype.forEach.call(sortEl.querySelectorAll('.hm-sortb'),
             function (x) { x.classList.toggle('on', x.getAttribute('data-s') === SORT); });
           layoutList();
+          changed();
         });
         sortEl.appendChild(b);
       });
     }
     function setTf(key) {
-      if (key === TF) return; TF = key; data._tf = TF;
+      if (key === TF) return;
+      var wasReady = timeframeReady();
+      TF = key; data._tf = TF;
       Array.prototype.forEach.call(tfsEl.children, function (b) {
         b.classList.toggle('on', b.getAttribute('data-tf') === key);
+        if (entry) b.setAttribute('aria-selected', b.getAttribute('data-tf') === key ? 'true' : 'false');
       });
       hideCard(); hideMembers();
-      if (mode === 'tree') recolor(); else layoutList();
+      if (!wasReady) layout(); else if (mode === 'tree') { recolor(); positioned(); } else layoutList();
       updateLegend();
       updateRead();
       renderDash();
+      changed();
     }
     function updateLegend() {
+      if (!timeframeReady()) { legendEl.textContent = ''; return; }
       var e = edgesFor(TF), pal = binPalette();
       var sw = '';
       [-3, -2, -1, -0.5, 0, 0.5, 1, 2, 3].forEach(function (b) {
@@ -1233,6 +1272,7 @@
         + '<span class="hm-lg-step">' + L('bins', '分档') + ' ±' + edgeFmt(e[0]) + '/' + edgeFmt(e[1]) + '/' + edgeFmt(e[2]) + '</span>';
     }
     function updateRead() {
+      if (!timeframeReady()) { readEl.textContent = ''; return; }
       // Same rule as the breadth card: quote the whole board when the payload carries
       // it for this session, else the tiles. Two adv/dec pairs on one page disagreeing
       // by 3x is how the sample-vs-board confusion reads to a user.
@@ -1283,13 +1323,14 @@
       return s;
     }
     function layoutTree() {
+      if (retired) return;
       mode = 'tree'; root.classList.remove('hm-mobile');
       var animate = firstLayout && !REDUCE; firstLayout = false;
       tileEls = []; secPc = [];
       var H = mapHeight();
       wrap.style.height = H + 'px'; tm.style.height = H + 'px';
       var W = tm.clientWidth || wrap.clientWidth;
-      if (W <= 0) { requestAnimationFrame(layoutTree); return; }
+      if (W <= 0) { retryLayout(layoutTree); return; }
 
       hier = groupHierarchy(data);
       var secItems = Object.keys(hier).map(function (k) { return { value: hier[k].value, ref: hier[k] }; });
@@ -1353,6 +1394,7 @@
       });
       secPc.forEach(function (sp) { sp.el = sp.show ? tm.querySelector('.pc[data-secpc="' + sp.key + '"]') : null; });
       recolor();
+      positioned();
     }
 
     /* ----- themes treemap (theme → subsector-leaf tile) ----- */
@@ -1370,13 +1412,14 @@
       return s;
     }
     function layoutThemes() {
+      if (retired) return;
       mode = 'tree'; root.classList.remove('hm-mobile');
       var animate = firstLayout && !REDUCE; firstLayout = false;
       tileEls = []; secPc = [];
       var H = mapHeight();
       wrap.style.height = H + 'px'; tm.style.height = H + 'px';
       var W = tm.clientWidth || wrap.clientWidth;
-      if (W <= 0) { requestAnimationFrame(layoutThemes); return; }
+      if (W <= 0) { retryLayout(layoutThemes); return; }
 
       hier = {};
       data.tiles.forEach(function (t) {
@@ -1428,6 +1471,7 @@
       });
       secPc.forEach(function (sp) { sp.el = sp.show ? tm.querySelector('.pc[data-secpc="' + sp.key + '"]') : null; });
       recolor();
+      positioned();
     }
 
     /* ----- flat stocks treemap (sector → stock-leaf tile; CN / HK / CA) ----- */
@@ -1494,6 +1538,7 @@
     }
 
     function layoutStocksFlat() {
+      if (retired) return;
       _stopLiveObserver();
       mode = 'tree'; root.classList.remove('hm-mobile');
       var animate = firstLayout && !REDUCE; firstLayout = false;
@@ -1501,7 +1546,7 @@
       var H = mapHeight();
       wrap.style.height = H + 'px'; tm.style.height = H + 'px';
       var W = tm.clientWidth || wrap.clientWidth;
-      if (W <= 0) { requestAnimationFrame(layoutStocksFlat); return; }
+      if (W <= 0) { retryLayout(layoutStocksFlat); return; }
 
       hier = {};
       data.tiles.forEach(function (t) {
@@ -1569,6 +1614,7 @@
       recolor();
       // Start the live observer AFTER the DOM is built.
       if (liveMkt) _startLiveObserver();
+      positioned();
     }
     function recolor() {
       var edges = edgesFor(TF), pal = binPalette();
@@ -1598,6 +1644,7 @@
 
     /* ----- mobile list ----- */
     function layoutList() {
+      if (retired) return;
       mode = 'list'; root.classList.add('hm-mobile');
       wrap.style.height = 'auto'; tm.style.height = 'auto';
       var edges = edgesFor(TF), pal = binPalette();
@@ -1609,7 +1656,7 @@
         var agg = sectorAgg(data, s.tiles, TF);
         var br = breadth(s.tiles, TF), tot = Math.max(1, br.adv + br.dec);
         html.push('<div class="hm-mgrp">'
-          + '<div class="hm-mhd"><span class="nm">' + L(esc(lab.en), esc(lab.zh)) + '</span>'
+          + '<div class="hm-mhd" data-sec-name="' + esc(k) + '"><span class="nm">' + L(esc(lab.en), esc(lab.zh)) + '</span>'
           + '<span class="pc ' + (agg == null ? '' : agg >= 0 ? 'up' : 'dn') + '">' + fmtPc(agg) + '</span>'
           + '<span class="hm-mbr"><i class="up" style="width:' + (100 * br.adv / tot) + '%"></i>'
           + '<i class="dn" style="width:' + (100 * br.dec / tot) + '%"></i></span></div>');
@@ -1628,7 +1675,7 @@
             var det = t.members && t.members.length
               ? t.members.length + ' ' + lz('members', '成员')
               : esc(t.desc || '');
-            html.push('<div class="hm-mrow hm-mrow-th">'
+            html.push('<div class="hm-mrow hm-mrow-th"' + (entry ? ' data-hm-key="' + esc(t.t) + '" data-hm-group="' + esc(k) + '"' : '') + '>'
               + '<span class="hm-mpc' + inkCls(c) + '" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
               + '<span class="hm-mid"><b>' + esc(t.name) + '</b><span>' + det + '</span></span></div>');
             return;
@@ -1643,7 +1690,7 @@
             ? dispT(t.t)
             : (t.industry && t.industry !== t.sector ? t.industry
                : ((isZh() && t.name_zh) ? t.name_zh : t.name));
-          html.push('<a class="hm-mrow" href="' + STOCK_URL + encodeURIComponent(t.t) + '">'
+          html.push('<a class="hm-mrow"' + (entry ? ' data-hm-key="' + esc(t.t) + '" data-hm-group="' + esc(k) + '"' : '') + ' href="' + STOCK_URL + encodeURIComponent(t.t) + '">'
             + '<span class="hm-mpc' + inkCls(c) + '" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
             + '<span class="hm-mid"><b>' + esc(primary) + '</b><span>' + esc(sub) + '</span></span>'
             + '<span class="hm-mgo">›</span></a>');
@@ -1651,6 +1698,7 @@
         html.push('</div>');
       });
       tm.innerHTML = html.join('');
+      positioned();
     }
 
     /* ----- hover / click on the treemap ----- */
@@ -1702,10 +1750,21 @@
     tm.addEventListener('mouseleave', onLeave);
     tm.addEventListener('click', onClick);
 
-    function layout() { if (isMobile()) layoutList(); else if (IS_THEMES) layoutThemes(); else if (IS_STOCKS) layoutStocksFlat(); else layoutTree(); }
+    function layout() {
+      if (retired) return;
+      if (entry) {
+        wrap.style.display = timeframeReady() ? '' : 'none';
+        root.querySelector('.hm-hint').style.display = timeframeReady() ? '' : 'none';
+      }
+      if (!timeframeReady()) {
+        tm.innerHTML = ''; wrap.style.height = 'auto'; tm.style.height = 'auto';
+        positioned(); return;
+      }
+      if (isMobile()) layoutList(); else if (IS_THEMES) layoutThemes(); else if (IS_STOCKS) layoutStocksFlat(); else layoutTree();
+    }
 
     var rt;
-    function onResize() { clearTimeout(rt); rt = setTimeout(function () { hideCard(); hideMembers(); layout(); }, 150); }
+    function onResize() { clearTimeout(rt); rt = setTimeout(function () { if (retired) return; layoutRetries = 0; hideCard(); hideMembers(); layout(); }, 150); }
     function onTheme() { hideCard(); hideMembers(); if (mode === 'tree') recolor(); else layoutList(); updateLegend(); updateRead(); }
     function onLang() { buildTabs(); buildSort(); updateLegend(); updateRead(); if (searchEl) searchEl.placeholder = isZh() ? '筛选个股…' : 'Filter…'; hideCard(); hideMembers(); layout(); renderDash(); }
     function onRefresh(e) {
@@ -1713,11 +1772,12 @@
       hideCard(); hideMembers();
       // a refresh can flip timeframe availability (e.g. intraday windows crossing
       // the coverage threshold) — never leave the selection on a dead tab.
-      if (!(data.timeframes || []).some(function (tf) { return tf.key === TF && tf.available; })) {
+      if (!entry && !(data.timeframes || []).some(function (tf) { return tf.key === TF && tf.available; })) {
         var first = (data.timeframes || []).filter(function (tf) { return tf.available; })[0];
         if (first) { TF = first.key; data._tf = TF; }
       }
       buildTabs(); updateLegend(); updateRead(); layout(); renderDash();
+      changed();
     }
     window.addEventListener('resize', onResize);
     document.addEventListener('themechange', onTheme);
@@ -1929,6 +1989,8 @@
     }
     function renderDash() {
       if (!SHOW_DASH) return;
+      if (entry) [pulseEl, statsEl, boardsEl].forEach(function (el) { el.style.display = timeframeReady() ? '' : 'none'; });
+      if (!timeframeReady()) { pulseEl.textContent = ''; statsEl.textContent = ''; boardsEl.textContent = ''; return; }
       var sm = computeSummary(TF);
       renderPulse(sm); renderStats(sm); renderBoards(sm);
     }
@@ -1947,6 +2009,7 @@
       searchEl.addEventListener('input', function () {
         _q = (searchEl.value || '').trim().toLowerCase();
         applyFilter();
+        positioned(); changed();
       });
     }
 
@@ -1955,7 +2018,10 @@
     startAutoRefresh(data._url || JSON_URL);
 
     return {
+      state: viewState,
       destroy: function () {
+        retired = true; clearTimeout(rt);
+        if (layoutFrame !== null) cancelAnimationFrame(layoutFrame);
         window.removeEventListener('resize', onResize);
         document.removeEventListener('themechange', onTheme);
         document.removeEventListener('langchange', onLang);
@@ -2548,6 +2614,188 @@
   function _emptyHtml(msg) {
     return '<div class="hm-empty" style="padding:48px;text-align:center;color:var(--muted)">' + msg + '</div>';
   }
+  // Transient state belongs to this native browser entry, never an account save.
+  // No URL parser, storage, payload cache or shared-shell transport is added.
+  function standaloneEntry(full, maps) {
+    if (full.getAttribute('data-hm-history') !== 'us-v1' || window.top !== window.self || window.MMXSharedShell) return null;
+    var KEY = 'mmx.usHeatmap.v1', path = window.location.pathname;
+    var keys = maps.map(function (m) { return m.key; });
+    var note = document.createElement('p'); note.className = 'hm-return-note';
+    note.setAttribute('role', 'status'); note.hidden = true; full.appendChild(note);
+    var writable = true, validEntry = false, activity = 0, frame = null, leaveTarget = null;
+    var restored = false, moved = false, missing = '', observationChanged = false;
+    var latest = null, latestReady = true, latestAvailable = true, latestMode = null, activeKey = null;
+    var pageShown = document.readyState === 'complete', afterShow = null;
+    window.addEventListener('pageshow', function () {
+      pageShown = true;
+      if (afterShow) { var resume = afterShow; afterShow = null; resume(); }
+    });
+    function record(v) { return v !== null && typeof v === 'object' && !Array.isArray(v) && Object.prototype.toString.call(v) === '[object Object]'; }
+    function textValue(v, limit) { return typeof v === 'string' && v.length <= limit; }
+    function coordinate(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) <= 10000000; }
+    function otherHistoryOwner() {
+      var overlay = window.MDXTerminalOverlay;
+      if (overlay && overlay.isOpen && overlay.isOpen()) return true;
+      try { var raw = window.history.state; return record(raw) && Object.prototype.hasOwnProperty.call(raw, '__mdxTerminalOverlay'); }
+      catch (e) { return false; }
+    }
+    function blank() { return { version: 1, path: path, map: keys[0], views: {}, position: null }; }
+    function read() {
+      validEntry = false;
+      var raw;
+      try { raw = window.history.state; } catch (e) { writable = false; return blank(); }
+      if (raw !== null && !record(raw)) { writable = false; return blank(); }
+      var v = raw && raw[KEY];
+      if (!record(v) || v.version !== 1 || v.path !== path || keys.indexOf(v.map) < 0 || !record(v.views)) return blank();
+      validEntry = true;
+      var clean = blank(); clean.map = v.map;
+      keys.forEach(function (key) {
+        var s = v.views[key];
+        if (record(s) && textValue(s.tf, 32) && s.tf && ['cap', 'move', 'az'].indexOf(s.sort) >= 0 && textValue(s.query, 160) && textValue(s.observation, 400))
+          clean.views[key] = { tf: s.tf, sort: s.sort, query: s.query, observation: s.observation };
+      });
+      var p = v.position;
+      if (record(p) && p.map === v.map && textValue(p.key, 160) && textValue(p.group, 160) && coordinate(p.offset) && coordinate(p.y) && coordinate(p.x)) {
+        clean.position = { map: p.map, key: p.key, group: p.group, offset: p.offset, y: p.y, x: p.x, focus: null };
+        var f = p.focus;
+        if (record(f) && ['map', 'tf', 'sort', 'query', 'item'].indexOf(f.kind) >= 0 && textValue(f.key, 160))
+          clean.position.focus = { kind: f.kind, key: f.key };
+      }
+      return clean;
+    }
+    var state = read();
+    function announce() {
+      var parts = [];
+      if (!writable) parts.push(lz('This browser entry cannot retain the view.', '此浏览器历史记录无法保留视图。'));
+      if (latest && !latestReady) {
+        parts.push(lz('Timeframe ' + latest.tf + ' is unavailable.', latest.tf + ' 周期当前不可用。'));
+        parts.push(latestAvailable ? lz('Choose an available timeframe.', '请选择可用周期。') : lz('No timeframe is currently available. Your settings are retained.', '当前没有可用周期，您的设置已保留。'));
+      }
+      else if (restored) parts.push(lz('View settings restored. Observations use the current feed.', '视图设置已恢复，数据使用当前可用来源。'));
+      if (observationChanged) parts.push(lz('The source or observation time has changed since your last visit.', '数据来源或观测时间与上次访问相比已改变。'));
+      if (latestMode === 'list' && latest && latest.query.trim()) parts.push(lz('Your tile search is retained but is inactive in the mobile list.', '方块搜索已保留，但不应用于移动端列表。'));
+      if (missing === 'group') parts.push(lz('The previous item is no longer in this view. Returned to its group.', '先前项目已不在此视图中，已返回其所在分组。'));
+      if (missing === 'position') parts.push(lz('Returned to the same view; the previous position could not be restored.', '已返回同一视图，但无法恢复先前位置。'));
+      if (moved) parts.push(lz('Position was left where you moved after returning.', '已保留返回后您主动移动到的位置。'));
+      var message = parts.join(' ');
+      if (note.textContent !== message) note.textContent = message;
+      note.hidden = !message;
+    }
+    function write() {
+      if (!writable || otherHistoryOwner()) return;
+      try {
+        var raw = window.history.state;
+        if (raw !== null && !record(raw)) throw new Error('foreign history owner');
+        var next = {};
+        Object.keys(raw || {}).forEach(function (key) {
+          Object.defineProperty(next, key, { value: raw[key], writable: true, configurable: true, enumerable: true });
+        });
+        next[KEY] = state;
+        // Omitting the URL also avoids changing query/fragment encoding.
+        window.history.replaceState(next, '');
+      } catch (e) { writable = false; announce(); }
+    }
+    function byAttribute(attr, value) {
+      return Array.prototype.filter.call(full.querySelectorAll('[' + attr + ']'), function (el) { return el.getAttribute(attr) === value; })[0] || null;
+    }
+    function focusDescription(el) {
+      if (!el || !full.contains(el)) return null;
+      if (el.matches('.hm-search input')) return { kind: 'query', key: '' };
+      var attrs = [['map', 'data-hm-map'], ['tf', 'data-tf'], ['sort', 'data-s'], ['item', 'data-hm-key']];
+      for (var i = 0; i < attrs.length; i++) if (el.hasAttribute(attrs[i][1])) return { kind: attrs[i][0], key: el.getAttribute(attrs[i][1]) };
+      return null;
+    }
+    function capture(target) {
+      if (otherHistoryOwner() || !activeKey || !state.views[activeKey]) return;
+      var item = target && target.closest && target.closest('[data-hm-key]');
+      if (!item || !full.contains(item)) {
+        item = Array.prototype.filter.call(full.querySelectorAll('[data-hm-key]'), function (el) {
+          var r = el.getBoundingClientRect(); return r.height > 0 && r.width > 0 && r.bottom > 90 && r.top < window.innerHeight;
+        })[0];
+      }
+      var r = (item || full).getBoundingClientRect();
+      state.position = { map: activeKey, key: item ? item.getAttribute('data-hm-key') : '', group: item ? item.getAttribute('data-hm-group') || '' : '',
+        offset: r.top, x: window.scrollX, y: window.scrollY, focus: focusDescription(document.activeElement) };
+      write();
+    }
+    function cancelByUser(e) {
+      activity++; leaveTarget = null;
+      // The incumbent overlay captures clicks before this renderer. Remember
+      // the origin on the initiating pointer/key edge, before it arms its guard.
+      var trigger = e.target.closest && (e.target.closest('a[href]') || e.target.closest('.hm-tile'));
+      if (trigger && (e.type === 'pointerdown' || e.type === 'touchstart' || (e.type === 'keydown' && e.key === 'Enter'))) capture(trigger);
+    }
+    document.addEventListener('focusin', function (e) { if (e.target.hasAttribute && e.target.hasAttribute('data-hm-key')) capture(e.target); }, true);
+    ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(function (name) { document.addEventListener(name, cancelByUser, true); });
+    document.addEventListener('click', function (e) {
+      if (e.target.closest && (e.target.closest('a[href]') || e.target.closest('.hm-tile'))) { leaveTarget = e.target; capture(leaveTarget); }
+    }, true);
+    window.addEventListener('pagehide', function () { capture(leaveTarget); });
+    document.addEventListener('langchange', announce);
+    return {
+      current: function () { return state.map; },
+      reload: function () {
+        if (otherHistoryOwner()) return null;
+        var next = read();
+        if (!validEntry || JSON.stringify(next) === JSON.stringify(state)) return null;
+        state = next; return state.map;
+      },
+      capture: capture,
+      begin: function (key, returning, isCurrent) {
+        if (frame !== null) { cancelAnimationFrame(frame); frame = null; }
+        activeKey = key; state.map = key;
+        var initial = state.views[key] || {}, pending = returning && state.position && state.position.map === key ? state.position : null;
+        var stamp = activity, focusAtStart = document.activeElement;
+        afterShow = null;
+        var priorObservation = initial.observation;
+        var remembered = returning && !!initial.tf;
+        restored = false; moved = false; missing = ''; observationChanged = false;
+        latest = null; latestReady = true; latestAvailable = true; latestMode = null;
+        if (!returning) { state.position = null; write(); }
+        announce();
+        return {
+          initial: initial,
+          change: function (s) { if (!isCurrent()) return; state.views[key] = s; write(); },
+          layout: function (s, ready, mode, available) {
+            if (!isCurrent()) return;
+            state.views[key] = s; latest = s; latestReady = ready; latestAvailable = available; latestMode = mode; restored = remembered;
+            observationChanged = !!priorObservation && priorObservation !== s.observation;
+            announce();
+            if (!ready || !pending || frame !== null) return;
+            function restorePosition() {
+              if (!isCurrent() || !pending) return;
+              frame = requestAnimationFrame(function () { frame = requestAnimationFrame(function () {
+              frame = null;
+              if (!isCurrent() || !pending) return;
+              var p = pending; pending = null;
+              if (otherHistoryOwner()) return;
+              var ae = document.activeElement;
+              var currentFocus = focusDescription(ae);
+              var sameFocus = p.focus && currentFocus && p.focus.kind === currentFocus.kind && p.focus.key === currentFocus.key;
+              if (activity !== stamp || (ae !== document.body && ae !== document.documentElement && !sameFocus)) { moved = true; announce(); return; }
+              var el = p.key ? byAttribute('data-hm-key', p.key) : full;
+              if (!el) { el = p.group ? byAttribute('data-sec-name', p.group) : null; missing = el ? 'group' : 'position'; }
+              if (el) window.scrollTo(p.x, Math.max(0, window.scrollY + el.getBoundingClientRect().top - p.offset));
+              else window.scrollTo(p.x, Math.max(0, window.scrollY + full.getBoundingClientRect().top - 90));
+              var f = p.focus, focusEl = null;
+              if (f && (ae === document.body || ae === document.documentElement || ae === focusAtStart)) {
+                var attrs = { map: 'data-hm-map', tf: 'data-tf', sort: 'data-s', item: 'data-hm-key' };
+                focusEl = f.kind === 'query' ? full.querySelector('.hm-search input') : byAttribute(attrs[f.kind], f.key);
+                // Pointer-only tiles do not manufacture a keyboard focus origin.
+                if (focusEl && focusEl.getClientRects().length && !focusEl.disabled) focusEl.focus({ preventScroll: true });
+              }
+              announce();
+              }); });
+            }
+            // Native traversal restores its pixels after pageshow. Restore the
+            // logical item after that phase, without changing scrollRestoration.
+            if (pageShown) restorePosition(); else afterShow = restorePosition;
+          }
+        };
+      },
+      unavailable: function () { restored = false; missing = state.position ? 'position' : ''; announce(); }
+    };
+  }
   // Multi-map host: a #heatmap-full carrying data-hm-maps='[{key,label_en,
   // label_zh,icon,url},...]' gets a map-type switcher and mounts one map at a
   // time (S&P 500 ⇄ Themes …). Absent the attribute the page behaves exactly as
@@ -2564,26 +2812,33 @@
       bar = document.createElement('div'); bar.className = 'hm-maptype'; bar.setAttribute('role', 'tablist');
       full.appendChild(bar);
     }
+    var historyEntry = standaloneEntry(full, maps);
     var host = document.createElement('div'); host.className = 'hm-host';
     full.appendChild(host);
-    var curView = null, curKey = null, btns = {};
-    function select(m) {
-      if (curKey === m.key) return;
+    var curView = null, curKey = null, selection = 0, btns = {};
+    function select(m, returning) {
+      if (curKey === m.key && !returning) return;
+      if (historyEntry && curView && !returning) historyEntry.capture();
+      var operation = ++selection;
+      function current() { return operation === selection && curKey === m.key; }
       curKey = m.key;
+      var entry = historyEntry && historyEntry.begin(m.key, returning, current);
       Object.keys(btns).forEach(function (k) {
         var on = k === m.key;
         btns[k].classList.toggle('on', on); btns[k].setAttribute('aria-selected', on ? 'true' : 'false');
       });
       if (curView && curView.destroy) { curView.destroy(); curView = null; }
+      if (historyEntry) host.className = 'hm-host';
       host.innerHTML = _emptyHtml('…');
       loadData(m.url).then(function (data) {
-        if (curKey !== m.key) return;                 // a newer click superseded this
-        if (!data.tiles || !data.tiles.length) { host.innerHTML = _emptyHtml(L('No heatmap data available.', '暂无热力图数据。')); return; }
+        if (!current()) return;
+        if (!data.tiles || !data.tiles.length) { host.innerHTML = _emptyHtml(L('No heatmap data available.', '暂无热力图数据。')); if (historyEntry) historyEntry.unavailable(); return; }
         host.innerHTML = '';
-        curView = createFullView(host, data);
+        curView = createFullView(host, data, entry);
       }).catch(function (e) {
-        if (curKey !== m.key) return;
+        if (!current()) return;
         host.innerHTML = _emptyHtml(L('Could not load heatmap data.', '无法加载热力图数据。'));
+        if (historyEntry) historyEntry.unavailable();
         if (window.console) console.error('heatmap load failed', e);
       });
     }
@@ -2591,12 +2846,24 @@
       maps.forEach(function (m) {
         var b = document.createElement('button'); b.type = 'button';
         b.className = 'hm-mt'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', 'false');
+        if (historyEntry) b.setAttribute('data-hm-map', m.key);
         b.innerHTML = (m.icon ? m.icon + ' ' : '') + L(m.label_en || m.key, m.label_zh || m.label_en || m.key);
         b.addEventListener('click', function () { select(m); });
         btns[m.key] = b; bar.appendChild(b);
       });
     }
-    select(maps[0]);
+    if (historyEntry) {
+      var entryURL = window.location.href;
+      window.addEventListener('popstate', function () {
+        // Same-URL dismissible states belong to their incumbent UI owner. The
+        // Terminal overlay retains this live view and restores its own focus.
+        if (window.location.href === entryURL) return;
+        entryURL = window.location.href;
+        var key = historyEntry.reload();
+        if (key !== null) select(maps.filter(function (m) { return m.key === key; })[0] || maps[0], true);
+      }, true);
+      select(maps.filter(function (m) { return m.key === historyEntry.current(); })[0] || maps[0], true);
+    } else select(maps[0]);
     return true;
   }
   function boot() {

@@ -22,6 +22,7 @@
   .hm-head h1 { font-size:23px; margin:0; font-weight:800; letter-spacing:-.015em; }
   .hm-head .sub { color:var(--muted); font-size:12.5px; margin-top:5px; max-width:74ch; line-height:1.5; }
   .hm-foot { color:var(--muted); font-size:11px; margin:14px 2px 0; line-height:1.6; }
+  .hm-return-note { color:var(--text); margin:var(--sp-3,12px) 0; max-width:90ch; }
 </style>
 </head>
 <body>
@@ -36,7 +37,7 @@
     </div>
   </div>
 
-  <div id="heatmap-full" data-hm-maps='[{"key":"sp500","icon":"🔥","label_en":"S&amp;P 500","label_zh":"标普500","url":"marketdata/sp500_heatmap.json"},{"key":"themes","icon":"🧭","label_en":"Themes","label_zh":"主题","url":"marketdata/themes_heatmap.json"}]'></div>
+  <div id="heatmap-full" data-hm-history="us-v1" data-hm-maps='[{"key":"sp500","label_en":"S&amp;P 500","label_zh":"标普500","url":"marketdata/sp500_heatmap.json"},{"key":"themes","label_en":"Themes","label_zh":"主题","url":"marketdata/themes_heatmap.json"}]'></div>
 
   <div id="rotation-strip"></div>
 
