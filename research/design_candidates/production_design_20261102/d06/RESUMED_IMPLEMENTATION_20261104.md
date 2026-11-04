@@ -1,5 +1,25 @@
 # D06 resumed implementation — reader continuity and compact-chart data clarity
 
+## Current continuation — actual Paper R2 and adaptive workspace (2026-11-04)
+
+**Workspace source published and locally verified; D06 execution continues.** The existing Terminal Draft #1270 is now at **f9960127b0ac51fc9cd6422cfd4d28946e0d3f67**. The [implementation and proof](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f9960127b0ac51fc9cd6422cfd4d28946e0d3f67/terminal/docs/d06-workspace-20261104.md) contain eight actual edited Paper boards, extracted JSX, native screenshots and the implemented responsive workspace. The original operation, managed worktree and branch are unchanged.
+
+Paper is usable and was used. On the existing Terminal file **01M3NSZGE8JWN2EZCSF0DT05RM**, page **p-17-0**, the root edited, rendered and self-QAed boards **1U01-0, 1UEL-0, 1US3-0, 1V6P-0, 1W4S-0, 1WI8-0, 1WI9-0 and 1WIA-0**. The first five describe the chart workspace; the last three cover Scripts and public-snapshot designs whose implementation follows in this same session. All eight were finalized through the native tool and exported; success was checked by inspecting actual renders. No original F01/F02 uncertain target was touched.
+
+The Chairman's current instruction explicitly resumes actual D06 design and implementation. It supersedes the earlier session's blanket **STOP AT READ** and does not make F01/F02 joint release a blocker for these disjoint owned D06 edits. Preserve original unknown effects and the binding release gates; do not reinstate an obsolete Paper availability/admission claim.
+
+The same reader and chart now survive rail-to-below transitions, repeated viewport resizing and one/two-pane changes. Keyboard resizing/reset, pointer cancellation, focused return and drawing-toolbar scrolling are implemented. Engine pixel rounding is accounted for without boundary oscillation. A hidden feedback announcement no longer expands the document into blank space.
+
+Verification: **55 focused unit/DOM tests; all four new workspace browser journeys passed in their final applicable runs; 27 existing reader browser executions passed**, with 16 scope/project skips. The earlier failing boundary case was fixed and subsequently passed. The final overflow refinement overlaps one workspace journey and confirms document height equals the 900-pixel viewport at 861/1024/1280/1440 widths. Final TypeScript passes; new helpers and DrawingSidebar are lint-clean, and other changed files retain their baseline findings. These are actual local browser routes with existing deterministic fixtures, not production/native-host acceptance.
+
+The current protected source pin is **0f9043313069d90cc3e1629a04ff2455f0f0fe78**, compatible with bootstrap major 1. The material source-law delta was read; byte-identical unchanged required laws were reused. The original accepted 974128e/d73e55b/fed19d1/0cf50dc/2d29878 behavior remains DO_NOT_REDO absent a material change.
+
+The next active phase is **Scripts implementation and proof** in the same Terminal worktree. Its prepared Paper design is complete; editor source changes now implement persistent save outcomes, exact-revision readback, cancelled navigation tickets, current-input diagnostics, keyboard controls and mobile flow. These changes are **uncommitted and under focused tests**, so they are not credited to the published workspace head. Snapshot/embed completion, the three Macro reader routes, and remaining complete-case acceptance follow. Both PRs stay Draft; no ready/enqueue/merge/deploy action is claimed.
+
+
+## Historical earlier slice — retained evidence below
+
+
 **SOURCE_PUBLISHED / LOCALLY_VERIFIED / CURRENT_HEAD_CI_PENDING / RELEASE_HOLD. Overall D06 remains PARTIAL; RIG draft.** The original [Terminal Draft #1270](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1270) now holds the verified compact-chart source-state/date slice at **974128ee2f9527a9c8a1db2b78ae97fc239a9786**. This is source publication and bounded local proof, not complete D06, final design, merge, deployment or production acceptance.
 
 The Chairman requested resumption after the prior session reached its limit. Recovery retained the same owner, managed workspace, branch, operation and publisher. Earlier reader, chart-time, feedback and language evidence remains bound to its original commits. No replacement source carrier, global lifecycle or control plane was created.

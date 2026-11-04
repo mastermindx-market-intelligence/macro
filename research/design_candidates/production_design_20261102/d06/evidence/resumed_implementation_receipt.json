@@ -1,16 +1,16 @@
 {
   "schema": "d06.resume-implementation.v1",
-  "checkpoint_time": "2026-11-04 07:39:09 UTC",
-  "protected_source": "75a6540519cf519edfef7633e74f57b68aef9329",
+  "checkpoint_time": "2026-11-04 09:06 UTC",
+  "protected_source": "0f9043313069d90cc3e1629a04ff2455f0f0fe78",
   "programme_source": "6e1862867193ec6486a22001a0e4fb515da20448",
-  "macro_parent": "ae52ee1a5118d5d169422bce98ac2f2c88409551",
+  "macro_parent": "b3db232c3f5dbc7d20769c740d22a02a04875880",
   "terminal": {
     "repository": "mastermindx-market-intelligence/mastermind-terminal",
     "pr": 1270,
     "branch": "sol/web-d06-terminal-reader-resilience-20261103-c4",
     "operation_id": "d06-terminal-reader-resilience-20261103-c4",
     "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d06-terminal-reader-resilience-20261103-c4",
-    "head": "974128ee2f9527a9c8a1db2b78ae97fc239a9786",
+    "head": "f9960127b0ac51fc9cd6422cfd4d28946e0d3f67",
     "clean_after_push": true,
     "feedback": {
       "commit": "fed19d1ac3aa8a716f528c8205651ff60b7b413d",
@@ -141,15 +141,28 @@
         "existing invalid-volume zero fallback retained",
         "no final Paper, production or complete-case acceptance"
       ]
+    },
+    "workspace_phase": {
+      "parent": "974128ee2f9527a9c8a1db2b78ae97fc239a9786",
+      "commit": "f9960127b0ac51fc9cd6422cfd4d28946e0d3f67",
+      "commit_action": "798ea4b1b9db2dd5e07777bf7095633ad88f4a00ab34b24db283096c9a1fa09d",
+      "push_action": "a74527d92179c896f0c930ddf6f1f4431edb4fc70f418caef135c1d946b3fe19",
+      "unit_passes": 55,
+      "new_workspace_unique_browser_journeys": 4,
+      "existing_reader_browser_passes": 27,
+      "intentional_skips": 16,
+      "typescript_exit": 0,
+      "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f9960127b0ac51fc9cd6422cfd4d28946e0d3f67/terminal/docs/pr-crops/d06-workspace-20261104/runtime/verification.json",
+      "current_working_phase": "Scripts source applied after workspace publication; focused tests running; uncommitted."
     }
   },
   "ci": {
     "prior_head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
     "prior_run": 41776880568,
     "prior_successful_jobs": 17,
-    "current_head": "974128ee2f9527a9c8a1db2b78ae97fc239a9786",
-    "current_run": 41793286851,
-    "current_status_at_publication_readback": "pending",
+    "current_head": "f9960127b0ac51fc9cd6422cfd4d28946e0d3f67",
+    "current_run": null,
+    "current_status_at_publication_readback": "not yet read for this head",
     "pr_check_run": 41793276738,
     "pr_check_status_at_publication_readback": "queued",
     "current_head_qualified": false,
@@ -159,7 +172,8 @@
       "success": 5,
       "cancelled": 2,
       "in_progress": 9
-    }
+    },
+    "previous_head": "974128ee2f9527a9c8a1db2b78ae97fc239a9786"
   },
   "foundation": {
     "observed_at": "2026-11-04 07:39:09 UTC",
@@ -173,23 +187,69 @@
   },
   "paper": {
     "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
-    "page_id": "p-W-0",
-    "desktop_node": "1K9F-0",
-    "mobile_node": "1KNZ-0",
+    "page_id": "p-17-0",
+    "page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-17-0",
+    "native_edit_applied": true,
+    "rendered_inspected_exported": true,
+    "boards": [
+      {
+        "node": "1U01-0",
+        "name": "Desktop dark EN"
+      },
+      {
+        "node": "1UEL-0",
+        "name": "Phone dark EN"
+      },
+      {
+        "node": "1US3-0",
+        "name": "Constrained light EN"
+      },
+      {
+        "node": "1V6P-0",
+        "name": "Phone light ZH"
+      },
+      {
+        "node": "1W4S-0",
+        "name": "Keyboard and focused return"
+      },
+      {
+        "node": "1WI8-0",
+        "name": "Scripts desktop dark EN",
+        "implementation": "next phase"
+      },
+      {
+        "node": "1WI9-0",
+        "name": "Scripts phone light ZH",
+        "implementation": "next phase"
+      },
+      {
+        "node": "1WIA-0",
+        "name": "Public snapshot light EN",
+        "implementation": "subsequent phase"
+      }
+    ],
     "token_hash": "55dd37b7",
-    "read_and_desktop_screenshot_verified": true,
-    "catalog_hash": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
-    "read_snapshot_file_scope": "56990c1d183160fd97af75da054690161b6840657045ffcecea33dd2ce8e1c89",
-    "write_binding_observed": true,
-    "c4_per_seat_write_acceptance_established": false,
-    "mutations": 0
+    "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f9960127b0ac51fc9cd6422cfd4d28946e0d3f67/terminal/docs/pr-crops/d06-workspace-20261104/paper/receipt.json",
+    "historical_read_only": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-W-0",
+      "desktop_node": "1K9F-0",
+      "mobile_node": "1KNZ-0",
+      "token_hash": "55dd37b7",
+      "read_and_desktop_screenshot_verified": true,
+      "catalog_hash": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+      "read_snapshot_file_scope": "56990c1d183160fd97af75da054690161b6840657045ffcecea33dd2ce8e1c89",
+      "write_binding_observed": true,
+      "c4_per_seat_write_acceptance_established": false,
+      "mutations": 0
+    }
   },
   "migration": {
     "cases": 75,
     "partial": 12,
     "unexecuted": 63,
     "fully_qualified": 0,
-    "new_credit": "new partial EMBED01–02; extended existing HIST02/A11Y02–04; no new full-case qualification",
+    "new_credit": "Bounded actual Paper R2 and workspace implementation proof; complete-case qualification remains pending.",
     "retained_macro_images": 72
   },
   "release": {
@@ -203,14 +263,15 @@
   },
   "effects": {
     "new_unknown": 0,
-    "optional_native_adviser": "two bounded read-only reasoning returns accepted / STOP; no formal approval",
+    "optional_native_adviser": "bounded read-only architecture/source reasoning; no formal approval or source/Paper writer",
     "external_messages": 0,
     "background_observer": false
   },
-  "next_action": "Inspect exact 974128ee hosted CI run41793286851 and repair any concrete same-carrier regression. Shared-shell/Paper work remains contingent on actual joint F01/F02 release and exact C4 write admission; retain remaining owner-specific migration requirements.",
+  "next_action": "Continue current Scripts source tests and browser proof in original Terminal operation; commit/push verified slice. Then snapshot/embed and Macro Market Structure/Stage/S&P presentation work. Preserve existing F01/F02 unknown targets and Draft release holds.",
   "protected_source_readback": {
-    "observed_master": "690e5316629815ae3e78f65ebdec2eb87f0cad16",
-    "reused_pin": "75a6540519cf519edfef7633e74f57b68aef9329",
-    "reason": "INDEX and required procedure files unchanged from the valid pin"
-  }
+    "pin": "0f9043313069d90cc3e1629a04ff2455f0f0fe78",
+    "material_delta_read": true,
+    "unchanged_required_sources_reused_by_byte_identity": true
+  },
+  "intent_supersession": "Current Chairman explicitly authorizes actual D06 Paper design and implementation. Old blanket STOP AT READ/availability blocker is superseded for the exact owned disjoint R2 boards; no foundation unknown effect is retried."
 }
