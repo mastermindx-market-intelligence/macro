@@ -1,41 +1,48 @@
 # D08C — Options Plan, Compare & Review
 
-Status: in progress; design/specification only; RIG draft. Integration owner remains D08 on [#10649](https://github.com/mastermindx-market-intelligence/macro/pull/10649). This is a bounded child artifact of the existing production-design programme, not a new product service or runtime registry.
+**Bounded design/specification return to D08, not product implementation. RIG: draft.** This package develops a coherent investigation → research plan → assumptions → comparison → explicit save/watch → revisit journey. It preserves the incumbent contract identities, observations, calculation limits, Investigation owner and uncertain-operation custody.
 
-## Mission and completion contract
+The integration owner remains **mastermindx-3 on [Macro #10649](https://github.com/mastermindx-market-intelligence/macro/pull/10649)**. The existing Plan persistence carrier remains **[Terminal #804](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/804)**, Draft/HOLD. D23 owns the shared saved-state and alert contract; D22 owns actual holdings. This package creates neither a service nor a runtime store.
 
-Make investigation → research plan → assumptions → comparison → explicit save/watch → later review coherent while retaining exact contracts, source evidence, uncertainty and model limits. Deliver source-backed retention, interactions, backend/build guidance and executable future acceptance cases. Candidate compositions may advance where admitted; final shell-dependent acceptance requires the actual F01/F02 release and independent QA01/RIG.
+## Read this package
 
-Current Chairman assignment authorizes this design slice. It prohibits product implementation, merge, Ready/un-draft, enqueue, held-PR relabel, deployment and uncertain-operation replay.
+| File | Decision it supports |
+| --- | --- |
+| [SOURCE_AUDIT.md](SOURCE_AUDIT.md) | Exact source, route, producer, incumbent implementation and Paper baseline |
+| [PRODUCT_AND_RETENTION.md](PRODUCT_AND_RETENTION.md) | Persona, complete journeys, capability dispositions and reachable successors |
+| [INTERACTIONS.md](INTERACTIONS.md) | Controls, state transitions, copy, navigation, input, focus and recovery |
+| [DATA_AND_BUILD.md](DATA_AND_BUILD.md) | Identities, units, clocks, actual APIs, owner boundaries and future integration sequence |
+| [ACCEPTANCE.feature](ACCEPTANCE.feature) | Executable future acceptance scenarios; no claim they have run against the product |
+| [fixtures/expiry_payoff.json](fixtures/expiry_payoff.json) and [verify_oracle.py](verify_oracle.py) | Independent synthetic arithmetic oracle; not a service response or contract-coverage proof |
+| [DESIGN_MANIFEST.json](DESIGN_MANIFEST.json) | Exact editable targets, responsive classes and captured artifact identity |
+| [VERIFICATION.md](VERIFICATION.md) | Actual visual/read-only proof, critique, remediation and remaining gates |
+| [RETURN.md](RETURN.md) | Bounded receiver action and continuity dispositions |
 
-## Exact inputs and custody
+## What changed in the design
 
-- Protected procedure: Mastermind `910803421beca53ca25145392725ab2d84c7a8e9`; `mastermind.sol_skillpack.v1`, 1.0.1, minimum bootstrap major 1; compatible.
-- Programme/assignment: Macro `6e1862867193ec6486a22001a0e4fb515da20448`.
-- D08 semantic interface: `D08-OPTIONS/1.0.0` at `d0516e1bad9cb5982d43d20c4167d0355cb70e2c`; current integration source `e89f527e3267b1d1dd27ac7507e9a25983c0c903`.
-- Current Terminal source: `2ded360882b9c721e690907ff363b553781fb920`.
-- Shell input: `F01-F02-SHELL/1.0.0-candidate.4`, blob `1160f14b108bf0948384f59a249320385a1dfb6c`, unchanged at inspected F01 head `c1fc69b3452b92dff0f1863c1689e18b049cb56f`. It remains PARTIAL / REQUEST_CHANGES; no released foundation is inferred.
-- F02 input: `1.0.0-candidate.2`; token-map blob `a7ec801d3b559cc64f4fd57141c32f63098c6461`.
-- Paper source: Terminal `01M3NSZGE8JWN2EZCSF0DT05RM`, pages `p-2-0,p-3-1,p-4-1,p-5-1,p-6-1,p-7-1,p-P-1`. Existing boards are retained references. Live resource and PR/branch checks found no separate D08C candidate. New work will use disjoint D08C candidate pages/boards inside this verified file; no shared board/container is renamed, moved or deleted.
-- Direct Mastermind Paper is the single design carrier. Live schema receipt accepted the applicable tools. Integration board `1N2L-0` and its denied write are outside this assignment and must not be retried.
-- Source writer scope: `d08c/` on `design/d08c-options-plan-review-20261103`, based on D08 integration head. D08, D08A/B/D, F01/F02/F03, D22 and D23 source/boards remain independently owned.
+The plan leads with an expiry payoff, exact legs and authored assumptions. Evidence stays reachable with its own dates. Comparison exposes the changed assumption and common basis before showing a numerical difference. Revisit separates the immutable saved revision from newly acquired observations. Save, exact-revision readback and watch activation have distinct states, including known commitment with unavailable readback.
 
-## Editorial phases
+These are editable **provisional specimens**. The shell input is `F01-F02-SHELL/1.0.0-candidate.4`, and F02 is `1.0.0-candidate.2`; final released foundations and formal independent reference acceptance remain outstanding. Capturing an immutable review artifact does not qualify that provisional shell or approve the design.
 
-1. Source and live-reference audit: exact source/pins, model and persistence boundary, retained capabilities, visual defects and live access result.
-2. UX and interaction specification: coherent research journey, supported and proposed operations, all-state and responsive contracts.
-3. Admitted editable Paper candidate: exact IDs, meaningful normal-data and failure specimens, actual screenshots and review. Final foundation-dependent qualification remains separate.
-4. Build and acceptance package: owner interfaces, migration guidance, executable future cases, evidence digests, independent critique and explicit unresolved gates.
-5. Return the bounded package to existing D08 #10649 with immutable source references and verified readback.
+## Exact source and action boundary
 
-## Evidence already observed
+| Input | Pin |
+| --- | --- |
+| Protected law | Mastermind `910803421beca53ca25145392725ab2d84c7a8e9`; compatible `mastermind.sol_skillpack.v1` 1.0.1, bootstrap major 1 |
+| Programme / assignment | Macro `6e1862867193ec6486a22001a0e4fb515da20448` |
+| D08 semantic interface / audited producer | Macro `d0516e1bad9cb5982d43d20c4167d0355cb70e2c`, `D08-OPTIONS/1.0.0` |
+| D08 integration head inspected | `e89f527e3267b1d1dd27ac7507e9a25983c0c903` |
+| Current Terminal consumer | `2ded360882b9c721e690907ff363b553781fb920` |
+| Held Plan persistence implementation | Terminal #804 `27df56d997df0ae94a17b6b8e2d14867431bb394` |
+| F01 source inspected | `c1fc69b3452b92dff0f1863c1689e18b049cb56f`; joint contract blob `1160f14b108bf0948384f59a249320385a1dfb6c` |
+| F02 source inspected | `f7c25c4b9870cff260c2a4b998be18d6c04d36d0`; token map blob `a7ec801d3b559cc64f4fd57141c32f63098c6461` |
 
-Beta `/options?tab=structure` rendered “Options is temporarily unavailable” / “We couldn't verify Options access right now.” This is an observed access-verification limitation, not proof of an expired subscription, normal-data acceptance or backend data outage.
+Only the assigned `d08c/` source package and newly created disjoint Paper candidate targets are changed. Existing Paper references, D08 shared integration board `1N2L-0`, held PRs, routes, services and data are untouched. No merge, Ready/un-draft, enqueue, held-PR relabel, deploy or uncertain-operation replay is authorized or performed.
 
-Plan `FS4-0/HEB-0`, comparison `KD8-0`, and save verification `L6U-1` were read and visually inspected. Existing meaningful evidence, exact readback uncertainty and alternative price references will be retained. No Paper content effect has been dispatched at this checkpoint.
+## Reality check
 
-## Execution profile
+The live `/options?tab=structure` route displayed **“Options is temporarily unavailable”** and could not verify access. Normal-data browser paths and authenticated save/watch behavior were therefore not proved. The exact access screen is retained in `evidence/browser_access_unavailable.png`; this does not establish a changed subscription or a data outage.
 
-Principal synthesis and direct canvas custody remain with this assigned D08C session: PRINCIPAL_JUDGMENT / UNIQUE_APPROVED_ACCESS. Two native reasoning advisors assess cross-owner persistence and valuation/comparison ambiguity without external writes or Paper access. They are advisory and are not Fabric execution or formal independent review. No provider/model/host selection or fabricated runtime receipt.
+The illustrative spread is SPY 20 November 2026, long one 600 call at 5.20 and short one 610 call at 2.00 USD per option unit, with an **assumed** ordinary multiplier of 100. The arithmetic is independently checkable; actual installed reference coverage and current executable quotes are not claimed. Account saving remains unavailable in the current-source specimen. Saved/review/watch specimens express the conditional future owner contract.
 
-Next action: complete the current-source audit, specify the design, then create only the disjoint D08C candidate targets after fresh exact-file guard.
+Completion for this return means a concrete, reviewable design package with source and evidence. Foundation release, formal RIG approval, implementation, merge, deployment and served-product acceptance are separate later gates.
