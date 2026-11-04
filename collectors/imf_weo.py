@@ -128,6 +128,41 @@ class ImfWeoAdapter(Adapter):
         cfg = config.load()
         self.cfg = cfg.get("imf_weo", {}) or {}
 
+    def materialize_native_current_account(self, workbook_bytes, source_receipt):
+        """Commit an already acquired official edition through this store owner.
+
+        Acquisition/rights are separate controls. No network request, vintage
+        inference or permission grant occurs here; existing DataMapper remains
+        unchanged for its legacy consumers.
+        """
+        from datetime import datetime, timezone
+        from lib.intl_annual_publication import (
+            COLUMN, _sha, _utc, capture_current_account_commit, parse_native_current_account,
+        )
+
+        source = parse_native_current_account(workbook_bytes)
+        if (type(source_receipt) is not dict or source_receipt.get("sha256") != _sha(workbook_bytes)
+                or source_receipt.get("status") != 200
+                or not str(source_receipt.get("url", "")).startswith("https://data.imf.org/")):
+            raise ValueError("unbound original native edition")
+        _utc(source_receipt["received_at"])
+        frame = pd.DataFrame(
+            {COLUMN: [v["value"] for _, v in sorted(source["values"].items())]},
+            index=pd.DatetimeIndex([f"{year}-12-31" for year in sorted(source["values"])]),
+        )
+        current = store.read(self.group, "BCA_NGDPD_JPN")
+        if current is not None and current.columns.tolist() != [COLUMN]:
+            raise ValueError("incompatible existing current-account alias")
+        # The native source owns supplied overlaps; legacy old-only dates remain
+        # in the canonical cache but are never certified by this edition's
+        # response evidence. This is not adjusted-price span replacement.
+        store.upsert(self.group, "BCA_NGDPD_JPN", frame)
+        return capture_current_account_commit(
+            data_root=config.data_dir(), workbook_bytes=workbook_bytes,
+            source_receipt=source_receipt, returned=frame,
+            committed_at=datetime.now(timezone.utc).isoformat(),
+        )
+
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         if not self.cfg.get("enabled", True):
             raise RuntimeError("imf_weo disabled in config")
@@ -143,10 +178,37 @@ class ImfWeoAdapter(Adapter):
 
         frames: dict[str, pd.DataFrame] = {}
         total_ok = 0
+        native_japan = self.cfg.get("native_current_account")
+        if native_japan is not None:
+            import json
+            from pathlib import Path
+            from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys
+            from lib.intl_annual_publication import LIMIT
+
+            if (type(native_japan) is not dict or set(native_japan) != {"workbook", "receipt"}
+                    or indicators.get("BCA_NGDPD") != "current_account_pct_gdp" or "JPN" not in countries):
+                raise ValueError("invalid native current-account input configuration")
+            root = config.data_dir().resolve()
+            paths = []
+            for name in ("workbook", "receipt"):
+                relative = native_japan[name]
+                if type(relative) is not str or not relative or Path(relative).is_absolute():
+                    raise ValueError("native edition input must be data-relative")
+                path = root / relative
+                if not path.resolve().is_relative_to(root):
+                    raise ValueError("native edition input escapes data root")
+                paths.append(path)
+            raw = _read_stable_once(paths[0], LIMIT)
+            receipt = json.loads(_read_stable_once(paths[1], LIMIT), object_pairs_hook=_reject_duplicate_keys)
+            self.materialize_native_current_account(raw, receipt)
+            total_ok += 1
 
         for indicator, alias in indicators.items():
+            requested_countries = [c for c in countries if not (native_japan is not None and indicator == "BCA_NGDPD" and c == "JPN")]
+            if not requested_countries:
+                continue
             series_map = fetch_indicator(
-                base_url, indicator, countries,
+                base_url, indicator, requested_countries,
                 retries=retries, timeout=timeout,
             )
             if not series_map:
@@ -154,6 +216,8 @@ class ImfWeoAdapter(Adapter):
                 continue
 
             for iso3, s in series_map.items():
+                if native_japan is not None and indicator == "BCA_NGDPD" and iso3 == "JPN":
+                    continue  # native edition owns this one exact series
                 key = f"{indicator}_{iso3}"
                 df = s.to_frame(alias)
                 store.upsert(self.group, key, df)

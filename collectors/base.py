@@ -665,6 +665,16 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
                                       normalize_index=getattr(adapter, "normalize_index", True),
                                       overwrite_overlap=getattr(adapter, "overwrite_overlap", False))
                 rows += len(df)
+                # Opt-in producer evidence follows a successful canonical write.
+                # Evidence failure never rolls back/replays the acquisition.
+                after_commit = getattr(adapter, "after_store_commit", None)
+                if callable(after_commit):
+                    try:
+                        after_commit(series_name, df, merged,
+                                     committed_at=datetime.now(timezone.utc).isoformat())
+                    except Exception:
+                        observation_notes.append(
+                            f"{series_name}: post-store evidence unavailable; publication unqualified")
                 if capture_yahoo_receipts and series_name in store.YAHOO_CAPTURE_COHORT:
                     capture_attempted.add(series_name)
                     try:

@@ -48,6 +48,7 @@
 {% set metric_value = metric.get('value') %}
 {% set metric_unit = metric.get('unit') %}
 {% set metric_quality = metric.get('quality') %}
+{% set monthly_yield = market_id == 'JP' and field.key == 'yield_10y' and metric.get('instrument') is mapping and metric.get('instrument').get('id') == 'IRLTLT01JPM156N' %}
         {% if metric_value is not none %}
           <span class="intl-macro__value" data-im-macro-value>{{ metric_value|e }}</span>
           {% if metric_unit in unit_labels %}<small><span class="l-en">{{ unit_labels[metric_unit].en|e }}</span><span class="l-zh" lang="zh">{{ unit_labels[metric_unit].zh|e }}</span></small>{% endif %}
@@ -80,7 +81,7 @@
           <div><dt><span class="l-en">Instrument</span><span class="l-zh" lang="zh">工具</span></dt><dd>{{ metric_instrument.id|e }} · {{ metric_instrument.kind|e }} · {{ metric_instrument.market_id|e }}</dd></div>
           <div><dt><span class="l-en">Quality</span><span class="l-zh" lang="zh">质量</span></dt><dd>{% set evidence_quality = quality_labels.get(metric_quality, quality_labels.unknown) %}<span class="l-en">{{ evidence_quality.en|e }}</span><span class="l-zh" lang="zh">{{ evidence_quality.zh|e }}</span></dd></div>
           {% if metric_unit in unit_labels %}<div><dt><span class="l-en">Unit</span><span class="l-zh" lang="zh">单位</span></dt><dd><span class="l-en">{{ unit_labels[metric_unit].en|e }}</span><span class="l-zh" lang="zh">{{ unit_labels[metric_unit].zh|e }}</span></dd></div>{% endif %}
-          <div><dt><span class="l-en">Observation date</span><span class="l-zh" lang="zh">观测日期</span></dt><dd>{% if metric.get('observation_at') is none %}{{ not_supplied() }}{% else %}{{ metric.get('observation_at')|e }}{% endif %}</dd></div>
+          <div><dt>{% if monthly_yield %}<span class="l-en">Observation month</span><span class="l-zh" lang="zh">观测月份</span>{% else %}<span class="l-en">Observation date</span><span class="l-zh" lang="zh">观测日期</span>{% endif %}</dt><dd>{% if metric.get('observation_at') is none %}{{ not_supplied() }}{% else %}{{ metric.get('observation_at')|e }}{% endif %}</dd></div>
           <div><dt><span class="l-en">Period / count basis</span><span class="l-zh" lang="zh">区间 / 计数口径</span></dt><dd>
             {% set metric_period = metric.get('period') %}{% if metric_period is none %}{{ not_supplied() }}{% else %}<span class="intl-macro__period">{{ metric_period.start|e }} – {{ metric_period.end|e }} · {{ metric_period.count|e }} · {{ metric_period.count_basis|e }}</span>{% endif %}
           </dd></div>

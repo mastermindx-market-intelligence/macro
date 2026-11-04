@@ -206,3 +206,68 @@ The official sidecar's `source_updated` is an observation-date alias.
 is an independently known policy publication time: `calculation_at` and an
 unknown release period remain null. Qualification here means permitted and
 within the adopted observation-age tolerance, with that limitation visible.
+
+
+## Byte-bound Japan yield and native annual current-account composition
+
+The normal International publisher reads two additional independently qualified
+field materializations. Their existence never supplies disclosure permission.
+`intl.field_publication.<field>` is an explicit adopted publisher policy with
+`status`, `policy_ref`, `metadata` and `value_permission`; no policy is enabled by
+this implementation. The trusted publisher binds an adopted policy to the exact
+field and receipt digest before the existing projections may expose a value.
+
+For `JP.yield_10y`, the existing configured FRED series is `IRLTLT01JPM156N`
+(OECD Japan long-term government yield, monthly percent, not seasonally
+adjusted). `intl.macro.jp_yield_capture: true` opts into retaining the response
+already obtained by the incumbent collector; it does not authorize a new request.
+No setting is enabled here. Only the post-successful-store callback may retain
+response/cache agreement evidence. The response month-start label stays an
+observation-month label, never a daily close or publication timestamp. The
+existing45-day observation-age tolerance is measured from that original label;
+unknown source publication/revision dates stay null. Values are pass-through,
+so calculation time is null. Current source access/disclosure must be independently
+established; this source change does not clear an observed provider refusal.
+
+The incumbent `ImfWeoAdapter.fetch()` accepts an optional already-acquired native
+edition through `imf_weo.native_current_account: {workbook: <data-relative path>,
+receipt: <data-relative path>}`. The acquisition receipt binds the actual workbook
+hash, original IMF URL and received instant. It selects exactly
+`JPN.BCA_NGDPD.A`; the existing alias remains `current_account_pct_gdp`.
+Canonical `store.upsert` replaces supplied overlapping values and preserves
+old-only rows. Only rows covered by this exact response receive the new edition
+evidence. Native Japan is excluded from the same pass's DataMapper writes.
+No native input is configured by this change. Failed source/store validation
+cannot issue a new successful materialization receipt.
+
+The native annual parser preserves `LATEST_ACTUAL_ANNUAL_DATA`, field-specific
+`COUNTRY_UPDATE_DATE`, edition `PUBLICATION_DATE`/`UPDATE_DATE`, source methodology
+and the raw `START_END_MONTHS_OF_REPORTING_YEAR` value, including null. Later
+years are staff estimates under the WEO FAQ; the actual-year boundary does not
+create a separate forecast/projection threshold. The displayed field selects
+the latest source-labelled actual, never the legacy maximum year across unrelated
+debt/fiscal/current-account rows.
+
+The [October2026 WEO Database Appendix, Data Conventions, page3](https://data.imf.org/-/media/iData/External-Storage/Documents/C4182C5C54794FC48892DE8F6C74FF82/en/October-2026-WEO-Database-Appendix.pdf#page=3)
+states that data refer to calendar years, with the stated TableF exceptions for
+national accounts and government finance. This external-account/BPM6 measure
+uses that documented calendar-year convention: year2025 maps to
+2025-01-01 through2026-01-01 solely as the existing annual field interval. This
+is not a claim that a blank reporting-month cell supplied those dates.
+
+The annual measure carries the source country-series update date under the
+existing `observation_at` slot and labels it **Source updated / 来源更新** in the
+Risk cell. Edition publication remains the separate vintage, field year remains
+the economic annual period, and `calculation_at` is null for the pass-through
+value. Qualification requires source update ≤ edition publication ≤ actual
+response receipt ≤ successful materialization ≤ evaluation, preserving the
+source date's day precision. The incumbent annual200-day tolerance is measured
+from the country-series update date. A missing source-update date withholds
+qualification. Neither evaluation nor publication is substituted for it.
+
+The actual October2026 workbook's Japan2025 actual was used for an internal
+source/store/builder/render check. That check and fixture publisher decisions
+are not commercial redistribution admission. Native data access, source rights,
+scientific interpretation, protected release and authenticated beta behavior
+remain separate facts. Existing ECB admission and all unrelated fields retain
+their current contracts.

@@ -57,6 +57,7 @@ class IntlMacroAdapter(Adapter):
         self.cfg = icfg["macro"]
         self.countries = icfg["countries"]
         self.source_meta: dict[str, dict[str, Any]] = {}
+        self._jp_yield_response = None
 
     def _fetch_fred(self, fid: str) -> pd.DataFrame:
         r = self.http_get(
@@ -67,6 +68,10 @@ class IntlMacroAdapter(Adapter):
             headers={"User-Agent": FREDGRAPH_UA},
         )
         raw = pd.read_csv(io.StringIO(r.text))
+        if fid == "IRLTLT01JPM156N" and self.cfg.get("jp_yield_capture") is True:
+            # Opt-in only: this does not authorize a new source acquisition or
+            # publication. Keep the existing response, never request it again.
+            self._jp_yield_response = (r.content, datetime.now(timezone.utc).isoformat())
         date_col = raw.columns[0]  # observation_date (or DATE on older series)
         val_col = raw.columns[1]
         raw[val_col] = pd.to_numeric(raw[val_col], errors="coerce")
@@ -76,6 +81,21 @@ class IntlMacroAdapter(Adapter):
         if s.empty:
             raise ValueError(f"fred {fid}: no numeric rows")
         return pd.DataFrame({"_": s}).sort_index()
+
+    def after_store_commit(self, name, returned, merged, *, committed_at):
+        if name != "JP_yield_10y" or self._jp_yield_response is None:
+            return
+        from lib.intl_yield_publication import capture_jp_yield_commit, SOURCE_CONTRACT
+
+        raw, received = self._jp_yield_response
+        # Consume once even if evidence writing fails. Never replay acquisition
+        # or attach another source response to this successful store operation.
+        self._jp_yield_response = None
+        capture_jp_yield_commit(
+            data_root=config.data_dir(), returned=returned,
+            response_bytes=raw, received_at=received, committed_at=committed_at,
+            source=dict(SOURCE_CONTRACT),
+        )
 
     @staticmethod
     def _jsonstat_series(payload: dict[str, Any]) -> pd.Series:
@@ -217,6 +237,7 @@ class IntlMacroAdapter(Adapter):
         )
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
+        self._jp_yield_response = None
         # No cold-start branch needed: fredgraph.csv returns each series' FULL history
         # every call, so this plane self-seeds on the first run regardless of
         # `full_history` (unlike the price plane, which is 1mo-incremental).

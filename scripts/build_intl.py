@@ -177,13 +177,38 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
             "horizons": workspace["config"]["horizons"],
             "bases": workspace["config"]["bases"],
     }
+    from lib.intl_yield_publication import read_jp_yield_materialization, admit_jp_yield_field
+    from lib.intl_annual_publication import read_current_account_materialization, admit_current_account_field
+
+    adopted_policies = (config.load().get("intl") or {}).get("field_publication", {})
+
+    def publication_decision(field, materialized):
+        # Trusted normal publisher adopts only an explicit source-specific
+        # policy. A readable file, response hash or current time is no grant.
+        policy = adopted_policies.get(field) if type(adopted_policies) is dict else None
+        if (type(policy) is not dict or set(policy) != {"status", "policy_ref", "metadata", "value_permission"}
+                or policy["status"] != "confirmed" or type(policy["policy_ref"]) is not str or not policy["policy_ref"]):
+            return None
+        return {"owner_ref": "scripts/build_intl.py", "policy_ref": policy["policy_ref"],
+                "decision_ref": generation + ":" + field,
+                "metadata": policy["metadata"], "value_permission": policy["value_permission"],
+                "binding": {"field": field, "receipt_sha256": materialized.get("receipt_sha256")}}
+
+    jp_yield = read_jp_yield_materialization(data_root=data_root)
+    jp_measure = admit_jp_yield_field(
+        jp_yield, evaluated_at=evaluated_at,
+        publication_decision=publication_decision("JP.yield_10y", jp_yield))
+    annual = read_current_account_materialization(data_root=data_root)
+    annual_field = admit_current_account_field(
+        annual, evaluated_at=evaluated_at,
+        publication_decision=publication_decision("JP.annual_current_account", annual))
     try:
         measure = _ecb_publication_measure(
             read_ecb_deposit_materialization(data_root=data_root),
             evaluated_at=evaluated_at, generation=generation,
         )
         mounted = attach_macros(
-            workspace, registry=registry, measures={"EZ.policy_rate": measure},
+            workspace, registry=registry, measures={"EZ.policy_rate": measure, "JP.yield_10y": jp_measure},
             cycle_evidence={}, destinations={},
             source_notice={
                 "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
@@ -198,7 +223,10 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         # Existing packets supply context, never disclosure or source grants.
         workspace = attach_risks(
             workspace, registry=registry, risk_desk=risk_desk, cgl=cgl,
-            measures={}, field_support={}, summary_eligibility={}, destinations={},
+            measures={"JP.annual_current_account": annual_field["measure"]},
+            field_support=({"JP.annual_current_account": annual_field["support"]}
+                           if annual_field["support"] is not None else {}),
+            summary_eligibility={}, destinations={},
         )
     except Exception as exc:
         log.error("International Risk panel unavailable (%s)", type(exc).__name__)

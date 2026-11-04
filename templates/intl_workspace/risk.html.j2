@@ -308,6 +308,7 @@
                 {% set support = annual.get('support') %}
                 {% if support is mapping %}
                   {% if support.get('field_year') is not none %}<small>{{ words('Field year', '字段年份') }} {{ support.get('field_year')|e }}</small>{% endif %}
+                  {% if annual.get('observation_at') is not none %}<small>{{ words('Source updated', '来源更新') }} {{ annual.get('observation_at')|e }}</small>{% endif %}
                   {% if support.get('vintage') is not none %}<small>{{ words('Vintage', '版本') }} {{ support.get('vintage')|e }}</small>{% endif %}
                   {% if support.get('observation_type') in annual_types %}
                     <small>{{ words(annual_types[support.observation_type].en, annual_types[support.observation_type].zh) }}</small>
