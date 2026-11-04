@@ -50,6 +50,11 @@ def _valid_json(raw: bytes, rel: str, lens: str) -> tuple[date, datetime, dict]:
         generated = datetime.fromisoformat(doc["generated_at"].replace("Z", "+00:00"))
         if generated.tzinfo is None:
             raise ValueError("generated_at lacks timezone")
+        # A fresh timestamp with an empty parsed LLM response is NOT a usable
+        # new brief.  Match the downstream publication contract before the
+        # earliest durable writer can replace a last-good narrative.
+        if not any(doc.get(k) for k in ("summary", "tldr", "regime_read")):
+            raise ValueError("brief has no rendered narrative")
         return asof, generated, doc
     except (ValueError, KeyError, TypeError, AttributeError) as exc:
         raise CheckpointRefused(f"invalid {lens} generated brief {rel}: {exc}") from exc

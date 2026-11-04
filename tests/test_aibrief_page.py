@@ -512,3 +512,42 @@ def test_standalone_ai_brief_cannot_advance_watermark_with_stale_lens(
         pub.check(tmp_path, "macro")
     _publication_pages(tmp_path, json.loads((tmp_path / "site/china_brief.json").read_text()))
     assert pub.check(tmp_path, "macro+china+hk") == ["china", "hk", "macro"]
+
+
+@pytest.mark.parametrize(
+    "summary,tldr,regime_read,accepted",
+    [
+        (None, [], None, False),
+        ("", [], "", False),
+        (None, None, None, False),
+        ("A verified narrative", [], None, True),
+        (None, ["A verified top-line finding"], None, True),
+        (None, [], "A verified regime observation", True),
+    ],
+)
+def test_early_checkpoint_requires_nonempty_narrative_before_publication(
+    _brief_checkpoint_tree, summary, tldr, regime_read, accepted,
+):
+    """A fresh healthy timestamp with an inert LLM reply cannot displace last-good."""
+    from scripts.ci.aibrief_checkpoint_manifest import (
+        CheckpointRefused, generated_manifest,
+    )
+
+    root, base, make_payload = _brief_checkpoint_tree
+    brief = make_payload(
+        "china", asof="2026-11-03",
+        generated="2026-11-04T09:00:00+00:00", degraded=None,
+    )
+    brief.update(summary=summary, tldr=tldr, regime_read=regime_read)
+    raw = json.dumps(brief).encode()
+    for rel in ("data/regime/china_brief.json", "site/china_brief.json"):
+        (root / rel).write_bytes(raw)
+
+    if accepted:
+        rows = dict(generated_manifest(root, base))
+        assert set(rows) == {
+            "data/regime/china_brief.json", "site/china_brief.json"
+        }
+    else:
+        with pytest.raises(CheckpointRefused, match="no rendered narrative"):
+            generated_manifest(root, base)

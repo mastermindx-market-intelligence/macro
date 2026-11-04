@@ -68,9 +68,6 @@ on:
     paths:
       # Human/source pushes may update the brief too. Nightly GITHUB_TOKEN
       # commits are handled by the completion event below, not push recursion.
-      - "site/master_brief.json"
-      - "site/china_brief.json"
-      - "site/btc_brief.json"
       - "templates/**"
       # Public/marketing surfaces have a dedicated GitHub-hosted fast lane. These
       # exclusions are ordered after templates/** so they do not occupy the scarce
@@ -90,6 +87,11 @@ on:
       - "!templates/seo_base.html.j2"
       - "!templates/support.html.j2"
       - "!templates/unsubscribe.html.j2"
+      # Brief JSON inputs are independent of the ordered template exclusions.
+      # Keep templates/** first for the real ship-loop path scanner.
+      - "site/master_brief.json"
+      - "site/china_brief.json"
+      - "site/btc_brief.json"
       # Explicit builder ownership. This lane executes these entrypoints directly
       # or imports them transitively; every other top-level build_*.py belongs to a
       # different lane and must not occupy pipeline-render. The ownership contract
