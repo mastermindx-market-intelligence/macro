@@ -82,6 +82,24 @@
 .ilx-d0 { left: 1px; }
 .ilx-d1 { right: 1px; }
 
+/* A missing observation is a visible break, not a silently joined value.
+   Page typography owns the label, never a horizontally stretched SVG glyph. */
+.ilx-gap-note {
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 140px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-2, var(--muted));
+  background: var(--panel);
+  pointer-events: none;
+}
+
 .ilx-tag {
   position: absolute;
   top: 2px;
