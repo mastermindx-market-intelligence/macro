@@ -28,8 +28,9 @@ waves:
   - id: scenario_illustration_extension
     title: Numeric heatmaps and qualitative scenario matrices with model selection and production proof
     status: in_progress
-next_action: Complete the Chairman's 2026-11-04 heatmap/scenario-matrix extension in the existing Brain visual contract, qualify actual model selection and responsive shared-widget/history behavior, then follow the existing protected release and production-proof path. PR10069 is merged; preserve its accepted implementation and the remaining live acceptance distinctions.
+next_action: Reconcile original Fabric run brain-scenario-illustrations-build-20261104-c4 under root mastermind-ai-illustrations-20261015-c1 after evidenced runtime recovery; require matching-root terminal/result or execution-absence proof before resuming HM2-HM6. Preserve the tested parent selection repair, same branch and original uncertain effect. PR10069 is merged.
 artifacts:
+  - agentos/handoffs/WS-MASTERMIND-AI-ILLUSTRATIONS-2026-11-04-C4.md
   - docs/superpowers/specs/2026-11-04-brain-scenario-illustrations.md
   - docs/superpowers/specs/2026-10-21-brain-intelligent-output.md
   - docs/superpowers/specs/2026-10-15-mastermind-ai-illustrations.md

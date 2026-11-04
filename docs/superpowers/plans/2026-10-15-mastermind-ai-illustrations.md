@@ -23,10 +23,11 @@ Execution ownership: principal retains cross-owner integration and visual judgme
 
 Spec: docs/superpowers/specs/2026-11-04-brain-scenario-illustrations.md. This is an additive extension on protected main after merged PR10069; it does not replace PR9447 or PR10208.
 
-- [ ] HM1: persist contract; preserve original-root accounting and isolated source custody.
+- [x] HM1: persist contract; preserve original-root accounting and isolated source custody.
 - [ ] HM2: closed numeric heatmap and qualitative scenario_matrix compiler, schema and replay validation.
 - [ ] HM3: native responsive matrix renderer with accessible axes/cells, semantic legend, assumptions and exact-value disclosure.
 - [ ] HM4: teach the model template selection; prevent text-only illustrative matrices from evading current/historical data guards.
+- [x] HM4a: recognize heatmap/matrix presentation requests in Fast EN/ZH without widening upstream tool authorization; clarify explicitly requested financial teaching scope and qualify deterministic regressions. Actual model selection remains in HM6.
 - [ ] HM5: integrated shared-widget browser proof in both themes/languages, 1440/390 and 320 robustness; unchanged source/history/CSV semantics.
 - [ ] HM6: exact-head review/CI, normal protected release and served model-to-visual/history acceptance.
 
