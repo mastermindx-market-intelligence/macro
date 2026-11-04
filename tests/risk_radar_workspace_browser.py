@@ -316,6 +316,7 @@ def check_ui(output: Path) -> dict:
                    page.locator('.rkw-inspector-content .rlx-bar-track').count() == 0)
             page.keyboard.press("Escape")
 
+            risk_band_colors = {}
             for width, theme, language in [(w, t, l) for w in (1440, 768, 390, 320)
                                            for t in ("dark", "light") for l in ("en", "zh")]:
                 page.set_viewport_size({"width": width, "height": 844 if width < 900 else 900})
@@ -323,6 +324,13 @@ def check_ui(output: Path) -> dict:
                     document.documentElement.dataset.lang=s[1];document.documentElement.lang=s[1];}""",
                               [theme, language])
                 page.wait_for_timeout(250)  # Let the native theme transitions settle before capture.
+                colors = [page.locator(".riskdlg-scare .sc-band-" + band).first.evaluate(
+                    "(e)=>getComputedStyle(e).color") for band in ("high", "calm")]
+                if language == "en":
+                    risk_band_colors[(width, theme)] = colors
+                else:
+                    record(f"risk severity ink stays consistent across languages {width}px/{theme}",
+                           colors == risk_band_colors[(width, theme)] and colors[0] != colors[1])
                 page.locator("#dlg-risk .mx5-dlg-body").evaluate("(e)=>e.scrollTop=0")
                 record(f"modal fits {width}px {theme}/{language}", page.locator("#dlg-risk .mx5-dlg-panel").evaluate(
                     "(e)=>{let r=e.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&e.scrollWidth<=e.clientWidth+1;}"))
