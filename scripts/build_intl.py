@@ -161,7 +161,12 @@ def _project_investigation_sink(*, workspace, request, sink, measures, materiali
         receipt = source.get("receipt") or {}
         native = receipt.get("source") or {}
         if sid == "EZ.policy_rate":
-            identity = source.get("materialized_identity")
+            owned_identity = source.get("materialized_identity")
+            identity = ({key: owned_identity[key] for key in ("artifact_sha256", "provenance_sha256")}
+                        if type(owned_identity) is dict
+                        and set(owned_identity) == {"artifact_sha256", "provenance_sha256", "column"}
+                        and owned_identity["column"] == "ez_depo_rate"
+                        else None)
         else:
             digest = source.get("receipt_sha256")
             identity = {"receipt_sha256": digest} if digest is not None else None

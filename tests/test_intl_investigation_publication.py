@@ -124,3 +124,29 @@ def test_mismatched_native_panel_generation_cannot_issue_a_packet(tmp_path):
     with pytest.raises(ValueError, match='workspace_scope_mismatch'):
         _project_investigation_sink(workspace=workspace, request=request(), sink={},
                                    measures={}, materialized={}, decisions={})
+
+
+def test_actual_ecb_reader_column_descriptor_is_projected_to_exact_receipt_pair(tmp_path):
+    import json
+    from tests.test_intl_ecb_deposit_admission import inputs as ecb_inputs
+    from lib.intl_macro_publication import read_ecb_deposit_materialization
+    frame, _ = _setup(tmp_path)
+    source = ecb_inputs()
+    directory = tmp_path / 'intl_macro'; directory.mkdir()
+    source['series'].to_frame().to_parquet(directory / 'ez_depo_rate.parquet')
+    (directory / 'provenance.json').write_text(json.dumps({'series': {'ez_depo_rate': source['provenance']}}))
+    owned = read_ecb_deposit_materialization(data_root=tmp_path)
+    assert set(owned['materialized_identity']) == {'column', 'artifact_sha256', 'provenance_sha256'}
+    req = request(); selected = ['EZ.policy_rate']
+    req['context'].update(researchMarket='EZ', selectedMeasureIds=selected)
+    req['requirements']['requiredMeasureIds'] = selected
+    req['enumerated_measure_ids'] = selected
+    req['owner']['measureLabels'] = {'EZ.policy_rate': 'ECB deposit facility rate'}
+    sink = {}
+    workspace = _publication_workspace(frame, data_root=tmp_path, evaluated_at='2026-10-07T10:00:00Z',
+                                       investigation_request=req, investigation_sink=sink)
+    observation = sink['packet']['current']['observations'][0]
+    assert observation['qualified'] and observation['interpretation']['value'] == 2.5
+    assert set(sink['provenance']['measures']['EZ.policy_rate']['receiptIdentity']) == {'artifact_sha256', 'provenance_sha256'}
+    assert observation['qualificationIdentity'] is not None
+    assert workspace['config']['source_reference'] == sink['packet']['current']['generation']
