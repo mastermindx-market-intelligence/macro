@@ -911,7 +911,7 @@
       if (API === '') location.href = '/logout';   // app: also clears mm_session
       else location.reload();                        // macro: back to signed-out
     };
-    if (SUPA && hasPersisted()) sbClient().then(function (sb) { return sb.auth.signOut(); }).then(fin, fin);
+    if (SUPA && hasPersisted()) sbClient().then(function (sb) { return sb.auth.signOut({ scope: 'local' }); }).then(fin, fin);
     else fin();
   }
   // S1-04: only an authoritative {ok:true} reply is a global sign-out. A server error, a
@@ -1290,7 +1290,7 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20261101-expectation-surface-nav';
+    s.src = pfx + 'nav_market.js?v=20261103-auth-session-continuity';
     s.async = true;
     (document.head || document.documentElement).appendChild(s);
   })();
