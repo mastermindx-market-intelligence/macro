@@ -30,6 +30,15 @@ html[data-theme=light]{--series-1:#66543b;--series-2:#235b8e;--series-3:#256341;
 .row-identity{display:flex;align-items:center;justify-content:space-between;gap:8px}.row-identity>span:first-child{min-width:0}.formula{font-variant-numeric:tabular-nums;background:var(--raised);padding:14px;border-radius:6px;font-size:15px}
 @media(max-width:600px){html[data-density=comfortable]{--row:64px}main{padding-top:18px}.page-head{margin-bottom:12px}.page-head .deck{font-size:12px}.page-head h1{font-size:25px}.page-action{margin-top:8px}.receipt{font-size:11px}.receipt span{margin:2px 0}.summary-strip{grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:12px 0;gap:12px}.summary-strip .metric:first-child{grid-column:auto}.summary-strip .metric:first-child .metric-value{font-size:27px}.summary-strip .metric:last-child{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px}.summary-strip .metric:last-child .metric-value{grid-column:2;grid-row:1/3;font-size:23px;align-self:center}.summary-strip .metric:last-child .metric-change,.summary-strip .metric:last-child .metric-note{grid-column:1;font-size:11px}.metric-value{font-size:25px}.metric-note{font-size:11px}.mobile-evidence{display:inline-flex;margin:0!important;flex-shrink:0}.evidence-icon{width:44px;height:44px;min-width:44px;min-height:44px;padding:10px!important}.row-name{overflow-wrap:normal;word-break:normal}.sticky-first th:first-child{width:200px;min-width:200px;max-width:200px}th,td{padding:5px 10px}.table-options tbody th,.table-options td{height:max(52px,var(--row))}.row-sub{font-size:11px}.chart{min-height:0}.chart text{font-size:12px}.section-heading h2{font-size:16px}.table-hint{font-size:11px}.table-foot{font-size:11px}.filter-row input{width:auto;max-width:180px;min-width:100px}.table-company{min-width:950px}.table-data{min-width:480px}}
 @media(forced-colors:active){.selected-row td,.selected-row th{border-block:1px solid Highlight}.company-series{fill:CanvasText;stroke:Canvas;stroke-width:1}.legend-mark{color:CanvasText;background:Canvas;border:1px solid CanvasText}}
+/* Scroll restoration must reveal the focused value beyond the sticky row label. */
+#panel-comparison .table-wrap{scroll-padding-inline-start:188px;scroll-padding-inline-end:12px}
+#panel-comparison .table-wrap [data-evidence]{scroll-margin-inline:4px}
+/* At 400% zoom a 1280px desktop exposes only 320 CSS px. A 200px pinned
+   metric column otherwise covers most numeric values and their focus outlines. */
+@media(max-width:600px){
+  .sticky-first th:first-child{position:static}
+  #panel-comparison .table-wrap{scroll-padding-inline-start:12px}
+}
 </style>
 </head>
 <body>
