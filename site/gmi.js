@@ -168,7 +168,7 @@ var tr=function(en,zh){return lang()==='zh'?zh:en;};
 var txt=function(value){return value==null?'':String(value);};
 var norm=function(value){return txt(value).normalize('NFKC').toLocaleLowerCase().replace(/\s+/g,' ').trim();};
 function el(tag,cls,text){var n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=txt(text);return n;}
-function icon(kind){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('width','16');s.setAttribute('height','16');s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');s.setAttribute('stroke-width','1.8');s.setAttribute('stroke-linecap','round');s.setAttribute('stroke-linejoin','round');s.setAttribute('aria-hidden','true');var p=document.createElementNS(s.namespaceURI,'path');p.setAttribute('d',kind==='ext'?'M14 4.5h5.5V10M19.5 4.5L11 13M17.5 14v5.5h-13v-13H10':'M4.5 12h15M13.5 6l6 6-6 6');s.append(p);return s;}
+function icon(kind){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('width','16');s.setAttribute('height','16');s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');s.setAttribute('stroke-width','1.8');s.setAttribute('stroke-linecap','round');s.setAttribute('stroke-linejoin','round');s.setAttribute('aria-hidden','true');var p=document.createElementNS(s.namespaceURI,'path');p.setAttribute('d',kind==='ext'?'M14 4.5h5.5V10M19.5 4.5L11 13M17.5 14v5.5h-13v-13H10':kind==='back'?'M19.5 12h-15M10.5 6l-6 6 6 6':'M4.5 12h15M13.5 6l6 6-6 6');s.append(p);return s;}
 function date(value){var parsed=new Date(txt(value).slice(0,10)+'T00:00:00Z');return Number.isNaN(parsed.getTime())?tr('Date not recorded','日期未记录'):new Intl.DateTimeFormat(lang()==='zh'?'zh-CN':'en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(parsed);}
 function stage(value){var words={planned:['Planned','计划中'],announced:['Announced','已宣布'],in_production:['In production','量产中'],terminated:['Ended','已终止'],active:['Active in source','来源记载有效']};var v=words[value]||['Stage not recorded','阶段未记录'];return tr(v[0],v[1]);}
 function link(label,href,cls,external){var a=el('a',cls,label);try{var u=new URL(href,location.href);if(u.protocol!=='http:'&&u.protocol!=='https:')throw new Error('protocol');a.href=u.href;}catch(e){return el('span','gmi-muted',label);}if(external){a.target='_blank';a.rel='noopener noreferrer';a.append(icon('ext'),el('span','gmi-vh',tr(' opens a new tab',' 在新标签页打开')));}return a;}
@@ -182,15 +182,86 @@ document.addEventListener('DOMContentLoaded',dockBrain,{once:true});
 window.addEventListener('mm-brain-ready',dockBrain);
 document.querySelectorAll('[data-gmi-snapshot]').forEach(function(n){var d=new Date(n.getAttribute('data-gmi-snapshot').slice(0,10)+'T00:00:00Z');var age=Date.now()-d.getTime();var label=n.querySelector('.gmi-snapshot-stale');if(label&&Number.isFinite(age))label.hidden=age<=7*86400000;});
 
-/* Company catalogue uses the same source-rendered cards and preserves no-JS access. */
+/* Research context stays in the existing URL state. Only two local return routes
+   and their presentation keys are accepted; fragments keep search out of requests.
+   A catalogue may carry one upstream theme return, never an arbitrary stack. */
+function safeReturn(value,nested){
+  if(typeof value!=='string'||value.length>4096)return '';
+  var route=/^(gmi(?:-companies)?\.html)(?:#([^\r\n]*))?$/.exec(value);if(!route)return '';
+  var input=new URLSearchParams(route[2]||''),output=new URLSearchParams();
+  function copy(key,valid){var v=input.get(key);if(v&&valid(v))output.set(key,v);}
+  if(route[1]==='gmi.html'){
+    ['theme','category'].forEach(function(key){copy(key,function(v){return /^[a-z0-9_:.-]{1,160}$/i.test(v);});});
+    copy('scope',function(v){return v==='core'||v==='extended';});
+    copy('evidence',function(v){return v==='1';});
+    copy('lens',function(v){return v==='coverage'||v==='chain';});
+  }else if(!nested){
+    var upstream=safeReturn(input.get('gmi_return'),true);
+    if(upstream.split('#')[0]==='gmi.html')output.set('gmi_return',upstream);
+  }
+  if(input.get('q'))output.set('q',input.get('q').slice(0,200));
+  return route[1]+(output.size?'#'+output.toString():'');
+}
+function localPage(href){try{var u=new URL(href,location.href);if(u.origin===location.origin&&u.pathname.slice(0,u.pathname.lastIndexOf('/')+1)===location.pathname.slice(0,location.pathname.lastIndexOf('/')+1))return u.pathname.split('/').pop();}catch(error){}return '';}
+var originalHrefs=new WeakMap();
+function refreshJourney(){
+  var current=localPage(location.href),inherited=safeReturn(new URLSearchParams(location.hash.slice(1)).get('gmi_return'));
+  if(current==='gmi-companies.html'&&inherited.split('#')[0]!=='gmi.html')inherited='';
+  var source=current==='gmi.html'||current==='gmi-companies.html'?safeReturn(current+location.hash):inherited;
+  var catalog=inherited.split('#')[0]==='gmi-companies.html'?inherited:'';
+  var research=catalog?safeReturn(new URLSearchParams(catalog.split('#')[1]||'').get('gmi_return'),true):inherited;
+  if(research.split('#')[0]!=='gmi.html')research='';
+  var nav=document.querySelector('.gmi-product-nav'),holder=document.querySelector('.gmi-return-context');
+  var back=inherited&&(current==='gmi-companies.html'||/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(current));
+  if(back&&nav){
+    if(!holder){holder=el('div','gmi-return-context');nav.after(holder);}
+    var action=holder.querySelector('[data-gmi-return]');if(!action){action=el('a','gmi-action-secondary');action.setAttribute('data-gmi-return','');holder.append(action);}
+    action.href=new URL(inherited,location.href).href;
+    action.replaceChildren(icon('back'),el('span','',catalog?tr('Back to company results','返回公司结果'):tr('Back to theme research','返回主题研究')));
+  }else if(holder)holder.remove();
+  document.querySelectorAll('main a[href]:not([data-gmi-return])').forEach(function(a){
+    if(!originalHrefs.has(a))originalHrefs.set(a,a.getAttribute('href'));
+    var original=originalHrefs.get(a),page=localPage(original),next=original;
+    if(source&&(/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(page)||(page==='gmi-companies.html'&&current!=='gmi-companies.html'))){
+      if(page==='gmi-companies.html'&&catalog)next=catalog;
+      else{var url=new URL(original,location.href),p=new URLSearchParams(url.hash.slice(1));p.set('gmi_return',source);url.hash=p.toString();next=url.href;}
+    }else if(research&&page==='gmi.html'&&a.matches('.gmi-product-name,.gmi-product-tabs a'))next=research;
+    if(a.getAttribute('href')!==next)a.setAttribute('href',next);
+  });
+}
+
+/* Company catalogue uses source-rendered cards and the same URL state owner. */
 var companySearch=document.querySelector('[data-company-search]');
 function companies(){if(!companySearch)return;var q=norm(companySearch.value),count=0;document.querySelectorAll('[data-company-card]').forEach(function(c){c.hidden=!!q&&!norm(c.getAttribute('data-search')).includes(q);if(!c.hidden)count++;});document.querySelector('[data-company-empty]').hidden=count>0;document.querySelector('[data-company-count]').textContent=tr(count+' '+(count===1?'company':'companies')+' with evidence on file','有收录证据的公司：'+count+' 家');}
-if(companySearch){companySearch.addEventListener('input',companies);document.querySelector('[data-company-reset]').addEventListener('click',function(){companySearch.value='';companies();companySearch.focus();});companies();}
+function restoreCompanies(){if(companySearch){companySearch.value=txt(new URLSearchParams(location.hash.slice(1)).get('q')).slice(0,200);companies();}refreshJourney();}
+function updateCompanies(){var p=new URLSearchParams(location.hash.slice(1)),q=companySearch.value.slice(0,200);if(q)p.set('q',q);else p.delete('q');history.replaceState(null,'',location.pathname+location.search+(p.size?'#'+p.toString():''));companies();refreshJourney();}
+if(companySearch){companySearch.maxLength=200;companySearch.addEventListener('input',updateCompanies);document.querySelector('[data-company-reset]').addEventListener('click',function(){companySearch.value='';updateCompanies();companySearch.focus();});}
+restoreCompanies();
 var workspace=document.querySelector('[data-gmi-explorer]');
-if(!workspace){new MutationObserver(function(){languageOptions();companies();}).observe(root,{attributes:true,attributeFilter:['data-lang']});return;}
+if(!workspace){window.addEventListener('hashchange',restoreCompanies);window.addEventListener('popstate',restoreCompanies);new MutationObserver(function(){languageOptions();companies();refreshJourney();}).observe(root,{attributes:true,attributeFilter:['data-lang']});return;}
 var answer=document.querySelector('[data-topic-answer]'),notice=document.querySelector('[data-topic-notice]'),announcement=document.querySelector('[data-gmi-announcement]');
 var data;
-try{data=JSON.parse(document.getElementById('gmi-topic-data').textContent);if(!Array.isArray(data.topics)||!data.topics.length)throw new Error('missing topics');}catch(error){notice.hidden=false;notice.textContent=tr('Interactive research could not load. The answer below and the full index remain available.','交互研究未能加载。下方答案与完整索引仍可使用。');document.querySelector('[data-browse-home]').hidden=true;var fallback=document.querySelector('[data-browse-open]');fallback.addEventListener('click',function(){location.href='gmi-index.html';});answer.querySelector('[data-gmi-copy]').hidden=true;return;}
+/* Validate the complete presentation shape before replacing the server answer.
+   This is a rendering guard, not a publication/permission decision. */
+function usableData(value){
+  function object(v){return v!==null&&typeof v==='object'&&!Array.isArray(v);}
+  function string(v){return typeof v==='string'&&v.trim().length>0;}
+  function optional(v){return v==null||typeof v==='string';}
+  function labelled(v){return object(v)&&string(v.en)&&string(v.zh);}
+  if(!object(value)||!object(value.categories)||!Array.isArray(value.topics)||!value.topics.length)return false;
+  var cats=value.categories,ids=new Set();
+  function categoryExists(id){return string(id)&&Object.prototype.hasOwnProperty.call(cats,id)&&labelled(cats[id]);}
+  if(!Object.values(cats).every(labelled))return false;
+  if(!value.topics.every(function(t){
+    if(!labelled(t)||!string(t.id)||ids.has(t.id)||!['core','extended'].includes(t.tier)||!categoryExists(t.category)||!categoryExists(t.parent)||!optional(t.position))return false;
+    ids.add(t.id);
+    if(!Array.isArray(t.paths)||!t.paths.length||!t.paths.every(function(path){return Array.isArray(path)&&path.length&&path.every(function(p){return labelled(p)&&categoryExists(p.id);});}))return false;
+    return Array.isArray(t.connections)&&t.connections.every(function(c){return object(c)&&string(c.company)&&string(c.ticker)&&string(c.href)&&/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(localPage(c.href))&&['product','platform','lifecycle','receipt'].every(function(key){return optional(c[key]);})&&labelled(c.source)&&['date','url','key','sha256'].every(function(key){return optional(c.source[key]);});});
+  }))return false;
+  return ids.has(workspace.getAttribute('data-default-theme'))&&Array.from(document.querySelectorAll('[data-topic-results] [data-topic-select]')).every(function(row){return ids.has(row.getAttribute('data-topic-select'));});
+}
+function loadFailure(){notice.hidden=false;notice.textContent=tr('Interactive research could not load. The answer below and the full index remain available.','交互研究未能加载。下方答案与完整索引仍可使用。');}
+try{data=JSON.parse(document.getElementById('gmi-topic-data').textContent);if(!usableData(data))throw new Error('incomplete presentation data');}catch(error){loadFailure();document.querySelector('[data-browse-home]').hidden=true;var fallback=document.querySelector('[data-browse-open]');fallback.addEventListener('click',function(){location.href='gmi-index.html';});answer.querySelector('[data-gmi-copy]').hidden=true;new MutationObserver(function(){languageOptions();loadFailure();refreshJourney();}).observe(root,{attributes:true,attributeFilter:['data-lang']});return;}
 var topics=data.topics,byId=new Map(topics.map(function(t){return[t.id,t];}));
 var defaults={theme:workspace.getAttribute('data-default-theme'),q:'',category:'',scope:'all',evidence:false};
 var state=Object.assign({},defaults),invalidTheme=false,lastHash=null;
@@ -203,7 +274,7 @@ var searchText=new Map(topics.map(function(t){return[t.id,norm([t.en,t.zh].conca
 function label(n){return n[lang()]||n.en;}
 function announce(message){announcement.textContent=message;}
 function readURL(){var p=new URLSearchParams(location.hash.slice(1));var requested=p.get('theme')||defaults.theme;invalidTheme=!byId.has(requested);state={theme:invalidTheme?defaults.theme:requested,q:txt(p.get('q')).slice(0,200),category:category.querySelector('option[value="'+CSS.escape(p.get('category')||'')+'"]')?(p.get('category')||''):'',scope:['core','extended'].includes(p.get('scope'))?p.get('scope'):'all',evidence:p.get('evidence')==='1'};}
-function writeURL(mode){var p=new URLSearchParams(location.hash.slice(1));p.set('theme',state.theme);[['q',state.q],['category',state.category],['scope',state.scope==='all'?'':state.scope],['evidence',state.evidence?'1':'']].forEach(function(pair){if(pair[1])p.set(pair[0],pair[1]);else p.delete(pair[0]);});var next='#'+p.toString();if(next!==location.hash)history[mode==='push'?'pushState':'replaceState'](null,'',next);lastHash=location.hash;}
+function writeURL(mode){var p=new URLSearchParams(location.hash.slice(1));p.set('theme',state.theme);[['q',state.q],['category',state.category],['scope',state.scope==='all'?'':state.scope],['evidence',state.evidence?'1':'']].forEach(function(pair){if(pair[1])p.set(pair[0],pair[1]);else p.delete(pair[0]);});var next='#'+p.toString();if(next!==location.hash)history[mode==='push'?'pushState':'replaceState'](null,'',next);lastHash=location.hash;refreshJourney();}
 function matches(t){return(!state.category||t.paths.some(function(path){return path.length&&path[0].id===state.category;}))&&(state.scope==='all'||t.tier===state.scope)&&(!state.evidence||t.connections.length>0)&&(!norm(state.q)||searchText.get(t.id).includes(norm(state.q)));}
 function filters(){search.value=state.q;category.value=state.category;evidence.checked=state.evidence;scopes.forEach(function(s){s.checked=s.value===state.scope;});var count=0,firstVisible=null,selectedVisible=null;rows.forEach(function(row){var t=byId.get(row.getAttribute('data-topic-select'));row.hidden=!matches(t);row.tabIndex=-1;if(!row.hidden){count++;if(!firstVisible)firstVisible=row;if(t.id===state.theme)selectedVisible=row;}if(t.id===state.theme)row.setAttribute('aria-current','true');else row.removeAttribute('aria-current');});if(selectedVisible||firstVisible)(selectedVisible||firstVisible).tabIndex=0;document.querySelector('[data-topic-count]').textContent=tr(count+' of '+topics.length+' topics',topics.length+' 个主题中显示 '+count+' 个');document.querySelector('[data-topic-no-results]').hidden=count>0;results.hidden=count===0;var selected=byId.get(state.theme);notice.hidden=!invalidTheme&&matches(selected);answer.querySelector('[data-topic-category]').textContent=label(data.categories[state.category&&selected.paths.some(function(path){return path.length&&path[0].id===state.category;})?state.category:selected.category]);notice.textContent=invalidTheme?tr('That topic is not available in this snapshot. Showing the available starting topic.','此快照中找不到该主题，现显示可用的起始主题。'):tr('Your selected topic is outside these filters. Clear filters to include it.','当前所选主题不在筛选范围内。清除筛选即可显示。');}
 function connection(c,t){var card=el('article','gmi-evidence-card');var top=el('div','gmi-evidence-top'),when=el('div','gmi-evidence-date');top.append(el('span','gmi-eyebrow',tr('Documented connection','有据可查的关联')));when.append(el('span','',tr('Source','来源')+' · '+date(c.source.date)),el('span','gmi-stage',stage(c.lifecycle)));top.append(when);card.append(top);
@@ -215,10 +286,10 @@ function renderAnswer(){var t=byId.get(state.theme);answer.querySelector('.gmi-c
 var cards=answer.querySelector('[data-topic-connections]');cards.replaceChildren();if(t.connections.length){t.connections.forEach(function(c){cards.append(connection(c,t));});}else{var empty=el('section','gmi-topic-empty');empty.append(el('span','gmi-eyebrow',tr('Research coverage','研究覆盖')),el('h2','',tr('No company evidence yet','暂无公司证据')),el('p','',tr('This topic is mapped. A reviewed company connection has not been published here yet.','此主题已列入体系，但此处尚未发布经审核的公司关联。')),el('p','gmi-note',tr('An empty result does not mean no companies participate in this theme.','没有结果并不表示没有公司参与这一主题。')),link(tr('Browse available evidence','浏览现有证据'),'gmi-companies.html','gmi-action-secondary'));cards.append(empty);}
 answer.querySelector('[data-topic-coverage]').textContent=tr(t.connections.length+' documented connection'+(t.connections.length===1?'':'s')+' on file.','已收录 '+t.connections.length+' 条有据可查的关联。');var related=answer.querySelector('[data-topic-related]');related.replaceChildren();var parents=new Set(t.paths.filter(function(p){return p.length;}).map(function(p){return p[p.length-1].id;}));var nearby=topics.filter(function(other){return other.id!==t.id&&other.paths.some(function(p){return p.length&&parents.has(p[p.length-1].id);});}).slice(0,3);nearby.forEach(function(other){var a=link(label(other),'#theme='+encodeURIComponent(other.id));a.setAttribute('data-topic-select',other.id);related.append(a);});if(!nearby.length){related.append(link(tr('Browse this category','浏览此类别'),'#theme='+encodeURIComponent(t.id)+'&category='+encodeURIComponent(t.category)));}
 var taxonomy=answer.querySelector('[data-topic-taxonomy]');taxonomy.replaceChildren();t.paths.forEach(function(p){taxonomy.append(el('p','',p.map(label).concat(label(t)).join(' › ')));});var positions={upstream:['Upstream','上游'],midstream:['Midstream','中游'],downstream:['Downstream','下游'],enabler:['Enabler','赋能']},position=positions[t.position];taxonomy.append(el('p','',tr('Value-chain position: ','价值链位置：')+(position?tr(position[0],position[1]):tr('Not recorded','未记录'))));taxonomy.append(el('p','',t.tier==='core'?tr('Core topics form the coverage measurement set.','核心主题构成覆盖率衡量集合。'):tr('Extended topics provide orientation and are excluded from core coverage measures.','扩展主题用于帮助浏览，不计入核心覆盖率衡量。')));answer.setAttribute('aria-busy','false');answer.querySelector('[data-copy-label]').textContent=tr('Copy link','复制链接');}
-function sync(){languageOptions();filters();renderAnswer();}
+function sync(){languageOptions();filters();renderAnswer();refreshJourney();}
 function restore(){if(lastHash===location.hash)return;readURL();lastHash=location.hash;sync();if(invalidTheme)writeURL('replace');}
 function closeBrowse(focusTitle){if(dialog.open)dialog.close();if(focusTitle)requestAnimationFrame(function(){document.getElementById('gmi-topic-title').focus({preventScroll:true});document.getElementById('gmi-topic-title').scrollIntoView({block:'start',behavior:'auto'});});}
-function select(id,focusAnswer){if(!byId.has(id))return;state.theme=id;invalidTheme=false;writeURL('push');filters();renderAnswer();closeBrowse(mobile.matches||focusAnswer);announce(tr('Selected: ','已选择：')+label(byId.get(id)));}
+function select(id,focusAnswer){if(!byId.has(id))return;state.theme=id;invalidTheme=false;writeURL('push');filters();renderAnswer();refreshJourney();closeBrowse(mobile.matches||focusAnswer);announce(tr('Selected: ','已选择：')+label(byId.get(id)));}
 document.addEventListener('click',function(event){var a=event.target.closest('[data-topic-select]');if(!a||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||event.button!==0)return;event.preventDefault();select(a.getAttribute('data-topic-select'),!results.contains(a));});
 results.addEventListener('keydown',function(event){var a=event.target.closest('[data-topic-select]');if(!a)return;var visible=rows.filter(function(r){return!r.hidden;}),i=visible.indexOf(a),target;if(event.key==='ArrowDown')target=visible[Math.min(i+1,visible.length-1)];else if(event.key==='ArrowUp')target=visible[Math.max(i-1,0)];else if(event.key==='Home')target=visible[0];else if(event.key==='End')target=visible[visible.length-1];if(target){event.preventDefault();rows.forEach(function(r){r.tabIndex=-1;});target.tabIndex=0;target.focus();}});
 function updateFilters(){state.q=search.value.slice(0,200);state.category=category.value;state.scope=scopes.find(function(s){return s.checked;}).value;state.evidence=evidence.checked;invalidTheme=false;writeURL('replace');filters();answer.querySelector('[data-topic-category]').textContent=label(data.categories[state.category&&byId.get(state.theme).paths.some(function(path){return path.length&&path[0].id===state.category;})?state.category:byId.get(state.theme).category]);}
@@ -231,7 +302,7 @@ document.addEventListener('keydown',function(event){if(event.key!=='/'||event.ct
 answer.querySelector('[data-gmi-copy]').addEventListener('click',async function(){var button=this;button.disabled=true;writeURL('replace');try{if(!navigator.clipboard||!navigator.clipboard.writeText)throw new Error('clipboard unavailable');await navigator.clipboard.writeText(location.href);answer.querySelector('[data-copy-label]').textContent=tr('Link copied','链接已复制');announce(tr('Link copied to clipboard.','链接已复制到剪贴板。'));setTimeout(function(){answer.querySelector('[data-copy-label]').textContent=tr('Copy link','复制链接');},2500);}catch(error){var fallback=answer.querySelector('.gmi-copy-fallback'),input=document.getElementById('gmi-share-url');fallback.hidden=false;input.value=location.href;input.focus();input.select();announce(tr('Copy was unavailable. Select and copy the address shown.','暂无法自动复制。请选择并复制所显示的地址。'));}finally{button.disabled=false;}});
 answer.querySelector('[data-copy-close]').addEventListener('click',function(){answer.querySelector('.gmi-copy-fallback').hidden=true;answer.querySelector('[data-gmi-copy]').focus();});
 window.addEventListener('hashchange',restore);window.addEventListener('popstate',restore);
-new MutationObserver(function(){sync();companies();}).observe(root,{attributes:true,attributeFilter:['data-lang']});
+new MutationObserver(function(changes){if(changes.some(function(change){return change.attributeName==='data-lang';})){sync();companies();}else refreshJourney();}).observe(root,{attributes:true,attributeFilter:['data-lang','data-gmi-lens']});
 restore();
 workspace.setAttribute('data-gmi-ready','');
 })();

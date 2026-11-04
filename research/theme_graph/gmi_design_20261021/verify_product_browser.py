@@ -14,6 +14,7 @@ from pathlib import Path
 import re
 import threading
 import traceback
+from urllib.parse import parse_qs, urlencode, urlsplit
 from playwright.sync_api import sync_playwright, expect
 
 parser = argparse.ArgumentParser()
@@ -236,6 +237,143 @@ with sync_playwright() as pw:
             p.locator('.gmi-product-tools a[href="gmi-index.html"]').click()
             expect(p.locator('a.gmi-irow-name')).to_have_count(371)
     check('malformed-payload-preserves-server-answer-and-index', malformed_payload)
+
+    def return_journey(width, theme, language):
+        with context(width, theme, language) as c:
+            p = page_for(c)
+            default_id = p.locator('[data-gmi-explorer]').get_attribute('data-default-theme')
+            target = ('theme=' + default_id + '&q=Micron&category=theme:technology_software'
+                      '&scope=core&evidence=1&lens=chain')
+            p.goto(base+'/gmi.html#'+target, wait_until='networkidle')
+            origin = parse_qs(urlsplit(p.url).fragment)
+            evidence = p.locator('.gmi-evidence-actions .gmi-action-primary').first
+            # A real href must carry context before activation, including new tabs.
+            href = evidence.get_attribute('href')
+            assert 'gmi_return=' in href
+            other = c.new_page()
+            other.on('pageerror', lambda e: report['page_errors'].append(str(e)))
+            other.goto(href, wait_until='networkidle')
+            back = other.locator('[data-gmi-return]')
+            expect(back).to_have_text('返回主题研究' if language == 'zh' else 'Back to theme research')
+            assert back.bounding_box()['height'] >= 44
+            assert back.evaluate('(el) => parseFloat(getComputedStyle(el).opacity)') >= 1
+            assert not other.evaluate('document.documentElement.scrollWidth > innerWidth')
+            back.focus()
+            other.keyboard.press('Tab')
+            other.keyboard.press('Shift+Tab')
+            expect(back).to_be_focused()
+            assert back.evaluate('(el) => el.matches(":focus-visible")')
+            name = f'return-{width}-{theme}-{language}.png'
+            other.screenshot(path=str(args.out/name), full_page=True)
+            report['screenshots'].append(name)
+            other.keyboard.press('Enter')
+            expect(other.locator('[data-gmi-ready]')).to_have_count(1)
+            assert parse_qs(urlsplit(other.url).fragment) == origin
+            if width == 390:
+                other.locator('[data-browse-open]').click()
+            expect(other.locator('[data-topic-search]')).to_have_value('Micron')
+            expect(other.locator('[data-topic-category-filter]')).to_have_value('theme:technology_software')
+            expect(other.locator('[data-evidence-only]')).to_be_checked()
+            expect(other.locator('input[name="gmi-scope"][value="core"]')).to_be_checked()
+            assert other.locator('.gmi-topic-option:visible').count() == 1
+            assert other.locator('html').get_attribute('data-gmi-lens') == 'chain'
+            other.close()
+            # Preserve a company search and the upstream theme context on a second hop.
+            p.locator('.gmi-product-tabs a').nth(1).click()
+            p.locator('[data-company-search]').fill('Micron')
+            p.reload(wait_until='networkidle')
+            expect(p.locator('[data-company-search]')).to_have_value('Micron')
+            catalog_origin = parse_qs(urlsplit(p.url).fragment)
+            p.locator('.gmi-company-card a').first.click()
+            expect(p.locator('[data-gmi-return]')).to_have_text('返回公司结果' if language == 'zh' else 'Back to company results')
+            p.locator('[data-gmi-return]').click()
+            expect(p.locator('[data-company-search]')).to_have_value('Micron')
+            assert parse_qs(urlsplit(p.url).fragment) == catalog_origin
+            p.locator('[data-gmi-return]').click()
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            assert parse_qs(urlsplit(p.url).fragment) == origin
+            # Lens controls use replaceState; contextual hrefs must update as well.
+            p.locator('.gmi-advanced > summary').click()
+            p.locator('[data-gmi-set-lens="coverage"]').click()
+            href = p.locator('.gmi-evidence-actions .gmi-action-primary').first.get_attribute('href')
+            return_value = parse_qs(urlsplit(href).fragment)['gmi_return'][0]
+            assert parse_qs(urlsplit(return_value).fragment)['lens'] == ['coverage']
+
+    for width in (1440, 390):
+        for theme in ('dark', 'light'):
+            for language in ('en', 'zh'):
+                check(f'return-journey-{width}-{theme}-{language}',
+                      lambda w=width,t=theme,l=language: return_journey(w,t,l))
+
+    def incomplete_payloads():
+        original = (args.site / 'gmi.html').read_text()
+        pattern = r'(<script\b[^>]*id="gmi-topic-data"[^>]*>).*?(</script>)'
+        payload = json.loads(re.search(pattern, original, re.S)[0].split('>', 1)[1].rsplit('</script>', 1)[0])
+        cases = ('categories', 'paths', 'connections', 'source', 'duplicate-id', 'default-id', 'category-label', 'parent')
+        with context(390, 'light', 'zh') as c:
+            for defect in cases:
+                data = json.loads(json.dumps(payload))
+                selected = next(t for t in data['topics'] if t['connections'])
+                if defect == 'categories':
+                    data.pop('categories')
+                elif defect in ('paths', 'connections'):
+                    selected[defect] = None
+                elif defect == 'source':
+                    selected['connections'][0]['source'] = None
+                elif defect == 'duplicate-id':
+                    data['topics'].append(data['topics'][0])
+                elif defect == 'default-id':
+                    data['topics'].remove(selected)
+                elif defect == 'category-label':
+                    data['categories'][selected['category']] = None
+                elif defect == 'parent':
+                    selected['parent'] = 'missing-category'
+                damaged = re.sub(pattern, lambda m: m[1]+json.dumps(data)+m[2], original, flags=re.S)
+                c.route('**/gmi.html', lambda route: route.fulfill(status=200, content_type='text/html', body=damaged))
+                p = page_for(c)
+                expect(p.locator('[data-topic-notice]')).to_be_visible()
+                assert '交互研究未能加载' in p.locator('[data-topic-notice]').inner_text(), defect
+                assert p.locator('.gmi-evidence-card').count() == 1, defect
+                expect(p.locator('[data-gmi-ready]')).to_have_count(0)
+                assert not p.locator('[data-browse-open]').is_visible()
+                assert not p.locator('[data-gmi-copy]').is_visible()
+                if defect == 'categories':
+                    p.locator('#settings-open').click()
+                    p.locator('.lang-toggle .en-opt').click()
+                    expect(p.locator('[data-topic-notice]')).to_contain_text('Interactive research could not load')
+                    p.keyboard.press('Escape')
+                    name = 'incomplete-payload-recovery.png'
+                    p.screenshot(path=str(args.out/name), full_page=True)
+                    report['screenshots'].append(name)
+                p.close()
+                c.unroute('**/gmi.html')
+            p = page_for(c, 'gmi-index.html')
+            expect(p.locator('a.gmi-irow-name')).to_have_count(371)
+    check('incomplete-payloads-preserve-server-answer-and-index', incomplete_payloads)
+
+    def return_boundary():
+        rejected = ('https://example.invalid/', '//example.invalid/', 'javascript:alert(1)',
+                    '../gmi.html#theme=wrong', 'gmi.html?token=private', 'gmi.html/extra',
+                    'gmi.html#q='+'a'*5000, 'gmi-issuer-mu.html', 'data:text/html,x')
+        with context() as c:
+            for value in rejected:
+                p = page_for(c, 'gmi-issuer-mu.html#'+urlencode({'gmi_return': value}))
+                expect(p.locator('[data-gmi-return]')).to_have_count(0)
+                assert p.locator('.gmi-product-tabs a').first.get_attribute('href') == 'gmi.html'
+                p.close()
+            value = 'gmi.html#theme=theme:hbm_packaging&q='+('a'*250)+'&scope=bogus&unknown=secret&lens=chain'
+            p = page_for(c, 'gmi-issuer-mu.html#'+urlencode({'gmi_return': value}))
+            back = p.locator('[data-gmi-return]')
+            expect(back).to_be_visible()
+            href = back.get_attribute('href')
+            assert urlsplit(href).netloc == urlsplit(base).netloc
+            returned = parse_qs(urlsplit(href).fragment)
+            assert set(returned) == {'theme', 'q', 'lens'}
+            assert len(returned['q'][0]) == 200
+            p.evaluate('location.hash="gmi_return="+encodeURIComponent("https://example.invalid/")')
+            expect(back).to_have_count(0)
+            assert p.locator('.gmi-product-tabs a').first.get_attribute('href') == 'gmi.html'
+    check('return-context-is-bounded-local-and-whitelisted', return_boundary)
 
     def interaction_captures():
         for theme in ('dark', 'light'):
