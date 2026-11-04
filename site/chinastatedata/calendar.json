@@ -1,7 +1,7 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-11-03",
-  "generated_at_utc": "2026-11-03T15:23:30.744406+00:00",
+  "asof": "2026-11-04",
+  "generated_at_utc": "2026-11-04T17:04:15.119368+00:00",
   "horizon_days": 45,
   "entries": [
     {
@@ -26,6 +26,18 @@
       "impact": "medium",
       "source_class": "rule",
       "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-05",
+      "window_end": null,
+      "etype": "omo_outright_repo_tender",
+      "label_en": "PBoC outright reverse repo tender — 3个月, RMB 300bn, matures 2027-02-04",
+      "label_zh": "央行买断式逆回购操作：3个月，3,000亿元，到期 2027-02-04",
+      "region": "cn",
+      "impact": "medium",
+      "source_class": "feed",
+      "source": "china_omo.operations",
       "approx": false
     },
     {
@@ -414,7 +426,6 @@
     }
   ],
   "data_gaps": [
-    "china_omo store holds no announced operation inside the horizon (the tape is present; the PBoC simply has nothing pending)",
     "china_earnings store holds no reporting month inside the horizon"
   ],
   "authority": {
