@@ -45,18 +45,18 @@
             Confirm the domain action; keep its real owner and result.
           </div>
         </div>
-        <div id="4KA-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
-          <div id="4KB-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
+        <div id="4KA-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-text-primary)', borderRadius: '6px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+          <div id="4KB-0" style={{ boxSizing: 'border-box', color: 'var(--noir-canvas)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
             Save view
           </div>
         </div>
-        <div id="4KC-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+        <div id="4KC-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-panel)', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
           <div id="4KD-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
             Source details
           </div>
         </div>
-        <div id="4KE-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
-          <div id="4KF-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
+        <div id="4KE-0" style={{ alignItems: 'center', borderRadius: '6px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+          <div id="4KF-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '20px' }}>
             More
           </div>
         </div>

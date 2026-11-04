@@ -1,0 +1,40 @@
+{
+  "schema": "f02.native-review-repair.v1",
+  "finding": "R2-P-001",
+  "applied_operation_ids": [
+    "f02-r2-company-dark-history-navigation-20261104-01",
+    "f02-r2-company-light-history-navigation-20261104-01"
+  ],
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "nodes": [
+    {
+      "key": "company-dark",
+      "caption": "5CB-0",
+      "action": "5CC-0"
+    },
+    {
+      "key": "company-light",
+      "caption": "5N5-0",
+      "action": "5N4-0"
+    }
+  ],
+  "status": "APPLIED_RECAPTURED_AUTHOR_VISUALLY_CHECKED",
+  "changes": "Current range moved to the table caption ('Showing FY 2022\u20132026'); separate action '\u2190 Earlier periods'. No destination, route, period data or behavior invented. Existing D07 ownership retained.",
+  "browser_proof": "NOT_RUN",
+  "affected_review": "PENDING",
+  "original_unknown_preserved": true,
+  "export_comparison": [
+    {
+      "board": "company-dark",
+      "only_two_text_literals_changed": true,
+      "before_sha256": "7722f029eb8d4382ee02cb2b2be782018d456bed682e6afa0d27f1f535c077fb",
+      "after_sha256": "47459d21a0c1e5fa2692020cf8a9b868a760c3a559651075e0f0d9161efd5c24"
+    },
+    {
+      "board": "company-light",
+      "only_two_text_literals_changed": true,
+      "before_sha256": "0187ceb77de01d4b7fa49791400e27d717a7930888023dce95ec6c10a68c62ba",
+      "after_sha256": "ca0613e8116c982aa3aa5e11f7c1c3aec4778f0d66c511803d8b7f01d9bb22c4"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "f02.post-retention-owned-delta.v1",
+  "observed_at": "2026-11-04T02:01:41.491946+00:00",
+  "base_original_retention": "paper/repairs/retention-observed-20261104.json",
+  "base_operation_count": 640,
+  "current_operation_count": 644,
+  "deltas": [
+    {
+      "id": "f02-r2-company-dark-history-navigation-20261104-01",
+      "board": "company-dark",
+      "tool": "set_text_content",
+      "targets": [
+        "5CB-0",
+        "5CC-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T01:51:01.061Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": {
+        "key": "company-dark",
+        "finding": "R2-P-001",
+        "scope": "Separate current table window from earlier-period navigation; preserve D07 ownership, table values and history."
+      }
+    },
+    {
+      "id": "f02-r2-company-light-history-navigation-20261104-01",
+      "board": "company-light",
+      "tool": "set_text_content",
+      "targets": [
+        "5N5-0",
+        "5N4-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T01:51:15.955Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": {
+        "key": "company-light",
+        "finding": "R2-P-001",
+        "scope": "Separate current table window from earlier-period navigation; preserve D07 ownership, table values and history."
+      }
+    },
+    {
+      "id": "f02-r2-controls-action-hierarchy-20261104-01",
+      "board": "controls",
+      "tool": "update_styles",
+      "targets": [
+        "4KA-0",
+        "4KB-0",
+        "4KC-0",
+        "4KE-0",
+        "4KF-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T01:59:52.377Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Native Taste R2-T-001; align general controls with unchanged accepted primary/secondary/quiet variants on 771-0; preserve node IDs, 44px targets, labels and domain/save ownership."
+    },
+    {
+      "id": "f02-r2-readme-excluded-index-20261104-01",
+      "board": "readme",
+      "tool": "set_text_content",
+      "targets": [
+        "9RW-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T01:59:56.997Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Native Taste R2-T-003; label original Chinese comparison exclusion inline and distinguish its separately accepted partial evidence-return companion; no mutation of held target."
+    }
+  ],
+  "scope": "Four text/style-only operations on ten existing F02-created Company, Controls and Read me nodes. No original-reference, token, row-data or held-board target. The earlier 67-original read timestamps remain authoritative; they are not restamped as a later full reread.",
+  "original_unknown_unchanged": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+  "full_acceptance": false
+}

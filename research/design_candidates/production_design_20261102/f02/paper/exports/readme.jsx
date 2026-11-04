@@ -154,7 +154,7 @@
           Chart/table grammar, narrow evidence, responsive widths, localized return paths and density examples.
         </div>
         <div id="9RW-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
-          grammar [4LC-0] · company-eps-overlay-320 [70C-0] · company-dividend-overlay-320 [72T-0] · options-full-row-evidence-320 [74P-0] · macro-dark-en-390 [7CM-0] · macro-light-zh-390 [7IS-0] · macro-docked-1280 [8G2-0] · macro-zh-evidence-return-390 [8N8-0] · company-fy2025-eps-evidence-390 [8PF-0] · editorial-calculation-evidence-390 [8R5-0] · editorial-reading-390 [8TF-0] · width-768-overlay [98N-0] · width-1024-overlay [9EB-0] · width-1600-docked [9K6-0]
+          grammar [4LC-0] · company-eps-overlay-320 [70C-0] · company-dividend-overlay-320 [72T-0] · options-full-row-evidence-320 [74P-0] · macro-dark-en-390 [7CM-0] · macro-light-zh-390 [7IS-0] — EXCLUDED: unresolved operation / no complete capture · macro-docked-1280 [8G2-0] · macro-zh-evidence-return-390 [8N8-0] — partial evidence-return coverage only · company-fy2025-eps-evidence-390 [8PF-0] · editorial-calculation-evidence-390 [8R5-0] · editorial-reading-390 [8TF-0] · width-768-overlay [98N-0] · width-1024-overlay [9EB-0] · width-1600-docked [9K6-0]
         </div>
         <div id="9RX-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px', width: '1296px' }}>
           Open the observed page; use the exact board IDs above

@@ -1,9 +1,9 @@
 {
   "schema": "f02.native-board-index.v1",
-  "generated_at": "2026-11-04T01:16:54.695457+00:00",
+  "generated_at": "2026-11-04T02:01:41.936981+00:00",
   "source_checkpoint": "paper/writer-continuation-progress.json",
-  "checkpoint_sha256": "cde09a0d39dc5b32a491e6e16135f0e32182bac790384279590418ac7154fd8c",
-  "operation_count": 640,
+  "checkpoint_sha256": "320c1311abbfe08d58272964a6c5fca6fba40f3d6cba9a749cda56b917091054",
+  "operation_count": 644,
   "unresolved_operations": [
     "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
   ],
@@ -32,13 +32,13 @@
       },
       "screenshot": {
         "path": "paper/screenshots/readme.jpg",
-        "bytes": 326014,
-        "sha256": "93c1f414f7c68b7dd8ed8237975f6834608846558095961ecff2b3e84a48399c"
+        "bytes": 330306,
+        "sha256": "e6181d0ff701d97a044e035ffbf7a2091352dbbe639022bd8821d2ed736b226a"
       },
       "jsx": {
         "path": "paper/exports/readme.jsx",
-        "bytes": 24282,
-        "sha256": "2010f86873c70cb051113aa585406c46b5cdbe4516c2827b49585e85b323b334"
+        "bytes": 24381,
+        "sha256": "c5dea90ad66dd10c701b6f04506d43964453e8bb2c90dc0224beed0ceb9a7db2"
       },
       "latest_writer_capture": {
         "key": "readme",
@@ -46,15 +46,15 @@
         "boardId": "47Q-0",
         "nodeId": "47Q-0",
         "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
-        "captured_at": "2026-11-04T01:02:57.396Z",
-        "operations_through": 637,
+        "captured_at": "2026-11-04T02:00:07.005Z",
+        "operations_through": 644,
         "jsx": "f02/paper/exports/readme.jsx",
         "screenshot": "f02/paper/screenshots/readme.jpg",
         "mime_type": "image/jpeg",
-        "verdict": "Native capture; independent review pending",
-        "jsx_sha256": "2010f86873c70cb051113aa585406c46b5cdbe4516c2827b49585e85b323b334",
-        "screenshot_sha256": "93c1f414f7c68b7dd8ed8237975f6834608846558095961ecff2b3e84a48399c",
-        "screenshot_bytes": 326014
+        "verdict": "Actual post-repair native capture; affected review pending",
+        "jsx_sha256": "c5dea90ad66dd10c701b6f04506d43964453e8bb2c90dc0224beed0ceb9a7db2",
+        "screenshot_sha256": "e6181d0ff701d97a044e035ffbf7a2091352dbbe639022bd8821d2ed736b226a",
+        "screenshot_bytes": 330306
       },
       "latest_scoped_capture": {
         "key": "readme",
@@ -62,15 +62,15 @@
         "boardId": "47Q-0",
         "nodeId": "47Q-0",
         "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
-        "captured_at": "2026-11-04T01:02:57.396Z",
-        "operations_through": 637,
+        "captured_at": "2026-11-04T02:00:07.005Z",
+        "operations_through": 644,
         "jsx": "f02/paper/exports/readme.jsx",
         "screenshot": "f02/paper/screenshots/readme.jpg",
         "mime_type": "image/jpeg",
-        "verdict": "Native capture; independent review pending",
-        "jsx_sha256": "2010f86873c70cb051113aa585406c46b5cdbe4516c2827b49585e85b323b334",
-        "screenshot_sha256": "93c1f414f7c68b7dd8ed8237975f6834608846558095961ecff2b3e84a48399c",
-        "screenshot_bytes": 326014
+        "verdict": "Actual post-repair native capture; affected review pending",
+        "jsx_sha256": "c5dea90ad66dd10c701b6f04506d43964453e8bb2c90dc0224beed0ceb9a7db2",
+        "screenshot_sha256": "e6181d0ff701d97a044e035ffbf7a2091352dbbe639022bd8821d2ed736b226a",
+        "screenshot_bytes": 330306
       },
       "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
@@ -302,13 +302,13 @@
       },
       "screenshot": {
         "path": "paper/screenshots/controls.jpg",
-        "bytes": 224721,
-        "sha256": "80ab5b3d90092d7f69ea87fb338918a05e9b8f4046928f174b26cb7301d26ff3"
+        "bytes": 224071,
+        "sha256": "82dc8a33eaffbf485a601348da49cdca597ddaaf380a9dbb9ed55d8d3fa6181b"
       },
       "jsx": {
         "path": "paper/exports/controls.jsx",
-        "bytes": 20539,
-        "sha256": "7f3e82a322b57358d84c48d339b90d5f9ae9422dd20cb359e09705481f5d9772"
+        "bytes": 20482,
+        "sha256": "9c5b72b75ab9fc9564cfb1ea7b4e3b9c96d15875c527ad74388313200d699423"
       },
       "latest_writer_capture": {
         "key": "controls",
@@ -316,15 +316,15 @@
         "boardId": "4JP-0",
         "nodeId": "4JP-0",
         "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
-        "captured_at": "2026-11-04T00:18:57.513Z",
-        "operations_through": 499,
+        "captured_at": "2026-11-04T02:00:00.855Z",
+        "operations_through": 644,
         "jsx": "f02/paper/exports/controls.jsx",
         "screenshot": "f02/paper/screenshots/controls.jpg",
         "mime_type": "image/jpeg",
-        "verdict": "Native capture; independent review pending",
-        "jsx_sha256": "7f3e82a322b57358d84c48d339b90d5f9ae9422dd20cb359e09705481f5d9772",
-        "screenshot_sha256": "80ab5b3d90092d7f69ea87fb338918a05e9b8f4046928f174b26cb7301d26ff3",
-        "screenshot_bytes": 224721
+        "verdict": "Actual post-repair native capture; affected review pending",
+        "jsx_sha256": "9c5b72b75ab9fc9564cfb1ea7b4e3b9c96d15875c527ad74388313200d699423",
+        "screenshot_sha256": "82dc8a33eaffbf485a601348da49cdca597ddaaf380a9dbb9ed55d8d3fa6181b",
+        "screenshot_bytes": 224071
       },
       "latest_scoped_capture": {
         "key": "controls",
@@ -332,15 +332,15 @@
         "boardId": "4JP-0",
         "nodeId": "4JP-0",
         "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
-        "captured_at": "2026-11-04T00:18:57.513Z",
-        "operations_through": 499,
+        "captured_at": "2026-11-04T02:00:00.855Z",
+        "operations_through": 644,
         "jsx": "f02/paper/exports/controls.jsx",
         "screenshot": "f02/paper/screenshots/controls.jpg",
         "mime_type": "image/jpeg",
-        "verdict": "Native capture; independent review pending",
-        "jsx_sha256": "7f3e82a322b57358d84c48d339b90d5f9ae9422dd20cb359e09705481f5d9772",
-        "screenshot_sha256": "80ab5b3d90092d7f69ea87fb338918a05e9b8f4046928f174b26cb7301d26ff3",
-        "screenshot_bytes": 224721
+        "verdict": "Actual post-repair native capture; affected review pending",
+        "jsx_sha256": "9c5b72b75ab9fc9564cfb1ea7b4e3b9c96d15875c527ad74388313200d699423",
+        "screenshot_sha256": "82dc8a33eaffbf485a601348da49cdca597ddaaf380a9dbb9ed55d8d3fa6181b",
+        "screenshot_bytes": 224071
       },
       "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
@@ -730,13 +730,13 @@
       },
       "screenshot": {
         "path": "paper/screenshots/company-dark.jpg",
-        "bytes": 231782,
-        "sha256": "7b8c24a06d00bd169dccf8d8f0246912a99d1b7b9c4c512aba1c24c93a412898"
+        "bytes": 232274,
+        "sha256": "bff7d506be5a964450a71a76eb8bedcaeee16790ea8df83246fd28e5d26bbaa0"
       },
       "jsx": {
         "path": "paper/exports/company-dark.jsx",
-        "bytes": 114451,
-        "sha256": "7722f029eb8d4382ee02cb2b2be782018d456bed682e6afa0d27f1f535c077fb"
+        "bytes": 114462,
+        "sha256": "47459d21a0c1e5fa2692020cf8a9b868a760c3a559651075e0f0d9161efd5c24"
       },
       "latest_writer_capture": {
         "key": "company-dark",
@@ -744,15 +744,15 @@
         "boardId": "56L-0",
         "nodeId": "56L-0",
         "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
-        "captured_at": "2026-11-04T01:09:51.051Z",
-        "operations_through": 638,
+        "captured_at": "2026-11-04T01:51:06.419Z",
+        "operations_through": 641,
         "jsx": "f02/paper/exports/company-dark.jsx",
         "screenshot": "f02/paper/screenshots/company-dark.jpg",
         "mime_type": "image/jpeg",
-        "verdict": "Native capture; independent review pending",
-        "jsx_sha256": "7722f029eb8d4382ee02cb2b2be782018d456bed682e6afa0d27f1f535c077fb",
-        "screenshot_sha256": "7b8c24a06d00bd169dccf8d8f0246912a99d1b7b9c4c512aba1c24c93a412898",
-        "screenshot_bytes": 231782
+        "verdict": "Actual post-repair native capture; affected review pending",
+        "jsx_sha256": "47459d21a0c1e5fa2692020cf8a9b868a760c3a559651075e0f0d9161efd5c24",
+        "screenshot_sha256": "bff7d506be5a964450a71a76eb8bedcaeee16790ea8df83246fd28e5d26bbaa0",
+        "screenshot_bytes": 232274
       },
       "latest_scoped_capture": {
         "key": "company-dark",
@@ -760,15 +760,15 @@
         "boardId": "56L-0",
         "nodeId": "56L-0",
         "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
-        "captured_at": "2026-11-04T01:09:51.051Z",
-        "operations_through": 638,
+        "captured_at": "2026-11-04T01:51:06.419Z",
+        "operations_through": 641,
         "jsx": "f02/paper/exports/company-dark.jsx",
         "screenshot": "f02/paper/screenshots/company-dark.jpg",
         "mime_type": "image/jpeg",
-        "verdict": "Native capture; independent review pending",
-        "jsx_sha256": "7722f029eb8d4382ee02cb2b2be782018d456bed682e6afa0d27f1f535c077fb",
-        "screenshot_sha256": "7b8c24a06d00bd169dccf8d8f0246912a99d1b7b9c4c512aba1c24c93a412898",
-        "screenshot_bytes": 231782
+        "verdict": "Actual post-repair native capture; affected review pending",
+        "jsx_sha256": "47459d21a0c1e5fa2692020cf8a9b868a760c3a559651075e0f0d9161efd5c24",
+        "screenshot_sha256": "bff7d506be5a964450a71a76eb8bedcaeee16790ea8df83246fd28e5d26bbaa0",
+        "screenshot_bytes": 232274
       },
       "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
@@ -817,13 +817,13 @@
       },
       "screenshot": {
         "path": "paper/screenshots/company-light.jpg",
-        "bytes": 234079,
-        "sha256": "837cd955e8121401f55993aa3fbec3ddedc7e5517d3fad93ba862c81e073f2fd"
+        "bytes": 234566,
+        "sha256": "1593519d6658b6e6d074a8a3911eb98aff0a00e305d2b4c9f7d4f660d9794d4d"
       },
       "jsx": {
         "path": "paper/exports/company-light.jsx",
-        "bytes": 112057,
-        "sha256": "0187ceb77de01d4b7fa49791400e27d717a7930888023dce95ec6c10a68c62ba"
+        "bytes": 112068,
+        "sha256": "ca0613e8116c982aa3aa5e11f7c1c3aec4778f0d66c511803d8b7f01d9bb22c4"
       },
       "latest_writer_capture": {
         "key": "company-light",
@@ -831,15 +831,15 @@
         "boardId": "5HV-0",
         "nodeId": "5HV-0",
         "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
-        "captured_at": "2026-11-04T01:09:56.405Z",
-        "operations_through": 638,
+        "captured_at": "2026-11-04T01:51:20.696Z",
+        "operations_through": 642,
         "jsx": "f02/paper/exports/company-light.jsx",
         "screenshot": "f02/paper/screenshots/company-light.jpg",
         "mime_type": "image/jpeg",
-        "verdict": "Native capture; independent review pending",
-        "jsx_sha256": "0187ceb77de01d4b7fa49791400e27d717a7930888023dce95ec6c10a68c62ba",
-        "screenshot_sha256": "837cd955e8121401f55993aa3fbec3ddedc7e5517d3fad93ba862c81e073f2fd",
-        "screenshot_bytes": 234079
+        "verdict": "Actual post-repair native capture; affected review pending",
+        "jsx_sha256": "ca0613e8116c982aa3aa5e11f7c1c3aec4778f0d66c511803d8b7f01d9bb22c4",
+        "screenshot_sha256": "1593519d6658b6e6d074a8a3911eb98aff0a00e305d2b4c9f7d4f660d9794d4d",
+        "screenshot_bytes": 234566
       },
       "latest_scoped_capture": {
         "key": "company-light",
@@ -847,15 +847,15 @@
         "boardId": "5HV-0",
         "nodeId": "5HV-0",
         "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
-        "captured_at": "2026-11-04T01:09:56.405Z",
-        "operations_through": 638,
+        "captured_at": "2026-11-04T01:51:20.696Z",
+        "operations_through": 642,
         "jsx": "f02/paper/exports/company-light.jsx",
         "screenshot": "f02/paper/screenshots/company-light.jpg",
         "mime_type": "image/jpeg",
-        "verdict": "Native capture; independent review pending",
-        "jsx_sha256": "0187ceb77de01d4b7fa49791400e27d717a7930888023dce95ec6c10a68c62ba",
-        "screenshot_sha256": "837cd955e8121401f55993aa3fbec3ddedc7e5517d3fad93ba862c81e073f2fd",
-        "screenshot_bytes": 234079
+        "verdict": "Actual post-repair native capture; affected review pending",
+        "jsx_sha256": "ca0613e8116c982aa3aa5e11f7c1c3aec4778f0d66c511803d8b7f01d9bb22c4",
+        "screenshot_sha256": "1593519d6658b6e6d074a8a3911eb98aff0a00e305d2b4c9f7d4f660d9794d4d",
+        "screenshot_bytes": 234566
       },
       "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"

@@ -1,13 +1,13 @@
 {
   "schema": "f02.paper-writer-continuation-progress.v1",
   "checkpoint": "WIDTH-1600-DOCKED_CONSTRUCTED",
-  "observed_at": "2026-11-04T01:14:22.984Z",
+  "observed_at": "2026-11-04T02:00:07.005Z",
   "fileId": "01M312VSDSZFVT45674GDVJVZN",
   "actor": "/root",
   "assignment_owner": "/root",
   "tool_carrier": "Mastermind Paper direct",
   "root_operation_count": 293,
-  "new_operation_count": 347,
+  "new_operation_count": 351,
   "source_freeze_head": "245d70bbd3ac773f3074277c771095264b31269d",
   "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
   "source_input_hashes": {
@@ -168172,6 +168172,3236 @@
         "production_acceptance": false
       },
       "completed_at": "2026-11-04T01:11:27.361Z"
+    },
+    {
+      "id": "f02-r2-company-dark-history-navigation-20261104-01",
+      "tool": "set_text_content",
+      "actor": "/root",
+      "tool_carrier": "Mastermind Paper direct",
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "source_input": {
+        "key": "company-dark",
+        "finding": "R2-P-001",
+        "scope": "Separate current table window from earlier-period navigation; preserve D07 ownership, table values and history."
+      },
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "5CB-0",
+            "html": "EXM · annual statements · Showing FY 2022–2026 · USD bn unless labeled"
+          },
+          {
+            "nodeId": "5CC-0",
+            "html": "← Earlier periods"
+          }
+        ],
+        "fileId": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "before_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "law_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+      "started_at": "2026-11-04T01:50:58.511Z",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "response": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "f02-r2-company-dark-history-navigation-20261104-01",
+        "tool": "set_text_content",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"5CB-0\"\n    },\n    {\n      \"nodeId\": \"5CC-0\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before": {
+          "basic_info": {
+            "fileName": "Mastermind Product Design System — Canonical",
+            "pageName": "04 · Patterns",
+            "pageId": "p-5-0",
+            "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+            "rootNodeId": "root_node_p-5-0",
+            "nodeCount": 2566,
+            "artboardCount": 22,
+            "artboards": [
+              {
+                "id": "2S4-0",
+                "name": "Pattern · Material UI State Contract · Dark",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -2020,
+                "worldY": -2275
+              },
+              {
+                "id": "2UE-0",
+                "name": "Pattern · Material UI State Contract · Light",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -500,
+                "worldY": -2275
+              },
+              {
+                "id": "2WO-0",
+                "name": "Pattern · Archetype Signature Devices · Dark",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -2020,
+                "worldY": -1015
+              },
+              {
+                "id": "2YK-0",
+                "name": "Pattern · Archetype Signature Devices · Light",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -500,
+                "worldY": -1015
+              },
+              {
+                "id": "30G-0",
+                "name": "Pattern · Mobile Decision Thread · Dark",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1160,
+                "worldY": -2275
+              },
+              {
+                "id": "336-0",
+                "name": "Pattern · Mobile Decision Thread · Light",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1630,
+                "worldY": -2275
+              },
+              {
+                "id": "35W-0",
+                "name": "Pattern · Data, Chart & Access · Dark",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -2020,
+                "worldY": 225
+              },
+              {
+                "id": "39G-0",
+                "name": "Pattern · Data, Chart & Access · Light",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -500,
+                "worldY": 225
+              },
+              {
+                "id": "4LC-0",
+                "name": "F02 · Table and chart grammar · Candidate 2",
+                "childCount": 7,
+                "width": 1440,
+                "height": 1191,
+                "worldX": 2100,
+                "worldY": -2275
+              },
+              {
+                "id": "70C-0",
+                "name": "F02 · Company evidence · Unknown EPS · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1617,
+                "worldX": 3620,
+                "worldY": -2275
+              },
+              {
+                "id": "72T-0",
+                "name": "F02 · Company evidence · Actual zero dividend · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1587,
+                "worldX": 4020,
+                "worldY": -2275
+              },
+              {
+                "id": "74P-0",
+                "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+                "childCount": 4,
+                "width": 320,
+                "height": 1391,
+                "worldX": 4420,
+                "worldY": -2275
+              },
+              {
+                "id": "7CM-0",
+                "name": "F02 · Macro comparison · EN · Dark · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1484,
+                "worldX": 4820,
+                "worldY": -2275
+              },
+              {
+                "id": "7IS-0",
+                "name": "F02 · Macro comparison · 中文 · Light · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1221,
+                "worldX": 5290,
+                "worldY": -2275
+              },
+              {
+                "id": "8G2-0",
+                "name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+                "childCount": 3,
+                "width": 1280,
+                "height": 1245,
+                "worldX": 1020,
+                "worldY": 225
+              },
+              {
+                "id": "8N8-0",
+                "name": "F02 · 中文行业证据与返回 · 390 · Candidate 2",
+                "childCount": 6,
+                "width": 390,
+                "height": 1291,
+                "worldX": 2380,
+                "worldY": 225
+              },
+              {
+                "id": "8PF-0",
+                "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+                "childCount": 6,
+                "width": 390,
+                "height": 1381,
+                "worldX": 2850,
+                "worldY": 225
+              },
+              {
+                "id": "8R5-0",
+                "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 1269,
+                "worldX": 3320,
+                "worldY": 225
+              },
+              {
+                "id": "8TF-0",
+                "name": "F02 · Public editorial reading · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 2393,
+                "worldX": 2100,
+                "worldY": -1004
+              },
+              {
+                "id": "98N-0",
+                "name": "F02 · 768px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 768,
+                "height": 1111,
+                "worldX": 2570,
+                "worldY": -1004
+              },
+              {
+                "id": "9EB-0",
+                "name": "F02 · 1024px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 1024,
+                "height": 1071,
+                "worldX": 1020,
+                "worldY": 1550
+              },
+              {
+                "id": "9K6-0",
+                "name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+                "childCount": 3,
+                "width": 1600,
+                "height": 1245,
+                "worldX": -3818,
+                "worldY": -2408
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "00 · Cover",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "00 · Read me & Build contract",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-1",
+                "name": "07 · Source Imports + Assets · Pending Review",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "01 · Getting Started",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "02 · Foundations",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "03 · Components",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "04 · Patterns",
+                "icon": null,
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "05 · Reference Screens",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "06 · Utilities",
+                "icon": null,
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "System Sans-Serif",
+              "Noto Sans SC"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--noir-canvas",
+                  "value": "#080808"
+                },
+                {
+                  "name": "--noir-sidebar",
+                  "value": "#0C0C0C"
+                },
+                {
+                  "name": "--noir-panel",
+                  "value": "#121212"
+                },
+                {
+                  "name": "--noir-raised",
+                  "value": "#191919"
+                },
+                {
+                  "name": "--noir-hover",
+                  "value": "#222222"
+                },
+                {
+                  "name": "--noir-selected",
+                  "value": "#292929"
+                },
+                {
+                  "name": "--noir-text-primary",
+                  "value": "#F3F3F3"
+                },
+                {
+                  "name": "--noir-text-secondary",
+                  "value": "#B8B8B8"
+                },
+                {
+                  "name": "--noir-text-tertiary",
+                  "value": "#949494"
+                },
+                {
+                  "name": "--noir-champagne",
+                  "value": "#C9B99B"
+                },
+                {
+                  "name": "--noir-sage",
+                  "value": "#A8C2AD"
+                },
+                {
+                  "name": "--noir-rose",
+                  "value": "#DEA4A5"
+                },
+                {
+                  "name": "--noir-steel",
+                  "value": "#A7B4C2"
+                },
+                {
+                  "name": "--noir-lilac",
+                  "value": "#BDB2CE"
+                },
+                {
+                  "name": "--market-canvas",
+                  "value": "#0A0B0D"
+                },
+                {
+                  "name": "--market-panel",
+                  "value": "#111318"
+                },
+                {
+                  "name": "--market-raised",
+                  "value": "#181B20"
+                },
+                {
+                  "name": "--market-line",
+                  "value": "#2B3038"
+                },
+                {
+                  "name": "--intelligence-panel",
+                  "value": "#10131A"
+                },
+                {
+                  "name": "--intelligence-active",
+                  "value": "#151B29"
+                }
+              ]
+            },
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "contentHash": {
+              "tokens": "356191c3"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M312VSDSZFVT45674GDVJVZN"
+          },
+          "snapshot_sha256": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "basic_info": {
+            "fileName": "Mastermind Product Design System — Canonical",
+            "pageName": "04 · Patterns",
+            "pageId": "p-5-0",
+            "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+            "rootNodeId": "root_node_p-5-0",
+            "nodeCount": 2566,
+            "artboardCount": 22,
+            "artboards": [
+              {
+                "id": "2S4-0",
+                "name": "Pattern · Material UI State Contract · Dark",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -2020,
+                "worldY": -2275
+              },
+              {
+                "id": "2UE-0",
+                "name": "Pattern · Material UI State Contract · Light",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -500,
+                "worldY": -2275
+              },
+              {
+                "id": "2WO-0",
+                "name": "Pattern · Archetype Signature Devices · Dark",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -2020,
+                "worldY": -1015
+              },
+              {
+                "id": "2YK-0",
+                "name": "Pattern · Archetype Signature Devices · Light",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -500,
+                "worldY": -1015
+              },
+              {
+                "id": "30G-0",
+                "name": "Pattern · Mobile Decision Thread · Dark",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1160,
+                "worldY": -2275
+              },
+              {
+                "id": "336-0",
+                "name": "Pattern · Mobile Decision Thread · Light",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1630,
+                "worldY": -2275
+              },
+              {
+                "id": "35W-0",
+                "name": "Pattern · Data, Chart & Access · Dark",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -2020,
+                "worldY": 225
+              },
+              {
+                "id": "39G-0",
+                "name": "Pattern · Data, Chart & Access · Light",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -500,
+                "worldY": 225
+              },
+              {
+                "id": "4LC-0",
+                "name": "F02 · Table and chart grammar · Candidate 2",
+                "childCount": 7,
+                "width": 1440,
+                "height": 1191,
+                "worldX": 2100,
+                "worldY": -2275
+              },
+              {
+                "id": "70C-0",
+                "name": "F02 · Company evidence · Unknown EPS · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1617,
+                "worldX": 3620,
+                "worldY": -2275
+              },
+              {
+                "id": "72T-0",
+                "name": "F02 · Company evidence · Actual zero dividend · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1587,
+                "worldX": 4020,
+                "worldY": -2275
+              },
+              {
+                "id": "74P-0",
+                "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+                "childCount": 4,
+                "width": 320,
+                "height": 1391,
+                "worldX": 4420,
+                "worldY": -2275
+              },
+              {
+                "id": "7CM-0",
+                "name": "F02 · Macro comparison · EN · Dark · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1484,
+                "worldX": 4820,
+                "worldY": -2275
+              },
+              {
+                "id": "7IS-0",
+                "name": "F02 · Macro comparison · 中文 · Light · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1221,
+                "worldX": 5290,
+                "worldY": -2275
+              },
+              {
+                "id": "8G2-0",
+                "name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+                "childCount": 3,
+                "width": 1280,
+                "height": 1245,
+                "worldX": 1020,
+                "worldY": 225
+              },
+              {
+                "id": "8N8-0",
+                "name": "F02 · 中文行业证据与返回 · 390 · Candidate 2",
+                "childCount": 6,
+                "width": 390,
+                "height": 1291,
+                "worldX": 2380,
+                "worldY": 225
+              },
+              {
+                "id": "8PF-0",
+                "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+                "childCount": 6,
+                "width": 390,
+                "height": 1381,
+                "worldX": 2850,
+                "worldY": 225
+              },
+              {
+                "id": "8R5-0",
+                "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 1269,
+                "worldX": 3320,
+                "worldY": 225
+              },
+              {
+                "id": "8TF-0",
+                "name": "F02 · Public editorial reading · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 2393,
+                "worldX": 2100,
+                "worldY": -1004
+              },
+              {
+                "id": "98N-0",
+                "name": "F02 · 768px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 768,
+                "height": 1111,
+                "worldX": 2570,
+                "worldY": -1004
+              },
+              {
+                "id": "9EB-0",
+                "name": "F02 · 1024px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 1024,
+                "height": 1071,
+                "worldX": 1020,
+                "worldY": 1550
+              },
+              {
+                "id": "9K6-0",
+                "name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+                "childCount": 3,
+                "width": 1600,
+                "height": 1245,
+                "worldX": -3818,
+                "worldY": -2408
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "00 · Cover",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "00 · Read me & Build contract",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-1",
+                "name": "07 · Source Imports + Assets · Pending Review",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "01 · Getting Started",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "02 · Foundations",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "03 · Components",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "04 · Patterns",
+                "icon": null,
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "05 · Reference Screens",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "06 · Utilities",
+                "icon": null,
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "System Sans-Serif",
+              "Noto Sans SC"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--noir-canvas",
+                  "value": "#080808"
+                },
+                {
+                  "name": "--noir-sidebar",
+                  "value": "#0C0C0C"
+                },
+                {
+                  "name": "--noir-panel",
+                  "value": "#121212"
+                },
+                {
+                  "name": "--noir-raised",
+                  "value": "#191919"
+                },
+                {
+                  "name": "--noir-hover",
+                  "value": "#222222"
+                },
+                {
+                  "name": "--noir-selected",
+                  "value": "#292929"
+                },
+                {
+                  "name": "--noir-text-primary",
+                  "value": "#F3F3F3"
+                },
+                {
+                  "name": "--noir-text-secondary",
+                  "value": "#B8B8B8"
+                },
+                {
+                  "name": "--noir-text-tertiary",
+                  "value": "#949494"
+                },
+                {
+                  "name": "--noir-champagne",
+                  "value": "#C9B99B"
+                },
+                {
+                  "name": "--noir-sage",
+                  "value": "#A8C2AD"
+                },
+                {
+                  "name": "--noir-rose",
+                  "value": "#DEA4A5"
+                },
+                {
+                  "name": "--noir-steel",
+                  "value": "#A7B4C2"
+                },
+                {
+                  "name": "--noir-lilac",
+                  "value": "#BDB2CE"
+                },
+                {
+                  "name": "--market-canvas",
+                  "value": "#0A0B0D"
+                },
+                {
+                  "name": "--market-panel",
+                  "value": "#111318"
+                },
+                {
+                  "name": "--market-raised",
+                  "value": "#181B20"
+                },
+                {
+                  "name": "--market-line",
+                  "value": "#2B3038"
+                },
+                {
+                  "name": "--intelligence-panel",
+                  "value": "#10131A"
+                },
+                {
+                  "name": "--intelligence-active",
+                  "value": "#151B29"
+                }
+              ]
+            },
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "contentHash": {
+              "tokens": "356191c3"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M312VSDSZFVT45674GDVJVZN"
+          },
+          "snapshot_sha256": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "completed_at": "2026-11-04T01:51:01.061Z"
+    },
+    {
+      "id": "f02-r2-company-light-history-navigation-20261104-01",
+      "tool": "set_text_content",
+      "actor": "/root",
+      "tool_carrier": "Mastermind Paper direct",
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "source_input": {
+        "key": "company-light",
+        "finding": "R2-P-001",
+        "scope": "Separate current table window from earlier-period navigation; preserve D07 ownership, table values and history."
+      },
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "5N5-0",
+            "html": "EXM · annual statements · Showing FY 2022–2026 · USD bn unless labeled"
+          },
+          {
+            "nodeId": "5N4-0",
+            "html": "← Earlier periods"
+          }
+        ],
+        "fileId": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "before_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "law_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+      "started_at": "2026-11-04T01:51:10.759Z",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "response": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "f02-r2-company-light-history-navigation-20261104-01",
+        "tool": "set_text_content",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"5N5-0\"\n    },\n    {\n      \"nodeId\": \"5N4-0\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before": {
+          "basic_info": {
+            "fileName": "Mastermind Product Design System — Canonical",
+            "pageName": "04 · Patterns",
+            "pageId": "p-5-0",
+            "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+            "rootNodeId": "root_node_p-5-0",
+            "nodeCount": 2566,
+            "artboardCount": 22,
+            "artboards": [
+              {
+                "id": "2S4-0",
+                "name": "Pattern · Material UI State Contract · Dark",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -2020,
+                "worldY": -2275
+              },
+              {
+                "id": "2UE-0",
+                "name": "Pattern · Material UI State Contract · Light",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -500,
+                "worldY": -2275
+              },
+              {
+                "id": "2WO-0",
+                "name": "Pattern · Archetype Signature Devices · Dark",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -2020,
+                "worldY": -1015
+              },
+              {
+                "id": "2YK-0",
+                "name": "Pattern · Archetype Signature Devices · Light",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -500,
+                "worldY": -1015
+              },
+              {
+                "id": "30G-0",
+                "name": "Pattern · Mobile Decision Thread · Dark",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1160,
+                "worldY": -2275
+              },
+              {
+                "id": "336-0",
+                "name": "Pattern · Mobile Decision Thread · Light",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1630,
+                "worldY": -2275
+              },
+              {
+                "id": "35W-0",
+                "name": "Pattern · Data, Chart & Access · Dark",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -2020,
+                "worldY": 225
+              },
+              {
+                "id": "39G-0",
+                "name": "Pattern · Data, Chart & Access · Light",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -500,
+                "worldY": 225
+              },
+              {
+                "id": "4LC-0",
+                "name": "F02 · Table and chart grammar · Candidate 2",
+                "childCount": 7,
+                "width": 1440,
+                "height": 1191,
+                "worldX": 2100,
+                "worldY": -2275
+              },
+              {
+                "id": "70C-0",
+                "name": "F02 · Company evidence · Unknown EPS · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1617,
+                "worldX": 3620,
+                "worldY": -2275
+              },
+              {
+                "id": "72T-0",
+                "name": "F02 · Company evidence · Actual zero dividend · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1587,
+                "worldX": 4020,
+                "worldY": -2275
+              },
+              {
+                "id": "74P-0",
+                "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+                "childCount": 4,
+                "width": 320,
+                "height": 1391,
+                "worldX": 4420,
+                "worldY": -2275
+              },
+              {
+                "id": "7CM-0",
+                "name": "F02 · Macro comparison · EN · Dark · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1484,
+                "worldX": 4820,
+                "worldY": -2275
+              },
+              {
+                "id": "7IS-0",
+                "name": "F02 · Macro comparison · 中文 · Light · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1221,
+                "worldX": 5290,
+                "worldY": -2275
+              },
+              {
+                "id": "8G2-0",
+                "name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+                "childCount": 3,
+                "width": 1280,
+                "height": 1245,
+                "worldX": 1020,
+                "worldY": 225
+              },
+              {
+                "id": "8N8-0",
+                "name": "F02 · 中文行业证据与返回 · 390 · Candidate 2",
+                "childCount": 6,
+                "width": 390,
+                "height": 1291,
+                "worldX": 2380,
+                "worldY": 225
+              },
+              {
+                "id": "8PF-0",
+                "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+                "childCount": 6,
+                "width": 390,
+                "height": 1381,
+                "worldX": 2850,
+                "worldY": 225
+              },
+              {
+                "id": "8R5-0",
+                "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 1269,
+                "worldX": 3320,
+                "worldY": 225
+              },
+              {
+                "id": "8TF-0",
+                "name": "F02 · Public editorial reading · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 2393,
+                "worldX": 2100,
+                "worldY": -1004
+              },
+              {
+                "id": "98N-0",
+                "name": "F02 · 768px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 768,
+                "height": 1111,
+                "worldX": 2570,
+                "worldY": -1004
+              },
+              {
+                "id": "9EB-0",
+                "name": "F02 · 1024px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 1024,
+                "height": 1071,
+                "worldX": 1020,
+                "worldY": 1550
+              },
+              {
+                "id": "9K6-0",
+                "name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+                "childCount": 3,
+                "width": 1600,
+                "height": 1245,
+                "worldX": -3818,
+                "worldY": -2408
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "00 · Cover",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "00 · Read me & Build contract",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-1",
+                "name": "07 · Source Imports + Assets · Pending Review",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "01 · Getting Started",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "02 · Foundations",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "03 · Components",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "04 · Patterns",
+                "icon": null,
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "05 · Reference Screens",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "06 · Utilities",
+                "icon": null,
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "System Sans-Serif",
+              "Noto Sans SC"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--noir-canvas",
+                  "value": "#080808"
+                },
+                {
+                  "name": "--noir-sidebar",
+                  "value": "#0C0C0C"
+                },
+                {
+                  "name": "--noir-panel",
+                  "value": "#121212"
+                },
+                {
+                  "name": "--noir-raised",
+                  "value": "#191919"
+                },
+                {
+                  "name": "--noir-hover",
+                  "value": "#222222"
+                },
+                {
+                  "name": "--noir-selected",
+                  "value": "#292929"
+                },
+                {
+                  "name": "--noir-text-primary",
+                  "value": "#F3F3F3"
+                },
+                {
+                  "name": "--noir-text-secondary",
+                  "value": "#B8B8B8"
+                },
+                {
+                  "name": "--noir-text-tertiary",
+                  "value": "#949494"
+                },
+                {
+                  "name": "--noir-champagne",
+                  "value": "#C9B99B"
+                },
+                {
+                  "name": "--noir-sage",
+                  "value": "#A8C2AD"
+                },
+                {
+                  "name": "--noir-rose",
+                  "value": "#DEA4A5"
+                },
+                {
+                  "name": "--noir-steel",
+                  "value": "#A7B4C2"
+                },
+                {
+                  "name": "--noir-lilac",
+                  "value": "#BDB2CE"
+                },
+                {
+                  "name": "--market-canvas",
+                  "value": "#0A0B0D"
+                },
+                {
+                  "name": "--market-panel",
+                  "value": "#111318"
+                },
+                {
+                  "name": "--market-raised",
+                  "value": "#181B20"
+                },
+                {
+                  "name": "--market-line",
+                  "value": "#2B3038"
+                },
+                {
+                  "name": "--intelligence-panel",
+                  "value": "#10131A"
+                },
+                {
+                  "name": "--intelligence-active",
+                  "value": "#151B29"
+                }
+              ]
+            },
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "contentHash": {
+              "tokens": "356191c3"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M312VSDSZFVT45674GDVJVZN"
+          },
+          "snapshot_sha256": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "basic_info": {
+            "fileName": "Mastermind Product Design System — Canonical",
+            "pageName": "04 · Patterns",
+            "pageId": "p-5-0",
+            "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+            "rootNodeId": "root_node_p-5-0",
+            "nodeCount": 2566,
+            "artboardCount": 22,
+            "artboards": [
+              {
+                "id": "2S4-0",
+                "name": "Pattern · Material UI State Contract · Dark",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -2020,
+                "worldY": -2275
+              },
+              {
+                "id": "2UE-0",
+                "name": "Pattern · Material UI State Contract · Light",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -500,
+                "worldY": -2275
+              },
+              {
+                "id": "2WO-0",
+                "name": "Pattern · Archetype Signature Devices · Dark",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -2020,
+                "worldY": -1015
+              },
+              {
+                "id": "2YK-0",
+                "name": "Pattern · Archetype Signature Devices · Light",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -500,
+                "worldY": -1015
+              },
+              {
+                "id": "30G-0",
+                "name": "Pattern · Mobile Decision Thread · Dark",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1160,
+                "worldY": -2275
+              },
+              {
+                "id": "336-0",
+                "name": "Pattern · Mobile Decision Thread · Light",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1630,
+                "worldY": -2275
+              },
+              {
+                "id": "35W-0",
+                "name": "Pattern · Data, Chart & Access · Dark",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -2020,
+                "worldY": 225
+              },
+              {
+                "id": "39G-0",
+                "name": "Pattern · Data, Chart & Access · Light",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -500,
+                "worldY": 225
+              },
+              {
+                "id": "4LC-0",
+                "name": "F02 · Table and chart grammar · Candidate 2",
+                "childCount": 7,
+                "width": 1440,
+                "height": 1191,
+                "worldX": 2100,
+                "worldY": -2275
+              },
+              {
+                "id": "70C-0",
+                "name": "F02 · Company evidence · Unknown EPS · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1617,
+                "worldX": 3620,
+                "worldY": -2275
+              },
+              {
+                "id": "72T-0",
+                "name": "F02 · Company evidence · Actual zero dividend · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1587,
+                "worldX": 4020,
+                "worldY": -2275
+              },
+              {
+                "id": "74P-0",
+                "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+                "childCount": 4,
+                "width": 320,
+                "height": 1391,
+                "worldX": 4420,
+                "worldY": -2275
+              },
+              {
+                "id": "7CM-0",
+                "name": "F02 · Macro comparison · EN · Dark · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1484,
+                "worldX": 4820,
+                "worldY": -2275
+              },
+              {
+                "id": "7IS-0",
+                "name": "F02 · Macro comparison · 中文 · Light · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1221,
+                "worldX": 5290,
+                "worldY": -2275
+              },
+              {
+                "id": "8G2-0",
+                "name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+                "childCount": 3,
+                "width": 1280,
+                "height": 1245,
+                "worldX": 1020,
+                "worldY": 225
+              },
+              {
+                "id": "8N8-0",
+                "name": "F02 · 中文行业证据与返回 · 390 · Candidate 2",
+                "childCount": 6,
+                "width": 390,
+                "height": 1291,
+                "worldX": 2380,
+                "worldY": 225
+              },
+              {
+                "id": "8PF-0",
+                "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+                "childCount": 6,
+                "width": 390,
+                "height": 1381,
+                "worldX": 2850,
+                "worldY": 225
+              },
+              {
+                "id": "8R5-0",
+                "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 1269,
+                "worldX": 3320,
+                "worldY": 225
+              },
+              {
+                "id": "8TF-0",
+                "name": "F02 · Public editorial reading · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 2393,
+                "worldX": 2100,
+                "worldY": -1004
+              },
+              {
+                "id": "98N-0",
+                "name": "F02 · 768px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 768,
+                "height": 1111,
+                "worldX": 2570,
+                "worldY": -1004
+              },
+              {
+                "id": "9EB-0",
+                "name": "F02 · 1024px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 1024,
+                "height": 1071,
+                "worldX": 1020,
+                "worldY": 1550
+              },
+              {
+                "id": "9K6-0",
+                "name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+                "childCount": 3,
+                "width": 1600,
+                "height": 1245,
+                "worldX": -3818,
+                "worldY": -2408
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "00 · Cover",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "00 · Read me & Build contract",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-1",
+                "name": "07 · Source Imports + Assets · Pending Review",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "01 · Getting Started",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "02 · Foundations",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "03 · Components",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "04 · Patterns",
+                "icon": null,
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "05 · Reference Screens",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "06 · Utilities",
+                "icon": null,
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "System Sans-Serif",
+              "Noto Sans SC"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--noir-canvas",
+                  "value": "#080808"
+                },
+                {
+                  "name": "--noir-sidebar",
+                  "value": "#0C0C0C"
+                },
+                {
+                  "name": "--noir-panel",
+                  "value": "#121212"
+                },
+                {
+                  "name": "--noir-raised",
+                  "value": "#191919"
+                },
+                {
+                  "name": "--noir-hover",
+                  "value": "#222222"
+                },
+                {
+                  "name": "--noir-selected",
+                  "value": "#292929"
+                },
+                {
+                  "name": "--noir-text-primary",
+                  "value": "#F3F3F3"
+                },
+                {
+                  "name": "--noir-text-secondary",
+                  "value": "#B8B8B8"
+                },
+                {
+                  "name": "--noir-text-tertiary",
+                  "value": "#949494"
+                },
+                {
+                  "name": "--noir-champagne",
+                  "value": "#C9B99B"
+                },
+                {
+                  "name": "--noir-sage",
+                  "value": "#A8C2AD"
+                },
+                {
+                  "name": "--noir-rose",
+                  "value": "#DEA4A5"
+                },
+                {
+                  "name": "--noir-steel",
+                  "value": "#A7B4C2"
+                },
+                {
+                  "name": "--noir-lilac",
+                  "value": "#BDB2CE"
+                },
+                {
+                  "name": "--market-canvas",
+                  "value": "#0A0B0D"
+                },
+                {
+                  "name": "--market-panel",
+                  "value": "#111318"
+                },
+                {
+                  "name": "--market-raised",
+                  "value": "#181B20"
+                },
+                {
+                  "name": "--market-line",
+                  "value": "#2B3038"
+                },
+                {
+                  "name": "--intelligence-panel",
+                  "value": "#10131A"
+                },
+                {
+                  "name": "--intelligence-active",
+                  "value": "#151B29"
+                }
+              ]
+            },
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "contentHash": {
+              "tokens": "356191c3"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M312VSDSZFVT45674GDVJVZN"
+          },
+          "snapshot_sha256": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "completed_at": "2026-11-04T01:51:15.955Z"
+    },
+    {
+      "id": "f02-r2-controls-action-hierarchy-20261104-01",
+      "tool": "update_styles",
+      "actor": "/root",
+      "tool_carrier": "Mastermind Paper direct",
+      "board_key": "controls",
+      "board_id": "4JP-0",
+      "source_input": "Native Taste R2-T-001; align general controls with unchanged accepted primary/secondary/quiet variants on 771-0; preserve node IDs, 44px targets, labels and domain/save ownership.",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4KA-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--noir-text-primary)",
+              "borderWidth": "0px"
+            }
+          },
+          {
+            "nodeIds": [
+              "4KB-0"
+            ],
+            "styles": {
+              "color": "var(--noir-canvas)"
+            }
+          },
+          {
+            "nodeIds": [
+              "4KC-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--noir-panel)"
+            }
+          },
+          {
+            "nodeIds": [
+              "4KE-0"
+            ],
+            "styles": {
+              "borderWidth": "0px"
+            }
+          },
+          {
+            "nodeIds": [
+              "4KF-0"
+            ],
+            "styles": {
+              "fontWeight": 500,
+              "fontFamily": "\"Inter-Medium\", \"Inter\", system-ui, sans-serif"
+            }
+          }
+        ],
+        "fileId": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "before_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "law_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+      "started_at": "2026-11-04T01:59:50.009Z",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "response": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "f02-r2-controls-action-hierarchy-20261104-01",
+        "tool": "update_styles",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"4KA-0\"\n    },\n    {\n      \"nodeId\": \"4KB-0\"\n    },\n    {\n      \"nodeId\": \"4KC-0\"\n    },\n    {\n      \"nodeId\": \"4KE-0\"\n    },\n    {\n      \"nodeId\": \"4KF-0\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before": {
+          "basic_info": {
+            "fileName": "Mastermind Product Design System — Canonical",
+            "pageName": "04 · Patterns",
+            "pageId": "p-5-0",
+            "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+            "rootNodeId": "root_node_p-5-0",
+            "nodeCount": 2566,
+            "artboardCount": 22,
+            "artboards": [
+              {
+                "id": "2S4-0",
+                "name": "Pattern · Material UI State Contract · Dark",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -2020,
+                "worldY": -2275
+              },
+              {
+                "id": "2UE-0",
+                "name": "Pattern · Material UI State Contract · Light",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -500,
+                "worldY": -2275
+              },
+              {
+                "id": "2WO-0",
+                "name": "Pattern · Archetype Signature Devices · Dark",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -2020,
+                "worldY": -1015
+              },
+              {
+                "id": "2YK-0",
+                "name": "Pattern · Archetype Signature Devices · Light",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -500,
+                "worldY": -1015
+              },
+              {
+                "id": "30G-0",
+                "name": "Pattern · Mobile Decision Thread · Dark",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1160,
+                "worldY": -2275
+              },
+              {
+                "id": "336-0",
+                "name": "Pattern · Mobile Decision Thread · Light",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1630,
+                "worldY": -2275
+              },
+              {
+                "id": "35W-0",
+                "name": "Pattern · Data, Chart & Access · Dark",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -2020,
+                "worldY": 225
+              },
+              {
+                "id": "39G-0",
+                "name": "Pattern · Data, Chart & Access · Light",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -500,
+                "worldY": 225
+              },
+              {
+                "id": "4LC-0",
+                "name": "F02 · Table and chart grammar · Candidate 2",
+                "childCount": 7,
+                "width": 1440,
+                "height": 1191,
+                "worldX": 2100,
+                "worldY": -2275
+              },
+              {
+                "id": "70C-0",
+                "name": "F02 · Company evidence · Unknown EPS · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1617,
+                "worldX": 3620,
+                "worldY": -2275
+              },
+              {
+                "id": "72T-0",
+                "name": "F02 · Company evidence · Actual zero dividend · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1587,
+                "worldX": 4020,
+                "worldY": -2275
+              },
+              {
+                "id": "74P-0",
+                "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+                "childCount": 4,
+                "width": 320,
+                "height": 1391,
+                "worldX": 4420,
+                "worldY": -2275
+              },
+              {
+                "id": "7CM-0",
+                "name": "F02 · Macro comparison · EN · Dark · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1484,
+                "worldX": 4820,
+                "worldY": -2275
+              },
+              {
+                "id": "7IS-0",
+                "name": "F02 · Macro comparison · 中文 · Light · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1221,
+                "worldX": 5290,
+                "worldY": -2275
+              },
+              {
+                "id": "8G2-0",
+                "name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+                "childCount": 3,
+                "width": 1280,
+                "height": 1245,
+                "worldX": 1020,
+                "worldY": 225
+              },
+              {
+                "id": "8N8-0",
+                "name": "F02 · 中文行业证据与返回 · 390 · Candidate 2",
+                "childCount": 6,
+                "width": 390,
+                "height": 1291,
+                "worldX": 2380,
+                "worldY": 225
+              },
+              {
+                "id": "8PF-0",
+                "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+                "childCount": 6,
+                "width": 390,
+                "height": 1381,
+                "worldX": 2850,
+                "worldY": 225
+              },
+              {
+                "id": "8R5-0",
+                "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 1269,
+                "worldX": 3320,
+                "worldY": 225
+              },
+              {
+                "id": "8TF-0",
+                "name": "F02 · Public editorial reading · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 2393,
+                "worldX": 2100,
+                "worldY": -1004
+              },
+              {
+                "id": "98N-0",
+                "name": "F02 · 768px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 768,
+                "height": 1111,
+                "worldX": 2570,
+                "worldY": -1004
+              },
+              {
+                "id": "9EB-0",
+                "name": "F02 · 1024px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 1024,
+                "height": 1071,
+                "worldX": 1020,
+                "worldY": 1550
+              },
+              {
+                "id": "9K6-0",
+                "name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+                "childCount": 3,
+                "width": 1600,
+                "height": 1245,
+                "worldX": -3818,
+                "worldY": -2408
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "00 · Cover",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "00 · Read me & Build contract",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-1",
+                "name": "07 · Source Imports + Assets · Pending Review",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "01 · Getting Started",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "02 · Foundations",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "03 · Components",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "04 · Patterns",
+                "icon": null,
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "05 · Reference Screens",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "06 · Utilities",
+                "icon": null,
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "System Sans-Serif",
+              "Noto Sans SC"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--noir-canvas",
+                  "value": "#080808"
+                },
+                {
+                  "name": "--noir-sidebar",
+                  "value": "#0C0C0C"
+                },
+                {
+                  "name": "--noir-panel",
+                  "value": "#121212"
+                },
+                {
+                  "name": "--noir-raised",
+                  "value": "#191919"
+                },
+                {
+                  "name": "--noir-hover",
+                  "value": "#222222"
+                },
+                {
+                  "name": "--noir-selected",
+                  "value": "#292929"
+                },
+                {
+                  "name": "--noir-text-primary",
+                  "value": "#F3F3F3"
+                },
+                {
+                  "name": "--noir-text-secondary",
+                  "value": "#B8B8B8"
+                },
+                {
+                  "name": "--noir-text-tertiary",
+                  "value": "#949494"
+                },
+                {
+                  "name": "--noir-champagne",
+                  "value": "#C9B99B"
+                },
+                {
+                  "name": "--noir-sage",
+                  "value": "#A8C2AD"
+                },
+                {
+                  "name": "--noir-rose",
+                  "value": "#DEA4A5"
+                },
+                {
+                  "name": "--noir-steel",
+                  "value": "#A7B4C2"
+                },
+                {
+                  "name": "--noir-lilac",
+                  "value": "#BDB2CE"
+                },
+                {
+                  "name": "--market-canvas",
+                  "value": "#0A0B0D"
+                },
+                {
+                  "name": "--market-panel",
+                  "value": "#111318"
+                },
+                {
+                  "name": "--market-raised",
+                  "value": "#181B20"
+                },
+                {
+                  "name": "--market-line",
+                  "value": "#2B3038"
+                },
+                {
+                  "name": "--intelligence-panel",
+                  "value": "#10131A"
+                },
+                {
+                  "name": "--intelligence-active",
+                  "value": "#151B29"
+                }
+              ]
+            },
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "contentHash": {
+              "tokens": "356191c3"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M312VSDSZFVT45674GDVJVZN"
+          },
+          "snapshot_sha256": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "basic_info": {
+            "fileName": "Mastermind Product Design System — Canonical",
+            "pageName": "04 · Patterns",
+            "pageId": "p-5-0",
+            "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+            "rootNodeId": "root_node_p-5-0",
+            "nodeCount": 2566,
+            "artboardCount": 22,
+            "artboards": [
+              {
+                "id": "2S4-0",
+                "name": "Pattern · Material UI State Contract · Dark",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -2020,
+                "worldY": -2275
+              },
+              {
+                "id": "2UE-0",
+                "name": "Pattern · Material UI State Contract · Light",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -500,
+                "worldY": -2275
+              },
+              {
+                "id": "2WO-0",
+                "name": "Pattern · Archetype Signature Devices · Dark",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -2020,
+                "worldY": -1015
+              },
+              {
+                "id": "2YK-0",
+                "name": "Pattern · Archetype Signature Devices · Light",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -500,
+                "worldY": -1015
+              },
+              {
+                "id": "30G-0",
+                "name": "Pattern · Mobile Decision Thread · Dark",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1160,
+                "worldY": -2275
+              },
+              {
+                "id": "336-0",
+                "name": "Pattern · Mobile Decision Thread · Light",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1630,
+                "worldY": -2275
+              },
+              {
+                "id": "35W-0",
+                "name": "Pattern · Data, Chart & Access · Dark",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -2020,
+                "worldY": 225
+              },
+              {
+                "id": "39G-0",
+                "name": "Pattern · Data, Chart & Access · Light",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -500,
+                "worldY": 225
+              },
+              {
+                "id": "4LC-0",
+                "name": "F02 · Table and chart grammar · Candidate 2",
+                "childCount": 7,
+                "width": 1440,
+                "height": 1191,
+                "worldX": 2100,
+                "worldY": -2275
+              },
+              {
+                "id": "70C-0",
+                "name": "F02 · Company evidence · Unknown EPS · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1617,
+                "worldX": 3620,
+                "worldY": -2275
+              },
+              {
+                "id": "72T-0",
+                "name": "F02 · Company evidence · Actual zero dividend · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1587,
+                "worldX": 4020,
+                "worldY": -2275
+              },
+              {
+                "id": "74P-0",
+                "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+                "childCount": 4,
+                "width": 320,
+                "height": 1391,
+                "worldX": 4420,
+                "worldY": -2275
+              },
+              {
+                "id": "7CM-0",
+                "name": "F02 · Macro comparison · EN · Dark · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1484,
+                "worldX": 4820,
+                "worldY": -2275
+              },
+              {
+                "id": "7IS-0",
+                "name": "F02 · Macro comparison · 中文 · Light · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1221,
+                "worldX": 5290,
+                "worldY": -2275
+              },
+              {
+                "id": "8G2-0",
+                "name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+                "childCount": 3,
+                "width": 1280,
+                "height": 1245,
+                "worldX": 1020,
+                "worldY": 225
+              },
+              {
+                "id": "8N8-0",
+                "name": "F02 · 中文行业证据与返回 · 390 · Candidate 2",
+                "childCount": 6,
+                "width": 390,
+                "height": 1291,
+                "worldX": 2380,
+                "worldY": 225
+              },
+              {
+                "id": "8PF-0",
+                "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+                "childCount": 6,
+                "width": 390,
+                "height": 1381,
+                "worldX": 2850,
+                "worldY": 225
+              },
+              {
+                "id": "8R5-0",
+                "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 1269,
+                "worldX": 3320,
+                "worldY": 225
+              },
+              {
+                "id": "8TF-0",
+                "name": "F02 · Public editorial reading · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 2393,
+                "worldX": 2100,
+                "worldY": -1004
+              },
+              {
+                "id": "98N-0",
+                "name": "F02 · 768px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 768,
+                "height": 1111,
+                "worldX": 2570,
+                "worldY": -1004
+              },
+              {
+                "id": "9EB-0",
+                "name": "F02 · 1024px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 1024,
+                "height": 1071,
+                "worldX": 1020,
+                "worldY": 1550
+              },
+              {
+                "id": "9K6-0",
+                "name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+                "childCount": 3,
+                "width": 1600,
+                "height": 1245,
+                "worldX": -3818,
+                "worldY": -2408
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "00 · Cover",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "00 · Read me & Build contract",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-1",
+                "name": "07 · Source Imports + Assets · Pending Review",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "01 · Getting Started",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "02 · Foundations",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "03 · Components",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "04 · Patterns",
+                "icon": null,
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "05 · Reference Screens",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "06 · Utilities",
+                "icon": null,
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "System Sans-Serif",
+              "Noto Sans SC"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--noir-canvas",
+                  "value": "#080808"
+                },
+                {
+                  "name": "--noir-sidebar",
+                  "value": "#0C0C0C"
+                },
+                {
+                  "name": "--noir-panel",
+                  "value": "#121212"
+                },
+                {
+                  "name": "--noir-raised",
+                  "value": "#191919"
+                },
+                {
+                  "name": "--noir-hover",
+                  "value": "#222222"
+                },
+                {
+                  "name": "--noir-selected",
+                  "value": "#292929"
+                },
+                {
+                  "name": "--noir-text-primary",
+                  "value": "#F3F3F3"
+                },
+                {
+                  "name": "--noir-text-secondary",
+                  "value": "#B8B8B8"
+                },
+                {
+                  "name": "--noir-text-tertiary",
+                  "value": "#949494"
+                },
+                {
+                  "name": "--noir-champagne",
+                  "value": "#C9B99B"
+                },
+                {
+                  "name": "--noir-sage",
+                  "value": "#A8C2AD"
+                },
+                {
+                  "name": "--noir-rose",
+                  "value": "#DEA4A5"
+                },
+                {
+                  "name": "--noir-steel",
+                  "value": "#A7B4C2"
+                },
+                {
+                  "name": "--noir-lilac",
+                  "value": "#BDB2CE"
+                },
+                {
+                  "name": "--market-canvas",
+                  "value": "#0A0B0D"
+                },
+                {
+                  "name": "--market-panel",
+                  "value": "#111318"
+                },
+                {
+                  "name": "--market-raised",
+                  "value": "#181B20"
+                },
+                {
+                  "name": "--market-line",
+                  "value": "#2B3038"
+                },
+                {
+                  "name": "--intelligence-panel",
+                  "value": "#10131A"
+                },
+                {
+                  "name": "--intelligence-active",
+                  "value": "#151B29"
+                }
+              ]
+            },
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "contentHash": {
+              "tokens": "356191c3"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M312VSDSZFVT45674GDVJVZN"
+          },
+          "snapshot_sha256": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "completed_at": "2026-11-04T01:59:52.377Z"
+    },
+    {
+      "id": "f02-r2-readme-excluded-index-20261104-01",
+      "tool": "set_text_content",
+      "actor": "/root",
+      "tool_carrier": "Mastermind Paper direct",
+      "board_key": "readme",
+      "board_id": "47Q-0",
+      "source_input": "Native Taste R2-T-003; label original Chinese comparison exclusion inline and distinguish its separately accepted partial evidence-return companion; no mutation of held target.",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "9RW-0",
+            "html": "grammar [4LC-0] · company-eps-overlay-320 [70C-0] · company-dividend-overlay-320 [72T-0] · options-full-row-evidence-320 [74P-0] · macro-dark-en-390 [7CM-0] · macro-light-zh-390 [7IS-0] — EXCLUDED: unresolved operation / no complete capture · macro-docked-1280 [8G2-0] · macro-zh-evidence-return-390 [8N8-0] — partial evidence-return coverage only · company-fy2025-eps-evidence-390 [8PF-0] · editorial-calculation-evidence-390 [8R5-0] · editorial-reading-390 [8TF-0] · width-768-overlay [98N-0] · width-1024-overlay [9EB-0] · width-1600-docked [9K6-0]"
+          }
+        ],
+        "fileId": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "before_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "law_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+      "started_at": "2026-11-04T01:59:54.632Z",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "response": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "f02-r2-readme-excluded-index-20261104-01",
+        "tool": "set_text_content",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"9RW-0\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before": {
+          "basic_info": {
+            "fileName": "Mastermind Product Design System — Canonical",
+            "pageName": "04 · Patterns",
+            "pageId": "p-5-0",
+            "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+            "rootNodeId": "root_node_p-5-0",
+            "nodeCount": 2566,
+            "artboardCount": 22,
+            "artboards": [
+              {
+                "id": "2S4-0",
+                "name": "Pattern · Material UI State Contract · Dark",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -2020,
+                "worldY": -2275
+              },
+              {
+                "id": "2UE-0",
+                "name": "Pattern · Material UI State Contract · Light",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -500,
+                "worldY": -2275
+              },
+              {
+                "id": "2WO-0",
+                "name": "Pattern · Archetype Signature Devices · Dark",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -2020,
+                "worldY": -1015
+              },
+              {
+                "id": "2YK-0",
+                "name": "Pattern · Archetype Signature Devices · Light",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -500,
+                "worldY": -1015
+              },
+              {
+                "id": "30G-0",
+                "name": "Pattern · Mobile Decision Thread · Dark",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1160,
+                "worldY": -2275
+              },
+              {
+                "id": "336-0",
+                "name": "Pattern · Mobile Decision Thread · Light",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1630,
+                "worldY": -2275
+              },
+              {
+                "id": "35W-0",
+                "name": "Pattern · Data, Chart & Access · Dark",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -2020,
+                "worldY": 225
+              },
+              {
+                "id": "39G-0",
+                "name": "Pattern · Data, Chart & Access · Light",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -500,
+                "worldY": 225
+              },
+              {
+                "id": "4LC-0",
+                "name": "F02 · Table and chart grammar · Candidate 2",
+                "childCount": 7,
+                "width": 1440,
+                "height": 1191,
+                "worldX": 2100,
+                "worldY": -2275
+              },
+              {
+                "id": "70C-0",
+                "name": "F02 · Company evidence · Unknown EPS · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1617,
+                "worldX": 3620,
+                "worldY": -2275
+              },
+              {
+                "id": "72T-0",
+                "name": "F02 · Company evidence · Actual zero dividend · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1587,
+                "worldX": 4020,
+                "worldY": -2275
+              },
+              {
+                "id": "74P-0",
+                "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+                "childCount": 4,
+                "width": 320,
+                "height": 1391,
+                "worldX": 4420,
+                "worldY": -2275
+              },
+              {
+                "id": "7CM-0",
+                "name": "F02 · Macro comparison · EN · Dark · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1484,
+                "worldX": 4820,
+                "worldY": -2275
+              },
+              {
+                "id": "7IS-0",
+                "name": "F02 · Macro comparison · 中文 · Light · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1221,
+                "worldX": 5290,
+                "worldY": -2275
+              },
+              {
+                "id": "8G2-0",
+                "name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+                "childCount": 3,
+                "width": 1280,
+                "height": 1245,
+                "worldX": 1020,
+                "worldY": 225
+              },
+              {
+                "id": "8N8-0",
+                "name": "F02 · 中文行业证据与返回 · 390 · Candidate 2",
+                "childCount": 6,
+                "width": 390,
+                "height": 1291,
+                "worldX": 2380,
+                "worldY": 225
+              },
+              {
+                "id": "8PF-0",
+                "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+                "childCount": 6,
+                "width": 390,
+                "height": 1381,
+                "worldX": 2850,
+                "worldY": 225
+              },
+              {
+                "id": "8R5-0",
+                "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 1269,
+                "worldX": 3320,
+                "worldY": 225
+              },
+              {
+                "id": "8TF-0",
+                "name": "F02 · Public editorial reading · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 2393,
+                "worldX": 2100,
+                "worldY": -1004
+              },
+              {
+                "id": "98N-0",
+                "name": "F02 · 768px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 768,
+                "height": 1111,
+                "worldX": 2570,
+                "worldY": -1004
+              },
+              {
+                "id": "9EB-0",
+                "name": "F02 · 1024px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 1024,
+                "height": 1071,
+                "worldX": 1020,
+                "worldY": 1550
+              },
+              {
+                "id": "9K6-0",
+                "name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+                "childCount": 3,
+                "width": 1600,
+                "height": 1245,
+                "worldX": -3818,
+                "worldY": -2408
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "00 · Cover",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "00 · Read me & Build contract",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-1",
+                "name": "07 · Source Imports + Assets · Pending Review",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "01 · Getting Started",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "02 · Foundations",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "03 · Components",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "04 · Patterns",
+                "icon": null,
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "05 · Reference Screens",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "06 · Utilities",
+                "icon": null,
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "System Sans-Serif",
+              "Noto Sans SC"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--noir-canvas",
+                  "value": "#080808"
+                },
+                {
+                  "name": "--noir-sidebar",
+                  "value": "#0C0C0C"
+                },
+                {
+                  "name": "--noir-panel",
+                  "value": "#121212"
+                },
+                {
+                  "name": "--noir-raised",
+                  "value": "#191919"
+                },
+                {
+                  "name": "--noir-hover",
+                  "value": "#222222"
+                },
+                {
+                  "name": "--noir-selected",
+                  "value": "#292929"
+                },
+                {
+                  "name": "--noir-text-primary",
+                  "value": "#F3F3F3"
+                },
+                {
+                  "name": "--noir-text-secondary",
+                  "value": "#B8B8B8"
+                },
+                {
+                  "name": "--noir-text-tertiary",
+                  "value": "#949494"
+                },
+                {
+                  "name": "--noir-champagne",
+                  "value": "#C9B99B"
+                },
+                {
+                  "name": "--noir-sage",
+                  "value": "#A8C2AD"
+                },
+                {
+                  "name": "--noir-rose",
+                  "value": "#DEA4A5"
+                },
+                {
+                  "name": "--noir-steel",
+                  "value": "#A7B4C2"
+                },
+                {
+                  "name": "--noir-lilac",
+                  "value": "#BDB2CE"
+                },
+                {
+                  "name": "--market-canvas",
+                  "value": "#0A0B0D"
+                },
+                {
+                  "name": "--market-panel",
+                  "value": "#111318"
+                },
+                {
+                  "name": "--market-raised",
+                  "value": "#181B20"
+                },
+                {
+                  "name": "--market-line",
+                  "value": "#2B3038"
+                },
+                {
+                  "name": "--intelligence-panel",
+                  "value": "#10131A"
+                },
+                {
+                  "name": "--intelligence-active",
+                  "value": "#151B29"
+                }
+              ]
+            },
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "contentHash": {
+              "tokens": "356191c3"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M312VSDSZFVT45674GDVJVZN"
+          },
+          "snapshot_sha256": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "basic_info": {
+            "fileName": "Mastermind Product Design System — Canonical",
+            "pageName": "04 · Patterns",
+            "pageId": "p-5-0",
+            "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+            "rootNodeId": "root_node_p-5-0",
+            "nodeCount": 2566,
+            "artboardCount": 22,
+            "artboards": [
+              {
+                "id": "2S4-0",
+                "name": "Pattern · Material UI State Contract · Dark",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -2020,
+                "worldY": -2275
+              },
+              {
+                "id": "2UE-0",
+                "name": "Pattern · Material UI State Contract · Light",
+                "childCount": 8,
+                "width": 1440,
+                "height": 1120,
+                "worldX": -500,
+                "worldY": -2275
+              },
+              {
+                "id": "2WO-0",
+                "name": "Pattern · Archetype Signature Devices · Dark",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -2020,
+                "worldY": -1015
+              },
+              {
+                "id": "2YK-0",
+                "name": "Pattern · Archetype Signature Devices · Light",
+                "childCount": 6,
+                "width": 1440,
+                "height": 1029,
+                "worldX": -500,
+                "worldY": -1015
+              },
+              {
+                "id": "30G-0",
+                "name": "Pattern · Mobile Decision Thread · Dark",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1160,
+                "worldY": -2275
+              },
+              {
+                "id": "336-0",
+                "name": "Pattern · Mobile Decision Thread · Light",
+                "childCount": 7,
+                "width": 390,
+                "height": 1680,
+                "worldX": 1630,
+                "worldY": -2275
+              },
+              {
+                "id": "35W-0",
+                "name": "Pattern · Data, Chart & Access · Dark",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -2020,
+                "worldY": 225
+              },
+              {
+                "id": "39G-0",
+                "name": "Pattern · Data, Chart & Access · Light",
+                "childCount": 12,
+                "width": 1440,
+                "height": 2078,
+                "worldX": -500,
+                "worldY": 225
+              },
+              {
+                "id": "4LC-0",
+                "name": "F02 · Table and chart grammar · Candidate 2",
+                "childCount": 7,
+                "width": 1440,
+                "height": 1191,
+                "worldX": 2100,
+                "worldY": -2275
+              },
+              {
+                "id": "70C-0",
+                "name": "F02 · Company evidence · Unknown EPS · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1617,
+                "worldX": 3620,
+                "worldY": -2275
+              },
+              {
+                "id": "72T-0",
+                "name": "F02 · Company evidence · Actual zero dividend · 320",
+                "childCount": 3,
+                "width": 320,
+                "height": 1587,
+                "worldX": 4020,
+                "worldY": -2275
+              },
+              {
+                "id": "74P-0",
+                "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+                "childCount": 4,
+                "width": 320,
+                "height": 1391,
+                "worldX": 4420,
+                "worldY": -2275
+              },
+              {
+                "id": "7CM-0",
+                "name": "F02 · Macro comparison · EN · Dark · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1484,
+                "worldX": 4820,
+                "worldY": -2275
+              },
+              {
+                "id": "7IS-0",
+                "name": "F02 · Macro comparison · 中文 · Light · 390",
+                "childCount": 3,
+                "width": 390,
+                "height": 1221,
+                "worldX": 5290,
+                "worldY": -2275
+              },
+              {
+                "id": "8G2-0",
+                "name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+                "childCount": 3,
+                "width": 1280,
+                "height": 1245,
+                "worldX": 1020,
+                "worldY": 225
+              },
+              {
+                "id": "8N8-0",
+                "name": "F02 · 中文行业证据与返回 · 390 · Candidate 2",
+                "childCount": 6,
+                "width": 390,
+                "height": 1291,
+                "worldX": 2380,
+                "worldY": 225
+              },
+              {
+                "id": "8PF-0",
+                "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+                "childCount": 6,
+                "width": 390,
+                "height": 1381,
+                "worldX": 2850,
+                "worldY": 225
+              },
+              {
+                "id": "8R5-0",
+                "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 1269,
+                "worldX": 3320,
+                "worldY": 225
+              },
+              {
+                "id": "8TF-0",
+                "name": "F02 · Public editorial reading · 390 · Repair v1",
+                "childCount": 5,
+                "width": 390,
+                "height": 2393,
+                "worldX": 2100,
+                "worldY": -1004
+              },
+              {
+                "id": "98N-0",
+                "name": "F02 · 768px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 768,
+                "height": 1111,
+                "worldX": 2570,
+                "worldY": -1004
+              },
+              {
+                "id": "9EB-0",
+                "name": "F02 · 1024px width evaluation · Evidence overlay",
+                "childCount": 3,
+                "width": 1024,
+                "height": 1071,
+                "worldX": 1020,
+                "worldY": 1550
+              },
+              {
+                "id": "9K6-0",
+                "name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+                "childCount": 3,
+                "width": 1600,
+                "height": 1245,
+                "worldX": -3818,
+                "worldY": -2408
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "00 · Cover",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "00 · Read me & Build contract",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-1",
+                "name": "07 · Source Imports + Assets · Pending Review",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "01 · Getting Started",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "02 · Foundations",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "03 · Components",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "04 · Patterns",
+                "icon": null,
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "05 · Reference Screens",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "06 · Utilities",
+                "icon": null,
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "System Sans-Serif",
+              "Noto Sans SC"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--noir-canvas",
+                  "value": "#080808"
+                },
+                {
+                  "name": "--noir-sidebar",
+                  "value": "#0C0C0C"
+                },
+                {
+                  "name": "--noir-panel",
+                  "value": "#121212"
+                },
+                {
+                  "name": "--noir-raised",
+                  "value": "#191919"
+                },
+                {
+                  "name": "--noir-hover",
+                  "value": "#222222"
+                },
+                {
+                  "name": "--noir-selected",
+                  "value": "#292929"
+                },
+                {
+                  "name": "--noir-text-primary",
+                  "value": "#F3F3F3"
+                },
+                {
+                  "name": "--noir-text-secondary",
+                  "value": "#B8B8B8"
+                },
+                {
+                  "name": "--noir-text-tertiary",
+                  "value": "#949494"
+                },
+                {
+                  "name": "--noir-champagne",
+                  "value": "#C9B99B"
+                },
+                {
+                  "name": "--noir-sage",
+                  "value": "#A8C2AD"
+                },
+                {
+                  "name": "--noir-rose",
+                  "value": "#DEA4A5"
+                },
+                {
+                  "name": "--noir-steel",
+                  "value": "#A7B4C2"
+                },
+                {
+                  "name": "--noir-lilac",
+                  "value": "#BDB2CE"
+                },
+                {
+                  "name": "--market-canvas",
+                  "value": "#0A0B0D"
+                },
+                {
+                  "name": "--market-panel",
+                  "value": "#111318"
+                },
+                {
+                  "name": "--market-raised",
+                  "value": "#181B20"
+                },
+                {
+                  "name": "--market-line",
+                  "value": "#2B3038"
+                },
+                {
+                  "name": "--intelligence-panel",
+                  "value": "#10131A"
+                },
+                {
+                  "name": "--intelligence-active",
+                  "value": "#151B29"
+                }
+              ]
+            },
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "contentHash": {
+              "tokens": "356191c3"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M312VSDSZFVT45674GDVJVZN"
+          },
+          "snapshot_sha256": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "completed_at": "2026-11-04T01:59:56.997Z"
     }
   ],
   "captures": [
@@ -170030,6 +173260,70 @@
       "jsx_sha256": "e074559f314025ad84bce009762d8356587a3ebf8df697e833ec8646b5bcdcbf",
       "screenshot_sha256": "40c188f628aa545e26b69ca497ddcb32d19247719f6ab3c807226553be876532",
       "screenshot_bytes": 226242
+    },
+    {
+      "key": "company-dark",
+      "boardKey": "company-dark",
+      "boardId": "56L-0",
+      "nodeId": "56L-0",
+      "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
+      "captured_at": "2026-11-04T01:51:06.419Z",
+      "operations_through": 641,
+      "jsx": "f02/paper/exports/company-dark.jsx",
+      "screenshot": "f02/paper/screenshots/company-dark.jpg",
+      "mime_type": "image/jpeg",
+      "verdict": "Actual post-repair native capture; affected review pending",
+      "jsx_sha256": "47459d21a0c1e5fa2692020cf8a9b868a760c3a559651075e0f0d9161efd5c24",
+      "screenshot_sha256": "bff7d506be5a964450a71a76eb8bedcaeee16790ea8df83246fd28e5d26bbaa0",
+      "screenshot_bytes": 232274
+    },
+    {
+      "key": "company-light",
+      "boardKey": "company-light",
+      "boardId": "5HV-0",
+      "nodeId": "5HV-0",
+      "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
+      "captured_at": "2026-11-04T01:51:20.696Z",
+      "operations_through": 642,
+      "jsx": "f02/paper/exports/company-light.jsx",
+      "screenshot": "f02/paper/screenshots/company-light.jpg",
+      "mime_type": "image/jpeg",
+      "verdict": "Actual post-repair native capture; affected review pending",
+      "jsx_sha256": "ca0613e8116c982aa3aa5e11f7c1c3aec4778f0d66c511803d8b7f01d9bb22c4",
+      "screenshot_sha256": "1593519d6658b6e6d074a8a3911eb98aff0a00e305d2b4c9f7d4f660d9794d4d",
+      "screenshot_bytes": 234566
+    },
+    {
+      "key": "controls",
+      "boardKey": "controls",
+      "boardId": "4JP-0",
+      "nodeId": "4JP-0",
+      "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
+      "captured_at": "2026-11-04T02:00:00.855Z",
+      "operations_through": 644,
+      "jsx": "f02/paper/exports/controls.jsx",
+      "screenshot": "f02/paper/screenshots/controls.jpg",
+      "mime_type": "image/jpeg",
+      "verdict": "Actual post-repair native capture; affected review pending",
+      "jsx_sha256": "9c5b72b75ab9fc9564cfb1ea7b4e3b9c96d15875c527ad74388313200d699423",
+      "screenshot_sha256": "82dc8a33eaffbf485a601348da49cdca597ddaaf380a9dbb9ed55d8d3fa6181b",
+      "screenshot_bytes": 224071
+    },
+    {
+      "key": "readme",
+      "boardKey": "readme",
+      "boardId": "47Q-0",
+      "nodeId": "47Q-0",
+      "capture_state": "COMPLETE_NATIVE_BOARD_OBSERVED",
+      "captured_at": "2026-11-04T02:00:07.005Z",
+      "operations_through": 644,
+      "jsx": "f02/paper/exports/readme.jsx",
+      "screenshot": "f02/paper/screenshots/readme.jpg",
+      "mime_type": "image/jpeg",
+      "verdict": "Actual post-repair native capture; affected review pending",
+      "jsx_sha256": "c5dea90ad66dd10c701b6f04506d43964453e8bb2c90dc0224beed0ceb9a7db2",
+      "screenshot_sha256": "e6181d0ff701d97a044e035ffbf7a2091352dbbe639022bd8821d2ed736b226a",
+      "screenshot_bytes": 330306
     }
   ],
   "repairs": [

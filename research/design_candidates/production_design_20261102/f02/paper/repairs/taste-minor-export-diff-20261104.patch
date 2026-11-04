@@ -1,0 +1,37 @@
+--- r1/controls.jsx
++++ r2/controls.jsx
+@@ -45,18 +45,18 @@
+             Confirm the domain action; keep its real owner and result.
+           </div>
+         </div>
+-        <div id="4KA-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+-          <div id="4KB-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
++        <div id="4KA-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-text-primary)', borderRadius: '6px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
++          <div id="4KB-0" style={{ boxSizing: 'border-box', color: 'var(--noir-canvas)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
+             Save view
+           </div>
+         </div>
+-        <div id="4KC-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
++        <div id="4KC-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-panel)', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+           <div id="4KD-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
+             Source details
+           </div>
+         </div>
+-        <div id="4KE-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+-          <div id="4KF-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
++        <div id="4KE-0" style={{ alignItems: 'center', borderRadius: '6px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
++          <div id="4KF-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '20px' }}>
+             More
+           </div>
+         </div>
+--- r1/readme.jsx
++++ r2/readme.jsx
+@@ -154,7 +154,7 @@
+           Chart/table grammar, narrow evidence, responsive widths, localized return paths and density examples.
+         </div>
+         <div id="9RW-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
+-          grammar [4LC-0] · company-eps-overlay-320 [70C-0] · company-dividend-overlay-320 [72T-0] · options-full-row-evidence-320 [74P-0] · macro-dark-en-390 [7CM-0] · macro-light-zh-390 [7IS-0] · macro-docked-1280 [8G2-0] · macro-zh-evidence-return-390 [8N8-0] · company-fy2025-eps-evidence-390 [8PF-0] · editorial-calculation-evidence-390 [8R5-0] · editorial-reading-390 [8TF-0] · width-768-overlay [98N-0] · width-1024-overlay [9EB-0] · width-1600-docked [9K6-0]
++          grammar [4LC-0] · company-eps-overlay-320 [70C-0] · company-dividend-overlay-320 [72T-0] · options-full-row-evidence-320 [74P-0] · macro-dark-en-390 [7CM-0] · macro-light-zh-390 [7IS-0] — EXCLUDED: unresolved operation / no complete capture · macro-docked-1280 [8G2-0] · macro-zh-evidence-return-390 [8N8-0] — partial evidence-return coverage only · company-fy2025-eps-evidence-390 [8PF-0] · editorial-calculation-evidence-390 [8R5-0] · editorial-reading-390 [8TF-0] · width-768-overlay [98N-0] · width-1024-overlay [9EB-0] · width-1600-docked [9K6-0]
+         </div>
+         <div id="9RX-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px', width: '1296px' }}>
+           Open the observed page; use the exact board IDs above

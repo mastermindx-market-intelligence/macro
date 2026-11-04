@@ -302,10 +302,10 @@
           </div>
           <div id="5CA-0" style={{ boxSizing: 'border-box', display: 'flex', flexShrink: '0', justifyContent: 'space-between', paddingBottom: '10px', paddingTop: '20px', width: '1168px' }}>
             <div id="5CB-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
-              EXM · annual statements · USD bn unless labeled
+              EXM · annual statements · Showing FY 2022–2026 · USD bn unless labeled
             </div>
             <div id="5CC-0" style={{ boxSizing: 'border-box', color: '#A7C9F1', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
-              ← Earlier periods FY 2022–2026
+              ← Earlier periods
             </div>
           </div>
           <div id="5CE-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-raised)', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', width: '1168px' }}>
