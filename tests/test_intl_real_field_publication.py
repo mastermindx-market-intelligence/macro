@@ -187,6 +187,26 @@ def test_full_builder_composes_both_fields_without_changing_existing_views(tmp_p
         panel_context=risk["context"], context_id=risk["context_id"], generation=risk["generation"])
     assert "Source updated" in rendered and "来源更新" in rendered
     assert "2026-09-24" in rendered and "2026-10-13T02:00:00Z" in rendered
+    assert 'href="https://data.imf.org/test-fixture.xlsx"' in rendered
+    assert "Source: IMF World Economic Outlook" in rendered
+    assert "来源：IMF《世界经济展望》" in rendered
+    native = next(r for r in risk_rows if r["market_id"] == "JP")["annual_current_account"]
+    native["instrument"]["id"] = "other-annual-source"
+    other_html = env.get_template("intl_workspace/risk.html.j2").render(
+        risk_section=risk["risk_section"], registry=result["risk_registry"],
+        panel_context=risk["context"], context_id=risk["context_id"], generation=risk["generation"])
+    assert "Source updated" not in other_html and "Observation" in other_html
+    assert "Source: IMF World Economic Outlook" not in other_html
+    # The typed projection removes all source metadata before serialization
+    # when it is not permitted; the cell cannot reconstruct its URL/title.
+    cfg["intl"]["field_publication"]["JP.annual_current_account"]["metadata"] = "denied"
+    denied = build_intl._publication_workspace(closes, data_root=tmp_path, evaluated_at=EVALUATED)
+    risk = denied["risks"][0]
+    denied_html = env.get_template("intl_workspace/risk.html.j2").render(
+        risk_section=risk["risk_section"], registry=denied["risk_registry"],
+        panel_context=risk["context"], context_id=risk["context_id"], generation=risk["generation"])
+    assert "https://data.imf.org/test-fixture.xlsx" not in denied_html
+    assert "Source: IMF World Economic Outlook" not in denied_html
 
 
 @pytest.mark.parametrize("source_date,expected", [(None, "unknown"), ("2026-10-14", "failed"),

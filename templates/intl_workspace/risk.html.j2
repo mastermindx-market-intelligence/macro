@@ -305,14 +305,19 @@
               {{ metric_number(row.get('annual_current_account'), 'gdp') }}
               {% set annual = row.get('annual_current_account') %}
               {% if annual is mapping %}
+                {% set annual_instrument = annual.get('instrument') %}
                 {% set support = annual.get('support') %}
                 {% if support is mapping %}
                   {% if support.get('field_year') is not none %}<small>{{ words('Field year', '字段年份') }} {{ support.get('field_year')|e }}</small>{% endif %}
-                  {% if annual.get('observation_at') is not none %}<small>{{ words('Source updated', '来源更新') }} {{ annual.get('observation_at')|e }}</small>{% endif %}
+                  {% if annual.get('observation_at') is not none %}<small>{% if annual_instrument is mapping and annual_instrument.get('id') == 'JPN.BCA_NGDPD.A' %}{{ words('Source updated', '来源更新') }}{% else %}{{ words('Observation', '观测') }}{% endif %} {{ annual.get('observation_at')|e }}</small>{% endif %}
                   {% if support.get('vintage') is not none %}<small>{{ words('Vintage', '版本') }} {{ support.get('vintage')|e }}</small>{% endif %}
                   {% if support.get('observation_type') in annual_types %}
                     <small>{{ words(annual_types[support.observation_type].en, annual_types[support.observation_type].zh) }}</small>
                   {% endif %}
+                {% endif %}
+                {% set annual_source = annual.get('source_reference') %}
+                {% if annual_instrument is mapping and annual_instrument.get('id') == 'JPN.BCA_NGDPD.A' and annual_source is string and annual_source.startswith('https://data.imf.org/') %}
+                  <a href="{{ annual_source|e }}" target="_blank" rel="noopener">{{ words('Source: IMF World Economic Outlook', '来源：IMF《世界经济展望》') }}</a>
                 {% endif %}
               {% endif %}
             </td>
