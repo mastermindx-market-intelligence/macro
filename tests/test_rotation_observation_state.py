@@ -185,6 +185,51 @@ def test_non_defensive_rows_never_create_sector_notifications():
     assert advance(ctx=ctx)["records"]==[]
 
 
+def test_observation_identity_is_deterministic_across_fresh_runs():
+    # O01: two independent runs over the same prior and the same measured source
+    # produce byte-identical receipts; the id is a function of the measured basis
+    # and the lineage, never of the wall clock that observed it.
+    a=advance(seed(),packet(),clock())
+    b=advance(seed(),packet(),clock())
+    assert a==b
+    rec=a["records"][0]
+    assert rec["observation_id"].startswith("rotobs_") and len(rec["observation_id"])==len("rotobs_")+40
+    assert rec["previous_observation_id"]==seed()["pairs"]["XLP/SMH"]["observation_id"]
+    later=advance(seed(),packet(),clock(hour=23,minute=30))["records"][0]
+    assert later["observation_id"]==rec["observation_id"] and later["fingerprint"]==rec["fingerprint"]
+    assert later["observed_at"]!=rec["observed_at"]
+    # a different measured value is a different identity, not a re-stamped one
+    other=advance(seed(),packet(n=2.5),clock())["records"][0]
+    assert other["fingerprint"]!=rec["fingerprint"] and other["observation_id"]!=rec["observation_id"]
+
+
+def test_observation_identity_is_deterministic_through_the_recording_path(tmp_path,monkeypatch):
+    (tmp_path/"run_a").mkdir(); (tmp_path/"run_b").mkdir()
+    first=record(tmp_path/"run_a",monkeypatch)
+    second=record(tmp_path/"run_b",monkeypatch)
+    assert first["records"]==second["records"]
+    rows_a=(tmp_path/"run_a"/"rotation_events"/"events.jsonl").read_text()
+    rows_b=(tmp_path/"run_b"/"rotation_events"/"events.jsonl").read_text()
+    assert rows_a==rows_b and json.loads(rows_a)["observation_id"]==first["records"][0]["observation_id"]
+
+
+@pytest.mark.parametrize("mutation",[
+    {"definition_id":"rotation_early_context/2"},{"definition_id":None},{"definition_id":1},
+    {"schema":"rotation_early_context/v2"},{"display_only":False},{"display_only":"true"},
+])
+def test_wrong_definition_or_envelope_is_refused_not_measured(mutation):
+    # O01: the consumer binds to rotation_early_context/1 as a display-only envelope.
+    # Any other definition, schema or rights flag is not evidence: a fresh run records
+    # nothing, and an existing observation is withdrawn rather than re-measured.
+    ctx={**packet(),**mutation}
+    fresh=advance(None,ctx)
+    assert fresh["records"]==[] and fresh["state"]["pairs"]=={}
+    out=advance(seed(2,-1),ctx)
+    assert [r["kind"] for r in out["records"]]==["data_withdrawal"]
+    assert out["records"][0]["values"] is None and out["records"][0]["available"] is False
+    assert out["state"]["pairs"]["XLP/SMH"]["available"] is False
+
+
 def test_strict_history_clock_and_schema():
     with pytest.raises(ValueError): advance(previous={"schema":"another"})
     with pytest.raises(ValueError): advance(previous={"schema":"rotation_early_observation_history/v1","pairs":{},"last_observed_at":"not-time"})

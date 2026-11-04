@@ -1515,7 +1515,7 @@ def test_relationship_and_footnote_grammar_fails_closed(resources_suffix, body_s
         parse_sec_filing_document(content, document_name="bad-footnote.xhtml")
 
 
-def test_relationship_outside_ix_resources_and_unreferenced_footnote_fail_closed():
+def test_relationship_outside_ix_resources_fails_closed():
     fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
     footnote = '<ix:footnote id="fn1">n</ix:footnote>'
     outside = _inline(
@@ -1524,10 +1524,6 @@ def test_relationship_outside_ix_resources_and_unreferenced_footnote_fail_closed
     )
     with pytest.raises(SecFilingParseError, match=r"ix:relationship must be a direct child of ix:resources"):
         parse_sec_filing_document(outside, document_name="relationship-in-body.xhtml")
-
-    unreferenced = _inline(fact + footnote, resources=_BASE_RESOURCES)
-    with pytest.raises(SecFilingParseError, match=r"ix:footnote is not referenced by any ix:relationship"):
-        parse_sec_filing_document(unreferenced, document_name="unreferenced-footnote.xhtml")
 
 
 def test_footnote_must_not_appear_in_ix_header():
@@ -1604,7 +1600,7 @@ def test_b2_cap_literals_are_frozen():
     assert parser_module._HARD_LIMITS["max_nodes"] == 300_000
     assert parser_module._HARD_LIMITS["max_fact_text_bytes"] == 2 * 1024 * 1024
     assert parser_module._HARD_LIMITS["max_facts"] == 12_000
-    assert parser_module._HARD_LIMITS["max_continuation_chain"] == 32
+    assert parser_module._HARD_LIMITS["max_continuation_chain"] == 256
     assert parser_module._HARD_LIMITS["max_output_bytes"] == 64 * 1024 * 1024
     assert SEC_FILING_PARSER_VERSION == "1"
 
@@ -1623,12 +1619,12 @@ def test_fact_budget_boundary_is_12000():
         parse_sec_filing_document(beyond, document_name="facts-beyond.xml")
 
 
-def test_continuation_chain_boundary_is_32():
+def test_continuation_chain_boundary_is_256():
     # A chain is counted as the number of ix:continuation elements reachable
     # from the owning fact's continuedAt by following continued_at links (the
     # owning fact itself is not counted).  The root walk checks
     # `len(chain) >= limits["max_continuation_chain"]` before appending each
-    # member, so exactly 32 linked continuations are admitted and a 33rd
+    # member, so exactly 256 linked continuations are admitted and a 257th
     # refuses with the chain-limit message.
     def chain_document(count: int) -> bytes:
         continuations = "".join(
@@ -1642,11 +1638,11 @@ def test_continuation_chain_boundary_is_32():
             continuations=continuations,
         )
 
-    within = parse_sec_filing_document(chain_document(32), document_name="chain-within.xhtml")
-    assert len(within["facts"][0]["continuation_chain"]) == 32
+    within = parse_sec_filing_document(chain_document(256), document_name="chain-within.xhtml")
+    assert len(within["facts"][0]["continuation_chain"]) == 256
 
     with pytest.raises(SecFilingParseError, match="chain limit"):
-        parse_sec_filing_document(chain_document(33), document_name="chain-beyond.xhtml")
+        parse_sec_filing_document(chain_document(257), document_name="chain-beyond.xhtml")
 
 
 def test_fact_text_boundary_is_2mib():
@@ -1714,3 +1710,126 @@ def test_accepted_corpus_members_stay_byte_identical(member, expected_sha):
     content = (Path(__file__).parent / "fixtures" / member).read_bytes()
     result = parse_sec_filing_document(content, document_name=Path(member).name)
     assert sha256(parser_module._semantic_result_bytes(result)).hexdigest() == expected_sha
+
+
+# ---------------------------------------------------------------------------
+# DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102.  iXBRL 1.1 §9.1
+# permits ix:footnote as a direct child of the single ix:hidden; §13.1.2 binds
+# each toRefs IDREF but does not require every footnote to be referenced; the
+# continuation chain cap moves from 32 to 256 links.  Every case below is a
+# path that previously raised, so no previously accepted document changes.
+
+
+def test_footnote_direct_child_of_ix_hidden_is_admitted():
+    relationship = '<ix:relationship fromRefs="f1" toRefs="fn1"/>'
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    hidden = (
+        '<ix:hidden><ix:nonNumeric id="h1" name="ex:H" contextRef="c">hidden</ix:nonNumeric>'
+        '<ix:footnote id="fn1">n</ix:footnote></ix:hidden>'
+    )
+    content = _inline(fact, resources=_BASE_RESOURCES + relationship).replace(
+        b"<ix:header>", b"<ix:header>" + hidden.encode(), 1
+    )
+    result = parse_sec_filing_document(content, document_name="hidden-footnote.xhtml")
+    assert result["coverage"]["ix_relationship_count"] == 1
+    assert result["coverage"]["ix_footnote_count"] == 1
+    assert result["coverage"]["ix_footnote_continuation_count"] == 0
+    assert len(result["coverage"]) == 20
+    facts = {item["fact_id"]: item for item in result["facts"]}
+    assert facts["h1"]["hidden"] is True
+    validate_sec_filing_parse_result(result, source_content=content)
+
+
+def test_footnote_positions_inside_ix_header_still_fail_closed():
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    footnote = '<ix:footnote id="fn1">n</ix:footnote>'
+
+    # Directly under ix:header (after ix:resources): still refused.
+    under_header = _inline(fact, resources=_BASE_RESOURCES).replace(
+        b"</ix:resources></ix:header>",
+        b"</ix:resources>" + footnote.encode() + b"</ix:header>",
+        1,
+    )
+    with pytest.raises(SecFilingParseError, match=r"ix:footnote must not appear in ix:header"):
+        parse_sec_filing_document(under_header, document_name="footnote-under-header.xhtml")
+
+    # Inside ix:resources: still refused.
+    in_resources = _inline(fact, resources=_BASE_RESOURCES).replace(
+        b"</ix:resources>", footnote.encode() + b"</ix:resources>", 1
+    )
+    with pytest.raises(SecFilingParseError, match=r"ix:footnote must not appear in ix:header"):
+        parse_sec_filing_document(in_resources, document_name="footnote-in-resources.xhtml")
+
+    # Nested deeper inside ix:hidden (inside a hidden fact), not a direct child.
+    nested = _inline(fact, resources=_BASE_RESOURCES).replace(
+        b"<ix:header>",
+        b'<ix:header><ix:hidden><ix:nonNumeric id="h1" name="ex:H" contextRef="c">x'
+        + footnote.encode()
+        + b"</ix:nonNumeric></ix:hidden>",
+        1,
+    )
+    with pytest.raises(SecFilingParseError, match=r"ix:footnote must not appear in ix:header"):
+        parse_sec_filing_document(nested, document_name="footnote-nested-in-hidden-fact.xhtml")
+
+
+def test_unreferenced_footnote_alongside_referenced_one_is_admitted():
+    relationship = '<ix:relationship fromRefs="f1" toRefs="fn1"/>'
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    content = _inline(
+        fact
+        + '<ix:footnote id="fn1">kept</ix:footnote><ix:footnote id="fn2">unreferenced</ix:footnote>',
+        resources=_BASE_RESOURCES + relationship,
+    )
+    result = parse_sec_filing_document(content, document_name="unreferenced-alongside.xhtml")
+    assert result["coverage"]["ix_relationship_count"] == 1
+    assert result["coverage"]["ix_footnote_count"] == 2
+    validate_sec_filing_parse_result(result, source_content=content)
+
+
+def test_footnotes_with_zero_relationships_are_admitted():
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    content = _inline(
+        fact + '<ix:footnote id="fn1">note</ix:footnote>',
+        resources=_BASE_RESOURCES,
+    )
+    result = parse_sec_filing_document(content, document_name="no-relationships.xhtml")
+    assert result["coverage"]["ix_relationship_count"] == 0
+    assert result["coverage"]["ix_footnote_count"] >= 1
+    assert len(result["coverage"]) == 20
+    validate_sec_filing_parse_result(result, source_content=content)
+
+
+def test_validator_refuses_ix_counts_with_zero_relationship_and_zero_footnotes():
+    # The ix_* keys stay present exactly when relationship or footnote counts
+    # are nonzero; with the keys present, a zero relationship count is valid
+    # only alongside at least one footnote.
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    content = _inline(
+        fact + '<ix:footnote id="fn1">note</ix:footnote>',
+        resources=_BASE_RESOURCES,
+    )
+    result = parse_sec_filing_document(content, document_name="zero-ix-counts.xhtml")
+    tampered = deepcopy(result)
+    tampered["coverage"]["ix_relationship_count"] = 0
+    tampered["coverage"]["ix_footnote_count"] = 0
+    with pytest.raises(SecFilingParseError, match="coverage Inline XBRL counts are invalid"):
+        validate_sec_filing_parse_result(tampered, source_content=content)
+
+
+def test_continuation_chain_of_44_links_is_admitted():
+    # The AMZN primaries carry 43/44-link chains; both are ordinary admitted
+    # chains under the 256-link cap.
+    count = 44
+    continuations = "".join(
+        f'<ix:continuation id="c{index}"'
+        + (f' continuedAt="c{index + 1}"' if index < count - 1 else "")
+        + f">t{index}</ix:continuation>"
+        for index in range(count)
+    )
+    content = _inline(
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" continuedAt="c0">x</ix:nonNumeric>',
+        continuations=continuations,
+    )
+    result = parse_sec_filing_document(content, document_name="chain-44.xhtml")
+    assert len(result["facts"][0]["continuation_chain"]) == 44
+    validate_sec_filing_parse_result(result, source_content=content)

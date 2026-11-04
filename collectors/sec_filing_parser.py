@@ -52,6 +52,17 @@ SEC_FILING_PARSER_VERSION = "1"
 # inert decimals/precision/scale/format/sign is admitted with all five dropped
 # and exactly one per-fact ``nil_fact_inert_attributes_dropped`` diagnostic, a
 # path that previously raised, so every accepted output stays byte-identical.
+# The iXBRL 1.1 spec-conformance widening
+# (DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102) is another
+# strict widening under this same fingerprint: an ix:footnote that is a direct
+# child of the single ix:hidden (§9.1), an ix:footnote that no ix:relationship
+# references (§13.1.2 binds each toRefs IDREF, not the converse), and a
+# continuation chain of up to 256 links are admitted.  Each of those paths
+# previously raised, so every accepted output stays byte-identical.  A
+# pre-widening build refuses these inputs on replay - the ADI/AVGO primaries
+# with the header-footnote and unreferenced-footnote refusals, the AMZN
+# primaries with "continuation chain limit exceeded" - exactly as it refuses
+# the CAT primaries admitted by the fragment-href widening above.
 # Refusal verdicts are not fingerprint-bound;
 # they are bound by the committed ``_VERDICT_PIN`` in
 # tests/test_fif_gsrc_capture.py, regenerated in the same PR.  Runtime
@@ -110,7 +121,7 @@ _HARD_LIMITS = MappingProxyType({
     "max_units": 2_000,
     "max_facts": 12_000,
     "max_continuations": 10_000,
-    "max_continuation_chain": 32,
+    "max_continuation_chain": 256,
     "max_dimensions_per_context": 256,
     "max_measures_per_unit": 256,
     "max_abs_scale": 308,
@@ -1606,6 +1617,25 @@ def _inline_ancestor(node: _Node | None, local: str) -> bool:
     return _has_ancestor(node, IX11, local) if node is not None else False
 
 
+def _is_hidden_direct_header_child(node: _Node | None) -> bool:
+    """True when ``node`` is an ``ix:hidden`` that is a direct header child.
+
+    DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102: iXBRL 1.1
+    §9.1 permits ``ix:footnote`` as a direct child of the single
+    ``ix:hidden``.  The at-most-one-``ix:hidden`` and direct-header-child
+    placement of the hidden node itself remain enforced by
+    ``_validate_document_structure``.
+    """
+    return (
+        node is not None
+        and node.namespace == IX11
+        and node.local == "hidden"
+        and node.parent is not None
+        and node.parent.namespace == IX11
+        and node.parent.local == "header"
+    )
+
+
 def _nearest_inline_owner(node: _Node | None) -> _Node | None:
     """Return the nearest Inline XBRL semantic ancestor, if one exists.
 
@@ -1700,8 +1730,12 @@ def _validate_relationship_and_footnote_structure(
 
     Neither element is a fact: they never enter fact records, values, or
     spans.  Relationships live only as direct (empty) children of the single
-    ``ix:resources``; footnotes live in document content, transparently
-    wrapping any facts inside them, and every footnote must be referenced.
+    ``ix:resources``; footnotes live in document content or as direct children
+    of the single ``ix:hidden``, transparently wrapping any facts inside them.
+    Every ``fromRefs``/``toRefs`` reference must resolve; iXBRL 1.1 §13.1.2
+    does not require the converse, so a footnote referenced by no
+    relationship is admitted
+    (DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102).
     """
     footnotes = [node for node in nodes if node.namespace == IX11 and node.local == "footnote"]
     relationships = [node for node in nodes if node.namespace == IX11 and node.local == "relationship"]
@@ -1721,7 +1755,7 @@ def _validate_relationship_and_footnote_structure(
     }
     footnote_ids: set[str] = set()
     for node in footnotes:
-        if _inline_ancestor(node.parent, "header"):
+        if _inline_ancestor(node.parent, "header") and not _is_hidden_direct_header_child(node.parent):
             raise SecFilingParseError("ix:footnote must not appear in ix:header")
         for ancestor in _ancestor_nodes(node.parent):
             if ancestor.namespace == IX11 and ancestor.local in forbidden_footnote_owners:
@@ -1737,7 +1771,6 @@ def _validate_relationship_and_footnote_structure(
         continued_at = _attr(node, "continuedAt")
         if continued_at is not None:
             _normalized_identifier(continued_at, field_name="footnote continuedAt")
-    referenced: set[str] = set()
     for node in relationships:
         if node.parent is not resource:
             raise SecFilingParseError("ix:relationship must be a direct child of ix:resources")
@@ -1770,9 +1803,6 @@ def _validate_relationship_and_footnote_structure(
             raise SecFilingParseError("ix:relationship toRefs repeats a reference")
         if any(token not in footnote_ids for token in to_tokens):
             raise SecFilingParseError("ix:relationship toRefs does not resolve to an ix:footnote")
-        referenced.update(to_tokens)
-    if footnote_ids != referenced:
-        raise SecFilingParseError("ix:footnote is not referenced by any ix:relationship")
     return len(relationships), len(footnotes)
 
 
@@ -1849,8 +1879,13 @@ def _validate_document_structure(
     for hidden in hidden_nodes:
         if hidden.parent is not header:
             raise SecFilingParseError("ix:hidden must be a direct ix:header child")
+        # DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102: iXBRL 1.1
+        # §9.1 also permits ix:footnote as a direct child of ix:hidden; any
+        # other content, or a footnote nested deeper (for example inside a
+        # hidden fact), still refuses above and in the footnote header check.
         if not hidden.children or _direct_text(hidden, events).strip() or any(
-            child.namespace != IX11 or child.local not in {"nonFraction", "nonNumeric", "fraction"}
+            child.namespace != IX11
+            or child.local not in {"nonFraction", "nonNumeric", "fraction", "footnote"}
             for child in hidden.children
         ):
             raise SecFilingParseError("ix:hidden must contain only direct Inline XBRL facts")
@@ -2736,7 +2771,11 @@ def validate_sec_filing_parse_result(
         for key in sorted(ix_coverage_fields):
             if isinstance(coverage[key], bool) or not isinstance(coverage[key], int) or coverage[key] < 0:
                 raise SecFilingParseError("coverage Inline XBRL counts are invalid")
-        if coverage["ix_relationship_count"] < 1 or coverage["ix_footnote_count"] < 1:
+        # DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102: an
+        # unreferenced footnote is admitted, so a relationship count of zero
+        # is valid exactly when at least one footnote is present; a count set
+        # with no footnote at all is still invalid.
+        if coverage["ix_footnote_count"] < 1:
             raise SecFilingParseError("coverage Inline XBRL counts are invalid")
     else:
         coverage = _exact_dict(raw_coverage, coverage_fields, field_name="coverage")

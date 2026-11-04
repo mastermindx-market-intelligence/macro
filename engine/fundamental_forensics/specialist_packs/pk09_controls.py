@@ -14,7 +14,7 @@ from datetime import date
 from hashlib import sha256
 import calendar
 import re
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from .. import specialist_pack_contract as contract
 from ..financial_intelligence_packet import PACKET_MAX_LIMITATIONS
@@ -299,9 +299,21 @@ AUDITOR_OPINION_ICFR = (
     r"|(?P<adverse>has not maintained effective internal control)"
 )
 CRITICAL_AUDIT_MATTERS = r"Critical Audit Matters?\b(?!.{0,15}communicated)"
+# Review repairs D1+E1/E2 (per-pack reviews, 2026-11-02): the arm refuses
+# an occurrence preceded by no/not/never/free of/without — capitals
+# included (E2) — one followed by may/might/could/would in the same
+# clause, or (E1) one whose same clause run re-mentions the doubt directly
+# negated ("no|not|never (any) substantial doubt", 160 chars). A refused
+# match never discloses; the field falls to 'not_disclosed' as if absent.
+_GC_DOUBT_PHRASE = (
+    r"substantial doubt about (?:the Company.s|our|its) ability "
+    r"to continue as a going concern"
+)
 GOING_CONCERN_DOUBT = (
-    r"(?P<present>substantial doubt about (?:the Company.s|our|its) ability "
-    r"to continue as a going concern)"
+    r"(?<![Nn]o )(?<![Nn]ot )(?<![Nn]ever )(?<![Ff]ree of )(?<![Ww]ithout )"
+    r"(?P<present>" + _GC_DOUBT_PHRASE + r")"
+    r"(?![^.;:]{0,24}\b(?:may|might|could|would)\b)"
+    r"(?![^.;:]{0,160}\b(?:[Nn]o|[Nn]ot|[Nn]ever)\s+(?:any\s+)?substantial doubt)"
 )
 GOING_CONCERN_PLAN = r"management.s plans?"
 REMEDIATION = "remediat"
@@ -685,16 +697,74 @@ def _icfr_conclusion_value(
     lo, hi = _sentence_bounds(text, match.start(), match.end())
     stated = _ICFR_STATED_CONCLUSION.search(text, lo, hi)
     if stated is not None:
-        literal = (
-            "effective"
-            if any(
-                stated.group(name) is not None
-                for name in ("effective", "effective_bridge", "effective_adj")
-            )
-            else "ineffective"
-        )
-        return literal, (stated.start(), stated.end())
+        return _stated_conclusion_literal(stated), (stated.start(), stated.end())
     return "material_weakness", (match.start(), match.end())
+
+
+def _stated_conclusion_literal(match: Any) -> str:
+    """The enum literal a stated-conclusion match carries."""
+    return (
+        "effective"
+        if any(
+            match.group(name) is not None
+            for name in ("effective", "effective_bridge", "effective_adj")
+        )
+        else "ineffective"
+    )
+
+
+# Review repair D2 (per-pack review, 2026-11-02): the framework resolves a
+# selector with one leftmost search, so the acquired-subsidiary exclusion
+# wording ("Management determined that the internal control over financial
+# reporting of <acquired firm> was not effective as of the acquisition
+# date") placed before management's period-end conclusion used to win the
+# field, and reversing the two sentences flipped it back — a purely
+# leftmost-order read. Among multiple conclusion clauses the v7 period
+# machinery (the _MW_AS_OF_DATE read the dated-remediation rule uses) now
+# prefers the clause whose sentence's as-of date equals the period of
+# report; clauses with that date that disagree, or none dated to it,
+# demote to the typed absence the two-firm auditor demotion produces. A
+# single conclusion clause behaves exactly as before.
+_KEEP_TODAY = object()
+
+
+def _sentence_as_of_key(
+    text: str, start: int, end: int
+) -> tuple[int, int, int] | None:
+    """The "as of <Month D, YYYY>" key of the sentence holding [start, end),
+    or None when the sentence carries no parseable as-of date."""
+    lo, hi = _sentence_bounds(text, start, end)
+    stated = _MW_AS_OF_DATE.search(text, lo, hi)
+    return None if stated is None else _mw_date_key(stated.group(1))
+
+
+def _prefer_period_conclusion(
+    text: str,
+    candidates: Sequence[tuple[str, tuple[int, int]]],
+    por: date | None,
+) -> Any:
+    """D2 selection among conclusion ``candidates`` — ``(literal, span)``
+    pairs.
+
+    Returns the period-of-report clause's ``(literal, span)`` when one
+    exists and the clauses dated to the period agree; ``None`` to demote
+    (no clause dated to the period, or those clauses disagree); the
+    ``_KEEP_TODAY`` sentinel when today's resolution must stand (a single
+    clause, or no period of report to compare against — the v7 pass's own
+    precedent for an unknown period).
+    """
+    if len(candidates) <= 1 or por is None:
+        return _KEEP_TODAY
+    preferred = [
+        (literal, span)
+        for literal, span in candidates
+        if _sentence_as_of_key(text, span[0], span[1]) == (por.year, por.month, por.day)
+    ]
+    if not preferred:
+        return None
+    if len({literal for literal, _span in preferred}) > 1:
+        return None
+    return preferred[0]
 
 
 def _mw_clause_start(text: str, sentence_lo: int, verb_start: int) -> int:
@@ -867,6 +937,18 @@ def _management_vs_auditor_icfr(
     return _check_row(catalogue_check, "pass" if holds else "fail", None)
 
 
+def _gc_refused_only(audit_text: str) -> bool:
+    """D1: does the audit span carry the full doubt phrase with every
+    occurrence refused (negated or hypothetical wording)?
+
+    The refusal set is exactly GOING_CONCERN_DOUBT's guards: the raw phrase
+    matches but the guarded arm does not.
+    """
+    if re.search(_GC_DOUBT_PHRASE, audit_text) is None:
+        return False
+    return re.search(GOING_CONCERN_DOUBT, audit_text) is None
+
+
 def _going_concern_vs_opinion(
     catalogue_check: Mapping[str, Any],
     rows: Mapping[str, Mapping[str, Any]],
@@ -883,12 +965,20 @@ def _going_concern_vs_opinion(
         or opinion.get("quality_state") != "valued"
     ):
         return _check_row(catalogue_check, "not_evaluable", "missing_dependency")
-    if str(doubt["text_value"]) != "disclosed":
-        return _check_row(catalogue_check, "pass", None)
     nt = runtime.narrative_text()
     audit_span = narrative.locate_section(nt, AUDIT)
     audit_text = "" if audit_span is None else nt.text[audit_span[0] : audit_span[1]]
-    corroborated = "substantial doubt" in audit_text
+    if str(doubt["text_value"]) != "disclosed":
+        # D1: the auditor's report repeating the phrase only in refused
+        # (negated or hypothetical) wording is the false-positive
+        # corroboration channel (review run A1b) — never a pass on the
+        # strength of a refused match.
+        if _gc_refused_only(audit_text):
+            return _check_row(catalogue_check, "fail", None)
+        return _check_row(catalogue_check, "pass", None)
+    corroborated = "substantial doubt" in audit_text and not _gc_refused_only(
+        audit_text
+    )
     return _check_row(catalogue_check, "pass" if corroborated else "fail", None)
 
 
@@ -1035,6 +1125,12 @@ def _section_text_span(nt: Any, section: Any) -> tuple[int, int] | None:
     return narrative.locate_section(nt, section)
 
 
+def _manifest_por(primary: Any) -> date | None:
+    """The filing's period of report, or None when the manifest carries none."""
+    por_text = str(primary.manifest.get("period_of_report") or "")
+    return date.fromisoformat(por_text[:10]) if por_text else None
+
+
 class Pk09Producer(PackProducer):
     """PK09 declaration plus the B.3 v7 dated-remediation finalize hook and
     the 2026-11-01 management-report ICFR fallback.
@@ -1080,6 +1176,14 @@ class Pk09Producer(PackProducer):
         )
         if self._apply_icfr_management_fallback(result, rows, primary, primary_form):
             self._repair_envelope_after_finalize(result, rows)
+            self._apply_management_report_weakness_fallback(
+                result, rows, primary, primary_form
+            )
+        else:
+            # D2 reads the effective section the stock search resolved; a
+            # fallback-minted row is governed by the fallback's own D2
+            # selection inside Management's report instead.
+            self._finalize_icfr_conclusion(result, rows, primary, primary_form)
         self._finalize_auditor_firm(result, rows, primary, primary_form)
         return self._finalize_material_weakness(result, rows, primary, primary_form)
 
@@ -1098,7 +1202,11 @@ class Pk09Producer(PackProducer):
         inside the same report ("... whether the Company's internal control
         over financial reporting is effective") never satisfies the field;
         the value itself resolves through the same sentence-bounded
-        stated-conclusion resolver the stock row uses.
+        stated-conclusion resolver the stock row uses. When the report
+        holds more than one conclusion clause, the D2 selection
+        (``_prefer_period_conclusion``) governs: the clause dated to the
+        period of report wins, and disagreeing or undated clause sets mint
+        nothing (the typed miss stands).
         """
         if primary_form in _QUARTERLY_FORMS or primary_form is None:
             return False
@@ -1112,10 +1220,23 @@ class Pk09Producer(PackProducer):
         if section_span is None:
             return False
         lo, hi = section_span
-        match = re.compile(_ICFR_MGMT_CONCLUSION).search(nt.text, lo, hi)
-        if match is None:
+        resolutions = [
+            _icfr_conclusion_value(nt, section_span, match)
+            for match in re.compile(_ICFR_MGMT_CONCLUSION).finditer(nt.text, lo, hi)
+        ]
+        if not resolutions:
             return False
-        value, span = _icfr_conclusion_value(nt, section_span, match)
+        if len(resolutions) == 1:
+            value, span = resolutions[0]
+        else:
+            selection = _prefer_period_conclusion(
+                nt.text, resolutions, _manifest_por(primary)
+            )
+            if selection is None:
+                return False
+            value, span = (
+                resolutions[0] if selection is _KEEP_TODAY else selection
+            )
         mapping = _FIELD_MAPPINGS["icfr_management_conclusion"]
         accession = str(primary.manifest.get("accession") or "")
         row["quality_state"] = "valued"
@@ -1156,6 +1277,205 @@ class Pk09Producer(PackProducer):
             raise SpecialistPackError(
                 "PK09 finalize refused: " + "; ".join(errors[:5])
             )
+
+    def _apply_management_report_weakness_fallback(
+        self,
+        result: dict[str, Any],
+        rows: Mapping[str, Mapping[str, Any]],
+        primary: Any,
+        primary_form: str | None,
+    ) -> None:
+        """D3: never a confident material_weakness_present ``false`` over an
+        Item 9A that only incorporates Management's report by reference.
+
+        Runs only directly behind ``_apply_icfr_management_fallback``, so
+        the governing conclusion row was just minted from outside Item 9A,
+        and only when the effective Item 9A span is an incorporation shell
+        — it carries an "incorporated by reference" marker and no own
+        disclosure-controls conclusion, so the weakness boolean was
+        asserted over the incorporation sentence alone. (An Item 9A that
+        evaluates disclosure controls of its own keeps the framework's
+        valued false over that substantive section.) The same
+        MGMT_ICFR_REPORT span is then searched for the weakness boolean: a
+        management-voice mention values the row through the stock resolver
+        (with the period of report for the v7 remediation read); a mention
+        whose sentence also lies inside the audit report is auditor-scope
+        boilerplate ("assessing the risk that a material weakness exists")
+        and is refused; no usable mention demotes the row to the typed
+        absence the two-firm auditor demotion produces.
+        ``remediation_span`` follows the boolean through the pack's
+        existing gating.
+        """
+        row = rows.get("material_weakness_present")
+        if (
+            row is None
+            or row.get("quality_state") != "valued"
+            or row.get("text_value") != "false"
+        ):
+            return
+        if primary is None:
+            return
+        por = _manifest_por(primary)
+        nt = narrative.primary_document_text(primary)
+        shell_span = _section_text_span(
+            nt, _effective_section("material_weakness_present", primary_form)
+        )
+        if shell_span is None:
+            return
+        shell_lo, shell_hi = shell_span
+        section_text = nt.text[shell_lo:shell_hi]
+        if (
+            re.search(r"incorporat\w+\s+(?:herein\s+)?by\s+reference", section_text)
+            is None
+            or re.compile(DISCLOSURE_CONTROLS).search(
+                nt.text, shell_lo, shell_hi
+            )
+            is not None
+        ):
+            return  # a substantive Item 9A: the valued false over it stands
+        section_span = narrative.locate_section(nt, MGMT_ICFR_REPORT)
+        if section_span is None:
+            return
+        lo, hi = section_span
+        audit_span = narrative.locate_section(nt, AUDIT)
+        chosen = None
+        for match in re.compile(MATERIAL_WEAKNESS_IDENTIFIED).finditer(
+            nt.text, lo, hi
+        ):
+            sentence_lo, sentence_hi = _sentence_bounds(
+                nt.text, match.start(), match.end()
+            )
+            if (
+                audit_span is not None
+                and sentence_lo < audit_span[1]
+                and sentence_hi > audit_span[0]
+            ):
+                continue
+            chosen = match
+            break
+        accession = str(primary.manifest.get("accession") or "")
+        if chosen is not None:
+            value, span = _material_weakness_value(
+                _PorNarrative(nt.text, por) if por is not None else nt,
+                section_span,
+                chosen,
+            )
+            row["text_value"] = value
+            row["source_span"] = _raw_span(nt, span[0], span[1], accession)
+            if value == "true":
+                self._activate_remediation_span(rows, nt, primary_form, primary)
+                result["limitations"] = [
+                    line
+                    for line in result["limitations"]
+                    if not line.startswith("pk09.remediation_span: non-valued")
+                ]
+        else:
+            row["quality_state"] = "missing"
+            row["non_value_state"] = "missing"
+            row["coverage_state"] = "unmapped"
+            row["reason"] = "narrative_span_not_located"
+            row["value"] = None
+            row["text_value"] = None
+            row["evidence_kind"] = "text_span"
+            row["required_evidence_kind"] = "text_span"
+            row["mapping_rule_id"] = (
+                f"{SPEC.pack_id}.material_weakness_present.text_span/v1"
+            )
+            row["mapping_rule_digest"] = _text_span_digest(
+                _FIELD_MAPPINGS["material_weakness_present"]
+            )
+            row["source_span"] = None
+            row["dependency_field_ids"] = []
+            # F6-3: never the line that breaks the framework's R-F10 cap.
+            if len(result["limitations"]) < _LIMITATION_CAP:
+                result["limitations"].append(
+                    "pk09.material_weakness_present: non-valued "
+                    "(narrative_span_not_located); the governing conclusion "
+                    "was minted from Management's report outside Item 9A and "
+                    "no material-weakness mention was located there; section "
+                    f"searched: {MGMT_ICFR_REPORT.heading}"
+                )
+        self._repair_envelope_after_finalize(result, rows)
+
+    def _finalize_icfr_conclusion(
+        self,
+        result: dict[str, Any],
+        rows: Mapping[str, Mapping[str, Any]],
+        primary: Any,
+        primary_form: str | None,
+    ) -> None:
+        """D2: prefer the period-of-report conclusion clause among many
+        inside the effective section (see ``_prefer_period_conclusion``).
+
+        The stock row resolves through the framework's single leftmost
+        search, so an acquired-subsidiary exclusion clause placed first used
+        to win the literal. When the effective section holds more than one
+        stated conclusion clause, the clause whose sentence's as-of date
+        equals the period of report governs: a different literal rewrites
+        the row's value and evidence span, while disagreeing clauses dated
+        to the period — or none dated to it — demote the row to the typed
+        absence the two-firm auditor demotion produces. A single clause, a
+        preferred literal equal to the row's own, or an unknown period of
+        report leaves the row exactly as the framework resolved it.
+        """
+        row = rows.get("icfr_management_conclusion")
+        if row is None or row.get("quality_state") != "valued":
+            return
+        if primary is None or primary_form is None:
+            return
+        por = _manifest_por(primary)
+        if por is None:
+            return
+        nt = narrative.primary_document_text(primary)
+        section = _effective_section("icfr_management_conclusion", primary_form)
+        section_span = _section_text_span(nt, section)
+        if section_span is None:
+            return
+        lo, hi = section_span
+        candidates = [
+            (_stated_conclusion_literal(match), (match.start(), match.end()))
+            for match in re.compile(_ICFR_STATED_CONCLUSION).finditer(
+                nt.text, lo, hi
+            )
+        ]
+        selection = _prefer_period_conclusion(nt.text, candidates, por)
+        if selection is _KEEP_TODAY:
+            return
+        if selection is not None:
+            value, span = selection
+            if value == row.get("text_value"):
+                return  # same literal: the stock leftmost evidence stands
+            accession = str(primary.manifest.get("accession") or "")
+            row["text_value"] = value
+            row["source_span"] = _raw_span(nt, span[0], span[1], accession)
+            self._repair_envelope_after_finalize(result, rows)
+            return
+        section_text = "whole document" if section is None else section.heading
+        mapping = _FIELD_MAPPINGS["icfr_management_conclusion"]
+        row["quality_state"] = "missing"
+        row["non_value_state"] = "missing"
+        row["coverage_state"] = "unmapped"
+        row["reason"] = "narrative_span_not_located"
+        row["value"] = None
+        row["text_value"] = None
+        row["evidence_kind"] = "text_span"
+        row["required_evidence_kind"] = "text_span"
+        row["mapping_rule_id"] = (
+            f"{SPEC.pack_id}.icfr_management_conclusion.text_span/v1"
+        )
+        row["mapping_rule_digest"] = _text_span_digest(mapping)
+        row["source_span"] = None
+        row["dependency_field_ids"] = []
+        # F6-3: never the line that breaks the framework's R-F10 cap.
+        if len(result["limitations"]) < _LIMITATION_CAP:
+            result["limitations"].append(
+                "pk09.icfr_management_conclusion: non-valued "
+                "(narrative_span_not_located); "
+                f"{len(candidates)} conclusion clauses in the section "
+                "disagree or none is dated to the period of report; section "
+                f"searched: {section_text}"
+            )
+        self._repair_envelope_after_finalize(result, rows)
 
     @staticmethod
     def _finalize_auditor_firm(

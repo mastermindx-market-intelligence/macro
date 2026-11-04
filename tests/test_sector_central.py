@@ -271,8 +271,18 @@ _INST = [{"kind": "sector", "id": "xlk", "ticker": "XLK", "rotation_rank": 1}]
 
 
 def _status(monkeypatch, tmp_path, body):
+    # Mirrors compute() (engine/sector_central.py, SIC-D-B02 #9917): the loader returns the raw
+    # file and the settled-session gate decides arming — no wall-clock age rule. The consumer
+    # session is pinned to 2026-10-30 so a 2026-10-16 artifact, a session-less one and a hostile
+    # one all fail the gate exactly as they would on the rendered page; #10290 wrote this helper
+    # against the pre-B02 48 h loader guard, which the gate replaced.
+    from engine import sector_generation_guard as _sgg
     _write_artifact(monkeypatch, tmp_path, body)
     raw = sc._load_rotation_artifact()
+    alignment = _sgg.session_alignment(raw.get("session") or raw.get("asof"), "2026-10-30",
+                                       today=_dt.date(2026, 10, 30))
+    if alignment["status"] != "aligned":
+        raw = {}
     return sc._fast_lens_status(bool(raw and raw.get("instruments")), raw)
 
 

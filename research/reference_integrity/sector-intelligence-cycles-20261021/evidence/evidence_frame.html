@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- RIG evidence frame (sector-intelligence-cycles-20261021): loads a production page from the SAME origin after
+     seeding localStorage theme/lang (the keys the head boot reads before paint), sizes the iframe to the page's own
+     document height, and copies measurement facts onto this document so a headless --dump-dom can read them.
+     Query: ?src=<page.html#hash>&theme=dark|light&lang=en|zh&w=1440|390  — served as /__sic_evidence_frame.html -->
+<html><head><meta charset="utf-8"><title>evidence frame</title>
+<style>html,body{margin:0;padding:0;background:#f00}iframe{display:block;border:0}</style></head>
+<body><script>
+(function(){
+  var q=new URLSearchParams(location.search), src=q.get('src')||'sector_central.html', th=q.get('theme')||'dark', lg=q.get('lang')||'en', w=parseInt(q.get('w')||'1440',10);
+  try{localStorage.setItem('theme',th);localStorage.removeItem('themeAuto');localStorage.setItem('lang',lg);}catch(e){}
+  var d=document.documentElement; d.setAttribute('data-w',String(w)); d.setAttribute('data-src',src);
+  var f=document.createElement('iframe'); f.width=w; f.height=800; f.src=src; document.body.appendChild(f);
+  var n=0, last=-1, stable=0;
+  function fact(sel){try{var el=f.contentDocument.querySelector(sel);return el?el.textContent.replace(/\s+/g,' ').trim():''}catch(e){return ''}}
+  function measure(){
+    var doc, win; try{doc=f.contentDocument;win=f.contentWindow}catch(e){doc=null}
+    if(!doc||!doc.body){ if(++n<120) return setTimeout(measure,250); return; }
+    var h=Math.max(doc.documentElement.scrollHeight,doc.body.scrollHeight);
+    if(h===last) stable++; else {stable=0; last=h;}
+    f.height=h;
+    if(stable<4 && ++n<120) return setTimeout(measure,250);
+    var ovf=[]; try{doc.querySelectorAll('body *').forEach(function(el){var r=el.getBoundingClientRect(); if(!(r.width>0&&r.height>0&&r.right>w+1)) return; var cs=getComputedStyle(el); if(cs.position==='fixed'||cs.visibility==='hidden') return; var a=el.parentElement, clipped=false; while(a&&a!==doc.body){var ox=getComputedStyle(a).overflowX; if(ox==='hidden'||ox==='auto'||ox==='scroll'||ox==='clip'){clipped=true;break;} a=a.parentElement;} if(!clipped) ovf.push(el.tagName.toLowerCase()+(el.id?'#'+el.id:'')+(el.className&&typeof el.className==='string'?'.'+el.className.trim().split(/\s+/).slice(0,2).join('.'):'')+'@'+Math.round(r.right)+'|'+(el.textContent||'').replace(/\s+/g,' ').trim().slice(0,40));});}catch(e){}
+    d.setAttribute('data-sw',String(Math.max(doc.documentElement.scrollWidth,doc.body.scrollWidth)));
+    d.setAttribute('data-h',String(h)); d.setAttribute('data-ovf',ovf.slice(0,6).join(' '));
+    d.setAttribute('data-theme',doc.documentElement.getAttribute('data-theme')||''); d.setAttribute('data-lang',doc.documentElement.getAttribute('data-lang')||'');
+    d.setAttribute('data-hash',(win&&win.location.hash)||''); d.setAttribute('data-title',fact('h1'));
+    d.setAttribute('data-asof',[fact('#sc-asof'),fact('#asof'),fact('#si-side-asof')].filter(Boolean).join(' | '));
+    var secs={}; ['map','moving','money','confluence','tm-mount','accumulation-section','overview','si-brief-coverage','si-brief-series','sc-asof','asof'].forEach(function(id){var el=doc.getElementById(id); if(el){var r=el.getBoundingClientRect(); secs[id]=[Math.round(r.top+win.scrollY),Math.round(r.height)];}});
+    d.setAttribute('data-sections',JSON.stringify(secs));
+    var txt=(doc.body.innerText||''); d.setAttribute('data-incompat', /different day|不同日期|incompatible/i.test(txt)?'1':'0');
+    d.setAttribute('data-ready','1');
+  }
+  f.addEventListener('load',function(){setTimeout(measure,400)});
+})();
+</script></body></html>

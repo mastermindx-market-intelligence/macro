@@ -619,6 +619,30 @@ def early_signals(close: pd.Series, cyc: dict, mtf: dict) -> dict:
     return {}
 
 
+# Chinese twins of early_signals()' signal names and tiers, for ladder_state()'s
+# early_note_zh. That note used to join the English names into its Chinese sentence,
+# so the zh half of a sector page read "（heads-up）：StochRSI popped out of oversold".
+# tests/test_cycles.py holds every name and tier early_signals() can return to a twin
+# here; an unknown name would still print in English rather than vanish.
+EARLY_SIGNAL_ZH = {
+    "RSI bullish divergence (price made a lower low, momentum didn't)":
+        "RSI 看涨背离（价格创新低，动量未创新低）",
+    "MACD histogram turned up off a trough (pre-cross)": "MACD 柱状图自谷底回升（尚未交叉）",
+    "StochRSI popped out of oversold": "StochRSI 脱离超卖区",
+    "RSI bearish divergence (price made a higher high, momentum didn't)":
+        "RSI 看跌背离（价格创新高，动量未创新高）",
+    "MACD histogram rolled over off a peak (pre-cross)": "MACD 柱状图自峰值回落（尚未交叉）",
+    "StochRSI dropped out of overbought": "StochRSI 跌出超买区",
+}
+EARLY_TIER_ZH = {"anticipated": "预判", "heads-up": "预警"}
+
+
+def _early_zh(early: dict) -> tuple[str, str]:
+    """(tier, joined signal names) for the zh early note, in Chinese."""
+    tier = EARLY_TIER_ZH.get(early["tier"], early["tier"])
+    return tier, "；".join(EARLY_SIGNAL_ZH.get(name, name) for name in early["signals"])
+
+
 # ----------------------------------------------------------- signal ladder ----
 
 LADDER = ["DECLINE", "BOTTOM WATCH", "TURN SIGNALED", "FRESH BUY",
@@ -1334,8 +1358,9 @@ def ladder_state(cyc: dict, mtf: dict, early: dict | None = None,
                       + "; ".join(early["signals"]) + ". These anticipate a low BEFORE "
                       "full confirmation — earlier entry, but a higher false-alarm rate, so "
                       "treat as a heads-up to watch closely, not a trigger yet.")
-        early_note_zh = ("⚡ 反转正在提前酝酿（" + early["tier"] + "）："
-                         + "; ".join(early["signals"]) + "。这些信号会在完全确认之前"
+        tier_zh, signals_zh = _early_zh(early)
+        early_note_zh = ("⚡ 反转正在提前酝酿（" + tier_zh + "）："
+                         + signals_zh + "。这些信号会在完全确认之前"
                          "预判低点——入场更早，但误报率更高，因此应视为密切关注的"
                          "提示，而非触发信号。")
     elif early.get("dir") == "down" and state in ("TOP WATCH", "RALLY ON"):
@@ -1343,8 +1368,9 @@ def ladder_state(cyc: dict, mtf: dict, early: dict | None = None,
         early_note = ("⚡ Early topping signs (" + early["tier"] + "): "
                       + "; ".join(early["signals"]) + ". These anticipate a high BEFORE "
                       "confirmation — a heads-up to protect gains, not a sell trigger yet.")
-        early_note_zh = ("⚡ 提前出现的做顶迹象（" + early["tier"] + "）："
-                         + "; ".join(early["signals"]) + "。这些信号会在确认之前预判"
+        tier_zh, signals_zh = _early_zh(early)
+        early_note_zh = ("⚡ 提前出现的做顶迹象（" + tier_zh + "）："
+                         + signals_zh + "。这些信号会在确认之前预判"
                          "高点——属于保护利润的提示，而非卖出触发信号。")
 
     # ── Liquidity regime (macro conviction modifier) ─────────────────────────

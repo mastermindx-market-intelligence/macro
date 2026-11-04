@@ -428,6 +428,75 @@ def test_e3_m1_pinned_counted(m1_reference):
         assert sum(full["per_domain"][domain]["issuers"].values()) == leaf_count
 
 
+
+def _write_judging_dir(directory: Path, issuer_ids: list, failed: int) -> None:
+    directory.mkdir(parents=True)
+    (directory / "fetch_ledger.jsonl").write_text(
+        "".join(
+            json.dumps({"issuer_id": issuer_id, "state": "collected",
+                        "documents": []}) + "\n"
+            for issuer_id in issuer_ids
+        ),
+        encoding="utf-8",
+    )
+    (directory / "materialize_report.json").write_text(
+        json.dumps({"counters": {"excerpt_self_check_failed": failed,
+                                 "sources_reused": 9}}),
+        encoding="utf-8",
+    )
+
+
+def test_e3_parse_outcomes_attach_to_each_dirs_own_domain(tmp_path):
+    # falsifier: the pre-fix scan of the GLOBAL ledger rows credited every
+    # judging dir to the first dir's domain, so D2 read parse_outcomes ABSENT
+    # while D1 silently carried D2's counters.
+    leaves = {"D1": ["ISS:US-XNAS-AAA"], "D2": ["ISS:US-XNYS-BBB"]}
+    _write_judging_dir(tmp_path / "D1a", ["ISS:US-XNAS-AAA"], failed=2)
+    _write_judging_dir(tmp_path / "D2a", ["ISS:US-XNYS-BBB"], failed=5)
+    _write_judging_dir(
+        tmp_path / "P", ["ISS:US-XNAS-AAA", "ISS:US-XNYS-BBB"], failed=7
+    )
+    dirs = sorted(p for p in tmp_path.iterdir() if p.is_dir())
+    e3 = env.e3_sources({"coverage": []}, leaves, dirs)
+    per = e3["per_domain"]
+    assert per["D1"]["parse_outcomes"] == {"excerpt_self_check_failed": 2}
+    assert per["D2"]["parse_outcomes"] == {"excerpt_self_check_failed": 5}
+    # a mixed-domain dir cannot be split by issuer: OTHER, never D1 or D2
+    assert per["OTHER"]["parse_outcomes"] == {"excerpt_self_check_failed": 7}
+    assert e3["parse_attribution"] == {
+        str(tmp_path / "D1a"): "D1",
+        str(tmp_path / "D2a"): "D2",
+        str(tmp_path / "P"): "OTHER",
+    }
+    # injected per-dir rows win over disk; the global row list is never used
+    rows, reports, _ = env.read_judging(dirs)
+    injected = env.e3_sources(
+        {"coverage": []}, leaves, dirs,
+        ledger_rows=rows, materialize_reports=reports,
+        ledger_rows_by_dir={str(tmp_path / "P"): [
+            {"issuer_id": "ISS:US-XNYS-BBB"}
+        ]},
+    )
+    assert injected["per_domain"]["D2"]["parse_outcomes"] == {
+        "excerpt_self_check_failed": 12
+    }
+    assert injected["per_domain"]["OTHER"]["parse_outcomes"] is None
+
+
+def test_e3_committed_judging_dirs_give_both_domains_parse_outcomes():
+    judging_root = INPUTS_DIR / "m2" / "judging"
+    dirs = sorted(p for p in judging_root.iterdir() if p.is_dir())
+    e3 = env.e3_sources(
+        _load(PACKAGE_PATH), _load(LEAVES_PATH), dirs, inputs_dir=INPUTS_DIR
+    )
+    assert {Path(d).name: dom for d, dom in e3["parse_attribution"].items()} \
+        == {"D1a": "D1", "D1b": "D1", "D2a": "D2", "D2b": "D2", "P": "OTHER"}
+    for domain in ("D1", "D2"):
+        assert e3["per_domain"][domain]["parse_outcomes"] == {
+            "excerpt_self_check_failed": 0
+        }
+
+
 # --- E4 ------------------------------------------------------------------------
 
 

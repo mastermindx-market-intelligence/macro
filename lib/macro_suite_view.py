@@ -785,7 +785,7 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "sample_note": (
                 _catch_rate_sample_note(metric)
                 or _tga_reserves_note(metric)
-                or _prior_claims_note(snapshot, metric)
+                or _prior_claims_note(snapshot, metric) or _glt_view_note(metric)
             ),
             "coverage": L.fmt_ratio_pct(metric.get("coverage")),
             "authority_ceiling": D.authority_ceiling_pair(
@@ -2643,3 +2643,35 @@ def build_command_header(entries: Sequence[Mapping[str, Any]], *,
         "strip": chips,
         "coverage": {"available": sections_available, "total": sections_total},
     }
+
+
+def _glt_view_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
+    """T22 M2: the visible note for a global-liquidity views row.
+
+    The workspace projection stores the reviewed note token in
+    ``transformation`` (never rendered as such); this hook turns it into the
+    bilingual note. A replay token is expanded with the row's as-known day
+    (and correction day when revised). An unknown token is recorded and the
+    row stays without a note — never a fabricated sentence.
+    """
+    metric_id = metric.get("metric_id")
+    if not isinstance(metric_id, str) or not metric_id.startswith("glt_view_"):
+        return None
+    token = metric.get("transformation")
+    if not isinstance(token, str):
+        return None
+    if token in ("glt_view_note.replay.as_known", "glt_view_note.replay.corrected"):
+        asof = _plain_day_pair(metric.get("calculation_as_of"))
+        if asof is None:
+            return None
+        corrected = None
+        if token == "glt_view_note.replay.corrected":
+            corrected = _plain_day_pair(metric.get("revised_at"))
+            if corrected is None:
+                return None
+        return L.glt_view_replay_note(asof, corrected)
+    pair = L.GLT_VIEW_NOTES.get(token)
+    if pair is None:
+        L.record_unknown(f"glt_view_note:{token}")
+        return None
+    return dict(pair)

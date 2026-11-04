@@ -2408,6 +2408,16 @@ def advance_early_observation_history(previous, context, *, observed_at):
                       "pairs": new_pairs}, "records": records, "status": "observed"}
 
 
+OBSERVATION_VIEW_SCHEMA = "rotation_observation_view/v1"
+OBSERVATION_LEDGER_SOURCE = "macro.rotation_events.ledger"
+OBSERVATION_LEDGER_REF = "rotation_events/events.jsonl"
+
+
+def early_observation_receipt_line(row):
+    """The one canonical serialization of an observation receipt (no newline)."""
+    return json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False)
+
+
 def _validate_early_observation_receipt(row):
     """Validate this owner's immutable receipt before recovery or delivery reads."""
     import re
@@ -2530,28 +2540,7 @@ def record_early_observation_history(payload, data_dir, *, observed_at):
     ledger_preimage = ledger_path.stat() if ledger_path.exists() else None
     if ledger_preimage is not None:
         with ledger_path.open() as ledger:
-            for line in ledger:
-                if not line.strip():
-                    continue
-                row = json.loads(line)
-                if not isinstance(row, dict):
-                    raise ValueError("malformed rotation ledger row")
-                if row.get("event") != "early_observation":
-                    continue
-                pair, basis, stamp = _validate_early_observation_receipt(row)
-                identity = row["observation_id"]
-                if identity in known:
-                    if known[identity] != row:
-                        raise ValueError("conflicting canonical observation identity")
-                    continue
-                previous = tips.get(pair)
-                if row["previous_observation_id"] != (previous["observation_id"] if previous else None):
-                    raise ValueError("observation ledger contains a fork or missing predecessor")
-                if previous is not None and stamp < datetime.fromisoformat(previous["observed_at"]):
-                    raise ValueError("observation ledger clock moved backward")
-                known[identity] = row
-                tips[pair] = row
-                receipt_times.append(stamp)
+            known, tips, receipt_times, _ = _fold_early_observation_rows(ledger, require_canonical=False)
     for pair, checkpoint in old_pairs.items():
         if not isinstance(checkpoint, dict):
             raise ValueError("invalid prior observation")
@@ -2597,7 +2586,7 @@ def record_early_observation_history(payload, data_dir, *, observed_at):
     if additions:
         with ledger_path.open("a") as out:
             for row in additions:
-                out.write(json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n")
+                out.write(early_observation_receipt_line(row) + "\n")
             out.flush()
             os.fsync(out.fileno())
     state["early_observations"] = plan["state"]
@@ -2615,6 +2604,178 @@ def record_early_observation_history(payload, data_dir, *, observed_at):
         if tmp is not None and tmp.exists():
             tmp.unlink()
     return {"status": "recorded", "records": [*recovered_records, *additions]}
+
+
+def _fold_early_observation_rows(lines, *, require_canonical=False):
+    """Fold ledger lines into validated observation chains.
+
+    Returns (known, tips, receipt_times, ordered). Non-observation rows are skipped.
+    With require_canonical, every observation row must be byte-identical (after the
+    trailing newline) to its canonical serialization, so a published receipt digest
+    is the digest of the exact stored line.
+    """
+    known, tips, receipt_times, ordered = {}, {}, [], []
+    for line in lines:
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if not isinstance(row, dict):
+            raise ValueError("malformed rotation ledger row")
+        if row.get("event") != "early_observation":
+            continue
+        pair, basis, stamp = _validate_early_observation_receipt(row)
+        if require_canonical:
+            raw = line[:-1] if line.endswith("\n") else line
+            if raw != early_observation_receipt_line(row):
+                raise ValueError("observation ledger row is not canonical")
+        identity = row["observation_id"]
+        if identity in known:
+            if known[identity] != row:
+                raise ValueError("conflicting canonical observation identity")
+            continue
+        previous = tips.get(pair)
+        if row["previous_observation_id"] != (previous["observation_id"] if previous else None):
+            raise ValueError("observation ledger contains a fork or missing predecessor")
+        if previous is not None and stamp < datetime.fromisoformat(previous["observed_at"]):
+            raise ValueError("observation ledger clock moved backward")
+        known[identity] = row
+        tips[pair] = row
+        receipt_times.append(stamp)
+        ordered.append(row)
+    return known, tips, receipt_times, ordered
+
+
+def read_early_observation_ledger(data_dir):
+    """Read-only canonical observation receipts from the existing rotation ledger.
+
+    A missing ledger is an empty history. Any malformed, forked or non-canonical
+    observation row refuses the whole read (ValueError); this never repairs data.
+    """
+    from pathlib import Path
+
+    path = Path(data_dir) / "rotation_events" / "events.jsonl"
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8") as ledger:
+        _, _, _, ordered = _fold_early_observation_rows(ledger, require_canonical=True)
+    return ordered
+
+
+def project_latest_observation_view(context, ledger_rows):
+    """Project the newest standing notification into the published context.
+
+    Pure. Only a pair's chain tip can stand: a later non-notifying receipt
+    supersedes an earlier notice. The view copies the notification exactly and
+    adds only cross-checked display context; window and horizon are attached only
+    when the published row still measures the same session and values. Returns
+    None when no tip carries a notification. Display-only, never a signal.
+    """
+    import math
+    import re
+
+    if not isinstance(context, dict) or not isinstance(ledger_rows, list) or not ledger_rows:
+        return None
+    known, tips = {}, {}
+    for row in ledger_rows:
+        if not isinstance(row, dict) or row.get("event") != "early_observation":
+            continue
+        known[row["observation_id"]] = row
+        tips[row["num"] + "/" + row["den"]] = row
+    ctx_rows = [r for r in context.get("pairs", []) if isinstance(r, dict)] \
+        if isinstance(context.get("pairs"), list) else []
+    order = {}
+    for index, r in enumerate(ctx_rows):
+        if isinstance(r.get("pair_id"), str):
+            order.setdefault(r["pair_id"], index)
+    candidates = [row for row in tips.values() if isinstance(row.get("notification"), dict)]
+    if not candidates:
+        return None
+
+    def rank(row):
+        stamp = datetime.fromisoformat(row["observed_at"]).timestamp()
+        return (-stamp, order.get(row["pair_id"], len(ctx_rows)), row["pair_id"])
+
+    tip = min(candidates, key=rank)
+    note = tip["notification"]
+
+    def strict_date(value):
+        if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            return None
+        try:
+            return value if date.fromisoformat(value).isoformat() == value else None
+        except ValueError:
+            return None
+
+    def finite(value):
+        return type(value) in (int, float) and math.isfinite(value)
+
+    def norm(values):
+        return {k: (0.0 if v == 0 else v) for k, v in values.items()} if isinstance(values, dict) else None
+
+    keys = ("numerator_return_pct", "denominator_return_pct", "ratio_return_pct")
+    current = strict_date(context.get("as_of")) is not None and tip["event_as_of"] == context.get("as_of")
+    match = None
+    if current:
+        same = [r for r in ctx_rows if r.get("pair_id") == tip["pair_id"]
+                and r.get("num") == tip["num"] and r.get("den") == tip["den"]]
+        match = same[0] if len(same) == 1 else None
+    hz = match.get("horizons") if match is not None and isinstance(match.get("horizons"), dict) else {}
+    window_2s = None
+    win = hz.get("2s")
+    if (isinstance(win, dict) and isinstance(tip.get("values"), dict) and note.get("values") is not None
+            and strict_date(win.get("start")) and win.get("end") == tip["event_as_of"]
+            and all(finite(win.get(k)) for k in keys)
+            and norm({k: win[k] for k in keys}) == norm({k: tip["values"].get(k) for k in keys})):
+        window_2s = {"start": win["start"], "end": win["end"]}
+    horizon_20s = None
+    h20 = hz.get("20s")
+    if (isinstance(h20, dict) and h20.get("eligible") is True and type(h20.get("sessions")) is int
+            and h20["sessions"] == 20 and strict_date(h20.get("start"))
+            and h20.get("end") == tip["event_as_of"] and all(finite(h20.get(k)) for k in keys)):
+        n, d, r = (float(h20[k]) for k in keys)
+        if n > -100 and d > -100:
+            try:
+                ratio = ((1 + n / 100) / (1 + d / 100) - 1) * 100
+            except (ZeroDivisionError, OverflowError):
+                ratio = math.nan
+            if math.isfinite(ratio) and abs(ratio - r) <= 1e-6:
+                horizon_20s = {"sessions": 20, "start": h20["start"], "end": h20["end"],
+                               **{k: h20[k] for k in keys}}
+    availability = {"status": "UNKNOWN", "available_at": None}
+    raw_av = context.get("availability")
+    if (current and isinstance(raw_av, dict) and raw_av.get("status") in ("VERIFIED", "UNKNOWN")
+            and (raw_av.get("available_at") is None or isinstance(raw_av.get("available_at"), str))):
+        availability = {"status": raw_av["status"], "available_at": raw_av.get("available_at")}
+    coverage = None
+    cov = context.get("coverage")
+    if (current and isinstance(cov, dict)
+            and all(type(cov.get(k)) is int for k in ("registered_pairs", "evaluable_2s"))
+            and isinstance(cov.get("missing_pair_ids"), list)):
+        coverage = {"registered_pairs": cov["registered_pairs"], "evaluable_2s": cov["evaluable_2s"],
+                    "missing_pair_ids": [x for x in cov["missing_pair_ids"] if isinstance(x, str)]}
+    lineage = context.get("lineage")
+    roots = lineage.get("roots") if current and isinstance(lineage, dict) else None
+    lineage_roots = [x for x in roots if isinstance(x, str)] if isinstance(roots, list) else []
+    basis = match.get("basis") if match is not None and isinstance(match.get("basis"), str) else None
+    predecessor = known.get(tip.get("previous_observation_id"))
+    previous = None
+    if predecessor is not None:
+        previous = {"observation_id": predecessor["observation_id"],
+                    "observed_at": predecessor["observed_at"], "values": predecessor["values"]}
+    line = early_observation_receipt_line(tip)
+    return {
+        "schema": OBSERVATION_VIEW_SCHEMA,
+        "notification": json.loads(json.dumps(note, allow_nan=False)),
+        "window_2s": window_2s,
+        "horizon_20s": horizon_20s,
+        "basis": basis or "dividend_adjusted_close",
+        "availability": availability,
+        "coverage": coverage,
+        "lineage_roots": lineage_roots,
+        "previous": previous,
+        "recorded": {"source": OBSERVATION_LEDGER_SOURCE, "ledger": OBSERVATION_LEDGER_REF,
+                     "receipt_sha256": hashlib.sha256(line.encode("utf-8")).hexdigest()},
+    }
 
 
 def _coldstart_fingerprint(sectors: dict, p: dict) -> str:

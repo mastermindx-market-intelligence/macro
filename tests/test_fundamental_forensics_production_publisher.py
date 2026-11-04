@@ -395,7 +395,14 @@ def _capture_cli(lane: dict, contract: Path, clock: str = CAPTURE_CLOCK) -> int:
     )
 
 
-def _publish_cli(lane: dict, contract: Path, store: Path, report: Path, clock: str = RUN_CLOCK) -> int:
+def _publish_cli(
+    lane: dict,
+    contract: Path,
+    store: Path,
+    report: Path,
+    clock: str = RUN_CLOCK,
+    extra_args: tuple[str, ...] = (),
+) -> int:
     return producer.main(
         [
             "publish",
@@ -406,6 +413,7 @@ def _publish_cli(lane: dict, contract: Path, store: Path, report: Path, clock: s
             "--store-dir", str(store),
             "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report),
+            *extra_args,
         ]
     )
 
@@ -5055,3 +5063,278 @@ def test_a0_verify_admits_only_the_closed_refusal_vocabulary(tmp_path) -> None:
             store,
         )
     assert caught.value.code == "verify_failed"
+
+
+# ---------------------------------------------------------------------------
+# Gap-3 (DEC:FIF-PUBLISH-PER-ISSUER-REFUSAL-EXCLUSION-20261102): the opt-in
+# --exclude-unpinned-first-publication-refusals publish flag
+# ---------------------------------------------------------------------------
+
+_GAP3_FLAG = ("--exclude-unpinned-first-publication-refusals",)
+
+
+def _gap3_rows_for_one_issuer(cik: str, accession: str, rows_spec: tuple[tuple[str, str], ...]):
+    """A ``_readback_issuer_refusals`` fake: fabricated refusal rows (statement
+    type, code) for ONE issuer CIK, none for the others."""
+
+    def _rows(_store, plan, *, registry):
+        binding = plan.staged.binding
+        if binding.cik != cik:
+            return []
+        return [
+            {
+                "ticker": binding.ticker,
+                "cik": binding.cik,
+                "accession": accession,
+                "statement_type": statement_type,
+                "code": code,
+                "message": "",
+            }
+            for statement_type, code in rows_spec
+        ]
+
+    return _rows
+
+
+def _gap3_stage_refusals(
+    monkeypatch, cik: str, accession: str, rows_spec: tuple[tuple[str, str], ...]
+) -> None:
+    monkeypatch.setattr(producer, "_issuer_all_statements_refused", lambda *_a: False)
+    monkeypatch.setattr(
+        producer,
+        "_readback_issuer_refusals",
+        _gap3_rows_for_one_issuer(cik, accession, rows_spec),
+    )
+
+
+def test_gap3_flag_default_is_off() -> None:
+    args = producer.build_parser().parse_args(
+        [
+            "publish",
+            "--coverage-file", "contract.json",
+            "--raw-root", "raw",
+            "--archive-root", "archive",
+            "--recorded-at", RUN_CLOCK,
+        ]
+    )
+    assert args.exclude_unpinned_first_publication_refusals is False
+
+
+def test_gap3_flag_off_first_publication_still_fails(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _stage_three_issuers_coherently(monkeypatch)
+    _gap3_stage_refusals(
+        monkeypatch, ciks[0], accession, (("income_statement", "displayed_table_absent"),)
+    )
+    monkeypatch.setattr(producer, "_load_statement_refusal_pin", lambda: ({}, set(), frozenset()))
+    rc = _publish_cli(lane, contract, tmp_path / "store", tmp_path / "r.json")
+    captured = capsys.readouterr()
+    assert rc == 1
+    assert any(
+        line.startswith("::error title=fif_production_datasets-statement_refusal_unpinned::")
+        and "first_publication" in line
+        for line in captured.err.splitlines()
+    )
+
+
+def test_gap3_flag_on_excludes_the_issuer_and_publishes_the_others(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _stage_three_issuers_coherently(monkeypatch)
+    # Alphabetical statement_type order on purpose: the reason/detail must come
+    # out in income/balance/cash_flow order, not alphabetical.
+    _gap3_stage_refusals(
+        monkeypatch,
+        ciks[0],
+        accession,
+        (
+            ("balance_sheet", "displayed_table_absent"),
+            ("income_statement", "displayed_cell_period_mismatch"),
+        ),
+    )
+    monkeypatch.setattr(producer, "_load_statement_refusal_pin", lambda: ({}, set(), frozenset()))
+    report_path = tmp_path / "r.json"
+    rc = _publish_cli(lane, contract, tmp_path / "store", report_path, extra_args=_GAP3_FLAG)
+    captured = capsys.readouterr()
+    assert rc == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert [row["cik"] for row in report["excluded"]] == [ciks[0]]
+    assert report["excluded"][0]["reason"] == (
+        "statement_reconstruction_refused:displayed_cell_period_mismatch"
+    )
+    assert report["excluded"][0]["detail"] == [
+        {
+            "accession": accession,
+            "statement_type": "income_statement",
+            "code": "displayed_cell_period_mismatch",
+        },
+        {
+            "accession": accession,
+            "statement_type": "balance_sheet",
+            "code": "displayed_table_absent",
+        },
+    ]
+    assert sorted(row["cik"] for row in report["published"]) == sorted(ciks[1:])
+    assert any(
+        line.startswith(
+            "::warning title=fif_production_datasets-statement_reconstruction_refused::"
+        )
+        and "unpinned first-publication refusal(s) excluded" in line
+        for line in captured.err.splitlines()
+    )
+
+
+def test_gap3_flag_on_golden_row_still_fails(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = sorted(GOLDEN_AAPL_FIXTURES)[0]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _stage_three_issuers_coherently(monkeypatch)
+    _gap3_stage_refusals(
+        monkeypatch, ciks[0], accession, (("income_statement", "displayed_table_absent"),)
+    )
+    monkeypatch.setattr(
+        producer, "_load_statement_refusal_pin", lambda: ({}, set(), frozenset({accession}))
+    )
+    rc = _publish_cli(
+        lane, contract, tmp_path / "store", tmp_path / "r.json", extra_args=_GAP3_FLAG
+    )
+    captured = capsys.readouterr()
+    assert rc == 1
+    assert any(
+        line.startswith("::error title=fif_production_datasets-statement_refusal_unpinned::")
+        for line in captured.err.splitlines()
+    )
+
+
+def test_gap3_flag_on_pinned_code_changed_still_fails(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _stage_three_issuers_coherently(monkeypatch)
+    _gap3_stage_refusals(
+        monkeypatch, ciks[0], accession, (("income_statement", "displayed_table_absent"),)
+    )
+    monkeypatch.setattr(
+        producer,
+        "_load_statement_refusal_pin",
+        lambda: (
+            {(accession, "income_statement"): "statement_role_not_consolidated"},
+            set(),
+            frozenset(),
+        ),
+    )
+    rc = _publish_cli(
+        lane, contract, tmp_path / "store", tmp_path / "r.json", extra_args=_GAP3_FLAG
+    )
+    captured = capsys.readouterr()
+    assert rc == 1
+    assert any(
+        line.startswith("::error title=fif_production_datasets-statement_refusal_unpinned::")
+        and "pinned_code_changed" in line
+        for line in captured.err.splitlines()
+    )
+
+
+def test_gap3_flag_on_mixed_pinned_and_first_publication_excludes(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    accession = identity["accessions"][0]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _stage_three_issuers_coherently(monkeypatch)
+    _gap3_stage_refusals(
+        monkeypatch,
+        ciks[0],
+        accession,
+        (
+            ("balance_sheet", "displayed_table_absent"),
+            ("income_statement", "statement_role_not_consolidated"),
+        ),
+    )
+    monkeypatch.setattr(
+        producer,
+        "_load_statement_refusal_pin",
+        lambda: (
+            {(accession, "income_statement"): "statement_role_not_consolidated"},
+            {(accession, "income_statement", "statement_role_not_consolidated")},
+            frozenset(),
+        ),
+    )
+    report_path = tmp_path / "r.json"
+    rc = _publish_cli(lane, contract, tmp_path / "store", report_path, extra_args=_GAP3_FLAG)
+    assert rc == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert [row["cik"] for row in report["excluded"]] == [ciks[0]]
+    assert report["excluded"][0]["reason"] == (
+        "statement_reconstruction_refused:statement_role_not_consolidated"
+    )
+    assert [item["statement_type"] for item in report["excluded"][0]["detail"]] == [
+        "income_statement",
+        "balance_sheet",
+    ]
+
+
+def test_gap3_flag_on_with_prior_publication_is_inert(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    # Modeled on test_r6_unchanged_plan_reports_refusals_from_comparison: the
+    # first publish leaves latest.json, so later runs carry a non-None latest
+    # and the flag's latest-is-None branch cannot fire.
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    _stage_three_issuers_coherently(monkeypatch)
+    monkeypatch.setattr(producer, "_load_statement_refusal_pin", lambda: ({}, set(), frozenset()))
+    store = tmp_path / "store"
+    assert _publish_cli(lane, contract, store, tmp_path / "r1.json") == 0
+    fabricated_accession = identity["accessions"][0] + "-gap3"
+    reports = []
+    for label, extra in (("off", ()), ("on", _GAP3_FLAG)):
+        _gap3_stage_refusals(
+            monkeypatch,
+            ciks[0],
+            fabricated_accession,
+            (("income_statement", "displayed_table_absent"),),
+        )
+        report_path = tmp_path / f"r-{label}.json"
+        assert _publish_cli(lane, contract, store, report_path, extra_args=extra) == 0
+        reports.append(json.loads(report_path.read_text(encoding="utf-8")))
+    for report in reports:
+        assert not any(
+            row["cik"] == ciks[0]
+            and row["reason"].startswith("statement_reconstruction_refused:")
+            for row in report["excluded"]
+        )
+        assert ciks[0] in {row["cik"] for row in report["published"]}
+
+
+def test_gap3_verify_accepts_the_new_reason(tmp_path) -> None:
+    store = producer.build_production_dataset_store(local_dir=tmp_path / "store")
+    producer.verify_report(
+        _minimal_refusal_report(
+            "statement_reconstruction_refused:displayed_cell_period_mismatch"
+        ),
+        store,
+    )

@@ -626,3 +626,159 @@ def test_expiry_qualification_does_not_invent_an_observation_clock():
     assert settled._clock_reason(doc, SESSION, SESSION, NOW) == "source_expired"
     doc["stale_after"] = []
     assert settled._clock_reason(doc, SESSION, SESSION, None) == "malformed_source_expiry"
+
+
+# ── EW-P4-ACT: display-only latest observation view reaches Radar verbatim ─────
+
+VERDICT_KEYS = ("measured_state", "hazard_summary", "policies", "episodes",
+                "policy_summary", "authority", "confluence")
+
+
+def observation_view(*, event_as_of=SESSION, observed_at="2026-10-06T21:30:00+00:00"):
+    return {
+        "schema": "rotation_observation_view/v1",
+        "notification": {"pair_id": "xlp_spy", "num": "XLP", "den": "SPY", "kind": "observed_change",
+                         "event_as_of": event_as_of, "source_as_of": event_as_of,
+                         "observed_at": observed_at, "direction": "numerator_led",
+                         "values": {"numerator_return_pct": 1.2, "denominator_return_pct": -0.4,
+                                    "ratio_return_pct": 1.6064257028112452}},
+        "window_2s": {"start": "2026-10-05", "end": event_as_of},
+        "horizon_20s": None,
+        "basis": "dividend_adjusted_close",
+        "availability": {"status": "UNKNOWN", "available_at": None},
+        "coverage": {"registered_pairs": 1, "evaluable_2s": 1, "missing_pair_ids": []},
+        "lineage_roots": ["price:xlp:oct6"],
+        "previous": None,
+        "recorded": {"source": "macro.rotation_events.ledger", "ledger": "rotation_events/events.jsonl",
+                     "receipt_sha256": "0" * 64},
+    }
+
+
+def rotation_with(view, **kwargs):
+    doc = rotation(**kwargs)
+    doc["early_context"]["latest_observation"] = view
+    return doc
+
+
+def envelope_schema():
+    from pathlib import Path
+    jsonschema = pytest.importorskip("jsonschema")
+    return jsonschema, json.loads((Path(__file__).resolve().parents[1]
+                                   / "contracts/risk_envelope.schema.json").read_text())
+
+
+def test_latest_observation_is_lifted_verbatim_and_never_changes_a_verdict():
+    view = observation_view()
+    plain = compose(reads())
+    sources = reads()[:2] + [settled._rotation_read(rotation_with(view), SESSION, now=NOW)]
+    lifted = compose(sources)
+    assert lifted["rotation_context"]["latest_observation"] == view
+    assert "latest_observation" not in plain["rotation_context"]
+    assert "latest_observation" not in (lifted["rotation_context"]["early_context"] or {})
+    for key in VERDICT_KEYS:
+        assert lifted[key] == plain[key]
+    for key in ("state", "usable", "coverage", "excluded_reason", "confirmed_events", "display_only"):
+        assert lifted["rotation_context"][key] == plain["rotation_context"][key]
+    jsonschema, schema = envelope_schema()
+    jsonschema.validate(lifted, schema)
+    unknown = json.loads(json.dumps(lifted))
+    unknown["rotation_context"]["observation_alert"] = True
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(unknown, schema)
+
+
+def test_lifted_observation_is_an_independent_copy():
+    view = observation_view()
+    doc = rotation_with(view)
+    read = settled._rotation_read(doc, SESSION, now=NOW)
+    doc["early_context"]["latest_observation"]["notification"]["kind"] = "reversal"
+    assert read.detail["latest_observation"]["notification"]["kind"] == "observed_change"
+    output = compose(reads()[:2] + [read])
+    read.detail["latest_observation"]["recorded"]["receipt_sha256"] = "f" * 64
+    assert output["rotation_context"]["latest_observation"]["recorded"]["receipt_sha256"] == "0" * 64
+
+
+@pytest.mark.parametrize("mutate,reason", [
+    (lambda d: d["early_context"].update(as_of="2026-10-05"), "off_session"),
+    (lambda d: d["early_context"].update(freshness={"stale": True}), "source_stale"),
+    (lambda d: d["early_context"].update(stale_after="2026-10-07T00:00:00Z"), "source_expired"),
+    (lambda d: d["early_context"].update(state=None), "early_context_unavailable"),
+])
+def test_older_or_stale_context_still_carries_its_view_for_the_consumer_to_judge(mutate, reason):
+    view = observation_view(event_as_of="2026-10-05", observed_at="2026-10-05T21:30:00+00:00")
+    doc = rotation_with(view)
+    mutate(doc)
+    read = settled._rotation_read(doc, SESSION, now=NOW)
+    assert read.usable is False and read.detail["excluded_reason"] == reason
+    output = compose(reads()[:2] + [read])
+    assert output["rotation_context"]["usable"] is False
+    assert output["rotation_context"]["latest_observation"] == view
+    assert output["hazard_summary"]["stage"] == "FRAGILE"
+
+
+@pytest.mark.parametrize("mutate,withheld", [
+    (lambda d: d["early_context"].update(as_of="2026-10-07"), "future_source_session"),
+    (lambda d: d["early_context"].update(as_of=None), "missing_or_malformed_session"),
+    (lambda d: d["early_context"].update(available_at="2026-10-07T13:00:00Z"), "source_not_available"),
+    (lambda d: d["early_context"].update(produced_at="2026-10-07T13:00:00Z"), "future_production_clock"),
+    (lambda d: d["early_context"].update(produced_at="tomorrow"), "malformed_source_clock"),
+    (lambda d: d.update(available_at="2026-10-07T13:00:00Z"), "source_not_available"),
+    # Review (FU2, F1): an off-session source still answers for its availability and
+    # production clocks; a replay must not lift a view published after the cutoff.
+    (lambda d: d["early_context"].update(as_of="2026-10-05", available_at="2026-10-07T13:00:00Z"),
+     "source_not_available"),
+    (lambda d: d["early_context"].update(as_of="2026-10-05", produced_at="2026-10-07T13:00:00Z"),
+     "future_production_clock"),
+    # The read's own day comes from the early context; the top-level availability clock still gates it.
+    (lambda d: (d["early_context"].update(as_of="2026-10-05"), d.update(available_at="2026-10-07T13:00:00Z")),
+     "source_not_available"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        observed_at="2026-10-07T12:00:01+00:00"), "observation_not_available"),
+    (lambda d: d["early_context"].update(as_of="2026-10-05")
+     or d["early_context"]["latest_observation"]["notification"].update(event_as_of="2026-10-07"),
+     "future_observation_session"),
+    # A benign parent reason (expired, stale) must not short-circuit the early clock check.
+    (lambda d: d.update(stale_after="2026-10-07T00:00:00Z")
+     or d["early_context"].update(available_at="2026-10-07T13:00:00Z"), "source_not_available"),
+    (lambda d: d.update(freshness={"stale": True})
+     or d["early_context"].update(produced_at="2026-10-07T13:00:00Z"), "future_production_clock"),
+    # Notification clocks that cannot be read are withheld, never lifted unchecked.
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        event_as_of="2026-10-04"), "observation_clock_unreadable"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        event_as_of="06/10/2026"), "observation_clock_unreadable"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        observed_at="2026-10-06T21:30:00"), "observation_clock_unreadable"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        observed_at="yesterday"), "observation_clock_unreadable"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        observed_at=None), "observation_clock_unreadable"),
+])
+def test_view_not_available_at_the_cutoff_is_withheld(mutate, withheld):
+    doc = rotation_with(observation_view())
+    mutate(doc)
+    read = settled._rotation_read(doc, SESSION, now=NOW)
+    assert "latest_observation" not in read.detail
+    assert read.detail["latest_observation_withheld"] == withheld
+    output = compose(reads()[:2] + [read])
+    assert "latest_observation" not in output["rotation_context"]
+    assert output["hazard_summary"]["stage"] == "FRAGILE"
+
+
+@pytest.mark.parametrize("value", [None, "not-a-view", [1, 2], 7, {"schema": "rotation_observation_view/v9"}])
+def test_present_null_or_non_object_view_is_carried_verbatim_for_the_consumer(value):
+    read = settled._rotation_read(rotation_with(value), SESSION, now=NOW)
+    output = compose(reads()[:2] + [read])
+    assert output["rotation_context"]["latest_observation"] == value
+    for key in VERDICT_KEYS:
+        assert output[key] == compose(reads())[key]
+    jsonschema, schema = envelope_schema()
+    jsonschema.validate(output, schema)
+
+
+def test_absent_view_or_missing_source_adds_no_key():
+    assert "latest_observation" not in settled._rotation_read(rotation(), SESSION, now=NOW).detail
+    assert "latest_observation" not in compose(reads())["rotation_context"]
+    missing = compose(reads()[:2] + [settled._rotation_read(None, SESSION, now=NOW)])
+    assert "latest_observation" not in missing["rotation_context"]
+    assert "latest_observation" not in (compose(reads()[:2]).get("rotation_context") or {})

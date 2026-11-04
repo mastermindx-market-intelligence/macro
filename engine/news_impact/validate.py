@@ -30,6 +30,12 @@ string does not match is an injection_pattern issue (full-width or other
 compatibility forms cannot route around the schema's injection guard).  It
 reuses the existing code; REASON_CODES stay closed.
 
+F2 control M07b (2026-11-02) appends rule S15: a quantity whose own fiscal
+period cannot evidence the event's claim slot (fiscal_period or horizon_period)
+is refused when the two are disjoint; containment, partial overlap, absence
+unions and dateless periods within one label year pass.  The fifty-two or
+fifty-three week fiscal calendar stays a contract gap (control M07c).
+
 F2 review NOTE-A (2026-11-01) widens two existing rules without a new code:
 S8 also tests the NFKC fold of each field and of each join, so a full-width
 role marker split across two fields is refused.  S7 also reads each value
@@ -50,6 +56,7 @@ excerpt that S7 refuses.
 from __future__ import annotations
 
 import argparse
+import calendar
 import copy
 import json
 import math
@@ -57,7 +64,7 @@ import re
 import sys
 import unicodedata
 from dataclasses import dataclass, field
-from datetime import date as _date, datetime as _datetime
+from datetime import date as _date, datetime as _datetime, timedelta as _timedelta
 from hashlib import sha256
 from pathlib import Path
 from typing import Callable, Iterable
@@ -1058,6 +1065,163 @@ def _s14_compatibility_normalized(payload, ctx: _Context) -> list[ValidationIssu
     return issues
 
 
+#: S15 (F2 control M07b, 2026-11-02): each event type's claim slot period and the
+#: quantities that evidence that same slot.  ``prior_amount`` (a timing revision
+#: legitimately names an earlier period), ``remaining_authorization`` and
+#: ``executed_amount`` (dated as of a point, not over the horizon) and every
+#: ``baseline.period`` (a different period by construction) are exempt.
+_S15_PAIRS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    ("demand_guidance_contract_event.v1", "fiscal_period",
+     ("stated_amount", "option_ceiling")),
+    ("capital_allocation_event.v1", "horizon_period", ("incremental_amount",)),
+    ("strategic_product_partnership_event.v1", "horizon_period", ("stated_quantity",)),
+)
+_S15_MONTHS = {"quarter": 3, "half_year": 6, "nine_months": 9, "fiscal_year": 12}
+#: Shrink each calendar range by this many days at both ends before the overlap
+#: test: a fourteen-week quarter or a fifty-three-week year is up to seven days
+#: longer than the month arithmetic assumes, so adjacent periods (Q1 of the next
+#: year against this year) still read as disjoint while a period dated inside
+#: another by the same calendar does not.  Multi-year periods never enter this
+#: test (see ``_period_calendar_range``).
+_S15_EDGE_DAYS = 7
+#: Label years may differ by one without dates: a fiscal year straddles two
+#: calendar years, so a calendar-labelled quarter can sit one year off its
+#: fiscal label (MASTERPLAN 5.3 "fiscal versus calendar period").
+_S15_LABEL_GAP_YEARS = 1
+
+
+def _is_int(value) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _is_fiscal_period(value) -> bool:
+    return (isinstance(value, dict) and _is_int(value.get("year"))
+            and (value.get("period_kind") in _S15_MONTHS or value.get("period_kind") == "multi_year"))
+
+
+def _period_label_years(fp: dict) -> tuple[int, int | None]:
+    """(first, last) label years; ``last`` is None for an open multi-year span.
+
+    The contract does not require ``end_year`` and the producer drops it when
+    the labeler leaves it out (its token is ``FY<year>M``), so a multi-year
+    period without one is bounded below only.  An ``end_year`` before ``year``
+    is S13's finding; it is clamped here so the span stays well formed.
+    """
+    year = fp["year"]
+    if fp.get("period_kind") != "multi_year":
+        return year, year
+    end_year = fp.get("end_year")
+    if not _is_int(end_year):
+        return year, None
+    return year, max(end_year, year)
+
+
+def _period_label(fp: dict) -> str:
+    first, last = _period_label_years(fp)
+    kind = fp.get("period_kind")
+    if kind == "quarter" and _is_int(fp.get("quarter")):
+        return f"FY{first}Q{fp['quarter']}"
+    if kind == "multi_year":
+        return f"FY{first}-{last}" if last is not None else f"FY{first} multi_year (open end)"
+    return f"FY{first} {kind}"
+
+
+def _months_before(day: _date, months: int) -> _date:
+    index = day.year * 12 + (day.month - 1) - months
+    year, month = divmod(index, 12)
+    month += 1
+    return _date(year, month, min(day.day, calendar.monthrange(year, month)[1]))
+
+
+def _period_calendar_range(fp: dict) -> tuple[_date, _date] | None:
+    """[start, end] from calendar_end and the kind's length; None when unusable.
+
+    None for a multi-year period: the contract never says whether its
+    ``calendar_end`` closes the whole span or its first year, so only the label
+    test applies to it.  None too for any date the calendar arithmetic cannot
+    place (the schema's pattern admits ``0001-06-30``; stepping back from it
+    leaves year zero) so one bad date never silences the rule for the payload.
+    """
+    end = fp.get("calendar_end")
+    if not isinstance(end, str):
+        return None
+    months = _S15_MONTHS.get(fp.get("period_kind"))
+    if months is None:
+        return None
+    try:
+        end_day = _date.fromisoformat(end)
+        return _months_before(end_day, months) + _timedelta(days=1), end_day
+    except (ValueError, OverflowError):
+        return None
+
+
+def _periods_disjoint(slot: dict, period: dict) -> str | None:
+    """Why ``period`` cannot evidence ``slot``; None when they may overlap.
+
+    Containment and partial overlap pass.  Two tests refuse: label years more
+    than ``_S15_LABEL_GAP_YEARS`` apart (no date needed; an open multi-year
+    span has no upper label year, so only its lower bound can refuse), or, when
+    neither is multi-year and both carry a usable ``calendar_end``, calendar ranges
+    that do not overlap once each is shrunk by ``_S15_EDGE_DAYS`` at both ends.
+    A period without a usable date and within the label tolerance is never
+    refused here.
+    """
+    a_first, a_last = _period_label_years(slot)
+    b_first, b_last = _period_label_years(period)
+    if ((b_last is not None and a_first - b_last > _S15_LABEL_GAP_YEARS)
+            or (a_last is not None and b_first - a_last > _S15_LABEL_GAP_YEARS)):
+        return (f"label years {_period_label(period)} and {_period_label(slot)} "
+                f"are more than one year apart")
+    a, b = _period_calendar_range(slot), _period_calendar_range(period)
+    if a is None or b is None:
+        return None
+    edge = _timedelta(days=_S15_EDGE_DAYS)
+    if a[0] + edge > b[1] - edge or b[0] + edge > a[1] - edge:
+        return (f"calendar ranges {b[0].isoformat()}..{b[1].isoformat()} and "
+                f"{a[0].isoformat()}..{a[1].isoformat()} do not overlap")
+    return None
+
+
+def _s15_claim_evidence_period(payload, ctx: _Context) -> list[ValidationIssue]:
+    """S15: a quantity whose own period cannot evidence the event's claim slot.
+
+    F2 control M07b (MASTERPLAN 5.3 "fiscal versus calendar period"; 9.3
+    "fiscal periods"): a Q4-2026 guidance slot whose stated amount is an
+    FY2027 figure validated.  Only DISJOINT periods are refused: a quarter's
+    figure filed under the annual slot that contains it (MASTERPLAN 5.3
+    "quarterly versus annual") still passes and stays an open gap recorded in
+    the F2 negative-control doc.  For each pair in ``_S15_PAIRS`` both periods
+    must be real fiscal periods; otherwise the rule is silent (absence unions
+    and the schema's own shape refusals are not reported twice).  A date the
+    schema admits but the calendar cannot place drops only that period's date
+    test, never the rule.  A fifty-two or fifty-three week fiscal calendar
+    itself is a contract gap (F2 N2, control M07c), not repaired here.
+    """
+    issues = []
+    for obj, keys in _iter_objects(payload):
+        schema = obj.get("schema")
+        for name, slot_key, quantity_keys in _S15_PAIRS:
+            if schema != name:
+                continue
+            slot = obj.get(slot_key)
+            if not _is_fiscal_period(slot):
+                continue
+            for quantity_key in quantity_keys:
+                quantity = obj.get(quantity_key)
+                if not isinstance(quantity, dict):
+                    continue
+                period = quantity.get("period")
+                if not _is_fiscal_period(period):
+                    continue
+                why = _periods_disjoint(slot, period)
+                if why:
+                    issues.append(ValidationIssue(
+                        SCHEMA_VIOLATION, _pointer(list(keys) + [quantity_key, "period"]),
+                        f"{quantity_key}.period {_period_label(period)} cannot evidence "
+                        f"{slot_key} {_period_label(slot)}: {why} (rule S15)"))
+    return issues
+
+
 _SEMANTIC_RULES: tuple[Callable[[object, "_Context"], list[ValidationIssue]], ...] = (
     _s1_non_finite_numbers,
     _s2_ordered_pairs,
@@ -1073,11 +1237,12 @@ _SEMANTIC_RULES: tuple[Callable[[object, "_Context"], list[ValidationIssue]], ..
     _s12_self_counterparty,
     _s13_period_bounds,
     _s14_compatibility_normalized,
+    _s15_claim_evidence_period,
 )
 
 
 def _semantic_issues(payload, ctx: _Context) -> list[ValidationIssue]:
-    """The S1-S14 semantic layer, merged after the schema pass.
+    """The S1-S15 semantic layer, merged after the schema pass.
 
     A rule that cannot evaluate (field absent, wrong type the schema already
     rejects) emits nothing and never raises: each rule runs under a guard
@@ -1158,7 +1323,7 @@ def validate_event(payload: dict, *, contract: dict | None = None) -> Validation
     top-level oneOf over templates is dispatched on each branch's ``schema``
     const so issues point at the real node; a payload naming no branch gets
     one ``schema_violation`` at ``/schema``.  After the schema pass the
-    semantic layer (S1-S14) merges its issues into the same sorted,
+    semantic layer (S1-S15) merges its issues into the same sorted,
     de-duplicated report.  Every issue carries exactly one of
     :data:`REASON_CODES`.  The payload is never mutated.
     """

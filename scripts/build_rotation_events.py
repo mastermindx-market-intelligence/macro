@@ -109,6 +109,60 @@ def _load_sector_breadth() -> tuple[dict[str, float], dict[str, pd.Series]]:
     return breadth_by_sector, breadth_series_by_sector
 
 
+def _publish_latest_observation(payload, data_dir, site):
+    """Atomically republish rotation_events.json with the latest recorded view.
+
+    Runs only after the recorder has returned "recorded". The view is projected
+    from the canonical ledger (read-only, strict) and the published context; the
+    in-memory payload is never mutated, so alerts and returns are unchanged. Any
+    failure leaves the legacy publication exactly as already written.
+    """
+    import os
+    import tempfile
+
+    try:
+        ec = payload.get("early_context")
+        if not isinstance(ec, dict):
+            return "absent"
+        view = rotation_events.project_latest_observation_view(
+            ec, rotation_events.read_early_observation_ledger(data_dir))
+        if view is None:
+            return "absent"
+        published = {**payload, "early_context": {**ec, "latest_observation": view}}
+        text = json.dumps(_clean(published), separators=(",", ":"),
+                          ensure_ascii=False, allow_nan=False)
+        target = Path(site) / "marketdata" / "rotation_events.json"
+        fd, tmp = tempfile.mkstemp(dir=str(target.parent), prefix=".rotation_events.", suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as out:
+                out.write(text)
+                out.flush()
+                os.fsync(out.fileno())
+            # mkstemp creates 0600; the published file must stay world-readable
+            os.chmod(tmp, 0o644)
+            os.replace(tmp, target)
+        except BaseException:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
+        # The rename is durable only once the directory entry is flushed as well. The file
+        # is already published, so a failure here is logged, never reported as unavailable.
+        try:
+            dfd = os.open(str(target.parent), os.O_RDONLY)
+            try:
+                os.fsync(dfd)
+            finally:
+                os.close(dfd)
+        except OSError as exc:
+            log.warning("rotation observation view directory fsync skipped: %s", type(exc).__name__)
+        return "published"
+    except Exception as exc:  # the view is display-only; never damage the publication
+        log.warning("rotation observation view unavailable: %s", type(exc).__name__)
+        return "unavailable"
+
+
 def _record_early_observations(payload, *, data_dir, site, art_dir, explicit_stamp):
     """Opt-in observation recording by the existing canonical nightly builder.
 
@@ -133,7 +187,10 @@ def _record_early_observations(payload, *, data_dir, site, art_dir, explicit_sta
         # reconstructed bar date or the earlier start-of-build timestamp.
         result = rotation_events.record_early_observation_history(
             payload, canonical_data, observed_at=datetime.now(timezone.utc))
-        return {"status": result["status"], "receipts": len(result.get("records", []))}
+        summary = {"status": result["status"], "receipts": len(result.get("records", []))}
+        if result["status"] == "recorded":
+            summary["view"] = _publish_latest_observation(payload, canonical_data, canonical_site)
+        return summary
     except Exception as exc:  # observation quality cannot damage legacy publication
         log.warning("rotation observation recording unavailable: %s", type(exc).__name__)
         return {"status": "unavailable", "receipts": None, "error_class": type(exc).__name__}

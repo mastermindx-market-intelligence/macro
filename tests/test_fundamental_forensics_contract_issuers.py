@@ -18,6 +18,7 @@ import shutil
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 import scripts.build_fundamental_forensics as bff
 
@@ -116,8 +117,8 @@ def test_contract_issuer_missing_from_the_panel_is_listed_as_limited(tmp_path: P
         "latest_filed": "",
         "action": {
             "key": "limited",
-            "en": "Checks not run: not yet in the broad statements panel",
-            "zh": "未运行检查：尚未进入广覆盖报表面板",
+            "en": "Checks not run: not yet evaluable from the broad statements panel",
+            "zh": "未运行检查：尚无法从广覆盖报表面板评估",
         },
         "coverage": {
             "periods": 0,
@@ -192,3 +193,98 @@ def test_contract_only_path_carries_no_ticker_or_cik_literal() -> None:
     for source in sources:
         for literal in ("SNOW", "AAPL", "CAT", "BAC", "GOOGL", "1640147", "320193", "ISS:"):
             assert literal not in source
+
+
+# ---------------------------------------------------------------------------
+# CIK de-duplication (2026-11-02): one SEC registrant is listed once even when
+# the contract names it under a different ticker than the panel, and the
+# contract-only copy no longer claims the issuer is missing from the panel's
+# source universe — the panel yields only issuers with a prior-year same
+# quarter, so absence does not mean the issuer is unknown to it.
+# ---------------------------------------------------------------------------
+
+
+def _set_panel_cik(root: Path, cik: int | str) -> None:
+    """Store the panel company's CIK in either shape fundamentals may carry."""
+    pd.DataFrame({"cik": [cik]}, index=pd.Index(["PAN"], name="ticker")).to_parquet(
+        root / "data" / "edgar" / "fundamentals.parquet"
+    )
+
+
+def _write_contract(root: Path, members: tuple[tuple[str, str, str], ...]) -> None:
+    """Stage a coverage contract carrying exactly these issuer rows."""
+    issuers = [
+        {
+            "ticker": ticker,
+            "cik": cik,
+            "legal_name": legal_name,
+            "accessions": [{
+                "accession": f"0000000-26-0000{index}",
+                "form": "10-Q",
+                "filing_date": "2026-07-15",
+                "period_of_report": "2026-06-30",
+                "retention_state": "not_retained",
+            }],
+        }
+        for index, (ticker, cik, legal_name) in enumerate(members)
+    ]
+    path = root / bff.COVERAGE_CONTRACT_RELATIVE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({
+        "schema": "fundamental_forensics.coverage_contract/v1",
+        "contract_id": "synthetic_contract_issuers_v1",
+        "issuers": issuers,
+    }, indent=1), encoding="utf-8")
+
+
+def test_contract_member_sharing_a_panel_cik_under_another_ticker_is_not_listed(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_root(tmp_path, contract=False)
+    _write_contract(tmp_path, (("ZZZ", "0000000011", "Panel Share Class Inc."),))
+    state = _compose(tmp_path, monkeypatch)
+
+    assert "ZZZ" not in state["companies"]
+    assert state["summary"]["companies"] == 1  # exactly the panel count
+    assert state["summary"]["contract_only_companies"] == 0
+
+
+@pytest.mark.parametrize("panel_cik", [11, "0000000011"], ids=["int", "text"])
+def test_shared_cik_member_is_skipped_for_int_and_digit_text_panel_cik(
+    tmp_path: Path, monkeypatch, panel_cik: int | str
+) -> None:
+    _write_root(tmp_path, contract=False)
+    _set_panel_cik(tmp_path, panel_cik)
+    _write_contract(tmp_path, (("ZZZ", "0000000011", "Panel Share Class Inc."),))
+    state = _compose(tmp_path, monkeypatch)
+
+    assert "ZZZ" not in state["companies"]
+    assert state["summary"]["companies"] == 1
+    assert state["summary"]["contract_only_companies"] == 0
+
+
+def test_two_contract_members_sharing_one_cik_list_only_the_first(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_root(tmp_path, contract=False)
+    _write_contract(tmp_path, (
+        ("SSS", "0000000021", "First Share Class Inc."),
+        ("TTT", "0000000021", "Second Share Class Inc."),
+    ))
+    state = _compose(tmp_path, monkeypatch)
+
+    assert list(state["companies"]) == ["PAN", "SSS"]
+    assert state["summary"]["companies"] == 2
+    assert state["summary"]["contract_only_companies"] == 1
+    assert state["companies"]["SSS"]["cik"] == 21
+
+
+def test_contract_only_row_carries_the_not_evaluable_copy(tmp_path: Path, monkeypatch) -> None:
+    _write_root(tmp_path)
+    state = _compose(tmp_path, monkeypatch)
+    for ticker in ("QQQ", "RRR"):
+        assert state["companies"][ticker]["action"] == {
+            "key": "limited",
+            "en": "Checks not run: not yet evaluable from the broad statements panel",
+            "zh": "未运行检查：尚无法从广覆盖报表面板评估",
+        }

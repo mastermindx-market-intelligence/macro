@@ -42,6 +42,8 @@
 
   function readRoute() {
     if (!location.hash.startsWith("#forex/")) {
+      q("#fxr-search").value = "";
+      q("#fxr-filter").value = "all";
       state = { destination: "today", pair: null, tab: "outlook", from: "today" };
       return;
     }

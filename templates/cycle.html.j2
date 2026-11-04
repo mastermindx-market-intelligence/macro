@@ -47,6 +47,17 @@
     </div>
   </header>
 
+  {% with lock_renderer='cycle_app.js', lock_fill='cyc-cards',
+    lock_hide='.cyc-hero-hd,#cyc-stale-banner,#cyc-groups,'
+    ~ '#cyc-chips,#cyc-chart,#cyc-detail,'
+    ~ '.cyc-cards-hd>h2,.cyc-cards-hd>.sub,#cyc-cards,.cyc-asof',
+    lock_en="Members get where each cycle sits on one clock, "
+    ~ "each cycle's scorecard, and the projection drawn "
+    ~ "from its backing tape.",
+    lock_zh='会员可查看各周期在同一张时钟上的位置、每个周期的记分卡，以及由其底层数据得出的推算。' %}
+  {% include "_cycle_locked_slot.html.j2" %}
+  {% endwith %}
+
   <section class="cyc-stage">
     <div class="cyc-hero">
       <div class="cyc-hero-hd">
