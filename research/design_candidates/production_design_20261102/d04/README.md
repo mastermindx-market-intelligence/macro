@@ -2,7 +2,7 @@
 
 **Current outcome: two bounded implementations are published in held drafts.** [Confluence #10705](https://github.com/mastermindx-market-intelligence/macro/pull/10705), at `126bb13421d7052527ce034a900c89cd1a7fb9e6`, is locally verified with exact-head CI completed. [Standalone US heatmap return #10719](https://github.com/mastermindx-market-intelligence/macro/pull/10719), at `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`, is locally verified with fences passed and CI in progress. This existing [domain draft #7727](https://github.com/mastermindx-market-intelligence/macro/pull/7727) retains the discovery package and current continuation.
 
-[Latest continuation and exact successor](https://github.com/mastermindx-market-intelligence/macro/blob/84801a334a38db6944081562b9dfe3c9cfc2047f/research/design_candidates/production_design_20261102/d04/CONTINUATION_IMPLEMENTATION_20261104.md) · [Heatmap behavior, visual proof and limitations](https://github.com/mastermindx-market-intelligence/macro/blob/5c3195cfb8b9644ce20526e94617ac1cb2268ecc/mockups/evidence/d04-us-heatmap-return-20261104/README.md).
+[Latest continuation and exact successor](https://github.com/mastermindx-market-intelligence/macro/blob/063ae7b18f7f9545cc03e8b0c2215ba59f612d1a/research/design_candidates/production_design_20261102/d04/CONTINUATION_IMPLEMENTATION_20261104.md) · [Heatmap behavior, visual proof and limitations](https://github.com/mastermindx-market-intelligence/macro/blob/5c3195cfb8b9644ce20526e94617ac1cb2268ecc/mockups/evidence/d04-us-heatmap-return-20261104/README.md).
 
 Start with the [current delivery and reconstruction index](https://github.com/mastermindx-market-intelligence/macro/blob/8dbdfe041a1002c67b049f2d7d802dda9483200e/research/design_candidates/production_design_20261102/d04/implementation_20261104/evidence_bundle/README.md) and [readable implementation/design report](https://github.com/mastermindx-market-intelligence/macro/blob/8057a2bd6a3ad43e3bf64e3f1a6a96c64cc019cf/research/design_candidates/production_design_20261102/d04/implementation_20261104/evidence_bundle/IMPLEMENTATION_REPORT.md).
 
@@ -38,7 +38,9 @@ The standalone US heatmap retains S&P/Themes timeframe, sort and query independe
 
 Functional journeys use controlled public-shaped feeds and a same-origin detail fixture with bfcache disabled. Separate rendering checks use committed S&P (503 source tiles, 2026-11-02) and Themes (268 source tiles, 2026-11-03) snapshots. The incumbent mobile overlay does not reopen on Forward; that behavior is unchanged. No production entitlement, live-feed, D07 destination, Safari/iOS or whole-D04 acceptance is inferred.
 
-The source evidence README documents the precise composition seams with the held regional branches #7967 and #8144. Their access/auth/live-refresh behavior retains its existing owner; no combined-branch acceptance is claimed.
+The source evidence README documents the precise composition seams with the held regional branches #7967 and #8144. Their access/auth/live-refresh behavior retains its existing owner; no combined-branch acceptance is claimed. The continuation maps the new heatmap assertions to A022/A042/A043/A050/A053/A055/A057/A061 while retaining all 75 whole-case statuses unchanged.
+
+**Checkpoint, 2026-11-04 08:49:37 UTC:** fences and ci-plan passed. Exact-head CI 41800565111 has seven test packs running, five queued and contract-delta running, with no failed job/step observed. The next action is to consume that run and the complete required-check rollup on source #10719, repairing actual D04 failures in its original managed operation. No duplicate CI runner was started.
 
 ## Current representation and verification
 
