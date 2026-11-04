@@ -16,7 +16,8 @@
    panel answers "so what do I do" (here: watch / research, not buy).
 
    Context contract (builder passes EXACTLY this):
-     generated_utc, asof, universe_n, split_date,
+     generated_utc, asof, source_status, source_generation, source_built,
+      universe_n, split_date,
      n_active_total, cta_url, premium_payload_url,
      combos = [ { rank, combo_id, name_en, name_zh,
        legs: [ {en, zh, tf} ],          # tf "D" | "W"
@@ -41,7 +42,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>Signals Lining Up — {{ asof }} | MastermindX</title>
+<title>Signals Lining Up — {{ asof or 'Source unavailable' }} | MastermindX</title>
 {% set seo_title = 'Signals Lining Up — Free Daily Setup Screener | MastermindX' %}
 {% set seo_desc = 'Free daily screener: the technical buy-signal combinations firing across large US stocks right now, with honest recent and older-era win rates printed side by side.' %}
 {% set seo_path = 'confluence_screener.html' %}
@@ -71,7 +72,7 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .hero::before{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(120% 140% at 88% -20%, color-mix(in srgb,var(--info) 20%,transparent), transparent 60%)}
 .hero-inner{position:relative;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
-.hero-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:9px}
+.hero-eyebrow{font-size:var(--fs-sm,12.5px);font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:9px}
 .hero-state{font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:0;color:var(--text)}
 .hero-state .n{color:var(--ink-info, var(--info))}
 .stance{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:999px;font-size:13px;font-weight:700;margin-top:14px;
@@ -90,21 +91,40 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .ledger{display:flex;flex-direction:column;gap:16px;margin-top:14px}
 .lc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;
   padding:20px 22px 18px;transition:border-color .16s,box-shadow .16s,transform .16s}
-.lc:hover{border-color:color-mix(in srgb,var(--info) 40%,var(--line));box-shadow:0 10px 30px -18px rgba(0,0,0,.5)}
-.lc.free{border-color:color-mix(in srgb,var(--info) 34%,var(--line))}
+.lc:hover{border-color:var(--line);background:var(--panel)}
+.lc.free{border-color:var(--line)}
 .lc-top{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}
 /* rank chip — rank_score IS a real ordering, so the numeral carries information */
 .lc-rank{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--muted);
   border:1px solid var(--line);border-radius:9px;padding:5px 9px;line-height:1;letter-spacing:.02em;white-space:nowrap;margin-top:2px}
-.lc.free .lc-rank{color:var(--ink-info, var(--info));border-color:color-mix(in srgb,var(--info) 40%,var(--line))}
+.lc.free .lc-rank{color:var(--text);background:var(--panel2);border-color:var(--line)}
 .lc-title{font-size:16px;font-weight:700;color:var(--text);line-height:1.35;letter-spacing:-.01em}
-.lc-since{font-size:11.5px;color:var(--muted);margin-top:3px}
+.lc-since{font-size:var(--fs-sm,12.5px);color:var(--muted);margin-top:var(--sp-1,4px);overflow-wrap:anywhere}
 /* win-rate hero block — the number is the type hero, honestly paired with the older era */
-.lc-wr{text-align:right;flex:none;min-width:118px}
-.lc-wr-big{font-family:var(--font-mono);font-size:30px;font-weight:800;line-height:1;color:var(--ink-up, var(--up));letter-spacing:-.02em}
-.lc-wr-unit{font-size:11px;color:var(--muted);font-weight:600;margin-top:3px}
-.lc-wr-old{font-size:11.5px;color:var(--muted);margin-top:8px;font-family:var(--font-mono)}
-.lc-wr-old b{color:var(--text);font-weight:700}
+.lc-title-wrap{min-width:0}
+.lc-wr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2,8px) var(--sp-3,12px);width:310px;min-width:0;text-align:left}
+.lc-era{display:flex;flex-direction:column;gap:var(--sp-2,8px);min-width:0}
+.lc-era-label,.lc-sample,.lc-wr-unit{font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.45}
+.lc-era-label{font-weight:600}
+.lc-wr-big,.lc-wr-old{font:700 var(--fs-h1,28px)/1.1 var(--font-mono);color:var(--text);font-variant-numeric:tabular-nums}
+.lc-rate-denominator{font-size:var(--fs-sm,12.5px);color:var(--muted);font-weight:500}
+.lc-wr-unit{grid-column:1/-1;border-top:1px solid var(--line);padding-top:var(--sp-2,8px)}
+.lc-method{margin-top:var(--sp-3,12px);border-top:1px solid var(--line);font-size:var(--fs-sm,12.5px);color:var(--muted)}
+.lc-method summary{min-height:44px;display:flex;align-items:center;gap:var(--sp-2,8px);cursor:pointer;color:var(--text);font-weight:600;list-style:none}
+.lc-method summary::-webkit-details-marker{display:none}
+.lc-method summary::before{content:"+";font:700 16px var(--font-mono);width:16px;flex:none}
+.lc-method[open] summary::before{content:"−"}
+.lc-method p{font-size:var(--fs-body,14px);line-height:1.55;margin:0 0 var(--sp-3,12px);max-width:85ch}
+.confluence-access{display:flex;align-items:center;gap:var(--sp-3,12px);flex-wrap:wrap;padding:var(--sp-4,16px);margin-top:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);font-size:var(--fs-body,14px)}
+.confluence-access[hidden],.confluence-access button[hidden]{display:none}
+.empty .btn{margin-top:var(--sp-4,16px)}
+.tkr,.btn{min-height:44px}
+.tkr{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.tkr .nm{font-size:var(--fs-sm,12.5px);min-width:0}
+.hero::before{background:none}
+html[data-theme="light"] .hero,html[data-theme="light"] .lc,html[data-theme="light"] .cta-band{background:var(--panel);border-color:var(--line);box-shadow:var(--card-shadow);backdrop-filter:none}
+html[data-theme="light"] .confluence-access{background:var(--panel);box-shadow:var(--card-shadow)}
+
 
 /* the line-up leg stack */
 .legs{display:flex;flex-direction:column;gap:7px;margin:16px 0 4px}
@@ -130,11 +150,12 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .tkr{display:inline-flex;align-items:baseline;gap:6px;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--text);
   background:color-mix(in srgb,var(--up) 12%,transparent);border:1px solid color-mix(in srgb,var(--up) 26%,transparent);
   border-radius:8px;padding:5px 10px}
-.tkr .nm{font-family:var(--font-ui);font-weight:500;font-size:11px;color:var(--muted)}
+.tkr .ticker-symbol{flex:none;white-space:nowrap}
+.tkr .nm{font-family:var(--font-ui);font-weight:500;font-size:var(--fs-sm,12.5px);color:var(--muted)}
 
 /* locked state — honest, built from active_count only. NO blurred text. */
 .locked{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding:14px 16px;border-radius:12px;
-  background:color-mix(in srgb,var(--info) 7%,transparent);border:1px dashed color-mix(in srgb,var(--info) 34%,var(--line))}
+  background:var(--panel2);border:1px dashed var(--line)}
 .locked .ic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
   background:color-mix(in srgb,var(--info) 16%,transparent);color:var(--ink-info, var(--info))}
 .locked .lk-tx{flex:1;min-width:180px;font-size:13px;color:var(--text);line-height:1.4}
@@ -184,7 +205,10 @@ a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(-
   .hero-state{font-size:26px}
   .lc-top{grid-template-columns:auto 1fr;grid-template-areas:"rank title" "wr wr"}
   .lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr;text-align:left;margin-top:6px}
-  .lc-wr-old{margin-top:4px}
+  .lc-wr{width:100%;gap:var(--sp-3,12px)}
+  .lc{padding:var(--sp-4,16px)}
+  .hero{padding:var(--sp-5,20px)}
+  .hero-eyebrow{overflow-wrap:anywhere}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
@@ -193,7 +217,7 @@ a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(-
             padding-bottom:3px; border-radius:var(--r-ctl,8px);
             transition:border-color .16s ease, background .16s ease; }
 .cs-tipped:hover,.cs-tipped:focus-visible{ border-bottom-color:var(--info); background:none; outline:none; }
-.cs-tipped:focus-visible{ box-shadow:0 0 0 2px color-mix(in srgb,var(--info) 35%,transparent); }
+.cs-tipped:focus-visible{ outline:2px solid var(--ink-info,var(--info)); outline-offset:3px; box-shadow:none; }
 
 /* LIGHT — crisp solid hairline; hover washes the material instead of brightening the rule */
 html[data-theme="light"] .cs-tipped{ border-bottom:1px solid color-mix(in srgb,var(--muted) 52%,transparent);
@@ -211,34 +235,40 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 {% include "_site_nav.html.j2" %}
 
 <div class="wrap">
-  <div class="pg-brand">📊 <span class="l-en">Signals <span class="gn">Lining Up</span></span><span class="l-zh">信号<span class="gn">共振</span></span></div>
+  <div class="pg-brand"><span class="l-en">Signals <span class="gn">Lining Up</span></span><span class="l-zh">信号<span class="gn">共振</span></span></div>
   <p class="pg-lead">
-    <span class="l-en">Free daily screener. When several proven buy signals line up on the same stock at once, we surface the pattern — with honest win rates from the recent years and the years before, printed side by side.</span>
-    <span class="l-zh">免费每日筛选器。当同一只股票上多个经检验的买入信号同时共振时，我们呈现该形态——并把近年与更早年份的胜率并排如实列出。</span>
+    <span class="l-en">Find signal combinations worth researching. Compare both historical periods before opening a company.</span>
+    <span class="l-zh">寻找值得研究的信号组合。先比较两段历史，再查看公司。</span>
   </p>
 
-  {% set _n_today = combos|length %}
-  {% if _n_today > 0 %}
+  {% set _n_today = n_active_total or 0 %}
+  {% if source_status != 'available' %}
+  <section class="empty" aria-labelledby="confluence-data-title" data-source-state="unavailable">
+    <h1 id="confluence-data-title">{{ t('Data unavailable', '数据暂不可用') }}</h1>
+    <p>{{ t('We could not verify this source. The number of matching line-ups is unknown.', '无法核实此源数据，匹配的信号组合数量未知。') }}</p>
+    <button type="button" class="btn ghost" id="confluence-reload-page">{{ t('Check again', '重新检查') }}</button>
+  </section>
+  {% elif _n_today > 0 %}
   {# ================= HERO ================= #}
   <div class="hero">
     <div class="hero-inner">
       <div>
-        <div class="hero-eyebrow">{{ t('SETUP TAPE · ' ~ asof, '布局磁带 · ' ~ asof) }}</div>
+        <div class="hero-eyebrow">{{ t('SOURCE BUILT · ' ~ source_built, '源数据生成于 · ' ~ source_built) }}</div>
         <h1 class="hero-state" tabindex="0"
-            data-tip-en="How many proven signal line-ups are firing across the large-cap list today. A line-up only appears here if it cleared the history gates below."
-            data-tip-zh="今日在大盘股名单中触发的、且已通过历史门槛的信号组合数量。未达门槛的组合不会出现在这里。"
+            data-tip-en="Eligible active signal combinations in this source snapshot, not stocks. The list below shows up to three combinations in source rank order."
+            data-tip-zh="此数据快照中符合条件的活跃信号组合数，不是股票数。下方最多展示按源数据排名的前三组。"
             data-tip-rc-en="Gates: ≥40 fires pooled · ≥24 distinct months pooled · ≥10 tickers · ≥15 fires and ≥12 distinct months since {{ split_date }} · horizon 21 trading days"
             data-tip-rc-zh="门槛：合计触发 ≥40 次 · 合计 ≥24 个不同月份 · ≥10 只股票 · {{ split_date }} 起触发 ≥15 次且覆盖 ≥12 个不同月份 · 持有期 21 个交易日">
-          <span class="l-en"><span class="n">{{ _n_today }}</span> {{ 'setup' if _n_today == 1 else 'setups' }} lining up today</span>
-          <span class="l-zh"><span class="n">{{ _n_today }}</span> 组信号今日共振</span>
+          <span class="l-en"><span class="n">{{ _n_today }}</span> {{ 'active line-up' if _n_today == 1 else 'active line-ups' }}</span>
+          <span class="l-zh"><span class="n">{{ _n_today }}</span> 组活跃信号组合</span>
         </h1>
         <span class="stance">
           <span class="l-en">Watch &amp; research — don't chase</span>
           <span class="l-zh">观察研究，别追高</span>
         </span>
         <p class="hero-sentence">
-          <span class="l-en">These are historical leads, not buy calls. The strongest one below is free — see the stock it's matching now. Two more are lining up behind it.</span>
-          <span class="l-zh">这些是历史线索，非买入建议。下方最强的一组免费——查看它当前匹配的股票。另有两组正在其后共振。</span>
+          <span class="l-en">Showing {{ combos|length }} of {{ _n_today }} eligible line-ups. Open the first group's companies for free.</span>
+          <span class="l-zh">展示 {{ _n_today }} 组中的前 {{ combos|length }} 组。第一组的匹配公司可免费查看。</span>
         </p>
       </div>
       {# right-rail motif: three signal ticks converging into one node = "lining up" #}
@@ -261,8 +291,8 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 
   {# ================= LEDGER ================= #}
   <div class="sec-h">
-    <h2>{{ t("Today's line-ups", '今日共振组合') }}</h2>
-    <span class="sub">{{ t('Ranked strongest first · large established US stocks', '按强度排序 · 大型成熟美股') }}</span>
+    <h2>{{ t('Compare the evidence', '比较历史依据') }}</h2>
+    <span class="sub">{{ t('Source rank · large established US stocks', '源数据排名 · 大型成熟美股') }}</span>
   </div>
 
   <div class="ledger">
@@ -270,33 +300,46 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
     <div class="lc {{ 'free' if c.is_free else 'gated' }}">
       <div class="lc-top">
         <div class="lc-rank cs-tipped" tabindex="0"
-             data-tip-en="Ranked by the cautious end of its recent win rate — a line-up with fewer months behind it is pushed down, not up."
-             data-tip-zh="按近年胜率的保守下限排序——历史月份越少的组合排名越靠后，而非靠前。"
-             data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, minus the random-entry baseline, 21-day horizon, recent half"
-             data-tip-rc-zh="按月合并胜率的 Wilson 置信下限，减去随机入场基准 · 21 日持有期 · 近期样本">{{ '%02d'|format(c.rank) }}</div>
+             data-tip-en="Source ordering uses recent monthly win averages and a small-sample penalty relative to random entry. This ranking heuristic does not establish statistical significance."
+             data-tip-zh="源数据按近年月均胜率、样本量惩罚和随机入场基准排序。这是排序方法，不代表统计显著性。"
+             data-tip-rc-en="Wilson-based ranking heuristic on the monthly win average, minus the random-entry baseline · 21 trading days · recent test period"
+             data-tip-rc-zh="月均胜率的 Wilson 排序近似值，减去随机入场基准 · 21 个交易日 · 近期测试期">{{ '%02d'|format(c.rank) }}</div>
         <div class="lc-title-wrap">
           <div class="lc-title"><span class="l-en">{{ c.name_en }}</span><span class="l-zh">{{ c.name_zh }}</span></div>
           <div class="lc-since" tabindex="0"
-               data-tip-en="Every time all of this line-up's signals were true for a stock on the same day counts as one sighting. The yearly figure is those sightings spread over the span between the first and the last."
-               data-tip-zh="该组合的全部信号在同一天对同一只股票同时成立，即计为一次出现。「每年约 N 次」是把这些次数摊到首末两次之间的年数上。">
+               data-tip-en="A sighting starts when a stock's full signal combination changes from false to true. Consecutive days that stay true do not add sightings. The yearly figure averages sightings over the first-to-last span."
+               data-tip-zh="某只股票的完整信号组合由不成立变为成立，计为一次触发。连续成立的日期不重复计数。年均次数按首次至末次的时间跨度计算。">
+            {% if c.history_complete %}
             <span class="l-en">Seen {{ c.n_fires }} times since {{ c.first_fire[:4] }} · about {{ c.fires_per_year|round(1) }} a year · last {{ c.last_fire }}</span>
             <span class="l-zh">自 {{ c.first_fire[:4] }} 年出现 {{ c.n_fires }} 次 · 约每年 {{ c.fires_per_year|round(1) }} 次 · 最近 {{ c.last_fire }}</span>
+            {% else %}
+            {{ t('Historical frequency details unavailable', '历史触发频率详情暂无数据') }}
+            {% endif %}
           </div>
         </div>
         <div class="lc-wr">
-          <div class="lc-wr-big mono cs-tipped" tabindex="0"
-               data-tip-en="Out of the recent months where this line-up fired, the share that ended higher 21 trading days later — about a calendar month. Each month counts once, so a busy month can't inflate it."
-               data-tip-zh="在近年触发过的月份中，21 个交易日（约一个自然月）后收高的月份占比。每个月只计一次，密集触发不会虚增。"
-               data-tip-rc-en="{{ c.months_test }} months · {{ c.n_test }} fires · {{ split_date }} → {{ asof }} · win = up after 21 trading days"
-               data-tip-rc-zh="{{ c.months_test }} 个月 · 触发 {{ c.n_test }} 次 · {{ split_date }} 至 {{ asof }} · 胜 = 21 个交易日后上涨">{{ (c.wr_test_pct / 10)|round(1) }}<span style="font-size:15px;color:var(--muted);font-weight:600">/10</span></div>
-          <div class="lc-wr-unit">{{ t('wins recently (' ~ split_date[:4] ~ '+)', '近年胜率 (' ~ split_date[:4] ~ '起)') }}</div>
-          <div class="lc-wr-old cs-tipped" tabindex="0"
-               data-tip-en="The same reading on the years before the split — the out-of-sample check. A line-up that only works after the split is the one to distrust."
-               data-tip-zh="同一读数应用于分割日之前的年份——即样本外检验。只在分割日之后才有效的组合最值得怀疑。"
-               data-tip-rc-en="{{ c.months_train }} months · {{ c.n_train }} fires · first fire {{ c.first_fire }} → {{ split_date }}"
-               data-tip-rc-zh="{{ c.months_train }} 个月 · 触发 {{ c.n_train }} 次 · 首次触发 {{ c.first_fire }} 至 {{ split_date }}">{{ t('older years:', '更早年份:') }} <b>{{ (c.wr_train_pct / 10)|round(1) }}/10</b></div>
+          <div class="lc-era">
+            <div class="lc-era-label">{{ t('Recent (' ~ split_date[:4] ~ '+)', '近年（' ~ split_date[:4] ~ '起）') }}</div>
+            <div class="lc-wr-big mono">{{ (c.wr_test_pct / 10)|round(1) }}<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample">{{ t(c.months_test ~ ' months · ' ~ c.n_test ~ ' fires', c.months_test ~ ' 个月 · ' ~ c.n_test ~ ' 次触发') }}</div>
+          </div>
+          <div class="lc-era">
+            <div class="lc-era-label">{{ t('Older (before ' ~ split_date[:4] ~ ')', '更早（' ~ split_date[:4] ~ '前）') }}</div>
+            <div class="lc-wr-old">{{ (c.wr_train_pct / 10)|round(1) }}<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample">{{ t(c.months_train ~ ' months · ' ~ c.n_train ~ ' fires', c.months_train ~ ' 个月 · ' ~ c.n_train ~ ' 次触发') }}</div>
+          </div>
+          <div class="lc-wr-unit">{{ t('Monthly win average · 21 trading days', '月均胜率 · 21 个交易日') }}</div>
         </div>
       </div>
+
+      <details class="lc-method">
+        <summary>{{ t('How these readings are calculated', '这些读数如何计算') }}</summary>
+        <p>{{ t('Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.', '先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。') }}</p>
+        <p>{{ t('Recent is the test period, with fire dates from ' ~ split_date ~ '. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.', '近年为测试期，触发日期自 ' ~ split_date ~ ' 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。') }}</p>
+        <p>{{ t('Random-entry monthly win average · 21 trading days · recent: ', '随机入场月均胜率 · 21 个交易日 · 近年：') }}{{ ('%.1f'|format(baseline_test_pct / 10)) ~ '/10' if baseline_test_pct is not none else t('unavailable', '暂无数据') }}{{ t(' · older: ', ' · 更早：') }}{{ ('%.1f'|format(baseline_train_pct / 10)) ~ '/10' if baseline_train_pct is not none else t('unavailable', '暂无数据') }}. {{ t('Comparison points describe win-rate differences, not investment returns.', '比较百分点指胜率差值，并非投资收益率。') }}</p>
+        <p>{{ t('A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.', '完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。') }}</p>
+        <p>{{ t('Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.', '源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。') }}</p>
+      </details>
 
       {# the line-up: each leg lined up, timeframe-tagged #}
       <div class="legs">
@@ -304,12 +347,12 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         <div class="leg">
           {% if leg.tf == 'W' %}
           <span class="leg-tf w" tabindex="0"
-                data-tip-en="Read on weekly bars — a slower leg that only changes a few times a year."
-                data-tip-zh="按周线读取——变化较慢的一条，一年只切换几次。">W</span>
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
           {% else %}
           <span class="leg-tf d" tabindex="0"
-                data-tip-en="Read on daily bars — this signal has to be true on the day."
-                data-tip-zh="按日线读取——该信号须在当日成立。">D</span>
+                data-tip-en="This leg is evaluated on daily bars. The indicator itself may use a longer lookback."
+                data-tip-zh="此条件在日线数据上计算；指标本身可能使用更长的回看窗口。">D</span>
           {% endif %}
           <span class="leg-txt"><span class="l-en">{{ leg.en }}</span><span class="l-zh">{{ leg.zh }}</span></span>
         </div>
@@ -318,42 +361,28 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 
       <div class="lc-foot">
         <span class="chip ok" tabindex="0"
-              data-tip-en="Ten blocks, one per win in ten. Filled blocks are the recent win rate rounded to the nearest whole win."
-              data-tip-zh="十个方块代表十次中的胜负。填充的方块数是近年胜率四舍五入到整数的结果。">{{ wins_bar(c.wr_test_pct, 'free' if c.is_free else 'gated') }}
+              data-tip-en="Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades."
+              data-tip-zh="十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。">{{ wins_bar(c.wr_test_pct, 'free' if c.is_free else 'gated') }}
           <span class="l-en">{{ (c.wr_test_pct/10)|round(1) }} in 10 recently</span>
           <span class="l-zh">近年 {{ (c.wr_test_pct/10)|round(1) }}/10</span></span>
-        {% set _edge = c.edge_test_pp|round|int %}
-        {% set _edge_s = '%+d'|format(_edge) %}
+        {% if c.edge_test_pp is not none %}
         <span class="chip cs-tipped" tabindex="0"
               data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
-              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。"
-              data-tip-rc-en="Random-entry baseline, month-collapsed win rate, 21-day horizon, {{ split_date }} → {{ asof }}"
-              data-tip-rc-zh="随机入场基准 · 按月合并胜率 · 21 日持有期 · {{ split_date }} 至 {{ asof }}">
-          <span class="l-en">{{ _edge_s }} points better than entering at random</span>
-          {% if _edge > 0 %}
-          <span class="l-zh">较随机入场高 {{ _edge }} 个百分点</span>
-          {% else %}
-          <span class="l-zh">较随机入场 {{ _edge_s }} 个百分点</span>
-          {% endif %}
+              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。">
+          <span class="l-en">{{ '%+.1f'|format(c.edge_test_pp) }} percentage points vs random entry</span>
+          <span class="l-zh">较随机入场 {{ '%+.1f'|format(c.edge_test_pp) }} 个百分点</span>
         </span>
-        {% if c.consistent %}
-        <span class="chip ok cs-tipped" tabindex="0"
-              data-tip-en="It beat random entry in the older years as well as the recent ones. Both halves had to clear the bar, not just the recent one."
-              data-tip-zh="在更早年份与近年，它都跑赢了随机入场。两段样本须同时达标，而非只看近年。">✓ <span class="l-en">held up in both eras</span><span class="l-zh">两期均稳</span></span>
-        {% elif c.edge_test_pp > 0 %}
-        <span class="chip cs-tipped" tabindex="0"
-              data-tip-en="It beat random entry recently, but not in the older years — so the recent reading is the only one supporting it."
-              data-tip-zh="它近年跑赢了随机入场，但在更早年份没有——因此只有近年读数在支持它。">
-          <span class="l-en">older years didn't back it up</span>
-          <span class="l-zh">更早年份未能印证</span>
-        </span>
+        {% if c.consistent is sameas true %}
+        <span class="chip ok">{{ t('Above baseline in both periods', '两期均高于基准') }}</span>
+        {% elif c.edge_test_pp <= 0 %}
+        <span class="chip">{{ t('Not above baseline recently', '近年未高于基准') }}</span>
+        {% elif c.consistent is sameas false %}
+        <span class="chip">{{ t('Above baseline only in the recent period', '仅近年高于基准') }}</span>
         {% else %}
-        <span class="chip cs-tipped" tabindex="0"
-              data-tip-en="Hasn't beaten random entry in the recent half — so the recent reading is not supporting it."
-              data-tip-zh="近段未能跑赢随机入场——因此近年读数并不支持它。">
-          <span class="l-en">Hasn't beaten random entry in the recent half</span>
-          <span class="l-zh">近段未能跑赢随机入场</span>
-        </span>
+        <span class="chip">{{ t('Older-period comparison unavailable', '更早时期比较暂无数据') }}</span>
+        {% endif %}
+        {% else %}
+        <span class="chip">{{ t('Random-entry comparison unavailable', '随机入场比较暂无数据') }}</span>
         {% endif %}
       </div>
 
@@ -362,11 +391,11 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         {% if c.active_tickers %}
         <div class="lc-foot" style="border-top:0;padding-top:6px;margin-top:8px">
           <span class="chip ok" style="color:var(--text)">
-            <span class="l-en">Matching now &nbsp;→</span><span class="l-zh">当前匹配 &nbsp;→</span>
+            <span class="l-en">Matching in this snapshot &nbsp;→</span><span class="l-zh">此快照匹配 &nbsp;→</span>
           </span>
           <div class="tickers">
             {% for tk in c.active_tickers %}
-            <a class="tkr" href="stocks/{{ tk.ticker }}.html">{{ tk.ticker }}<span class="nm">{{ tk.name }}</span></a>
+            <a class="tkr" href="stocks/{{ tk.ticker }}.html"><span class="ticker-symbol">{{ tk.ticker }}</span><span class="nm">{{ tk.name }}</span></a>
             {% endfor %}
           </div>
         </div>
@@ -376,16 +405,16 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         </div>
         {% endif %}
       {% else %}
-        <div class="locked" data-confluence-combo="{{ c.combo_id }}">
+        <div class="locked" data-confluence-combo="{{ c.combo_id }}" data-confluence-count="{{ c.active_count }}">
           <span class="ic" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
           </span>
           <span class="lk-tx">
             <b class="cs-tipped" tabindex="0"
-               data-tip-en="How many of today's large-cap names this line-up matches right now. The names sit behind the trial; the count does not."
-               data-tip-zh="该组合当前匹配的大盘股数量。具体名称需试用后查看，数量本身不设限。">
-              <span class="l-en">{{ c.active_count }} {{ 'stock' if c.active_count == 1 else 'stocks' }} lining up now</span>
-              <span class="l-zh">{{ c.active_count }} 只股票当前共振</span>
+               data-tip-en="Matching large-cap stocks in this source snapshot. Their count is public; names require an entitled response for this same snapshot."
+               data-tip-zh="此源数据快照中匹配的大盘股数量。数量公开；名称须来自有权限访问的同一快照。">
+              <span class="l-en">{{ c.active_count }} {{ 'stock' if c.active_count == 1 else 'stocks' }} in this snapshot</span>
+              <span class="l-zh">{{ c.active_count }} 只股票在此快照匹配</span>
             </b>
             <span class="sub">
               <span class="l-en">Unlock this line-up's matching tickers with the free trial.</span>
@@ -407,30 +436,36 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         <span class="l-zh"><b>线索，非定论。</b>这些组合由自动搜索大量信号配方得出。请将其视为值得观察与研究的线索，而非保证。</span></li>
       <li><span class="l-en"><b>The stocks are survivors.</b> The list covers {{ universe_n }} large, established US companies — names that made it. That flatters the win rates. Small and failed companies aren't here.</span>
         <span class="l-zh"><b>标的是幸存者。</b>名单覆盖 {{ universe_n }} 家大型成熟美国公司——都是活下来的赢家。这会美化胜率。小盘股与失败公司不在其中。</span></li>
-      <li><span class="l-en"><b>Small recent samples.</b> A recent-era rate can rest on only a couple dozen monthly readings — samples that thin will wobble. Hover or tap any win rate to see how many months it rests on.</span>
-        <span class="l-zh"><b>近期样本偏小。</b>近期胜率可能只基于二十来个月度读数——样本这么小，数字会有波动。将鼠标移到任一胜率上（手机端点按），即可看到它基于多少个月的读数。</span></li>
-      <li><span class="l-en"><b>Win rates are historical, month-by-month reads.</b> Each calendar month counts once, so clusters don't inflate them. We show the recent years and the older years so you can see if a pattern is cherry-picked.</span>
-        <span class="l-zh"><b>胜率是逐月的历史读数。</b>每个日历月只计一次，密集触发不会虚增。我们同时展示近年与更早年份，便于你判断某形态是否被挑选出来。</span></li>
+      <li><span class="l-en"><b>Small recent samples.</b> A recent-era rate can rest on only a couple dozen monthly readings — samples that thin will wobble. Months and fires are shown beside each rate; open “How these readings are calculated” for definitions.</span>
+        <span class="l-zh"><b>近期样本偏小。</b>近期胜率可能只基于二十来个月度读数——样本这么小，数字会有波动。月份与触发次数列在各读数旁；打开「这些读数如何计算」可查看定义。</span></li>
+      <li><span class="l-en"><b>Win rates are historical, month-by-month reads.</b> First average wins within each month, then average those months equally. This does not remove dependence between observations or selection bias from searching many recipes.</span>
+        <span class="l-zh"><b>胜率是逐月的历史读数。</b>先计算每个月内的胜率，再对各月等权平均。这不能消除观察值之间的相关性，也不能消除搜索大量组合带来的选择偏差。</span></li>
       <li><span class="l-en"><b>The honest stance is watch, not buy.</b> A signal lining up tells you where to look. Your own entry, sizing and stop are still your call.</span>
         <span class="l-zh"><b>客观立场是观察，而非买入。</b>信号共振告诉你该看哪里。具体入场、仓位与止损仍由你决定。</span></li>
     </ul>
   </div>
 
+  {% if combos|length > 1 %}
+  <div class="confluence-access" id="confluence-access-status" hidden>
+    <span role="status" aria-live="polite" id="confluence-access-message"></span>
+    <button type="button" class="btn ghost" id="confluence-check-access" hidden>{{ t('Check access', '检查访问权限') }}</button>
+    <button type="button" class="btn ghost" id="confluence-reload-access" hidden>{{ t('Reload latest page', '重新加载最新页面') }}</button>
+  </div>
   <div class="cta-band" id="confluence-paid-cta">
     <div>
-      <div class="cb-tx"><span class="l-en">See every line-up's matching stocks</span><span class="l-zh">查看每组共振匹配的股票</span></div>
-      <div class="cb-sub"><span class="l-en">The full screener updates daily. Build your own combos and screen all {{ universe_n }} names.</span><span class="l-zh">完整筛选器每日更新。自建组合并筛选全部 {{ universe_n }} 只标的。</span></div>
+      <div class="cb-tx"><span class="l-en">See these line-ups' stocks</span><span class="l-zh">查看这些组合的匹配股票</span></div>
+      <div class="cb-sub"><span class="l-en">Matching names for the other displayed line-ups require an eligible plan.</span><span class="l-zh">其他已展示组合的匹配名称需要相应方案权限。</span></div>
     </div>
     <a class="btn" href="{{ cta_url }}"><span class="l-en">Start free trial →</span><span class="l-zh">开始免费试用 →</span></a>
   </div>
 
+  {% endif %}
   {% else %}
   {# ================= EMPTY STATE ================= #}
-  <div class="empty">
-    <div class="ec-ic" aria-hidden="true">🔭</div>
-    <h3><span class="l-en">Nothing lining up today</span><span class="l-zh">今日暂无共振</span></h3>
-    <p><span class="l-en">No proven signal combos are firing across our large-cap list right now. That's normal — the strongest setups are rare by design. Check back tomorrow.</span>
-      <span class="l-zh">目前大盘股名单中没有经检验的信号组合触发。这很正常——最强的布局本就稀少。请明日再来。</span></p>
+  <div class="empty" data-source-state="available-empty">
+    <h3><span class="l-en">No eligible line-ups</span><span class="l-zh">暂无符合条件的组合</span></h3>
+    <p><span class="l-en">This source contains no active line-ups with historical readings for both periods. Check the next update.</span>
+      <span class="l-zh">此源数据没有同时具备两段历史读数的活跃信号组合。请查看下次更新。</span></p>
     <div style="margin-top:18px">
       <a class="btn ghost" href="{{ cta_url }}"><span class="l-en">Get notified when setups fire</span><span class="l-zh">布局触发时通知我</span></a>
     </div>
@@ -438,7 +473,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   {% endif %}
 
   <div class="site-foot">
-    <span><span class="l-en">Data as of {{ asof }} · large-cap US universe · updated daily.</span><span class="l-zh">数据截至 {{ asof }} · 美国大盘股 · 每日更新。</span></span>
+    <span><span class="l-en">{% if source_built %}Source built {{ source_built }} · market observation time not supplied.{% else %}Source unavailable · matching count unknown.{% endif %}</span><span class="l-zh">{% if source_built %}源数据生成于 {{ source_built }} · 未提供市场观察时间。{% else %}源数据不可用 · 匹配数量未知。{% endif %}</span></span>
     <span><span class="l-en">Context, not investment advice.</span><span class="l-zh">仅供参考，非投资建议。</span></span>
   </div>
 </div>
@@ -448,164 +483,275 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 (function(){
   'use strict';
 
-  /* The public document contains only the free ticker row. The server-protected
-     /premiumdata/ response is authoritative: a 200 hydrates rank 2/3, while
-     401/403/offline leaves the rendered trial wall unchanged. */
+  var reloadPage = document.getElementById('confluence-reload-page');
+  if(reloadPage) reloadPage.addEventListener('click', function(){ location.reload(); });
+
+  /* A generation receipt joins two projections; only the existing protected
+     endpoint authorizes names. Never commit part of a paid response. */
   var PREMIUM_PAYLOAD = {{ premium_payload_url | tojson }};
-  var hydrated = false;
-  var inFlight = false;
-
-  function freshSession(){
-    try{
-      if(window.MDXAuth && window.MDXAuth.client &&
-         window.MDXAuth.hasSession && window.MDXAuth.hasSession()){
-        return window.MDXAuth.client()
-          .then(function(sb){ return sb.auth.getSession(); })
-          .catch(function(){});
-      }
-    }catch(e){}
-    return Promise.resolve();
-  }
-
-  /* theme.js is deferred, so wait briefly for its first auth broadcast before
-     refreshing the shared session cookie and requesting the protected asset. */
-  function whenAuthSettled(){
-    return new Promise(function(resolve){
-      var done = false;
-      function go(){ if(done) return; done = true; resolve(); }
-      if(window.MDXAuth){ go(); return; }
-      window.addEventListener('mdx-auth', go, {once:true});
-      setTimeout(go, 3000);
-    });
-  }
+  var SOURCE_RECEIPT = {{ source_generation | tojson }};
+  var rows = Array.prototype.map.call(document.querySelectorAll('[data-confluence-combo]'), function(wall){
+    return {
+      id: wall.getAttribute('data-confluence-combo'),
+      count: Number(wall.getAttribute('data-confluence-count')),
+      original: wall.cloneNode(true),
+      live: wall
+    };
+  });
+  var band = document.getElementById('confluence-paid-cta');
+  var originalBand = band ? band.cloneNode(true) : null;
+  var statusBox = document.getElementById('confluence-access-status');
+  var message = document.getElementById('confluence-access-message');
+  var retry = document.getElementById('confluence-check-access');
+  var reload = document.getElementById('confluence-reload-access');
+  var epoch = 0, inFlight = null, hydrated = false, scheduled = null, expiryTimer = null;
 
   function bilingual(en, zh){
     var frag = document.createDocumentFragment();
-    var enNode = document.createElement('span');
-    var zhNode = document.createElement('span');
-    enNode.className = 'l-en';
-    zhNode.className = 'l-zh';
-    enNode.textContent = en;
-    zhNode.textContent = zh || en;
-    frag.appendChild(enNode);
-    frag.appendChild(zhNode);
+    ['l-en', 'l-zh'].forEach(function(cls, i){
+      var node = document.createElement('span');
+      node.className = cls;
+      node.textContent = i ? zh : en;
+      frag.appendChild(node);
+    });
     return frag;
   }
 
-  function tickerLink(item){
-    var ticker = typeof item.ticker === 'string' ? item.ticker.trim() : '';
-    if(!/^[A-Za-z0-9._^=-]{1,20}$/.test(ticker)) return null;
-
-    var link = document.createElement('a');
-    link.className = 'tkr';
-    link.href = 'stocks/' + encodeURIComponent(ticker) + '.html';
-    link.appendChild(document.createTextNode(ticker));
-    if(item.name){
-      var name = document.createElement('span');
-      name.className = 'nm';
-      name.textContent = String(item.name);
-      link.appendChild(name);
-    }
-    return link;
+  function showState(state){
+    if(!statusBox) return;
+    var copy = {
+      checking: ['Checking access to matching stocks…', '正在检查匹配股票的访问权限…'],
+      denied: ['Your plan does not include these matching names. Public evidence remains available.', '您的方案不包含这些匹配名称，公开历史依据仍可查看。'],
+      expired: ['Sign in again to check access. Public evidence remains available.', '请重新登录以检查访问权限，公开历史依据仍可查看。'],
+      unavailable: ['Matching stocks could not be loaded. The public counts are unchanged.', '暂时无法加载匹配股票，公开数量保持不变。'],
+      mismatch: ['This page and the stock list are from different updates. Reload the latest page.', '此页面与股票名单来自不同更新，请重新加载最新页面。'],
+      invalid: ['The matching-stock response is incomplete. No paid names were displayed.', '匹配股票的返回数据不完整，未显示任何付费名称。']
+    };
+    statusBox.setAttribute('data-state', state);
+    statusBox.hidden = !copy[state];
+    retry.hidden = ['unavailable', 'invalid', 'denied', 'expired'].indexOf(state) < 0 && !(state === 'checking' && inFlight && inFlight.returnFocus);
+    /* Keep a deliberate retry focusable while checking; the handler guards
+       duplicate activation. Native disabling can discard keyboard focus. */
+    retry.setAttribute('aria-disabled', state === 'checking' ? 'true' : 'false');
+    reload.hidden = state !== 'mismatch';
+    message.textContent = '';
+    if(copy[state]) message.appendChild(bilingual(copy[state][0], copy[state][1]));
+    rows.forEach(function(row){ row.live.setAttribute('aria-busy', state === 'checking' ? 'true' : 'false'); });
   }
 
-  function replaceLockedRow(combo){
-    var walls = document.querySelectorAll('[data-confluence-combo]');
-    var wall = null;
-    for(var i=0;i<walls.length;i++){
-      if(walls[i].getAttribute('data-confluence-combo') === combo.combo_id){
-        wall = walls[i];
-        break;
-      }
-    }
-    if(!wall) return;
+  function currentUserId(){
+    try{
+      var user = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user();
+      return user && typeof user.id === 'string' && user.id ? user.id : null;
+    }catch(e){ return null; }
+  }
 
-    var foot = document.createElement('div');
-    foot.className = 'lc-foot';
-    foot.style.borderTop = '0';
-    foot.style.paddingTop = '6px';
-    foot.style.marginTop = '8px';
-
-    var label = document.createElement('span');
-    label.className = 'chip ok';
-    label.style.color = 'var(--text)';
-    label.appendChild(bilingual('Matching now \u00a0→', '当前匹配 \u00a0→'));
-    foot.appendChild(label);
-
-    var tickers = document.createElement('div');
-    tickers.className = 'tickers';
-    var items = Array.isArray(combo.active_tickers) ? combo.active_tickers : [];
-    items.forEach(function(item){
-      var link = tickerLink(item || {});
-      if(link) tickers.appendChild(link);
+  function freshSession(){
+    var auth = window.MDXAuth;
+    if(!auth || !auth.client || (!currentUserId() && !(auth.hasSession && auth.hasSession()))) return Promise.resolve(null);
+    return auth.client().then(function(sb){ return sb.auth.getSession(); }).then(function(result){
+      if(!result || result.error) throw new Error('unavailable');
+      return result.data && result.data.session;
     });
-    if(!tickers.children.length){
-      tickers.appendChild(bilingual(
-        'No stock matches this one today.',
-        '今日无股票匹配此组合。'
-      ));
-    }
-    foot.appendChild(tickers);
-    wall.replaceWith(foot);
   }
 
-  function showUnlockedCta(){
-    var band = document.getElementById('confluence-paid-cta');
-    if(!band) return;
-    var title = band.querySelector('.cb-tx');
-    var sub = band.querySelector('.cb-sub');
-    var button = band.querySelector('.btn');
-    if(title){
-      title.textContent = '';
-      title.appendChild(bilingual('Paid view unlocked', '付费视图已解锁'));
+  function invalidate(restoreFocus, keepStatus){
+    epoch++;
+    if(inFlight && inFlight.controller) inFlight.controller.abort();
+    inFlight = null;
+    hydrated = false;
+    if(scheduled !== null){ clearTimeout(scheduled); scheduled = null; }
+    if(expiryTimer !== null){ clearTimeout(expiryTimer); expiryTimer = null; }
+    rows.forEach(function(row){
+      var hadFocus = restoreFocus && row.live.contains(document.activeElement);
+      var wall = row.original.cloneNode(true);
+      row.live.replaceWith(wall);
+      row.live = wall;
+      if(hadFocus){
+        var target = wall.querySelector('a,button,[tabindex]');
+        if(target) target.focus({preventScroll:true});
+      }
+    });
+    if(band && originalBand){
+      band.replaceChildren.apply(band, Array.prototype.map.call(originalBand.childNodes, function(n){ return n.cloneNode(true); }));
     }
-    if(sub){
-      sub.textContent = '';
-      sub.appendChild(bilingual(
-        'All matching stocks available to your plan are visible above.',
-        '您方案内可用的全部匹配股票已显示在上方。'
-      ));
-    }
-    if(button){
-      button.textContent = '';
-      button.appendChild(bilingual('Open Mastermind →', '打开操盘大脑 →'));
-    }
+    if(!keepStatus) showState('locked');
   }
 
-  function hydrate(payload){
-    if(!payload || payload.schema !== 'tier_payload.v1' ||
-       payload.page !== 'confluence_screener' ||
-       !Array.isArray(payload.combos)){
-      throw new Error('invalid payload');
+  function sameRequest(ticket){
+    return ticket.epoch === epoch && (!ticket.owner || ticket.owner === currentUserId());
+  }
+
+  function requireUnexpired(ticket){
+    if(!Number.isFinite(ticket.expiresAt) || ticket.expiresAt <= Date.now()) throw new Error('expired');
+  }
+
+  function armExpiry(ticket){
+    if(expiryTimer !== null) clearTimeout(expiryTimer);
+    /* This is a display deadline from the existing auth owner's session, not a
+       new token/plan authority or refresh loop. The endpoint authorizes names. */
+    expiryTimer = setTimeout(function(){
+      expiryTimer = null;
+      if(!sameRequest(ticket)) return;
+      if(Date.now() < ticket.expiresAt){ armExpiry(ticket); return; }
+      invalidate(true);
+      showState('expired');
+    }, Math.max(0, Math.min(ticket.expiresAt - Date.now(), 2147483647)));
+  }
+
+  function prepareRows(payload){
+    if(!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'confluence_screener' ||
+       payload.gated !== true || payload.required_tier !== 'essential' ||
+       payload.source_status !== 'available' || !Array.isArray(payload.combos)){
+      throw new Error('invalid');
     }
-    payload.combos.forEach(replaceLockedRow);
-    showUnlockedCta();
+    var got = payload.source_generation;
+    if(!got || !SOURCE_RECEIPT || got.schema !== 'confluence_source.v1' ||
+       got.sha256 !== SOURCE_RECEIPT.sha256 ||
+       got.generated_utc !== SOURCE_RECEIPT.generated_utc || payload.built !== SOURCE_RECEIPT.generated_utc){
+      throw new Error('mismatch');
+    }
+    if(payload.combos.length !== rows.length) throw new Error('invalid');
+    var byId = new Map();
+    payload.combos.forEach(function(combo){
+      if(!combo || typeof combo.combo_id !== 'string' || byId.has(combo.combo_id)) throw new Error('invalid');
+      byId.set(combo.combo_id, combo);
+    });
+    return rows.map(function(row){
+      var combo = byId.get(row.id);
+      if(!combo || !Number.isSafeInteger(combo.active_count) || combo.active_count !== row.count ||
+         !Number.isSafeInteger(row.count) || row.count < 1 || !Array.isArray(combo.active_tickers) ||
+         combo.active_tickers.length !== row.count){
+        throw new Error('invalid');
+      }
+      var seen = new Set();
+      var foot = document.createElement('div');
+      foot.className = 'lc-foot';
+      foot.setAttribute('data-confluence-combo', row.id);
+      foot.setAttribute('data-confluence-count', String(row.count));
+      foot.setAttribute('data-confluence-hydrated', 'true');
+      var label = document.createElement('span');
+      label.className = 'chip';
+      label.appendChild(bilingual('Matching in this snapshot →', '此快照匹配 →'));
+      foot.appendChild(label);
+      var tickers = document.createElement('div');
+      tickers.className = 'tickers';
+      combo.active_tickers.forEach(function(item){
+        if(!item || typeof item.ticker !== 'string' || !/^[A-Za-z0-9._^=-]{1,20}$/.test(item.ticker) ||
+           typeof item.name !== 'string' || seen.has(item.ticker)){
+          throw new Error('invalid');
+        }
+        seen.add(item.ticker);
+        var link = document.createElement('a');
+        link.className = 'tkr';
+        link.href = 'stocks/' + encodeURIComponent(item.ticker) + '.html';
+        var symbol = document.createElement('span');
+        symbol.className = 'ticker-symbol';
+        symbol.textContent = item.ticker;
+        link.appendChild(symbol);
+        if(item.name){
+          var name = document.createElement('span');
+          name.className = 'nm';
+          name.textContent = item.name;
+          link.appendChild(name);
+        }
+        tickers.appendChild(link);
+      });
+      foot.appendChild(tickers);
+      return foot;
+    });
+  }
+
+  function hydrate(payload, ticket){
+    if(!sameRequest(ticket)) return;
+    requireUnexpired(ticket);
+    var prepared = prepareRows(payload);
+    if(!sameRequest(ticket)) return;
+    requireUnexpired(ticket);
+    rows.forEach(function(row, i){ row.live.replaceWith(prepared[i]); row.live = prepared[i]; });
+    if(band){
+      var title = band.querySelector('.cb-tx'), sub = band.querySelector('.cb-sub'), button = band.querySelector('.btn');
+      if(title){ title.textContent = ''; title.appendChild(bilingual('Matching stocks loaded', '匹配股票已加载')); }
+      if(sub){ sub.textContent = ''; sub.appendChild(bilingual('Names for the displayed line-ups are visible above.', '已展示组合的匹配名称列在上方。')); }
+      if(button){ button.textContent = ''; button.appendChild(bilingual('Open Mastermind →', '打开操盘大脑 →')); }
+    }
     hydrated = true;
+    if(ticket.returnFocus && document.activeElement === retry){
+      var firstName = rows[0].live.querySelector('a.tkr');
+      if(firstName) firstName.focus({preventScroll:true});
+    }
+    showState('loaded');
   }
 
-  function attemptHydrate(){
-    if(hydrated || inFlight || !PREMIUM_PAYLOAD) return Promise.resolve();
-    inFlight = true;
-    return freshSession()
-      .then(function(){
-        return fetch(PREMIUM_PAYLOAD, {
-          credentials: 'same-origin',
-          cache: 'no-store'
-        });
-      })
-      .then(function(response){
-        if(!response || !response.ok) throw new Error('locked');
-        return response.json();
-      })
-      .then(hydrate)
-      .catch(function(){
-        /* Locked (or offline): keep the honest server-rendered wall. */
-      })
-      .then(function(){ inFlight = false; });
+  function attemptHydrate(returnFocus){
+    if(hydrated || inFlight || !rows.length || !PREMIUM_PAYLOAD || !SOURCE_RECEIPT) return Promise.resolve();
+    var ticket = {epoch:epoch, owner:null, expiresAt:null, returnFocus:!!returnFocus, controller:window.AbortController ? new AbortController() : null};
+    inFlight = ticket;
+    showState('checking');
+    return freshSession().then(function(session){
+      if(!sameRequest(ticket)) return null;
+      var owner = currentUserId();
+      if(!session || !session.user || session.user.id !== owner || !owner){
+        showState('locked');
+        return null;
+      }
+      ticket.owner = owner;
+      if(typeof session.expires_at !== 'number' || !Number.isFinite(session.expires_at)) throw new Error('unavailable');
+      ticket.expiresAt = session.expires_at * 1000;
+      requireUnexpired(ticket);
+      armExpiry(ticket);
+      return fetch(PREMIUM_PAYLOAD, {
+        credentials: 'same-origin',
+        cache: 'no-store',
+        signal: ticket.controller ? ticket.controller.signal : undefined
+      });
+    }).then(function(response){
+      if(!response || !sameRequest(ticket)) return null;
+      requireUnexpired(ticket);
+      if(response.status === 401) throw new Error('expired');
+      if(response.status === 403) throw new Error('denied');
+      if(!response.ok) throw new Error('unavailable');
+      return response.json().then(function(payload){ return {payload:payload}; }).catch(function(){ throw new Error('invalid'); });
+    }).then(function(result){
+      if(result && sameRequest(ticket)) hydrate(result.payload, ticket);
+    }).catch(function(error){
+      if(!sameRequest(ticket)) return;
+      showState(['expired','denied','mismatch','invalid'].indexOf(error.message) >= 0 ? error.message : 'unavailable');
+    }).then(function(){
+      if(inFlight === ticket) inFlight = null;
+    });
   }
 
-  whenAuthSettled().then(attemptHydrate);
-  window.addEventListener('mdx-auth', attemptHydrate);
+  function scheduleCheck(){
+    if(scheduled !== null || document.visibilityState === 'hidden') return;
+    /* Leave the shared SDK auth callback before requesting its session. */
+    scheduled = setTimeout(function(){ scheduled = null; attemptHydrate(); }, 0);
+  }
+
+  var seenOwner = currentUserId();
+  window.addEventListener('mdx-auth', function(event){
+    var detail = event.detail || {};
+    var nextOwner = detail.user && typeof detail.user.id === 'string' ? detail.user.id : null;
+    if(detail.event === 'PREFS_SAVED' && nextOwner === seenOwner) return;
+    seenOwner = nextOwner;
+    invalidate(true);
+    if(detail.event !== 'SIGNED_OUT' && detail.event !== 'SDK_FAILED') scheduleCheck();
+  });
+  if(retry) retry.addEventListener('click', function(){
+    if(inFlight) return;
+    var returnFocus = document.activeElement === retry;
+    invalidate(false, true);
+    attemptHydrate(returnFocus);
+  });
+  if(reload) reload.addEventListener('click', function(){ location.reload(); });
+  window.addEventListener('pagehide', function(){ invalidate(false); });
+  window.addEventListener('pageshow', function(event){ if(event.persisted){ invalidate(false); scheduleCheck(); } });
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'hidden') invalidate(false);
+    else scheduleCheck();
+  });
+  if(window.MDXAuth) scheduleCheck();
+  else setTimeout(scheduleCheck, 3000); // one bounded initialization fallback; no polling
 })();
 </script>
 </body>

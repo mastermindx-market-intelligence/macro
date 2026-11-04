@@ -11,7 +11,10 @@ Usage:
 """
 from __future__ import annotations
 
+import hashlib
 import json
+import math
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -49,6 +52,92 @@ def _cta_url() -> str:
 # build_context — pure function, testable
 # ─────────────────────────────────────────────────────────────────────────────
 
+_TICKER = re.compile(r"^[A-Za-z0-9._^=-]{1,20}$")
+
+
+def _finite_number(value: object) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def _source_receipt(raw: object) -> dict | None:
+    """Qualify the reader's input and bind both projections to one artifact.
+
+    The opaque digest is a consistency receipt, never an entitlement or a market
+    observation clock. Reject malformed coverage instead of calling it zero.
+    """
+    if not isinstance(raw, dict):
+        return None
+    try:
+        built = raw["generated_utc"]
+        if not isinstance(built, str) or datetime.fromisoformat(built.replace("Z", "+00:00")).tzinfo is None:
+            return None
+        if type(raw["universe_n"]) is not int or raw["universe_n"] < 0:
+            return None
+        datetime.strptime(raw["split_date"], "%Y-%m-%d")
+        legs = raw["legs"]
+        longs = raw["combos"]["long"]
+        if not isinstance(legs, list) or not isinstance(longs, list):
+            return None
+        if any(not isinstance(leg, dict) or leg.get("tf") not in ("D", "W") or
+               not isinstance(leg.get("display_en"), str) or
+               not isinstance(leg.get("display_zh"), str) for leg in legs):
+            return None
+        ids: set[str] = set()
+        for combo in longs:
+            if not isinstance(combo, dict):
+                return None
+            key, active, indices = combo.get("id"), combo.get("active_now"), combo.get("legs")
+            if not isinstance(key, str) or not key or key in ids:
+                return None
+            ids.add(key)
+            if not isinstance(active, list) or any(not isinstance(t, str) or not _TICKER.fullmatch(t) for t in active):
+                return None
+            if len(set(active)) != len(active):
+                return None
+            if not isinstance(indices, list) or any(type(i) is not int or not 0 <= i < len(legs) for i in indices):
+                return None
+            h21 = combo.get("h21")
+            if h21 is None:
+                h21 = {}
+            if not isinstance(h21, dict) or not _finite_number(combo.get("rank_score", 0)):
+                return None
+            for half in ("test", "train"):
+                rate = h21.get("wr_mc_" + half)
+                if rate is not None and (not _finite_number(rate) or not 0 <= rate <= 1):
+                    return None
+            if active and all(h21.get("wr_mc_" + half) is not None for half in ("test", "train")):
+                if not indices or not _finite_number(combo.get("rank_score")):
+                    return None
+                for key in ("n_test", "months_test", "n_train", "months_train"):
+                    if type(h21.get(key)) is not int or h21[key] <= 0:
+                        return None
+        canonical = json.dumps(raw, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return None
+    return {
+        "schema": "confluence_source.v1",
+        "generated_utc": built,
+        "sha256": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+    }
+
+
+def _baseline_pct(raw: dict, half: str) -> float | None:
+    try:
+        value = raw["base"]["long"]["h21"]["wr_mc_" + half]
+    except (KeyError, TypeError):
+        return None
+    return value * 100 if _finite_number(value) and 0 <= value <= 1 else None
+
+
+def _optional_date(value: object) -> str | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        return value if datetime.strptime(value, "%Y-%m-%d").strftime("%Y-%m-%d") == value else None
+    except ValueError:
+        return None
+
+
 def _eligible_long_combos(raw: dict | None) -> list[dict]:
     """Return eligible long combos in rank order.
 
@@ -83,14 +172,20 @@ def build_context(raw: dict | None, name_map: dict) -> dict:
     combos only `len(c["active_now"])` is called — the ticker list is discarded.
     """
     generated_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    source_generation = _source_receipt(raw)
+    if source_generation is None:
+        raw = None
 
     if raw is None:
         return {
             "generated_utc": generated_utc,
             "asof": None,
-            "universe_n": 0,
+            "source_status": "unavailable",
+            "source_generation": None,
+            "source_built": None,
+            "universe_n": None,
             "split_date": "2018-01-01",
-            "n_active_total": 0,
+            "n_active_total": None,
             "combos": [],
             "cta_url": _cta_url(),
             "premium_payload_url": PAYLOAD_URL,
@@ -147,6 +242,24 @@ def build_context(raw: dict | None, name_map: dict) -> dict:
             # Gated: call len() only, never iterate tickers into the context
             active_tickers = []
 
+        # Optional evidence stays unknown when absent or malformed. A useful
+        # qualified rate must not turn a missing comparison into a zero result.
+        n_fires = c.get("n_fires")
+        if type(n_fires) is not int or n_fires < h21["n_test"] + h21["n_train"]:
+            n_fires = None
+        first_fire = _optional_date(c.get("first_fire"))
+        last_fire = _optional_date(c.get("last_fire"))
+        if first_fire and last_fire and first_fire > last_fire:
+            first_fire = last_fire = None
+        frequency = c.get("fires_per_year")
+        if not _finite_number(frequency) or frequency < 0:
+            frequency = None
+        edge = c.get("edge_wr_test")
+        edge_pp = edge * 100 if _finite_number(edge) and -1 <= edge <= 1 else None
+        consistent = c.get("consistent")
+        if type(consistent) is not bool or (consistent and (edge_pp is None or edge_pp <= 0)):
+            consistent = None
+
         combo_entry = {
             "rank": rank,
             "combo_id": c.get("id", ""),
@@ -159,12 +272,13 @@ def build_context(raw: dict | None, name_map: dict) -> dict:
             "months_test": h21.get("months_test") or 0,
             "n_train": h21.get("n_train") or 0,
             "months_train": h21.get("months_train") or 0,
-            "n_fires": c.get("n_fires") or 0,
-            "first_fire": c.get("first_fire") or "",
-            "last_fire": c.get("last_fire") or "",
-            "fires_per_year": c.get("fires_per_year") or 0.0,
-            "edge_test_pp": (c.get("edge_wr_test") or 0) * 100,
-            "consistent": bool(c.get("consistent")),
+            "n_fires": n_fires,
+            "first_fire": first_fire,
+            "last_fire": last_fire,
+            "fires_per_year": frequency,
+            "history_complete": all(v is not None for v in (n_fires, first_fire, last_fire, frequency)),
+            "edge_test_pp": edge_pp,
+            "consistent": consistent,
             "is_free": is_free,
             "active_count": len(active_now),
             "active_tickers": active_tickers,
@@ -174,6 +288,11 @@ def build_context(raw: dict | None, name_map: dict) -> dict:
     return {
         "generated_utc": generated_utc,
         "asof": asof,
+        "source_status": "available",
+        "source_generation": source_generation,
+        "source_built": artifact_utc,
+        "baseline_test_pct": _baseline_pct(raw, "test"),
+        "baseline_train_pct": _baseline_pct(raw, "train"),
         "universe_n": universe_n,
         "split_date": split_date,
         "n_active_total": n_active_total,
@@ -189,6 +308,9 @@ def build_premium_payload(raw: dict | None, name_map: dict) -> dict:
     This data must never be embedded in the public page. Caddy protects the
     /premiumdata/ prefix with the authoritative registration + paywall checks.
     """
+    source_generation = _source_receipt(raw)
+    if source_generation is None:
+        raw = None
     artifact_utc = raw.get("generated_utc") if raw else None
     combos: list[dict] = []
     for combo in _eligible_long_combos(raw)[1:3]:
@@ -208,6 +330,8 @@ def build_premium_payload(raw: dict | None, name_map: dict) -> dict:
         "gated": True,
         "required_tier": "essential",
         "built": artifact_utc or "",
+        "source_status": "available" if source_generation else "unavailable",
+        "source_generation": source_generation,
         "combos": combos,
     }
 
@@ -227,7 +351,7 @@ def render_html(root: Path, ctx: dict) -> str:
     )
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     tpl = env.get_template("confluence_screener.html.j2")
-    return tpl.render(**ctx)
+    return re.sub(r"(?m)^[ \t]+$", "", tpl.render(**ctx))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
