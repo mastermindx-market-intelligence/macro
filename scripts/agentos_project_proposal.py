@@ -85,9 +85,13 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 import unicodedata
 from pathlib import Path
 from typing import Any
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from scripts import agentos
 
