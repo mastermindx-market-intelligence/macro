@@ -1,0 +1,48 @@
+{
+  "at": "2026-11-04T00:02:24.666814+00:00",
+  "scope": "S8 native asset-only coupling, not full financial producer/publication/served",
+  "parent": "826abfe62f3d3fea16535b96ab992bae0e96c1b0",
+  "paths": [
+    {
+      "path": "lib/pages.py",
+      "sha256": "aee8a0278bc0c487415d246ef0ee814c1f13e0591cbd2f8c361e5d056c2e0a68",
+      "blob": "06a1bf465a5598864b14fddf857da50d4c17ec49"
+    },
+    {
+      "path": "scripts/build_bonds.py",
+      "sha256": "63e02f0f20a5e64ceae8521ca38f96ce70fc069e5888a416a68e37a2ffa8bd62",
+      "blob": "b076a4c868a7d08dcb74e61a08f4a19dac2ed396"
+    },
+    {
+      "path": "scripts/externalize_css.py",
+      "sha256": "2c625b2498145af6ef39d77290aca2da61ecb818185ba21cd3a9dbc1a38a263c",
+      "blob": "c2e79acab107f5c95fd988c80511d6d00228d50e"
+    },
+    {
+      "path": "tests/test_externalize_css.py",
+      "sha256": "211465a46fd643d7f247f97e65fd11614b97b190ac52249bd9d9ab70de9156e3",
+      "blob": "6a9708a1f39822f26c247a4a73ed55d519fc6513"
+    },
+    {
+      "path": "tests/test_bonds_glance_copy.py",
+      "sha256": "e3ccde0fae5c187771cf76f2dbcda12ab47a8c46821705b79b43afafed302cee",
+      "blob": "2bdf08958feeaa88218f1859c2891aed27af6b03"
+    },
+    {
+      "path": "site/bonds.html",
+      "sha256": "658e7c0ee6e49012c57815df5c958556bdcc36eb3f695cebfc61a2f71c04d0b7",
+      "blob": "99b6d87d170d617cd2d980b49cdea7c91d112e09"
+    },
+    {
+      "path": "site/assets/css/de1c4f80.css",
+      "sha256": "de1c4f805688a2f2c0229eafc2f797095684d56562b178f360c9f57d1eb6a17a",
+      "blob": "d86915f1cb8764790cd939e712ec60e027d9461f"
+    }
+  ],
+  "checks": {
+    "externalize_asset_suite": "67 passed in22.24s, final mkstemp adapter",
+    "fingerprint_and_native_dispatch": "2 passed in5.05s",
+    "full_matrix": "not repeated",
+    "browser": "held; no new claim"
+  }
+}

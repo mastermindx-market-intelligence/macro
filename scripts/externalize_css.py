@@ -57,6 +57,7 @@ from lib.pages import (  # noqa: E402
     externalize_css_text,
     externalize_js_text,
     write_page,
+    write_css_asset,
 )
 
 log = logging.getLogger("externalize_css")
@@ -223,16 +224,7 @@ def externalize(site_dir: Path) -> int:
             data = css.encode("utf-8")
             if len(data) < MIN_BYTES:
                 return None
-            h = hashlib.sha256(data).hexdigest()[:8]
-            dst = css_root / f"{h}.css"
-            if not dst.exists():
-                try:
-                    css_root.mkdir(parents=True, exist_ok=True)
-                    dst.write_text(css, encoding="utf-8")
-                except OSError as e:
-                    log.warning("write css %s failed: %s", dst.name, e)
-                    return None
-            return f"{_prefix}assets/css/{h}.css?v={h}"
+            return write_css_asset(site_dir, css, prefix=_prefix)
 
         def make_js_src(js: str, index: int, _prefix: str = prefix) -> Optional[str]:
             data = js.encode("utf-8")

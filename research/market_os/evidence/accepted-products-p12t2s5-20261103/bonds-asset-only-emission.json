@@ -1,0 +1,32 @@
+{
+  "scope": "actual native deterministic asset-only stage; not full Bonds producer/emission/served proof",
+  "entry_result": {
+    "body_sha256": "5dda0256c01350c57ee408379362d6560b31fb0be6cd6694b5a5a83b52a0858a",
+    "changed": true,
+    "css_sha256": "de1c4f805688a2f2c0229eafc2f797095684d56562b178f360c9f57d1eb6a17a",
+    "new_href": "assets/css/de1c4f80.css?v=de1c4f80",
+    "old_href": "assets/css/ebe31e14.css?v=ebe31e14",
+    "scope": "asset-only; no full Bonds emission, VM, data or clock change",
+    "slots": 1
+  },
+  "document_before_sha256": "44680f9b35d054d13e0af5e9df3c195e694bd51edebec3169bf772f81e7fccbc",
+  "document_after_sha256": "658e7c0ee6e49012c57815df5c958556bdcc36eb3f695cebfc61a2f71c04d0b7",
+  "all_non_asset_bytes_equal": true,
+  "financial_body_data_clocks_equal": true,
+  "body_sha256": "eaddab2858077e317153c8194d4864635b4fe1bf4bc72f4a5324e436e22747b9",
+  "unchanged_asset_sha256": {
+    "data_base.js": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+    "shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+    "assets/css/ebe31e14.css": "ebe31e1495cecbd47daf8c8c0f07ad95c461826d99b812be603e1017c3884906"
+  },
+  "instrumentation_limitation": "The native stage returned zero and emitted changed=true; wrapper later failed assert-not-blocked. The individual blocked Python audit events were not printed/retained, so absence of all attempted incidental writes is NOT established. Exact repository delta and nonasset equality verified independently; no full financial producer called. Initial NamedTemporaryFile preliminary directory audit failure retained; adapter now uses mkstemp with exact temporary pathname.",
+  "audit_causal_closure": {
+    "fixture_red": "asset-audit-causal-complete.log",
+    "actual_blocked_targets": "Python bytecode cache for lib.shared_shell and lib.site_assets; no product/data write",
+    "same_fence_green": "asset-audit-causal-green.log",
+    "single_control": "PYTHONDONTWRITEBYTECODE=1; unchanged asset source/fixtures/OS network denial/write fence",
+    "blocked_events_green": [],
+    "limitation": "Exact original attempted events were not retained. Same full native input/interface reproduction diagnoses the assertion; original and replayed output independently preserve all nonasset bytes."
+  }
+}

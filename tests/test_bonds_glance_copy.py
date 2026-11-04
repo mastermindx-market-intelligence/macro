@@ -490,3 +490,16 @@ def test_sovereign_frame_future_origin_and_caller_override_are_unqualified(monke
     row = _us_sovereign(overridden)
     assert row["observed_as_of"] is None and row["observation_qualified"] is False
     assert row["sources"][0]["source_url"] is None
+
+
+def test_bonds_stylesheet_only_dispatch_cannot_run_financial_producer(monkeypatch):
+    from scripts import build_bonds
+
+    def forbidden():
+        raise AssertionError("financial producer must not run")
+    monkeypatch.setattr(build_bonds, "main", forbidden)
+    monkeypatch.setattr(build_bonds, "refresh_stylesheet_only", lambda: {"scope": "asset-only"})
+    assert build_bonds.entrypoint(["--stylesheet-only"]) == 0
+    with pytest.raises(SystemExit) as exc:
+        build_bonds.entrypoint(["--stylesheet-only", "--unknown"])
+    assert exc.value.code == 2

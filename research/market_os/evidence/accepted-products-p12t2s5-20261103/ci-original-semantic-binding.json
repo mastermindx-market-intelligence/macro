@@ -1,0 +1,341 @@
+{
+  "run": 41729104897,
+  "subject_head": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e",
+  "tested_merge": "eb598a3a9dd77ac96754a4d695fb01bde0e1f7e3",
+  "tested_merge_tree": "582d2ae8222a7fb7d620a23c121c48b722f37a0b",
+  "base": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+  "parents": [
+    "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+    "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+  ],
+  "artifact_sha256": "5e70cb07b201f23c467aa54b06348de65bf60194027921978bb6eaa5866e299a",
+  "evidence_sha256": "33a85468f09db09c009bb38ad725047a0578f866e05d5585a98dd6eeee55719b",
+  "incumbent_loader": "scripts.ci_semantic_proof.load_semantic_evidence + semantic_gate_verdict",
+  "loader_blob": "df7e5007413584d8593bfeb69dd9b479daa99147",
+  "status": "failure",
+  "clear": false,
+  "passed_units": 374,
+  "inherited_units": 0,
+  "blocking_units": [
+    {
+      "logical_job_id": "ccw-w4-credit-desk",
+      "proof_id": "CCW-W4 credit desk vm tests",
+      "classification": "pr_regression",
+      "outcome": "failed",
+      "pack_index": 5,
+      "step_spec_sha256": "94e64e45ffb7bdba0f14476434967dab1d9799484c8ab47cfe07b3523fe828ce",
+      "job_exec_sha256": "2c6f045862e8defa152ae5d988d6f5d788e260b846830fa9e937544022d96c30",
+      "failure_signature": {
+        "atoms": [
+          "pytest:failed:tests/test_bonds_glance_copy.py::test_committed_bonds_stylesheet_is_fingerprinted:reason=3323fb5ed91cb5a1a53bb71d5bc574049b9f7a28588bd4989d170ecb49dbe77d"
+        ],
+        "sha256": "fb267257b48b9b612c10ba00aa4e87b4852874443d610a54048202b72d3cfba4"
+      },
+      "detail": "same semantic proof passes on exact base",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet source, lifecycle and presentation contracts (one native process)",
+      "classification": "unknown",
+      "outcome": "failed",
+      "pack_index": 4,
+      "step_spec_sha256": "d3745d1bbc296753dab347fba62933c305576e0b9254083bab1b362aa16f06dc",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": {
+        "atoms": [
+          "pytest:failed:tests/test_prophet_card_shared.py::test_setup_table_fallback_missing_values_never_enrich_from_other_population:reason=1adc27ba7293a3ee87252560127a04f2e5bea7907f8533495dfa4988721e720e",
+          "pytest:failed:tests/test_prophet_card_shared.py::test_setup_table_same_row_body_and_clock_match_card_presenter:reason=e5351f26cb98f60fb51ab0b972a5ef84f2a4388a17cb28408d747ce47bd12a78",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_cli_against_committed_fixture:reason=84acd6104b13154e8ec83ee0395fcccb8a068706a9c78d4db20dc7aab3b10d9d",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_cli_clean_journey_exit_code_zero:reason=777de34c3d32ef75fd8637b9ec35fbcd1fab059a53aa21562b041df0d45bffd1",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_cli_subprocess_pass:reason=9e3ee346d005a2f6bea422e20745fb99d4e9ba2086f737e64dd3ac86871a60e3",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_cli_subprocess_prints_check_and_result_lines:reason=9e3ee346d005a2f6bea422e20745fb99d4e9ba2086f737e64dd3ac86871a60e3",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_cli_without_runtime_is_partial:reason=c43d83b33bcd26cdc70d0f4b27cdf524a3b2385197e2eb13073ad5f58f45119a",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_input_integrity_j6_rejects_matching_invented_template_and_display[price-$123.45]:reason=0b7a9f32a575c3f4b742092edda351bf98cd5f963b716f3c13306dd9ab69c3e1",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_against_committed_fixture:reason=fc72a92b8affd86bfdf1d205d510bae1c6965d1e511fc86903f7635ceec20d8d",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_fail_second_displayed_body_with_foreign_native_id:reason=df42020ab60a2348c65528fd77711b4e55f237d65d94521a126e32028ec9b505",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_fail_signal_asof_string_mismatch:reason=df42020ab60a2348c65528fd77711b4e55f237d65d94521a126e32028ec9b505",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_fail_template_summary_clock_text_differs_from_displayed:reason=b23fc6bf72272a2a02facbc0d538bede92b05f5ba2c36887094c59914eaa7734",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_fail_whole_displayed_body_with_different_clock_text:reason=df42020ab60a2348c65528fd77711b4e55f237d65d94521a126e32028ec9b505",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_fail_whole_displayed_body_with_different_plan_id:reason=df42020ab60a2348c65528fd77711b4e55f237d65d94521a126e32028ec9b505",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_pass_all_fields_preserved:reason=fc72a92b8affd86bfdf1d205d510bae1c6965d1e511fc86903f7635ceec20d8d",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_pass_displayed_body_matches_template:reason=fc72a92b8affd86bfdf1d205d510bae1c6965d1e511fc86903f7635ceec20d8d",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_pass_ignores_comment_and_whitespace_differences:reason=fc72a92b8affd86bfdf1d205d510bae1c6965d1e511fc86903f7635ceec20d8d",
+          "pytest:failed:tests/test_prophet_journey_reconcile.py::test_j6_pass_summary_clock_text_is_read_inside_the_template_copy:reason=003b9205e853b45150ccbebf6f4c6990aec53250da6e3c55fcda39829cd91fe5",
+          "pytest:failed:tests/test_prophet_plan_relation.py::test_three_presenters_render_the_same_plan_relation_body:reason=e5b2bf91c38c10836a24b839b41447cf1d4b93f655b40254f537d64225f7664e"
+        ],
+        "sha256": "7be5deb9f94d91d082682544f0d64c00446bf4d8c7aa5b293e1f20566d6ad268"
+      },
+      "detail": "head and exact-base failure signatures differ",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet R7 Wave A watchlist save outcomes and saved/tonight columns (A2)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "64aa6e7d7c7398c8ab14fd4ebbff290faaa6819421621582c6469ac4965c38af",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet detector, organ and disposition contracts (one native process)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "0dd85d66d482d676389d877fe99791cafb3941a1a92ef061dcb82e6a944a2ff9",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet R7 Wave A refusal receipts and design guards (A3)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "dc7dc15b8eaa9d5af115a039c59e2d6f436e3fbcea266345d081c8d82a552512",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet native Plan source-origin binding and malformed-input guards",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "9ace02be9b4d39874065573b2af7424c5d4eb393f126442ccc3abb625c26f511",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet R7 Wave A plan-card record states (A1)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "6610fc80ccda1ba35476bed354f1682bc1ffbdc4d45892e9ca9e71e6300f6ebc",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet B05 same-read contract (candidate state and runtime entry availability read the same B4 snapshot)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "a73dac2f2343b0a7c32833918748f6a05c8770522e432690757a21efe730ffe8",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet B4 nightly capture (capture-only; W3 discipline; no state token persisted)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "c5975f0ee0ea4e061728a8ceb2e7c16e0505bf16af13abac99bf740a7b49244c",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet B4 producer basis and disclosed freshness guards",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "86ecbdc84f38f7008de4872daf0587bef9e58339ca9770222e9ba4c388d7d2c1",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "Prophet B23 journey latency acceptance (lab serve + latency report, hermetic; loads the scripts by path)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "9dc127bec92fd954cc92d34ae740e53c40ee7b12cad9d41b8669906b154b9b12",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "US B1 recorded_at writer clock (durable CLI refuses caller clocks; exclusive organ, weight-neutral)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "30767fe959f09567cb9ab59ef8662b1fedbf6acf5faf82de5f081cd0a2a2d78d",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "e19346f4262de38576882e4ea7736549c0e93d527041e38a04a564db51732c14",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "washout-turn-organ",
+      "proof_id": "expectation surface page builder contract (ITP-ES wave 1)",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 4,
+      "step_spec_sha256": "933292a8576f533217e4907605c02885f42dc4e026d5b12f16c088c44123a5b5",
+      "job_exec_sha256": "85b9d51d3ed085583066c600550a1ec1fe017c703f56cc249c64e0a5f4b0edf3",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "market-os-macro-suite-pages",
+      "proof_id": "Market OS rates & curves \u2014 curve-shape hero, ceiling, byte preservation",
+      "classification": "pr_regression",
+      "outcome": "failed",
+      "pack_index": 6,
+      "step_spec_sha256": "220531bb1404a592bf3adad83bf5a29d74ac9e8f85ac2fbe82be7f077145d9d4",
+      "job_exec_sha256": "2dbce0916ae883dfdbae3df1743ff080eabc76e1c851162603854f377a2cd698",
+      "failure_signature": {
+        "atoms": [
+          "pytest:failed:tests/test_macro_rates_curves_route.py::test_11_thirteen_other_suite_pages_byte_identical:reason=60035ac32fe02f346ab199135369a153247f07542554fa1c0a773a285c3a25b1"
+        ],
+        "sha256": "f190923cbebf983656f6521e20a213db0c412f4c810ab842dda8755d2609a8a3"
+      },
+      "detail": "same semantic proof passes on exact base",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "market-os-macro-suite-pages",
+      "proof_id": "Market OS macro suite pages \u2014 shell, labels, view model, builder",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 6,
+      "step_spec_sha256": "e19d188dafb839c1a306f2e43b4541a880faa8fd2fc7a330dddc46b56efdf6bc",
+      "job_exec_sha256": "2dbce0916ae883dfdbae3df1743ff080eabc76e1c851162603854f377a2cd698",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    },
+    {
+      "logical_job_id": "market-os-macro-suite-pages",
+      "proof_id": "Market OS macro suite hub \u2014 discoverability, ordering, honest absence",
+      "classification": "unknown",
+      "outcome": "not_run_prior_failure",
+      "pack_index": 6,
+      "step_spec_sha256": "01a334606a356708ed43fb85bb01d209b9f2354774e7f936f37f47d23270cbdf",
+      "job_exec_sha256": "2dbce0916ae883dfdbae3df1743ff080eabc76e1c851162603854f377a2cd698",
+      "failure_signature": null,
+      "detail": "an earlier semantic step did not pass",
+      "base_sha": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+      "head_sha": "aa14ff6acfd532bc5dc13d1b1e67d1db49d4bd0e"
+    }
+  ],
+  "infrastructure_blocking": false,
+  "infrastructure": [],
+  "source_and_modes_exact_tested_binding": {
+    "Bonds": [
+      {
+        "path": "engine/intl_bonds.py",
+        "git_entry": "100644 blob e30591b0c2d5837dc2cd62feef09e5b81cd3e54e\tengine/intl_bonds.py"
+      },
+      {
+        "path": "templates/bonds.html.j2",
+        "git_entry": "100644 blob 816f1038305914424278caad76d623b8dab505ea\ttemplates/bonds.html.j2"
+      },
+      {
+        "path": "tests/test_bonds_glance_copy.py",
+        "git_entry": "100644 blob b07ae0c7e2ad742afcdf9dd72e138ecc6d4acea6\ttests/test_bonds_glance_copy.py"
+      }
+    ],
+    "Forensics": [
+      {
+        "path": "site/fundamental_forensics.js",
+        "git_entry": "100644 blob 45ade618ae2ae78d1093bc23df98dd3ffc6f9fca\tsite/fundamental_forensics.js"
+      },
+      {
+        "path": "templates/fundamental_forensics.js",
+        "git_entry": "100644 blob 45ade618ae2ae78d1093bc23df98dd3ffc6f9fca\ttemplates/fundamental_forensics.js"
+      },
+      {
+        "path": "tests/fundamental_forensics_drawer_resume.test.mjs",
+        "git_entry": "100644 blob 703c119c384409f84b3d5437ea1bdc9daea84ea3\ttests/fundamental_forensics_drawer_resume.test.mjs"
+      },
+      {
+        "path": "tests/test_fundamental_forensics_ui.py",
+        "git_entry": "100644 blob 1c50d2bd449975ebb21741d2dcabc254654cf235\ttests/test_fundamental_forensics_ui.py"
+      }
+    ],
+    "BusinessActivity": [
+      {
+        "path": "templates/_macro_suite_shell.html.j2",
+        "git_entry": "100644 blob c6f4f50623c0d80a772606da32ad8791be8825e7\ttemplates/_macro_suite_shell.html.j2"
+      },
+      {
+        "path": "templates/macro_business_activity.html.j2",
+        "git_entry": "100644 blob 35478ddfc09f6665895737297a27bf3caf4e540d\ttemplates/macro_business_activity.html.j2"
+      },
+      {
+        "path": "tests/test_macro_suite_pages.py",
+        "git_entry": "100644 blob 5be8804188d241d54bc20f1c14407455eefac3d8\ttests/test_macro_suite_pages.py"
+      }
+    ],
+    "ChinaHub": [
+      {
+        "path": "templates/china_intel.html.j2",
+        "git_entry": "100644 blob 34e3b08bcfc6f7ef6edaad6ad93050185673c707\ttemplates/china_intel.html.j2"
+      },
+      {
+        "path": "tests/test_china_intel_visits_render.py",
+        "git_entry": "100644 blob ba4151ecfabcd457687013fe15a5e8f6a4692b38\ttests/test_china_intel_visits_render.py"
+      }
+    ]
+  },
+  "classification_counts": {
+    "passed": 374,
+    "pr_regression": 2,
+    "unknown": 15
+  },
+  "claim": "Exact original run/source/tested merge+base binding only. No later-base protection, merge, native producer/publication, browser or served claim."
+}
