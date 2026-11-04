@@ -192,7 +192,7 @@
   </div>
   <p class="mq-context-line">
     <span class="mq-context-line-item">
-      <span class="mq-context-line-key">{{ t('Data to', '数据截至') }}</span>
+      <span class="mq-context-line-key">{% if ctx.get('clock_qualification') %}{{ t('Reference period', '参考期') }}{% else %}{{ t('Data to', '数据截至') }}{% endif %}</span>
       {% if head.effective_date %}{{ vis_time(head.effective_date) }}{% else %}{{ absent(head.absence, True) }}{% endif %}
     </span>
     <span class="mq-context-line-item">
@@ -406,7 +406,7 @@
       {%- endif -%}
     </h2>
     <dl class="mq-headline-meta">
-      <div><dt>{{ t('Effective date', '生效日期') }}</dt>
+      <div><dt>{% if view.context.get('clock_qualification') %}{{ t('Reference period', '参考期') }}{% else %}{{ t('Effective date', '生效日期') }}{% endif %}</dt>
            <dd>{% if head.effective_date %}{{ vis_time(head.effective_date) }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
       <div><dt>{{ t('Last reading', '上次读数') }}</dt>
            <dd>{% if head.prior.absent %}{% if view.changes.absence %}{{ absent(view.changes.absence, True) }}{% else %}<span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why">{{ t('No prior reading on file', '尚无上次读数') }}</span>{% endif %}{% else %}<strong>{{ head.prior.state_id }}</strong> {{ vis_time(head.prior.effective_date) }}{% endif %}</dd></div>

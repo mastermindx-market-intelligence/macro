@@ -24,15 +24,15 @@
     {
       "path": "lib/macro_suite_view.py",
       "preimage": "2c7a4c266d8f84552b68ceb10b169d1a3f1cd2cc",
-      "postimage": "be817c6e47c706f9fc66d479c10556789bb41f3c",
-      "sha256": "f1f0b1803f16637e530b43efcb72c8def189cf9fcda8d089fc9016b03e9e4189",
+      "postimage": "8d19534afeedc01178fe891bf24b22b14440ff13",
+      "sha256": "f546c9b317cda2e74d29f1c2490f43732129f920be31361d1d0e0d3d2439c502",
       "mode": "100644"
     },
     {
       "path": "templates/_macro_suite_shell.html.j2",
       "preimage": "c6f4f50623c0d80a772606da32ad8791be8825e7",
-      "postimage": "1482153a0b9624304ce6aea95f5a0a14f5d98a5e",
-      "sha256": "48e3cb161103aecde722bed97d0397bfc7b2a9597fe02a85cce0d59299166e44",
+      "postimage": "e38fb9e30bcfd89d6fd43871dfae71d882ff1810",
+      "sha256": "5526242fe95d632e2fdda5958446c470631d3036e67df74b2794c8ac9a62cbdb",
       "mode": "100644"
     },
     {
@@ -45,8 +45,8 @@
     {
       "path": "tests/test_macro_suite_pages.py",
       "preimage": "5be8804188d241d54bc20f1c14407455eefac3d8",
-      "postimage": "00d128c1cee658b329f51128c29e7a9acb5a57a1",
-      "sha256": "f9330694d479dcccd5932157d56e3f3def4623dc8dd6aa627a78f7f7cdbfc5f9",
+      "postimage": "8af40e22899c8d91051e4a2a883507a6a40ef351",
+      "sha256": "17d87b56ae2b4fda594f9d59a4e9b0b17568e950b15726c26819172011fa4b70",
       "mode": "100644"
     },
     {
@@ -72,11 +72,24 @@
     "new optional source_artifact receipt names raw verified input, not derived replacement snapshot"
   ],
   "artifacts": {
-    "BUSINESS_CLOCK_S13_FROZEN_PACKET.md": "3d1715e303821c6411c82dae8256a4d1f0de983035c9cf24fc0ff2740393f6d9",
+    "business_clock_s13_review_finding_native.py": "6f36ee736046572ce1d7de28fca09be0d97173a2356bfe39200267eb53464ba6",
+    "BUSINESS_CLOCK_S13_FROZEN_PACKET.md": "4841fc3426bd6bd4104bcebfe068b19c14b009caf43a3cd82aafd6ada8015223",
     "business-clock-s13-final-focused.json": "b6b454832aa36d81c050ab8291ffbc0962f60cfd92637a69b9921966db2e595c",
     "business_clock_s13_native.py": "5b1c77cab467073b27e0f6911b09aed736caad2e07212d331f2cb9f30bb2b733",
     "business-clock-s13-design.log": "311d37519babf246c71a18de14868bfbac0b924a5699eb1219e13169ac92b12b",
+    "business-clock-s13-review-finding-green.log": "9438228ea311ca412af1c60fd2f45368e3b35c32dfcd11fa4f685397e9027b54",
+    "business-clock-s13-review-finding-red.json": "d9d65fd7fcae8b6f83ced9670f2051a4f2835638e4bee9d3205946adca618a4e",
     "business-clock-s13-final-native-report.json": "4d5e5ff76d519b829dd1caf2acf8c7b3f717bbaea687d69ee9babd70008004f6",
+    "business-clock-s13-review-finding-native-report.json": "4b349b823111ad4bd54ebbea77469bf18c8660eec26d2c48778e1ce1b7238f79",
     "business-clock-s13-ui-evidence.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "review_finding": {
+    "id": "S13-R1",
+    "reviewed_head": "ea57571e18dba7f20afcbfd8b356d5813469b5c2",
+    "receipt_sha256": "bd128023539f0ef46d25473e1de0761dddefadcfe6c971e6a50460515d5d0d0e",
+    "repair": "Business headline and compact label Reference period; no period-as-publication for method or derived metric/axis definition labels; raw model period/version/values/rights/source preserved",
+    "causality": "Exact new test callable FAIL on ea575 frozen view; current two affected tests PASS; existing native build_page verifies changed actual retained Business+13 other-family exact view/HTML",
+    "prior_evidence": "Original native report retained as pre-R1 adverse finding; its integrity/31value/other-family proof scope preserved. New derived definition_label intentionally becomes undated; raw definition_version unchanged. Original12+Today71 not repeated or relabeled after this repair.",
+    "limits": "Native/taste/viewport/touch/PIT/current/served remain unqualified; no S13 publication."
   }
 }

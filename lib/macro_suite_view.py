@@ -467,7 +467,7 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
         x_id = x_axis.get("axis_id")
         y_id = y_axis.get("axis_id")
     # Present dx/dy still render without axis ids (main's rates fixture).
-    published = L.date_or_none(headline.get("effective_date"))
+    published = None if is_business_workspace(snapshot) else L.date_or_none(headline.get("effective_date"))
     return {
         "state_id": headline.get("state_id"),
         "state_label": _bilingual(headline.get("state_label")),
@@ -864,7 +864,7 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "definition_version": metric.get("definition_version"),
             "definition_label": D.definition_version_pair(
                 metric.get("definition_version"),
-                metric.get("reference_period") or published),
+                None if business else metric.get("reference_period") or published),
             "owner_ref": metric.get("owner_ref"),
             "owner_name": D.owner_display_pair(metric.get("owner_ref")),
             "model_version": metric.get("model_version"),
@@ -2067,7 +2067,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
     """
     if layout not in _LAYOUTS:
         raise ValueError(f"unknown layout {layout!r}; expected one of {sorted(_LAYOUTS)}")
-    published = L.date_or_none((snapshot.get("headline") or {}).get("effective_date"))
+    published = None if is_business_workspace(snapshot) else L.date_or_none((snapshot.get("headline") or {}).get("effective_date"))
     axes = [_axis_view(a, published=published)
             for a in (snapshot.get("axes") or {}).get("items") or []]
     context = _context(snapshot, page_built_at)

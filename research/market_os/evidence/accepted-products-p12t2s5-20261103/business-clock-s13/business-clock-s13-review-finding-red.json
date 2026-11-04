@@ -1,0 +1,8 @@
+{
+  "base": "ea57571e18dba7f20afcbfd8b356d5813469b5c2",
+  "old_view_blob": "be817c6e47c706f9fc66d479c10556789bb41f3c",
+  "new_test_sha256": "17d87b56ae2b4fda594f9d59a4e9b0b17568e950b15726c26819172011fa4b70",
+  "old_actual_assertion": "FAIL expected: reference period must not become method publication date",
+  "traceback": "Traceback (most recent call last):\n  File \"<stdin>\", line 6, in <module>\n  File \"/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9/tests/test_macro_suite_pages.py\", line 1329, in test_business_reference_period_does_not_claim_method_or_definition_publication\n    assert view[\"headline\"][\"method_version_label\"] == disclosure.method_version_pair(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "scope": "exact new callable against frozen old source; not hosted CI"
+}

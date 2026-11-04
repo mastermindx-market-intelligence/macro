@@ -1318,3 +1318,24 @@ def test_business_legacy_read_view_qualifies_current_and_keeps_periods_and_right
         assert clocks["released_at"] == raw["released_at"]
     failed = deepcopy(snapshot); failed["availability"]["state"] = "SOURCE_FAILED"
     assert V._context(failed, "2026-11-03T21:52:38Z")["state_tone"] == "bad"
+
+
+def test_business_reference_period_does_not_claim_method_or_definition_publication():
+    from lib import macro_suite_disclosure as disclosure
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+    view = macro_suite_view.build_view(snapshot, page_built_at="2026-11-03T21:52:38Z", artifact=artifact)
+    assert view["headline"]["effective_date"] == snapshot["headline"]["effective_date"]
+    assert view["headline"]["method_version_label"] == disclosure.method_version_pair(
+        snapshot["headline"]["method_version"], None)
+    for row, raw in zip(view["metrics"], snapshot["metrics"]["items"]):
+        assert row["definition_label"] == disclosure.definition_version_pair(raw["definition_version"], None)
+    for axis in view["axes"]:
+        if axis["definition_version"]:
+            assert "published" not in axis["definition_version"]["en"]
+            assert "发布于" not in axis["definition_version"]["zh"]
+    html = builder.render_page(builder._environment(ROOT), page, view)
+    headline = next(n for n in _business_document(html, "html.parser")._nodes() if n._class("mq-headline"))
+    date_label = next(n for n in headline._nodes() if n.name == "dt")
+    assert next(n for n in date_label._nodes() if n._class("l-en")).get_text(strip=True) == "Reference period"
+    assert next(n for n in date_label._nodes() if n._class("l-zh")).get_text(strip=True) == "参考期"
