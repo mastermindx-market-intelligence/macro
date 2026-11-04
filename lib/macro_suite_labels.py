@@ -384,6 +384,11 @@ BASIS: dict[str, dict[str, str]] = {
 
 # --- owner categorical readings ---------------------------------------------
 OWNER_VALUE: dict[str, dict[str, str]] = {
+    # Business-cycle owner vocabulary; retain the existing shared recovery pair.
+    "expansion": _pair("Expansion", "扩张"),
+    "slowdown": _pair("Slowdown", "放缓"),
+    "contraction": _pair("Contraction", "收缩"),
+    "unknown": _pair("Unknown", "未知"),
     "contracting": _pair("Contracting", "收缩"),
     "expanding": _pair("Expanding", "扩张"),
     "benign_expansion": _pair("Benign expansion", "良性扩张"),
@@ -1839,6 +1844,31 @@ def producer_trips_copy_guard(text: str) -> bool:
     return bool(machine_text_hits(text))
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
+    # Keep both directions of the business owner's depth/breadth disagreement.
+    (
+        "The leading tier's 6-month momentum has crossed the calibrated recession-risk "
+        "DEPTH threshold, but BREADTH (the share of leading legs confirming) has not -- "
+        "the deterioration is concentrated, not broad-based; the owner's 3 D's rule "
+        "requires both to fire together before a recession-risk signal is asserted.",
+        _pair(
+            "The combined six-month decline has crossed its recession-risk threshold, but"
+            " too few leading indicators are weakening. Both measures must cross their "
+            "thresholds before a signal can be confirmed.",
+            "整体六个月跌幅已越过衰退风险阈值，但走弱的领先指标占比仍不足。两项条件须同时满足，才可确认衰退风险信号。",
+        ),
+    ),
+    (
+        "BREADTH (the share of leading legs weakening) has crossed the calibrated "
+        "recession-risk cutoff, but the leading tier's 6-month momentum DEPTH has not -- "
+        "the weakening is broad but shallow; the owner's 3 D's rule requires both to fire"
+        " together before a recession-risk signal is asserted.",
+        _pair(
+            "Many leading indicators are weakening, but the combined six-month decline "
+            "has not crossed its recession-risk threshold. Both measures must cross their"
+            " thresholds before a signal can be confirmed.",
+            "走弱的领先指标占比已越过衰退风险阈值，但整体六个月跌幅尚未达到相应阈值。两项条件须同时满足，才可确认衰退风险信号。",
+        ),
+    ),
     (
         "US labor-market state cannot be classified: axis coverage is below the "
         "disclosed floor. No quadrant is asserted rather than defaulting to a "

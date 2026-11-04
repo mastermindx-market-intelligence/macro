@@ -1,0 +1,76 @@
+{
+  "candidate": "ca66226c42222458a8c9d5f7cbbaa53ea89400f9",
+  "blobs": {
+    "lib/macro_suite_labels.py": "7e5360e7abda4e44681d74ffa555ea7a83604dfa",
+    "engine/market_os/macro_workspaces/business_activity.py": "a0090dd1a4e9fe1c13393126c3954c13764f015a",
+    "lib/macro_suite_zh_parity.py": "e590cfa93aacbdc46d92a98789f4cf66a2900e0b",
+    "engine/market_os/macro_workspaces/publication_prior.py": "f928f2616cc834ce3c1cfe2d94fb7d6d547c1e09"
+  },
+  "dependency_bytes_equal_frozen_base": true,
+  "candidate_source_modified": false,
+  "method": "execute exact unchanged candidate modules with byte-equal frozen dependencies; controlled real-producer inputs, no network or product writes",
+  "cases": [
+    {
+      "case": "phase-expansion",
+      "pair": {
+        "en": "Expansion",
+        "zh": "扩张"
+      },
+      "pass": true
+    },
+    {
+      "case": "phase-slowdown",
+      "pair": {
+        "en": "Slowdown",
+        "zh": "放缓"
+      },
+      "pass": true
+    },
+    {
+      "case": "phase-contraction",
+      "pair": {
+        "en": "Contraction",
+        "zh": "收缩"
+      },
+      "pass": true
+    },
+    {
+      "case": "phase-recovery",
+      "pair": {
+        "en": "Recovery",
+        "zh": "复苏"
+      },
+      "pass": true
+    },
+    {
+      "case": "phase-unknown",
+      "pair": {
+        "en": "Unknown",
+        "zh": "Unknown"
+      },
+      "pass": false
+    },
+    {
+      "case": "depth-only",
+      "pair": {
+        "en": "The six-month momentum of leading indicators has crossed the model's calibrated recession-risk threshold, but the share of indicators confirming weakness has not. Deterioration is concentrated rather than widespread. Both conditions are required before this model can flag recession risk.",
+        "zh": "领先指标的六个月动量已越过模型校准的衰退风险阈值，但确认走弱的指标占比尚未达标。走弱集中，并未广泛扩散。这两项条件须同时满足，模型才会发出衰退风险信号。"
+      },
+      "original_retained": true,
+      "direction_preserved": true,
+      "pass": true
+    },
+    {
+      "case": "breadth-only",
+      "pair": {
+        "en": "The share of leading indicators that are weakening has crossed the model's calibrated recession-risk threshold, but their six-month momentum has not. Weakness is widespread but shallow. Both conditions are required before this model can flag recession risk.",
+        "zh": "走弱的领先指标占比已越过模型校准的衰退风险阈值，但领先指标的六个月动量尚未达标。走弱范围广，但程度较浅。这两项条件须同时满足，模型才会发出衰退风险信号。"
+      },
+      "original_retained": true,
+      "direction_preserved": true,
+      "pass": true
+    }
+  ],
+  "passed": 6,
+  "failed": 1
+}

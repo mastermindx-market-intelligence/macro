@@ -1135,3 +1135,13 @@ console.log('suite candidate, standalone, fragment, history, scroll and keyboard
         capture_output=True, text=True, check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+
+@pytest.mark.parametrize("token", ["expansion", "slowdown", "contraction", "recovery", "unknown"])
+def test_business_cycle_phase_keeps_a_translated_categorical_reading(token: str) -> None:
+    """Every phase emitted by the business-cycle owner has a Chinese reading."""
+    pair = labels.value_pair(token)
+    assert pair and pair["en"]
+    assert any("\u4e00" <= char <= "\u9fff" for char in pair["zh"]), pair
+    assert pair["zh"] != pair["en"], pair

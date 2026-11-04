@@ -4855,3 +4855,29 @@ def test_no_unlisted_identical_png_pairs() -> None:
         if not _crop_collision_ratified(uniq, probes, manifest["pages"]):
             illegal[sha] = uniq
     assert not illegal, illegal
+
+
+
+@pytest.mark.parametrize("depth,breadth", [(True, False), (False, True)])
+def test_business_cycle_disagreement_explains_the_actual_owner_signal(depth: bool, breadth: bool) -> None:
+    """Both real producer directions retain useful copy and their original receipt."""
+    from engine.market_os.macro_workspaces import business_activity
+    from lib import macro_suite_labels as labels
+
+    contradiction = business_activity._detect_contradiction({
+        "recession_signal": {"available": True, "conditions": {"depth": depth, "breadth": breadth}},
+    })
+    assert contradiction["present"] is True
+    raw = {locale: contradiction[locale] for locale in ("en", "zh")}
+    pair, original = labels.apply_plain_producer(raw)
+    assert pair != labels.PLAIN_FALLBACK
+    assert original == raw
+    for locale in ("en", "zh"):
+        assert pair[locale]
+        assert labels.machine_text_hits(pair[locale]) == []
+    assert re.search(r"[\u4e00-\u9fff]", pair["zh"])
+    # Preserve which threshold remains unmet; never collapse the two conditions.
+    if depth:
+        assert "too few leading indicators" in pair["en"]
+    else:
+        assert "six-month decline has not crossed" in pair["en"]
