@@ -49921,6 +49921,9 @@ jobs:
       - templates/*.j2
       - tests/test_landing_auth_broker_retry.py
       - tests/test_landing_pricing_cta.py
+      - site/**/*.html
+      - templates/**/*.html
+      - templates/**/*.j2
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

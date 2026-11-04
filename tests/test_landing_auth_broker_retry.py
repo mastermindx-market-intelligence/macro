@@ -127,7 +127,8 @@ def test_every_entry_page_references_current_immutable_auth_assets() -> None:
         for name in ("theme", "onboard")
     }
     for base in (ROOT / "site", ROOT / "templates"):
-        pages = [*base.glob("*.html"), *base.glob("*.j2")]
+        # Nested stock, basket, earnings and research pages share these auth assets.
+        pages = [*base.rglob("*.html"), *base.rglob("*.j2")]
         assert pages
         for p in pages:
             text = p.read_text(encoding="utf-8")
