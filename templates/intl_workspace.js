@@ -1698,11 +1698,64 @@
     target.focus();
   }
 
+  // Shared-shell child bridge transport: the installed parent bridge appends
+  // mmx_shell=1&mmx_generation=<id> to the document URL (shared_shell_bridge
+  // TRANSPORT_KEYS), while the strict reducer owns only the product query. The
+  // pair set is removed at the query-read boundary solely for a genuinely
+  // installed bridge: the installed marker is set only after the frame,
+  // transport and referrer guards and the frozen public brand carries the
+  // protocol id, both before DOMContentLoaded; requiring bridge.active would
+  // stay false until the parent INIT handshake and reintroduce the original
+  // rejection at mount. Anything else — no bridge, a foreign brand, malformed
+  // or duplicated transport — stays in the raw query so the reducer keeps
+  // reporting INVALID_QUERY; product bytes are preserved verbatim.
+  var SHELL_BRIDGE_PROTOCOL = 'mmx.shared-shell.v1';
+  var SHELL_TRANSPORT_KEYS = ['mmx_shell', 'mmx_generation'];
+  var SHELL_TRANSPORT_MAX_ID = 128;
+
+  function shellBridgeInstalled(controller) {
+    var win = controller.environment.window;
+    try {
+      if (win.__MMX_SHARED_BRIDGE_INSTALLED__ !== true) return false;
+      var bridge = win.MMXSharedShell;
+      if (!bridge || typeof bridge !== 'object') return false;
+      return bridge.__mmxBridge === SHELL_BRIDGE_PROTOCOL;
+    } catch (_) { return false; }
+  }
+
+  function decodeTransportPart(value) {
+    try { return decodeURIComponent(value.replace(/\+/g, ' ')); } catch (_) { return null; }
+  }
+
+  function stripShellTransport(controller) {
+    var rawQuery = controller.environment.window.location.search;
+    if (typeof rawQuery !== 'string' || !shellBridgeInstalled(controller)) return rawQuery;
+    var query = rawQuery.charAt(0) === '?' ? rawQuery.slice(1) : rawQuery;
+    if (query === '') return rawQuery;
+    var parts = query.split('&');
+    var seen = {};
+    var transport = {};
+    var kept = [];
+    for (var index = 0; index < parts.length; index += 1) {
+      var separator = parts[index].indexOf('=');
+      var key = separator === -1 ? null : decodeTransportPart(parts[index].slice(0, separator));
+      if (key === null || SHELL_TRANSPORT_KEYS.indexOf(key) === -1) { kept.push(parts[index]); continue; }
+      if (Object.prototype.hasOwnProperty.call(seen, key)) return rawQuery;
+      seen[key] = true;
+      transport[key] = decodeTransportPart(parts[index].slice(separator + 1));
+    }
+    if (seen.mmx_shell !== true || seen.mmx_generation !== true) return rawQuery;
+    if (transport.mmx_shell !== '1') return rawQuery;
+    var generation = transport.mmx_generation;
+    if (typeof generation !== 'string' || generation.length === 0 || generation.length > SHELL_TRANSPORT_MAX_ID) return rawQuery;
+    return (rawQuery.charAt(0) === '?' ? '?' : '') + kept.join('&');
+  }
+
   function popstate(controller) {
     if (!controller.live) return;
     var hadInspector = !!controller.inspector;
     if (hadInspector) visuallyCloseInspector(controller, { release: true });
-    var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
+    var parsed = controller.reducer.parseQuery(stripShellTransport(controller));
     parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed));
     var committed = commitResearch(controller, parsed, 'popstate');
     if (controller.pendingScenario) {
@@ -1955,7 +2008,7 @@
       required(root, '[data-im-heading]').setAttribute('tabindex', '-1');
       required(root, '[data-im-issues]').setAttribute('role', 'status');
       required(root, '[data-im-unavailable]');
-      var parsed = reducer.parseQuery(window.location.search);
+      var parsed = reducer.parseQuery(stripShellTransport(controller));
       parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed));
       if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);
