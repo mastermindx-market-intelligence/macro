@@ -1,0 +1,61 @@
+{
+  "schema": "d06.market_locale_colors.v1",
+  "source_parent": "4ac468b3a552559ec20afa14e71b19ea3a1ae680",
+  "source_before": {
+    "templates/market_structure.html.j2": "f34e88b11467e73b88ffeb8438c1acddbe21f681d948373cb06f59be541ae1bb",
+    "site/market_structure.html": "b69a01d3a916f465173414d30c23df78bed067b874cf229692a04b42821b8cbb",
+    "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "data/market_structure/latest.json": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1"
+  },
+  "source_after": {
+    "templates/market_structure.html.j2": "f34e88b11467e73b88ffeb8438c1acddbe21f681d948373cb06f59be541ae1bb",
+    "site/market_structure.html": "b69a01d3a916f465173414d30c23df78bed067b874cf229692a04b42821b8cbb",
+    "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "data/market_structure/latest.json": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1"
+  },
+  "source_stable": true,
+  "producer_input_unchanged": true,
+  "runs": [
+    {
+      "name": "color-probe",
+      "exit_code": 0,
+      "seconds": 13.8,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py",
+        "fixed"
+      ],
+      "log": "color-probe.log"
+    },
+    {
+      "name": "market-browser",
+      "exit_code": 0,
+      "seconds": 16.93,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py",
+        "--only",
+        "market"
+      ],
+      "log": "market-browser.log"
+    },
+    {
+      "name": "market-tests",
+      "exit_code": 0,
+      "seconds": 22.39,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_d06_market_structure.py",
+        "tests/test_build_market_structure_page.py",
+        "tests/test_market_structure_glance_copy.py"
+      ],
+      "log": "market-tests.log"
+    }
+  ],
+  "baseline": "baseline-colors.json",
+  "fixed_colors": "fixed-colors.json",
+  "scope": "Use existing shared down token with local fallback; retain every producer regime, value, date and zero/gap rule."
+}

@@ -904,7 +904,7 @@ function getRange(k,d,allowed){
 }
 function setRange(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function vr(n){return'var('+n+')'}
-var UP=vr('--up'),DN=vr('--dn'),MUT=vr('--mut'),BLUE=vr('--blue'),AMB=vr('--amb'),LINE=vr('--line');
+var UP=vr('--up'),DN='var(--down, var(--dn))',MUT=vr('--mut'),BLUE=vr('--blue'),AMB=vr('--amb'),LINE=vr('--line');
 
 function polyline(pts,stroke,sw,fill,op){
   var d='M '+pts.map(function(p){return p[0]+','+p[1]}).join(' L ');
