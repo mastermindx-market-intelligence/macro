@@ -118,6 +118,15 @@ def _fmt(v, value_fmt):
         return f"{v:g}"
 
 
+def _range_fraction(value, lo, hi):
+    """Position in a finite domain without overflowing a wide subtraction."""
+    numerator, denominator = value - lo, hi - lo
+    if math.isfinite(numerator) and math.isfinite(denominator):
+        return numerator / denominator
+    factor = max(abs(value), abs(lo), abs(hi))
+    return (value / factor - lo / factor) / (hi / factor - lo / factor)
+
+
 def _scale(pairs, height, *, baseline=None, reference=None, zero_floor=False):
     """Map (index, value) -> (x, y) in viewBox units. Returns (xy, y0, span, vmin, vmax).
 
@@ -134,9 +143,16 @@ def _scale(pairs, height, *, baseline=None, reference=None, zero_floor=False):
         vmax = max(vmax, 0.0)
         vmin = min(vmin, 0.0)
     if vmax == vmin:
-        vmax = vmin + 1.0
-    pad = (vmax - vmin) * 0.08
-    lo, hi = vmin - pad, vmax + pad
+        step = max(1.0, abs(vmin) * 0.08)
+        if math.isfinite(vmax + step):
+            vmax += step
+        else:
+            vmin -= step
+    width = vmax - vmin
+    pad = (width * 0.08 if math.isfinite(width)
+           else (vmax / 2 - vmin / 2) * 0.16)
+    finite_limit = math.nextafter(math.inf, 0.0)
+    lo, hi = max(-finite_limit, vmin - pad), min(finite_limit, vmax + pad)
     top, bot = _PAD_T, height - _PAD_B
     n = len(pairs)
 
@@ -144,7 +160,7 @@ def _scale(pairs, height, *, baseline=None, reference=None, zero_floor=False):
         return 0.0 if n <= 1 else round(i / (n - 1) * _VBW, 2)
 
     def py(v):
-        return round(bot - (v - lo) / (hi - lo) * (bot - top), 2)
+        return round(bot - _range_fraction(v, lo, hi) * (bot - top), 2)
 
     xy = [(px(i), py(v)) for i, (_d, v) in enumerate(pairs)]
     y0 = py(baseline if baseline is not None else 0.0)
@@ -202,23 +218,20 @@ def _line_geometry_with_gaps(dates, vals, height, *, max_points, reference=None)
     if current:
         runs.append(current)
 
+    # Sample globally so both extrema and both observed endpoints survive even
+    # when there are more runs than the point budget. Reconstruct the ORIGINAL
+    # run identity afterwards: skipping a whole run must never join its neighbors.
+    # The shared min/max sampler is bounded by limit + two endpoint samples.
     limit = max(4, int(max_points))
-    max_runs = max(1, limit // 2)
-    if len(runs) > max_runs:
-        # Very sparse long histories remain discontinuous and bounded. Even a
-        # one-point run is never connected to another run to manufacture data.
-        indices = ([0] if max_runs == 1 else
-                   [round(i * (len(runs) - 1) / (max_runs - 1))
-                    for i in range(max_runs)])
-        runs = [runs[i] for i in sorted(set(indices))]
-
-    spare = max(0, limit - 2 * len(runs))
-    weights = [max(0, len(run) - 2) for run in runs]
-    total_weight = sum(weights)
-    sampled_runs = []
-    for run, weight in zip(runs, weights):
-        budget = 2 + (spare * weight // total_weight if total_weight else 0)
-        sampled_runs.append(_downsample(run, max(2, min(len(run), budget))))
+    run_for_slot = {point[0]: run_id
+                    for run_id, run in enumerate(runs) for point in run}
+    sampled_runs, previous_run = [], None
+    for point in _downsample(valid, limit):
+        run_id = run_for_slot[point[0]]
+        if run_id != previous_run:
+            sampled_runs.append([])
+        sampled_runs[-1].append(point)
+        previous_run = run_id
 
     # Reuse the ordinary vertical scale, including its explicit reference rule.
     # Unlike _scale's positional x values, the sparse x coordinate uses the
@@ -229,7 +242,7 @@ def _line_geometry_with_gaps(dates, vals, height, *, max_points, reference=None)
     last_slot = max(1, len(raw) - 1)
     xy_runs = [[
         (round(i / last_slot * _VBW, 2),
-         round(bot - (v - lo) / (hi - lo) * (bot - top), 2))
+         round(bot - _range_fraction(v, lo, hi) * (bot - top), 2))
         for i, v, _d in run
     ] for run in sampled_runs]
     xy = [point for run in xy_runs for point in run]
@@ -308,7 +321,7 @@ def _corner_labels(pairs):
             f'<span class="ilx-d ilx-d1">{d1}</span>')
 
 
-def _end_tag(last_v, value_fmt, unit_en, unit_zh):
+def _end_tag(last_v, value_fmt, unit_en, unit_zh, *, last_observed_date=None):
     """End-value tag: last value + unit, bilingual via l-en/l-zh spans."""
     num = escape(_fmt(last_v, value_fmt))
     ue, uz = escape(unit_en or ""), escape(unit_zh if unit_zh is not None else (unit_en or ""))
@@ -316,6 +329,12 @@ def _end_tag(last_v, value_fmt, unit_en, unit_zh):
     if ue or uz:
         unit_html = (f'<span class="ilx-u">'
                      f'<span class="l-en">{ue}</span><span class="l-zh">{uz}</span></span>')
+    if last_observed_date is not None:
+        observed_date = escape(str(last_observed_date))
+        return (f'<span class="ilx-tag ilx-tag-historical">'
+                f'<span class="ilx-tag-value">{num}{unit_html}</span>'
+                f'<span class="ilx-tag-date"><span class="l-en">Last observed</span>'
+                f'<span class="l-zh">最近记录</span> · {observed_date}</span></span>')
     return f'<span class="ilx-tag">{num}{unit_html}</span>'
 
 
@@ -725,13 +744,20 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
                              baseline=baseline)
 
     series = series or {}
-    pairs = _downsample(_clean(series.get("dates"), series.get("vals")), max_points)
-    if len(pairs) < 4:
+    pairs_all = _clean(series.get("dates"), series.get("vals"))
+    pairs = _downsample(pairs_all, max_points)
+    # History eligibility is a property of source observations, not the number
+    # of points a low-detail renderer happens to retain for a flat line.
+    if len(pairs_all if kind == "line" else pairs) < 4:
         return _null_fragment(accent, height, aria_en)
 
     line_gap = (_line_geometry_with_gaps(series.get("dates"), series.get("vals"),
                                         height, max_points=max_points, reference=reference)
                 if kind == "line" else None)
+    raw_slots = (list(zip(series.get("dates") or [], series.get("vals") or []))
+                 if line_gap is not None else [])
+    trailing_gap = bool(raw_slots and not _clean([raw_slots[-1][0]],
+                                                [raw_slots[-1][1]]))
     uid = _hash_id(kind, pairs, extra=f"{accent}{baseline}{reference}")
 
     if kind == "bars":
@@ -764,8 +790,9 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
             defs, mid, body, dot = _svg_drawdown(xy, y0, uid, height)
         else:  # "line"
             defs, mid, body, dot = _svg_line(xy, uid)
-        end = _end_tag(pairs[-1][1], value_fmt, unit_en, unit_zh)
-        corners = _corner_labels(pairs)
+        end = _end_tag(pairs[-1][1], value_fmt, unit_en, unit_zh,
+                       last_observed_date=pairs_all[-1][0] if trailing_gap else None)
+        corners = _corner_labels(raw_slots if line_gap is not None else pairs)
 
     # reference level marker (e.g. NBS climate neutral=100) as an HTML caption anchored
     # to its y — the SVG carries only a hairline; the number lives in HTML.
@@ -774,7 +801,7 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
         # y of the reference line as a % of height, for CSS top:
         _xy, _y0, (lo, hi, top, bot), _vm, _vx = _scale(
             pairs, height, reference=reference, zero_floor=(kind == "drawdown"))
-        ry = round(bot - (reference - lo) / (hi - lo) * (bot - top), 2)
+        ry = round(bot - _range_fraction(reference, lo, hi) * (bot - top), 2)
         ref_pct = round(ry / height * 100, 1)
         refnum = escape(_fmt(reference, "{:g}"))
         ref_html = (
@@ -793,8 +820,8 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
             he = bd.get("hi")
             le = bd.get("lo")
             tint = bd.get("tint", "var(--muted)")
-            y_hi = bot if he is None else round(bot - (he - lo) / (hi - lo) * (bot - top), 2)
-            y_lo = top if le is None else round(bot - (le - lo) / (hi - lo) * (bot - top), 2)
+            y_hi = bot if he is None else round(bot - _range_fraction(he, lo, hi) * (bot - top), 2)
+            y_lo = top if le is None else round(bot - _range_fraction(le, lo, hi) * (bot - top), 2)
             y_top = min(y_hi, y_lo)
             bh = abs(y_lo - y_hi)
             band_rects += (
@@ -817,6 +844,9 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
     gap_description = (f"; {line_gap[3]} missing observation"
                        f"{'' if line_gap[3] == 1 else 's'}, line interrupted"
                        if line_gap is not None else "")
+    if trailing_gap:
+        gap_description += (f"; latest observation unavailable; last observed "
+                            f"{_fmt(pairs_all[-1][1], value_fmt)} on {pairs_all[-1][0]}")
     gap_html = (f'<span class="ilx-gap-note"><span class="l-en">Gap: {line_gap[3]} missing</span>'
                 f'<span class="l-zh">缺失 {line_gap[3]} 条</span></span>'
                 if line_gap is not None else "")
@@ -826,9 +856,18 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
         f'aria-hidden="true"><defs>{defs}</defs>{mid}{body if kind != "bars" else ""}'
         f'{dot if kind != "bars" else ""}</svg>'
     )
+    # Historical metadata gets its own lane. Overlaying a two-line receipt at
+    # top-right would hide a high last-observed point just before the empty tail.
+    # Keep all plot-relative captions inside the same resizing container.
+    content = f"{svg}{band_html}{ref_html}{corners}{end}{gap_html}"
+    historical_class = ""
+    if trailing_gap:
+        historical_class = " ilx-historical"
+        content = (f'{end}<div class="ilx-plot">'
+                   f'{svg}{band_html}{ref_html}{corners}{gap_html}</div>')
     return (
-        f'<figure class="ilx ilx-{escape(kind)}"{gap_attr} style="{style}" '
-        f'role="img" aria-label="{aria}">{svg}{band_html}{ref_html}{corners}{end}{gap_html}</figure>'
+        f'<figure class="ilx ilx-{escape(kind)}{historical_class}"{gap_attr} style="{style}" '
+        f'role="img" aria-label="{aria}">{content}</figure>'
     )
 
 

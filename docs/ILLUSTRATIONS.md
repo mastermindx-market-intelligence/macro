@@ -22,6 +22,19 @@ Plotly fragments on dashboard surfaces.
   ink breaks, the original horizontal slot is preserved, and the figure exposes
   `data-gap-count`, a bilingual gap label, and an accessible EN description.
   An isolated valid sample is drawn as a point, never joined to its neighbors.
+  Domain captions retain the supplied first/last dates even when their values
+  are missing. A missing final slot labels the value as **Last observed / 最近记录**
+  with its observation date, not as a current value. Sparse-history sampling
+  preserves global extrema and the first/last valid observations; retained
+  points keep their original run identity. Its min/max bucket threshold may
+  retain up to two extra endpoint samples, never extra cross-gap strokes.
+  Single-series geometry uses overflow-safe range arithmetic, including wide
+  finite ranges and constant high-magnitude inputs. This is not a freshness
+  decision: callers still own source identity, access, expected observation
+  cadence, and whether a supplied date grid is complete.
+  Historical receipts occupy a separate metadata lane above the plot so they
+  cannot cover a high last-observed point. The chart, reference captions and
+  date labels resize together inside their own plot container.
   Callers must supply aligned date/value slots for missing sessions; omitted
   dates cannot be inferred as missing. This is a **line-kind implementation**,
   not a claim that `area`, `baseline`, `drawdown`, `bars`, or `multi` have qualified

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+import math
 import re
 
 from lib import illus as I
@@ -97,6 +98,120 @@ def test_line_complete_series_retains_legacy_geometry():
     assert path.count("M") == 1
     assert 'data-gap-count=' not in out
     assert "560" in path
+
+
+def test_line_gap_domain_labels_and_historical_value_stay_honest():
+    vals = [None, 1, 2, 3, 4, None, None, None]
+    dates = _dates(len(vals))
+    out = I.illus({"dates": dates, "vals": vals}, kind="line")
+    assert f'class="ilx-d ilx-d0">{dates[0]}</span>' in out
+    assert f'class="ilx-d ilx-d1">{dates[-1]}</span>' in out
+    assert 'class="ilx-tag ilx-tag-historical"' in out
+    assert '<span class="l-en">Last observed</span>' in out
+    assert '<span class="l-zh">最近记录</span>' in out
+    assert f'last observed 4.0 on {dates[4]}' in out
+    assert f'<span class="ilx-tag-date">' in out
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    xs = [float(x) for x in re.findall(r"(?:M|L)([0-9.]+) ", path)]
+    assert xs == [80, 160, 240, 320]
+
+
+def test_line_historical_receipt_has_a_non_overlay_lane():
+    vals = [0, 1, 2, 3, 4, 5, 6, None]
+    out = I.illus({"dates": _dates(len(vals)), "vals": vals}, kind="line",
+                  reference=3)
+    assert 'class="ilx ilx-line ilx-historical"' in out
+    assert out.index('class="ilx-tag-date"') < out.index('class="ilx-plot"')
+    plot = out[out.index('<div class="ilx-plot">'):]
+    assert "<svg" in plot and 'class="ilx-reflab"' in plot
+    assert 'class="ilx-d ilx-d0"' in plot and 'class="ilx-gap-note"' in plot
+    assert 'class="ilx-tag' not in plot
+
+
+def test_line_gap_sampling_preserves_global_extremes_and_endpoints():
+    vals = [1, 2, None, 99, 100, None, -99, -100, None, 3, 4]
+    dates = _dates(len(vals))
+    out = I.illus({"dates": dates, "vals": vals}, kind="line", max_points=4)
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    xs = [float(x) for x in re.findall(r"(?:M|L)([0-9.]+) ", path)]
+    assert 224.0 in xs  # +100 at source slot 4
+    assert 392.0 in xs  # -100 at source slot 7
+    assert xs[0] == 0 and xs[-1] == 560
+    assert len(xs) <= 6  # min/max bucket budget plus both endpoints
+    assert path.count("M") == 4
+
+
+def test_line_gap_flat_history_is_not_misreported_as_empty_after_sampling():
+    vals = [1, None, 1, 1, 1, 1, 1, 1, 1]
+    out = I.illus({"dates": _dates(len(vals)), "vals": vals}, kind="line",
+                  max_points=4)
+    assert 'class="ilx ilx-line"' in out
+    assert 'data-gap-count="1"' in out
+    assert 'class="ilx-path"' in out
+    assert "No history yet" not in out
+
+
+def test_line_gap_sampling_never_connects_across_an_omitted_run():
+    # A global sampler may skip whole runs. Run identity, not proximity in the
+    # sampled array, must determine connectivity.
+    for n in range(5, 10):
+        for mask in range(1, 1 << n):
+            vals = [None if mask & (1 << i) else float(i % 3) for i in range(n)]
+            if sum(v is not None for v in vals) < 4:
+                continue
+            geometry = I._line_geometry_with_gaps(_dates(n), vals, 190,
+                                                  max_points=4)
+            assert geometry is not None
+            xy, path, _length, missing, _isolated = geometry
+            assert missing == sum(v is None for v in vals)
+            assert len(xy) <= 6
+            for run in path.split("M")[1:]:
+                xs = [float(run.split()[0])]
+                xs += [float(x) for x in re.findall(r"L([0-9.]+) ", run)]
+                slots = [round(x / 560 * (n - 1)) for x in xs]
+                assert all(vals[i] is not None
+                           for i in range(slots[0], slots[-1] + 1))
+
+
+def test_line_finite_extremes_never_emit_nonfinite_svg_coordinates():
+    cases = [
+        [-1e308, None, 0, 1e308, 1],
+        [1e308, None, 1e308, 1e308, 1e308],
+        [-1.79e308, 0, 1.79e308, 1],
+        [1.79e308, 1.79e308, 1.79e308, 1.79e308],
+        [-1.79e308, -1.79e308, -1.79e308, -1.79e308],
+    ]
+    for vals in cases:
+        out = I.illus({"dates": _dates(len(vals)), "vals": vals}, kind="line")
+        path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+        assert "nan" not in path.lower() and "inf" not in path.lower()
+        xy = re.findall(r"[ML]([0-9.]+) ([0-9.]+)", path)
+        assert len(xy) == sum(v is not None for v in vals)
+        assert all(0 <= float(x) <= 560 and 0 <= float(y) <= 190 for x, y in xy)
+
+
+def test_line_extreme_reference_uses_same_safe_vertical_scale():
+    vals = [-1e308, None, 0, 1e308, 1]
+    out = I.illus({"dates": _dates(len(vals)), "vals": vals}, kind="line",
+                  reference=0)
+    marker = re.search(r'class="ilx-ref"[^>]*y1="([^"]+)"', out)
+    assert marker is not None
+    assert math.isfinite(float(marker.group(1)))
+    assert abs(float(marker.group(1)) - 95.0) < 0.01
+
+
+def test_line_gap_css_pair_preserves_mark_contrast_and_bilingual_receipt():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    css = (root / "templates" / "illus.css").read_text()
+    assert css == (root / "site" / "illus.css").read_text()
+    isolated = re.search(r"\.ilx-isolate\s*\{([^}]+)\}", css).group(1)
+    assert "opacity:" not in isolated
+    assert "stroke: currentColor" in isolated
+    assert "vector-effect: non-scaling-stroke" in isolated
+    assert ".ilx-tag-historical" in css and ".ilx-tag-date" in css
+    receipt = re.search(r"\.ilx-tag-historical\s*\{([^}]+)\}", css).group(1)
+    assert "position: static" in receipt and "max-width: 100%" in receipt
 
 
 def test_line_sparse_long_history_is_bounded_and_never_bridges():
