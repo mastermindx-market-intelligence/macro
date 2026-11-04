@@ -1,0 +1,346 @@
+{
+  "operation": "d03-t48-320-public-featured-empty-20261104-c2-v1",
+  "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+  "pageId": "p-D-0",
+  "boardId": "12PR-0",
+  "width": 320,
+  "height": 1160,
+  "visible_text_count": 33,
+  "pass_count": 33,
+  "fail_count": 0,
+  "min_contrast": 5.02,
+  "thresholds": "WCAG 2.2 AA static text 4.5:1 normal / 3:1 large",
+  "method": "Parse rendered Paper JSX inline color/background chain; skip native hidden display:none roots; no dynamic browser or assistive-tech proof",
+  "visible_text_nodes": [
+    {
+      "id": "12UB-0",
+      "text": "9:41",
+      "font": 17,
+      "bg": "#F7F8FA",
+      "fg": "#000000",
+      "contrast": 19.76,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12U1-0",
+      "text": "MASTERMIND",
+      "font": 11,
+      "bg": "#FFFFFF",
+      "fg": "#53647B",
+      "contrast": 6.04,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12U0-0",
+      "text": "US · Prophet",
+      "font": 15,
+      "bg": "#FFFFFF",
+      "fg": "#16202E",
+      "contrast": 16.4,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TY-0",
+      "text": "⌕",
+      "font": 18,
+      "bg": "#F1F3F7",
+      "fg": "#22314B",
+      "contrast": 11.75,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TW-0",
+      "text": "☰",
+      "font": 18,
+      "bg": "#F1F3F7",
+      "fg": "#22314B",
+      "contrast": 11.75,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TS-0",
+      "text": "US EQUITIES / RESEARCH",
+      "font": 11,
+      "bg": "#FFFFFF",
+      "fg": "#53647B",
+      "contrast": 6.04,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TR-0",
+      "text": "SNAPSHOT",
+      "font": 10,
+      "bg": "#F1F0FD",
+      "fg": "#5B5BC1",
+      "contrast": 5.02,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TO-0",
+      "text": "See what this access includes.",
+      "font": 28,
+      "bg": "#FFFFFF",
+      "fg": "#152033",
+      "contrast": 16.33,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "id": "12TN-0",
+      "text": "Public Screener previews remain visible. Featured setups belong to a separate access level.",
+      "font": 14,
+      "bg": "#FFFFFF",
+      "fg": "#5D6B7E",
+      "contrast": 5.43,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TM-0",
+      "text": "PUBLIC PREVIEW · READ ONLY",
+      "font": 12,
+      "bg": "#FFFFFF",
+      "fg": "#53647B",
+      "contrast": 6.04,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TL-0",
+      "text": "•",
+      "font": 12,
+      "bg": "#FFFFFF",
+      "fg": "#53647B",
+      "contrast": 6.04,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TK-0",
+      "text": "Nov 3 source",
+      "font": 12,
+      "bg": "#FFFFFF",
+      "fg": "#53647B",
+      "contrast": 6.04,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TH-0",
+      "text": "SOURCE ACCESS · NOV 3",
+      "font": 10,
+      "bg": "#F1F3F7",
+      "fg": "#53647B",
+      "contrast": 5.44,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TG-0",
+      "text": "Entitled shelf",
+      "font": 14,
+      "bg": "#F1F3F7",
+      "fg": "#22334C",
+      "contrast": 11.49,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TE-0",
+      "text": "0 / 12",
+      "font": 16,
+      "bg": "#F1F3F7",
+      "fg": "#263B59",
+      "contrast": 10.21,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TD-0",
+      "text": "Public Featured",
+      "font": 10,
+      "bg": "#F1F3F7",
+      "fg": "#53647B",
+      "contrast": 5.44,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12TA-0",
+      "text": "Today",
+      "font": 13,
+      "bg": "#1B293E",
+      "fg": "#FFFFFF",
+      "contrast": 14.65,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12T8-0",
+      "text": "Screener",
+      "font": 13,
+      "bg": "#FFFFFF",
+      "fg": "#40516A",
+      "contrast": 8.07,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12T6-0",
+      "text": "Plans",
+      "font": 13,
+      "bg": "#FFFFFF",
+      "fg": "#40516A",
+      "contrast": 8.07,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12T3-0",
+      "text": "Featured shelf",
+      "font": 17,
+      "bg": "#F7F8FA",
+      "fg": "#1C2C42",
+      "contrast": 13.28,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12T2-0",
+      "text": "No Featured names in public preview",
+      "font": 11,
+      "bg": "#F7F8FA",
+      "fg": "#53647B",
+      "contrast": 5.68,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12T0-0",
+      "text": "Open Screener ↗",
+      "font": 12,
+      "bg": "#F7F8FA",
+      "fg": "#355BA4",
+      "contrast": 6.21,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12UF-0",
+      "text": "◎",
+      "font": 22,
+      "bg": "#EAF1FC",
+      "fg": "#315C9D",
+      "contrast": 5.87,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "id": "12UH-0",
+      "text": "PUBLIC ACCESS · SOURCE READ",
+      "font": 10,
+      "bg": "#FFFFFF",
+      "fg": "#53647B",
+      "contrast": 6.04,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12UI-0",
+      "text": "As of Nov 3, 2026",
+      "font": 12,
+      "bg": "#FFFFFF",
+      "fg": "#263B57",
+      "contrast": 11.38,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12UJ-0",
+      "text": "Featured setups are outside this preview.",
+      "font": 20,
+      "bg": "#FFFFFF",
+      "fg": "#1C2C42",
+      "contrast": 14.11,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "id": "12UK-0",
+      "text": "The source board carries 12 Featured names, but this public view exposes none. This is an access boundary—not a claim that no setu",
+      "font": 13,
+      "bg": "#FFFFFF",
+      "fg": "#53647B",
+      "contrast": 6.04,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12UN-0",
+      "text": "PUBLIC SCREENER",
+      "font": 10,
+      "bg": "#F1F4F8",
+      "fg": "#53647B",
+      "contrast": 5.48,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12UO-0",
+      "text": "3 preview candidates",
+      "font": 13,
+      "bg": "#F1F4F8",
+      "fg": "#23354A",
+      "contrast": 11.33,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12UP-0",
+      "text": "Explore ↗",
+      "font": 11,
+      "bg": "#F1F4F8",
+      "fg": "#315C9D",
+      "contrast": 6.05,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12US-0",
+      "text": "Open Screener ↗",
+      "font": 12,
+      "bg": "#1B293E",
+      "fg": "#FFFFFF",
+      "contrast": 14.65,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12UU-0",
+      "text": "Access details ↗",
+      "font": 12,
+      "bg": "#EEF1F6",
+      "fg": "#2E4768",
+      "contrast": 8.37,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "id": "12UV-0",
+      "text": "No protected payload, Plan target, Save control or trade authority is exposed in this design state. Route binding and account enti",
+      "font": 11,
+      "bg": "#FFFFFF",
+      "fg": "#53647B",
+      "contrast": 6.04,
+      "threshold": 4.5,
+      "pass": true
+    }
+  ]
+}
