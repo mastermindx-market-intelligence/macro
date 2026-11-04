@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 13060,
-      "sha256": "22fc28a43c82116ee502f914e3800ee9019299514c068c5daec0f5cfebe5a78e",
-      "git_blob_sha": "36e4566129cdec1443f1a296591ad2c930e19404"
+      "bytes": 14253,
+      "sha256": "014d9873ab0f1ce3a8e89041907e61f76fd2f870eec8bbd8aac63950f371173c",
+      "git_blob_sha": "4c23645a8832421baad1675417bd4378d449b1ed"
     },
     {
       "path": "CONTRACT.md",
@@ -41,9 +41,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 15965,
-      "sha256": "f4e2d8ad086d339a705d391ce9c7289500537f1edb7972c04f88d53e7e4e0fb3",
-      "git_blob_sha": "497896516864fa4147128f7f63434f522987a64d"
+      "bytes": 17158,
+      "sha256": "650a482af2c3a8f4f28dda506e7d7a927cece941b3f4bf6317cf98a23e956d69",
+      "git_blob_sha": "dffea7c88508535c5ea70ec7e2497ad42bbe859e"
     },
     {
       "path": "REPRODUCE.md",
@@ -1066,6 +1066,66 @@
       "git_blob_sha": "8ae65e0068b215ae48b4ddd7a4e34bb796ce440a"
     },
     {
+      "path": "paper/exports/original-only-intraday-20261104/6Z1L-1.jsx",
+      "bytes": 33548,
+      "sha256": "f4b3124087ceaeb0a926e3cd23b1b0b0423208bd0ac6e159247f7f45e8592250",
+      "git_blob_sha": "50db5a6d10a7768ff1c392992c58d483385b29a6"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/6Z5I-1.jsx",
+      "bytes": 11358,
+      "sha256": "a3e4478ffc49d81886190639159b5370617de959de0fafcdb6b29de8f1a61812",
+      "git_blob_sha": "e62ea140c469b9407e35559286310226c9f2142c"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/6ZFE-1.jsx",
+      "bytes": 21020,
+      "sha256": "e85c795c8aff0e8bebf595819258a462d9e06775e6c2ddbb45e648b2cd5c3dd3",
+      "git_blob_sha": "8a69fb7d0b3791219bf3ee7afba5438a5411fb30"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/6ZHV-1.jsx",
+      "bytes": 19855,
+      "sha256": "9ff19844ca1b5c9c51427909bfecc3160d9a5bed78406d5b3772b7af5046ed4e",
+      "git_blob_sha": "bfe1f3726edd67d148e44793250ff77b09632a15"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/6ZK3-1.jsx",
+      "bytes": 12591,
+      "sha256": "6c23348c1b1557336bf38afbab9e7292d45443f62d582d4e0c29b1e329a83548",
+      "git_blob_sha": "fa781444cf9e50ee84132e4e6faaa07cfc93cee3"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/6ZLG-1.jsx",
+      "bytes": 15344,
+      "sha256": "63c821b4aab008a2388203cab9d6b8e59e1f3d92916684587fa868b81b1a9d9b",
+      "git_blob_sha": "9c7aacd8a9273ddd43acc126ae9109a94d8e27dc"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/6ZVB-0.jsx",
+      "bytes": 13266,
+      "sha256": "4517087d996883849a49b0f1ce69aaeb7570f57488a7bee038572e362f67e1ab",
+      "git_blob_sha": "ab7b6aa317592c6002859eba6581a2249b0ccebb"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/6ZYE-0.jsx",
+      "bytes": 13525,
+      "sha256": "c918975935dbde7ec3c0e045013a5d7e17303c713055ee5f35e05b4c09d7b785",
+      "git_blob_sha": "34a530445085817be1db521ee18c50dec95f27f2"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/71UJ-0.jsx",
+      "bytes": 11468,
+      "sha256": "873757a047384bd94a057a5081e7061aaed3df685820f0cb36a5a8319f5d882e",
+      "git_blob_sha": "0a1cb3fc20b64c3bedcbfd20bef27d9276e8791d"
+    },
+    {
+      "path": "paper/exports/original-only-intraday-20261104/720J-0.jsx",
+      "bytes": 14304,
+      "sha256": "e4d911023f83bc67438813ddabe9d4a345908ec40b025fcff8c5ec0678631aba",
+      "git_blob_sha": "2c9e970861784fdd5088906e3bb25a0d818017c8"
+    },
+    {
       "path": "paper/exports/original-only-t47-20261104/72OX-0.jsx",
       "bytes": 31051,
       "sha256": "851cad0014e125e2efa10472959bd251224592e327c19baddd660a42bb277d09",
@@ -1166,6 +1226,12 @@
       "bytes": 91529,
       "sha256": "fe119a42c1fb11503d1d73e7e171c0f83a5453b69b3e32cc6d15e82ca3458aae",
       "git_blob_sha": "34ff8b099195c36117b8eebe5a8a03728f265833"
+    },
+    {
+      "path": "paper/retention/original-only-intraday-20261104.json",
+      "bytes": 7416,
+      "sha256": "4b78ea781bf70be72e1d791f9acf61269a0db4a87e2329c43a932cea96299615",
+      "git_blob_sha": "aa3ed22c4ec5efec190be718599f2df47a1cc301"
     },
     {
       "path": "paper/retention/original-only-t47-20261104.json",
@@ -1316,5 +1382,6 @@
     "zero_artboard_pages": 12,
     "evidence": "paper/continuations/listed-page-expansion-20261104.json"
   },
-  "current_original_only_capture_set": "paper/retention/original-only-t47-20261104.json"
+  "current_original_only_capture_set": "paper/retention/original-only-t47-20261104.json",
+  "current_original_only_intraday_capture_set": "paper/retention/original-only-intraday-20261104.json"
 }
