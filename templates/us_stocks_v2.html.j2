@@ -8,6 +8,9 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
+{% set coverage = d.get('source_coverage') or {} %}
+{% set source_state = coverage.get('state', 'unknown') %}
+{% set observation_state = coverage.get('observation_state', 'unknown') %}
 {# one row card: the glyph PAIR + chips. `lane` sets the accent.              #}
 {# rx: the reflexivity_overlay artifact dict (may be None on first render pass) #}
 {% macro row_card(r, lane) -%}
@@ -111,7 +114,7 @@
 <link rel="stylesheet" href="theme.css">
 <style>
   * { box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font:14px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px; }
+  body { background:var(--bg); color:var(--text); font:14px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:16px; }
   @media (min-width:1100px){ body{ padding:24px max(34px,calc((100vw - 1360px)/2)); } }
   a { text-decoration:none; color:inherit; }
   h1 { font-size:22px; margin:0 0 2px; }
@@ -119,19 +122,38 @@
   .shadow-tag { display:inline-block; font-size:11px; font-weight:800; letter-spacing:.04em;
     color:var(--ink-warn, var(--warn)); border:1px solid color-mix(in srgb,var(--warn) 45%,var(--line));
     background:color-mix(in srgb,var(--warn) 12%,transparent); padding:2px 8px; border-radius:7px; margin-left:8px; }
+  /* D03 T46: source coverage is not a qualification result. */
+  .source-coverage { background:var(--panel); border:1px solid var(--line);
+    border-radius:13px; padding:16px; margin:14px 0; overflow-wrap:anywhere; }
+  .source-label { color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.04em; }
+  .source-coverage h2 { font-size:16px; line-height:1.45; margin:4px 0 8px; }
+  .source-description, .source-clock { font-size:14px; line-height:1.5; margin:0 0 10px; }
+  .source-clock { color:var(--muted); }
+  .source-date { display:inline-block; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .source-receipts summary { min-height:44px; display:flex; align-items:center;
+    width:fit-content; max-width:100%; cursor:pointer; font-size:14px; text-decoration:underline;
+    text-underline-offset:3px; }
+  .source-receipts summary:focus-visible, .v2-card:focus-visible {
+    outline:2px solid var(--text); outline-offset:3px; }
+  .source-receipt-list { display:flex; flex-wrap:wrap; gap:12px; margin:8px 0 0; }
+  .source-receipt { flex:1 1 250px; min-width:0; border-top:1px solid var(--line); padding:10px 0; }
+  .source-receipt dt { font-weight:700; font-size:12px; }
+  .source-receipt dd { margin:4px 0 0; font-size:12px; color:var(--muted); }
+  .source-receipt code { font-size:12px; overflow-wrap:anywhere; }
+  .source-build-note { margin:10px 0 0; font-size:12px; color:var(--muted); }
   /* stat strip */
   .strip { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:0 0 14px; }
   .stat { font-size:12px; color:var(--muted); padding:5px 12px; border:1px solid var(--line); border-radius:9px; background:var(--panel); }
   .stat b { color:var(--text); font-size:14px; font-variant-numeric:tabular-nums; }
   /* section heads */
-  .sec { display:flex; align-items:baseline; gap:10px; margin:22px 0 4px; }
+  .sec { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; margin:22px 0 4px; }
   .sec h2 { font-size:16px; margin:0; }
   .sec .cnt { color:var(--muted); font-size:12.5px; font-variant-numeric:tabular-nums; }
   .sub { color:var(--muted); font-size:12.5px; margin:0 0 8px; max-width:840px; }
   .conc { font-size:12px; color:var(--muted); padding:6px 12px; border:1px dashed var(--line); border-radius:9px; margin:0 0 10px; display:inline-block; }
   .conc.warn { color:var(--ink-warn, var(--warn)); border-color:color-mix(in srgb,var(--warn) 45%,var(--line)); border-style:solid; }
   /* grid + cards */
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; margin:4px 0 6px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr)); gap:12px; margin:4px 0 6px; }
   .v2-card { display:flex; flex-direction:column; gap:7px; min-width:0; overflow:hidden; position:relative;
     background:var(--panel); border:1px solid var(--line);
     border-radius:12px; padding:12px 13px; transition:border-color .12s; }
@@ -183,6 +205,8 @@
   .rx-caveat { display:inline-block; font-size:10px; cursor:help; margin-left:6px;
     color:var(--muted); border:1px solid var(--line); border-radius:50%;
     width:15px; height:15px; text-align:center; line-height:13px; vertical-align:middle; }
+  /* This must follow the card's default transition to win the cascade. */
+  @media (prefers-reduced-motion:reduce) { .v2-card { transition:none; } }
 </style>
 </head>
 <body>
@@ -191,39 +215,94 @@
   'Names that are BOTH worth buying (trajectory up, not lagging) AND at a good entry rather than a chase — the entry signal has to have fired. Sector, subsector and theme rotation only set priority; they never decide whether a name qualifies. Two separate marks, never fused into one number: the EDGE grade and the ENTRY state.',
   '同时满足"值得买"（趋势向上、不是落后股）和"入场点好、不是追高"——入场信号必须已经触发。板块、子行业和主题轮动只影响优先级，绝不决定一只股票能不能入选。两个标记始终分开，不合成一个数字：优势评级，和入场状态。') }}</p>
 
+<section class="source-coverage" data-source-state="{{ source_state }}" aria-labelledby="source-coverage-heading">
+  <div class="source-label">{{ t('SHADOW SOURCE COVERAGE','影子预览 · 数据覆盖') }}</div>
+  <h2 id="source-coverage-heading">
+    {% if source_state == 'unavailable' %}{{ t('Sources unavailable','数据源暂不可用') }}
+    {% elif source_state == 'partial' %}{{ t('Partial coverage','覆盖不完整') }}
+    {% elif source_state == 'complete' %}{{ t('Both inputs readable','两个输入均可读取') }}
+    {% else %}{{ t('Source coverage not recorded','尚无数据覆盖记录') }}{% endif %}
+  </h2>
+  <p class="source-description">
+    {% if source_state == 'unavailable' %}{{ t('No reliable candidate population. Qualification cannot be assessed.','无法确认候选范围，暂时不能判断是否有标的符合条件。') }}
+    {% elif source_state == 'partial' %}{{ t('Rows come from the available inputs only. Missing coverage is not a zero result.','下方仅展示可用输入中的标的。缺失的覆盖不能解释为零结果。') }}
+    {% elif source_state == 'complete' %}{{ t('Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.','依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。') }}
+    {% else %}{{ t('These legacy rows have no source-coverage receipt. A complete population is not established.','这些旧版数据没有来源覆盖凭据，无法确认候选范围完整。') }}{% endif %}
+  </p>
+  <p class="source-clock">
+    {% if observation_state == 'shared' and d.as_of %}{{ t('Shared source observation','共同来源观察日期') }}: <b class="source-date">{{ d.as_of }}</b>. {{ t('Build time does not establish freshness.','构建时间不能证明数据新鲜度。') }}
+    {% elif observation_state == 'mixed' %}{{ t('Shared observation unavailable — source dates differ. Inspect each date below.','共同观察日期暂不可用——来源日期不同，请查看下方各自日期。') }}
+    {% elif observation_state == 'future' %}{{ t('Shared observation unavailable — a supplied date is in the future and is unverified.','共同观察日期暂不可用——存在尚未核实的未来日期。') }}
+    {% else %}{{ t('Shared observation unavailable. Build time is not a source observation.','共同观察日期暂不可用。构建时间不等于来源观察时间。') }}{% endif %}
+  </p>
+  <details class="source-receipts">
+    <summary>{{ t('Inspect source details','查看来源详情') }}</summary>
+    <dl class="source-receipt-list">
+      {% for name, source in (coverage.get('sources') or {}).items() %}
+      <div class="source-receipt">
+        <dt><code>{{ name }}</code></dt>
+        <dd>{{ t('Coverage','覆盖') }}:
+          {% if source.state == 'complete' %}{{ t('Readable','可读取') }}
+          {% elif source.state == 'partial' %}{{ t('Partial','不完整') }}
+          {% else %}{{ t('Unavailable','暂不可用') }}{% endif %}
+          · <code>{{ source.reason }}</code></dd>
+        <dd>{{ t('Source date','来源日期') }}:
+          {% if source.as_of %}<time class="source-date" datetime="{{ source.as_of }}">{{ source.as_of }}</time>{% else %}{{ t('Not provided or invalid','未提供或无效') }}{% endif %}
+          {% if source.clock_state == 'future' %} · {{ t('Future date — unverified','未来日期——未核实') }}{% endif %}</dd>
+        <dd>{{ t('Consumed collections','已读取的集合') }}:
+          {% for key, state in source.collections.items() %}
+          <code>{{ key }}</code> =
+          {% if state == 'available' %}{{ t('readable','可读取') }}
+          {% elif state == 'missing' %}{{ t('missing','缺失') }}
+          {% else %}{{ t('invalid','无效') }}{% endif %}{% if not loop.last %} · {% endif %}
+          {% endfor %}</dd>
+      </div>
+      {% endfor %}
+    </dl>
+    <p class="source-build-note">{{ t('This unlinked shadow preview updates through the existing build pipeline. Opening this page does not recompute or publish a board.','此未链接的影子预览通过现有构建流程更新。打开本页不会重新计算或发布榜单。') }}</p>
+  </details>
+</section>
 <div class="strip">
-  <span class="stat">{{ t('as of','截至') }} <b>{{ d.as_of }}</b></span>
-  <span class="stat">{{ t('candidates','候选') }} <b>{{ d.counts.candidates }}</b></span>
-  <span class="stat">{{ t('entry open','入场开放') }} <b>{{ d.counts.entry_open }}</b></span>
-  <span class="stat">{{ t('setting up','酝酿中') }} <b>{{ d.counts.setting_up }}</b></span>
+  <span class="stat">{{ t('Shared observation','共同观察日期') }} <b>{% if observation_state == 'shared' and d.as_of %}{{ d.as_of }}{% else %}—{% endif %}</b></span>
+  <span class="stat">{{ t('Candidates','候选') if source_state == 'complete' else t('Available candidates','可用候选') }} <b>{{ d.counts.candidates if source_state != 'unavailable' else '—' }}</b></span>
+  <span class="stat">{{ t('entry open','入场开放') }} <b>{{ d.counts.entry_open if source_state != 'unavailable' else '—' }}</b></span>
+  <span class="stat">{{ t('setting up','酝酿中') }} <b>{{ d.counts.setting_up if source_state != 'unavailable' else '—' }}</b></span>
   <span class="stat">{{ t('knobs','参数') }} <b>{{ d.knobs_basis }}</b></span>
 </div>
-{{ rx_board_banner() }}
+{% if source_state != 'unavailable' %}{{ rx_board_banner() }}{% endif %}
 
 {# ---- ENTRY OPEN lane ---- #}
-<div class="sec"><h2>{{ t('Entry open','入场开放') }}</h2><span class="cnt">{{ d.counts.entry_open }} {{ t('names','只') }}</span></div>
-<p class="sub">{{ t('Both gates pass — a fresh confluence cross is live now. Ordered by group leadership → edge percentile → entry freshness. Zero fill pressure: however many qualify (an empty lane is honest).','双门槛通过——共振金叉刚刚触发。按行业领先→优势分位→入场新鲜度排序。零填充压力：合格多少就显示多少（空榜也是诚实的）。') }}</p>
-{{ conc_banner(d.concentration.entry_open, 'entry_open') }}
+<div class="sec"><h2>{{ t('Entry open','入场开放') }}</h2><span class="cnt">{{ d.counts.entry_open if source_state != 'unavailable' else '—' }} {{ t('names','只') if source_state == 'complete' else t('in available inputs','来自可用输入') }}</span></div>
+<p class="sub">{{ t('Both gates pass in the published inputs. Ordered by group leadership → edge percentile → entry freshness. Zero fill pressure: however many qualify (an empty lane is honest).','已发布输入中的双门槛通过。按行业领先→优势分位→入场新鲜度排序。零填充压力：合格多少就显示多少（空榜也是诚实的）。') }}</p>
+{% if source_state != 'unavailable' %}{{ conc_banner(d.concentration.entry_open, 'entry_open') }}{% endif %}
 {% if d.lanes.entry_open %}
 <div class="grid">
   {% for r in d.lanes.entry_open %}{{ row_card(r, 'entry_open') }}{% endfor %}
 </div>
 {% else %}
-<div class="empty">{{ t('No names clear both gates today. An empty actionable lane is honest — see Setting up for the pipeline.','今日无名单同时通过双门槛。空的可执行榜是诚实的——请看"酝酿中"了解在途标的。') }}</div>
+<div class="empty">
+{% if source_state == 'complete' %}{{ t('No names clear both gates in the published inputs. An empty lane is valid; no names are added to fill it.','已发布输入中没有标的同时通过双门槛。空榜是有效结果，不为填满榜单而添加标的。') }}
+{% elif source_state == 'unavailable' %}{{ t('Entry qualification is unavailable until candidate inputs can be read.','候选输入可读取后，才能判断入场条件。') }}
+{% else %}{{ t('No qualifying names in the available inputs. Coverage is incomplete; this is not a confirmed zero result.','可用输入中暂无符合条件的标的。覆盖不完整，不能确认总结果为零。') }}{% endif %}
+</div>
 {% endif %}
 <p class="pass">{{ t('Passport','护照') }}: basis <code>dual-gate</code> · frame <code>cross-sectional</code> · rotation sources
   {% for k,v in d.rotation_coverage.items() %}{{ k }}=<code>{{ 'ok' if not v.degraded else 'degraded' }}</code>{% if not loop.last %} · {% endif %}{% endfor %}</p>
 
 {# ---- SETTING UP lane ---- #}
-<div class="sec"><h2>{{ t('Setting up','酝酿中') }}</h2><span class="cnt">{{ d.counts.setting_up }} {{ t('names','只') }}</span></div>
+<div class="sec"><h2>{{ t('Setting up','酝酿中') }}</h2><span class="cnt">{{ d.counts.setting_up if source_state != 'unavailable' else '—' }} {{ t('names','只') if source_state == 'complete' else t('in available inputs','来自可用输入') }}</span></div>
 <p class="sub">{{ t('These names are improving but have not confirmed yet. Every row is provisional and may change, so treat it as a watch — not an entry.','这些股票正在改善，但还没有确认。每一行都是暂定判断，仍可能变化；先放进观察列表，不要当作入场点。') }}</p>
-{{ conc_banner(d.concentration.setting_up, 'setting_up') }}
+{% if source_state != 'unavailable' %}{{ conc_banner(d.concentration.setting_up, 'setting_up') }}{% endif %}
 {% if d.lanes.setting_up %}
 <div class="grid">
   {% for r in d.lanes.setting_up %}{{ row_card(r, 'setting_up') }}{% endfor %}
 </div>
 {% else %}
-<div class="empty">{{ t('No imminent-cross names today.','今日无即将交叉标的。') }}</div>
+<div class="empty">
+{% if source_state == 'complete' %}{{ t('No imminent-cross names in the published inputs.','已发布输入中没有即将交叉的标的。') }}
+{% elif source_state == 'unavailable' %}{{ t('The setup pipeline cannot be assessed without readable candidate inputs.','缺少可读取的候选输入，暂时无法判断酝酿中的标的。') }}
+{% else %}{{ t('No setup names in the available inputs. The missing population remains unknown.','可用输入中暂无酝酿中的标的，缺失部分仍然未知。') }}{% endif %}
+</div>
 {% endif %}
 
 <div class="foot">

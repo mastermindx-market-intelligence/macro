@@ -1,0 +1,6658 @@
+{
+  "kind": "synthetic actual-builder browser proof; not deployment or live-market acceptance",
+  "chromium": "151.0.7922.34",
+  "fixture_build_clock": "2026-11-04T06:00:00Z",
+  "source_sha256": {
+    "scripts/build_stock_board_v2.py": "c23250ab4d920bf9ce41b46325979aa8f10d7fadb79c7f63781a07391b27ae46",
+    "templates/us_stocks_v2.html.j2": "53324d1c77f841e13dcd2ef8085e3a4ae74f5b87b3343400ccf87452a7d7e6d6",
+    "tests/test_stock_board_v2_availability.py": "72f0f6e6d9e7789fa4235314cb98780278bd9205d5c148b336171854be627027",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "templates/shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+    "templates/data_base.js": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+  },
+  "case_count": 64,
+  "js_errors": [],
+  "blocked_requests": [],
+  "minimum_source_text_contrast": 5.426663883173387,
+  "results": [
+    {
+      "case": "unavailable",
+      "viewport": 320,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "unavailable-320-light-en.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 235.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Sources unavailable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "No reliable candidate population. Qualification cannot be assessed.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 320,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "partial-320-light-en.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 256.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Partial coverage",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Rows come from the available inputs only. Missing coverage is not a zero result.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 320,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "empty-320-light-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 277.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 320,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "populated-320-light-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 277.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 320,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "unavailable-320-light-zh.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 235.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "数据源暂不可用",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "无法确认候选范围，暂时不能判断是否有标的符合条件。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 320,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "partial-320-light-zh.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 235.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "覆盖不完整",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "下方仅展示可用输入中的标的。缺失的覆盖不能解释为零结果。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 320,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "empty-320-light-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 256.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 320,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "populated-320-light-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 256.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 320,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "unavailable-320-dark-en.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 235.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Sources unavailable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "No reliable candidate population. Qualification cannot be assessed.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 320,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "partial-320-dark-en.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 256.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Partial coverage",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Rows come from the available inputs only. Missing coverage is not a zero result.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 320,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "empty-320-dark-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 277.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 320,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "populated-320-dark-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 277.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 320,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "unavailable-320-dark-zh.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 235.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "数据源暂不可用",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "无法确认候选范围，暂时不能判断是否有标的符合条件。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 320,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "partial-320-dark-zh.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 235.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "覆盖不完整",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "下方仅展示可用输入中的标的。缺失的覆盖不能解释为零结果。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 320,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "empty-320-dark-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 256.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 320,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "populated-320-dark-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": true,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 304,
+      "width": 288,
+      "height": 256.78125,
+      "pageScrollWidth": 320,
+      "scrollWidth": 286,
+      "clientWidth": 286,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 254,
+          "height": 63,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 254,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "unavailable-390-light-en.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Sources unavailable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "No reliable candidate population. Qualification cannot be assessed.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "malformed",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "malformed-390-light-en.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Sources unavailable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "No reliable candidate population. Qualification cannot be assessed.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "partial-390-light-en.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Partial coverage",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Rows come from the available inputs only. Missing coverage is not a zero result.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "empty-390-light-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "populated-390-light-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "mixed",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "mixed-390-light-en.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "mixed",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-01"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-01",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable — source dates differ. Inspect each date below.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unknown",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "unknown-390-light-en.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "future",
+      "viewport": 390,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "future-390-light-en.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "future",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2030-01-01"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2030-01-01",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable — a supplied date is in the future and is unverified.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "unavailable-390-light-zh.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "数据源暂不可用",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "无法确认候选范围，暂时不能判断是否有标的符合条件。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "malformed",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "malformed-390-light-zh.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "数据源暂不可用",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "无法确认候选范围，暂时不能判断是否有标的符合条件。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "partial-390-light-zh.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "覆盖不完整",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "下方仅展示可用输入中的标的。缺失的覆盖不能解释为零结果。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "empty-390-light-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "populated-390-light-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "mixed",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "mixed-390-light-zh.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "mixed",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-01"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-01",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用——来源日期不同，请查看下方各自日期。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unknown",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "unknown-390-light-zh.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "future",
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "future-390-light-zh.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "future",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2030-01-01"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2030-01-01",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用——存在尚未核实的未来日期。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "unavailable-390-dark-en.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Sources unavailable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "No reliable candidate population. Qualification cannot be assessed.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "malformed",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "malformed-390-dark-en.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Sources unavailable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "No reliable candidate population. Qualification cannot be assessed.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "partial-390-dark-en.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Partial coverage",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Rows come from the available inputs only. Missing coverage is not a zero result.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "empty-390-dark-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "populated-390-dark-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "mixed",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "mixed-390-dark-en.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "mixed",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-01"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-01",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable — source dates differ. Inspect each date below.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unknown",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "unknown-390-dark-en.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "future",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "future-390-dark-en.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "future",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2030-01-01"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2030-01-01",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable — a supplied date is in the future and is unverified.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "unavailable-390-dark-zh.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "数据源暂不可用",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "无法确认候选范围，暂时不能判断是否有标的符合条件。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "malformed",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "malformed-390-dark-zh.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "数据源暂不可用",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "无法确认候选范围，暂时不能判断是否有标的符合条件。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "partial-390-dark-zh.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "覆盖不完整",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "下方仅展示可用输入中的标的。缺失的覆盖不能解释为零结果。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "empty-390-dark-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "populated-390-dark-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "mixed",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "mixed-390-dark-zh.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "mixed",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-01"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-01",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用——来源日期不同，请查看下方各自日期。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unknown",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "unknown-390-dark-zh.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "future",
+      "viewport": 390,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "future-390-dark-zh.png",
+      "status": "ok",
+      "as_of": null,
+      "observation_state": "future",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2030-01-01"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2030-01-01",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 16,
+      "right": 374,
+      "width": 358,
+      "height": 235.78125,
+      "pageScrollWidth": 390,
+      "scrollWidth": 356,
+      "clientWidth": 356,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用——存在尚未核实的未来日期。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 324,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "unavailable-1440-light-en.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Sources unavailable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "No reliable candidate population. Qualification cannot be assessed.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "partial-1440-light-en.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Partial coverage",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Rows come from the available inputs only. Missing coverage is not a zero result.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "empty-1440-light-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "screenshot": "populated-1440-light-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "unavailable-1440-light-zh.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "数据源暂不可用",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "无法确认候选范围，暂时不能判断是否有标的符合条件。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "partial-1440-light-zh.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "覆盖不完整",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "下方仅展示可用输入中的标的。缺失的覆盖不能解释为零结果。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "empty-1440-light-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 1440,
+      "theme": "light",
+      "language": "zh",
+      "screenshot": "populated-1440-light-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)",
+        "color(srgb 0.788392 0.8 0.820706)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.426663883173387,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 15.620283087860223,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "unavailable-1440-dark-en.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Sources unavailable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "No reliable candidate population. Qualification cannot be assessed.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "partial-1440-dark-en.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Partial coverage",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Rows come from the available inputs only. Missing coverage is not a zero result.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared observation unavailable. Build time is not a source observation.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "empty-1440-dark-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "screenshot": "populated-1440-dark-en.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "SHADOW SOURCE COVERAGE",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "Both inputs readable",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "Qualification uses the published inputs. An empty result is valid; no names are added to fill a lane.",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "Shared source observation: 2026-11-02. Build time does not establish freshness.",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "Inspect source details",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 141.875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "unavailable",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "unavailable-1440-dark-zh.png",
+      "status": "unavailable",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [],
+        []
+      ],
+      "unbroken_source_dates": [],
+      "sourceState": "unavailable",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "数据源暂不可用",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "无法确认候选范围，暂时不能判断是否有标的符合条件。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "partial-1440-dark-zh.png",
+      "status": "partial",
+      "as_of": null,
+      "observation_state": "unknown",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        []
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "partial",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "覆盖不完整",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "下方仅展示可用输入中的标的。缺失的覆盖不能解释为零结果。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同观察日期暂不可用。构建时间不等于来源观察时间。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "empty",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "empty-1440-dark-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": false,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "case": "populated",
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "screenshot": "populated-1440-dark-zh.png",
+      "status": "ok",
+      "as_of": "2026-11-02",
+      "observation_state": "shared",
+      "keyboard_details": true,
+      "touch_details": false,
+      "candidate_links": [
+        "stock.html?t=AAA",
+        "stock.html?t=CCC"
+      ],
+      "reduced_motion_media_exercised": true,
+      "card_reduced_motion_verified": true,
+      "clock_copy_verified": true,
+      "receipt_dates": [
+        [
+          "2026-11-02"
+        ],
+        [
+          "2026-11-02"
+        ]
+      ],
+      "unbroken_source_dates": [
+        {
+          "text": "2026-11-02",
+          "height": 21,
+          "lineHeight": 21,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "2026-11-02",
+          "height": 18.59375,
+          "lineHeight": 18.6,
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "sourceState": "complete",
+      "x": 40,
+      "right": 1400,
+      "width": 1360,
+      "height": 193.78125,
+      "pageScrollWidth": 1440,
+      "scrollWidth": 1358,
+      "clientWidth": 1358,
+      "background": "rgb(24, 27, 33)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "text": [
+        {
+          "selector": ".source-label",
+          "text": "影子预览 · 数据覆盖",
+          "fontSize": 12,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 18.59375,
+          "overflow": false
+        },
+        {
+          "selector": "h2",
+          "text": "两个输入均可读取",
+          "fontSize": 16,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 23.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".source-description",
+          "text": "依据已发布输入判断是否符合条件。空结果是有效结果，不为填满列表而添加标的。",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".source-clock",
+          "text": "共同来源观察日期: 2026-11-02. 构建时间不能证明数据新鲜度。",
+          "fontSize": 14,
+          "contrast": 5.573322167346348,
+          "width": 1326,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": "summary",
+          "text": "查看来源详情",
+          "fontSize": 14,
+          "contrast": 12.513347014441809,
+          "width": 85.6875,
+          "height": 44,
+          "overflow": false
+        }
+      ]
+    }
+  ]
+}

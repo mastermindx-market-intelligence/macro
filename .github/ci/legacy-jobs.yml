@@ -39086,6 +39086,9 @@ jobs:
     if: ${{ false }}
     gate: code
     paths:
+      - "tests/test_stock_board_v2_availability.py"
+      - "scripts/build_stock_board_v2.py"
+      - "templates/us_stocks_v2.html.j2"
       - "tests/test_act_now_board_assembler.py"
       - "tests/test_action_board_lane_split.py"
       - "tests/test_alert_coverage_recurrence.py"
@@ -39106,12 +39109,12 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
-      - name: Macro header — compact glance layer with on-demand detail
-        run: python -m pytest tests/test_macro_header_compact.py -q
-      - name: OKX retail chip — bilingual + the contrarian framing survives copy edits
-        run: python -m pytest tests/test_okx_retail.py -q
-      - name: CN risk-backdrop chip — renders, degrades, and stays out of macro mode
-        run: python -m pytest tests/test_w5b_edge_chips.py -q
+      # One pytest process for these hermetic source/render contracts: preserves
+      # every existing suite while adding D03 T46 without raising packing weight.
+      - name: Macro header, retail/risk chips, and shadow US source availability
+        run: >-
+          python -m pytest tests/test_macro_header_compact.py tests/test_okx_retail.py
+          tests/test_w5b_edge_chips.py tests/test_stock_board_v2_availability.py -q
       # P0B exact-source correction (2026-09-06): 14 builder/template cases are
       # hermetic and belong in the PR code gate.  The one generated-page case
       # remains in unrun-intl-collectors, which continues to run all 15 in data.

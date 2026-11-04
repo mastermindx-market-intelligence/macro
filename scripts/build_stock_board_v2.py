@@ -55,8 +55,9 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -114,13 +115,113 @@ _LAGGING_PREFIXES = ("lagging",)
 # --------------------------------------------------------------------------- #
 #  candidate assembly                                                          #
 # --------------------------------------------------------------------------- #
-def _load(site, name):
+def _source_clock(value, today: date) -> tuple[str | None, str]:
+    """A supplied calendar date is not a build clock or a freshness guarantee."""
+    if value is None or value == "":
+        return None, "missing"
+    if not isinstance(value, str) or len(value) != 10:
+        return None, "invalid"
+    try:
+        observed = date.fromisoformat(value)
+    except ValueError:
+        return None, "invalid"
+    if observed.isoformat() != value:
+        return None, "invalid"
+    return value, "future" if observed > today else "supplied"
+
+
+def _reject_nonfinite(value):
+    raise ValueError(f"non-finite JSON number: {value}")
+
+
+def _number_or_none(value) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def _row_shape_readable(row) -> bool:
+    """Reject shapes the existing gates/renderer cannot read; do not coerce them."""
+    if not isinstance(row, dict) or not isinstance(row.get("ticker"), str):
+        return False
+    if not row["ticker"].strip():
+        return False
+    conv, sig = row.get("conviction", {}), row.get("signal", {})
+    if not isinstance(conv, dict) or not isinstance(sig, dict):
+        return False
+    if any(row.get(key) is not None and not isinstance(row[key], str)
+           for key in ("name", "sector")):
+        return False
+    if conv.get("verdict") is not None and not isinstance(conv["verdict"], str):
+        return False
+    if conv.get("trust_tier") is not None and not isinstance(conv["trust_tier"], dict):
+        return False
+    if conv.get("drivers") is not None and not isinstance(conv["drivers"], list):
+        return False
+    if sig.get("last") is not None and not isinstance(sig["last"], dict):
+        return False
+    if sig.get("tier_cascade") is not None and not isinstance(sig["tier_cascade"], str):
+        return False
+    numbers = [row.get(key) for key in ("alpha", "off_high", "price")]
+    numbers += [sig.get(key) for key in ("ticks", "fresh_bars", "bars_to_cross")]
+    return all(_number_or_none(value) for value in numbers + [conv.get("composite_z")])
+
+
+def _load(site, name, today: date) -> tuple[dict | None, dict]:
+    """Read only this consumer's envelope; keep unknown collections distinct.
+
+    Explicit empty lists are available. A missing/malformed consumed collection
+    is excluded and disclosed, not silently promoted to a confirmed zero.
+    Candidate dictionaries in readable collections are not rewritten.
+    """
+    keys = ("buy", "watch", "laggards") if name == _STD else ("buy",)
+    receipt = {"state": "unavailable", "reason": "missing",
+               "collections": dict.fromkeys(keys, "missing"),
+               "as_of": None, "clock_state": "missing"}
     p = site / "factordata" / name
     try:
-        return json.loads(p.read_text())
-    except Exception as e:  # noqa: BLE001
-        log.warning("v2: could not read %s (%s)", name, e)
-        return None
+        raw = json.loads(p.read_text(), parse_constant=_reject_nonfinite)
+    except FileNotFoundError:
+        return None, receipt
+    except (OSError, UnicodeError) as exc:
+        log.warning("v2: unreadable %s (%s)", name, exc)
+        receipt["reason"] = "unreadable"
+        return None, receipt
+    except (ValueError, RecursionError) as exc:
+        log.warning("v2: invalid JSON in %s (%s)", name, exc)
+        receipt["reason"] = "invalid_json"
+        return None, receipt
+    if not isinstance(raw, dict):
+        receipt["reason"] = "invalid_document"
+        return None, receipt
+
+    receipt["as_of"], receipt["clock_state"] = _source_clock(raw.get("as_of"), today)
+    data = dict(raw)
+    for key in keys:
+        rows = raw.get(key)
+        if key not in raw:
+            state = "missing"
+        elif not isinstance(rows, list) or not all(_row_shape_readable(row) for row in rows):
+            state = "invalid"
+        else:
+            state = "available"
+        receipt["collections"][key] = state
+        data[key] = rows if state == "available" else []
+
+    states = list(receipt["collections"].values())
+    if all(state == "available" for state in states):
+        receipt.update(state="complete", reason="readable")
+    elif "available" in states:
+        receipt.update(state="partial", reason="incomplete_collections")
+    else:
+        receipt["reason"] = "unavailable_collections"
+        return None, receipt
+    return data, receipt
 
 
 def _candidates(std: dict | None, setups: dict | None) -> list[dict]:
@@ -515,10 +616,26 @@ def _concentration(rows: list[dict], site=None) -> dict:
 # --------------------------------------------------------------------------- #
 def compute(site=None) -> dict:
     site = site or (config.ROOT / "site")
-    std = _load(site, _STD)
-    setups = _load(site, _SETUPS)
-    as_of = (std or {}).get("as_of") or (setups or {}).get("as_of") \
-        or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    now = datetime.now(timezone.utc)
+    std, std_receipt = _load(site, _STD, now.date())
+    setups, setups_receipt = _load(site, _SETUPS, now.date())
+    sources = {_STD: std_receipt, _SETUPS: setups_receipt}
+    complete = all(source["state"] == "complete" for source in sources.values())
+    coverage = "complete" if complete else (
+        "partial" if std is not None or setups is not None else "unavailable")
+    clocks = [source["clock_state"] for source in sources.values()]
+    if "future" in clocks:
+        observation = "future"
+    elif any(clock != "supplied" for clock in clocks):
+        observation = "unknown"
+    elif std_receipt["as_of"] != setups_receipt["as_of"]:
+        observation = "mixed"
+    else:
+        observation = "shared" if complete else "incomplete"
+    # The existing grader ignores status and snapshots any truthy as_of. Only a
+    # complete, coherently dated population may reserve its immutable day.
+    # Partial rows still retain their original gates/order and per-source dates.
+    as_of = std_receipt["as_of"] if observation == "shared" else None
 
     gc = GroupContext(site=site)
     cands = _candidates(std, setups)
@@ -553,9 +670,11 @@ def compute(site=None) -> dict:
     setting_up = _order(setting_up)
 
     return {
-        "status": "ok",
+        "status": "ok" if complete else coverage,
         "as_of": as_of,
-        "generated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "source_coverage": {"state": coverage, "sources": sources,
+                            "observation_state": observation},
+        "generated_utc": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "shadow": True,
         "note": ("SHADOW artifact — Buy Board 2.0 (W6-US). Dual-gated (WHAT trajectory "
                  "+ WHEN validated confluence) with rotation-priority ordering. Not live; "
