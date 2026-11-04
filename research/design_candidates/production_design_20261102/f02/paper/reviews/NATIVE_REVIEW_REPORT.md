@@ -1,12 +1,12 @@
 # F02 native review record
 
-**Current phase:** PARTIAL; native writes paused after one unresolved transport outcome. **Formal RIG:** draft; no approval receipt. The native design is not a released shared foundation. The stable checkpoint has 22 boards,20 full capture pairs and 434 observed applied responses plus one unresolved dispatch. Existing-board review repairs remain unapplied, and no complete repaired-native freeze or repaired-set critique has been issued.
+**Current phase: repaired subset independently under review.** The exact 31-board input is `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`, 88 members, aggregate `f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445`. All32 boards exist;31 full pairs and639 applied responses are observed. One original Chinese effect and its remaining native work are held. Formal RIG remains draft. The historical first-pass findings and reports below retain their original scope; their newer dispositions are recorded separately, never rewritten into retroactive passes.
 
 The closed first-pass artifact set is `245d70bbd3ac773f3074277c771095264b31269d`, 44 members, aggregate SHA256 `98c7569adb5827e7b3ab16350e56be642ede4ddd961dc4d599b99b7bf4d69b3b`. Both critics independently verified the set and examined every image. Their original BLOCK reports were preserved unchanged at `d3c24ceae3f234ce6eb756596367b2045f8ae3c6` before author rationale was revealed.
 
 Read [NATIVE_REVIEW_SEQUENCE.md](NATIVE_REVIEW_SEQUENCE.md), [product-native-first-pass.md](product-native-first-pass.md) and [taste-native-first-pass.md](taste-native-first-pass.md) for their exact scope and findings. The earlier `f02/reviews/` reports concern the historical source/static candidate; they are not native Paper approval.
 
-## Open repair work at this checkpoint
+## Historical first-pass repair requirements
 
 | Finding | Required design repair or proof |
 | --- | --- |

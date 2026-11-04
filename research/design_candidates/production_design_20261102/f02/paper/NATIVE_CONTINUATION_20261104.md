@@ -18,7 +18,7 @@ Current receiver retains recovery ownership. The next required effect action is 
 
 ## Review and qualification
 
-The repaired subset is being frozen for two independent native C3 advisory critics. This is expressly a scoped 31-board review, excluding the incomplete Chinese comparison; the strict 32-board final-freeze gate remains unchanged. Source semantics preserve candidate.2 geometry concurrence and qualify candidate.4 Brain, focus, active-overlay and shared-component clauses. F01 review `5760649569` covers its recorded source contract/handoff scope only; it is not visual, runtime or whole-current-head acceptance.
+The repaired subset is sealed at `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`, 88 members, aggregate `f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445`, for two independent native C3 advisory critics. This is expressly a scoped 31-board review, excluding the incomplete Chinese comparison; the strict 32-board final-freeze gate remains unchanged. Source semantics preserve candidate.2 geometry concurrence and qualify candidate.4 Brain, focus, active-overlay and shared-component clauses. F01 review `5760649569` covers its recorded source contract/handoff scope only; it is not visual, runtime or whole-current-head acceptance.
 
 Remaining joint qualification requires: original F02 effect resolution and full repaired native set; F01's own native effect/capture closure; affected independent Product/Taste re-review and design-authority disposition; typed Brain/D06/domain integration plus real keyboard, touch, focus, zoom, theme/locale and failure-state proof; and exact-source non-author review/formal independent reviewer route. No merge, Ready, un-draft, enqueue, relabel or deployment is authorized.
 

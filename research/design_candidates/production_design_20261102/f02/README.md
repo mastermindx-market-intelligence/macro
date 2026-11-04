@@ -1,13 +1,12 @@
 # F02 — Shared design system candidate
 
-**Delivery: PARTIAL.** **System:** `F02-SYSTEM/1.0.0-candidate.2`. **Formal RIG:** `draft`.  
-**Current native status:** `NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED`.
+**Delivery: PARTIAL; original Paper effect held.** **System:** `F02-SYSTEM/1.0.0-candidate.2`. **Formal RIG:** `draft`.
 
-The updated Paper app enabled substantial native construction: **22 observed F02 boards**, **20 full-board JPEG/JSX pairs**, and **434 confirmed applied operations**. One additional dispatch has an unresolved transport outcome. The state atlas and Chinese390 board remain partial, and captured desktop boards still have prepared review repairs. This is a saved design/specification checkpoint, not a completed foundation or approved release.
+The current native reference has **32 actual boards, 31 full JPEG/JSX pairs and 639 applied responses**, plus the original uncertain Chinese-board operation. All disjoint planned repairs are applied. The current 31-board review input is sealed at `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`; it is explicitly scoped and does not complete the held comparison or release joint v1.
 
-[Open Paper Read me](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) · [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630) · [Exact completed work and blockers](RETURN_F02.md) · [Actual native board index](paper/NATIVE_BOARD_INDEX.md).
+[Current return and exact gates](RETURN_F02.md) · [Open Paper Read me](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) · [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630) · [Actual native index](paper/NATIVE_BOARD_INDEX.md) · [Immutable scoped review manifest](paper/freezes/scoped-native-20261104-r1/MANIFEST.json).
 
-The immutable assignment is `6e1862867193ec6486a22001a0e4fb515da20448`, under programme Draft #10617. The served website, actual source and assigned Paper references were inspected. The package preserves the original product capabilities and distinguishes candidate visual evidence from actual runtime behavior.
+The immutable assignment remains `6e1862867193ec6486a22001a0e4fb515da20448`, under programme Draft #10617. All67 original reference identities/names/locations and20 shared tokens are retained. Existing source contracts, original packets and historical reviews remain preserved; current receipts distinguish applied work from preparation. F01 candidate.2 geometry and candidate.4 scoped source-policy concurrence do not imply runtime or formal acceptance.
 
 ## Main deliverables
 
@@ -28,8 +27,8 @@ Live readback confirms all **67 original boards** at their expected file/page lo
 
 The Paper request `f02-c2-macro-light-zh-390-chart-footer-20261103-01` returned `UNAVAILABLE / Connection timed out.` without an applied receipt. Same-carrier reads show the footer absent, but cannot establish the original request's terminal state. The assignment, Paper workflow and protected reconciliation procedure forbid treating that absence as retry authority. No edit was replayed or sent through another carrier. The [source investigation](paper/repairs/zh390-timeout-source-reconciliation.md) names the exact existing-owner evidence needed to resume.
 
-The first native product and taste critics both returned **BLOCK**. Their unchanged reports and separate rationale passes are preserved. Coherent participation fixtures, Company annual changes/units, numeric frame alignment, source identities/clocks, remaining widths, failure contexts and four consumer companions are prepared; their native application and complete repaired-set review remain open. The strict32-board packager refuses this incomplete checkpoint.
+The first native product and taste critics both returned **BLOCK**. Their unchanged reports and separate rationale passes are preserved. Those disjoint repairs are now applied and captured in the 31-board scoped freeze; independent scoped review is recorded separately. The strict32-board packager still refuses the original held Chinese comparison and dependent full-set evidence.
 
-F01 has published Draft #10645 and requested coordination; F02's candidate concurrence is saved. Final cutoff/transition acceptance and joint release remain open. Actual browser keyboard/touch/focus/400% proof, domain integration, formal RIG admission and authority verdict also remain separate gates. No product implementation, merge, Ready transition or deployment has occurred.
+F01 candidate.2 geometry is bilaterally accepted, and F02 explicitly concurs with candidate.4 changed source-policy clauses. Full native/integration qualification and joint release remain open. Actual browser keyboard/touch/focus/400% proof, domain integration, formal RIG admission and authority verdict also remain separate gates. No product implementation, merge, Ready transition or deployment has occurred.
 
 Historical HTML/static sheets and their freezes remain intact. They are supporting history, not the current authority for repaired native data or a substitute for completed Paper references.

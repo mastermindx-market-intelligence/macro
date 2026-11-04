@@ -2701,5 +2701,14 @@
   "visual_review": "Author has inspected actual current captures; independent scoped native Product/Taste review pending.",
   "browser_proof": "NOT_RUN",
   "approval": false,
-  "boundary": "Thirty-one completed design references plus one held partial Chinese comparison. Native construction/capture is not runtime or full v1 acceptance."
+  "boundary": "Thirty-one completed design references plus one held partial Chinese comparison. Native construction/capture is not runtime or full v1 acceptance.",
+  "scoped_review_input": {
+    "commit": "6b72172aec810aa7795e5a50d4be9ca2dde5cf5b",
+    "manifest": "paper/freezes/scoped-native-20261104-r1/MANIFEST.json",
+    "aggregate_sha256": "f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445",
+    "members": 88,
+    "full_board_pairs": 31,
+    "independent_native_reviews": "FIRST_PASSES_IN_PROGRESS",
+    "approval": false
+  }
 }

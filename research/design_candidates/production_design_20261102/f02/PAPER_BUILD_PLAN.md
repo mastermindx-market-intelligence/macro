@@ -1,14 +1,14 @@
 # Exact Paper construction and annotation packet
 
-## Current continuation status — NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED
+## Current native evidence — 4 November
 
-The accepted **Mastermind Paper direct app** created 22 observed F02 candidate boards in canonical file `01M312VSDSZFVT45674GDVJVZN`. The stable [writer checkpoint](paper/writer-continuation-progress.json) contains 435 dispatch records: **434 applied responses observed and one unresolved transport outcome**. Twenty boards have full capture/export pairs; partial boards and unapplied repairs are distinguished in [the exact pending-work record](paper/NATIVE_PENDING_WORK.md). A full pair is evidence of observed bytes, not completion or approval.
+The original Mastermind Paper direct carrier records **32 actual F02 boards, 31 complete native JPEG/JSX pairs, 639 applied responses and one original unresolved operation**. All independently safe planned boards, repairs/appends and the Read me/builder directory are complete. Only the original Chinese comparison remains held, with two incomplete groups, 33 pending numeric frames and five dependent role/width bindings.
 
-The [Read me page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) and owned board `47Q-0` are actual. The final read-only [retention receipt](paper/native-final-retention.json) confirms all 67 originals at their expected file/page locations with unchanged names, all 20 shared tokens unchanged at hash `356191c3`, and zero original targets in the recorded F02 operations. [Current role and predecessor bindings](paper/NATIVE_BOARD_INDEX.md) use actual IDs;50 bindings remain unresolved because construction/repairs are incomplete.
+[Current return](RETURN_F02.md) · [Actual index](paper/NATIVE_BOARD_INDEX.md) · [Native verification](paper/native-current-verification.json) · [Exact remaining work](paper/NATIVE_PENDING_WORK.md) · [Scoped 31-board freeze](paper/freezes/scoped-native-20261104-r1/MANIFEST.json). The immutable input commit is `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`, 88 members, aggregate `f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445`. This is not the strict final 32-board freeze or full v1 acceptance.
 
-The Chinese390 footer request timed out without an applied receipt. Same-carrier reads show it absent, but its terminal outcome is unresolved; no replay or alternate carrier was used. The [source reconciliation](paper/repairs/zh390-timeout-source-reconciliation.md) records the exact action and owner evidence needed. Initial zero-Paper/legacy writer-blocked observations remain historical. F01 candidate concurrence is [recorded](F01_HANDSHAKE_CANDIDATE.md), while joint release, browser behavior, consumer/domain qualification and formal RIG remain open. No product implementation, merge, deployment or reference approval is claimed.
+Fresh readback confirms all 67 original identities/names/locations and 20 shared tokens unchanged; the sequential target audit has zero original targets/scope violations. [Current retention receipt](paper/repairs/retention-observed-20261104.json). Native design, source concurrence, independent advisory review, actual browser/domain proof and formal RIG remain distinct.
 
-**Current state:** `NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED`. The accepted direct route produced22 observed boards and 434 applied responses before one transport timeout. Use [the exact pending work](paper/NATIVE_PENDING_WORK.md), current source precedence and stable writer checkpoint. The original construction items below preserve earlier preparation; the current strict completion set is32 boards plus scoped appends/repairs. No missing board ID or final acceptance is inferred.
+The historical verification/construction material below retains its stated source/capture dates. Preparation inputs are not execution receipts; the current journal, bindings and captures establish what is applied.
 
 ## Existing target and custody
 
@@ -47,8 +47,8 @@ Every newly or materially changed composition must remain editable. Avoid raster
 > **Owner:** F02 — shared tokens, components, chart/table/state patterns. F01 owns shell/navigation; domains own meaning; D23 owns saved-state mutations.  
 > **Job:** Compare observations, understand their units and limitations, inspect the evidence, and return to the same context.  
 > **Journey:** Read the question and period → compare the chart/table → distinguish zero, unknown and degraded coverage → inspect the exact row/source → return without losing focus or scroll → act through the existing domain owner and confirm the result.  
-> **Status:** Draft candidate; native writes paused on one unresolved request. The actual Read me page is p-9-0 and its board is47Q-0. This updated source annotation is not yet applied in Paper. Complete native evidence/mappings and independent review before claiming reference acceptance. Source/static and native artifacts are not production proof.  
-> **Shell dependency:** F01 joint contract pending. Observed baseline: expanded rail224px, narrow desktop196px, header64/56px. These values are not a frozen shell release.  
+> **Status:** Draft candidate; the original Chinese comparison alone remains held. Actual Read me page p-9-0, board47Q-0, and the32-board directory are applied and captured. Thirty-one completed boards are scoped for review. Complete the original effect, full native evidence/mappings and required review before claiming reference acceptance. Source/static and native artifacts are not production proof.  
+> **Shell dependency:** F01 candidate.2 geometry and candidate.4 scoped source policy are concurred; joint qualification remains pending. Expanded rail224px, narrow desktop196px, header64/56px remain versioned candidate rules, not a released shell.  
 > **System dependency:** This candidate and its immutable source artifact commit. Do not fork global CSS or use a Paper board name as a source import.  
 > **Current scope:** Metric/change, table/chart, evidence, inspector, state/access/action, density, typography, icons, locale and source mapping. Existing verdict/count/lifecycle/domain charts retain their own semantics.  
 > **Data:** All numbers in new exemplars are explicitly illustrative fixtures. Missing is not zero. Percent, percentage points and basis points have distinct meanings. Source observation, publication, retrieval and transport clocks are separate.  
@@ -66,7 +66,7 @@ When placed, replace only the actual state and insert real source/PR and Paper l
 | Source receipt | **Three clocks:** observation describes the underlying fact; publication describes the source release; retrieval describes this read. Connected transport is a fourth, independent state. Never substitute retrieval for source time. |
 | Table | **Semantic table:** caption + scoped headers. Numeric sort uses raw values; missing values sort last by explicit policy. Horizontal movement stays inside this frame. Export retains the real owner’s scope/precision. |
 | Evidence trigger | **Exact row:** open evidence for stable entity/field/observation identity. The accessible name includes the row. No save or navigation mutation occurs. |
-| Inspector | **Responsive behavior:** dock320px + gap24 only with ≥640px primary area. Otherwise modal overlay. Modal traps focus; dock does not. Escape/close returns to the trigger, with named table fallback if the row disappeared. |
+| Inspector | **Responsive behavior:** dock320px + gap24 only with ≥640px primary area. Otherwise modal overlay. Modal traps focus; dock does not. Only the active owner handles Escape. Restore to a connected, focusable, visible invoker or named fallback only when the retiring surface owns focus; preserve intentional outside focus without forced restoration or scroll. |
 | Tabs | **Manual activation:** arrows/Home/End move focus; Enter/Space activates. Selected fill is neutral. Focus outline remains visible and independent. Preserve existing URL-addressable tab behavior. |
 | Chart | **No interpolation:** gap at the missing session. Declared unit/axis/scale; exact values available by keyboard/touch. This fixture is not a model or validated source series. |
 | Empty/loading | **Different states:** loading has no known count; completed empty has a reason and recovery. Never display EMPTY above a loading skeleton. |
@@ -88,11 +88,11 @@ When placed, replace only the actual state and insert real source/PR and Paper l
 
 ## Current route evidence and remaining F01 dependency
 
-**Direct route:** original-owner v20 qualification and actual F02 write/readback are established; native writes are now paused on the later unresolved footer request. **Historical legacy route:** the initial packet observed catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db` on Paper Desktop 0.5.18. That mismatch does not describe the current direct route. Unsupported organization operations and any v21/legacy activation remain separate original-owner boundaries.
+**Direct route:** original-owner v20 qualification and actual F02 write/readback are established; only the original Chinese target is held by the later unresolved footer request; disjoint planned work is now complete. **Historical legacy route:** the initial packet observed catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db` on Paper Desktop 0.5.18. That mismatch does not describe the current direct route. Unsupported organization operations and any v21/legacy activation remain separate original-owner boundaries.
 
 **F01:** versioned rail/header/local-nav/inspector slots; narrow desktop and compact-rail behavior; public/focused-chart/internal shell boundaries; region/theme/language preference semantics; route/history/overlay rules; exact source/Paper artifact identity. F02 supplies its component minimums and concrete four-consumer stress examples for the joint decision.
 
-These are specific dependencies. Editable application has confirmed effects; further writes are paused pending terminal reconciliation. Exact coverage, final mapping and qualification remain incomplete. This packet does not call the candidate a frozen foundation or approved reference.
+These are specific dependencies. Editable application has confirmed effects; further writes to the original Chinese target are held pending terminal reconciliation. Exact coverage, final mapping and qualification remain incomplete. This packet does not call the candidate a frozen foundation or approved reference.
 
 ## Repair-set construction notes
 

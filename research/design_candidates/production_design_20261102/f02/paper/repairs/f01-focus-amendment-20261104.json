@@ -1,0 +1,26 @@
+{
+  "schema": "f02.f01-focus-amendment.v1",
+  "recorded_at": "2026-11-04T01:33:59.685811+00:00",
+  "f01_semantic_input": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "reviewed_f01_source_review": 5760649569,
+  "current_f01_head": "99df25eec943be94ffdfa46019dee7f510c93b3d",
+  "current_f01_contract_blob": "ff096fbde114fa14f218f48b8e3dc54a6646ee04",
+  "policy": "Retiring-owner conditional restoration with visible connected identity-based target/fallback; active-owner Escape; preserve intentional outside focus without forced restoration/scroll.",
+  "files": [
+    {
+      "path": "SOURCE_AND_DATA_CONTRACT.md",
+      "sha256": "47eaca2bfab2b804e7cdae9a8f701d307c4c07ca4b534f0e397dd40d25322a6c"
+    },
+    {
+      "path": "INTERACTION_STATES.md",
+      "sha256": "f23aced9b5de482fc0c211b12d4ebf3d44ef9a9ec6f6eb4a3dc0129062480a65"
+    },
+    {
+      "path": "PAPER_BUILD_PLAN.md",
+      "sha256": "9f48ec027b3b040c7e8f2cad54532db7ff0b259e9d18954bbb83eb01c0b2da02"
+    }
+  ],
+  "source_review_request_comment": 6620018694,
+  "browser_proof": "NOT_RUN",
+  "full_acceptance": false
+}

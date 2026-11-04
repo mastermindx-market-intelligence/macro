@@ -1,0 +1,43 @@
+{
+  "schema": "f02.formal-review-route-observation.v1",
+  "recorded_at": "2026-11-04T01:28:19.913Z",
+  "source_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "f02_scope_commit": "6b72172aec810aa7795e5a50d4be9ca2dde5cf5b",
+  "status": "FORMAL_REVIEW_ADMISSION_NOT_ESTABLISHED",
+  "executive_roots_read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"bounded\":[],\"data\":null,\"degraded\":[],\"error\":{\"code\":\"backend_unavailable\",\"message\":\"Executive reader request was not sent. Read-only describes this read operation; submission and execution readiness were not observed.\"},\"generated_at\":\"2026-11-04T01:26:51.337305+00:00\",\"grounding\":{},\"mode\":\"readonly\",\"ok\":false,\"schema\":\"mastermind.executive_mcp_result.v1\",\"server_version\":\"1.5.0\",\"tool\":\"executive_fabric\"}"
+      }
+    ],
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "earlier_same_continuation_observations": {
+    "session_targets": {
+      "classification": "PRE_EFFECT_BACKEND_UNAVAILABLE",
+      "message": "installed Session Bridge owner is unavailable"
+    },
+    "fabric_capabilities": {
+      "adapter_available": true,
+      "worker_admission": "UNPROBED",
+      "worker_start": "UNPROBED",
+      "caller_identity": "trusted enrolled channel; not individual ChatGPT identity",
+      "root_metadata_is_authentication": false,
+      "retry_allowed": false
+    }
+  },
+  "formal_request_sent": false,
+  "formal_worker_start_observed": false,
+  "approval": false,
+  "non_author_github_request": {
+    "pr": 10630,
+    "comment_id": 6620018694,
+    "reviewer": "mastermindxryan",
+    "scope": "Changed source/handoff at 6b72172; request observed, actual review not yet received"
+  },
+  "next_action": "Existing review owner supplies actual surface/reference identity, trusted root/parent and grant/budget, two independent qualified reviewer-class seats and designated authority verdict. Session-driven formal RIG remains permitted; these diagnostic failures are not a universal ban. Do not invent lineage or relabel native C3 advisories."
+}

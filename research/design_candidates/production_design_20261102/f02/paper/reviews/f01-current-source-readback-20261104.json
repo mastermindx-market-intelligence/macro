@@ -1,0 +1,53 @@
+{
+  "schema": "f02.f01-candidate4-current-source-readback.v1",
+  "observed_at": "2026-11-04T01:28:20.028Z",
+  "current_head": "99df25eec943be94ffdfa46019dee7f510c93b3d",
+  "current_contract_blob": "ff096fbde114fa14f218f48b8e3dc54a6646ee04",
+  "semantic_freeze": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "semantic_blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+  "section_2_onward_byte_identical": true,
+  "review": {
+    "id": 5760649569,
+    "node_id": "PRR_kwDOS4LjIs8AAAABV1yJYQ",
+    "user": {
+      "login": "mastermindxryan",
+      "id": 333722846,
+      "node_id": "U_kgDOE-Q03g",
+      "avatar_url": "https://avatars.githubusercontent.com/u/333722846?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/mastermindxryan",
+      "html_url": "https://github.com/mastermindxryan",
+      "followers_url": "https://api.github.com/users/mastermindxryan/followers",
+      "following_url": "https://api.github.com/users/mastermindxryan/following{/other_user}",
+      "gists_url": "https://api.github.com/users/mastermindxryan/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/mastermindxryan/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/mastermindxryan/subscriptions",
+      "organizations_url": "https://api.github.com/users/mastermindxryan/orgs",
+      "repos_url": "https://api.github.com/users/mastermindxryan/repos",
+      "events_url": "https://api.github.com/users/mastermindxryan/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/mastermindxryan/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "**APPROVE — bounded non-author F01 candidate.4 SOURCE-CONTRACT / HANDOFF follow-up ONLY** at current PR #10645 head `3e334bd3eabf1d6ecc7980845fbd7a813dd023e1`; semantic contract frozen at `8926b16af4e0c3e5310cdb4cf057390ec04d18ff`. This responds to the **existing** reviewer follow-up [comment 6617499383](https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6617499383), not a duplicate commission. Reviewer `mastermindxryan` is distinct from author `mastermidx4`. Prior source-only review #5760292764 remains correctly bound to previous head `be157007`.\n\n**Exact changed-scope review:** `8ee1a8d` adds C/D/F post-first-pass native capture/operation receipts, `8926b16` updates 18 F01-owned source/evidence files for candidate.4, and `3e334bd` adds **delivery/coordination only**, retaining unchanged `JOINT_SHELL_SYSTEM_CONTRACT.md` Git blob `1160f14b108bf0948384f59a249320385a1dfb6c`. Inspected candidate.4 joint contract, Product/UX, source/data contract, 80-case main acceptance specification, 6-case consumer supplement, 36-row retention ledger, return, source checks, consumer/test advisories, original-first-pass and follow-up adjudication, and exact F02 candidate.2 handshake. Independently cross-checked underlying Terminal `mastermindBrain.ts` at `3cc8da8`, `ShellSearch.tsx` / `companySearchContext.ts` at `2ded360`, and D06 revised handshake at `d7d6b7d`. Source checks and 52+4 author-recorded Paper acknowledgments are evidence records, not browser/Paper effects independently reproduced by this reviewer.\n\n**Decision: no blocking *source-contract coherence* defect found in this bounded changed-artifact review.** Candidate.2 shared geometry is unchanged: 600px content-gutter split; continuous 600/860/1200 intervals; constrained 440px represented modal; explicit user-selected compact rail; measured C≥984 for a 320+24 dock with ≥640 primary. Candidate.4 correctly **separates** D06's 360px initial / 300–520 preferred Terminal reader and provisional 640px actual *price plot* from F01's 320px shared evidence slot. It retains the incumbent Brain/D14 request/lifecycle owner rather than inventing a second assistant. Actual widget `close`, conditional `MM_BRAIN_CFG.onClose`, request Stop versus panel hide, readiness versus visible state, conditionally-owned focus and single reader inspection cursor are explicitly qualified, not asserted as implemented. Source-observed `company_query`, canonical symbol and `mmxCompanySearch` are kept distinct from full return/scroll/selection restoration. The current **80 distinct main cases + 6 consumer cases = 86 NOT_RUN**, 36 groups (23 RETAIN/13 IMPROVE), and unchanged 290 directory baseline IDs are retained. Current native C/D/F follow-ups address only bounded static findings; the six-board evidence is not a final reference.\n\n**Explicit unchanged holds / no permission broadened:** F02 has NOT concurred with candidate.4's *new* lifecycle/focus/search clauses (only prior candidate.2 geometry), and native effect/review issues remain. F01 original state-8/I-grid `EFFECT_UNKNOWN`, Readme `DOCUMENT_CHANGED` no-retry, remaining atlas, actual Brain/host callback and served-asset proof, D06 consumer qualification, full native state/theme/locale/keyboard/touch/400%-zoom accessibility/browser tests and formal QA01/RIG remain open. This **source-only** approval permits already assigned domains to use *versioned Phase 2A specifications provisionally*. It is **NOT** approval of Paper canvases, final joint F01/F02 v1, implementation, production, CI or release. Preserve current **Draft/HOLD** and owners; no Paper edit, new worker, source push, merge, Ready/un-draft, queue, relabel, service cutover or deployment is requested.",
+    "state": "APPROVED",
+    "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569",
+    "pull_request_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/10645",
+    "author_association": "MEMBER",
+    "is_copilot_code_review": false,
+    "copilot_code_review_effort": null,
+    "_links": {
+      "html": {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/10645"
+      }
+    },
+    "submitted_at": "2026-11-03T22:55:10Z",
+    "commit_id": "3e334bd3eabf1d6ecc7980845fbd7a813dd023e1"
+  },
+  "f02_new_source": "6b72172aec810aa7795e5a50d4be9ca2dde5cf5b",
+  "interpretation": "Qualified source-policy concurrence. Original review remains bounded to recorded head/semantic input; current status edits do not broaden it."
+}
