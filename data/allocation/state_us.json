@@ -16,20 +16,22 @@
     "reshoring",
     "retail",
     "robotics_automation",
+    "travel",
     "us_sector_discretionary",
     "us_sector_energy",
     "us_sector_financials",
     "us_sector_health",
     "us_sector_industrials",
     "us_sector_materials",
+    "us_sector_realestate",
     "us_sector_staples",
     "us_sector_tech"
   ],
   "held": [
     "energy_complex",
-    "us_sector_energy",
     "big_pharma",
-    "cybersecurity"
+    "us_sector_energy",
+    "defensives"
   ],
   "leader": "memory_storage",
   "names": {

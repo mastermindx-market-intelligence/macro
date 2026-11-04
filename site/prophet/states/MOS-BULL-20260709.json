@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MOS-BULL-20260709",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.8,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 58.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.273,
+    "dist_to_stop_r": -0.25,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 246.7,
-    "p1": -0.8485,
-    "p2": -0.4242,
+    "horizon_pct_used": 248.9,
+    "p1": -0.8333,
+    "p2": -0.4167,
     "p3": null,
-    "move_r": -1.273,
+    "move_r": -1.25,
     "mfe_r": 1.37,
     "mae_r": -1.669
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-28",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 111,
-  "tau": 2.4667,
+  "days_elapsed": 112,
+  "tau": 2.4889,
   "closed": true,
   "outcome": "EXPIRED"
 }

@@ -1,28 +1,28 @@
 {
-  "08698d48e1a9": {
-    "name_en": "Cross-sector cluster \u00b7 Basic Materials + Energy",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Basic Materials + Energy",
-    "score": 57.2
-  },
-  "0b4ec15377f6": {
+  "0fe2f0f53a13": {
     "name_en": "Emerging Industrials cluster",
     "name_zh": "\u65b0\u5174 Industrials \u96c6\u7fa4",
-    "score": 51.5
+    "score": 52.0
   },
   "61a55f63f603": {
     "name_en": "Emerging Basic Materials cluster",
     "name_zh": "\u65b0\u5174 Basic Materials \u96c6\u7fa4",
-    "score": 55.0
+    "score": 52.4
   },
-  "71f0aa208556": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Real Estate",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Real Estate",
-    "score": 51.6
+  "6257b1a51edc": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
+    "score": 50.1
+  },
+  "83b928dbe62d": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Basic Materials",
+    "score": 46.7
   },
   "bbb7d32e69fd": {
     "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
-    "score": 56.1
+    "score": 56.3
   },
   "cfcb580681ec": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Basic Materials",

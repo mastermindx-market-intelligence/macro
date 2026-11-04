@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "KEX-BULL-20260831",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 34.6,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 100.0,
-    "progress": 10.7,
-    "pace": 6.0,
-    "retention": 49.5,
-    "overlay": 52.9
+    "validity": 89.5,
+    "progress": 0.0,
+    "pace": 4.7,
+    "retention": 0.0,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.127,
-    "dist_to_t1_r": 1.373,
-    "dist_to_t2_r": 2.873,
-    "horizon_pct_used": 140.0,
-    "p1": 0.0848,
-    "p2": 0.0424,
+    "dist_to_stop_r": 0.921,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 142.2,
+    "p1": -0.0526,
+    "p2": -0.0263,
     "p3": null,
-    "move_r": 0.127,
+    "move_r": -0.079,
     "mfe_r": 0.257,
     "mae_r": -0.816
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 63,
-  "tau": 1.4,
+  "days_elapsed": 64,
+  "tau": 1.4222,
   "closed": true,
   "outcome": "EXPIRED"
 }
