@@ -295,6 +295,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -2563,6 +2564,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -3738,6 +3740,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -8413,6 +8416,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -11077,6 +11081,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "lib/intl_boe_publication.py"
@@ -11444,6 +11449,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/test_intl_library_retained.py"
+      - "tests/test_intl_library_render_ledgers.py"
+      - "tests/test_intl_retained_library_continuation.py"
+      - "lib/intl_library_retained.py"
       - "templates/intl_workspace_macro.css"
       - "tests/test_intl_workspace_macro_render.py"
       - "tests/test_intl_investigation_action_render.py"
@@ -11826,7 +11835,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow jinja2 requests openpyxl
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_investigation_action_render.py tests/test_intl_investigation_action.py tests/test_intl_investigation_action_mount.py tests/test_intl_snapshot_precision.py tests/test_intl_boe_source.py tests/test_intl_boe_publication.py tests/test_intl_boe_collector.py tests/test_intl_ecb_policy_source.py tests/test_intl_ecb_policy_publication.py tests/test_intl_generation_publication.py tests/test_intl_feed_reader.py tests/test_intl_policy_publication.py tests/test_intl_policy_feed_preview.py tests/test_intl_gs_deferred_render.py tests/test_intl_investigation_owner.py tests/test_intl_investigation_projection.py tests/test_intl_investigation_publication.py tests/test_intl_eurostat_annual_source.py tests/test_intl_eurostat_annual_publication.py tests/test_intl_eurostat_annual_pressure.py tests/test_intl_eod_component_scope.py tests/test_intl_eurostat_source.py tests/test_intl_eurostat_publication.py tests/test_intl_real_field_publication.py tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
+        run: python -m pytest tests/test_intl_library_retained.py tests/test_intl_library_render_ledgers.py tests/test_intl_retained_library_continuation.py tests/test_intl_investigation_action_render.py tests/test_intl_investigation_action.py tests/test_intl_investigation_action_mount.py tests/test_intl_snapshot_precision.py tests/test_intl_boe_source.py tests/test_intl_boe_publication.py tests/test_intl_boe_collector.py tests/test_intl_ecb_policy_source.py tests/test_intl_ecb_policy_publication.py tests/test_intl_generation_publication.py tests/test_intl_feed_reader.py tests/test_intl_policy_publication.py tests/test_intl_policy_feed_preview.py tests/test_intl_gs_deferred_render.py tests/test_intl_investigation_owner.py tests/test_intl_investigation_projection.py tests/test_intl_investigation_publication.py tests/test_intl_eurostat_annual_source.py tests/test_intl_eurostat_annual_publication.py tests/test_intl_eurostat_annual_pressure.py tests/test_intl_eod_component_scope.py tests/test_intl_eurostat_source.py tests/test_intl_eurostat_publication.py tests/test_intl_real_field_publication.py tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
 
   international-global-watch:
     # IM18: GS-local watch-condition lifecycle contract — the pure evaluator
@@ -11866,6 +11875,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "tests/intl_investigation_action_controller.test.cjs"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
@@ -12889,6 +12899,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -15514,6 +15525,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "lib/intl_boe_publication.py"
@@ -16114,6 +16126,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
@@ -17247,6 +17260,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -19818,6 +19832,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "lib/intl_boe_publication.py"
@@ -23885,6 +23900,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "lib/intl_boe_publication.py"
@@ -24339,6 +24355,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "lib/intl_boe_publication.py"
@@ -24689,6 +24706,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "lib/intl_boe_publication.py"
@@ -31556,6 +31574,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -36186,6 +36205,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "lib/intl_boe_publication.py"
@@ -41420,6 +41440,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -44835,6 +44856,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -46210,6 +46232,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -51506,6 +51529,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "lib/intl_library_retained.py"
       - "lib/intl_investigation_action.py"
       - "lib/intl_investigation_action_mount.py"
       - "app/macro_policy_preview.py"
