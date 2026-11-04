@@ -1,0 +1,20 @@
+{
+  "schema": "d04.heatmap_asset_stamp.v1",
+  "at": "2026-11-04T20:02:13.597459+00:00",
+  "owner": "scripts.optimize_assets.make_optimizer",
+  "old_tag": "<script src=\"heatmap.js?v=dacc4201\" defer></script>",
+  "new_tag": "<script src=\"heatmap.js?v=d72dc153\" defer></script>",
+  "old_html_sha256": "fc7b84f01b45c5e57380be4befe2f3e2a45ff71540598f91a310c9c5a1cbf1ce",
+  "new_html_sha256": "789e0c091c9c63224fde60308c3299b722ed97a6d27479b233bfbe1771cf7d65",
+  "javascript_sha256": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+  "only_content_fingerprint_changed": true,
+  "browser_observation": {
+    "at": "2026-11-04T20:02:36.879834+00:00",
+    "requested_url": "http://127.0.0.1:49845/heatmap.js?v=d72dc153",
+    "response_status": 200,
+    "response_sha256": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "rendered_items": 36,
+    "page_errors": [],
+    "cache_version_and_served_bytes_match": true
+  }
+}

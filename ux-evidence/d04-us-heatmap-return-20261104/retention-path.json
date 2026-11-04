@@ -1,0 +1,96 @@
+{
+  "nodes_in_heap": 515590,
+  "marked_retired_nodes": 1,
+  "strong_retaining_paths": [
+    {
+      "target": {
+        "type": "native",
+        "name": "<div class=\"hm-tm\">",
+        "id": 326803
+      },
+      "reachable": true,
+      "path": [
+        {
+          "from": {
+            "type": "synthetic",
+            "name": "",
+            "id": 1
+          },
+          "edge": {
+            "type": "element",
+            "name": "1"
+          },
+          "to": {
+            "type": "synthetic",
+            "name": "(GC roots)",
+            "id": 3
+          }
+        },
+        {
+          "from": {
+            "type": "synthetic",
+            "name": "(GC roots)",
+            "id": 3
+          },
+          "edge": {
+            "type": "element",
+            "name": "10"
+          },
+          "to": {
+            "type": "synthetic",
+            "name": "(Global handles)",
+            "id": 23
+          }
+        },
+        {
+          "from": {
+            "type": "synthetic",
+            "name": "(Global handles)",
+            "id": 23
+          },
+          "edge": {
+            "type": "internal",
+            "name": "4 / DevTools console"
+          },
+          "to": {
+            "type": "native",
+            "name": "<a class=\"hm-mrow\" data-hm-key=\"AAPL\" data-hm-group=\"Technology\" href=\"https://app.mastermind-x.com/terminal?symbol=AAPL\">",
+            "id": 7273
+          }
+        },
+        {
+          "from": {
+            "type": "native",
+            "name": "<a class=\"hm-mrow\" data-hm-key=\"AAPL\" data-hm-group=\"Technology\" href=\"https://app.mastermind-x.com/terminal?symbol=AAPL\">",
+            "id": 7273
+          },
+          "edge": {
+            "type": "element",
+            "name": "8"
+          },
+          "to": {
+            "type": "native",
+            "name": "<div class=\"hm-mgrp\">",
+            "id": 346462
+          }
+        },
+        {
+          "from": {
+            "type": "native",
+            "name": "<div class=\"hm-mgrp\">",
+            "id": 346462
+          },
+          "edge": {
+            "type": "element",
+            "name": "5"
+          },
+          "to": {
+            "type": "native",
+            "name": "<div class=\"hm-tm\">",
+            "id": 326803
+          }
+        }
+      ]
+    }
+  ]
+}

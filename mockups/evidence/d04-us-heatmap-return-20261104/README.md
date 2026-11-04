@@ -1,4 +1,19 @@
-# D04 — standalone US heatmap return and complete list access
+# D04 — standalone US heatmap return, complete lists and bounded lifecycle work
+
+## Current lifecycle and performance continuation
+
+The published complete-List baseline is `61844ffd1b6e53d8e63122141b1125b3d6219bd3`. Its successor removes redundant US List/history work while preserving the delivered journeys below. History capture stops at the first visible row, skips the offscreen List when no row can be a visible anchor, and retains the original fallback. Filtering no longer repeats positioning, and restored disclosure notifications do not repeat an already-recorded history write.
+
+In the controlled 4× CPU-throttled run, desktop Themes→S&P List median was **186.95 ms**, compared with **1,076.60 ms** before the repair. Final phone medians were **183.15 ms at 390px** and **201.90 ms at 320px**. These are local action-to-frame observations, not field Web Vitals. Complete expanded Theme-list reconstruction still reached approximately **0.8–1.0 seconds** under that stress condition and remains a disclosed performance gap.
+
+The clean final-source lifecycle check collected the retired List and found **zero growth in retained DOM nodes or event listeners** across the exercised cycles at all three widths. Earlier apparent growth was traced to debugger console target handles; the failed instrumented observations and the actual retaining path are preserved, with a separate by-value browser protocol mode for collection proof. No shared observer or overlay was changed on the basis of that artifact.
+
+The generated US page now requests **`heatmap.js?v=d72dc153`**, produced by the existing asset optimizer. An actual local browser response returned 200 and the exact matching JavaScript digest. The previous stamp was stale; only that generated content fingerprint changed in the page.
+
+[Repairs, measurements, profiler attribution and limits](LIFECYCLE_AND_PERFORMANCE.md) · [Current validation](lifecycle-validation.json) · [Current affected browser journeys](../../../ux-evidence/d04-us-heatmap-return-20261104/lifecycle-functional/browser-report.json) · [Cache-stamp/browser readback](../../../ux-evidence/d04-us-heatmap-return-20261104/cache-stamp.json).
+
+This continuation adds scoped A061/A063 evidence. All 75 whole-programme cases remain unpromoted, all release holds remain, and the historical List-access proof below retains its own inputs.
+
 
 ## Delivered behavior and acceptance boundary
 
@@ -34,7 +49,7 @@ This extends the existing list renderer and history schema. It adds no account s
 
 The history entry stores configuration, an observation receipt and a logical position/focus descriptor. It does not store the market payload or claim replay of prior membership or prices. Current feed data are rendered. Unsupported saved timeframes remain explicit until an available choice is made. When none is available, the notice says that settings are retained and no timeframe is currently available. Map search retains its existing tile emphasis; List search now filters the supplied rows on desktop and phone.
 
-## Verification on the current source hashes
+## Published List-access verification at 61844ffd
 
 The final browser run passed **45 cases**, recorded **zero page errors**, and produced **29 functional screenshots**. The unchanged canonical capture owner produced **24 states: eight rest, eight focus and eight hover** across desktop 1440 and mobile 390, EN/ZH, dark/light. The final functional run is separately bound to the final harness hash; accepted canonical captures were retained.
 
@@ -120,7 +135,7 @@ No merge, Ready/un-draft, enqueue, auto-merge, held-label change or production d
 
 The optional Fabric commission `d04-us-heatmap-return-20261104-state-tests`, original root/parent `d04-us-heatmap-return-20261104`, original controller PID `72554`, remains separately uncertain. Worker START/root/result were not proven; controller binding was lost. No result was consumed and no retry, replacement, re-home or acceptance occurred. This is **EFFECT_UNKNOWN for that original commission**, not a running/completed worker or review approval. Bounded native reasoning advice was accepted/STOP; root authored, tested and visually checked the source.
 
-Next: observe exact-head CI on this held draft, record its result in the existing D04 continuation, and advance only the next authorized owned slice. Once owning foundation/runtime interfaces qualify, compose the owned routes, persistence and Paper references and perform the remaining programme journeys. Do not redo accepted Confluence evidence or reconstruct the delivered discovery package without a material change.
+Next: observe exact-head CI for the current held draft, record its result in the existing D04 continuation, and repair only an actual owned failure. The finite lifecycle continuation is documented above; expanded-list rendering and field budgets remain explicitly unaccepted. Once owning foundation/runtime interfaces qualify, compose the owned routes, persistence and Paper references and perform the remaining programme journeys. Do not redo accepted Confluence evidence or reconstruct the delivered discovery package without a material change.
 
 ## Historical import-hygiene repair
 

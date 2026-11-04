@@ -1855,9 +1855,13 @@
     tm.addEventListener('mouseleave', onLeave);
     tm.addEventListener('click', onClick);
     function onDisclosure(e) {
-      if (!entry || !tm.contains(e.target) || !e.target.matches('details[data-hm-disclosure]')) return;
-      if (e.target.open) openThemes[e.target.getAttribute('data-hm-disclosure')] = true;
-      else delete openThemes[e.target.getAttribute('data-hm-disclosure')];
+      if (!entry || retired || !tm.contains(e.target) || !e.target.matches('details[data-hm-disclosure]')) return;
+      var key = e.target.getAttribute('data-hm-disclosure');
+      // Layout already records restored/filtered disclosure state. Native
+      // toggle events from those new nodes must not serialize it again.
+      if (!!openThemes[key] === e.target.open) return;
+      if (e.target.open) openThemes[key] = true;
+      else delete openThemes[key];
       changed();
     }
     if (entry) {
@@ -2136,8 +2140,9 @@
     if (searchEl) {
       searchEl.addEventListener('input', function () {
         _q = (searchEl.value || '').trim().toLowerCase();
-        if (entry && mode === 'list') layoutList(); else applyFilter();
-        positioned(); changed();
+        if (entry && mode === 'list') layoutList();
+        else { applyFilter(); positioned(); }
+        changed();
       });
     }
 
@@ -2843,9 +2848,19 @@
       if (otherHistoryOwner() || !activeKey || !state.views[activeKey]) return;
       var item = target && target.closest && target.closest('[data-hm-key]');
       if (!item || !full.contains(item)) {
-        item = Array.prototype.filter.call(full.querySelectorAll('[data-hm-key]'), function (el) {
-          var r = el.getBoundingClientRect(); return r.height > 0 && r.width > 0 && r.bottom > 90 && r.top < window.innerHeight;
-        })[0];
+        item = null;
+        // List rows stay inside this normal-flow container. When the entire
+        // list is outside the return band, no row can be a visible anchor.
+        var list = full.querySelector('.hm-list .hm-tm');
+        var bounds = list && list.getBoundingClientRect();
+        var outside = bounds && (bounds.bottom <= 90 || bounds.top >= window.innerHeight);
+        var candidates = outside ? [] : full.querySelectorAll('[data-hm-key]');
+        for (var i = 0; i < candidates.length; i++) {
+          var candidate = candidates[i], rect = candidate.getBoundingClientRect();
+          if (rect.height > 0 && rect.width > 0 && rect.bottom > 90 && rect.top < window.innerHeight) {
+            item = candidate; break;
+          }
+        }
       }
       var r = (item || full).getBoundingClientRect();
       state.position = { map: activeKey, key: item ? item.getAttribute('data-hm-key') : '', group: item ? item.getAttribute('data-hm-group') || '' : '',
