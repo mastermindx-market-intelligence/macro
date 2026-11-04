@@ -1,0 +1,741 @@
+{
+  "kind": "F03_native_file_pair_readback_v1",
+  "observed_date_utc": "2026-11-04",
+  "carrier": "Mastermind Paper direct paper_read get_basic_info on exact original and historical copy; no Paper edits",
+  "source": {
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "file_name": "MASTERMIND PAGES",
+    "page_count": 62,
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-1P-0",
+        "name": "00 · START HERE · Product & File Navigation",
+        "icon": "arrow"
+      },
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "Archetype Starters · Governed",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-27-0",
+        "name": "F01 · Shell system · v1 candidate · Review pending",
+        "icon": "blueprint"
+      },
+      {
+        "type": "page",
+        "id": "p-26-1",
+        "name": "Intraday Flow · R1 · Discovery workspace · DRAFT",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-25-0",
+        "name": "Options · Research Desk · R1 · 2026-11-02",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-24-0",
+        "name": "Sector Intelligence · R3 · Completion · 2026-10-21",
+        "icon": "design"
+      },
+      {
+        "type": "page",
+        "id": "p-29-0",
+        "name": "D06 · Market structure, stages and model allocation · R1",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-28-0",
+        "name": "DRAFT · T47 · Ranked snapshot search · 2026-11-04",
+        "icon": "design"
+      },
+      {
+        "type": "page",
+        "id": "p-23-0",
+        "name": "Shared Shell · Completion & Integration · R1",
+        "icon": "blueprint"
+      },
+      {
+        "type": "page",
+        "id": "p-22-0",
+        "name": "Market Memory · Evidence workspace · R1 · 2026-10-18",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-20-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-1Z-1",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-1Y-1",
+        "name": "ARCHIVE · Bonds + Transmission · pre-R30",
+        "icon": "paper"
+      },
+      {
+        "type": "page",
+        "id": "p-1X-1",
+        "name": "Forex · Archive · Prior studies & build history",
+        "icon": "paper"
+      },
+      {
+        "type": "page",
+        "id": "p-1W-1",
+        "name": "Macro · Dark Flow · Implementation · 2026-10-17",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-1U-0",
+        "name": "Shared Market · Prepared Research + Reading · Reference",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1T-0",
+        "name": "Shared Market · Watchlists + Save States · Reference",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1S-0",
+        "name": "Shared Market · Search + Comparison · Reference",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1R-0",
+        "name": "Shared Market · All Tools + Research Launcher · Reference",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1Q-0",
+        "name": "01 · Design Foundations · Components & Archetype Rules",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1N-0",
+        "name": "Gov Revenue · Builder Contracts & State Specimens",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1M-0",
+        "name": "BioCatalyst · Builder & Acceptance Contracts",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1L-0",
+        "name": "ARCHIVE · Synthetic Catalyst Investment Cases · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1K-0",
+        "name": "MedTech · Regulatory Catalyst R13 · Design References",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1J-0",
+        "name": "REFERENCE · Policy Watch R2–R3 & HELD · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1I-0",
+        "name": "ARCHIVE · Commodities Legacy 90–94 · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1H-0",
+        "name": "Bonds · Decision & Credit Studies · Revision index",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1F-0",
+        "name": "Forex · Advanced Movement & Decision Studies · R17–R24",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1E-0",
+        "name": "Cross-Asset · Bonds × Forex Transmission & Confluence · Studies",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1B-0",
+        "name": "ARCHIVE · Earnings and Dossiers Original Source · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1A-0",
+        "name": "ARCHIVE · Intelligence Hub R4 Original Source · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-18-0",
+        "name": "Investor Shell · Market Overview · Design Candidates",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-17-0",
+        "name": "REFERENCE · Forex Alternate R19–R21 Studies",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-16-0",
+        "name": "ARCHIVE · Forex Duplicate Study · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-15-0",
+        "name": "Returns Calendar · Terminal + Dossier",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-14-0",
+        "name": "Bot Paper Portfolio · V3 Upgrade · 2026-10-09",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-Q-0",
+        "name": "Earnings + Dossiers · North Star Study · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-3-1",
+        "name": "News Intelligence · 2026-09-20",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-D-0",
+        "name": "Mastermind · Shared Shell · Review 01 · 2026-09-24",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-13-1",
+        "name": "Market Breadth · Command Center · R1 · 2026-09-29",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-A-0",
+        "name": "Confluence Screener · Governed Reference · 2026-09-22",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-H-1",
+        "name": "Confluence Screener · R2 · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-O-1",
+        "name": "Bonds · Decision Workspace · R1 · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-N-1",
+        "name": "Forex · Guided Intelligence · R1 · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-J-1",
+        "name": "Policy Watch · Decision Desk · R1 Study · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-8-1",
+        "name": "Live Site Baselines · Wave 1 · 2026-09-21",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-T-0",
+        "name": "Intelligence Hub · Unified US + China · R4 · 2026-09-27",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-10-0",
+        "name": "Crypto Intelligence · R4 · Design References",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-L-0",
+        "name": "Commodities · R1 Study · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-Y-0",
+        "name": "Sector Intelligence · R2 · Current Build · 2026-09-27",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-S-1",
+        "name": "Gov Revenue · Signal Desk · R5 · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-K-0",
+        "name": "BioCatalyst · North Star + Build Blueprint · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-Z-0",
+        "name": "ARCHIVE · Sector Intelligence · Legacy Studies · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-V-0",
+        "name": "ARCHIVE · Company Intelligence · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-11-0",
+        "name": "ARCHIVE · Crypto Intelligence · R1–R2 · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-X-0",
+        "name": "ARCHIVE · Intelligence Hub · R1–R3 · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-W-0",
+        "name": "ARCHIVE · International Markets · R9 · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-E-1",
+        "name": "Sector Intelligence · vNext Study · 2026-09-24",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-6-1",
+        "name": "Sector Intelligence · Unified Detail · 2026-09-21",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-I-1",
+        "name": "Intelligence Hub · R1 Study · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-9-0",
+        "name": "Sector Central · Redesign · 2026-09-21",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-7-1",
+        "name": "China Intelligence · vNext · 2026-09-21",
+        "icon": null
+      }
+    ],
+    "tokens_hash": "cfd3d65c",
+    "warnings": [
+      "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+    ]
+  },
+  "candidate": {
+    "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+    "file_name": "MASTERMIND PAGES (copy)",
+    "page_count": 57,
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "Archetype Starters · Governed",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-24-0",
+        "name": "Sector Intelligence · R3 · Completion · 2026-10-21",
+        "icon": "design"
+      },
+      {
+        "type": "page",
+        "id": "p-23-0",
+        "name": "Shared Shell · Completion & Integration · R1",
+        "icon": "blueprint"
+      },
+      {
+        "type": "page",
+        "id": "p-22-0",
+        "name": "Market Memory · Evidence workspace · R1 · 2026-10-18",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-20-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-1Z-1",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-1Y-1",
+        "name": "ARCHIVE · Bonds + Transmission · pre-R30",
+        "icon": "paper"
+      },
+      {
+        "type": "page",
+        "id": "p-1X-1",
+        "name": "Forex · Archive · Prior studies & build history",
+        "icon": "paper"
+      },
+      {
+        "type": "page",
+        "id": "p-1W-1",
+        "name": "Macro · Dark Flow · Implementation · 2026-10-17",
+        "icon": "line-chart"
+      },
+      {
+        "type": "page",
+        "id": "p-1U-0",
+        "name": "Shared Market · Prepared Research + Reading · Reference",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1T-0",
+        "name": "Shared Market · Watchlists + Save States · Reference",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1S-0",
+        "name": "Shared Market · Search + Comparison · Reference",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1R-0",
+        "name": "Shared Market · All Tools + Research Launcher · Reference",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1Q-0",
+        "name": "01 · Design Foundations · Components & Archetype Rules",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1P-0",
+        "name": "00 · START HERE · Product & File Navigation",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1N-0",
+        "name": "Gov Revenue · Builder Contracts & State Specimens",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1M-0",
+        "name": "BioCatalyst · Builder & Acceptance Contracts",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1L-0",
+        "name": "ARCHIVE · Synthetic Catalyst Investment Cases · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1K-0",
+        "name": "MedTech · Regulatory Catalyst R13 · Design References",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1J-0",
+        "name": "REFERENCE · Policy Watch R2–R3 & HELD · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1I-0",
+        "name": "ARCHIVE · Commodities Legacy 90–94 · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1H-0",
+        "name": "Bonds · Advanced Mechanism & Decision Studies · R18–R25",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1F-0",
+        "name": "Forex · Advanced Movement & Decision Studies · R17–R24",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1E-0",
+        "name": "Cross-Asset · Bonds × Forex Transmission & Confluence · Studies",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1B-0",
+        "name": "ARCHIVE · Earnings and Dossiers Original Source · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-1A-0",
+        "name": "ARCHIVE · Intelligence Hub R4 Original Source · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-18-0",
+        "name": "Investor Shell · Market Overview · Design Candidates",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-17-0",
+        "name": "REFERENCE · Forex Alternate R19–R21 Studies",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-16-0",
+        "name": "ARCHIVE · Forex Duplicate Study · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-15-0",
+        "name": "Returns Calendar · Terminal + Dossier",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-14-0",
+        "name": "Bot Paper Portfolio · V3 Upgrade · 2026-10-09",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-Q-0",
+        "name": "Earnings + Dossiers · North Star Study · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-3-1",
+        "name": "News Intelligence · 2026-09-20",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-D-0",
+        "name": "Mastermind · Shared Shell · Review 01 · 2026-09-24",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-13-1",
+        "name": "Market Breadth · Command Center · R1 · 2026-09-29",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-A-0",
+        "name": "Confluence Screener · Governed Reference · 2026-09-22",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-H-1",
+        "name": "Confluence Screener · R2 · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-O-1",
+        "name": "Bonds · Decision Workspace · R1 · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-N-1",
+        "name": "Forex · Guided Intelligence · R1 · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-J-1",
+        "name": "Policy Watch · Decision Desk · R1 Study · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-8-1",
+        "name": "Live Site Baselines · Wave 1 · 2026-09-21",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-T-0",
+        "name": "Intelligence Hub · Unified US + China · R4 · 2026-09-27",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-10-0",
+        "name": "Crypto Intelligence · R3 · Current Build · 2026-09-27",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-L-0",
+        "name": "Commodities · R1 Study · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-Y-0",
+        "name": "Sector Intelligence · R2 · Current Build · 2026-09-27",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-S-1",
+        "name": "Gov Revenue · Signal Desk · R5 · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-K-0",
+        "name": "BioCatalyst · North Star + Build Blueprint · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-Z-0",
+        "name": "ARCHIVE · Sector Intelligence · Legacy Studies · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-V-0",
+        "name": "ARCHIVE · Company Intelligence · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-11-0",
+        "name": "ARCHIVE · Crypto Intelligence · R1–R2 · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-X-0",
+        "name": "ARCHIVE · Intelligence Hub · R1–R3 · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-W-0",
+        "name": "ARCHIVE · International Markets · R9 · Not for Build",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-E-1",
+        "name": "Sector Intelligence · vNext Study · 2026-09-24",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-6-1",
+        "name": "Sector Intelligence · Unified Detail · 2026-09-21",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-I-1",
+        "name": "Intelligence Hub · R1 Study · 2026-09-26",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-9-0",
+        "name": "Sector Central · Redesign · 2026-09-21",
+        "icon": null
+      },
+      {
+        "type": "page",
+        "id": "p-7-1",
+        "name": "China Intelligence · vNext · 2026-09-21",
+        "icon": null
+      }
+    ],
+    "tokens_hash": "cfd3d65c",
+    "warnings": []
+  },
+  "native_restore_not_claimed": true,
+  "paper_mutations": 0
+}

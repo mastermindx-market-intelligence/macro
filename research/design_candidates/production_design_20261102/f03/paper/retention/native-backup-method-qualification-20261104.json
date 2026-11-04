@@ -91,6 +91,30 @@
     "native duplicate_nodes inside oversized original",
     "browser or shell route around guarded adapter"
   ],
-  "outcome": "No genuinely safe, tested Paper-native backup method can currently be certified from read-only evidence. Stop at retention inventory/source QA; preserve both originals; ask vendor/authorized controller for the specific missing gates when a Paper resource-write phase is appropriate.",
-  "effects": "0 Paper-native writes, 0 clone attempts, 0 folder moves, 0 resource actions, 0 purchases. PR #10631 Draft/HOLD."
+  "outcome": "Source-only fail-closed native pair verifier and direct readback prove the historical 57-page copy incomplete despite matching token digest. No genuinely safe tested Paper-native backup/restore is yet certified; vendor oversized-copy contract, native resource-write carrier and harmless scratch canary remain missing. Preserve both originals and all 301 physical HOLD rows. Email outreach prohibited.",
+  "effects": "0 Paper-native writes, 0 clone attempts, 0 folder moves, 0 resource actions, 0 emails, 0 purchases. PR #10631 Draft/HOLD.",
+  "latest_read_only_qualification": {
+    "observed_date_utc": "2026-11-04",
+    "source": "paper/retention/native-file-pair-readback-20261104.json",
+    "negative_assessment": "paper/retention/native-file-pair-assessment-20261104.json",
+    "source_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "candidate_file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+    "source_pages": 62,
+    "candidate_pages": 57,
+    "tokens_hash_equal": "cfd3d65c",
+    "missing_original_page_ids": [
+      "p-27-0",
+      "p-26-1",
+      "p-25-0",
+      "p-29-0",
+      "p-28-0"
+    ],
+    "D06_6_of_6_JSX_native_tree_source_captured": true,
+    "read_only_verifier": "tools/verify_native_backup.py",
+    "hermetic_tests_passed": 12,
+    "method_state": "NOT_QUALIFIED_DO_NOT_EXECUTE",
+    "vendor_email_sent": false,
+    "canary_executed": false,
+    "restore_verified": false
+  }
 }
