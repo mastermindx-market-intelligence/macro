@@ -16,6 +16,8 @@ Cool canvas, white panels, fine neutral borders and the existing card-shadow tok
 
 Desktop places the evidence pair beside the recipe; phone places the pair below the title. Every D/W leg remains visible. Long company names wrap independently from unbroken ticker symbols. Native `details/summary` gives touch and keyboard users a persistent methodology disclosure; rate values are readable text, not unreliable touch tooltip triggers. Existing shared navigation and Brain chrome are unchanged.
 
+A period-comparison badge uses the actual numeric comparison for each period. A missing older comparison remains unavailable even if the producer's optional consistency flag is false.
+
 The private reader validates the complete expected row set before replacing any wall. It distinguishes denied, expired, unavailable, generation mismatch and malformed responses. Retry focus belongs to the current request and transfers only while the retry control still owns focus. Sign-out, account changes, visibility/page transitions and the existing session's expiry deadline clear paid rows. The existing protected endpoint remains the entitlement authority.
 
 ## Evidence and limits
@@ -24,10 +26,12 @@ The private reader validates the complete expected row set before replacing any 
 - [manifest.json](manifest.json) is emitted by the existing `scripts/capture_page_evidence.py` owner. Its matrix includes anonymous desktop/mobile × EN/ZH × dark/light, plus actual focus and hover interactions.
 - [smells.json](smells.json) is a measured census, not a visual approval.
 - The nearest Git HEAD in the canonical capture records the base checkout; it is not a claim that the uncommitted candidate was deployed. The page's Git blob and the implementation report's SHA-256 bind the actual served bytes.
-- The separate finite handler harness passed 39 cases; the page/miner suite passed 132 tests. Controlled auth and private HTTP responses exercise reader behavior without claiming live server entitlement or subscription-revocation acceptance. Full logs and 23 labeled fixture screenshots are retained through the D04 domain carrier.
+- The separate finite handler harness passed 39 cases; the page/miner suite passed 138 tests. Controlled auth and private HTTP responses exercise reader behavior without claiming live server entitlement or subscription-revocation acceptance. Full logs and 23 labeled fixture screenshots are retained through the D04 domain carrier.
 - Samples measure 5.73:1 contrast in dark and 7.03:1 in light in the dense fixture. No page overflow was observed at 320, 390, 820, 1024 and 1440 CSS pixels. This does not claim a full assistive-technology or actual 400% zoom audit.
 - Existing floating Brain chrome can overlap the right edge on a phone. Existing shared Lens behavior for legacy metadata was not rewritten; the new methodology disclosure provides the numerical definitions on touch. These are retained owner constraints, not hidden screenshot exclusions.
 - Session expiry bounds display; plan revocation without an auth event is learned through the existing owner or the next protected read. There is no new token, plan, polling or persistence owner.
+
+The final missing-older-comparison repair preserved the served page blob exactly: `054327e23503f980cbf2fa99b1503c84e3fd4641`. The 24 canonical captures therefore remain valid for those page bytes; the 138 source/miner tests and 39 handler cases were rerun after that repair.
 
 F01/F02 final joint foundations and P00 Paper runtime acceptance remain separate gates. No D04 Paper mutation was dispatched. All 25 inherited reference conditions retain their recorded status; these local checks do not close the whole programme's reference review.
 

@@ -76,6 +76,7 @@ def _make_raw(*, free_active=("FREEAA",), gated2_active=("GATEDBB",),
                     "last_fire": "2026-07-15",
                     "fires_per_year": 3.5,
                     "edge_wr_test": 0.20,
+                    "edge_wr_train": 0.10,
                     "consistent": True,
                 },
                 # Rank 2 (gated)
@@ -92,6 +93,7 @@ def _make_raw(*, free_active=("FREEAA",), gated2_active=("GATEDBB",),
                     "last_fire": "2026-07-14",
                     "fires_per_year": 2.8,
                     "edge_wr_test": 0.15,
+                    "edge_wr_train": -0.02,
                     "consistent": False,
                 },
                 # Rank 3 (gated)
@@ -108,6 +110,7 @@ def _make_raw(*, free_active=("FREEAA",), gated2_active=("GATEDBB",),
                     "last_fire": "2026-07-13",
                     "fires_per_year": 2.0,
                     "edge_wr_test": 0.10,
+                    "edge_wr_train": 0.08,
                     "consistent": True,
                 },
                 # Rank 4 — would be rank 4 if there were more
@@ -124,6 +127,7 @@ def _make_raw(*, free_active=("FREEAA",), gated2_active=("GATEDBB",),
                     "last_fire": "2026-07-12",
                     "fires_per_year": 1.5,
                     "edge_wr_test": 0.05,
+                    "edge_wr_train": -0.01,
                     "consistent": False,
                 },
                 # Inactive combo (should NOT count toward n_active_total)
@@ -644,6 +648,8 @@ def test_baseline_readings_come_from_source_not_derived_edge():
 @pytest.mark.parametrize("field,value", [
     ("edge_wr_test", None), ("edge_wr_test", "0.2"), ("edge_wr_test", True),
     ("edge_wr_test", 1.5), ("consistent", None), ("consistent", "false"),
+    ("edge_wr_train", None), ("edge_wr_train", "0.1"), ("edge_wr_train", True),
+    ("edge_wr_train", 1.5),
     ("n_fires", None), ("n_fires", 0), ("first_fire", None),
     ("first_fire", "2005-02-30"), ("last_fire", None),
     ("fires_per_year", None), ("fires_per_year", -1),
@@ -665,8 +671,15 @@ def test_optional_evidence_missingness_does_not_erase_valid_rates(field, value):
         assert "Above baseline in both periods" not in card
     elif field == "consistent":
         assert first["consistent"] is None
+        # Known positive comparisons in both periods remain readable even when
+        # the optional producer flag is absent or malformed.
+        assert "Above baseline in both periods" in card
+        assert "Above baseline only in the recent period" not in card
+    elif field == "edge_wr_train":
+        assert first["edge_train_pp"] is None
         assert "Older-period comparison unavailable" in card
         assert "Above baseline only in the recent period" not in card
+        assert "Above baseline in both periods" not in card
     else:
         assert not first["history_complete"]
         assert "Historical frequency details unavailable" in card
@@ -675,7 +688,7 @@ def test_optional_evidence_missingness_does_not_erase_valid_rates(field, value):
 
 def test_absent_optional_evidence_is_not_negative_evidence():
     raw = copy.deepcopy(_make_raw())
-    for field in ("edge_wr_test", "consistent", "n_fires", "first_fire", "last_fire", "fires_per_year"):
+    for field in ("edge_wr_test", "edge_wr_train", "consistent", "n_fires", "first_fire", "last_fire", "fires_per_year"):
         raw["combos"]["long"][0].pop(field)
     ctx = build_context(raw, {})
     assert ctx["source_status"] == "available"
@@ -704,3 +717,15 @@ def test_missing_rank_is_not_silently_ranked_as_zero():
     raw = copy.deepcopy(_make_raw())
     raw["combos"]["long"][0].pop("rank_score")
     assert build_context(raw, {})["source_status"] == "unavailable"
+
+
+@pytest.mark.parametrize("flag", [True, False])
+def test_consistency_flag_cannot_supply_missing_older_comparison(flag):
+    raw = copy.deepcopy(_make_raw())
+    raw["combos"]["long"][0].update(consistent=flag, edge_wr_train=None)
+    ctx = build_context(raw, {})
+    assert ctx["combos"][0]["edge_test_pp"] > 0
+    card = render_html(_HERE, ctx).split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
+    assert "Older-period comparison unavailable" in card
+    assert "Above baseline only in the recent period" not in card
+    assert "Above baseline in both periods" not in card

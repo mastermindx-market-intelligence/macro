@@ -372,11 +372,11 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
           <span class="l-en">{{ '%+.1f'|format(c.edge_test_pp) }} percentage points vs random entry</span>
           <span class="l-zh">较随机入场 {{ '%+.1f'|format(c.edge_test_pp) }} 个百分点</span>
         </span>
-        {% if c.consistent is sameas true %}
+        {% if c.edge_train_pp is not none and c.edge_train_pp > 0 and c.edge_test_pp > 0 %}
         <span class="chip ok">{{ t('Above baseline in both periods', '两期均高于基准') }}</span>
         {% elif c.edge_test_pp <= 0 %}
         <span class="chip">{{ t('Not above baseline recently', '近年未高于基准') }}</span>
-        {% elif c.consistent is sameas false %}
+        {% elif c.edge_train_pp is not none and c.edge_train_pp <= 0 %}
         <span class="chip">{{ t('Above baseline only in the recent period', '仅近年高于基准') }}</span>
         {% else %}
         <span class="chip">{{ t('Older-period comparison unavailable', '更早时期比较暂无数据') }}</span>

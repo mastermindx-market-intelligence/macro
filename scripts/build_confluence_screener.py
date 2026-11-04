@@ -256,8 +256,12 @@ def build_context(raw: dict | None, name_map: dict) -> dict:
             frequency = None
         edge = c.get("edge_wr_test")
         edge_pp = edge * 100 if _finite_number(edge) and -1 <= edge <= 1 else None
+        older_edge = c.get("edge_wr_train")
+        older_edge_pp = older_edge * 100 if _finite_number(older_edge) and -1 <= older_edge <= 1 else None
         consistent = c.get("consistent")
-        if type(consistent) is not bool or (consistent and (edge_pp is None or edge_pp <= 0)):
+        if type(consistent) is not bool or (consistent and (
+            edge_pp is None or edge_pp <= 0 or older_edge_pp is None or older_edge_pp <= 0
+        )):
             consistent = None
 
         combo_entry = {
@@ -278,6 +282,7 @@ def build_context(raw: dict | None, name_map: dict) -> dict:
             "fires_per_year": frequency,
             "history_complete": all(v is not None for v in (n_fires, first_fire, last_fire, frequency)),
             "edge_test_pp": edge_pp,
+            "edge_train_pp": older_edge_pp,
             "consistent": consistent,
             "is_free": is_free,
             "active_count": len(active_now),
