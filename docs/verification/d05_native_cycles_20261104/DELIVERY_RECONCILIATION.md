@@ -1,11 +1,74 @@
 # D05 delivery reconciliation — 4 November 2026
 
+## Resumed CI and preview qualification
+
+This continuation was tested on `1573afdee7f6956968bded3b84e5fd4e25a8c82c`
+and composes on `4802d1b1e2e53061c42f57e78223ab4e45b16c3a`, preserving its
+disjoint CI import-closure repair and the newly published Macro Dossier, Members and Company-return
+composition. Protected law was refreshed at
+`7aefe3fa3917faecf9b074a3033d37f6a4e7838a`; INDEX 1.0.1 remains compatible.
+The exact tested source hashes are in [the continuation record](ci_followthrough_20261104.json).
+
+The internal Cycles restore preflight now reports `preflight_ready`. Its sole
+entry consumer and executable fixtures use the same outcome. Publication,
+source-date, family, entry, cancellation and actual-application checks remain
+unchanged; the status does not suggest scientific validation. The original
+source-claims guard passes without an allowance or exclusion.
+
+The two hosted contract failures were reproduced by the admitted bounded
+worker. The declared-basis test now separately requires the correct changed
+content identity while every measured value remains equal. The ownership
+test derives the writer's composed output names from its static AST. Parent
+self-review found and reproduced an additional false witness from an unrelated
+loop; the derivation now uses only the nearest enclosing binding and refuses
+an unsupported inner shadow. No producer, ownership-map meaning or scientific
+model changed.
+
+Preview assets retain the original shared owners and now include the complete
+`theme.js → account.js → nav_market.js` chain and the overlay fallback.
+Final emitted-byte hashes are recorded separately from source-input hashes,
+after synthetic publication replacement. Deliberately missing narrative data
+remains explicit. Current Members rendering and candidate-overlay support are
+preserved.
+
+Executed on the combined candidate:
+
+- **22 passing** native preflight/publication/entry tests.
+- **87 passing** shared-shell bridge tests; the initial sparse-file failure was
+  repaired by materializing exact committed CSS/bridge inputs.
+- **57 passing** countercase, ownership and metric-definition tests, including
+  the additional lexical-scope negative regression.
+- Source-claims guard, both JS syntax checks, paired bytes and diff whitespace pass.
+- All **five preview scenarios** pass final asset digest checks and actual local
+  HTTP checks for account, overlay and navigation scripts at both page depths.
+
+The retained `dd903b3` browser return has now been read and checked: **42/42**
+behavior cases, **48** canonical image hashes, **16 focus + 16 hover** states
+actually applied, and **68** EW-P4 image hashes with no reported overflow or
+page exceptions. Actual representative screenshots were inspected alongside
+Paper A02, A05 and the R4.1 phone Dossier. That evidence stays bound to its
+intermediate source; its preview dependency gaps and dense mobile presentation
+prevent a final visual-acceptance claim. The current composed-journey evidence
+has its own [source and limits](COMPOSED_BROWSER.md).
+
+EW-P4's canonical receipt still needs current-render qualification. The
+Terminal receiver retains its original publisher gate, and the original
+13-route/119-planned-case programme remains broader than these focused checks.
+All Draft/HOLD and release restrictions remain.
+
+## Earlier source increment — retained historical evidence
+
+The following record describes the earlier `dd903b3` increment. Its former
+next-action and owner-status statements are historical, superseded by the
+continuation above and the current composed-journey record.
+
+
 This increment is source-tested and preserves the existing Draft/HOLD boundary.
 It does not establish complete D05, Company-return, production or final design
 acceptance. The original 13-route programme and 119 planned cases remain in the
 D05 design package; those cases are not all executed by this increment.
 
-## Source and custody
+### Source and custody
 
 The code is composed on Macro #10703 at
 `77b6e5d4771242320198b002878d8c842f9833b9`. Its pure entry export and
@@ -25,7 +88,7 @@ verification workspace as clean at 9906. The GitHub publication was reconstructe
 from the exact base and strict diff, and every resulting blob matched the actual
 tested Studio file.
 
-## What changed
+### What changed
 
 - **Theme evidence:** absent or unusable native falsifier summaries no longer
   become an evaluated clean negative. The native engine remains the sole
@@ -46,7 +109,7 @@ tested Studio file.
   fixture inputs remain dated, and CSS font/icon dependencies are copied
   recursively. Provenance records the source and digest of each copied asset.
 
-## Executed validation
+### Executed validation
 
 **253 passed, 5 skipped, 0 failed** in 74.14s across the five affected suites
 listed in [the exact validation record](delivery_reconciliation.json). These
@@ -60,7 +123,7 @@ checkout failures; no assertion was relaxed. Paired Cycles assets, Node syntax
 and diff whitespace checks pass. The coherent preview builds with six Inter
 font weights and navigation icons.
 
-## Retained browser evidence and its limits
+### Retained browser evidence and its limits
 
 The original browser return remains bound to source 2e6c4589. Actual result files
 show 7/7 passes for each of archive, same-date mismatch, mixed series and missing
@@ -81,7 +144,7 @@ No new browser worker or Fabric acceptance is implied by this source record.
 Original terminal return identities and their limitations are preserved in
 the JSON record.
 
-## Next exact proof
+### Next exact proof
 
 On a lawfully admitted browser host, build all five scenarios from the exact
 published combined source. Run the unchanged committed runner for all five in

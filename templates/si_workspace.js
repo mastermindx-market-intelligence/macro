@@ -605,7 +605,7 @@ function resumeExternalRestore(){
     if(!restorePublication(op))return stopExternalRestore(op,'source_changed');
     var preflight=window.SectorCyclesApply(cycleRestoreContext(op,true));
     if(preflight.status==='pending')return;
-    if(preflight.status!=='validated')return stopExternalRestore(op,preflight.reason||preflight.status);
+    if(preflight.status!=='preflight_ready')return stopExternalRestore(op,preflight.reason||preflight.status);
   }
   if(!op.applied){
     op.applied=true;

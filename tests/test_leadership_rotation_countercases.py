@@ -1103,7 +1103,14 @@ def test_cc_evidence_mode_declared_basis_flip_is_visible_at_the_source():
     """Flipping the DECLARED basis is visible end to end: the projection READS
     ``meta.rs_history.basis``, so a non-engine basis word projects ``unknown``
     and never a matching label, the engine word ``price`` projects
-    ``price_only``, and no measured value moves either way."""
+    ``price_only``, and no measured value moves either way.
+
+    The flip is visible in TWO places, not one: the projected label, and the
+    content identity of the source payload the projection consumed (the
+    declared basis is part of the hashed sector spine, so the identity moves
+    with it). The identity is provenance, not a measured value, so it is
+    excluded from the measured-value equality and asserted to have moved.
+    """
     # MUTATION: hard-coded price_basis literal (a declared non-engine basis word
     # still projects a matching label instead of `unknown`)
     from engine import inputs as engine_inputs
@@ -1119,15 +1126,35 @@ def test_cc_evidence_mode_declared_basis_flip_is_visible_at_the_source():
     assert proj_px["generation"]["price_basis"] == "unknown", \
         "the projection reads the declared basis: a non-engine word is unknown"
     assert proj_price["generation"]["price_basis"] == "price_only"
-    # the declared basis is a LABEL axis only: strip it from both projections and
-    # they are identical, so the flip never silently moves any measured value
+    # the declared basis is a LABEL axis for MEASURED VALUES: strip it from both
+    # projections and no measured value moves. It is NOT invisible, though — the
+    # projection also carries the CONTENT IDENTITY of the payload it consumed, and
+    # the declared basis is part of that hashed spine, so the identity MUST move:
+    # the flip shows up in the provenance instead of being silently absorbed.
+    from engine.sector_generation_guard import cycle_spine_identity
+    spine_ok = proj_ok["generation"]["cycle_spine"]
+    spine_px = proj_px["generation"]["cycle_spine"]
+    spine_price = proj_price["generation"]["cycle_spine"]
+    assert spine_ok["sha256"] != spine_px["sha256"], \
+        "a declared-basis flip must move the source content identity"
+    assert spine_ok["sha256"] != spine_price["sha256"]
+    assert spine_px["sha256"] != spine_price["sha256"]
+    # …and that identity is the one the owner derived from the payload it actually
+    # read, so the movement is content provenance and not a self-reported label.
+    assert spine_ok == cycle_spine_identity(ok)
+    assert spine_px == cycle_spine_identity(px)
+    assert spine_price == cycle_spine_identity(price)
+    # strip the label AND the derived content identity from both projections and
+    # they are identical: the flip never silently moves any measured value
     stripped_ok, stripped_px = copy.deepcopy(proj_ok), copy.deepcopy(proj_px)
-    del stripped_ok["generation"]["price_basis"]
-    del stripped_px["generation"]["price_basis"]
+    for proj in (stripped_ok, stripped_px):
+        del proj["generation"]["price_basis"]
+        del proj["generation"]["cycle_spine"]["sha256"]
     assert _canon(stripped_ok) == _canon(stripped_px), \
         "a declared-basis flip must not silently move any measured value"
     stripped_price = copy.deepcopy(proj_price)
     del stripped_price["generation"]["price_basis"]
+    del stripped_price["generation"]["cycle_spine"]["sha256"]
     assert _canon(stripped_price) == _canon(stripped_ok)
     # flipping the declared MODE to a retained label is a source-side lie the
     # projection also does not absorb: it still labels every group reconstructed
@@ -1137,6 +1164,30 @@ def test_cc_evidence_mode_declared_basis_flip_is_visible_at_the_source():
     assert all(g["reconstruction"]["mode"] == "reconstructed_price_history"
                and g["reconstruction"]["naturally_observed"] is False
                for g in proj_lied["groups"])
+
+
+def test_cc_content_identity_tracks_the_measured_payload_not_the_label():
+    """NEGATIVE check on the content-identity guard: it is not a frozen decoration.
+
+    A change to a MEASURED value in the source payload must move both the
+    measured value in the projection and the content identity the owner stamps
+    on it, and the stamped identity must be the identity of the payload that was
+    actually consumed. Without this, the label-only invariant above would also
+    be satisfied by a projection that never re-derives its identity at all.
+    """
+    from engine.sector_generation_guard import cycle_spine_identity
+    base = _full_cyc_payload()
+    proj = _project(base, _rot())
+    stamp = proj["generation"]["cycle_spine"]
+    assert stamp == cycle_spine_identity(base), \
+        "the projection stamps the identity of the payload it consumed"
+    moved = _full_cyc_payload(h63={"XLE": 3.5})
+    proj_moved = _project(moved, _rot())
+    assert proj_moved["generation"]["cycle_spine"]["sha256"] != stamp["sha256"], \
+        "a measured-value change must move the source content identity"
+    by_id, by_id_moved = _by_id(proj), _by_id(proj_moved)
+    assert by_id_moved["XLE"]["current"]["rs_63d"] != by_id["XLE"]["current"]["rs_63d"], \
+        "the measured value itself must move"
 
 
 @needs_node

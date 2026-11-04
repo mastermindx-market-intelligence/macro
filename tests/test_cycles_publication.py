@@ -224,7 +224,7 @@ const settle=()=>new Promise(r=>setTimeout(r,15));
     assert.equal(JSON.stringify(c.SectorCyclesCapture()),stable,'strict refusal leaves current settings intact');
   }
   const portable={...advanced,leg:null};
-  assert.equal(c.SectorCyclesApply({...request,strictRestore:true,validateOnly:true,snapshot:portable}).status,'validated');
+  assert.equal(c.SectorCyclesApply({...request,strictRestore:true,validateOnly:true,snapshot:portable}).status,'preflight_ready');
   assert.equal(JSON.stringify(c.SectorCyclesCapture()),stable,'validation itself has no settings effects');
   assert.equal(c.SectorCyclesApply({...request,entryKey:'strict-valid',strictRestore:true,restore:true,snapshot:portable}).status,'applied');
   assert.equal(c.SectorCyclesCapture().mode,'price');

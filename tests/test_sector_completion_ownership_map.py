@@ -3,7 +3,10 @@
 Pins research/sector_completion_20261021/B01_OWNERSHIP_MAP.md against the repository:
 (a) every writer symbol named by the map exists (importlib+hasattr for engines, an AST
     scan of the file for scripts),
-(b) every artifact path literal occurs in its writer file's source,
+(b) every artifact path literal occurs in its writer file's source — either as a
+    quoted literal, or as a name the writer COMPOSES for a real write (the
+    composition is executed from the writer's own AST, so a renamed or
+    re-pointed writer fails the check instead of needing a dead literal),
 (c) every Artifacts row in the .md matches the Python data below,
 (d) every none_native census row's writer source contains NO string-literal dict key
     matching correction/revision/supersede — the R3A-92 proof that no native correction
@@ -154,6 +157,87 @@ def _script_defines(rel: str, name: str) -> bool:
                for n in tree.body)
 
 
+def _str_expr_value(node, env) -> str:
+    """Evaluate a string-only expression (literals, names, `+`) against `env`."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.Name):
+        value = env.get(node.id)
+        if isinstance(value, str):
+            return value
+        raise ValueError(node.id)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        return _str_expr_value(node.left, env) + _str_expr_value(node.right, env)
+    raise ValueError(ast.dump(node))
+
+
+def _loop_bindings(tree, call, expr):
+    """Use only the nearest enclosing loop that binds a name in the target."""
+    used = {n.id for n in ast.walk(expr) if isinstance(n, ast.Name)}
+    parents = {child: node for node in ast.walk(tree)
+               for child in ast.iter_child_nodes(node)}
+    node = parents.get(call)
+    while node is not None:
+        if isinstance(node, ast.For):
+            bound = {n.id for n in ast.walk(node.target) if isinstance(n, ast.Name)}
+            if used & bound:
+                # An inner unknown binding shadows any outer suffix table.
+                # Refuse unsupported shapes rather than borrowing another scope.
+                if not (isinstance(node.target, ast.Tuple)
+                        and len(node.target.elts) == 2
+                        and all(isinstance(e, ast.Name) for e in node.target.elts)):
+                    return
+                try:
+                    table = ast.literal_eval(node.iter)
+                except (ValueError, TypeError, SyntaxError):
+                    return
+                if not (isinstance(table, (list, tuple)) and table
+                        and all(isinstance(pair, (list, tuple)) and len(pair) == 2
+                                and all(isinstance(v, str) for v in pair)
+                                for pair in table)):
+                    return
+                for pair in table:
+                    yield {node.target.elts[0].id: pair[0],
+                           node.target.elts[1].id: pair[1]}
+                return
+        node = parents.get(node)
+
+
+def _composed_write_targets(rel: str) -> set[str]:
+    """The artifact names a writer COMPOSES for a real write, from its own source.
+
+    Most writers name an artifact as one quoted literal, and the literal search
+    finds it. A writer that composes the name instead — a (kind, suffix) table
+    over a prefix expression — emits the same file with no such literal anywhere
+    in its source: the literal search then fails on a TRUE owner, and the only
+    way to make it pass is to paste a dead literal back into the writer, which
+    proves nothing about who writes what.
+
+    So the composition is read out of the writer's own AST and EVALUATED: the
+    loop table and the name expression are the writer's own, and the result is
+    the set of file names that writer really passes to ``write_text``. A name the
+    writer only MENTIONS (a consumer's needs-list, a warning) is not in that set,
+    so a wrong owner cannot pass by naming the artifact.
+    """
+    tree = ast.parse(_source(rel))
+    names: set[str] = set()
+    for call in ast.walk(tree):
+        if not (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
+                and call.func.attr == "write_text"):
+            continue
+        receiver = call.func.value        # e.g. site / ("sector_cycles_" + suffix + ".js")
+        if not (isinstance(receiver, ast.BinOp) and isinstance(receiver.op, ast.Div)):
+            continue
+        for env in _loop_bindings(tree, call, receiver.right):
+            try:
+                value = _str_expr_value(receiver.right, env)
+            except ValueError:
+                continue
+            if value:
+                names.add(value)
+    return names
+
+
 def _md_artifact_rows() -> list[list[str]]:
     """Parse the §1 Artifacts table: header, then every pipe row until a non-table line."""
     lines = DOC.read_text(encoding="utf-8").splitlines()
@@ -196,6 +280,8 @@ def test_writer_symbols_exist():
 
 
 def test_artifact_path_literals_in_writer_source():
+    composed = {row["writer_file"]: _composed_write_targets(row["writer_file"])
+                for row in ROWS}
     for row in ROWS:
         src = _source(row["writer_file"])
         for lit in row["path_literals"]:
@@ -204,9 +290,62 @@ def test_artifact_path_literals_in_writer_source():
                     f"constant {lit!r} not found in {row['writer_file']} "
                     f"(artifact {row['artifact']})")
             else:
-                assert f'"{lit}"' in src or f"'{lit}'" in src, (
-                    f"literal {lit!r} not found in {row['writer_file']} "
+                assert f'"{lit}"' in src or f"'{lit}'" in src or lit in composed[row["writer_file"]], (
+                    f"artifact name {lit!r} neither appears literally in "
+                    f"{row['writer_file']} nor is composed for a write there "
                     f"(artifact {row['artifact']})")
+
+
+def test_composed_artifact_paths_are_produced_by_their_claimed_writer():
+    """A composed artifact name is proven by EXECUTING the writer's own
+    composition — by the write targets the writer really derives — not by a
+    literal pasted into the writer, and not by a name the writer only mentions.
+
+    The cycles data JS is written by ``scripts/build_sector_cycles.py`` over a
+    (kind, suffix) table, so the map's four rows must be exactly the names that
+    table produces. The central hub only REQUIRES those files (it warns when
+    they are missing); naming them is not ownership, and it must not become a
+    second writer without the ownership map being updated.
+    """
+    expected = {"sector_cycles_data.js", "sector_cycles_series_data.js",
+                "sector_cycles_narr_data.js", "sector_cycles_dna_data.js"}
+    writer = "scripts/build_sector_cycles.py"
+    assert _composed_write_targets(writer) == expected, (
+        "the cycles writer's composed write targets drifted from the ownership map")
+    for row in ROWS:
+        name = row["artifact"].rsplit("/", 1)[-1]
+        if name in expected:
+            assert row["writer_file"] == writer, (
+                f"{name} is written by {writer}, not {row['writer_file']}")
+            assert name in _composed_write_targets(row["writer_file"])
+    # the central hub names the four files only as REQUIREMENTS
+    central = "scripts/build_sector_central.py"
+    assert '"sector_cycles_data.js"' in _source(central)
+    assert not _composed_write_targets(central), (
+        f"{central} now writes the cycles data files — the ownership map's "
+        f"single-writer claim needs a new duplicate-owner row")
+
+
+
+def test_composed_write_targets_reject_unrelated_or_shadowed_loop_bindings(monkeypatch):
+    """A matching suffix table outside the write's lexical scope proves nothing."""
+    unrelated = """
+def unrelated():
+    for kind, suffix in (("core", "data"), ("series", "series_data")):
+        pass
+
+def write(site, suffix, payload):
+    (site / ("sector_cycles_" + suffix + ".js")).write_text(payload)
+"""
+    shadowed = """
+def write(site, replacements, payload):
+    for kind, suffix in (("core", "data"), ("series", "series_data")):
+        for suffix in replacements:
+            (site / ("sector_cycles_" + suffix + ".js")).write_text(payload)
+"""
+    for source in (unrelated, shadowed):
+        monkeypatch.setitem(globals(), "_source", lambda _rel: source)
+        assert _composed_write_targets("synthetic_writer.py") == set()
 
 
 def test_markdown_artifacts_table_matches_rows():

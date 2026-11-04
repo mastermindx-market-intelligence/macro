@@ -2650,7 +2650,7 @@
       })) {receipt.status='rejected';receipt.reason='leg_unavailable';return receipt;}
     }
     if (!node || !node.getBoundingClientRect().width) return receipt;
-    if (context.validateOnly) {receipt.status='validated';receipt.family=family;return receipt;}
+    if (context.validateOnly) {receipt.status='preflight_ready';receipt.family=family;return receipt;}
     mountHero();
     if (!heroChart) return receipt;
     var fresh=context.entryKey && context.entryKey!==appliedEntry;

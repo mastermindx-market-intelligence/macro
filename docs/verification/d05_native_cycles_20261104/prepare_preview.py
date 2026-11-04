@@ -63,6 +63,12 @@ known=set(subprocess.check_output(['git','-C',str(root),'ls-tree','-r','--name-o
 runtime_known=set(subprocess.check_output(['git','-C',str(root),'ls-tree','-r','--name-only',runtime_ref,'site'],text=True).splitlines())
 runtime_assets={}
 data_assets={'sector_cycles_data.js','sector_cycles_series_data.js','sector_cycles_narr_data.js','sector_cycles_dna_data.js','sector_central_data.js'}
+# These shared owners load scripts dynamically, so HTML/CSS discovery cannot
+# see them. Keep their original implementations and transitive navigation owner.
+dynamic_runtime_dependencies={
+    'theme.js': ('account.js', 'terminal_overlay.js'),
+    'account.js': ('nav_market.js',),
+}
 
 def local_asset(value, parent=''):
     parsed=urlsplit(value)
@@ -102,6 +108,7 @@ while pending:
         continue
     dst.write_bytes(body)
     runtime_assets[a]={'source':origin,'sha256':hashlib.sha256(body).hexdigest()}
+    pending.update(name for name in dynamic_runtime_dependencies.get(a,()) if name not in copied)
     if Path(a).suffix=='.css':
         css=body.decode('utf-8')
         dependencies=re.findall(r'url\(\s*[\'"]?([^\'")\s]+)',css)
@@ -186,5 +193,11 @@ for name,region,rows,state in [
     target=variant_dir/('members-'+name+'.html');target.write_text(html)
     variants[name]={'path':'/'+directory+'/d05_fixture.html','file':str(target.resolve()),'sourceId':stamp,'state':state,'symbols':[m['symbol'] for m in rows]}
 (out/'member_variants.json').write_text(json.dumps(variants,indent=2)+'\n')
+# Source hashes above describe the inputs; these hashes bind the final emitted
+# bytes after synthetic publication replacement and intentional absence cases.
+provenance['dynamic_runtime_dependencies']={name:list(deps) for name,deps in dynamic_runtime_dependencies.items() if name in copied}
+provenance['emitted_assets']={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest()
+                              for p in sorted(out.rglob('*')) if p.is_file() and p.name!='fixture_provenance.json'}
+provenance['intentional_missing_assets']=['sector_cycles_narr_data.js'] if args.scenario=='missing-extras' else []
 (out/'fixture_provenance.json').write_text(json.dumps(provenance,indent=2)+'\n')
 print('Preview:',out,'scenario:',args.scenario,'assets:',len(assets))

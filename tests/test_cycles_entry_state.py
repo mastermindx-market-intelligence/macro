@@ -247,7 +247,7 @@ let actual={...cycle,mode:'osc',scale:'log'};
 a.c.SectorCyclesCapture=()=>copy(actual);
 a.c.SectorCyclesEvidence=()=>copy(proof);
 a.c.SectorCyclesApply=c=>{
- if(c.validateOnly)return {status:'validated'};
+ if(c.validateOnly)return {status:'preflight_ready'};
  if(c.restore){actual=copy(c.snapshot);appliedCount++;}
  return {status:'applied',id:'xle',family:'sectors',leg:'closed',publication:copy(proof)};
 };
@@ -330,7 +330,7 @@ function boot(o={}){
   dispatchEvent:e=>(wl[e.type]||[]).forEach(f=>f(e)),
   Event:class{constructor(type){this.type=type}},CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail}},
   SectorCyclesEvidence:()=>clone(proof),SectorCyclesCapture:()=>clone(chart),
-  SectorCyclesApply(c){if(proof.status!=='verified')return {status:'pending'};if(c.validateOnly)return {status:'validated'};
+  SectorCyclesApply(c){if(proof.status!=='verified')return {status:'pending'};if(c.validateOnly)return {status:'preflight_ready'};
    if(c.restore&&c.snapshot)chart=clone(c.snapshot);chart.focus=c.id||null;chart.family=c.family||'sectors';
    return {status:'applied',id:chart.focus,family:chart.family,asOf:proof.asOf,series:'ready',leg:'closed',publication:{status:'verified'}}},
   SectorCyclesMembersHref:s=>s.id==='xle'&&s.publicationId===pubId?'basket/us_sector_energy.html':null,
