@@ -1,0 +1,314 @@
+{
+  "kind": "D08A_A_TO_B_SOURCE_CONSUMPTION",
+  "observed_at_utc": "2026-11-04T03:18:01.984Z",
+  "observed_at_local": "November 3, 2026, 9:18 p.m. America/Chicago",
+  "scope": "One source qualification step",
+  "parent_mission_complete": false,
+  "original_a_head": "c3413d84650ce85ca0c875c16b53b5e519b46f35",
+  "law": {
+    "pin": "a74de2a4b839eadb795f57bc7c76e372940e87d7",
+    "protected": true,
+    "index_blob": "95b36446601250ccaf298dfb1c9b51fa9823e042",
+    "schema": "mastermind.sol_skillpack.v1",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1,
+    "documents": [
+      {
+        "path": "docs/sol_skills/COLD_START.md",
+        "blob": "c5ca5ee7a06a71a82c7df4c56757b28a09f77c84",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+        "blob": "84dbaf920fed2b498b11a56b9ef5d305da718531",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/sol_skills/SESSION_RELIABILITY.md",
+        "blob": "095f2165c3a6a57561e1e17ce14fcbcd0ef64eb9",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+        "blob": "fe349b7032f420b7adb67b8d28ebdc438dcc1541",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/sol_skills/REVIEW_RETURN.md",
+        "blob": "f76c7ea1320d5cc461597a19d2da69fde667074a",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/sol_skills/RECONCILE_STATE.md",
+        "blob": "e72bb4e6609eb61a042cee8c30367869672e7ca9",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/sol_skills/CLOSEOUT.md",
+        "blob": "8757525f707c95282ce607e7274e62a55703cf46",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/CEO_PROJECT_PLAN_CONTINUITY.md",
+        "blob": "fd99e848f264962b4b088c1ddec20efad0f9fedb",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+        "blob": "c10fda0c2cbe8c16ce04dd6f3b6971ac6d03ed7a",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md",
+        "blob": "d01f7efc2648a061628a6c72e05eccd5559cda8e",
+        "unchanged_from_prior_pin": true
+      },
+      {
+        "path": "docs/PAPER_DESIGN_INTEGRATION.md",
+        "blob": "0388874dd7c7e32ddfd22c87e93aa123d845635f",
+        "unchanged_from_prior_pin": true
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "role": "A original contract",
+      "repo": "macro",
+      "ref": "c3413d84650ce85ca0c875c16b53b5e519b46f35",
+      "path": "research/design_candidates/production_design_20261102/d08a/BACKEND_CONTRACTS.md",
+      "blob": "1d1dcefe7c0df3b1e3714d6aa05e3c25e96ee2c9",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c3413d84650ce85ca0c875c16b53b5e519b46f35/research/design_candidates/production_design_20261102/d08a/BACKEND_CONTRACTS.md"
+    },
+    {
+      "role": "A acceptance cases",
+      "repo": "macro",
+      "ref": "c3413d84650ce85ca0c875c16b53b5e519b46f35",
+      "path": "research/design_candidates/production_design_20261102/d08a/TEST_PLAN.md",
+      "blob": "182824b4d5e2ab3c8b164e696097766067a3675d",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c3413d84650ce85ca0c875c16b53b5e519b46f35/research/design_candidates/production_design_20261102/d08a/TEST_PLAN.md"
+    },
+    {
+      "role": "Frozen shared logical contract",
+      "repo": "macro",
+      "ref": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c",
+      "path": "research/design_candidates/production_design_20261102/d08/SLICE_INTERFACES.json",
+      "blob": "0e079b4af9c3a9cfdbedf571314a34d8a5db28af",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/d0516e1bad9cb5982d43d20c4167d0355cb70e2c/research/design_candidates/production_design_20261102/d08/SLICE_INTERFACES.json"
+    },
+    {
+      "role": "B current receiving contract",
+      "repo": "macro",
+      "ref": "62f95141ce3bc56dbf96ab9b97ff5b3c8b806612",
+      "path": "research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md",
+      "blob": "abc4a489227b464b8772df65158c6cbabbc15716",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/62f95141ce3bc56dbf96ab9b97ff5b3c8b806612/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md"
+    },
+    {
+      "role": "C receiving decision",
+      "repo": "macro",
+      "ref": "22f64bd142754b42d85df9fa90346b2f0e47b861",
+      "path": "research/design_candidates/production_design_20261102/d08c/integration/b_to_c_20261104/CONSUMPTION.md",
+      "blob": "9007fd32d9aedadd658eae783ad19b96dfbae7a1",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/22f64bd142754b42d85df9fa90346b2f0e47b861/research/design_candidates/production_design_20261102/d08c/integration/b_to_c_20261104/CONSUMPTION.md"
+    },
+    {
+      "role": "C existing execution receipt, consumed not rerun",
+      "repo": "macro",
+      "ref": "22f64bd142754b42d85df9fa90346b2f0e47b861",
+      "path": "research/design_candidates/production_design_20261102/d08c/integration/b_to_c_20261104/RESULT.json",
+      "blob": "48cb39e1440d2cf83bd4b1d8e889dd6e3e6b2e74",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/22f64bd142754b42d85df9fa90346b2f0e47b861/research/design_candidates/production_design_20261102/d08c/integration/b_to_c_20261104/RESULT.json"
+    },
+    {
+      "role": "Current protected shortlist source",
+      "repo": "mastermind-terminal",
+      "ref": "f528a219cc5d73e94e058575e3df83d689632bf9",
+      "path": "terminal/lib/optionsContractShortlist.ts",
+      "blob": "8d42da79f3e5bbda9ea236df93845824feb4900d",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f528a219cc5d73e94e058575e3df83d689632bf9/terminal/lib/optionsContractShortlist.ts"
+    }
+  ],
+  "census": {
+    "D08A": {
+      "number": 10683,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10683",
+      "head": "c3413d84650ce85ca0c875c16b53b5e519b46f35",
+      "draft": true,
+      "state": "open",
+      "merged": false
+    },
+    "D08": {
+      "number": 10649,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10649",
+      "head": "e89f527e3267b1d1dd27ac7507e9a25983c0c903",
+      "draft": true,
+      "state": "open",
+      "merged": false
+    },
+    "D08B": {
+      "number": 10686,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10686",
+      "head": "62f95141ce3bc56dbf96ab9b97ff5b3c8b806612",
+      "draft": true,
+      "state": "open",
+      "merged": false
+    },
+    "D08C": {
+      "number": 10687,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10687",
+      "head": "22f64bd142754b42d85df9fa90346b2f0e47b861",
+      "draft": true,
+      "state": "open",
+      "merged": false
+    },
+    "F01": {
+      "number": 10645,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10645",
+      "head": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
+      "draft": true,
+      "state": "open",
+      "merged": false
+    },
+    "F02": {
+      "number": 10630,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10630",
+      "head": "13baa784723b72458f7f694cac925f2c7f96e3d7",
+      "draft": true,
+      "state": "open",
+      "merged": false
+    }
+  },
+  "paper": {
+    "carrier": "Mastermind Paper",
+    "inspect_state": "CONNECTED",
+    "server": "paper-desktop",
+    "version": "0.5.18",
+    "foreground_file": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+    "exact_read_state": "OBSERVED",
+    "exact_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "page": "p-12-0",
+    "artboards": [
+      {
+        "id": "1NZL-0",
+        "name": "B01 · Exposure + node · 1440 · Dark EN · R1"
+      },
+      {
+        "id": "1OD3-0",
+        "name": "B02 · Exposure slice · 390 · Dark EN · R1"
+      },
+      {
+        "id": "1OD4-0",
+        "name": "B03 · Exact node · 320 · Light ZH · R1"
+      },
+      {
+        "id": "1OMF-0",
+        "name": "B04 · Expiry-led volatility · 1440 · Light EN · R1"
+      },
+      {
+        "id": "1P0P-0",
+        "name": "B05 · 3D + exact slice · 1024 · Dark EN · R1"
+      },
+      {
+        "id": "1P85-0",
+        "name": "B06 · Exact 2D table · 768 · Light ZH · R1"
+      },
+      {
+        "id": "1PBQ-0",
+        "name": "B07 · Matched change · 1440 · Dark EN · R1"
+      },
+      {
+        "id": "1PG1-0",
+        "name": "B08 · Missing expiry · 390 · Light EN · R1"
+      },
+      {
+        "id": "1PI4-0",
+        "name": "B09 · State and interaction atlas · Dark EN · R1"
+      },
+      {
+        "id": "1Q0P-0",
+        "name": "B10 · Phone open research controls · 390 · Dark EN · R1"
+      },
+      {
+        "id": "1Q35-0",
+        "name": "B11 · Phone exact 2D and cell states · 390 · Dark EN · R1"
+      },
+      {
+        "id": "1QA0-0",
+        "name": "B12 · Interaction and state annotations · R1"
+      },
+      {
+        "id": "1QC6-0",
+        "name": "B13 · Published chain 3D + table · 1440 · Dark EN · R1"
+      },
+      {
+        "id": "1QGP-0",
+        "name": "B14 · Levels and positioning context · 1440 · Light EN · R1"
+      },
+      {
+        "id": "1QXD-0",
+        "name": "B15 · Rendered loading empty failure access · R1"
+      },
+      {
+        "id": "1REL-0",
+        "name": "B16 · Nonzero cohort differences · 1440 · Dark EN · R1"
+      },
+      {
+        "id": "1RIU-0",
+        "name": "B17 · Exact contract and ambiguous terms · 390 · Light EN · R1"
+      }
+    ],
+    "snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+    "catalog": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+    "accepted_schema": true,
+    "policy": "TOOL_SCOPED_CONTRACT_V1",
+    "d08a_target": null,
+    "content_mutations": 0,
+    "scope_note": "Read serviceability and schema evidence only; no sibling edit or new target admission."
+  },
+  "ci": {
+    "head": "c3413d84650ce85ca0c875c16b53b5e519b46f35",
+    "conclusion": "failure",
+    "reason": "unsupported_base_ref",
+    "base": "design/paper-production-audit-20261102-ryan",
+    "run_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41751155473",
+    "rerun": false,
+    "successor_head_ci": "NOT_CLAIMED"
+  },
+  "c_receipt_consumption": {
+    "behavior_checks_passed": 20,
+    "trust_limits_reproduced": 4,
+    "failed_checks": 0,
+    "rerun_this_step": false
+  },
+  "source_inspection": {
+    "pin_key": "export function pinKeyFor(identityKey: string, family: ShortlistFamily, session: string): string {\n  return `${family}@${session}#${identityKey}`;\n}\n\nexport type PinBuild = { ok: true; pin: ShortlistPin } | { ok: false; reason: IdentityRefusal };\n\n/**\n * Build a pin for `row` from `source`. `list` is the FULL source list the row\n * came from (unfiltered), used for the ambiguity check.\n */\n",
+    "locate_pin": "export function locatePin(\n  pin: ShortlistPin,\n  currentList: readonly unknown[] | null | undefined,\n  rootFilter: string,\n): PinLocation {\n  if (!currentList) return \"not_in_list\";\n  const found = currentList.some((row) => {\n    const id = contractIdentity(row);\n    return id.ok && id.identity.key === pin.identity.key;\n  });\n  if (!found) return \"not_in_list\";\n  if (rootFilter && pin.identity.root !== rootFilter) return \"hidden_by_filter\";\n  return \"present\";\n}\n\n",
+    "method": "Read actual current source; no new execution claimed."
+  },
+  "historical_tests": {
+    "a_source": 41,
+    "a_design": 27,
+    "rerun_this_step": false,
+    "future_cases": 32,
+    "future_case_status": "NOT_RUN"
+  },
+  "effects": {
+    "scope": "Additive D08A source files and existing GitHub return carriers only",
+    "paper": 0,
+    "product": 0,
+    "merge": false,
+    "ready": false,
+    "undraft": false,
+    "enqueue": false,
+    "relabel": false,
+    "deploy": false
+  },
+  "review": {
+    "self_qa": true,
+    "optional_review_wait": false,
+    "formal_approval_claim": false,
+    "native_advisory_task": "d08a_boundary_reasoning",
+    "native_status": "ACCEPTED_STOP",
+    "background_execution": false
+  }
+}
