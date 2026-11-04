@@ -1,0 +1,356 @@
+{
+  "scope": "existing verified raw owner+normal single-page native renderer; no full producer or current/PIT/served claim",
+  "raw_input_sha256": {
+    "site/macrodata/workspaces/manifest.json": "39b93af545ded66bcb30cea9186557f225533011a44cc9f800c3ad9a610e1601",
+    "site/macrodata/workspaces/business_activity/US/latest.json": "26180d18fbda8661acb5a959be65cf200b840f0582a997ba6419badd384255ca"
+  },
+  "raw_artifact": {
+    "path": "macrodata/workspaces/business_activity/US/latest.json",
+    "manifest_path": "macrodata/workspaces/manifest.json",
+    "sha256": "d1c1cbde31c074c74d88546da34a1531b49cdf0cd50b9d88f5ea4153aeec5393",
+    "bytes": 109502,
+    "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+  },
+  "raw_immutable": true,
+  "closed_raw_digest_valid": true,
+  "raw31_values_periods_and_all_nonclock_metric_metadata_equal": true,
+  "old_context": {
+    "state": "CURRENT",
+    "state_label": {
+      "en": "Current",
+      "zh": "当前有效"
+    },
+    "state_tone": "ok",
+    "worst_freshness": {
+      "en": "Current",
+      "zh": "当前有效"
+    },
+    "worst_freshness_tone": "ok",
+    "worst_freshness_token": "CURRENT",
+    "coverage": "100.0%",
+    "coverage_ratio": 1.0,
+    "coverage_present": true,
+    "coverage_absence": null,
+    "required": [
+      {
+        "component_id": "leading_tier",
+        "label": {
+          "en": "Leading tier",
+          "zh": "领先层"
+        },
+        "required": true,
+        "freshness": {
+          "en": "Current",
+          "zh": "当前有效"
+        },
+        "freshness_tone": "ok",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Partial",
+          "zh": "部分具备"
+        },
+        "presence_tone": "warn",
+        "source_asof": "2026-11-30",
+        "absence": null
+      },
+      {
+        "component_id": "coincident_tier",
+        "label": {
+          "en": "Coincident tier",
+          "zh": "同步层"
+        },
+        "required": true,
+        "freshness": {
+          "en": "Current",
+          "zh": "当前有效"
+        },
+        "freshness_tone": "ok",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Present",
+          "zh": "已具备"
+        },
+        "presence_tone": "ok",
+        "source_asof": "2026-09-30",
+        "absence": null
+      },
+      {
+        "component_id": "lagging_tier",
+        "label": {
+          "en": "Lagging tier",
+          "zh": "滞后层"
+        },
+        "required": false,
+        "freshness": {
+          "en": "Current",
+          "zh": "当前有效"
+        },
+        "freshness_tone": "ok",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Present",
+          "zh": "已具备"
+        },
+        "presence_tone": "ok",
+        "source_asof": "2026-09-30",
+        "absence": null
+      }
+    ],
+    "degraded": [],
+    "reasons": [
+      "contradiction=depth_breadth_divergence"
+    ],
+    "contradiction": {
+      "kind": {
+        "en": "Depth and breadth disagree",
+        "zh": "深度与广度相悖"
+      },
+      "kind_raw": "depth_breadth_divergence",
+      "text": {
+        "en": "The share of leading indicators that are weakening has crossed the model's calibrated recession-risk threshold, but their six-month momentum has not. Weakness is widespread but shallow. Both conditions are required before this model can flag recession risk.",
+        "zh": "走弱的领先指标占比已越过模型校准的衰退风险阈值，但领先指标的六个月动量尚未达标。走弱范围广，但程度较浅。这两项条件须同时满足，模型才会发出衰退风险信号。"
+      },
+      "components": [
+        "leading_tier_momentum_6m",
+        "leading_tier_diffusion"
+      ]
+    },
+    "last_source_cut": "2026-11-30",
+    "calculation_as_of": "2026-11-30",
+    "artifact_built_at": "2026-11-03T17:25:24Z",
+    "page_built_at": "2026-11-03T21:52:38Z",
+    "region_supported": true
+  },
+  "new_context": {
+    "state": "CURRENT",
+    "state_label": {
+      "en": "Source present; freshness unverified",
+      "zh": "来源已提供；时效性未核实"
+    },
+    "state_tone": "neutral",
+    "worst_freshness": {
+      "en": "Freshness unverified",
+      "zh": "时效性未核实"
+    },
+    "worst_freshness_tone": "neutral",
+    "worst_freshness_token": "CURRENT",
+    "coverage": "100.0%",
+    "coverage_ratio": 1.0,
+    "coverage_present": true,
+    "coverage_absence": null,
+    "required": [
+      {
+        "component_id": "leading_tier",
+        "label": {
+          "en": "Leading tier",
+          "zh": "领先层"
+        },
+        "required": true,
+        "freshness": {
+          "en": "Freshness unverified",
+          "zh": "时效性未核实"
+        },
+        "freshness_tone": "neutral",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Partial",
+          "zh": "部分具备"
+        },
+        "presence_tone": "warn",
+        "source_asof": null,
+        "absence": {
+          "token": "COMPUTATION_REFUSED",
+          "label": {
+            "en": "No reading arrived today.",
+            "zh": "今天没有新的读数。"
+          },
+          "display": "—"
+        }
+      },
+      {
+        "component_id": "coincident_tier",
+        "label": {
+          "en": "Coincident tier",
+          "zh": "同步层"
+        },
+        "required": true,
+        "freshness": {
+          "en": "Freshness unverified",
+          "zh": "时效性未核实"
+        },
+        "freshness_tone": "neutral",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Present",
+          "zh": "已具备"
+        },
+        "presence_tone": "ok",
+        "source_asof": null,
+        "absence": {
+          "token": "UNKNOWN",
+          "label": {
+            "en": "Unknown",
+            "zh": "未知"
+          },
+          "display": "—"
+        }
+      },
+      {
+        "component_id": "lagging_tier",
+        "label": {
+          "en": "Lagging tier",
+          "zh": "滞后层"
+        },
+        "required": false,
+        "freshness": {
+          "en": "Freshness unverified",
+          "zh": "时效性未核实"
+        },
+        "freshness_tone": "neutral",
+        "freshness_state": "CURRENT",
+        "presence": {
+          "en": "Present",
+          "zh": "已具备"
+        },
+        "presence_tone": "ok",
+        "source_asof": null,
+        "absence": {
+          "token": "UNKNOWN",
+          "label": {
+            "en": "Unknown",
+            "zh": "未知"
+          },
+          "display": "—"
+        }
+      }
+    ],
+    "degraded": [],
+    "reasons": [
+      "contradiction=depth_breadth_divergence"
+    ],
+    "contradiction": {
+      "kind": {
+        "en": "Depth and breadth disagree",
+        "zh": "深度与广度相悖"
+      },
+      "kind_raw": "depth_breadth_divergence",
+      "text": {
+        "en": "The share of leading indicators that are weakening has crossed the model's calibrated recession-risk threshold, but their six-month momentum has not. Weakness is widespread but shallow. Both conditions are required before this model can flag recession risk.",
+        "zh": "走弱的领先指标占比已越过模型校准的衰退风险阈值，但领先指标的六个月动量尚未达标。走弱范围广，但程度较浅。这两项条件须同时满足，模型才会发出衰退风险信号。"
+      },
+      "components": [
+        "leading_tier_momentum_6m",
+        "leading_tier_diffusion"
+      ]
+    },
+    "last_source_cut": null,
+    "calculation_as_of": null,
+    "artifact_built_at": "2026-11-03T17:25:24Z",
+    "page_built_at": "2026-11-03T21:52:38Z",
+    "region_supported": true,
+    "clock_qualification": {
+      "presence_only": true,
+      "reference_period": "2026-11-30",
+      "label": {
+        "en": "Source present; freshness unverified",
+        "zh": "来源已提供；时效性未核实"
+      },
+      "note": {
+        "en": "Period labels do not establish observation dates, calculation cut-offs or source freshness.",
+        "zh": "期间标记不能证明观察日期、计算截止时间或来源时效性。"
+      },
+      "tone": "neutral"
+    }
+  },
+  "other_family_exact_view_and_html": [
+    {
+      "id": "liquidity_regime",
+      "view_equal": true,
+      "html_sha256": "3d75e4a4d438910a62da964d6ded2fd9d1dd58f94072f2213393cc17fb083cbf"
+    },
+    {
+      "id": "growth_real_economy",
+      "view_equal": true,
+      "html_sha256": "ff82fa69f6df842997b6e3cb10833723b3d7a212f51a625a00f1e904e5f9f407"
+    },
+    {
+      "id": "labor_markets",
+      "view_equal": true,
+      "html_sha256": "5717caca2e5720a2ea02283a7cfdea6cc85ac62c2aad0ffe9c1300ddbdcb8e07"
+    },
+    {
+      "id": "inflation_system",
+      "view_equal": true,
+      "html_sha256": "ec83446c24d8cf7a957b9807496d49ac8d0598093bfa0965dcf93df6895f5715"
+    },
+    {
+      "id": "monetary_policy",
+      "view_equal": true,
+      "html_sha256": "1f4674d117e0fa3d8931715e77aced3fa42c9a4dc21281ad6932d790b4b2216a"
+    },
+    {
+      "id": "financial_conditions",
+      "view_equal": true,
+      "html_sha256": "507384d44de2a0055b7bab5b6b7b97d31e2b90b19d8038698197d37df5e35a0e"
+    },
+    {
+      "id": "liquidity_central_banks",
+      "view_equal": true,
+      "html_sha256": "5c5f91d6a3049ec171456a39b680ea63cc0ef8cb30a26a7d483c5d859ecb3a53"
+    },
+    {
+      "id": "capital_structure",
+      "view_equal": true,
+      "html_sha256": "28df06e898b2477c6b9de251eeb13fc30be8f7453934e3419cf4f94f68a2e45b"
+    },
+    {
+      "id": "housing_real_estate",
+      "view_equal": true,
+      "html_sha256": "7933fa644cab463e4773d9015d20aa78554d468973c32e1422451d1db36d2680"
+    },
+    {
+      "id": "consumer_payments",
+      "view_equal": true,
+      "html_sha256": "d7a7b1b33d3d0db424aca1bde98daf518d803ce29afab0b507621869082090c9"
+    },
+    {
+      "id": "national_debt_liabilities",
+      "view_equal": true,
+      "html_sha256": "744f27250c8f0a2ace8b9e45e69badbe8a89cd5c17b01d66bd8b9a4ec7d8d927"
+    },
+    {
+      "id": "rates_curves",
+      "view_equal": true,
+      "html_sha256": "af4ae10b3bc46c7493b924e5c708d2f04f4640d77ee68b7349ef9c085d4c0baa"
+    },
+    {
+      "id": "trade_flows",
+      "view_equal": true,
+      "html_sha256": "e3e6b6b6f19d55c5c6d683538fb9c0ff688e507b0c59ad8566ce76c0823411df"
+    }
+  ],
+  "unavailable_other_inputs": [],
+  "controlled_page_built_at": "2026-11-03T21:52:38Z",
+  "html_sha256": "b8cb442aa2a3b72776a3f95d82fb147406ef5aba707edbc636605a42d3d93d70",
+  "writes": [
+    [
+      "os.mkdir",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/business-clock-s13-native"
+    ],
+    [
+      "open",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/business-clock-s13-native/.macro_business_activity.html.65051.tmp"
+    ],
+    [
+      "os.rename",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/business-clock-s13-native/.macro_business_activity.html.65051.tmp"
+    ],
+    [
+      "os.remove",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/business-clock-s13-native/.macro_business_activity.html.65051.tmp"
+    ]
+  ],
+  "blocked": [],
+  "network": "OS deny network*",
+  "limits": "No fresh visual/browser/touch/currentness/availability/release/PIT authenticity claim."
+}

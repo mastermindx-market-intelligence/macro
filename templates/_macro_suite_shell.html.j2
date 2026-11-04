@@ -119,23 +119,23 @@
 
   <div class="mq-context-state">
     <div class="mq-avail">
-      <span class="mq-avail-label">{{ t('Data we need today', '今天需要的数据') }}</span>
+      <span class="mq-avail-label">{% if ctx.get('clock_qualification') %}{{ t('Source presence', '来源提供情况') }}{% else %}{{ t('Data we need today', '今天需要的数据') }}{% endif %}</span>
       <strong class="mq-tone-{{ ctx.state_tone }}">{{ bl(ctx.state_label) }}</strong>
     </div>
     <dl class="mq-context-meta">
       <div><dt>{{ t('Coverage', '覆盖率') }}</dt><dd>{% if ctx.coverage %}{{ ctx.coverage }}{% else %}{{ absent(none) }}<span class="mq-dash">—</span>{% endif %}</dd></div>
     </dl>
-    <p class="mq-context-caveat">{{ t('Updated once a night — not live.', '每晚更新一次 — 非实时。') }}</p>
+    <p class="mq-context-caveat">{% if ctx.get('clock_qualification') %}{{ bl(ctx.clock_qualification.note) }}{% else %}{{ t('Updated once a night — not live.', '每晚更新一次 — 非实时。') }}{% endif %}</p>
     {% call mc_details() %}
-      <p>{{ t('Conservative over the required set — a degraded optional leg cannot turn this green.', '在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。') }}</p>
+      <p>{% if ctx.get('clock_qualification') %}{{ bl(ctx.clock_qualification.note) }}{% else %}{{ t('Conservative over the required set — a degraded optional leg cannot turn this green.', '在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。') }}{% endif %}</p>
       <p>{{ t('Owner cadence, daily republish', '按所有者节奏，每日重新发布') }} · {{ t('Latest accepted print', '最新已接受读数') }}</p>
       <p>{{ t('Required-source availability', '必需数据源可用性') }}</p>
       <p>{{ t('Page build time is not an economic clock and never makes a source fresh. This page is a static publication — it does not poll for live data.', '页面生成时间并非经济时钟，不会使数据源变新。本页为静态发布 — 不会实时轮询数据。') }}</p>
       <dl class="mq-context-meta">
-        <div><dt>{{ t('Last accepted source cut', '最近已接受数据截止') }}</dt>
-             <dd>{% if ctx.last_source_cut %}<time>{{ ctx.last_source_cut }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
+        <div><dt>{% if ctx.get('clock_qualification') %}{{ t('Latest reference period', '最近参考期') }}{% else %}{{ t('Last accepted source cut', '最近已接受数据截止') }}{% endif %}</dt>
+             <dd>{% if ctx.get("clock_qualification") %}{% if ctx.clock_qualification.reference_period %}<time>{{ ctx.clock_qualification.reference_period }}</time>{% else %}{{ t("Not supplied", "来源未提供") }}{% endif %}{% else %}{% if ctx.last_source_cut %}<time>{{ ctx.last_source_cut }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}{% endif %}</dd></div>
         <div><dt>{{ t('Calculation as-of', '计算截止') }}</dt>
-             <dd>{% if ctx.calculation_as_of %}<time>{{ ctx.calculation_as_of }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
+             <dd>{% if ctx.calculation_as_of %}<time>{{ ctx.calculation_as_of }}</time>{% elif ctx.get("clock_qualification") %}{{ t("Not supplied", "来源未提供") }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
         <div class="mq-nonclock"><dt>{{ t('Page built', '页面生成') }}</dt>
              <dd><time>{{ ctx.page_built_at }}</time></dd></div>
       </dl>
@@ -227,14 +227,14 @@
   <div class="mq-avail">
     <span class="mq-avail-label">{{ t('Required-source availability', '必需数据源可用性') }}</span>
     <strong class="mq-tone-{{ ctx.state_tone }}">{{ bl(ctx.state_label) }}</strong>
-    <span class="mq-avail-note">{{ t('Conservative over the required set — a degraded optional leg cannot turn this green.', '在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。') }}</span>
+    <span class="mq-avail-note">{% if ctx.get('clock_qualification') %}{{ bl(ctx.clock_qualification.note) }}{% else %}{{ t('Conservative over the required set — a degraded optional leg cannot turn this green.', '在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。') }}{% endif %}</span>
   </div>
   <dl class="mq-context-meta">
     <div><dt>{{ t('Coverage', '覆盖率') }}</dt><dd>{% if ctx.coverage %}{{ ctx.coverage }}{% else %}{{ absent(none) }}<span class="mq-dash">—</span>{% endif %}</dd></div>
-    <div><dt>{{ t('Last accepted source cut', '最近已接受数据截止') }}</dt>
-         <dd>{% if ctx.last_source_cut %}<time>{{ ctx.last_source_cut }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
+    <div><dt>{% if ctx.get('clock_qualification') %}{{ t('Latest reference period', '最近参考期') }}{% else %}{{ t('Last accepted source cut', '最近已接受数据截止') }}{% endif %}</dt>
+         <dd>{% if ctx.get("clock_qualification") %}{% if ctx.clock_qualification.reference_period %}<time>{{ ctx.clock_qualification.reference_period }}</time>{% else %}{{ t("Not supplied", "来源未提供") }}{% endif %}{% else %}{% if ctx.last_source_cut %}<time>{{ ctx.last_source_cut }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}{% endif %}</dd></div>
     <div><dt>{{ t('Calculation as-of', '计算截止') }}</dt>
-         <dd>{% if ctx.calculation_as_of %}<time>{{ ctx.calculation_as_of }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
+         <dd>{% if ctx.calculation_as_of %}<time>{{ ctx.calculation_as_of }}</time>{% elif ctx.get("clock_qualification") %}{{ t("Not supplied", "来源未提供") }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
     <div class="mq-nonclock"><dt>{{ t('Page built', '页面生成') }}</dt>
          <dd><time>{{ ctx.page_built_at }}</time></dd></div>
   </dl>
@@ -1113,7 +1113,7 @@
     </div>
     <div class="mq-context-state">
       <dl class="mq-context-meta">
-        <div class="mq-nonclock"><dt>{{ t('Page refreshed', '页面更新于') }}</dt><dd>{{ t('Updated once a night — not live.', '每晚更新一次 — 非实时。') }}</dd></div>
+        <div class="mq-nonclock"><dt>{{ t('Page refreshed', '页面更新于') }}</dt><dd>{% if ctx.get('clock_qualification') %}{{ bl(ctx.clock_qualification.note) }}{% else %}{{ t('Updated once a night — not live.', '每晚更新一次 — 非实时。') }}{% endif %}</dd></div>
       </dl>
     </div>
   </header>

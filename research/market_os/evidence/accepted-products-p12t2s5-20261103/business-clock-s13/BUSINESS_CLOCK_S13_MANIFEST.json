@@ -1,0 +1,81 @@
+{
+  "schema": "mastermind.source_composition_evidence.v1",
+  "task": "P12.T2.S13",
+  "original_root": "01a15e6c-42f8-7941-ac2b-296021932fbb",
+  "parent": "01a15e76-ed5a-72f1-8092-813b4e735bdc",
+  "at": "2026-11-04T01:53:09.360449+00:00",
+  "base": "c7e6a8a7e9a6d3716e72f08555395c8f8e59e330",
+  "branch": "codex/business-period-clock-compat-p12t2s13-20261104",
+  "source": [
+    {
+      "path": "app/macro_command.py",
+      "preimage": "3b5a5cf81b425cd19614ca598063e37d90bed408",
+      "postimage": "a9d27313ce5b997271813bacf961b4ad9dc38337",
+      "sha256": "f721b4aa308d6bf6dcaa3e6ddd71523cdf0213b5586e33cc470b04f344750d60",
+      "mode": "100644"
+    },
+    {
+      "path": "engine/market_os/macro_workspaces/business_activity.py",
+      "preimage": "3359db806ed5dd3a88ac51f5ffa1d8a682f2e475",
+      "postimage": "a0090dd1a4e9fe1c13393126c3954c13764f015a",
+      "sha256": "ade306a972aff62bc40ada2dbbfd83cfa3df259e2577cbebc5109ce551d37416",
+      "mode": "100644"
+    },
+    {
+      "path": "lib/macro_suite_view.py",
+      "preimage": "2c7a4c266d8f84552b68ceb10b169d1a3f1cd2cc",
+      "postimage": "be817c6e47c706f9fc66d479c10556789bb41f3c",
+      "sha256": "f1f0b1803f16637e530b43efcb72c8def189cf9fcda8d089fc9016b03e9e4189",
+      "mode": "100644"
+    },
+    {
+      "path": "templates/_macro_suite_shell.html.j2",
+      "preimage": "c6f4f50623c0d80a772606da32ad8791be8825e7",
+      "postimage": "1482153a0b9624304ce6aea95f5a0a14f5d98a5e",
+      "sha256": "48e3cb161103aecde722bed97d0397bfc7b2a9597fe02a85cce0d59299166e44",
+      "mode": "100644"
+    },
+    {
+      "path": "tests/test_macro_command_api.py",
+      "preimage": "6f17fd05230035a62f395c569d910c63e6c8f543",
+      "postimage": "d7da1afadc0994c15b6a462c7730519583ea63c9",
+      "sha256": "3920aabfc2685888a7d9131b2a3d70cff881c0339471fc55c8d7da1b9ffd740a",
+      "mode": "100644"
+    },
+    {
+      "path": "tests/test_macro_suite_pages.py",
+      "preimage": "5be8804188d241d54bc20f1c14407455eefac3d8",
+      "postimage": "00d128c1cee658b329f51128c29e7a9acb5a57a1",
+      "sha256": "f9330694d479dcccd5932157d56e3f3def4623dc8dd6aa627a78f7f7cdbfc5f9",
+      "mode": "100644"
+    },
+    {
+      "path": "tests/test_macro_workspace_business_activity.py",
+      "preimage": "92d651244267e95c63ea9e720eb06829a298dc3c",
+      "postimage": "2d1a098cb0b6c2deeca91329150dc533638de3a8",
+      "sha256": "e5518032788abb393e40522bfef34e16dd9fd5b9c46363a8ce1a07cdc7491bc6",
+      "mode": "100644"
+    }
+  ],
+  "scope": "local preparation only; no push/PR/CI/provider/browser/host/producer/install",
+  "proof": {
+    "focused": "12 passed; source missing/rights/schema/digest, legacy periods past+future/explicit clocks/zero/raw immutability/hash tamper/auth controls",
+    "native": "existing verified raw reader + existing build_page; 31 Business values/periods/source/raw identities and real build clock preserved; 13 other-family view+HTML exact",
+    "guards": "enforce-added 0 blocking; UI evidence guard exit0 (no new material CSS/interaction; no browser proof)",
+    "today_consumer": "separate Product-owned local278297cb476ccbca45e4aeddaf5e1215088fea7f; no Terminal writes here"
+  },
+  "limits": [
+    "not a currentness/PIT/source authenticity adjudication",
+    "no fresh browser/pixel/served proof",
+    "c7 normal release remains independent and immutable",
+    "new optional source_artifact receipt names raw verified input, not derived replacement snapshot"
+  ],
+  "artifacts": {
+    "BUSINESS_CLOCK_S13_FROZEN_PACKET.md": "3d1715e303821c6411c82dae8256a4d1f0de983035c9cf24fc0ff2740393f6d9",
+    "business_clock_s13_native.py": "5b1c77cab467073b27e0f6911b09aed736caad2e07212d331f2cb9f30bb2b733",
+    "business-clock-s13-design.log": "311d37519babf246c71a18de14868bfbac0b924a5699eb1219e13169ac92b12b",
+    "business-clock-s13-final-focused.log": "e0394e320a6d926c3f886a94d32a5513d2a5285db99ef12d730ec3d5a27a70d0",
+    "business-clock-s13-final-native-report.json": "4d5e5ff76d519b829dd1caf2acf8c7b3f717bbaea687d69ee9babd70008004f6",
+    "business-clock-s13-ui-evidence.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

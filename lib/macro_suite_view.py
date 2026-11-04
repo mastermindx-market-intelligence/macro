@@ -19,6 +19,8 @@ Pure: no I/O, no clock read, no network. ``page_built_at`` is supplied.
 """
 from __future__ import annotations
 
+from copy import deepcopy
+
 import math
 import re
 from datetime import date, datetime, timedelta
@@ -103,9 +105,78 @@ def _clock_rows(node: Mapping[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
+# Business-only derived clock qualification. Raw publication objects and
+# their digests stay with the verified reader; this view is never re-published.
+def is_business_workspace(snapshot: Mapping[str, Any]) -> bool:
+    return (snapshot.get("workspace") or {}).get("id") == "business_activity"
+
+
+def business_reference_period(snapshot: Mapping[str, Any]) -> str | None:
+    periods = [row.get("reference_period")
+               for block in ("metrics", "sources")
+               for row in (snapshot.get(block) or {}).get("items") or []]
+    present = [p for p in periods if isinstance(p, str) and p.strip()]
+    return max(present) if present else None
+
+
+def qualify_business_clock_view(snapshot: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Read compatibility for the demonstrated Business v1 period aliases.
+
+    Distinct explicitly supplied clocks and release/availability/collection data
+    cross unchanged. A period equal to a clock is known to be the v1 composer's
+    alias, whether its label lies before or after today. No date heuristic.
+    """
+    if not is_business_workspace(snapshot):
+        return snapshot
+    result = deepcopy(dict(snapshot))
+    periods = {row.get("reference_period")
+               for block in ("metrics", "sources")
+               for row in (result.get(block) or {}).get("items") or []
+               if isinstance(row.get("reference_period"), str)}
+    for metric in (result.get("metrics") or {}).get("items") or []:
+        period = metric.get("reference_period")
+        if period is not None:
+            for key in ("observed_at", "calculation_as_of"):
+                if metric.get(key) == period:
+                    metric[key] = None
+    components = (result.get("availability") or {}).get("required") or []
+    # This owner explicitly derives component CURRENT/source_asof from tier
+    # presence and its monthly period label; it carries no source clock receipt.
+    for component in components:
+        if isinstance(component.get("source_asof"), str):
+            periods.add(component["source_asof"])
+        component["source_asof"] = None
+    generation = result.get("generation") or {}
+    if generation.get("calculation_as_of") in periods:
+        generation["calculation_as_of"] = None
+    return result
+
+
+def business_unverified_label() -> dict[str, str]:
+    return {"en": "Freshness unverified", "zh": "时效性未核实"}
+
+
+def business_clock_qualification(snapshot: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Optional read/view metadata, never a key added to the closed snapshot."""
+    if not is_business_workspace(snapshot):
+        return None
+    current = (snapshot.get("availability") or {}).get("state") == "CURRENT"
+    return {
+        "presence_only": True,
+        "reference_period": business_reference_period(snapshot),
+        "label": ({"en": "Source present; freshness unverified",
+                   "zh": "来源已提供；时效性未核实"} if current else business_unverified_label()),
+        "note": {"en": "Period labels do not establish observation dates, calculation cut-offs or source freshness.",
+                 "zh": "期间标记不能证明观察日期、计算截止时间或来源时效性。"},
+        "tone": "neutral",
+    }
+
+
 # --- context header ----------------------------------------------------------
 
 def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
+    qualification = business_clock_qualification(snapshot)
+    snapshot = qualify_business_clock_view(snapshot)
     availability = snapshot.get("availability") or {}
     generation = snapshot.get("generation") or {}
     region = snapshot.get("region") or {}
@@ -145,7 +216,7 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
     state = availability.get("state")
     # The header states the page's OWN freshness conservatively over the
     # required set (section 7.6); an optional degraded leg cannot turn it green.
-    return {
+    context = {
         "state": state,
         "state_label": L.label("freshness", state),
         "state_tone": L.tone("freshness", state),
@@ -170,6 +241,20 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
         "page_built_at": page_built_at,
         "region_supported": bool(region.get("supported")),
     }
+
+    if qualification:
+        context["clock_qualification"] = qualification
+        if state == "CURRENT":
+            context["state_label"] = dict(qualification["label"])
+            context["state_tone"] = "neutral"
+        if availability.get("worst_freshness") == "CURRENT":
+            context["worst_freshness"] = business_unverified_label()
+            context["worst_freshness_tone"] = "neutral"
+        for component in required:
+            if component["freshness_state"] == "CURRENT":
+                component["freshness"] = business_unverified_label()
+                component["freshness_tone"] = "neutral"
+    return context
 
 
 # --- causal implications ribbon ---------------------------------------------
@@ -752,6 +837,8 @@ def _tga_reserves_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
 
 
 def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> list[dict[str, Any]]:
+    business = is_business_workspace(snapshot)
+    snapshot = qualify_business_clock_view(snapshot)
     rows = []
     for metric in (snapshot.get("metrics") or {}).get("items") or []:
         value = metric.get("value")
@@ -798,6 +885,11 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "normalized": normalized,
             "fx_translation": fx_translation,
         })
+    if business:
+        for row, metric in zip(rows, (snapshot.get("metrics") or {}).get("items") or []):
+            if metric.get("freshness") == "CURRENT":
+                row["freshness"] = business_unverified_label()
+                row["freshness_tone"] = "neutral"
     return rows
 
 
@@ -1115,6 +1207,7 @@ def _lineage_note_for_printed_dates(note: Any, effective_date: Any,
 
 def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
               page_built_at: str, artifact: Mapping[str, Any]) -> dict[str, Any]:
+    business = is_business_workspace(snapshot)
     sources = []
     for source in (snapshot.get("sources") or {}).get("items") or []:
         sources.append({
@@ -1132,13 +1225,18 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "correction": L.label("correction_state", source.get("correction_state")),
             "clocks": _clock_rows({
                 **source,
-                "observed_at": source.get("reference_period"),
+                "observed_at": None if business else source.get("reference_period"),
                 "available_at": source.get("first_known_at"),
                 "calculation_as_of": None,
             }),
         })
 
-    generation = snapshot.get("generation") or {}
+    if business:
+        for row, source in zip(sources, (snapshot.get("sources") or {}).get("items") or []):
+            if source.get("freshness") == "CURRENT":
+                row["freshness"] = business_unverified_label()
+                row["freshness_tone"] = "neutral"
+    generation = qualify_business_clock_view(snapshot).get("generation") or {}
     authority = snapshot.get("authority") or {}
     corrections = snapshot.get("corrections") or {}
     return {
@@ -2209,14 +2307,14 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
         headline = _headline(snapshot, axes)
         changes = _changes(snapshot)
 
-        if headline.get("effective_date"):
+        if headline.get("effective_date") and not is_business_workspace(snapshot):
             effective_dates.append(str(headline["effective_date"]))
 
         row.update({
             "available": True,
             "state_id": headline.get("state_id"),
             "state_label": headline.get("state_label"),
-            "effective_date": headline.get("effective_date"),
+            "effective_date": None if is_business_workspace(snapshot) else headline.get("effective_date"),
             "freshness": context.get("state_label"),
             "freshness_tone": context.get("state_tone"),
             "coverage": context.get("coverage"),

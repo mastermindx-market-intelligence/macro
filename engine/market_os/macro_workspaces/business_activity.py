@@ -216,7 +216,7 @@ def _component_availability(bc: Any, tname: str, asof: str | None, required: boo
         "required": required,
         "freshness": fresh,
         "status": status,
-        "source_asof": (tier.get("asof") if present else None) or asof,
+        "source_asof": None,  # tier.asof is a period label, not an observation receipt
         "null_reason": null_reason,
     }
 
@@ -240,12 +240,12 @@ def _metric(metric_id, value, value_type, unit, basis, direction, owner_ref,
         "basis": basis,
         "direction_semantics": direction,
         "reference_period": reference_period,
-        "observed_at": reference_period,
+        "observed_at": None,  # monthly reference period does not establish observation time
         "released_at": None,
         "available_at": None,
         "collected_at": None,
         "revised_at": None,
-        "calculation_as_of": reference_period,
+        "calculation_as_of": None,
         "market_session": None,
         "source_refs": source_refs or [owner_ref],
         "source_digest": None,
@@ -780,7 +780,7 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
             "rendered_at": None,
             "producer": PRODUCER,
             "code_version": code_version,
-            "calculation_as_of": asof,
+            "calculation_as_of": None,  # the owner supplies a period label, not an input cut-off
             "content_sha256": "0" * 64,
         },
         "authority": {

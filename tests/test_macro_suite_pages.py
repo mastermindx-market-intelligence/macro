@@ -1240,3 +1240,81 @@ def test_business_definition_version_does_not_invent_publication_date():
         if metric["reference_period"]:
             assert reference.get_text(strip=True) == metric["reference_period"]
     assert json.dumps(view, sort_keys=True) == before
+
+
+@pytest.mark.parametrize("period", ["2025-01-31", "2026-11-30"])
+def test_business_period_alias_compatibility_is_not_a_future_date_heuristic(period):
+    from copy import deepcopy
+    from lib.macro_suite_view import qualify_business_clock_view, business_clock_qualification
+    snapshot = {
+        "workspace": {"id": "business_activity"},
+        "generation": {"calculation_as_of": period, "built_at": "2026-11-03T17:25:24Z"},
+        "availability": {"state": "CURRENT", "required": [{"source_asof": period, "status": "PRESENT"}]},
+        "metrics": {"items": [{"reference_period": period, "observed_at": period,
+            "calculation_as_of": period, "value": 0, "released_at": None}]},
+        "sources": {"items": [{"reference_period": period, "first_known_at": None}]},
+    }
+    before = deepcopy(snapshot)
+    projected = qualify_business_clock_view(snapshot)
+    assert snapshot == before
+    assert projected["metrics"]["items"][0]["value"] == 0
+    assert projected["metrics"]["items"][0]["reference_period"] == period
+    assert projected["metrics"]["items"][0]["observed_at"] is None
+    assert projected["metrics"]["items"][0]["calculation_as_of"] is None
+    assert projected["generation"]["calculation_as_of"] is None
+    assert projected["generation"]["built_at"] == before["generation"]["built_at"]
+    assert projected["availability"]["state"] == "CURRENT"
+    assert projected["availability"]["required"][0]["source_asof"] is None
+    q = business_clock_qualification(snapshot)
+    assert q["reference_period"] == period and q["presence_only"] is True and q["tone"] == "neutral"
+
+
+def test_business_clock_projection_preserves_explicit_distinct_clocks_and_other_family():
+    from copy import deepcopy
+    from lib.macro_suite_view import qualify_business_clock_view, business_clock_qualification
+    snapshot = {"workspace": {"id": "business_activity"},
+        "generation": {"calculation_as_of": "2026-11-03"},
+        "metrics": {"items": [{"reference_period": "2026-11-30", "observed_at": "2026-11-02",
+            "calculation_as_of": "2026-11-03", "released_at": "2026-11-02T14:00:00Z",
+            "available_at": "2026-11-02T14:00:01Z", "collected_at": "2026-11-02T14:00:02Z",
+            "value": None, "null_reason": "RIGHTS_BLOCKED"}]}}
+    before = deepcopy(snapshot)
+    assert qualify_business_clock_view(snapshot) == before
+    other = deepcopy(snapshot); other["workspace"]["id"] = "liquidity_regime"
+    assert qualify_business_clock_view(other) is other
+    assert business_clock_qualification(other) is None
+
+
+def test_business_legacy_read_view_qualifies_current_and_keeps_periods_and_rights():
+    import json
+    from copy import deepcopy
+    from lib import macro_suite_view as V
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "site/macrodata", page)
+    before = deepcopy(snapshot)
+    view = V.build_view(snapshot, page_built_at="2026-11-03T21:52:38Z", artifact=artifact)
+    assert snapshot == before
+    assert view["evidence"]["artifact"] == artifact
+    assert view["evidence"]["generation"]["content_sha256"] == snapshot["generation"]["content_sha256"] == artifact["sha256"]
+    assert len(view["metrics"]) == len(snapshot["metrics"]["items"]) == 31
+    assert view["context"]["state"] == "CURRENT"
+    assert view["context"]["state_tone"] == "neutral"
+    assert view["context"]["calculation_as_of"] is None
+    assert view["context"]["last_source_cut"] is None
+    assert view["context"]["clock_qualification"]["reference_period"] == "2026-11-30"
+    for row, metric in zip(view["metrics"], snapshot["metrics"]["items"]):
+        assert row["value"] == labels.value_pair(metric["value"])
+        assert row["reference_period"] == metric["reference_period"]
+        clocks = {c["key"]: c["value"] for c in row["clocks"]}
+        assert clocks["observed_at"] is None and clocks["calculation_as_of"] is None
+        if metric["freshness"] == "CURRENT":
+            assert row["freshness_tone"] == "neutral"
+        if metric["rights_state"] == "RIGHTS_BLOCKED":
+            assert row["rights"] == labels.RIGHTS_STATE["RIGHTS_BLOCKED"]
+    for source, raw in zip(view["evidence"]["sources"], snapshot["sources"]["items"]):
+        clocks = {c["key"]: c["value"] for c in source["clocks"]}
+        assert clocks["reference_period"] == raw["reference_period"]
+        assert clocks["observed_at"] is None
+        assert clocks["released_at"] == raw["released_at"]
+    failed = deepcopy(snapshot); failed["availability"]["state"] = "SOURCE_FAILED"
+    assert V._context(failed, "2026-11-03T21:52:38Z")["state_tone"] == "bad"
