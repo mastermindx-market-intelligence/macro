@@ -612,6 +612,8 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
 .gmi-product .gmi-action-secondary{background:var(--panel);color:var(--text)}
 .gmi-action-primary:hover{filter:brightness(.94)}
 .gmi-action-secondary:hover{background:var(--panel2)}
+.gmi-return-context{display:flex;margin-bottom:var(--sp-6,24px)}
+.gmi-return-context .gmi-action-secondary{font-weight:500;text-align:left}
 .gmi-evidence-receipt{border-top:1px solid var(--line-quiet);padding-top:var(--sp-3,12px)}
 .gmi-evidence-receipt summary,.gmi-topic-receipt summary{cursor:pointer;font-size:var(--fs-sm);font-weight:600;min-height:40px;padding-block:var(--sp-2,8px);line-height:1.6}
 .gmi-evidence-receipt summary>span:not(.l-en):not(.l-zh),.gmi-topic-receipt summary>span:not(.l-en):not(.l-zh){font-size:var(--fs-label);color:var(--muted);font-weight:400;margin-left:var(--sp-2,8px)}
@@ -662,6 +664,33 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
 .gmi-company-card h2{font-size:var(--fs-h2);margin:0}
 .gmi-company-card p{font-size:var(--fs-sm);color:var(--muted);margin:0;line-height:1.7}
 .gmi-company-card .gmi-action-secondary{margin-top:auto}
+.gmi-company-directory{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--sp-7,32px);align-items:start;margin-top:var(--sp-5,20px)}
+.gmi-company-results{min-width:0}
+.gmi-company-directory .gmi-company-grid{grid-template-columns:minmax(0,1fr);margin:var(--sp-4,16px) 0}
+.gmi-company-card-head,.gmi-company-identity{display:flex;align-items:center;gap:var(--sp-4,16px)}
+.gmi-company-card-head{justify-content:space-between;flex-wrap:wrap}
+.gmi-company-symbol{display:flex;align-items:center;justify-content:center;min-width:48px;min-height:48px;padding:var(--sp-2,8px);background:var(--panel2);border-radius:var(--r-btn,10px);font-family:var(--font-mono)}
+.gmi-company-identity h2{margin-top:var(--sp-2,8px)}
+.gmi-company-record{border-top:1px solid var(--line);padding-top:var(--sp-5,20px);margin-top:var(--sp-3,12px);min-width:0}
+.gmi-company-record+.gmi-company-record{margin-top:var(--sp-5,20px)}
+.gmi-company-record-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--sp-3,12px);font-size:var(--fs-sm);color:var(--muted)}
+.gmi-company-record h3{font-size:var(--fs-h2);line-height:1.4;margin:var(--sp-5,20px) 0 var(--sp-2,8px);overflow-wrap:anywhere}
+.gmi-company-record .gmi-source-link{margin-top:var(--sp-5,20px)}
+.gmi-company-record .gmi-source-link a{display:inline-flex;align-items:center;gap:var(--sp-2,8px);min-height:44px}
+.gmi-company-card-foot{display:flex;gap:var(--sp-5,20px);align-items:flex-end;justify-content:space-between;margin-top:var(--sp-3,12px)}
+.gmi-company-card-foot p{max-width:56ch}
+.gmi-company-card-foot .gmi-action-secondary{flex-shrink:0}
+.gmi-company-guide{min-width:0;margin-top:var(--sp-7,32px);padding:var(--sp-6,24px);background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px)}
+.gmi-company-guide h2{font-size:var(--fs-h2);margin:0 0 var(--sp-5,20px);line-height:1.4}
+.gmi-company-guide h3{font-size:var(--fs-body);margin:0 0 var(--sp-2,8px);line-height:1.5}
+.gmi-company-guide p{font-size:var(--fs-sm);color:var(--muted);line-height:1.75;margin:0}
+.gmi-company-guide section+section{border-top:1px solid var(--line);padding-top:var(--sp-5,20px);margin-top:var(--sp-5,20px)}
+.gmi-company-guide nav{display:flex;flex-direction:column;gap:var(--sp-2,8px);margin-top:var(--sp-5,20px)}
+.gmi-company-guide nav a{display:flex;gap:var(--sp-2,8px);align-items:center;min-height:44px;font-size:var(--fs-sm)}
+html[data-theme="light"] .gmi-company-card{box-shadow:var(--gmi-elev)}
+@media(max-width:1100px){.gmi-company-directory{grid-template-columns:minmax(0,1fr) 280px}.gmi-company-card-foot{align-items:flex-start;flex-direction:column}}
+@media(max-width:820px){.gmi-company-directory{grid-template-columns:minmax(0,1fr)}.gmi-company-guide{margin-top:0}.gmi-company-card-head{align-items:flex-start}.gmi-company-card-foot .gmi-action-secondary{width:100%}.gmi-company-record-meta{align-items:flex-start;flex-direction:column}}
+
 .gmi-company-context{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:var(--sp-7,32px);align-items:start}
 .gmi-company-notes{font-size:var(--fs-sm);color:var(--muted);line-height:1.7}
 .gmi-company-notes h2{font-size:var(--fs-body);color:var(--text);margin:0 0 var(--sp-3,12px)}

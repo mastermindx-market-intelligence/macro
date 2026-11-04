@@ -178,7 +178,7 @@ with sync_playwright() as pw:
             p.locator('[data-company-search]').fill('not-a-company-78123')
             expect(p.locator('[data-company-empty]')).to_be_visible()
             p.locator('[data-company-reset]').click()
-            p.locator('.gmi-company-card a').first.click()
+            p.locator('.gmi-company-card a[href*="gmi-issuer-"]').first.click()
             assert p.locator('.gmi-evidence-card').count() == 1
             assert p.locator('.gmi-source-link a').get_attribute('href').startswith('https://')
             p.screenshot(path=str(args.out/'mobile-company-zh.png'),full_page=True)
@@ -234,7 +234,7 @@ with sync_playwright() as pw:
             assert p.locator('.gmi-evidence-card').count() == 1
             assert not p.locator('[data-browse-open]').is_visible()
             assert not p.locator('[data-gmi-copy]').is_visible()
-            p.locator('.gmi-product-tools a[href="gmi-index.html"]').click()
+            p.locator('.gmi-product-tools a[href*="gmi-index.html"]').click()
             expect(p.locator('a.gmi-irow-name')).to_have_count(371)
     check('malformed-payload-preserves-server-answer-and-index', malformed_payload)
 
@@ -284,7 +284,7 @@ with sync_playwright() as pw:
             p.reload(wait_until='networkidle')
             expect(p.locator('[data-company-search]')).to_have_value('Micron')
             catalog_origin = parse_qs(urlsplit(p.url).fragment)
-            p.locator('.gmi-company-card a').first.click()
+            p.locator('.gmi-company-card a[href*="gmi-issuer-"]').first.click()
             expect(p.locator('[data-gmi-return]')).to_have_text('返回公司结果' if language == 'zh' else 'Back to company results')
             p.locator('[data-gmi-return]').click()
             expect(p.locator('[data-company-search]')).to_have_value('Micron')
@@ -304,6 +304,80 @@ with sync_playwright() as pw:
             for language in ('en', 'zh'):
                 check(f'return-journey-{width}-{theme}-{language}',
                       lambda w=width,t=theme,l=language: return_journey(w,t,l))
+
+    def secondary_research_return(width, theme, language):
+        with context(width, theme, language) as c:
+            p = page_for(c)
+            topic = p.locator('[data-gmi-explorer]').get_attribute('data-default-theme')
+            fragment = 'theme='+topic+'&q=Micron&scope=core&evidence=1&lens=chain'
+            origin = parse_qs(fragment)
+            for route in ('gmi-coverage.html', 'gmi-index.html', 'gmi-relationships.html'):
+                p.goto(base+'/gmi.html#'+fragment, wait_until='networkidle')
+                p.locator('main a[href*="'+route+'"]').first.click()
+                back = p.locator('[data-gmi-return]')
+                expect(back).to_be_visible()
+                expect(back).to_have_text('返回主题研究' if language == 'zh' else 'Back to theme research')
+                assert back.bounding_box()['height'] >= 44
+                assert parse_qs(urlsplit(back.get_attribute('href')).fragment) == origin
+                assert not p.evaluate('document.documentElement.scrollWidth > innerWidth')
+                if route == 'gmi-coverage.html':
+                    name = f'secondary-return-{width}-{theme}-{language}.png'
+                    p.screenshot(path=str(args.out/name), full_page=True)
+                    report['screenshots'].append(name)
+                back.focus()
+                p.keyboard.press('Enter')
+                expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+                assert parse_qs(urlsplit(p.url).fragment) == origin
+
+    def company_results_source_context(width, theme, language):
+        with context(width, theme, language) as c:
+            p = page_for(c, 'gmi-companies.html')
+            card = p.locator('.gmi-company-card').first
+            expect(card).to_be_visible()
+            assert ('2024年2月26日' if language == 'zh' else '26 Feb 2024') in card.inner_text()
+            assert ('计划中' if language == 'zh' else 'Planned') in card.inner_text()
+            source = card.locator('a[target="_blank"]').first
+            assert source.get_attribute('href').startswith('https://')
+            assert 'noopener' in source.get_attribute('rel')
+            expect(p.locator('[data-company-guide]')).to_be_visible()
+            assert not p.evaluate('document.documentElement.scrollWidth > innerWidth')
+            name = f'company-results-{width}-{theme}-{language}.png'
+            p.screenshot(path=str(args.out/name), full_page=True)
+            report['screenshots'].append(name)
+            search = p.locator('[data-company-search]')
+            search.fill('NO-MATCH-EXPECTED')
+            expect(p.locator('[data-company-card]:visible')).to_have_count(0)
+            expect(p.locator('[data-company-empty]')).to_be_visible()
+            p.locator('[data-company-reset]').click()
+            expect(search).to_be_focused()
+            expect(card).to_be_visible()
+
+    def index_saved_search(width):
+        with context(width, 'light', 'zh') as c:
+            p = page_for(c, 'gmi-index.html#open=all')
+            search = p.locator('input[data-gmi-filter="index"]')
+            search.fill('HBM')
+            expect(p).to_have_url(re.compile(r'[&#]q=HBM(?:&|$)'))
+            assert parse_qs(urlsplit(p.url).fragment).get('q') == ['HBM']
+            assert parse_qs(urlsplit(p.url).fragment).get('open') == ['all']
+            p.reload(wait_until='networkidle')
+            expect(search).to_have_value('HBM')
+            assert p.locator('a.gmi-irow-name:visible').count() > 0
+            search.press('Escape')
+            expect(search).to_have_value('')
+            expect(p).not_to_have_url(re.compile(r'[&#]q='))
+            assert 'q' not in parse_qs(urlsplit(p.url).fragment)
+            assert parse_qs(urlsplit(p.url).fragment).get('open') == ['all']
+            assert p.locator('a.gmi-irow-name:visible').count() == 371
+
+    for width in (1440, 390):
+        for theme in ('dark', 'light'):
+            for language in ('en', 'zh'):
+                check(f'secondary-research-return-{width}-{theme}-{language}',
+                      lambda w=width,t=theme,l=language: secondary_research_return(w,t,l))
+                check(f'company-results-source-context-{width}-{theme}-{language}',
+                      lambda w=width,t=theme,l=language: company_results_source_context(w,t,l))
+        check(f'index-saved-search-{width}', lambda w=width: index_saved_search(w))
 
     def incomplete_payloads():
         original = (args.site / 'gmi.html').read_text()
@@ -423,7 +497,7 @@ with sync_playwright() as pw:
             p = page_for(c)
             assert p.locator('.gmi-evidence-card').count() == 1
             assert not p.locator('[data-browse-open]').is_visible()
-            assert p.locator('.gmi-product-tools a[href="gmi-index.html"]').is_visible()
+            assert p.locator('.gmi-product-tools a[href*="gmi-index.html"]').is_visible()
     check('server-answer-without-javascript', no_script)
     browser.close()
 server.shutdown()

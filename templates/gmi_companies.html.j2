@@ -1,23 +1,42 @@
 {% extends "_gmi_base.html.j2" %}
-{% from "_gmi_macros.html.j2" import t, ic, asof with context %}
+{% from "_gmi_macros.html.j2" import t, d, ic, asof with context %}
 {% from "_gmi_head.html.j2" import head %}
+{% from "_gmi_product_macros.html.j2" import lifecycle with context %}
 {% block title %}GMI Explorer — Company evidence{% endblock %}
 {% block seo %}{% set seo_title = 'GMI Explorer — Company evidence | Mastermind' %}{% set seo_desc = 'Documented company products, theme context and dated sources.' %}{% set seo_path = 'gmi-companies.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
 {% block body %}
-{{ head([('Research','研究'),('Company evidence','公司证据')], 'Company evidence', '公司证据', 'Follow documented products and their dated sources.', '查看有据可查的产品及其来源日期。') }}
+{{ head([('Research','研究'),('Company evidence','公司证据')], 'Company evidence', '公司证据', 'Find the company. Check the dated claim. Follow its source.', '查找公司，核对有日期的记录，追溯原始来源。') }}
 <label class="gmi-topic-search">{{ ic('search', 18) }}<input type="search" data-company-search placeholder="Search company, ticker or product" aria-label="Search company evidence" data-ph-en="Search company, ticker or product" data-ph-zh="搜索公司、代码或产品" data-aria-en="Search company evidence" data-aria-zh="搜索公司证据" autocomplete="off"></label>
-<p class="gmi-note" data-company-count aria-live="polite"></p>
-{% set catalogue = namespace(count=0) %}
-<div class="gmi-company-grid">
+{% set catalogue = namespace(count=0, items=[]) %}
 {% for iss in model.issuers %}
-{% set shown_links = iss.links|selectattr('curation.decision','equalto','ACCEPT')|selectattr('status','equalto','RATIFIED')|list %}{% if shown_links %}{% set catalogue.count = catalogue.count + 1 %}
+{% set shown_links = iss.links|selectattr('curation.decision','equalto','ACCEPT')|selectattr('status','equalto','RATIFIED')|list %}
+{% if shown_links %}{% set catalogue.count = catalogue.count + 1 %}{% set _ = catalogue.items.append({'issuer': iss, 'links': shown_links}) %}{% endif %}
+{% endfor %}
+<div class="gmi-company-directory">
+<section class="gmi-company-results" aria-label="Company results" data-aria-en="Company results" data-aria-zh="公司结果">
+<p class="gmi-note" data-company-count aria-live="polite">{{ t(catalogue.count ~ ' ' ~ ('company' if catalogue.count == 1 else 'companies') ~ ' with evidence on file', '有收录证据的公司：' ~ catalogue.count ~ ' 家') }}</p>
+<div class="gmi-company-grid">
+{% for item in catalogue.items %}{% set iss = item.issuer %}{% set shown_links = item.links %}
 {% set keywords = [] %}{% for lk in shown_links %}{% set _ = keywords.append((lk.scope.product or '') ~ ' ' ~ lk.micro_en ~ ' ' ~ lk.micro_zh) %}{% endfor %}
 <article class="gmi-company-card" data-company-card data-search="{{ iss.display_name }} {{ iss.ticker }} {{ keywords|join(' ') }}">
-<span class="gmi-eyebrow">{{ iss.ticker }}{% if iss.exchange %} · {{ iss.exchange }}{% endif %}</span><h2>{{ iss.display_name }}</h2><p>{{ t(shown_links|length ~ ' documented product connection' ~ ('' if shown_links|length == 1 else 's') ~ ' on file.', '已收录 ' ~ shown_links|length ~ ' 条有据可查的产品关联。') }}</p>
-{% for lk in shown_links %}<p>{{ t(lk.micro_en, lk.micro_zh) }}{% if lk.scope.product %} · {{ lk.scope.product }}{% endif %}</p>{% endfor %}
-<a href="{{ nav_prefix }}gmi-issuer-{{ iss.ticker|lower }}.html" class="gmi-action-secondary">{{ t('Open company evidence', '查看公司证据') }}{{ ic('arrow',16) }}</a></article>
-{% endif %}{% endfor %}
+<div class="gmi-company-card-head"><div class="gmi-company-identity"><span class="gmi-company-symbol" aria-hidden="true">{{ iss.ticker }}</span><div><span class="gmi-eyebrow">{{ iss.ticker }}{% if iss.exchange %} · {{ iss.exchange }}{% endif %}</span><h2>{{ iss.display_name }}</h2></div></div><p>{{ t(shown_links|length ~ ' documented product connection' ~ ('' if shown_links|length == 1 else 's'), '已收录 ' ~ shown_links|length ~ ' 条产品关联') }}</p></div>
+<div class="gmi-company-records">
+{% for lk in shown_links %}
+<section class="gmi-company-record">
+<div class="gmi-company-record-meta"><span>{{ t(lk.micro_en, lk.micro_zh) }}</span><div class="gmi-evidence-date"><span>{{ t('Source', '来源') }} · {% if lk.source.published_date %}{{ d(lk.source.published_date) }}{% else %}{{ t('Date not recorded', '日期未记录') }}{% endif %}</span><span class="gmi-stage">{{ lifecycle(lk.lifecycle) }}</span></div></div>
+<h3>{{ lk.scope.product or t('Product not recorded', '产品未记录') }}</h3>
+<p>{{ t('Platform named in the source', '来源记载的平台') }}: {{ lk.scope.platform or t('Not recorded', '未记录') }}</p>
+<div class="gmi-source-link"><span>{{ t(lk.source.label_en, lk.source.label_zh) }}</span>{% set url = lk.source.url_if_public or '' %}{% if url.startswith('https://') or url.startswith('http://') %}<a href="{{ url }}" target="_blank" rel="noopener noreferrer">{{ t('Read the source', '阅读来源') }}{{ ic('ext',16) }}<span class="gmi-vh">{{ t('opens a new tab', '在新标签页打开') }}</span></a>{% else %}<span>{{ t('Public source link unavailable', '暂无公开来源链接') }}</span>{% endif %}</div>
+</section>
+{% endfor %}
+</div>
+<div class="gmi-company-card-foot"><p>{{ t('Historical source context — current delivery and revenue exposure are not established.', '历史来源背景：尚未证实当前交付或营收敞口。') }}</p><a href="{{ nav_prefix }}gmi-issuer-{{ iss.ticker|lower }}.html" class="gmi-action-secondary">{{ t('Open company evidence', '查看公司证据') }}{{ ic('arrow',16) }}</a></div>
+</article>
+{% endfor %}
 </div>
 <div class="gmi-topic-empty" data-company-empty{% if catalogue.count %} hidden{% endif %}><h2>{{ t('No matching company', '没有匹配的公司') if catalogue.count else t('No company evidence yet', '暂无公司证据') }}</h2><p>{{ t('Try a company name, ticker or product. This catalogue includes only the evidence currently on file.', '请尝试公司名称、代码或产品。此目录仅包含目前收录的证据。') if catalogue.count else t('No reviewed product connection is available in this snapshot. You can still explore the full theme taxonomy.', '此快照暂无可用的经审核产品关联。完整的主题分类体系仍可浏览。') }}</p><button type="button" class="gmi-action-secondary" data-company-reset{% if not catalogue.count %} hidden{% endif %}>{{ t('Clear search', '清除搜索') }}</button>{% if not catalogue.count %}<a class="gmi-action-secondary" href="{{ nav_prefix }}gmi.html">{{ t('Explore themes', '探索主题') }}</a>{% endif %}</div>
+</section>
+<aside class="gmi-company-guide" data-company-guide aria-labelledby="gmi-company-guide-title"><h2 id="gmi-company-guide-title">{{ t('What this evidence tells you', '如何理解这些证据') }}</h2><section><h3>{{ t('A documented product connection', '有据可查的产品关联') }}</h3><p>{{ t('Read the product, named platform and lifecycle together with the source date.', '结合来源日期，查看产品、所述平台及其所处阶段。') }}</p></section><section><h3>{{ t('Not a live exposure map', '并非实时敞口图谱') }}</h3><p>{{ t('These records do not establish current delivery, revenue exposure or complete company coverage.', '这些记录并不证实当前交付、营收敞口或完整的公司覆盖。') }}</p></section><nav aria-label="Evidence guidance" data-aria-en="Evidence guidance" data-aria-zh="证据指引"><a href="{{ nav_prefix }}gmi-coverage.html">{{ t('Coverage & methodology', '覆盖与方法') }}{{ ic('arrow',16) }}</a><a href="{{ nav_prefix }}gmi-index.html">{{ t('Explore all themes', '浏览全部主题') }}{{ ic('arrow',16) }}</a></nav></aside>
+</div>
 <p class="gmi-note">{{ t('A documented product connection does not establish current delivery, revenue exposure or complete company coverage.', '有据可查的产品关联不代表当前交付、营收敞口或完整的公司覆盖。') }}</p>
 {% endblock %}

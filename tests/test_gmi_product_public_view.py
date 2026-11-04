@@ -92,3 +92,46 @@ def test_payload_escapes_source_text(current_model, tmp_path):
     assert not soup.select("img[onerror]")
     payload = json.loads(soup.select_one("#gmi-topic-data").string)
     assert any("</script>" in (c["product"] or "") for t in payload["topics"] for c in t["connections"])
+
+
+def test_company_catalogue_keeps_dated_evidence(current_model, pages):
+    soup = BeautifulSoup(pages["gmi-companies.html"], "html.parser")
+    eligible = [link for issuer in current_model["issuers"] for link in issuer["links"]
+                if link["curation"]["decision"] == "ACCEPT" and link["status"] == "RATIFIED"]
+    records = soup.select(".gmi-company-record")
+    assert len(records) == len(eligible)
+    assert soup.select_one("[data-company-count]").get_text(strip=True)
+    assert soup.select_one("[data-company-guide]")
+    for record, link in zip(records, eligible):
+        assert link["scope"]["product"] in record.get_text(" ", strip=True)
+        assert record.select_one(".gmi-evidence-date .gmi-stage")
+        source = record.select_one(".gmi-source-link a")
+        assert source["href"] == link["source"]["url_if_public"]
+        assert set(source["rel"]) >= {"noopener", "noreferrer"}
+
+
+def test_company_catalogue_preserves_all_links_and_rejects_unsafe_source(current_model, tmp_path):
+    model = deepcopy(current_model)
+    extra = deepcopy(model["issuers"][0]["links"][0])
+    extra["scope"]["product"] = "TEST-ONLY-SECOND-PRODUCT"
+    extra["source"]["url_if_public"] = "javascript:alert(1)"
+    model["issuers"][0]["links"].append(extra)
+    html = next(p for p in render_site(model, tmp_path) if p.name == "gmi-companies.html").read_text()
+    soup = BeautifulSoup(html, "html.parser")
+    assert len(soup.select(".gmi-company-record")) == 2
+    assert "TEST-ONLY-SECOND-PRODUCT" in soup.get_text()
+    assert not soup.select(".gmi-company-record a[href^='javascript:']")
+    assert "Public source link unavailable" in soup.select(".gmi-company-record")[1].get_text()
+
+
+def test_company_catalogue_empty_state_is_server_rendered(current_model, tmp_path):
+    model = deepcopy(current_model)
+    for issuer in model["issuers"]:
+        for link in issuer["links"]:
+            link["curation"]["decision"] = "REJECT"
+    html = next(p for p in render_site(model, tmp_path) if p.name == "gmi-companies.html").read_text()
+    soup = BeautifulSoup(html, "html.parser")
+    assert not soup.select("[data-company-card]")
+    assert not soup.select_one("[data-company-empty]").has_attr("hidden")
+    assert "No company evidence yet" in soup.select_one("[data-company-empty]").get_text()
+    assert soup.select_one("[data-company-count]").get_text(strip=True)

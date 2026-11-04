@@ -1,9 +1,11 @@
 {
-  "command": "python3 scripts/check_ui_visual_evidence.py --repo-root <candidate> --diff-file <original-baseline UI diff>",
+  "command": "python3 scripts/check_ui_visual_evidence.py --repo-root <source-materialization> --diff-file <exact-eight-path-diff-from-2144ca13>",
   "exit_code": 0,
   "findings": [],
   "pages": 7,
   "rest_cells": 56,
   "hover_focus_cells": 4,
-  "scope": "Canonical receipt and original PNG integrity on changed GMI templates; hosted PR diff is checked separately."
+  "additional_real_browser_screenshots": 31,
+  "browser_cases": 92,
+  "scope": "Exact candidate PNG byte hashes, current canonical evidence receipt and actual submitted-change precursor diff. Hosted whole-PR checks and deployment are separate."
 }

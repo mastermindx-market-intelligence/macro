@@ -112,14 +112,25 @@ function indexRender(){
 }
 
 /* ---- inputs ---- */
+/* Keep index search in the same fragment as lens/open/return context. */
+function setIndexQuery(value){
+  var q=norm(value);
+  if(q&&!iq)isnap=groups.map(function(g){return g.hasAttribute('open');});
+  iq=q;indexRender();
+  if(!q&&isnap){groups.forEach(function(g,i){if(isnap[i])g.setAttribute('open','');else g.removeAttribute('open');});isnap=null;}
+}
+var indexInput=document.querySelector('input[data-gmi-filter="index"]');
+function restoreIndex(){if(!indexInput)return;indexInput.value=(new URLSearchParams(location.hash.slice(1)).get('q')||'').slice(0,200);setIndexQuery(indexInput.value);}
+if(indexInput){indexInput.maxLength=200;restoreIndex();window.addEventListener('hashchange',restoreIndex);window.addEventListener('popstate',restoreIndex);}
 var inputs=[].slice.call(document.querySelectorAll('input[data-gmi-filter]'));
 inputs.forEach(function(inp){
   var scope=inp.getAttribute('data-gmi-filter');
   inp.addEventListener('input',function(){var q=norm(inp.value);
     if(scope==='index'){
-      if(q&&!iq)isnap=groups.map(function(g){return g.hasAttribute('open');});
-      iq=q;indexRender();
-      if(!q&&isnap){groups.forEach(function(g,i){if(isnap[i])g.setAttribute('open','');else g.removeAttribute('open');});isnap=null;}
+      setIndexQuery(q);
+      var params=new URLSearchParams(location.hash.slice(1)),raw=inp.value.slice(0,200);
+      if(raw)params.set('q',raw);else params.delete('q');
+      history.replaceState(null,'',location.pathname+location.search+(params.size?'#'+params.toString():''));
     }else{
       if(q&&!tq)snap=trows.map(function(r){return isOpen(r);});
       tq=q;
@@ -204,6 +215,7 @@ function safeReturn(value,nested){
 }
 function localPage(href){try{var u=new URL(href,location.href);if(u.origin===location.origin&&u.pathname.slice(0,u.pathname.lastIndexOf('/')+1)===location.pathname.slice(0,location.pathname.lastIndexOf('/')+1))return u.pathname.split('/').pop();}catch(error){}return '';}
 var originalHrefs=new WeakMap();
+function contextPage(page){return ['gmi-coverage.html','gmi-index.html','gmi-relationships.html','gmi-states.html'].includes(page);}
 function refreshJourney(){
   var current=localPage(location.href),inherited=safeReturn(new URLSearchParams(location.hash.slice(1)).get('gmi_return'));
   if(current==='gmi-companies.html'&&inherited.split('#')[0]!=='gmi.html')inherited='';
@@ -212,7 +224,7 @@ function refreshJourney(){
   var research=catalog?safeReturn(new URLSearchParams(catalog.split('#')[1]||'').get('gmi_return'),true):inherited;
   if(research.split('#')[0]!=='gmi.html')research='';
   var nav=document.querySelector('.gmi-product-nav'),holder=document.querySelector('.gmi-return-context');
-  var back=inherited&&(current==='gmi-companies.html'||/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(current));
+  var back=inherited&&(current==='gmi-companies.html'||contextPage(current)||/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(current));
   if(back&&nav){
     if(!holder){holder=el('div','gmi-return-context');nav.after(holder);}
     var action=holder.querySelector('[data-gmi-return]');if(!action){action=el('a','gmi-action-secondary');action.setAttribute('data-gmi-return','');holder.append(action);}
@@ -222,7 +234,7 @@ function refreshJourney(){
   document.querySelectorAll('main a[href]:not([data-gmi-return])').forEach(function(a){
     if(!originalHrefs.has(a))originalHrefs.set(a,a.getAttribute('href'));
     var original=originalHrefs.get(a),page=localPage(original),next=original;
-    if(source&&(/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(page)||(page==='gmi-companies.html'&&current!=='gmi-companies.html'))){
+    if(source&&(/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(page)||(page==='gmi-companies.html'&&current!=='gmi-companies.html')||(contextPage(page)&&page!==current))){
       if(page==='gmi-companies.html'&&catalog)next=catalog;
       else{var url=new URL(original,location.href),p=new URLSearchParams(url.hash.slice(1));p.set('gmi_return',source);url.hash=p.toString();next=url.href;}
     }else if(research&&page==='gmi.html'&&a.matches('.gmi-product-name,.gmi-product-tabs a'))next=research;

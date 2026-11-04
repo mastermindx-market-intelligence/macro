@@ -58,6 +58,118 @@
       "result": "PASS"
     },
     {
+      "name": "return-journey-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "return-journey-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "return-journey-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "return-journey-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "return-journey-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "return-journey-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "return-journey-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "return-journey-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "secondary-research-return-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "company-results-source-context-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "secondary-research-return-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "company-results-source-context-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "secondary-research-return-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "company-results-source-context-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "secondary-research-return-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "company-results-source-context-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "index-saved-search-1440",
+      "result": "PASS"
+    },
+    {
+      "name": "secondary-research-return-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "company-results-source-context-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "secondary-research-return-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "company-results-source-context-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "secondary-research-return-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "company-results-source-context-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "secondary-research-return-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "company-results-source-context-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "index-saved-search-390",
+      "result": "PASS"
+    },
+    {
+      "name": "incomplete-payloads-preserve-server-answer-and-index",
+      "result": "PASS"
+    },
+    {
+      "name": "return-context-is-bounded-local-and-whitelisted",
+      "result": "PASS"
+    },
+    {
       "name": "visual-interaction-hover-and-keyboard-focus",
       "result": "PASS"
     },
@@ -267,6 +379,31 @@
     "390-dark-zh.png",
     "390-light-en.png",
     "390-light-zh.png",
+    "return-1440-dark-en.png",
+    "return-1440-dark-zh.png",
+    "return-1440-light-en.png",
+    "return-1440-light-zh.png",
+    "return-390-dark-en.png",
+    "return-390-dark-zh.png",
+    "return-390-light-en.png",
+    "return-390-light-zh.png",
+    "secondary-return-1440-dark-en.png",
+    "company-results-1440-dark-en.png",
+    "secondary-return-1440-dark-zh.png",
+    "company-results-1440-dark-zh.png",
+    "secondary-return-1440-light-en.png",
+    "company-results-1440-light-en.png",
+    "secondary-return-1440-light-zh.png",
+    "company-results-1440-light-zh.png",
+    "secondary-return-390-dark-en.png",
+    "company-results-390-dark-en.png",
+    "secondary-return-390-dark-zh.png",
+    "company-results-390-dark-zh.png",
+    "secondary-return-390-light-en.png",
+    "company-results-390-light-en.png",
+    "secondary-return-390-light-zh.png",
+    "company-results-390-light-zh.png",
+    "incomplete-payload-recovery.png",
     "1440-dark-en-hover.png",
     "1440-dark-en-focus.png",
     "1440-light-en-hover.png",
@@ -321,17 +458,17 @@
     "gmi-index-390-light-zh.png"
   ],
   "page_errors": [],
-  "generated_at": "2026-11-03T23:28:32.840544+00:00",
+  "generated_at": "2026-11-04T03:47:01.718023+00:00",
   "source_sha256": {
-    "gmi-companies.html": "0b81a0dacd057c24e83e724836eb808f11de3f808295c246cb8c939013245894",
+    "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
     "gmi-coverage.html": "c94ffb0a554a892795f338512b1b96d9be74b7637057de50a26e9f5e613ce94a",
     "gmi-index.html": "304086ae49f2543e143f9e39637cbdae2c2fe684572f3779edb388f0afc20e42",
     "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
     "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
     "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
-    "gmi.css": "6c320599b62ac03da97f9804792a933e01aedd03eec83642a4ddc89a39fe6e38",
+    "gmi.css": "3ea13106c69e4cfb8f33e3198d15a945eed78cdc97fac43228643b82e5c64a2b",
     "gmi.html": "12f2f5aee1ded9d656878db968e3c218e7797c659c89043f12346a14f013f190",
-    "gmi.js": "67e1b7c8d9fae93ab8b7d4408fb47ed27a102c91ef847a76555613ce602b96e6"
+    "gmi.js": "7f31f50bcb0408720f90ac20d5d2bfe9d12a514e30b4493a87e0a310760d7f43"
   },
   "browser": "156.0.8078.80",
   "pass": true
