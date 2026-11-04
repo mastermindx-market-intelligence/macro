@@ -1,5 +1,19 @@
 # D05 builder instructions
 
+## Implementation checkpoint — 2026-11-04 UTC
+
+**Draft source candidate: [Macro #10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703).** Published head `9906c882d56e5bed829b2d11aa7b837c5b7abc7f`; tested/published tree `123a688b378fc7acf06e6800c4e2d150c69688d0`. The Git CLI had no write credential and created no remote branch; the authorized GitHub connector published an exactly matching tree. Local preparation commit `260d2d2e95585897a89c3f640ca6e1e686c13452` is not the canonical PR head.
+
+Implemented the native `sector_central.html#cycles` view using the existing renderer, typed host/source-date receipt, preserved query/history state, native family controls and scorecards, visible-box mounting, guarded series hydration, dated rotation context, phase-age bounds, producer doctrine and historical timing qualifications. The 13 canonical routes and 24 compatibility anchors remain; `sc-cyclemap` now opens the native Cycles view.
+
+**Source verification: 273 passed, 3 skipped** across seven focused suites; syntax, rendered-template preparation, paired-asset equality and diff checks pass. The observed #7595 router patch passes a read-only composition check without being applied. See the immutable [verification report](https://github.com/mastermindx-market-intelligence/macro/blob/9906c882d56e5bed829b2d11aa7b837c5b7abc7f/docs/verification/d05_native_cycles_20261104/README.md) and [file digests/results](https://github.com/mastermindx-market-intelligence/macro/blob/9906c882d56e5bed829b2d11aa7b837c5b7abc7f/docs/verification/d05_native_cycles_20261104/source_validation.json).
+
+**Browser/visual proof remains held.** Chromium's required local socket was denied; the standard broader-execution request was rejected by this environment's granular approval policy. The approved Browser connection could not reach the workspace preview server. No new implementation screenshot, production proof or accepted responsive journey is claimed. The local server and task-created browser tab were closed; no background watcher is armed.
+
+The archived source pair exposes a real date mismatch: Central measured session `2026-10-30` versus Cycles `2026-11-02`. A selected handoff is withheld until an explicit current-snapshot choice; the older origin remains visible/returnable. Equal session dates still do not prove publication/digest equivalence. Complete core/series/narrative publication identity and exact advanced-state restoration across multiple entries/reload remain open contract work.
+
+**Exact successor:** keep #10703 Draft, run its included local browser runner on an admitted host, inspect actual light/dark × EN/ZH × desktop/mobile/stress screenshots, repair findings on the same branch, then complete the remaining generation/return contract work and reconcile #7595 and Terminal #1244. Do not mark P15/P17, all-route implementation, or final shared acceptance complete from source tests. Agent OS continuity remains owned by #10689; no duplicate workstream/handoff was written. F01/F02 remain provisional. No merge, Ready/un-draft, queue, held-PR relabel, uncertain Paper retry or production deploy.
+
 ## Active continuation — Chairman instruction received November 3, 2026 (America/Chicago)
 
 The current direct Chairman instruction, **“Resume design and implementation,”** reopens D05 for reversible design and source implementation. This supersedes only the original packet's statement that implementation was not commissioned. It does not release final shared design acceptance, held PRs, merge, Ready/un-draft, enqueue, relabel, or production deployment. Historical delivery receipts remain unchanged.
