@@ -1,12 +1,12 @@
 {
   "schema": "f02.source_artifact_index.v1",
-  "generated_at": "2026-11-04T02:36:38.450837+00:00",
+  "generated_at": "2026-11-04T02:41:15.457575+00:00",
   "excludes_self": true,
   "scope": "F02 current source, applied native repairs, immutable scoped review inputs and historical retained evidence",
   "delivery_status": "SCOPED_NATIVE_REVIEW_ORIGINAL_EFFECT_HELD",
   "not_final_repaired_native_review_freeze": true,
-  "file_count": 771,
-  "aggregate_sha256": "01ed5c12c3f72e0ecdac6cdba7231691119749c9ae4ec39fb42c740183301c38",
+  "file_count": 772,
+  "aggregate_sha256": "bb99c10ef72baaad639555e4d68697e164b8ceefc0e0fdece81451d73ae372d8",
   "aggregate_rule": "SHA256 of sorted relative path + NUL + lowercase member SHA256 + LF; index excludes itself",
   "files": [
     {
@@ -51,8 +51,8 @@
     },
     {
       "path": "RETURN_F02.md",
-      "bytes": 14767,
-      "sha256": "d58c50df87f05472c3e46853b8a8514500d7ac11a95829b52fe08e7b1ab5e34a"
+      "bytes": 15456,
+      "sha256": "1741e2ef588d1d8aa809b3acb81433ef94b285a28d1bba0c816de69b4264d5af"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
@@ -3073,6 +3073,11 @@
       "path": "paper/reviews/final-handoff-consistency-20261104.md",
       "bytes": 4995,
       "sha256": "409b8c968d6ccbc37849a5c903934b913fae606d3960f7d841b8be4954b3e504"
+    },
+    {
+      "path": "paper/reviews/final-owner-coordination-20261104.json",
+      "bytes": 13883,
+      "sha256": "6c249f5cddafee8f2037b82833eca82812fda2643e7811cd697d0d68021140c6"
     },
     {
       "path": "paper/reviews/final-source-handoff-verification-20261104.json",
