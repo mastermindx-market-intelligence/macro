@@ -43,6 +43,8 @@ confidence: high
 reversibility: easy
 decided_by: chairman
 decided_at: 2026-11-03
+supersedes:
+  - DEC:DEFAULT-FINISH-HANDS-WAIT-TO-SWEEPER
 ---
 
 ## Provenance and rollout state
@@ -56,3 +58,11 @@ Apply this as a memory/continuity pointer for future Web, Codex, Claude and
 Fabric sessions. The source policy remains the protected Mastermind revision
 once its PR is reviewed and accepted. Reconcile existing conflicting release
 changes instead of creating a second review dispatcher, queue or state plane.
+
+## Finish-to-release adjudication; supersedes unconditional CI handoff stop
+
+The earlier `DEC:DEFAULT-FINISH-HANDS-WAIT-TO-SWEEPER` required termination after `CI_HANDOFF` even when a PR had never merged, and prohibited the current session from verifying completion. The Chairman's current directive supersedes **that unconditional terminal interpretation**, not the existing `merge-on-green` sweeper or finite REST-quota protections.
+
+A truthful, verified `CI_HANDOFF` may release an **idle wait** to the original known sweeper when the candidate is reviewable, the exact head/required tests are observed, that watcher/trigger is proven functional and can return failed/held/merged outcomes to a reachable original-pr owner. The handoff is `DURABLE_EXECUTION_RUNNING` only with actual external execution and a genuine return path, **not** `PROVEN_OUTCOME`, completed PR, or permission to forget its failure. If no real return path or a red/blocked PR, the assigned owner works the concrete repair while able, saves the original carrier and names the reachable continuation when the current chat must end. Never force human-attended sessions to idle-poll checks or keep expensive agent loops awake during a proven sweeper wait. A valid hard HOLD remains `PARKED / HOLD-FOR-SOL` under its existing source law (Draft; no `merge-on-green` label or auto-merge; no Ready/merge until released). Separate source/CI/merge/deploy/live acceptance evidence is still required.
+
+This decision changes **organizational policy** only; it does not prove `.claude/hooks/ship_loop_guard.py`, `ci_handoff.py`, the sweeper, or a ChatGPT Project instruction has been patched/enrolled or provides new Wake/return capability. Align actual enforcement through the existing owner, with targeted tests; do not create a second Stop hook, observer, queue, merge controller or memory plane.
