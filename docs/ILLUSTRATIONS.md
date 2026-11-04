@@ -45,8 +45,14 @@ Plotly fragments on dashboard surfaces.
   140px for hidden corner dates. Complete-series output and other chart kinds
   do not opt into this variant; actual page rendering remains an integration
   acceptance step, not something source-level layout tests can establish.
-  Callers must supply aligned date/value slots for missing sessions; omitted
-  dates cannot be inferred as missing. This is a **line-kind implementation**,
+  Supplied dates define the `line` observation grid. If its value array ends
+  early, each remaining supplied date is a missing observation; it cannot silently
+  shorten the window or move an old value to the chart's right edge. Internal
+  omissions still require explicit nulls at their corresponding positions.
+  More values than dates is an unaligned input and renders the existing honest
+  null, because neither extra dates nor a corrected value alignment can be inferred.
+  Input arrays are not modified. Omitted dates cannot be inferred as missing.
+  This is a **line-kind implementation**,
   not a claim that `area`, `baseline`, `drawdown`, `bars`, or `multi` have qualified
   discontinuity semantics. Do not use their current dropped-null paths to imply
   an observed continuous interval.

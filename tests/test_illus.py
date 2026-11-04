@@ -100,6 +100,54 @@ def test_line_complete_series_retains_legacy_geometry():
     assert "560" in path
 
 
+def test_line_supplied_tail_dates_without_values_remain_missing_slots():
+    # A short value array must not silently shorten an explicitly supplied window.
+    dates = _dates(8)
+    values = [100, 101, 102, 103]
+    for height in (42, 190):
+        out = I.illus({"dates": dates, "vals": values}, height=height, unit_en="USD")
+        assert 'data-gap-count="4"' in out
+        assert 'latest observation unavailable' in out
+        assert f'last observed 103.0 USD on {dates[3]}' in out
+        assert f'class="ilx-d ilx-d1">{dates[-1]}</span>' in out
+        path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+        xs = [float(x) for x in re.findall(r"(?:M|L)([0-9.]+) ", path)]
+        assert xs == [0, 80, 160, 240]
+        if height == 42:
+            assert '<span class="l-en">Latest missing</span>' in out
+            assert '<span class="l-zh">最新值缺失</span>' in out
+        else:
+            assert '<span class="l-en">Last observed</span>' in out
+    assert values == [100, 101, 102, 103]  # rendering does not extend caller data
+
+
+def test_line_short_values_keep_internal_gaps_and_a_real_final_zero():
+    # Slot spacing follows only supplied dates; a calendar is never invented.
+    dates = ['2026-01-01', '2026-02-04', '2026-03-12', '2026-05-09',
+             '2026-06-20', '2026-09-16', '2026-11-04']
+    values = [7, None, 5, 3, 0]
+    out = I.illus({"dates": dates, "vals": values}, height=42)
+    assert 'data-gap-count="3"' in out  # one explicit null, two supplied tail slots
+    assert f'window {dates[0]} to {dates[-1]}' in out
+    assert f'last observed 0.0 on {dates[4]}' in out
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    assert path.count('M') == 2
+    xs = [float(x) for x in re.findall(r"(?:M|L)([0-9.]+) ", path)]
+    assert xs == [0, 186.67, 280, 373.33]
+    assert values == [7, None, 5, 3, 0]
+
+
+def test_line_values_without_date_slots_do_not_render_a_truncated_history():
+    # Extra values cannot be assigned an invented date or silently discarded.
+    dates = _dates(4)
+    for values in ([1, 2, 3, 4, 5], [1, 2, 3, 4, None]):
+        for height in (42, 190):
+            out = I.illus({"dates": dates, "vals": values}, height=height)
+            assert 'ilx-null' in out
+            assert 'class="ilx-path"' not in out
+            assert 'class="ilx-dot"' not in out
+
+
 def test_line_gap_domain_labels_and_historical_value_stay_honest():
     vals = [None, 1, 2, 3, 4, None, None, None]
     dates = _dates(len(vals))

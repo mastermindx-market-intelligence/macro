@@ -745,17 +745,26 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
                              baseline=baseline)
 
     series = series or {}
-    pairs_all = _clean(series.get("dates"), series.get("vals"))
+    dates, vals = series.get("dates"), series.get("vals")
+    if kind == "line":
+        dates, vals = list(dates or []), list(vals or [])
+        # Supplied dates own the observation slots. A short value array leaves
+        # unavailable tail slots; zip alone would silently shorten that window.
+        # Surplus values cannot be assigned dates without inventing alignment.
+        if len(vals) > len(dates):
+            return _null_fragment(accent, height, aria_en)
+        vals.extend([None] * (len(dates) - len(vals)))
+    pairs_all = _clean(dates, vals)
     pairs = _downsample(pairs_all, max_points)
     # History eligibility is a property of source observations, not the number
     # of points a low-detail renderer happens to retain for a flat line.
     if len(pairs_all if kind == "line" else pairs) < 4:
         return _null_fragment(accent, height, aria_en)
 
-    line_gap = (_line_geometry_with_gaps(series.get("dates"), series.get("vals"),
+    line_gap = (_line_geometry_with_gaps(dates, vals,
                                         height, max_points=max_points, reference=reference)
                 if kind == "line" else None)
-    raw_slots = (list(zip(series.get("dates") or [], series.get("vals") or []))
+    raw_slots = (list(zip(dates or [], vals or []))
                  if line_gap is not None else [])
     trailing_gap = bool(raw_slots and not _clean([raw_slots[-1][0]],
                                                 [raw_slots[-1][1]]))
