@@ -146,6 +146,9 @@ def _fixture_world(root: Path, n_securities: int = 20):
             for security_id, symbol in symbol_by_id.items()
         ]
     ).to_parquet(reference / "vendor_aliases.parquet", index=False)
+    for name in ("issuer_master.parquet", "issuer_migrations.parquet", "security_migrations.parquet"):
+        pd.DataFrame({"synthetic": []}).to_parquet(reference / name, index=False)
+    (reference / "_receipt.json").write_text('{"fixture":"legacy"}', encoding="utf-8")
 
     stockdata = root / "site/stockdata"
     stockdata.mkdir(parents=True)
@@ -250,13 +253,14 @@ def test_w1a_batch_and_performance_receipt(tmp_path, monkeypatch):
         return original_read_text(path, *args, **kwargs)
 
     monkeypatch.setattr(Path, "read_text", counted_read_text)
-    original_read_parquet = pd.read_parquet
+    from engine.entry_radar.replay import identity_observation_snapshot as snapshot_owner
+    original_parquet_records = snapshot_owner._parquet_records
 
-    def counted_read_parquet(path, *args, **kwargs):
-        counters.parquet_reads[str(path)] += 1
-        return original_read_parquet(path, *args, **kwargs)
+    def counted_parquet_records(raw, name):
+        counters.parquet_reads[name] += 1  # captured-byte decodes, no latest-path opens
+        return original_parquet_records(raw, name)
 
-    monkeypatch.setattr(pd, "read_parquet", counted_read_parquet)
+    monkeypatch.setattr(snapshot_owner, "_parquet_records", counted_parquet_records)
 
     original_stage_load = StageAdapter._load_document
 
@@ -480,8 +484,8 @@ def test_w1a_batch_and_performance_receipt(tmp_path, monkeypatch):
     assert all_loads["path_reads"][str(tmp_path / "data/stage_analysis/screener.json")] == 1
     assert all_loads["path_reads"][str(tmp_path / "data/stage_analysis/industry_name_pctile.json")] == 1
     assert all_loads["parquet_reads"] == {
-        str(tmp_path / "data/reference/security_master.parquet"): 1,
-        str(tmp_path / "data/reference/vendor_aliases.parquet"): 1,
+        "security_master.parquet": 1,
+        "vendor_aliases.parquet": 1,
     }
 
     industry, industry_metric = resolve(
@@ -515,8 +519,8 @@ def test_w1a_batch_and_performance_receipt(tmp_path, monkeypatch):
     assert representative_loads["quote_batches"] == 1
     assert representative_loads["quote_symbols"] == len(ids)
     assert representative_loads["parquet_reads"] == {
-        str(tmp_path / "data/reference/security_master.parquet"): 1,
-        str(tmp_path / "data/reference/vendor_aliases.parquet"): 1,
+        "security_master.parquet": 1,
+        "vendor_aliases.parquet": 1,
     }
     technical_reads = {
         path: count

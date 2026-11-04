@@ -1,0 +1,88 @@
+{
+  "schema": "mastermind.forex_clock_contract_qualification.v1",
+  "recorded_at_utc": "2026-10-22T18:51:50Z",
+  "base_head": "01a93e59d86f3243b19185f94d87c8aea95330dc",
+  "protected_skillpack_pin": "05a9eb52a54e29fb7bbd0d40813ed12623b176c7",
+  "source_before": {
+    "collectors/tiingo_archive.py": "d3f5f822a794763fac5842a90763193d8e2176b7",
+    "lib/dataos/tiingo_reader.py": "86cbe72434e1b00b3d5e91f9b8aa3ed994471c8d",
+    "lib/dataos/tiingo_forex.py": "e3b85ccaa85e934163e0dcd4a85f9d9b3364d077",
+    "tests/test_tiingo_forex_source.py": "021f3694790c9899fabeac2a2ae5069648718712"
+  },
+  "source_after": {
+    "collectors/tiingo_archive.py": "37924929924eac798036496dc7b1b6c6d117f876",
+    "lib/dataos/tiingo_reader.py": "7648ee522bd9ea7a179f5d9c910e02e1400829ed",
+    "lib/dataos/tiingo_forex.py": "be4e99308aebbdac83677d9d12be8dd20e865901",
+    "tests/test_tiingo_forex_source.py": "65e106a82f1a33f8f88bda222330d4a30d1f3220"
+  },
+  "red": {
+    "completed_at_utc": "2026-10-22T18:43:56.802056+00:00",
+    "pid": 52789,
+    "failed": 9,
+    "passed": 8,
+    "deselected": 234,
+    "pytest_seconds": 5.59,
+    "command_elapsed_seconds": 7.081,
+    "log_sha256": "463d81f115b0d74dd0563b78da3d98ed3da84ae0930e4dfb9aa8b0cebd1bcf7a",
+    "production_source_unchanged": true
+  },
+  "green": {
+    "completed_at_utc": "2026-10-22T18:46:20.432516+00:00",
+    "pid": 61440,
+    "passed": 524,
+    "pytest_seconds": 33.75,
+    "command_elapsed_seconds": 36.001,
+    "log_sha256": "28fe4da759fa9e1fb8d987a42ff4ae07b9c6f3b9067c4f6f611eb944efe93728",
+    "suites": [
+      "tests/test_tiingo_archive.py",
+      "tests/test_tiingo_forex_source.py",
+      "tests/test_tiingo_reader.py",
+      "tests/test_tiingo_views.py",
+      "tests/test_tiingo_ingestion_integrity.py",
+      "tests/test_boats_history_refresh.py",
+      "tests/test_boats_live_history_refresh.py"
+    ]
+  },
+  "preserved_prefix": {
+    "path": "lib/dataos/tiingo_forex.py",
+    "through_line": 455,
+    "byte_equal": true,
+    "sha256": "d32769fd8fe98a9aaefa59a9714cca6b0876706c5388ded3053efed629dcd0b1",
+    "bytes": 23419
+  },
+  "patches": {
+    "source.patch": {
+      "sha256": "f61b7d219cad64e72ce12b0f408b0e6ff5495a5d4243ad00e7f0fa3da873d612",
+      "bytes": 22655
+    },
+    "tests.patch": {
+      "sha256": "d1a35a880eb91156a5e04103851df379521cd55fd38d872bd8e1208f5fd67dd8",
+      "bytes": 17066
+    }
+  },
+  "contract": "local_utc_after_bounded_read_before_http_exit/v1",
+  "first_receipt_reuse_preserved": true,
+  "historical_receipts_modified": false,
+  "real_provider_requests": 0,
+  "real_archive_mutations": 0,
+  "historical_versions_preserved": true,
+  "omitted_policy_defaults_to_version": 2,
+  "strict_competing_vintage_check": true,
+  "producer_execution_independently_attested": false,
+  "policy_state": "CANDIDATE_NOT_ADOPTED",
+  "eligible_observations": [],
+  "monitoring_admitted": false,
+  "dataos_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "redistribution_admitted": false,
+  "independent_source_review": "unqualified_original_operation_preserved",
+  "licensing": "COMPLETE_by_Chairman_special_license_attestation",
+  "predecessor_ci": {
+    "head": "01a93e59d86f3243b19185f94d87c8aea95330dc",
+    "observed_at_utc": "2026-10-22T18:47:00Z",
+    "ci_run": 39831294081,
+    "ci_status": "in_progress",
+    "fences_run": 39831294103,
+    "fences_conclusion": "success"
+  }
+}

@@ -21,18 +21,18 @@
   "comparison_receipt": "data/global_liquidity_transmission/factor_comparison_btc_4w.json",
   "config_hash": "f02d493baed5f6cc54464583552bb51384f8f81288b47ea978f6224bc07a487b",
   "contract_schema": "global_liquidity_transmission.v1",
-  "current_first_known_at": "2026-09-04T11:03:41.497178Z",
-  "data_version": "glt_data:361611bc7ba7fb7e",
+  "current_first_known_at": "2026-10-16T18:16:51.754201Z",
+  "data_version": "glt_data:a948e779d83d6c92",
   "first_asof": "1998-04-03",
   "first_complete_state": "2004-12-10",
-  "generated_at": "2026-09-04T11:03:41.497178+00:00",
+  "generated_at": "2026-10-16T18:16:51.754201+00:00",
   "historical_clock_law": {
     "2023_2026_exact_episode_chronology": [],
     "chronology_status": "unavailable_do_not_infer_from_backfill",
     "first_known": "not reconstructable before the W-LIQ.1 producer existed; historical rows are not episode timestamps",
     "observation_and_release": "reconstructed conservatively from economic reference dates and configured date-only lags"
   },
-  "last_asof": "2026-08-28",
+  "last_asof": "2026-10-09",
   "model_version": "glt_state.v1",
   "pit_policy": "economic reference date plus conservative business-day release lag; expanding transforms use only prior observations",
   "producer_version": "w-liq.1.0",
@@ -42,7 +42,7 @@
     "exact_retry": "same hash is the same immutable source snapshot and preserves its earliest published first_known_at",
     "snapshot_identity": "source_snapshot_hash"
   },
-  "rows": 1483,
+  "rows": 1489,
   "schema": "global_liquidity_transmission.history_meta.v1",
-  "source_snapshot_hash": "361611bc7ba7fb7e46dcdef9aaf13b4ea1b0bd4cefc0949a210c4d9d88bb0002"
+  "source_snapshot_hash": "a948e779d83d6c92a08d11ce1e0391aa619616a17bfe7e72a636992213e4f6c9"
 }
