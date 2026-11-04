@@ -735,6 +735,6 @@ model memory or generic title matching implies a preference.
 
 Optional `standing_instructions` is a literal authored list of at most16 closed
 {instruction_ref,text} rows, unique project-scoped INS:UPPER-KEBAB key2..64 and
-nonblank text≤4096 Unicode codepoints. Absence and supplied-empty are distinct.
+nonblank valid UTF-8 text≤4096 Unicode codepoints (only LF/CR/TAB controls). Absence and supplied-empty are distinct.
 Revision is derived from exact canonical ref/text. No clock, activation, pause,
 scheduler or execution grant is authored here. Runtime admission remains separate.

@@ -1114,7 +1114,8 @@ def _project_knowledge_problems(rec: dict[str, Any], path: Path, *, decision: bo
                 ref, literal = row["instruction_ref"], row["text"]
                 valid = (type(ref) is str and ref.startswith("INS:") and 2 <= len(ref[4:]) <= 64
                          and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", ref[4:]) is not None and ref not in refs
-                         and type(literal) is str and bool(literal.strip()) and len(literal) <= 4096)
+                         and text(literal, 16384) and len(literal) <= 4096
+                         and not any((ord(c) < 32 and c not in "\n\r\t") or ord(c) == 127 for c in literal))
                 if not valid:
                     break
                 refs.add(ref)

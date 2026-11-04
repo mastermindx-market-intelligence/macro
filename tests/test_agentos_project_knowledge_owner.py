@@ -73,6 +73,7 @@ def test_explicit_empty_and_verbatim_codepoint_bound_are_valid(instructions):
 
 @pytest.mark.parametrize('instructions',[None,{},[{'instruction_ref':'INS:TEST','text':'   '}],
     [{'instruction_ref':'INS:../path','text':'Literal'}],[{'instruction_ref':'INS:TEST','text':'中'*4097}],
+    [{'instruction_ref':'INS:TEST','text':'\ud800'}],[{'instruction_ref':'INS:TEST','text':'bad\x00control'}],
     [{'instruction_ref':'INS:TEST','text':'Literal','revision':'a'*64}],
     [{'instruction_ref':'INS:TEST','text':'One'},{'instruction_ref':'INS:TEST','text':'Two'}]])
 def test_instruction_revision_state_and_duplicates_cannot_be_authored(instructions):
