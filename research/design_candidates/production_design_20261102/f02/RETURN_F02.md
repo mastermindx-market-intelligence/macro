@@ -1,5 +1,7 @@
 # F02 Design System — current return
 
+**Latest source checkpoint — 4 November 2026, 07:28 UTC:** implementation [#10698](https://github.com/mastermindx-market-intelligence/macro/pull/10698) is now at **`2b1593acd1b1d4e36014f20363ef11cfc71e8634`**. Three new missing-tail regressions and all **59 renderer tests pass**; all three changed files were read back exactly. Prior-head CI `41784199030` is now completed: 11/12 packs pass, including `ci-pack-1`; only the real-browser changed-illustration evidence gate fails in `ci-pack-5`. New-head CI `41792308587` and fences `41792308617` are queued at the first read. See the final section for the current source, effect and proof frontier; earlier queued/head observations below are historical.
+
 **Classification: CHECKPOINTED_CONTINUATION; source implementation is advancing on Draft #10698. Paper gate G15 remains EFFECT_UNKNOWN, and qualified joint v1 remains gated.** All independently safe native repairs and scoped Product/Taste followups are complete. This is the current return for [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630). The original uncertain Paper effect remains held; all independently safe construction in the planned 32-board set has been completed. No merge, Ready, un-draft, queue, relabel or deployment is authorized or performed.
 
 ## Concrete delivery
@@ -267,3 +269,49 @@ The canonical P0B closure selftest printed **OK**; the explicit changed-path clo
 The new real-browser HK/CA P0B receipts changed their file SHA-256s, which revealed one additional exact failing test in `tests/test_stock_dashboard_first_frame.py::test_visual_manifest_preserves_history_and_appends_bounded_repair`: the old `repair_extension.browser_receipts` hashes in `mockups/evidence/prophet-p0b-zero-fouc/manifest.json` were stale. Only those **two SHA-256 fields** were corrected from genuine local receipt bytes; baseline identity, 20 historical screenshot bindings, 16-state manifest and 64-case baseline remained untouched. A targeted rerun passed; then the full first-frame suite passed **119/119 evaluated, 1 skipped**, stock dashboard CSS **11/11**, illustration renderer **56/56** on m2studio. The source branch's manifest Git blob `c6a75f119044cecca27943df024b0b26b8e10029` was locally and remotely byte-bound, fast-forwarding [Draft source PR #10698](https://github.com/mastermindx-market-intelligence/macro/pull/10698) to [`510acc5fb87ecbdc39071f9c407dadcf63007fe5`](https://github.com/mastermindx-market-intelligence/macro/commit/510acc5fb87ecbdc39071f9c407dadcf63007fe5) (parent `532159b4`, manifest-only). GitHub raw `manifest.json` readback showed both new exact HK `ba7068e4...` and Canada `b3b72047...` values. No changed PNGs, new features, data collection, publisher effects, or deployment.
 
 Exact-head hosted [CI `41784199030`](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41784199030), [fences `41784199137`](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41784199137), ci-authority `41784192656` were queued/pending at readback; prior `532159b4` CI is superseded. The separate required `ci-pack-5` eight-cell source visual evidence gate remains; original Paper G15 is still `EFFECT_UNKNOWN` and final 32-board/joint acceptance remains gated. Both source and design PRs remain Draft/HOLD without merge/Ready/label/enqueue/deploy.
+
+## Supplied-date tail repair and resolved CI census — source `2b1593ac`
+
+**Classification: CHECKPOINTED_CONTINUATION.** This source phase is published and verified; full F02 is not accepted. The compatible protected source pin for this continuation is Mastermind/master **`690e5316629815ae3e78f65ebdec2eb87f0cad16`**, INDEX schema `mastermind.sol_skillpack.v1`, minimum bootstrap major 1. Original branch/custody and accepted native work remain in place.
+
+### Correctness defect and implemented behavior
+
+With eight supplied dates and only four values, the prior renderer zipped away the final four date slots. It drew an apparently complete line ending at the right edge and shortened the displayed window. This falsely suggested that the last observed value was current.
+
+For `kind="line"`, supplied dates now define the observation grid. A shorter value array is copied and padded with unavailable tail slots; existing missing-value geometry and metadata then preserve the full supplied window and report **Latest missing / 最新值缺失** in compact charts or a dated **Last observed** receipt in full-height charts. Internal gaps and a real final zero remain distinct. The renderer does not mutate caller arrays. Extra values without date slots render the existing honest null, because neither extra dates nor an alternative alignment can be inferred. Internal omissions still need explicit null positions, and omitted source dates cannot be recovered.
+
+The single original source branch `sol/web-f02-illus-gap-20261104-c2` advanced by expected-head, non-forced fast-forward from `510acc5fb87ecbdc39071f9c407dadcf63007fe5` to [`2b1593acd1b1d4e36014f20363ef11cfc71e8634`](https://github.com/mastermindx-market-intelligence/macro/commit/2b1593acd1b1d4e36014f20363ef11cfc71e8634), tree `d0df7091e28b62a93c4cda87e54dea4a2993a9a2`. The three changed paths are `lib/illus.py`, `tests/test_illus.py` and `docs/ILLUSTRATIONS.md`. Original GitHub publication was retained; the isolated source reconstruction was only a validation workspace. No CSS, P0B receipt, domain producer or Paper node changed in this repair.
+
+### Exact source proof
+
+| Check | Result |
+| --- | --- |
+| Regression first | All three added tests were observed RED against the preceding renderer before implementation: short tail slots, internal gap plus real zero, and values without date slots. |
+| Complete renderer suite | **59/59 test functions PASS**, using the direct stdlib function runner; no test function skipped. |
+| Complete-series compatibility | **900/900 byte-identical** outputs against `510acc5f`: five kinds (line/area/bars/baseline/drawdown), six heights (42/64/95/96/120/190), five lengths (4/8/31/221/1000), two budgets (8/220), random/flat/descending inputs; seed `20261104`. |
+| Other-kind ragged compatibility | **120/120 byte-identical** outputs against `510acc5f`: area/bars/baseline/drawdown, three heights, five lengths, both short and surplus value arrays. |
+| Tail semantics | **72/72** shortened-value cases match explicit trailing-null padding exactly, including leading/internal nulls and final zero, three heights/lengths and two sampling budgets; caller arrays remain unchanged. |
+| CSS preservation | Existing `templates/illus.css` and `site/illus.css` remain byte-identical and unchanged by this commit. |
+| Remote readback | All three published files match tested content byte-for-byte. Renderer blob `83159e39ccc63877737b8a5a7050a2b26a9beef3`; tests `629301f23d009bb8c92ebdbd9282b11d7444b995`; docs `dc8ccf8d2cfbff1cee48226cffb95bc45d1adc68`. PR readback confirms open/Draft at the exact new head. |
+
+### Hosted CI now observed, without carrying success to a different head
+
+Prior source `510acc5f` [fences 41784199137](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41784199137) is **SUCCESS**. Its [CI 41784199030](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41784199030) has completed **FAILURE**, with **11 of 12 packs successful**. In particular, `ci-pack-1` passed, confirming the prior genuine P0B remint/integrity repair in hosted CI.
+
+The sole failed pack is `ci-pack-5`, job [126430453152](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41784199030/job/126430453152). Its exact design-governance failure is:
+
+> material UI change 'templates/illus.css' has no committed EVIDENCE.yml receipt owning it in changed_paths (searched mockups/refs, mockups/evidence)
+
+The final failed-job list is only `design-governance`; the aggregate `ci-gate` consequently fails. This narrows the prior two-gate diagnosis. The pinned stock-dashboard receipts satisfy their own gate and do not stand in for changed-illustration visual proof.
+
+New source `2b1593ac` [fences 41792308617](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41792308617) and [CI 41792308587](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41792308587) were **queued** on their first exact-head read. No new-head hosted success is claimed, and no workflow was manually dispatched.
+
+### Original effects and actual current capability observations
+
+- Direct Paper inspection connected to Desktop 0.5.18 with PROPHET in the foreground. That file was not switched. The same direct carrier's catalog read timed out (`MCP request timed out`); this read-only transport result supplies neither edit schemas nor a terminal disposition of G15. No Paper mutation was dispatched.
+- Original operation `f02-c2-macro-light-zh-390-chart-footer-20261103-01`, F02 file `01M312VSDSZFVT45674GDVJVZN`, board `7IS-0`, body `7J4-0`, remains **EFFECT_UNKNOWN**. Prior eight-child/no-footer observations remain current-state evidence only. No replay, replacement, carrier failover, dependent footer or 33-frame writes.
+- Browser control is exposed, and its current documentation supports local web development. Read-only tab inventory found no existing F02 preview. The historical checkpoint records a generated `data:` URL-policy refusal, but retrieval did not recover the original tool/error payload. This uncertainty does not prove that all browsers or development URLs are unavailable; it also does not clear the original refused effect. No alternative route was used to obtain that denied preview.
+- Studio Direct was reachable; fleet/host selection returned `INVALID_ARGUMENT` / `FLEET_ROUTE_PREFLIGHT_REFUSED` with no applied selection. This is a route-preflight result, not a global device outage or permission grant. It does not block the independently owned original GitHub source lane.
+- Existing native reference, P0B/browser receipts, producer ownership, held overlap #8241/#8721, joint F01/F02 and final acceptance boundaries remain as recorded. No extra optional review ceremony is required for this source phase.
+
+**Exact successor action:** consume material exact-`2b1593ac` CI results and fix any reproducible in-scope source regression on the same branch. To close design-governance, first establish a genuinely authorized preview route with an explicit resolution of the recorded refusal; then capture the actual changed illustration in dark/light × EN/ZH × 1440/390, verify layout/accessibility/reduced-motion and commit real screenshot hashes plus matching `EVIDENCE.yml`. Separately obtain original-carrier terminal/canonical G15 reconciliation before its dependent Paper edits. Do not rerun accepted unchanged native reviews or P0B fixtures, invent preview evidence, or treat old CI success as current-head acceptance. Both PRs remain Draft/HOLD; no Ready/un-draft/relabel/enqueue/merge/deploy. No optional external reviewer, Fabric execution or watcher is being awaited or claimed.
