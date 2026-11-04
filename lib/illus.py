@@ -237,7 +237,11 @@ def _line_geometry_with_gaps(dates, vals, height, *, max_points, reference=None)
     stroke_len = sum(
         _path_len(run) for run in xy_runs if len(run) >= 2
     )
-    return xy, path_d, round(stroke_len, 1) or 1.0, missing
+    # An isolated valid sample is evidence, not a drawable line segment.
+    # Give each interior singleton its own dot; the last one already has
+    # the standard end-of-series settle dot.
+    isolated = [run[0] for run in xy_runs if len(run) == 1 and run[0] != xy[-1]]
+    return xy, path_d, round(stroke_len, 1) or 1.0, missing, isolated
 
 
 def _d_area(xy, y0):
@@ -334,9 +338,14 @@ def _null_fragment(accent, height, aria_en):
 # --------------------------------------------------------------------------- #
 # per-kind SVG bodies
 # --------------------------------------------------------------------------- #
-def _svg_line(xy, uid, path_d=None):
-    """Plain single ink stroke + settle dot. (area/baseline/drawdown have own builders.)"""
+def _svg_line(xy, uid, path_d=None, isolated_points=None):
+    """Plain ink stroke + honest isolated samples + settle dot."""
     body = f'<path class="ilx-path" d="{path_d if path_d is not None else _d_line(xy)}"/>'
+    if isolated_points:
+        body += "".join(
+            f'<circle class="ilx-isolate" cx="{x}" cy="{y}" r="2.4"/>'
+            for x, y in isolated_points
+        )
     dot = f'<circle class="ilx-dot" cx="{xy[-1][0]}" cy="{xy[-1][1]}" r="3.2"/>'
     return "", "", body, dot
 
@@ -742,8 +751,10 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
         )
         plen = _path_len(xy)
         if kind == "line" and line_gap is not None:
-            xy, path_d, plen, _gap_count = line_gap
-            defs, mid, body, dot = _svg_line(xy, uid, path_d=path_d)
+            xy, path_d, plen, _gap_count, isolated = line_gap
+            defs, mid, body, dot = _svg_line(
+                xy, uid, path_d=path_d, isolated_points=isolated
+            )
         elif kind == "area":
             defs, mid, body, dot = _svg_area(xy, height - _PAD_B, uid)
         elif kind == "baseline":
