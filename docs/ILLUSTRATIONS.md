@@ -139,3 +139,24 @@ Keyed on the `.ilx-in` class (added by `illus.js` via IntersectionObserver, thre
 
 Paired copies (`templates/` ↔ `site/`) must byte-match; `python -m
 scripts.check_template_site_sync --fix` heals them.
+
+## Reproducible line-gap browser proof
+
+`scripts/render_illus_gap_fixture.py` builds synthetic specimens with this actual
+renderer, paired CSS, production reveal JS, canonical theme and existing fonts.
+It includes complete/gapped histories, short-value tails, isolated observations,
+real zero, sparse sampling, honest null and 42px compact widths of 96/140/240px.
+The fixture manifest binds the exact source inputs and generated HTML by hash.
+
+Use the canonical `scripts/capture_page_evidence.py` for the eight
+dark/light × EN/ZH × desktop/mobile screenshots. The specimen invokes the public
+`ilxReveal(document)` API so full-page captures include settled below-fold ink.
+`?natural=1` leaves the normal reveal-on-scroll behavior intact;
+`scripts/verify_illus_gap_fixture.py` exercises it and reduced motion at
+1440/390/320px, including status/plot separation and compact accessible semantics.
+
+The [F02 component evidence](../mockups/evidence/f02-illus-gap-20261104/README.md)
+contains exact commands, source hashes, eight actual PNGs and 24 browser checks.
+This is component proof on synthetic inputs. A producer that drops missing
+observations, and live application interaction/access/data paths, require their
+own integration proof.
