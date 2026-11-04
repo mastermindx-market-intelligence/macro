@@ -3,8 +3,8 @@
   "authority": {
     "tier": "context_only"
   },
-  "built": "2026-10-30T13:43:58.705194+00:00",
-  "asof": "2026-10-30",
+  "built": "2026-11-03T15:23:24.986343+00:00",
+  "asof": "2026-11-03",
   "phase": "REPAIR",
   "confidence": 0.667,
   "evidence": [
@@ -259,8 +259,8 @@
     }
   ],
   "ledger_summary": {
-    "total_graded": 22935,
-    "held": 8158,
+    "total_graded": 22941,
+    "held": 8164,
     "fired": 1975,
     "indeterminate": 12802
   },

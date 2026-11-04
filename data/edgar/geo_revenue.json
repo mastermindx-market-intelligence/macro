@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-10-30T14:39:36.705899+00:00",
+"updated":"2026-11-04T07:04:17.969895+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -4223,11 +4223,11 @@
 ]
 },
 "AZO":{
-"foreign_pct":12.0,
-"asof":"2025-08-30",
-"source":"10-K 2025-08-30",
-"fy":2025,
-"accession":"0001104659-25-102611",
+"foreign_pct":13.4,
+"asof":"2026-08-29",
+"source":"10-K 2026-08-29",
+"fy":2026,
+"accession":"0001104659-26-118791",
 "method":"us_member",
 "concept":"Revenues",
 "by_region":[
@@ -4235,13 +4235,13 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":88.0
+"pct":86.6
 },
 {
 "key":"NonUs",
 "label":"Non Us",
 "cls":"foreign_total",
-"pct":12.0
+"pct":13.4
 }
 ]
 },
@@ -11700,11 +11700,11 @@
 ]
 },
 "AYI":{
-"foreign_pct":13.6,
-"asof":"2025-08-31",
-"source":"10-K 2025-08-31",
-"fy":2025,
-"accession":"0001144215-25-000082",
+"foreign_pct":12.7,
+"asof":"2026-08-31",
+"source":"10-K 2026-08-31",
+"fy":2026,
+"accession":"0001144215-26-000052",
 "method":"foreign_agg",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -11712,13 +11712,13 @@
 "key":"DomesticCountry",
 "label":"Domestic Country",
 "cls":"mixed",
-"pct":86.4
+"pct":87.3
 },
 {
 "key":"NonUs",
 "label":"Non Us",
 "cls":"foreign_total",
-"pct":13.6
+"pct":12.7
 }
 ]
 },
@@ -35765,11 +35765,11 @@
 },
 "meta":{
 "universe":2872,
-"attempted":2879,
+"attempted":2880,
 "parsed":1001,
 "skips":{
 "no_geo_axis":1373,
-"no_denominator":397,
+"no_denominator":398,
 "no_10k":72,
 "no_instance":27,
 "agg_no_total":3,

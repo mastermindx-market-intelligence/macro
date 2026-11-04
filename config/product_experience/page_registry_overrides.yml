@@ -365,11 +365,6 @@ pages:
     archetype: "instrument_analyzer"
     why: "one monthly contrarian sleeve, analysed as a single instrument"
 
-  macro:consumer_cyclical_plnt:
-    archetype: "instrument_analyzer"
-    evidence: [templates/consumer_cyclical_plnt.html.j2]
-    why: "A PLNT economic-change detail card with metric availability and provenance; its synthetic input does not change the company-detail composition."
-
   macro:financial_lineage:
     archetype: "instrument_analyzer"
     evidence: [site/financial_lineage.html]

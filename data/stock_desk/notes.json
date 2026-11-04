@@ -1,168 +1,167 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-10-14",
-  "generated_at": "2026-10-18T07:20:24.744019+00:00",
+  "as_of": "2026-11-03",
+  "generated_at": "2026-11-04T13:19:59.120080+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-10-14-GEHC-20261018072024-1",
-      "ticker": "GEHC",
-      "name": "GE HealthCare",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The verdict is 'Lagging \u2014 relative weakness' with negative selection z (-0.61), and the only risk-validated support is the entry axis (off-high, RSI calm). The daily bottoming turn is not confirmed by the weekly timeframe, so this is a watch-not-chase setup, not a directional long.",
-      "evidence": [
-        "Verdict: Lagging \u2014 relative weakness",
-        "Selection z -0.61 (SUE 0.14, revisions -1.01, momentum -1.67)",
-        "Ladder: TURN SIGNALED / BOTTOMING, weekly not turned",
-        "Entry axis z 0.72 \u2014 off-high and RSI calm, half-size entry tag"
-      ],
-      "dissent": "The swing low printed and price reclaimed the 10-day average with macro net-liquidity tailwind; if the weekly timeframe turns, early-bottom laggards can mean-revert sharply against a risk-on tape.",
-      "falsifier": {
-        "text": "Price closes back below the 63.49 swing low without recovering the 10-day average",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-04",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-10-14-ENSG-20261018072024-2",
-      "ticker": "ENSG",
-      "name": "Ensign Group",
+      "id": "2026-11-03-PWR-20261104131959-1",
+      "ticker": "PWR",
+      "name": "Quanta Services Inc",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "This is a 'Constructive \u2014 building a base' with a strong validated SUE leg (z 2.67) and positive revisions (0.92), plus a fresh buy-zone entry on a bullish weekly-aligned tape. The risk controls cap size via the accounting watch, but the directional setup is intact.",
+      "thesis": "The constructive verdict is supported by the shipped residual-alpha selection and an unblocked bottoming entry, with price above both long-term averages. Confidence stays low because the weekly trend is mixed, liquidity is contracting, and the accounting warning directly weakens the setup.",
       "evidence": [
-        "Verdict: Constructive \u2014 building a base, score 58",
-        "SUE z 2.67 (validated, fresh 81d), revisions z 0.92",
-        "Ladder: FRESH BUY / BUY ZONE, weekly agrees",
-        "Entry axis z 0.72, off-high -18.5%, RSI 55"
+        "Verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
+        "Selection axis: z 1.23, 68th percentile",
+        "Entry unblocked; daily momentum crossed up",
+        "Above 50-day and 200-day averages",
+        "Quality flag: accounting warn"
       ],
-      "dissent": "Accounting-quality watch flag and the name is in a crowded, stretched Health Care basket; if earnings disappoint or accruals are worse than feared, the base fails.",
+      "dissent": "The apparent daily turn may fail under the mixed weekly structure and macro headwind, while weak accounting quality could become the dominant risk.",
       "falsifier": {
-        "text": "Price falls back below the 169.22 swing low and the daily MACD rolls negative",
+        "text": "A break below the October 23 swing low with the weekly timeframe still failing to turn up.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "ENSG",
+          "subject_ticker": "PWR",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-11-11",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-12-01",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
     },
     {
-      "id": "2026-10-14-PR-20261018072024-3",
-      "ticker": "PR",
-      "name": "Permian Resources",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The deterministic verdict is 'Constructive \u2014 building a base' but the ladder flags a left-translated prior cycle (topped early) and the daily phase is stretched with RSI 68 right at the 52-week highs. This is an extension/don't-chase state on a momentum name, so neutral rather than a directional short.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base, but band neutral",
-        "SUE z 0.95, revisions z 1.2 (validated legs present)",
-        "Ladder: TURN SIGNALED / BOTTOMING, prior cycle left-translated",
-        "Daily phase stretched, RSI 68, price at 52w high -0.3%"
-      ],
-      "dissent": "The earnings/revisions confluence is real and the name is a relative momentum leader; a clean breakout above the prior swing high with fresh expansion could resume the uptrend.",
-      "falsifier": {
-        "text": "Price breaks below the 21.12 swing low on a closing basis",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-04",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-10-14-DIS-20261018072024-4",
-      "ticker": "DIS",
-      "name": "Walt Disney Co/The",
-      "lean": "cautious",
-      "conviction": "medium",
-      "horizon_d": 20,
-      "thesis": "The verdict is 'Lagging \u2014 relative weakness' with negative selection (SUE z -1.51), and the cycle read shows a left-translated (topped early) prior cycle with macro-risk elevated for a macro-sensitive name. The engine owns a genuine bearish signal here, not just extension.",
-      "evidence": [
-        "Verdict: Lagging \u2014 relative weakness, score 26",
-        "SUE z -1.51 (validated), revisions z -0.47, momentum z -0.50",
-        "Ladder: TURN SIGNALED / BOTTOMING, but prior cycle left-translated",
-        "Board: HOLD \u2014 EXTENDED, basket below long-term trend",
-        "Macro-risk elevated for this macro-sensitive name"
-      ],
-      "dissent": "The seasonality is favorable (Oct/Nov positive skew) and the name is off only -5.2% from 52w highs with RSI 62 \u2014 if the broad tape stabilizes, this could mean-revert higher.",
-      "falsifier": {
-        "text": "Price closes back above the 110 level and the Communication Services basket reclaims its long-term trend",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "DIS",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-11-11",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-10-14-RHHBY-20261018072024-5",
-      "ticker": "RHHBY",
-      "name": "Roche Holding (ADR)",
+      "id": "2026-11-03-CMG-20261104131959-2",
+      "ticker": "CMG",
+      "name": "Chipotle Mexican Grill Inc",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "Verdict is 'Constructive \u2014 building a base' with residual momentum positive, but the prior cycle was left-translated and the entry tag is HALF SIZE with a below-trend GLP-1/Obesity basket. The momentum is intact yet the structural tattoo warrants watch-not-chase.",
+      "thesis": "The deterministic verdict finds no clear edge: the short-term bottoming attempt is offset by below-200-day positioning, negative selection inputs, and a stretched daily phase. The risk controls favor waiting for confirmation rather than treating the board rank as predictive.",
       "evidence": [
-        "Verdict: Constructive \u2014 building a base, score 30",
-        "Residual momentum z 0.68 (context tier only)",
-        "Ladder: TURN SIGNALED / BOTTOMING, prior cycle left-translated",
-        "Entry z 0.77, half-size entry, basket below trend",
-        "Off 52w high -2.7%"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Selection axis: z -0.40, 44th percentile",
+        "Price 2.1% below 200-day average",
+        "Daily phase: stretched",
+        "Weekly picture remains mixed"
       ],
-      "dissent": "The name is close to highs with weekly momentum turning; if the GLP-1 basket rotates back into leadership, the base resolves to the upside.",
+      "dissent": "Clean accounting, strong profitability, and a successful recovery above the 200-day average could turn the current bottoming pattern into durable relative strength.",
       "falsifier": {
-        "text": "Price closes below the day-12 swing low and loses the 10-day average",
+        "text": "A sustained move above the 200-day average accompanied by an upward weekly turn and continued positive MACD.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-11",
+      "check_by": "2026-12-01",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-03-CVNA-20261104131959-3",
+      "ticker": "CVNA",
+      "name": "Carvana Co",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 10,
+      "thesis": "The bullish with-trend ladder argues against shorting the name, but the neutral verdict, earnings proximity, lottery-spike control, and weak quality factors make the relative direction illegible. The appropriate read is watch rather than chase ahead of an event that can override the setup.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Ladder: FRESH BUY with bullish weekly agreement",
+        "Earnings due; result can override setup",
+        "Entry axis includes lottery-spike",
+        "Quality axis: z -0.46; accounting watch"
+      ],
+      "dissent": "Momentum could persist despite the risk flags because price is above both major averages and the daily and weekly trends currently agree.",
+      "falsifier": {
+        "text": "An earnings response followed by sustained relative strength versus the S&P 500 while price remains above both major averages.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-17",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-03-SBRA-20261104131959-4",
+      "ticker": "SBRA",
+      "name": "Sabra Health Care REIT",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 25,
+      "thesis": "The building-base verdict and unblocked entry are balanced by a left-translated prior cycle, late investor phase, and a weekly trend that has not turned. With constructive calls historically poorly calibrated, the evidence does not justify a directional relative bet yet.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Entry axis: z 0.67, 60th percentile",
+        "Prior cycle was left-translated",
+        "Investor phase: late",
+        "Weekly timeframe has not turned"
+      ],
+      "dissent": "Positive revisions, clean accounting, low-beta characteristics, and price above both major averages could allow the base to resolve upward despite the tiring-cycle signal.",
+      "falsifier": {
+        "text": "A confirmed weekly upturn with the next cycle holding above the October 7 swing low and relative strength improving versus the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-08",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-14-NWN-20261018072024-6",
-      "ticker": "NWN",
-      "name": "NW Natural",
+      "id": "2026-11-03-UE-20261104131959-5",
+      "ticker": "UE",
+      "name": "Urban Edge Properties",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The verdict is 'Neutral \u2014 no clear edge' with a weak selection signal (SUE -0.08, revisions -1.01), and the only support is the entry axis on a bottoming daily that hasn't confirmed on the weekly. No validated directional edge exists here.",
+      "horizon_d": 20,
+      "thesis": "The constructive base-building verdict is not enough for a directional call because the failed cycle is a genuine bearish structural signal and price remains below the 200-day average. The new daily turn keeps this from becoming a short thesis, but confirmation is required.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge, score 37",
-        "SUE z -0.08, revisions z -1.01",
-        "Ladder: TURN SIGNALED / BOTTOMING, weekly not turned",
-        "Entry axis z 0.85, off-high -11.5%, RSI 60",
-        "Accounting-quality watch flag"
+        "Verdict: Constructive \u2014 building a base",
+        "Failed cycle: price broke its cycle-start low",
+        "Price 2.4% below 200-day average",
+        "Weekly picture remains mixed",
+        "Entry is unblocked"
       ],
-      "dissent": "The entry axis is genuinely attractive (high off-high, RSI calm) and macro net-liquidity is a tailwind \u2014 a surprise earnings beat could catalyze a quick gap.",
+      "dissent": "Positive revisions, clean accounting, and the recovery above the 50-day average may mark a successful repair rather than another failed rally.",
       "falsifier": {
-        "text": "Price breaks below the 46.66 swing low on a closing basis",
+        "text": "A sustained recovery above the 200-day average with the weekly timeframe turning up and no new cycle failure.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-04",
+      "check_by": "2026-12-01",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-11-03-CMCSA-20261104131959-6",
+      "ticker": "CMCSA",
+      "name": "Comcast Corp Class A",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 30,
+      "thesis": "The neutral verdict is paired with actual lagging structure rather than mere extension: price is below the 200-day average, the prior cycle topped early, selection inputs are negative, and its equal-weight sector basket is below trend. The bottoming attempt limits conviction, but the shipped risk controls support a cautious relative lean.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Price 6.7% below 200-day average",
+        "Prior cycle left-translated",
+        "Selection axis: z -0.36, 44th percentile",
+        "Sector basket below long-term trend"
+      ],
+      "dissent": "Strong cash generation, value and payout factors, clean accounting, and a daily turn above the 50-day average could produce a durable rebound. (softened: strong leader, momentum intact \u2014 extension is not a short (cautious-on-leader historically ~17% right); watch, don't chase)",
+      "falsifier": {
+        "text": "A sustained move above the 200-day average with a right-translated cycle and improving relative strength versus the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-15",
       "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],
