@@ -4,7 +4,10 @@ Scope: [Options disposition6546107958](https://github.com/mastermindx-market-int
 This adapter exercises the existing Q02 solver in explicitly constructed fixtures.
 It does not adopt Q02 for production, reopen E2, amend its preregistration, or
 produce an empirical result. Q02 remains `RESEARCH_ONLY / INSUFFICIENT_DATA`.
-This source is Draft-only; it does not complete Release B.
+Protected source release is authorized by [the scoped release ruling](https://github.com/mastermindx-market-intelligence/macro/pull/10331#issuecomment-6621748295).
+That ruling does not authorize production import or registration, real-source model
+adoption, empirical execution, installation, deployment or activation; this source
+does not complete Release B.
 
 ## Boundary
 
