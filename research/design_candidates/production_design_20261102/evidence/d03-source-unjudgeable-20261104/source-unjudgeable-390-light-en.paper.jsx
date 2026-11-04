@@ -96,7 +96,7 @@
           The live rank, entry trigger and confidence readout are hidden. We will not substitute old values or turn missing inputs into zeros.
         </div>
         <div id="10UQ-0" style={{ backgroundColor: 'var(--mx-light-line-quiet)', boxSizing: 'border-box', flexShrink: 0, height: '1px', width: '100%' }} />
-        <div id="10UR-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <div id="10UR-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', minHeight: '44px', width: '100%' }}>
           <div id="10US-0" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: '12px', lineHeight: '18px' }}>
             Research context
           </div>
