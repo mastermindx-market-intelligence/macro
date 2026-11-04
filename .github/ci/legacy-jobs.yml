@@ -30508,7 +30508,17 @@ jobs:
       # This test registration does not alter production render/publish inventory.
       # Sector Central: Paper evidence, native routes, synchronous payload ordering,
       # and the selected-sector Screener handoff run on code PRs with this Node/minimal-Python owner.
-        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py tests/test_consumer_cyclical_plnt_site_wiring.py tests/test_sector_central_paper.py tests/test_si_workspace_shell.py tests/test_sector_central_data_is_sync.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+        run: >-
+          node --version && python -m pytest
+          tests/test_public_render_fastlane.py tests/test_help_directory.py
+          tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py
+          tests/test_build_market_memory_page.py tests/test_glossary.py
+          tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py
+          tests/test_finance_intelligence_site_wiring.py
+          tests/test_consumer_cyclical_plnt_site_wiring.py tests/test_sector_central_paper.py
+          tests/test_si_workspace_shell.py tests/test_sector_central_data_is_sync.py
+          tests/test_regime_history_us_site_wiring.py tests/test_winner_health_source_dates.py
+          -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
@@ -30521,15 +30531,13 @@ jobs:
       # (templates/index.html 134/133), which turned integration-baseline red on main.
       # US Regime History table wiring (2026-10-31, #10053), on the same reasoning. The
       # suite reads scripts/build_site.py as TEXT, which this job already owns, and it
-      # needs nothing beyond this job's install line. Its own step, appended last, so it
-      # masks no step above.
-      - name: US Regime History table wiring
-        run: python -m pytest tests/test_regime_history_us_site_wiring.py -q
+      # needs nothing beyond this job's install line. It shares the source/render
+      # pytest process above; all suites remain explicit and retain their assertions.
       # D03 T43: the actual Winner Health loader/build path uses only temporary
       # data and this job's minimal deps. Its nightly owner is gate:data, so run
       # these impossible-date publication regressions on code PRs as well.
-      - name: Winner Health source-date publication safety
-        run: python -m pytest tests/test_winner_health_source_dates.py -q
+      # Same-process collection avoids duplicate pytest startup and preserves
+      # the existing packing ceilings without hiding or dropping test paths.
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -42545,8 +42553,6 @@ jobs:
       # Synthetic-only research guard: labels may look forward, but every feature
       # is point-in-time and all frozen thresholds remain tied to the preregistered
       # Phase-0 contract.  The derived scope follows its engine/script/read closure.
-      - name: TOP ANATOMY point-in-time engine and preregistration contracts
-        run: python -m pytest tests/test_top_anatomy.py -q
       # Wired 2026-09-02: tests/test_top_anatomy_oot_receipt.py shipped in #6723
       # named by NO run: step in any workflow (contract-delta unrun-suite
       # finding, inherited on main at dae473ed625e), so the guard over the
@@ -42556,14 +42562,12 @@ jobs:
       # merged. It belongs to this owner: the suite drives
       # scripts/research_top_anatomy_oot_receipt.py and the Phase-0 harness
       # over synthetic massive_stock_day stores in tmp_path (CI has no real
-      # data/ tree) through the same engine/top_anatomy closure the step above
-      # owns, and the shared install is a strict superset of its
+      # data/ tree) through the same engine/top_anatomy closure the combined
+      # family process below owns, and the shared install is a strict superset of its
       # pandas/numpy/pyarrow needs. Path-gated in ci.yml on BOTH the test and
       # its subjects (scripts/research_top_anatomy_oot_receipt.py,
       # scripts/research_top_anatomy_phase0.py, engine/top_anatomy.py) — a
       # guard the guarded change cannot trigger is not a guard (#3488).
-      - name: TOP ANATOMY OOT receipt — frozen prereg schema and boundary contracts
-        run: python -m pytest tests/test_top_anatomy_oot_receipt.py -q
       # The same harness's JSON write path, so it belongs to the same owner rather
       # than a second overlapping job. `default=str` does NOT catch NaN — it only
       # fires for values the encoder cannot serialize — so three shipped
@@ -42581,17 +42585,18 @@ jobs:
       # Nightly display-only consumer of the frozen TOP ANATOMY library. Keep
       # its point-in-time state machine and generated page beside the research
       # owner so changes to either side cannot leave the shipped read dark.
-      - name: Winner Health nightly maturation and render contracts
+      - name: TOP ANATOMY and Winner Health engine, maturation, and surface contracts
         run: >-
           TZ=UTC python -m pytest
-          tests/test_top_maturation.py
-          tests/test_winner_health_page.py
-          tests/test_winner_health_source_dates.py -q
+          tests/test_top_anatomy.py tests/test_top_anatomy_oot_receipt.py
+          tests/test_top_maturation.py tests/test_winner_health_page.py
+          tests/test_winner_health_source_dates.py tests/test_winner_health_design_freeze.py -q
       # Source-template render only; templates/winner_health.html.j2 is declared
       # above because Jinja's runtime template lookup is intentionally not inferred
       # as a Python import edge.
-      - name: Winner Health inert surface design freeze
-        run: python -m pytest tests/test_winner_health_design_freeze.py -q
+      # The design-freeze suite runs in the combined product-family process above.
+      # All six suites remain explicit; five duplicate pytest starts are removed
+      # across this job and public-render-fastlane, with unchanged packing limits.
 
   options-nbbo-cohort:
     # Frozen same-basis MomoEdge comparison infrastructure. The suite is fully

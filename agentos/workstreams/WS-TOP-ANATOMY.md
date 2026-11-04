@@ -180,3 +180,19 @@ acceptance or a new statistical verdict. Preserve Draft/HOLD until the existing
 release gates are lawfully satisfied; after release, verify the normal builder
 and served Winner Health path separately. Original #7073 template work and
 #9495 Prophet work remain untouched.
+
+### CI packing repair (2026-11-04 UTC)
+
+Hosted CI 41785595517 at source head 8b10afa2a0011922354672fc397705e26dc6e230
+found three introduced ordinary-change packing overruns (+5 weight-seconds),
+not a source-date product failure. Related pytest invocations are now combined
+within their existing public-render-fastlane and falsifier-tripwires owners.
+Every existing/new suite, selector, dependency, path scope, gate and ceiling is
+preserved; five duplicate interpreter starts are removed. Computed combined
+weight returns from 71 to its original 66 (34 + 32); no observed-weight override
+or packing-limit change. The actual combined commands pass 368 tests with one
+pre-existing deselection, and 369 tests respectively. Sparse checkout fixtures
+were materialized only from exact HEAD; no generated production artifacts changed.
+Manifest validation still reports 312 logical jobs / 12 packs. Differential
+contract-delta and hosted exact-head results are recorded on the existing D03
+continuation receipt after publication; they are not inferred from weight arithmetic.
