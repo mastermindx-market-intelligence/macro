@@ -45,3 +45,24 @@ Typed publication-status precheck returned REFUSED / NOT_APPLIED / INVALID_ARGUM
 6. **Persist:** commit/publish through the admitted workspace publisher when qualified; retain Draft-only product delivery if a new implementation PR is needed. Add exact source/browser evidence and results to this existing domain carrier. No release action.
 
 DO_NOT_REDO: prior 113-capability/10-route/24-alias/49-basket analysis and accepted unchanged source findings. All 25 inherited reference conditions retain their actual status until evidence supports a scoped disposition. Remaining broader heatmap exact-return and D23 persistence work follows this slice; no capability is silently removed.
+
+## Resumption: Confluence closed; standalone heatmap return next
+
+Observed 2026-11-04 in the Chairman's resumed D04 session. This section supersedes the historical NEXT statuses above; it does not replace the implementation bundle or its byte evidence.
+
+- Confluence source #10705 is published at `126bb13421d7052527ce034a900c89cd1a7fb9e6`. Exact-head CI run `41777083431` and fences `41777083339` completed successfully; all twelve CI packs and ci-gate passed. Native GitHub read reported Draft, CLEAN/MERGEABLE, no auto-merge. No base merge is needed. The prior 138 source tests, 39 browser cases and retained captures are DO_NOT_REDO absent a relevant change. This closes the previous pending-CI lane, not programme acceptance or release.
+- The original `d04-confluence-evidence-20261104` workspace and publisher reconcile local/remote head at that same commit with no tracked changes. Ignored/untracked evidence remains preserved. No source publication effect is unresolved.
+- Protected Mastermind pin for this resumption: `690e5316629815ae3e78f65ebdec2eb87f0cad16`, compatible INDEX 1.0.1/bootstrap1. Macro source inspected: `bb3b7273f1e9ccb869b6500c97871093eb22005a`.
+- Actual Paper reads still resolve the thirteen retained Confluence R2 boards. Current catalog `03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4` reports `accepted_for_write=false` against expected `ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9`. No D04 canvas write was attempted. Final F01/F02 composition and full-route acceptance remain unpromoted.
+
+### Next bounded product slice and custody
+
+Implement normal return for the existing **standalone Macro US heatmap** at `/sector_heatmap.html`: retain map type, each map's supported timeframe/sort/filter, and a stable visible company/group anchor across ordinary same-origin detail navigation and browser Back. Use the current document's native history entry, preserving unrelated state and exact URL/query/fragment. Add no account save, storage registry, router, auth or data producer. D23 saves and the embedded/shared-shell and cross-origin handoffs remain their existing owners' unqualified integration lanes.
+
+Source seams: `templates/heatmap.js` and its generated served twin, `templates/sector_heatmap.html.j2`, plus focused tests/browser proof. Opt in only the standalone US host; regional maps, overlays and scorecards retain existing behavior. Restore after actual layout, guard stale map loads and later user interaction, and disclose unavailable configuration/position or changed observation receipts rather than claim a frozen dataset. Never persist protected payloads or tickers through cross-origin transport.
+
+Existing #7967 at `a7d07473b030b2b981dedadac3d6ceafa381c34c` owns China sector/theme access and adapter work; #8144 retains regional renderer work. Their fixes and protected-feed policy are not adopted or duplicated. The D04 behavior is separate and US-opt-in, but overlapping shared-renderer hunks require a composition check and explicit source receipt. Root is the sole writer for this new bounded slice. Before acquisition, inspect the exact managed operation and existing workspaces; any uncertain acquisition stays on its original operation and is reconciled there.
+
+Root performs the tightly coupled integration and real-path proof under LOWER_TOTAL_OVERHEAD / PRINCIPAL_JUDGMENT: existing history and renderer ownership must be resolved together. The native child is a read-only reasoning adviser, not an implementation worker or formal approval. No Fabric run has been dispatched or START claimed.
+
+DONE_WHEN for this slice: code and focused checks demonstrate supported control preservation, safe return after delayed loads, logical position recovery or truthful limitation, preservation of unrelated history/query/hash, and no behavior change on non-opted surfaces. Browser proof must cover desktop/phone, EN/ZH, dark/light and changed/unavailable data. Publish only a held draft with exact source/evidence readback; do not promote the seventy-five whole-programme cases from this bounded result. Preserve all Chairman release holds.
