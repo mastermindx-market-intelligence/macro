@@ -62,7 +62,8 @@
     "focused": "12 passed; source missing/rights/schema/digest, legacy periods past+future/explicit clocks/zero/raw immutability/hash tamper/auth controls",
     "native": "existing verified raw reader + existing build_page; 31 Business values/periods/source/raw identities and real build clock preserved; 13 other-family view+HTML exact",
     "guards": "enforce-added 0 blocking; UI evidence guard exit0 (no new material CSS/interaction; no browser proof)",
-    "today_consumer": "separate Product-owned local278297cb476ccbca45e4aeddaf5e1215088fea7f; no Terminal writes here"
+    "today_consumer": "separate Product-owned local278297cb476ccbca45e4aeddaf5e1215088fea7f; no Terminal writes here",
+    "log_storage": "Exact console UTF8 stored as JSON string; raw external log remains untouched. Whitespace in upstream deprecation warnings preserved, not normalized."
   },
   "limits": [
     "not a currentness/PIT/source authenticity adjudication",
@@ -72,9 +73,9 @@
   ],
   "artifacts": {
     "BUSINESS_CLOCK_S13_FROZEN_PACKET.md": "3d1715e303821c6411c82dae8256a4d1f0de983035c9cf24fc0ff2740393f6d9",
+    "business-clock-s13-final-focused.json": "b6b454832aa36d81c050ab8291ffbc0962f60cfd92637a69b9921966db2e595c",
     "business_clock_s13_native.py": "5b1c77cab467073b27e0f6911b09aed736caad2e07212d331f2cb9f30bb2b733",
     "business-clock-s13-design.log": "311d37519babf246c71a18de14868bfbac0b924a5699eb1219e13169ac92b12b",
-    "business-clock-s13-final-focused.log": "e0394e320a6d926c3f886a94d32a5513d2a5285db99ef12d730ec3d5a27a70d0",
     "business-clock-s13-final-native-report.json": "4d5e5ff76d519b829dd1caf2acf8c7b3f717bbaea687d69ee9babd70008004f6",
     "business-clock-s13-ui-evidence.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
