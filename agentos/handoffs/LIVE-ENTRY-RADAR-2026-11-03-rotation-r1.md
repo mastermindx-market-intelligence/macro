@@ -40,6 +40,12 @@ verified:
   - claim: A concrete non-author GitHub review request exists on the implementation candidate.
     command: "github_request_pull_request_reviewers and returned PR snapshot for mastermindx-market-intelligence/mastermind-terminal#1259"
     result: "Ready for review, head 17798f2331ab24c0821cc76d9d6761e3c195e842; requested reviewer mastermindx-2 (318946022). This is a request, not pickup, technical acceptance or formal approval."
+  - claim: Hosted Terminal CI completed successfully on the unchanged implementation candidate.
+    command: "github_fetch actions/runs/41735687539 and github_fetch_workflow_job_steps for job 126264169079"
+    result: "CI completed/success at head 17798f2331ab24c0821cc76d9d6761e3c195e842; the final desktop shard and its artifact upload passed. Code scanning run 41735681472 also passed."
+  - claim: The new candidate-review attempt has a reconciled terminal result and no accepted review.
+    command: "fabric_status and fabric_result for rotation-r1-candidate-review-20261103-c1 under root rotation-regime-r1-20261103-c1"
+    result: "VERIFIED_TERMINAL, rc=1; 117-byte error: requested grok-4.7 rejected as unknown model id. Complete response SHA256 f90a20db30e790ba335b5034788bb28b35046b0dfd547626cf3da4a72ebfad45; accepted=false, retry_allowed=false."
 unverified:
   - claim: The current candidate is independently approved and eligible for protected release.
     what_would_verify: A real non-author review of Terminal PR 1259 at its current exact head, plus all current-head required checks and incumbent release assessment.
@@ -48,18 +54,18 @@ unverified:
   - claim: Rotation, pivots or regime adaptation have a predictive trading edge.
     what_would_verify: Prospective causal observations and the saved B0/P1 protocol with admitted data, costs, controls, out-of-sample calibration and existing Evaluation OS gates.
 unresolved:
-  - "Terminal PR 1259 needs non-author review and hosted CI disposition; normal CI run 41735687539 had started, not yet accepted at handoff authoring."
+  - "Terminal PR 1259 still needs genuine non-author review. Hosted CI run 41735687539 is now successful. The independent candidate review failed because the configured grok-4.7 model was rejected; no technical assessment or formal approval returned."
   - "No production deployment or actual live latency acceptance was performed."
   - "Both original paid Fabric children returned terminal provider errors and no source or review; their no-retry dispositions remain on the original carriers."
 next_actions:
-  - "The current Chairman-assigned receiver should fresh-read Terminal PR 1259, head 17798f2331ab24c0821cc76d9d6761e3c195e842, normal CI run 41735687539 and the existing mastermindx-2 review request. Repair concrete findings in the original operation workspace."
-  - "After independent approval and required checks qualify, have the incumbent non-author release authority land the exact candidate; follow the existing git-gated Terminal deployment and verify the signed-in production path."
+  - "The current Chairman-assigned receiver owns the next non-merge action on Terminal PR 1259, unchanged head 17798f2331ab24c0821cc76d9d6761e3c195e842. Consume actual returns from the existing GitHub review request and repair concrete findings in the original workspace. The named requested reviewer is not an exclusive historical owner; any eligible genuinely independent reviewer must satisfy the current review law."
+  - "Current Chairman scope is non-merge only: do not merge, Ready, un-draft, enqueue or relabel held PRs. Preserve Terminal PR 1259 as currently open/non-draft and Macro PR 10673 as open/draft. Review completion does not authorize release in this continuation."
   - "Measure source age, cross-symbol alignment, coverage and common bar endpoints during RTH before accepting a low-latency claim. Keep client polling cadence separate from price freshness."
   - "Then advance the saved prospective pivot/Radar/TOI slice and original B0/P1 research protocol; regime/duration additions retain their existing owners and validation gates."
 do_not_redo:
   - "The source-grounded specification in Macro PR 10673 at f7c9e2ae348e0fffdeee8296178b72843c41cc92 is the existing research foundation; refresh affected facts instead of recreating the literature review."
   - "The pure R1 engine, visible reader, responsive consumer and 95/24 local proof exist at Terminal commit 17798f2331ab24c0821cc76d9d6761e3c195e842. Revalidate when source or behavior changes."
-  - "Do not relaunch or reroute rotation-r1-source-audit-20261103-c1 or rotation-r1-engine-20261103-c1. Both are terminal with retry_allowed=false; no accepted worker result exists."
+  - "Do not relaunch or reroute rotation-r1-source-audit-20261103-c1, rotation-r1-engine-20261103-c1 or rotation-r1-candidate-review-20261103-c1. All are terminal with retry_allowed=false; no accepted worker result exists."
   - "Keep the incumbent RS study, Macro basket comparison, Quote Hub/Data OS, regime vector, Temporal Grain and Evaluation OS ownership. No duplicate collectors, event stores, regime verdict or research ledger."
   - "Preserve the existing rotation-times-cycle entry, fused-composite and outcome-selected-timeframe prohibitions and every adjacent carrier's holds."
 danger_areas:
@@ -77,14 +83,14 @@ The next build slice is implemented and published as [Terminal PR #1259](https:/
 
 The current Chairman-assigned attended session assumed responsibility for this continuation. It acquired operation **rotation-regime-r1-20261103-c1** through the installed workspace owner, completed source work in **/Volumes/Mastermind/agent-workspaces/terminal/web/rotation-regime-r1-20261103-c1**, and used that original operation's fenced commit/push publisher. The branch is **sol/web-rotation-regime-r1-20261103-c1**. No historical author is the sole recovery actor.
 
-Local consumer proof is complete: **95 targeted unit/component tests**, **24 responsive browser journeys**, full TypeScript, scoped lint and whitespace checks. The code is ready for review. **Formal approval, protected landing, production deployment, live latency acceptance and predictive qualification remain unproven.** The existing review request is to **mastermindx-2**, and normal pull-request CI is [run 41735687539](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41735687539).
+Local consumer proof is complete: **95 targeted unit/component tests**, **24 responsive browser journeys**, full TypeScript, scoped lint and whitespace checks. The code is ready for review. **Formal approval, protected landing, production deployment, live latency acceptance and predictive qualification remain unproven.** The existing review request is to **mastermindx-2**. Normal pull-request CI [run 41735687539](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41735687539) has now **completed successfully** on the unchanged candidate; code scanning also passed. The subsequent independent candidate-review attempt returned only a provider model-selection error, described below.
 
 The broader plan remains [Macro PR #10673](https://github.com/mastermindx-market-intelligence/macro/pull/10673). This record is continuity for an implemented candidate; it does not mark either existing workstream or the overall Rotation Regime programme complete. The schema's `model: sol` is the legacy CEO record category, not provider-model telemetry.
 
 ## §1 What is LEFT — in order
 
 1. Inspect the existing PR/head, CI and review request. Consume and repair material findings in the original workspace; retain the code/evidence distinction.
-2. Use the existing non-author release authority and protected deployment path only after actual review and required checks qualify. The source principal must not self-approve or self-merge.
+2. Preserve the current non-merge boundary: no merge, Ready, un-draft, enqueue or held-label change. Continue source repair/review work only. A future release requires its own applicable authority and production path; the source principal must never self-approve or self-merge.
 3. Prove the signed-in production journey and actual RTH source behavior. Opening the monitor requests quotes five seconds after a completed regular-session read and history sixty seconds after completion; neither cadence proves source latency.
 4. Continue prospective pivot watches through Radar/TOI and the saved original research protocol. Leadership durability, regime and cycle-duration work retain the earlier specification's scientific gates.
 
@@ -112,6 +118,24 @@ The bounded native adviser supplied principal design judgment only and was stopp
 No new DEC or DSC record is minted. The implementation applies the saved specification to an auditable consumer: true relative wealth, explicit unavailable states, independent quote/history reads, source-age qualification, fixed coverage and causal completed-bar cutoffs. It makes no fused regime or predictive assertion.
 
 Protected Mastermind source-law pin remains **9f65957e29eba92245d78609f032aaea523b7cb4**, compatible with bootstrap major 1. The next receiver should reuse that verified pin and refresh affected constraints when evidence changes.
+
+### Non-merge continuation — 3 November 2026
+
+The Chairman requested a quick account census followed by the next non-merge action on this thread. No PR merge, Ready/un-draft, enqueue or label operation was performed.
+
+A bounded current-source read found no submitted reviews or PR/review comments on Terminal #1259. The normal CI run and code-scanning run above are successful. The original managed Terminal publisher again reported identical local/remote head **17798f2331ab24c0821cc76d9d6761e3c195e842**, clean, publication APPLIED. The application source did not change.
+
+One new independent technical review of the implemented candidate was commissioned through the enrolled Fabric entrypoint: **rotation-r1-candidate-review-20261103-c1**, original root/parent **rotation-regime-r1-20261103-c1**, controller **52150**. This was distinct from the original pre-implementation audit/build jobs. The router recorded pool **grok**, requested model **grok-4.7**, and a remote launch. The reconciled terminal result was rc=1:
+
+```text
+Error: Couldn't set model 'grok-4.7': Invalid params: "unknown model id". Run 'grok models' to see available models.
+```
+
+The exact complete result is **117 bytes**, SHA256 **f90a20db30e790ba335b5034788bb28b35046b0dfd547626cf3da4a72ebfad45**. Root lineage is VERIFIED_TERMINAL; accepted=false; retry_allowed=false. There is no returned source assessment, proven model-serving identity or formal approval. The error's suggested command was not executed. No model/host/account change or replacement review was attempted. Any catalog qualification belongs to the incumbent Fabric owner; this failure grants no replay authority.
+
+Macro #10673 briefly reported mergeable=false through the normalized read. A bounded raw read reconciled that observation to **mergeable=true / clean**, synthetic merge commit **f68613768ab3b67a51445664d63ccc54780dcb47**, for the reported head **afb14e956f7627cbf5e5ee226e7a064bda0789a2** and reported base **43f83c108703a890987bbd5de3baf53496c2d60f**. The exact base movement from merge base **930f674ef08bb56ef2e7e0c08f27b93c19b63a22** to that reported base touched no candidate paths. The protected main ref had subsequently advanced to **705603262cf7252b6810db7f58327cb252895a52**; the REST comparison returned its 300-file ceiling, so that truncated comparison is **not full current-main compatibility proof**. No integration commit or branch rewrite was made.
+
+Remaining boundary: actual independent source/formal review, current integration qualification when needed, and eventual production/latency proof. The current instruction still prohibits release-state changes. The new review child is terminal; no running worker or watcher is claimed.
 
 ## §4 Not in scope — do not adopt
 
