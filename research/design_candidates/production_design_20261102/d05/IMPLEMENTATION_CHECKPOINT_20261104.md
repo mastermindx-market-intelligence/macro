@@ -1,6 +1,12 @@
 # D05 implementation checkpoint — 2026-11-04
 
-## Latest qualified continuation — source0c4493c7
+## Latest verification boundary — 12:50 UTC
+
+Current source 0c4493 has seven passing CI packs, four failed packs and one running pack. The contract-delta repair passed. The [CI and contrast addendum](CI_AND_CONTRAST_FOLLOWTHROUGH_20261104.md) binds every failure to its exact job, reproduces the router-host issue without source edits, and records the real Members accessible-name defect and generated-style drift. The incumbent source lead owns the repairs; this lane remains source-frozen.
+
+New D05-RESP-11 evidence measures 88 heatmap text instances across 1440/390 dark/light EN. Seven minimum samples are below target; the light phone header is 3.3942:1 against its painted background. Selected native focus is visible. Flow contrast remains unexecuted because the preview contains no native flow table. This is scoped failure evidence, not final accessibility or shared-design acceptance.
+
+## Latest qualified continuation — source 0c4493c7
 
 The original source lead published [0c4493c7025f7c1c0f9e558860d5e4ba33457cd1](https://github.com/mastermindx-market-intelligence/macro/commit/0c4493c7025f7c1c0f9e558860d5e4ba33457cd1), tree0273235719e35e4a67fbbd3b8ab480f903f92411, directly on this lane's CI repair4802d1b1. Root read the exact parent/diff and coordinated custody in the [existing Secretary thread](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793794398494349?thread_ts=1793768002.626429&cid=C0CBC6AEAQZ). The [incumbent lead's preserved frontier](review/20261104_delivery_reconciliation/README.md) retains Macro follow-through, EW-P4 and the separately assigned Theme Tree search work; this lane freezes additional Macro source writes and records programme/Dossier proof. A worker request/launch is not claimed as START.
 
@@ -17,7 +23,7 @@ Actual representative screenshots were inspected. The published749 expanded Doss
 The original design package remains the accepted documentation baseline:
 13 canonical routes,134 inherited capabilities plus40 additions,12 annotated
 editable Paper candidates and119 full-acceptance cases. This checkpoint advances
-implementation and proof without treating all119 acceptance cases as passed.
+implementation and proof without treating all 119 acceptance cases as passed.
 
 ## What now works in the qualified local composition
 

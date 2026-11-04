@@ -1,0 +1,3424 @@
+{
+  "source_ref": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
+  "fixture_only": true,
+  "preview_manifest_sha256": "0a78ce798897b97d3847977c770ef911f65238f7b466956d57d853d1860b6f6e",
+  "emitted_assets_verified": 57,
+  "heatmap_fixture_sha256": "d99adce7f8dd0c03fb5fcdac805e75ca9db3bf9c60aa2718169fd4a2dea82568",
+  "heatmap_blob": "8e48256c59e351fbf1db5f9314151550d44c7541",
+  "method": "Capture actual viewport. Preserve computed text-shadow and geometry while making only target ink transparent. Compare paired screenshots to locate painted glyph pixels. Compute intended foreground (including ancestor opacity) against the actually painted substrate at those glyph coordinates, and separately report actual raster-core contrast. Normal text requires4.5:1; genuine >=24px or >=18.6667px/700+ large text requires3:1. This is fixture text/selected-focus evidence, not full WCAG or shared acceptance.",
+  "raw_result_sha256": "fcd90f9d28c3c8d7d85c05b9f2c7649c8c248732f83095d9b6e7cb7674fa8137",
+  "raw_result_path": "/Volumes/Mastermind/agent-workspaces/macro/web/d05-native-source-verification-20261104/.pytest_cache/d05-composed-20261104/painted-contrast-0c4493-v3/result.json",
+  "runner_sha256": "1f5de704afadd8b2efad79c2bca6b3badb0466e8a0be551e3b2b44ef0ab47895",
+  "initial_probe_disposition": "First run rejected because the measurement parser treated color(srgb) unit floats as RGB bytes. V2 corrected sRGB unit channels to255. V3 additionally moves the mouse outside the measured iframe, records rendered locale/theme and ancestor filters, and reruns all four cases to avoid incidental tile hover. Only V3 is the accepted bounded measurement.",
+  "cases": [
+    {
+      "case": "1440-dark-en",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "errors": [],
+      "pointer_setup": "Mouse moved to parent viewport0,0, outside the measurement iframe; native hover styling is not forced.",
+      "rendered_presentation": {
+        "parent_theme": "dark",
+        "child_theme": "dark",
+        "parent_lang": "en",
+        "child_lang": "en"
+      },
+      "rendered_tile_count": 10,
+      "flow_cell_count": 0,
+      "flow_scope": "NO_NATIVE_FLOW_TABLE_IN_EXISTING_PREVIEW; no manufactured flow DOM",
+      "measured_rows": 22,
+      "failed_rows": 2,
+      "minimum_contrast": 4.2484,
+      "result": "MEASURED_FAILURES",
+      "focus": [
+        {
+          "selector": "#heatmap-scorecard .hm-sc-exp",
+          "keyboard_sequence": "focus target to seed position; Shift+Tab; paired baseline; Tab back to target",
+          "active": {
+            "matches": true,
+            "focusVisible": true,
+            "outlineColor": "rgb(0, 95, 204)",
+            "outlineWidth": "1px",
+            "outlineOffset": "0px",
+            "boxShadow": "rgba(255, 255, 255, 0.09) 0px 1px 0px 0px inset",
+            "rect": {
+              "left": 1101.609375,
+              "top": 453.859375,
+              "right": 1182,
+              "bottom": 483.859375
+            }
+          },
+          "changed_pixel_count": 659,
+          "pixels_at_least_3_to_1": 255,
+          "maximum_actual_change_contrast": 18.9877,
+          "result": "VISIBLE_MEASURED",
+          "limitation": "Selected control reachability and painted-indicator evidence only; not complete focus-area, perimeter, clipping or whole-page keyboard conformance.",
+          "before_png": "1440-dark-en-expand-focus-before.png",
+          "before_sha256": "2165abaff21af0823f12768aa71503bdb212bafd537e137bd843382366f6f115",
+          "focused_png": "1440-dark-en-expand-focus-focused.png",
+          "focused_sha256": "6a6c72c85853d06d6d4f5fc4c24a559459a9613ee85d96cf82e4b99ca5c6b9e3"
+        },
+        {
+          "selector": ".si-view-btn[data-view=\"money\"]",
+          "keyboard_sequence": "focus target to seed position; Shift+Tab; paired baseline; Tab back to target",
+          "active": {
+            "matches": true,
+            "focusVisible": true,
+            "outlineColor": "rgb(122, 167, 224)",
+            "outlineWidth": "2px",
+            "outlineOffset": "3px",
+            "boxShadow": "none",
+            "rect": {
+              "left": 297.03125,
+              "top": 22.09375,
+              "right": 434.328125,
+              "bottom": 62.09375
+            }
+          },
+          "changed_pixel_count": 874,
+          "pixels_at_least_3_to_1": 783,
+          "maximum_actual_change_contrast": 7.3914,
+          "result": "VISIBLE_MEASURED",
+          "limitation": "Selected control reachability and painted-indicator evidence only; not complete focus-area, perimeter, clipping or whole-page keyboard conformance.",
+          "before_png": "1440-dark-en-money-focus-before.png",
+          "before_sha256": "779763da2f08622fe732e058be0b1856b0ed32eb423ce988f324ae94667139a1",
+          "focused_png": "1440-dark-en-money-focus-focused.png",
+          "focused_sha256": "3e776e6653644ff0330e4e820e1171b65f04b6584e580860d370d7e2fa2ffffd"
+        }
+      ],
+      "measurements": [
+        {
+          "name": "1440-dark-en-heatmap",
+          "selector": "#heatmap-scorecard .hm-tile .sym, #heatmap-scorecard .hm-tile .pc, #heatmap-scorecard .hm-sc-sechd .nm, #heatmap-scorecard .hm-sc-sechd .pc",
+          "actual_png": "1440-dark-en-heatmap-actual.png",
+          "actual_sha256": "f9f23e595429026bf5119cf2bf5c9da0b019f95ae42556453fc53084dd4ec43d",
+          "substrate_png": "1440-dark-en-heatmap-substrate.png",
+          "substrate_sha256": "c32d4fb6345a2f818894dacec89c4ae988efe1c94ee192b43302d6c7650e1e13",
+          "rows": [
+            {
+              "i": 0,
+              "text": "Contrast fixture",
+              "color": "rgb(200, 208, 220)",
+              "fontSize": 12,
+              "fontWeight": "800",
+              "textShadow": "none",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": null,
+              "painted_glyph_pixels": 567,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 12.2342,
+              "p05_intended_contrast": 12.2342,
+              "p95_actual_raster_contrast": 12.2342,
+              "maximum_actual_raster_contrast": 12.2342,
+              "worst_sample": {
+                "xy": [
+                  272,
+                  564
+                ],
+                "actual_rgb": [
+                  22,
+                  26,
+                  35
+                ],
+                "substrate_rgb": [
+                  13,
+                  16,
+                  24
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 1,
+              "text": "0.00%",
+              "color": "color(srgb 0.270588 0.721569 0.45098)",
+              "fontSize": 11.9,
+              "fontWeight": "800",
+              "textShadow": "none",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": null,
+              "painted_glyph_pixels": 221,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 7.556,
+              "p05_intended_contrast": 7.556,
+              "p95_actual_raster_contrast": 7.5667,
+              "maximum_actual_raster_contrast": 7.5667,
+              "worst_sample": {
+                "xy": [
+                  1359,
+                  565
+                ],
+                "actual_rgb": [
+                  25,
+                  51,
+                  42
+                ],
+                "substrate_rgb": [
+                  14,
+                  16,
+                  24
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 2,
+              "text": "FX0",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "0",
+              "painted_glyph_pixels": 326,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.9326,
+              "p05_intended_contrast": 5.8362,
+              "p95_actual_raster_contrast": 15.2582,
+              "maximum_actual_raster_contrast": 16.4253,
+              "worst_sample": {
+                "xy": [
+                  367,
+                  660
+                ],
+                "actual_rgb": [
+                  205,
+                  68,
+                  87
+                ],
+                "substrate_rgb": [
+                  203,
+                  58,
+                  79
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 3,
+              "text": "−4.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "0",
+              "painted_glyph_pixels": 213,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.974,
+              "p05_intended_contrast": 5.6578,
+              "p95_actual_raster_contrast": 9.7426,
+              "maximum_actual_raster_contrast": 12.5743,
+              "worst_sample": {
+                "xy": [
+                  394,
+                  680
+                ],
+                "actual_rgb": [
+                  227,
+                  154,
+                  164
+                ],
+                "substrate_rgb": [
+                  201,
+                  59,
+                  79
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 4,
+              "text": "FX1",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "1",
+              "painted_glyph_pixels": 280,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.1752,
+              "p05_intended_contrast": 7.0685,
+              "p95_actual_raster_contrast": 16.2394,
+              "maximum_actual_raster_contrast": 17.2051,
+              "worst_sample": {
+                "xy": [
+                  369,
+                  856
+                ],
+                "actual_rgb": [
+                  177,
+                  64,
+                  82
+                ],
+                "substrate_rgb": [
+                  173,
+                  54,
+                  73
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 5,
+              "text": "−2.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "1",
+              "painted_glyph_pixels": 217,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.2585,
+              "p05_intended_contrast": 6.8737,
+              "p95_actual_raster_contrast": 10.8802,
+              "maximum_actual_raster_contrast": 12.7283,
+              "worst_sample": {
+                "xy": [
+                  387,
+                  884
+                ],
+                "actual_rgb": [
+                  177,
+                  69,
+                  87
+                ],
+                "substrate_rgb": [
+                  171,
+                  54,
+                  73
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 6,
+              "text": "FX2",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "2",
+              "painted_glyph_pixels": 305,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 9.5549,
+              "p05_intended_contrast": 10.7808,
+              "p95_actual_raster_contrast": 17.7667,
+              "maximum_actual_raster_contrast": 18.4824,
+              "worst_sample": {
+                "xy": [
+                  596,
+                  660
+                ],
+                "actual_rgb": [
+                  123,
+                  65,
+                  77
+                ],
+                "substrate_rgb": [
+                  112,
+                  49,
+                  62
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 7,
+              "text": "−1.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "2",
+              "painted_glyph_pixels": 218,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 9.2301,
+              "p05_intended_contrast": 10.2312,
+              "p95_actual_raster_contrast": 14.6702,
+              "maximum_actual_raster_contrast": 15.6609,
+              "worst_sample": {
+                "xy": [
+                  623,
+                  680
+                ],
+                "actual_rgb": [
+                  126,
+                  65,
+                  79
+                ],
+                "substrate_rgb": [
+                  116,
+                  50,
+                  65
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 8,
+              "text": "FX3",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "3",
+              "painted_glyph_pixels": 312,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 11.8853,
+              "p05_intended_contrast": 12.9691,
+              "p95_actual_raster_contrast": 18.5133,
+              "maximum_actual_raster_contrast": 19.0546,
+              "worst_sample": {
+                "xy": [
+                  596,
+                  856
+                ],
+                "actual_rgb": [
+                  92,
+                  61,
+                  72
+                ],
+                "substrate_rgb": [
+                  79,
+                  45,
+                  57
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 9,
+              "text": "−0.20%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "3",
+              "painted_glyph_pixels": 219,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 11.5714,
+              "p05_intended_contrast": 12.6383,
+              "p95_actual_raster_contrast": 16.0105,
+              "maximum_actual_raster_contrast": 16.815,
+              "worst_sample": {
+                "xy": [
+                  623,
+                  876
+                ],
+                "actual_rgb": [
+                  94,
+                  61,
+                  74
+                ],
+                "substrate_rgb": [
+                  82,
+                  46,
+                  60
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 10,
+              "text": "FX4",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "4",
+              "painted_glyph_pixels": 318,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 14.5286,
+              "p05_intended_contrast": 15.5186,
+              "p95_actual_raster_contrast": 19.4321,
+              "maximum_actual_raster_contrast": 19.6792,
+              "worst_sample": {
+                "xy": [
+                  836,
+                  660
+                ],
+                "actual_rgb": [
+                  48,
+                  51,
+                  62
+                ],
+                "substrate_rgb": [
+                  37,
+                  41,
+                  52
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 11,
+              "text": "0.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "4",
+              "painted_glyph_pixels": 202,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 14.9357,
+              "p05_intended_contrast": 15.5365,
+              "p95_actual_raster_contrast": 17.6517,
+              "maximum_actual_raster_contrast": 18.1156,
+              "worst_sample": {
+                "xy": [
+                  841,
+                  679
+                ],
+                "actual_rgb": [
+                  50,
+                  54,
+                  63
+                ],
+                "substrate_rgb": [
+                  35,
+                  39,
+                  49
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 12,
+              "text": "FX5",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "5",
+              "painted_glyph_pixels": 325,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 10.9474,
+              "p05_intended_contrast": 12.0388,
+              "p95_actual_raster_contrast": 18.3316,
+              "maximum_actual_raster_contrast": 18.8922,
+              "worst_sample": {
+                "xy": [
+                  836,
+                  856
+                ],
+                "actual_rgb": [
+                  40,
+                  76,
+                  69
+                ],
+                "substrate_rgb": [
+                  29,
+                  67,
+                  59
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 13,
+              "text": "+0.20%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "5",
+              "painted_glyph_pixels": 231,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 11.2332,
+              "p05_intended_contrast": 11.8946,
+              "p95_actual_raster_contrast": 15.4052,
+              "maximum_actual_raster_contrast": 16.9076,
+              "worst_sample": {
+                "xy": [
+                  851,
+                  876
+                ],
+                "actual_rgb": [
+                  138,
+                  157,
+                  153
+                ],
+                "substrate_rgb": [
+                  29,
+                  65,
+                  58
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 14,
+              "text": "FX6",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "6",
+              "painted_glyph_pixels": 333,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 8.6005,
+              "p05_intended_contrast": 9.7355,
+              "p95_actual_raster_contrast": 17.3896,
+              "maximum_actual_raster_contrast": 18.1532,
+              "worst_sample": {
+                "xy": [
+                  1053,
+                  660
+                ],
+                "actual_rgb": [
+                  35,
+                  94,
+                  72
+                ],
+                "substrate_rgb": [
+                  24,
+                  86,
+                  63
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 15,
+              "text": "+1.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "6",
+              "painted_glyph_pixels": 223,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 8.4645,
+              "p05_intended_contrast": 9.216,
+              "p95_actual_raster_contrast": 13.8141,
+              "maximum_actual_raster_contrast": 15.5418,
+              "worst_sample": {
+                "xy": [
+                  1080,
+                  680
+                ],
+                "actual_rgb": [
+                  80,
+                  127,
+                  110
+                ],
+                "substrate_rgb": [
+                  25,
+                  87,
+                  65
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 16,
+              "text": "FX7",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "7",
+              "painted_glyph_pixels": 298,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.3767,
+              "p05_intended_contrast": 6.213,
+              "p95_actual_raster_contrast": 15.5114,
+              "maximum_actual_raster_contrast": 16.6872,
+              "worst_sample": {
+                "xy": [
+                  1065,
+                  856
+                ],
+                "actual_rgb": [
+                  27,
+                  128,
+                  84
+                ],
+                "substrate_rgb": [
+                  15,
+                  122,
+                  75
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 17,
+              "text": "+2.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "7",
+              "painted_glyph_pixels": 228,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.3012,
+              "p05_intended_contrast": 5.9689,
+              "p95_actual_raster_contrast": 10.3353,
+              "maximum_actual_raster_contrast": 12.7969,
+              "worst_sample": {
+                "xy": [
+                  1080,
+                  876
+                ],
+                "actual_rgb": [
+                  73,
+                  154,
+                  118
+                ],
+                "substrate_rgb": [
+                  17,
+                  123,
+                  76
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 18,
+              "text": "FX8",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "8",
+              "painted_glyph_pixels": 333,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.2484,
+              "p05_intended_contrast": 5.1301,
+              "p95_actual_raster_contrast": 14.0334,
+              "maximum_actual_raster_contrast": 15.7393,
+              "worst_sample": {
+                "xy": [
+                  1293,
+                  660
+                ],
+                "actual_rgb": [
+                  29,
+                  149,
+                  93
+                ],
+                "substrate_rgb": [
+                  11,
+                  141,
+                  81
+                ]
+              },
+              "result": "FAIL"
+            },
+            {
+              "i": 19,
+              "text": "+4.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "8",
+              "painted_glyph_pixels": 234,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.4616,
+              "p05_intended_contrast": 4.8752,
+              "p95_actual_raster_contrast": 9.3097,
+              "maximum_actual_raster_contrast": 11.7365,
+              "worst_sample": {
+                "xy": [
+                  1302,
+                  679
+                ],
+                "actual_rgb": [
+                  29,
+                  145,
+                  91
+                ],
+                "substrate_rgb": [
+                  12,
+                  137,
+                  79
+                ]
+              },
+              "result": "FAIL"
+            },
+            {
+              "i": 20,
+              "text": "FX9",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "9",
+              "painted_glyph_pixels": 327,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 15.9582,
+              "p05_intended_contrast": 16.6631,
+              "p95_actual_raster_contrast": 19.6792,
+              "maximum_actual_raster_contrast": 19.9107,
+              "worst_sample": {
+                "xy": [
+                  1293,
+                  856
+                ],
+                "actual_rgb": [
+                  40,
+                  45,
+                  53
+                ],
+                "substrate_rgb": [
+                  29,
+                  34,
+                  43
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 21,
+              "text": "—",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "9",
+              "painted_glyph_pixels": 22,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 16.5108,
+              "p05_intended_contrast": 16.5108,
+              "p95_actual_raster_contrast": 13.4616,
+              "maximum_actual_raster_contrast": 13.4616,
+              "worst_sample": {
+                "xy": [
+                  1283,
+                  880
+                ],
+                "actual_rgb": [
+                  136,
+                  138,
+                  142
+                ],
+                "substrate_rgb": [
+                  27,
+                  31,
+                  39
+                ]
+              },
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "1440-light-en",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "lang": "en",
+      "errors": [],
+      "pointer_setup": "Mouse moved to parent viewport0,0, outside the measurement iframe; native hover styling is not forced.",
+      "rendered_presentation": {
+        "parent_theme": "light",
+        "child_theme": "light",
+        "parent_lang": "en",
+        "child_lang": "en"
+      },
+      "rendered_tile_count": 10,
+      "flow_cell_count": 0,
+      "flow_scope": "NO_NATIVE_FLOW_TABLE_IN_EXISTING_PREVIEW; no manufactured flow DOM",
+      "measured_rows": 22,
+      "failed_rows": 1,
+      "minimum_contrast": 4.4443,
+      "result": "MEASURED_FAILURES",
+      "focus": [
+        {
+          "selector": "#heatmap-scorecard .hm-sc-exp",
+          "keyboard_sequence": "focus target to seed position; Shift+Tab; paired baseline; Tab back to target",
+          "active": {
+            "matches": true,
+            "focusVisible": true,
+            "outlineColor": "rgb(0, 95, 204)",
+            "outlineWidth": "1px",
+            "outlineOffset": "0px",
+            "boxShadow": "rgba(255, 255, 255, 0.7) 0px 1px 0px 0px inset",
+            "rect": {
+              "left": 1101.609375,
+              "top": 453.859375,
+              "right": 1182,
+              "bottom": 483.859375
+            }
+          },
+          "changed_pixel_count": 631,
+          "pixels_at_least_3_to_1": 206,
+          "maximum_actual_change_contrast": 5.8266,
+          "result": "VISIBLE_MEASURED",
+          "limitation": "Selected control reachability and painted-indicator evidence only; not complete focus-area, perimeter, clipping or whole-page keyboard conformance.",
+          "before_png": "1440-light-en-expand-focus-before.png",
+          "before_sha256": "c22830f70a02fc972b54d316eadd339f7564f81d091bed9ab390f4d747ddf6ee",
+          "focused_png": "1440-light-en-expand-focus-focused.png",
+          "focused_sha256": "98b31b1883e41f452f33719476995680b4fae7eb00e9407cfbe854045c028c11"
+        },
+        {
+          "selector": ".si-view-btn[data-view=\"money\"]",
+          "keyboard_sequence": "focus target to seed position; Shift+Tab; paired baseline; Tab back to target",
+          "active": {
+            "matches": true,
+            "focusVisible": true,
+            "outlineColor": "color(srgb 0.159686 0.354667 0.917647)",
+            "outlineWidth": "2px",
+            "outlineOffset": "3px",
+            "boxShadow": "none",
+            "rect": {
+              "left": 297.03125,
+              "top": 22.09375,
+              "right": 434.328125,
+              "bottom": 62.09375
+            }
+          },
+          "changed_pixel_count": 875,
+          "pixels_at_least_3_to_1": 748,
+          "maximum_actual_change_contrast": 4.5243,
+          "result": "VISIBLE_MEASURED",
+          "limitation": "Selected control reachability and painted-indicator evidence only; not complete focus-area, perimeter, clipping or whole-page keyboard conformance.",
+          "before_png": "1440-light-en-money-focus-before.png",
+          "before_sha256": "0a32d1a0db63ecfad2605cae23aed7a269fb680cf6380590607701abc570768e",
+          "focused_png": "1440-light-en-money-focus-focused.png",
+          "focused_sha256": "4c893eca62e8b9b29e9e72a17c0c0133ddfaf30788b07be64ffd55b7344d8550"
+        }
+      ],
+      "measurements": [
+        {
+          "name": "1440-light-en-heatmap",
+          "selector": "#heatmap-scorecard .hm-tile .sym, #heatmap-scorecard .hm-tile .pc, #heatmap-scorecard .hm-sc-sechd .nm, #heatmap-scorecard .hm-sc-sechd .pc",
+          "actual_png": "1440-light-en-heatmap-actual.png",
+          "actual_sha256": "dd25529a55503375e3f0e222ee8332a42c5ad41c85d16f87dccc3b545652b942",
+          "substrate_png": "1440-light-en-heatmap-substrate.png",
+          "substrate_sha256": "1c7f2c32c13ff1092a4138671e0e0f4356a182fb9acd46b3097c572d8db4b05c",
+          "rows": [
+            {
+              "i": 0,
+              "text": "Contrast fixture",
+              "color": "rgb(46, 57, 80)",
+              "fontSize": 12,
+              "fontWeight": "800",
+              "textShadow": "none",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": null,
+              "painted_glyph_pixels": 565,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 9.5887,
+              "p05_intended_contrast": 9.5887,
+              "p95_actual_raster_contrast": 9.6765,
+              "maximum_actual_raster_contrast": 9.6765,
+              "worst_sample": {
+                "xy": [
+                  272,
+                  564
+                ],
+                "actual_rgb": [
+                  221,
+                  225,
+                  232
+                ],
+                "substrate_rgb": [
+                  231,
+                  234,
+                  240
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 1,
+              "text": "0.00%",
+              "color": "color(srgb 0.143922 0.459373 0.325882)",
+              "fontSize": 11.9,
+              "fontWeight": "800",
+              "textShadow": "none",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": null,
+              "painted_glyph_pixels": 227,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.5997,
+              "p05_intended_contrast": 4.5997,
+              "p95_actual_raster_contrast": 4.6491,
+              "maximum_actual_raster_contrast": 4.6491,
+              "worst_sample": {
+                "xy": [
+                  1359,
+                  565
+                ],
+                "actual_rgb": [
+                  190,
+                  209,
+                  207
+                ],
+                "substrate_rgb": [
+                  230,
+                  233,
+                  239
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 2,
+              "text": "FX0",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "0",
+              "painted_glyph_pixels": 326,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.61,
+              "p05_intended_contrast": 6.4932,
+              "p95_actual_raster_contrast": 15.7844,
+              "maximum_actual_raster_contrast": 16.8646,
+              "worst_sample": {
+                "xy": [
+                  367,
+                  660
+                ],
+                "actual_rgb": [
+                  194,
+                  60,
+                  72
+                ],
+                "substrate_rgb": [
+                  191,
+                  50,
+                  63
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 3,
+              "text": "−4.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "0",
+              "painted_glyph_pixels": 215,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.6355,
+              "p05_intended_contrast": 6.3189,
+              "p95_actual_raster_contrast": 10.5723,
+              "maximum_actual_raster_contrast": 13.3331,
+              "worst_sample": {
+                "xy": [
+                  387,
+                  688
+                ],
+                "actual_rgb": [
+                  196,
+                  65,
+                  78
+                ],
+                "substrate_rgb": [
+                  191,
+                  49,
+                  63
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 4,
+              "text": "FX1",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "1",
+              "painted_glyph_pixels": 278,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.3585,
+              "p05_intended_contrast": 7.0304,
+              "p95_actual_raster_contrast": 16.2018,
+              "maximum_actual_raster_contrast": 17.1599,
+              "worst_sample": {
+                "xy": [
+                  367,
+                  856
+                ],
+                "actual_rgb": [
+                  167,
+                  73,
+                  85
+                ],
+                "substrate_rgb": [
+                  162,
+                  61,
+                  74
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 5,
+              "text": "−2.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "1",
+              "painted_glyph_pixels": 217,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.1927,
+              "p05_intended_contrast": 6.8438,
+              "p95_actual_raster_contrast": 10.7867,
+              "maximum_actual_raster_contrast": 12.6268,
+              "worst_sample": {
+                "xy": [
+                  387,
+                  884
+                ],
+                "actual_rgb": [
+                  171,
+                  78,
+                  89
+                ],
+                "substrate_rgb": [
+                  164,
+                  63,
+                  75
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 6,
+              "text": "FX2",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "2",
+              "painted_glyph_pixels": 305,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.4509,
+              "p05_intended_contrast": 7.5565,
+              "p95_actual_raster_contrast": 16.1234,
+              "maximum_actual_raster_contrast": 17.1697,
+              "worst_sample": {
+                "xy": [
+                  596,
+                  660
+                ],
+                "actual_rgb": [
+                  147,
+                  90,
+                  101
+                ],
+                "substrate_rgb": [
+                  138,
+                  76,
+                  88
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 7,
+              "text": "−1.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "2",
+              "painted_glyph_pixels": 218,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.141,
+              "p05_intended_contrast": 7.0345,
+              "p95_actual_raster_contrast": 11.785,
+              "maximum_actual_raster_contrast": 13.0825,
+              "worst_sample": {
+                "xy": [
+                  623,
+                  680
+                ],
+                "actual_rgb": [
+                  150,
+                  92,
+                  103
+                ],
+                "substrate_rgb": [
+                  142,
+                  79,
+                  91
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 8,
+              "text": "FX3",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "3",
+              "painted_glyph_pixels": 311,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.5327,
+              "p05_intended_contrast": 7.5756,
+              "p95_actual_raster_contrast": 15.9246,
+              "maximum_actual_raster_contrast": 17.1592,
+              "worst_sample": {
+                "xy": [
+                  596,
+                  856
+                ],
+                "actual_rgb": [
+                  126,
+                  98,
+                  109
+                ],
+                "substrate_rgb": [
+                  116,
+                  85,
+                  97
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 9,
+              "text": "−0.20%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "3",
+              "painted_glyph_pixels": 218,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.1964,
+              "p05_intended_contrast": 7.1299,
+              "p95_actual_raster_contrast": 11.463,
+              "maximum_actual_raster_contrast": 12.7139,
+              "worst_sample": {
+                "xy": [
+                  623,
+                  876
+                ],
+                "actual_rgb": [
+                  131,
+                  100,
+                  110
+                ],
+                "substrate_rgb": [
+                  121,
+                  88,
+                  99
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 10,
+              "text": "FX4",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "4",
+              "painted_glyph_pixels": 317,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.3249,
+              "p05_intended_contrast": 7.1554,
+              "p95_actual_raster_contrast": 16.2748,
+              "maximum_actual_raster_contrast": 17.061,
+              "worst_sample": {
+                "xy": [
+                  822,
+                  666
+                ],
+                "actual_rgb": [
+                  105,
+                  111,
+                  120
+                ],
+                "substrate_rgb": [
+                  90,
+                  96,
+                  107
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 11,
+              "text": "0.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "4",
+              "painted_glyph_pixels": 201,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.3249,
+              "p05_intended_contrast": 7.0236,
+              "p95_actual_raster_contrast": 11.061,
+              "maximum_actual_raster_contrast": 11.598,
+              "worst_sample": {
+                "xy": [
+                  841,
+                  679
+                ],
+                "actual_rgb": [
+                  101,
+                  107,
+                  117
+                ],
+                "substrate_rgb": [
+                  90,
+                  96,
+                  107
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 12,
+              "text": "FX5",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "5",
+              "painted_glyph_pixels": 324,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.9702,
+              "p05_intended_contrast": 6.7095,
+              "p95_actual_raster_contrast": 15.7867,
+              "maximum_actual_raster_contrast": 16.8454,
+              "worst_sample": {
+                "xy": [
+                  847,
+                  856
+                ],
+                "actual_rgb": [
+                  82,
+                  115,
+                  110
+                ],
+                "substrate_rgb": [
+                  71,
+                  106,
+                  101
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 13,
+              "text": "+0.20%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "5",
+              "painted_glyph_pixels": 225,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.9007,
+              "p05_intended_contrast": 6.5081,
+              "p95_actual_raster_contrast": 10.6936,
+              "maximum_actual_raster_contrast": 12.9091,
+              "worst_sample": {
+                "xy": [
+                  845,
+                  875
+                ],
+                "actual_rgb": [
+                  81,
+                  115,
+                  110
+                ],
+                "substrate_rgb": [
+                  71,
+                  107,
+                  101
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 14,
+              "text": "FX6",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "6",
+              "painted_glyph_pixels": 333,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.4756,
+              "p05_intended_contrast": 6.5248,
+              "p95_actual_raster_contrast": 15.5191,
+              "maximum_actual_raster_contrast": 16.5666,
+              "worst_sample": {
+                "xy": [
+                  1053,
+                  660
+                ],
+                "actual_rgb": [
+                  66,
+                  123,
+                  104
+                ],
+                "substrate_rgb": [
+                  56,
+                  116,
+                  96
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 15,
+              "text": "+1.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "6",
+              "painted_glyph_pixels": 219,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.3917,
+              "p05_intended_contrast": 6.0266,
+              "p95_actual_raster_contrast": 10.7659,
+              "maximum_actual_raster_contrast": 12.8635,
+              "worst_sample": {
+                "xy": [
+                  1080,
+                  680
+                ],
+                "actual_rgb": [
+                  104,
+                  150,
+                  135
+                ],
+                "substrate_rgb": [
+                  57,
+                  117,
+                  98
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 16,
+              "text": "FX7",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "7",
+              "painted_glyph_pixels": 298,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.9917,
+              "p05_intended_contrast": 5.6993,
+              "p95_actual_raster_contrast": 15.0463,
+              "maximum_actual_raster_contrast": 16.2482,
+              "worst_sample": {
+                "xy": [
+                  1065,
+                  856
+                ],
+                "actual_rgb": [
+                  47,
+                  132,
+                  98
+                ],
+                "substrate_rgb": [
+                  36,
+                  126,
+                  90
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 17,
+              "text": "+2.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "7",
+              "painted_glyph_pixels": 222,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.9232,
+              "p05_intended_contrast": 5.5396,
+              "p95_actual_raster_contrast": 9.825,
+              "maximum_actual_raster_contrast": 12.3163,
+              "worst_sample": {
+                "xy": [
+                  1080,
+                  876
+                ],
+                "actual_rgb": [
+                  89,
+                  157,
+                  130
+                ],
+                "substrate_rgb": [
+                  37,
+                  127,
+                  91
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 18,
+              "text": "FX8",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "8",
+              "painted_glyph_pixels": 333,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.4443,
+              "p05_intended_contrast": 5.3155,
+              "p95_actual_raster_contrast": 14.3265,
+              "maximum_actual_raster_contrast": 15.8711,
+              "worst_sample": {
+                "xy": [
+                  1293,
+                  660
+                ],
+                "actual_rgb": [
+                  33,
+                  145,
+                  95
+                ],
+                "substrate_rgb": [
+                  16,
+                  137,
+                  83
+                ]
+              },
+              "result": "FAIL"
+            },
+            {
+              "i": 19,
+              "text": "+4.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "8",
+              "painted_glyph_pixels": 234,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.6145,
+              "p05_intended_contrast": 5.1093,
+              "p95_actual_raster_contrast": 9.5378,
+              "maximum_actual_raster_contrast": 12.0136,
+              "worst_sample": {
+                "xy": [
+                  1302,
+                  679
+                ],
+                "actual_rgb": [
+                  32,
+                  142,
+                  93
+                ],
+                "substrate_rgb": [
+                  16,
+                  134,
+                  81
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 20,
+              "text": "FX9",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "9",
+              "painted_glyph_pixels": 324,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.1949,
+              "p05_intended_contrast": 6.0209,
+              "p95_actual_raster_contrast": 15.1704,
+              "maximum_actual_raster_contrast": 16.29,
+              "worst_sample": {
+                "xy": [
+                  1279,
+                  862
+                ],
+                "actual_rgb": [
+                  118,
+                  122,
+                  131
+                ],
+                "substrate_rgb": [
+                  104,
+                  109,
+                  119
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 21,
+              "text": "—",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "9",
+              "painted_glyph_pixels": 22,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.7543,
+              "p05_intended_contrast": 5.7543,
+              "p95_actual_raster_contrast": 6.5551,
+              "maximum_actual_raster_contrast": 6.5551,
+              "worst_sample": {
+                "xy": [
+                  1283,
+                  880
+                ],
+                "actual_rgb": [
+                  173,
+                  175,
+                  180
+                ],
+                "substrate_rgb": [
+                  98,
+                  102,
+                  111
+                ]
+              },
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "390-dark-en",
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "errors": [],
+      "pointer_setup": "Mouse moved to parent viewport0,0, outside the measurement iframe; native hover styling is not forced.",
+      "rendered_presentation": {
+        "parent_theme": "dark",
+        "child_theme": "dark",
+        "parent_lang": "en",
+        "child_lang": "en"
+      },
+      "rendered_tile_count": 10,
+      "flow_cell_count": 0,
+      "flow_scope": "NO_NATIVE_FLOW_TABLE_IN_EXISTING_PREVIEW; no manufactured flow DOM",
+      "measured_rows": 22,
+      "failed_rows": 2,
+      "minimum_contrast": 4.1449,
+      "result": "MEASURED_FAILURES",
+      "focus": [
+        {
+          "selector": "#heatmap-scorecard .hm-sc-exp",
+          "result": "NOT_VISIBLE_AT_THIS_WIDTH"
+        },
+        {
+          "selector": ".si-view-btn[data-view=\"money\"]",
+          "keyboard_sequence": "focus target to seed position; Shift+Tab; paired baseline; Tab back to target",
+          "active": {
+            "matches": true,
+            "focusVisible": true,
+            "outlineColor": "rgb(122, 167, 224)",
+            "outlineWidth": "2px",
+            "outlineOffset": "3px",
+            "boxShadow": "none",
+            "rect": {
+              "left": 18,
+              "top": 252.125,
+              "right": 147.296875,
+              "bottom": 296.125
+            }
+          },
+          "changed_pixel_count": 778,
+          "pixels_at_least_3_to_1": 711,
+          "maximum_actual_change_contrast": 7.326,
+          "result": "VISIBLE_MEASURED",
+          "limitation": "Selected control reachability and painted-indicator evidence only; not complete focus-area, perimeter, clipping or whole-page keyboard conformance.",
+          "before_png": "390-dark-en-money-focus-before.png",
+          "before_sha256": "2ed3a305a976e6087b85d05e78cb5a8dcea8f81684397edeb347d2becbdb836e",
+          "focused_png": "390-dark-en-money-focus-focused.png",
+          "focused_sha256": "bbfca527489e9883709bf868ef48c0a97d9d6588ef91b46b2e3b3fa5116849e4"
+        }
+      ],
+      "measurements": [
+        {
+          "name": "390-dark-en-heatmap",
+          "selector": "#heatmap-scorecard .hm-tile .sym, #heatmap-scorecard .hm-tile .pc, #heatmap-scorecard .hm-sc-sechd .nm, #heatmap-scorecard .hm-sc-sechd .pc",
+          "actual_png": "390-dark-en-heatmap-actual.png",
+          "actual_sha256": "794eec40df1e78439fffdb63b29b905527c5986c76010214795df191c6aef677",
+          "substrate_png": "390-dark-en-heatmap-substrate.png",
+          "substrate_sha256": "9f1aeaf6546bc7c5f55944d9729049d42a8858532bbbef315d31933d42d1d2ae",
+          "rows": [
+            {
+              "i": 0,
+              "text": "Contrast fixture",
+              "color": "rgb(200, 208, 220)",
+              "fontSize": 12,
+              "fontWeight": "800",
+              "textShadow": "none",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": null,
+              "painted_glyph_pixels": 565,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 10.3773,
+              "p05_intended_contrast": 10.4653,
+              "p95_actual_raster_contrast": 10.9851,
+              "maximum_actual_raster_contrast": 11.2029,
+              "worst_sample": {
+                "xy": [
+                  99,
+                  256
+                ],
+                "actual_rgb": [
+                  93,
+                  99,
+                  112
+                ],
+                "substrate_rgb": [
+                  27,
+                  33,
+                  45
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 1,
+              "text": "0.00%",
+              "color": "color(srgb 0.270588 0.721569 0.45098)",
+              "fontSize": 11.9,
+              "fontWeight": "800",
+              "textShadow": "none",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": null,
+              "painted_glyph_pixels": 221,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.4825,
+              "p05_intended_contrast": 6.5124,
+              "p95_actual_raster_contrast": 6.6396,
+              "maximum_actual_raster_contrast": 6.7063,
+              "worst_sample": {
+                "xy": [
+                  324,
+                  257
+                ],
+                "actual_rgb": [
+                  37,
+                  56,
+                  54
+                ],
+                "substrate_rgb": [
+                  31,
+                  31,
+                  43
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 2,
+              "text": "FX0",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "0",
+              "painted_glyph_pixels": 325,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.9652,
+              "p05_intended_contrast": 6.0367,
+              "p95_actual_raster_contrast": 14.9219,
+              "maximum_actual_raster_contrast": 16.3464,
+              "worst_sample": {
+                "xy": [
+                  82,
+                  311
+                ],
+                "actual_rgb": [
+                  207,
+                  76,
+                  95
+                ],
+                "substrate_rgb": [
+                  202,
+                  58,
+                  79
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 3,
+              "text": "−4.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "0",
+              "painted_glyph_pixels": 214,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.7841,
+              "p05_intended_contrast": 5.6094,
+              "p95_actual_raster_contrast": 9.8886,
+              "maximum_actual_raster_contrast": 12.8969,
+              "worst_sample": {
+                "xy": [
+                  55,
+                  334
+                ],
+                "actual_rgb": [
+                  209,
+                  75,
+                  94
+                ],
+                "substrate_rgb": [
+                  206,
+                  60,
+                  81
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 4,
+              "text": "FX1",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "1",
+              "painted_glyph_pixels": 281,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.1752,
+              "p05_intended_contrast": 7.0693,
+              "p95_actual_raster_contrast": 16.4003,
+              "maximum_actual_raster_contrast": 17.2051,
+              "worst_sample": {
+                "xy": [
+                  189,
+                  311
+                ],
+                "actual_rgb": [
+                  177,
+                  64,
+                  82
+                ],
+                "substrate_rgb": [
+                  173,
+                  54,
+                  73
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 5,
+              "text": "−2.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "1",
+              "painted_glyph_pixels": 217,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.2585,
+              "p05_intended_contrast": 6.8737,
+              "p95_actual_raster_contrast": 10.8802,
+              "maximum_actual_raster_contrast": 12.7283,
+              "worst_sample": {
+                "xy": [
+                  207,
+                  339
+                ],
+                "actual_rgb": [
+                  177,
+                  69,
+                  87
+                ],
+                "substrate_rgb": [
+                  171,
+                  54,
+                  73
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 6,
+              "text": "FX2",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "2",
+              "painted_glyph_pixels": 305,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 9.5549,
+              "p05_intended_contrast": 10.7808,
+              "p95_actual_raster_contrast": 17.7667,
+              "maximum_actual_raster_contrast": 18.4824,
+              "worst_sample": {
+                "xy": [
+                  304,
+                  311
+                ],
+                "actual_rgb": [
+                  123,
+                  65,
+                  77
+                ],
+                "substrate_rgb": [
+                  112,
+                  49,
+                  62
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 7,
+              "text": "−1.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "2",
+              "painted_glyph_pixels": 218,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 9.2301,
+              "p05_intended_contrast": 10.2312,
+              "p95_actual_raster_contrast": 14.6702,
+              "maximum_actual_raster_contrast": 15.6609,
+              "worst_sample": {
+                "xy": [
+                  331,
+                  331
+                ],
+                "actual_rgb": [
+                  126,
+                  65,
+                  79
+                ],
+                "substrate_rgb": [
+                  116,
+                  50,
+                  65
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 8,
+              "text": "FX3",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "3",
+              "painted_glyph_pixels": 312,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 11.8853,
+              "p05_intended_contrast": 12.9691,
+              "p95_actual_raster_contrast": 18.5133,
+              "maximum_actual_raster_contrast": 19.0546,
+              "worst_sample": {
+                "xy": [
+                  63,
+                  436
+                ],
+                "actual_rgb": [
+                  92,
+                  61,
+                  72
+                ],
+                "substrate_rgb": [
+                  79,
+                  45,
+                  57
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 9,
+              "text": "−0.20%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "3",
+              "painted_glyph_pixels": 219,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 11.5714,
+              "p05_intended_contrast": 12.6383,
+              "p95_actual_raster_contrast": 16.0105,
+              "maximum_actual_raster_contrast": 16.815,
+              "worst_sample": {
+                "xy": [
+                  90,
+                  456
+                ],
+                "actual_rgb": [
+                  94,
+                  61,
+                  74
+                ],
+                "substrate_rgb": [
+                  82,
+                  46,
+                  60
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 10,
+              "text": "FX4",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "4",
+              "painted_glyph_pixels": 316,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 14.6011,
+              "p05_intended_contrast": 15.5186,
+              "p95_actual_raster_contrast": 19.4211,
+              "maximum_actual_raster_contrast": 19.6792,
+              "worst_sample": {
+                "xy": [
+                  74,
+                  571
+                ],
+                "actual_rgb": [
+                  52,
+                  56,
+                  65
+                ],
+                "substrate_rgb": [
+                  36,
+                  41,
+                  50
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 11,
+              "text": "0.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "4",
+              "painted_glyph_pixels": 205,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 14.5834,
+              "p05_intended_contrast": 15.3425,
+              "p95_actual_raster_contrast": 17.7772,
+              "maximum_actual_raster_contrast": 18.0836,
+              "worst_sample": {
+                "xy": [
+                  86,
+                  590
+                ],
+                "actual_rgb": [
+                  52,
+                  56,
+                  66
+                ],
+                "substrate_rgb": [
+                  36,
+                  41,
+                  51
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 12,
+              "text": "FX5",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "5",
+              "painted_glyph_pixels": 330,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 11.2626,
+              "p05_intended_contrast": 12.0514,
+              "p95_actual_raster_contrast": 18.3316,
+              "maximum_actual_raster_contrast": 18.8922,
+              "worst_sample": {
+                "xy": [
+                  175,
+                  422
+                ],
+                "actual_rgb": [
+                  39,
+                  74,
+                  67
+                ],
+                "substrate_rgb": [
+                  28,
+                  65,
+                  57
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 13,
+              "text": "+0.20%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "5",
+              "painted_glyph_pixels": 225,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 10.9013,
+              "p05_intended_contrast": 11.8821,
+              "p95_actual_raster_contrast": 15.5369,
+              "maximum_actual_raster_contrast": 17.0663,
+              "worst_sample": {
+                "xy": [
+                  202,
+                  442
+                ],
+                "actual_rgb": [
+                  47,
+                  81,
+                  74
+                ],
+                "substrate_rgb": [
+                  31,
+                  67,
+                  60
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 14,
+              "text": "FX6",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "6",
+              "painted_glyph_pixels": 330,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 8.4809,
+              "p05_intended_contrast": 9.6009,
+              "p95_actual_raster_contrast": 17.371,
+              "maximum_actual_raster_contrast": 18.1532,
+              "worst_sample": {
+                "xy": [
+                  311,
+                  422
+                ],
+                "actual_rgb": [
+                  41,
+                  99,
+                  78
+                ],
+                "substrate_rgb": [
+                  24,
+                  87,
+                  64
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 15,
+              "text": "+1.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "6",
+              "painted_glyph_pixels": 213,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 8.8364,
+              "p05_intended_contrast": 9.216,
+              "p95_actual_raster_contrast": 13.8141,
+              "maximum_actual_raster_contrast": 15.3666,
+              "worst_sample": {
+                "xy": [
+                  299,
+                  449
+                ],
+                "actual_rgb": [
+                  76,
+                  122,
+                  105
+                ],
+                "substrate_rgb": [
+                  24,
+                  84,
+                  62
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 16,
+              "text": "FX7",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "7",
+              "painted_glyph_pixels": 292,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.3744,
+              "p05_intended_contrast": 6.1258,
+              "p95_actual_raster_contrast": 15.1751,
+              "maximum_actual_raster_contrast": 16.5304,
+              "worst_sample": {
+                "xy": [
+                  166,
+                  557
+                ],
+                "actual_rgb": [
+                  33,
+                  131,
+                  88
+                ],
+                "substrate_rgb": [
+                  16,
+                  122,
+                  75
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 17,
+              "text": "+2.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "7",
+              "painted_glyph_pixels": 228,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.3012,
+              "p05_intended_contrast": 5.9689,
+              "p95_actual_raster_contrast": 10.3353,
+              "maximum_actual_raster_contrast": 12.7969,
+              "worst_sample": {
+                "xy": [
+                  181,
+                  577
+                ],
+                "actual_rgb": [
+                  73,
+                  154,
+                  118
+                ],
+                "substrate_rgb": [
+                  17,
+                  123,
+                  76
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 18,
+              "text": "FX8",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "8",
+              "painted_glyph_pixels": 331,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.1449,
+              "p05_intended_contrast": 5.2585,
+              "p95_actual_raster_contrast": 14.5358,
+              "maximum_actual_raster_contrast": 15.749,
+              "worst_sample": {
+                "xy": [
+                  249,
+                  557
+                ],
+                "actual_rgb": [
+                  24,
+                  148,
+                  90
+                ],
+                "substrate_rgb": [
+                  12,
+                  143,
+                  82
+                ]
+              },
+              "result": "FAIL"
+            },
+            {
+              "i": 19,
+              "text": "+4.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "8",
+              "painted_glyph_pixels": 227,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.3501,
+              "p05_intended_contrast": 4.9327,
+              "p95_actual_raster_contrast": 8.9951,
+              "maximum_actual_raster_contrast": 11.7365,
+              "worst_sample": {
+                "xy": [
+                  264,
+                  577
+                ],
+                "actual_rgb": [
+                  130,
+                  195,
+                  165
+                ],
+                "substrate_rgb": [
+                  12,
+                  139,
+                  81
+                ]
+              },
+              "result": "FAIL"
+            },
+            {
+              "i": 20,
+              "text": "FX9",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "9",
+              "painted_glyph_pixels": 334,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 15.9758,
+              "p05_intended_contrast": 16.6982,
+              "p95_actual_raster_contrast": 19.6689,
+              "maximum_actual_raster_contrast": 19.9107,
+              "worst_sample": {
+                "xy": [
+                  331,
+                  557
+                ],
+                "actual_rgb": [
+                  50,
+                  54,
+                  62
+                ],
+                "substrate_rgb": [
+                  29,
+                  34,
+                  42
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 21,
+              "text": "—",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "9",
+              "painted_glyph_pixels": 22,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 16.4575,
+              "p05_intended_contrast": 16.6809,
+              "p95_actual_raster_contrast": 13.4616,
+              "maximum_actual_raster_contrast": 13.4616,
+              "worst_sample": {
+                "xy": [
+                  332,
+                  581
+                ],
+                "actual_rgb": [
+                  136,
+                  138,
+                  142
+                ],
+                "substrate_rgb": [
+                  28,
+                  31,
+                  40
+                ]
+              },
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "390-light-en",
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "en",
+      "errors": [],
+      "pointer_setup": "Mouse moved to parent viewport0,0, outside the measurement iframe; native hover styling is not forced.",
+      "rendered_presentation": {
+        "parent_theme": "light",
+        "child_theme": "light",
+        "parent_lang": "en",
+        "child_lang": "en"
+      },
+      "rendered_tile_count": 10,
+      "flow_cell_count": 0,
+      "flow_scope": "NO_NATIVE_FLOW_TABLE_IN_EXISTING_PREVIEW; no manufactured flow DOM",
+      "measured_rows": 22,
+      "failed_rows": 2,
+      "minimum_contrast": 3.3942,
+      "result": "MEASURED_FAILURES",
+      "focus": [
+        {
+          "selector": "#heatmap-scorecard .hm-sc-exp",
+          "result": "NOT_VISIBLE_AT_THIS_WIDTH"
+        },
+        {
+          "selector": ".si-view-btn[data-view=\"money\"]",
+          "keyboard_sequence": "focus target to seed position; Shift+Tab; paired baseline; Tab back to target",
+          "active": {
+            "matches": true,
+            "focusVisible": true,
+            "outlineColor": "color(srgb 0.159686 0.354667 0.917647)",
+            "outlineWidth": "2px",
+            "outlineOffset": "3px",
+            "boxShadow": "none",
+            "rect": {
+              "left": 18,
+              "top": 252.125,
+              "right": 147.296875,
+              "bottom": 296.125
+            }
+          },
+          "changed_pixel_count": 773,
+          "pixels_at_least_3_to_1": 671,
+          "maximum_actual_change_contrast": 4.1129,
+          "result": "VISIBLE_MEASURED",
+          "limitation": "Selected control reachability and painted-indicator evidence only; not complete focus-area, perimeter, clipping or whole-page keyboard conformance.",
+          "before_png": "390-light-en-money-focus-before.png",
+          "before_sha256": "1954a976db72f911a4aa093fb51dcf8235ac35bb9d42ced4d673aa12517ac0ee",
+          "focused_png": "390-light-en-money-focus-focused.png",
+          "focused_sha256": "a96f3f44e15b5aa216527411f6e0d16dd01eacdc22c768496beb9c4aa04ffb17"
+        }
+      ],
+      "measurements": [
+        {
+          "name": "390-light-en-heatmap",
+          "selector": "#heatmap-scorecard .hm-tile .sym, #heatmap-scorecard .hm-tile .pc, #heatmap-scorecard .hm-sc-sechd .nm, #heatmap-scorecard .hm-sc-sechd .pc",
+          "actual_png": "390-light-en-heatmap-actual.png",
+          "actual_sha256": "85a0c19ed9e95d95babc962e94f9092d0dced90bb5828bdc17f335cf87ce2a61",
+          "substrate_png": "390-light-en-heatmap-substrate.png",
+          "substrate_sha256": "64caa2e1739747d4a000a0d4cb3dd1d6cc24dcc180c73fe13fc57396019fdfd9",
+          "rows": [
+            {
+              "i": 0,
+              "text": "Contrast fixture",
+              "color": "rgb(46, 57, 80)",
+              "fontSize": 12,
+              "fontWeight": "800",
+              "textShadow": "none",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": null,
+              "painted_glyph_pixels": 556,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.6084,
+              "p05_intended_contrast": 6.6779,
+              "p95_actual_raster_contrast": 7.4484,
+              "maximum_actual_raster_contrast": 7.6846,
+              "worst_sample": {
+                "xy": [
+                  116,
+                  260
+                ],
+                "actual_rgb": [
+                  46,
+                  57,
+                  80
+                ],
+                "substrate_rgb": [
+                  192,
+                  196,
+                  204
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 1,
+              "text": "0.00%",
+              "color": "color(srgb 0.143922 0.459373 0.325882)",
+              "fontSize": 11.9,
+              "fontWeight": "800",
+              "textShadow": "none",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": null,
+              "painted_glyph_pixels": 221,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 3.3942,
+              "p05_intended_contrast": 3.4191,
+              "p95_actual_raster_contrast": 3.5305,
+              "maximum_actual_raster_contrast": 3.5843,
+              "worst_sample": {
+                "xy": [
+                  326,
+                  256
+                ],
+                "actual_rgb": [
+                  112,
+                  155,
+                  141
+                ],
+                "substrate_rgb": [
+                  200,
+                  201,
+                  210
+                ]
+              },
+              "result": "FAIL"
+            },
+            {
+              "i": 2,
+              "text": "FX0",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "0",
+              "painted_glyph_pixels": 325,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.61,
+              "p05_intended_contrast": 6.6843,
+              "p95_actual_raster_contrast": 15.5423,
+              "maximum_actual_raster_contrast": 16.8646,
+              "worst_sample": {
+                "xy": [
+                  82,
+                  311
+                ],
+                "actual_rgb": [
+                  197,
+                  69,
+                  81
+                ],
+                "substrate_rgb": [
+                  191,
+                  50,
+                  63
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 3,
+              "text": "−4.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "0",
+              "painted_glyph_pixels": 214,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.4292,
+              "p05_intended_contrast": 6.3228,
+              "p95_actual_raster_contrast": 10.7183,
+              "maximum_actual_raster_contrast": 13.5874,
+              "worst_sample": {
+                "xy": [
+                  55,
+                  334
+                ],
+                "actual_rgb": [
+                  199,
+                  67,
+                  79
+                ],
+                "substrate_rgb": [
+                  195,
+                  51,
+                  64
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 4,
+              "text": "FX1",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "1",
+              "painted_glyph_pixels": 279,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.2776,
+              "p05_intended_contrast": 7.0304,
+              "p95_actual_raster_contrast": 16.286,
+              "maximum_actual_raster_contrast": 17.1599,
+              "worst_sample": {
+                "xy": [
+                  200,
+                  311
+                ],
+                "actual_rgb": [
+                  171,
+                  80,
+                  91
+                ],
+                "substrate_rgb": [
+                  163,
+                  62,
+                  74
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 5,
+              "text": "−2.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "1",
+              "painted_glyph_pixels": 217,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.1927,
+              "p05_intended_contrast": 6.8438,
+              "p95_actual_raster_contrast": 10.7867,
+              "maximum_actual_raster_contrast": 12.6268,
+              "worst_sample": {
+                "xy": [
+                  207,
+                  339
+                ],
+                "actual_rgb": [
+                  171,
+                  78,
+                  89
+                ],
+                "substrate_rgb": [
+                  164,
+                  63,
+                  75
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 6,
+              "text": "FX2",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "2",
+              "painted_glyph_pixels": 305,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.4509,
+              "p05_intended_contrast": 7.5565,
+              "p95_actual_raster_contrast": 16.1234,
+              "maximum_actual_raster_contrast": 17.1697,
+              "worst_sample": {
+                "xy": [
+                  304,
+                  311
+                ],
+                "actual_rgb": [
+                  147,
+                  90,
+                  101
+                ],
+                "substrate_rgb": [
+                  138,
+                  76,
+                  88
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 7,
+              "text": "−1.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "2",
+              "painted_glyph_pixels": 218,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.141,
+              "p05_intended_contrast": 7.0345,
+              "p95_actual_raster_contrast": 11.785,
+              "maximum_actual_raster_contrast": 13.0825,
+              "worst_sample": {
+                "xy": [
+                  331,
+                  331
+                ],
+                "actual_rgb": [
+                  150,
+                  92,
+                  103
+                ],
+                "substrate_rgb": [
+                  142,
+                  79,
+                  91
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 8,
+              "text": "FX3",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "3",
+              "painted_glyph_pixels": 311,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.5327,
+              "p05_intended_contrast": 7.5756,
+              "p95_actual_raster_contrast": 15.9246,
+              "maximum_actual_raster_contrast": 17.1592,
+              "worst_sample": {
+                "xy": [
+                  63,
+                  436
+                ],
+                "actual_rgb": [
+                  126,
+                  98,
+                  109
+                ],
+                "substrate_rgb": [
+                  116,
+                  85,
+                  97
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 9,
+              "text": "−0.20%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "3",
+              "painted_glyph_pixels": 218,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.1964,
+              "p05_intended_contrast": 7.1299,
+              "p95_actual_raster_contrast": 11.463,
+              "maximum_actual_raster_contrast": 12.7139,
+              "worst_sample": {
+                "xy": [
+                  90,
+                  456
+                ],
+                "actual_rgb": [
+                  131,
+                  100,
+                  110
+                ],
+                "substrate_rgb": [
+                  121,
+                  88,
+                  99
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 10,
+              "text": "FX4",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "4",
+              "painted_glyph_pixels": 312,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.9696,
+              "p05_intended_contrast": 7.1647,
+              "p95_actual_raster_contrast": 16.1226,
+              "maximum_actual_raster_contrast": 16.8918,
+              "worst_sample": {
+                "xy": [
+                  74,
+                  571
+                ],
+                "actual_rgb": [
+                  105,
+                  111,
+                  121
+                ],
+                "substrate_rgb": [
+                  93,
+                  100,
+                  111
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 11,
+              "text": "0.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "4",
+              "painted_glyph_pixels": 205,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.9368,
+              "p05_intended_contrast": 6.8303,
+              "p95_actual_raster_contrast": 11.0786,
+              "maximum_actual_raster_contrast": 11.7749,
+              "worst_sample": {
+                "xy": [
+                  86,
+                  590
+                ],
+                "actual_rgb": [
+                  106,
+                  111,
+                  123
+                ],
+                "substrate_rgb": [
+                  94,
+                  100,
+                  113
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 12,
+              "text": "FX5",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "5",
+              "painted_glyph_pixels": 327,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 6.0605,
+              "p05_intended_contrast": 6.7979,
+              "p95_actual_raster_contrast": 15.7724,
+              "maximum_actual_raster_contrast": 16.8454,
+              "worst_sample": {
+                "xy": [
+                  173,
+                  422
+                ],
+                "actual_rgb": [
+                  81,
+                  114,
+                  109
+                ],
+                "substrate_rgb": [
+                  70,
+                  105,
+                  100
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 13,
+              "text": "+0.20%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "5",
+              "painted_glyph_pixels": 224,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.5719,
+              "p05_intended_contrast": 6.5081,
+              "p95_actual_raster_contrast": 10.7365,
+              "maximum_actual_raster_contrast": 13.2417,
+              "worst_sample": {
+                "xy": [
+                  202,
+                  442
+                ],
+                "actual_rgb": [
+                  87,
+                  121,
+                  116
+                ],
+                "substrate_rgb": [
+                  74,
+                  111,
+                  105
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 14,
+              "text": "FX6",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "6",
+              "painted_glyph_pixels": 329,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.4649,
+              "p05_intended_contrast": 6.3592,
+              "p95_actual_raster_contrast": 15.3283,
+              "maximum_actual_raster_contrast": 16.5431,
+              "worst_sample": {
+                "xy": [
+                  311,
+                  422
+                ],
+                "actual_rgb": [
+                  70,
+                  126,
+                  109
+                ],
+                "substrate_rgb": [
+                  56,
+                  116,
+                  98
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 15,
+              "text": "+1.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "6",
+              "painted_glyph_pixels": 211,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.7057,
+              "p05_intended_contrast": 6.0975,
+              "p95_actual_raster_contrast": 10.7364,
+              "maximum_actual_raster_contrast": 12.7017,
+              "worst_sample": {
+                "xy": [
+                  299,
+                  449
+                ],
+                "actual_rgb": [
+                  99,
+                  145,
+                  130
+                ],
+                "substrate_rgb": [
+                  54,
+                  113,
+                  94
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 16,
+              "text": "FX7",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "7",
+              "painted_glyph_pixels": 292,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.0528,
+              "p05_intended_contrast": 5.6239,
+              "p95_actual_raster_contrast": 14.8742,
+              "maximum_actual_raster_contrast": 16.2482,
+              "worst_sample": {
+                "xy": [
+                  166,
+                  557
+                ],
+                "actual_rgb": [
+                  52,
+                  134,
+                  102
+                ],
+                "substrate_rgb": [
+                  36,
+                  125,
+                  90
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 17,
+              "text": "+2.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "7",
+              "painted_glyph_pixels": 222,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.9232,
+              "p05_intended_contrast": 5.5396,
+              "p95_actual_raster_contrast": 9.825,
+              "maximum_actual_raster_contrast": 12.3163,
+              "worst_sample": {
+                "xy": [
+                  181,
+                  577
+                ],
+                "actual_rgb": [
+                  89,
+                  157,
+                  130
+                ],
+                "substrate_rgb": [
+                  37,
+                  127,
+                  91
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 18,
+              "text": "FX8",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "8",
+              "painted_glyph_pixels": 331,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.3361,
+              "p05_intended_contrast": 5.3842,
+              "p95_actual_raster_contrast": 14.6738,
+              "maximum_actual_raster_contrast": 15.8711,
+              "worst_sample": {
+                "xy": [
+                  249,
+                  557
+                ],
+                "actual_rgb": [
+                  28,
+                  144,
+                  92
+                ],
+                "substrate_rgb": [
+                  16,
+                  139,
+                  84
+                ]
+              },
+              "result": "FAIL"
+            },
+            {
+              "i": 19,
+              "text": "+4.00%",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "8",
+              "painted_glyph_pixels": 227,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 4.5541,
+              "p05_intended_contrast": 5.1107,
+              "p95_actual_raster_contrast": 9.1453,
+              "maximum_actual_raster_contrast": 11.8531,
+              "worst_sample": {
+                "xy": [
+                  264,
+                  577
+                ],
+                "actual_rgb": [
+                  132,
+                  193,
+                  166
+                ],
+                "substrate_rgb": [
+                  17,
+                  135,
+                  82
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 20,
+              "text": "FX9",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 18,
+              "fontWeight": "800",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "9",
+              "painted_glyph_pixels": 328,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.1949,
+              "p05_intended_contrast": 6.0467,
+              "p95_actual_raster_contrast": 15.1549,
+              "maximum_actual_raster_contrast": 16.29,
+              "worst_sample": {
+                "xy": [
+                  331,
+                  557
+                ],
+                "actual_rgb": [
+                  118,
+                  122,
+                  131
+                ],
+                "substrate_rgb": [
+                  104,
+                  109,
+                  119
+                ]
+              },
+              "result": "PASS"
+            },
+            {
+              "i": 21,
+              "text": "—",
+              "color": "rgb(255, 255, 255)",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "textShadow": "rgba(0, 0, 0, 0.55) 0px 1px 2px, rgba(0, 0, 0, 0.5) 0px 0px 3px",
+              "opacity": 1,
+              "filters": [],
+              "hovered": false,
+              "tile": "9",
+              "painted_glyph_pixels": 22,
+              "required_ratio": 4.5,
+              "minimum_intended_contrast": 5.6249,
+              "p05_intended_contrast": 5.8665,
+              "p95_actual_raster_contrast": 6.5551,
+              "maximum_actual_raster_contrast": 6.5551,
+              "worst_sample": {
+                "xy": [
+                  332,
+                  581
+                ],
+                "actual_rgb": [
+                  173,
+                  176,
+                  180
+                ],
+                "substrate_rgb": [
+                  98,
+                  104,
+                  112
+                ]
+              },
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "primary_guidance": [
+    "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
+    "https://www.w3.org/WAI/WCAG21/Techniques/general/G18"
+  ],
+  "interpretation": "Seven rows fall below the strict minimum probe target across88 text instances. The light390 header is the strongest counterexample:11.9px, no shadow, minimum3.3942/p053.4191. Tile minima are conservative halo/edge samples; raster-core percentiles are reported separately and are not substituted for the user-agent foreground/background test. No blanket WCAG verdict or final shared acceptance.",
+  "flow_scope": "Native flow table absent in this preview. Flow contrast remains unexecuted; DOM was not manufactured.",
+  "visual_inspection": "Actual desktop and phone captures and the transparent-ink substrate were inspected; V3 resets pointer outside iframe and confirms zero hovered targets/ancestor filters."
+}

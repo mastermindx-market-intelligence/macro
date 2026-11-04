@@ -12,7 +12,13 @@ The package covers **all 13 assigned canonical routes**, **134 inherited capabil
 
 [Open the editable Paper candidates](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-3-0) · [Existing programme Draft PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617)
 
-Current-source proof now includes two actual nine-step Next/Company-return journeys at0c4493c7, with all57 emitted preview files hashed. Separate native Nasdaq/Russell verification adds8 actual-chart browser cases and6 missing/malformed/empty-source cases. The hosted contract-delta check at0c4493c7 passed. These receipts do not establish all119 acceptance cases or final visual acceptance. See [continuation proof](verification/continuation_0c4493.json) and [namespace proof](verification/native_index_namespaces_20261104.json).
+Current-source proof now includes two actual nine-step Next/Company-return journeys at0c4493c7, with all 57 emitted preview files hashed. Separate native Nasdaq/Russell verification adds8 actual-chart browser cases and6 missing/malformed/empty-source cases. The hosted contract-delta check at0c4493c7 passed. These receipts do not establish all 119 acceptance cases or final visual acceptance. See [continuation proof](verification/continuation_0c4493.json) and [namespace proof](verification/native_index_namespaces_20261104.json).
+
+## Latest verification boundary — 12:50 UTC
+
+Current source 0c4493 has seven passing CI packs, four failed packs and one running pack. The contract-delta repair passed. The [CI and contrast addendum](CI_AND_CONTRAST_FOLLOWTHROUGH_20261104.md) binds every failure to its exact job, reproduces the router-host issue without source edits, and records the real Members accessible-name defect and generated-style drift. The incumbent source lead owns the repairs; this lane remains source-frozen.
+
+New D05-RESP-11 evidence measures 88 heatmap text instances across 1440/390 dark/light EN. Seven minimum samples are below target; the light phone header is 3.3942:1 against its painted background. Selected native focus is visible. Flow contrast remains unexecuted because the preview contains no native flow table. This is scoped failure evidence, not final accessibility or shared-design acceptance.
 
 ## Read the package
 

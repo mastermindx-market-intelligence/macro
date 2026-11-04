@@ -222,5 +222,25 @@
     "programme_writer": "this D05 programme/Dossier lane",
     "coordination_message": "1793794398.494349",
     "additional_blanket_review_required": false
-  }
+  },
+  "current_ci": {
+    "observed_utc": "2026-11-04 12:50:53 UTC",
+    "run": 41824389478,
+    "head": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
+    "packs_passed": 7,
+    "packs_failed": 4,
+    "packs_running": 1,
+    "record": "verification/ci_failure_triage_0c4493.json",
+    "full_ci_claimed": false
+  },
+  "painted_contrast": {
+    "record": "verification/painted_contrast_0c4493.json",
+    "presentations": 4,
+    "text_instances": 88,
+    "strict_minimum_failures": 7,
+    "strongest_counterexample": 3.3942,
+    "flow_tested": false,
+    "shared_acceptance": false
+  },
+  "current_next": "Incumbent source lead resolves named CI/product failures and existing EW-P4/Theme Tree work; heatmap/F02 owner repairs contrast. This lane remains Macro-source-frozen. Original Terminal/component publisher gates persist."
 }

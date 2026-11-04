@@ -1,5 +1,12 @@
 # D05 test matrix and executed evidence
 
+## Additional executed evidence — 12:50 UTC
+
+D05-RESP-11 now has **partial executed failure evidence**: four native heatmap presentations (1440/390 × dark/light EN),88 text instances, seven below-threshold strict minimum samples. The light 390 header is 3.3942:1 with no shadow. Flow contrast remains unexecuted; the source preview lacks that table. Six selected visible focus controls were reached by keyboard and measured, with two mobile Expand controls correctly absent. This does not complete D05-RESP-11, D05-RESP-12 or shared F02 acceptance. See [exact method, findings and limits](CI_AND_CONTRAST_FOLLOWTHROUGH_20261104.md).
+
+Hosted CI is also not green: at 12:50 UTC seven packs passed, four failed and one remained running. Exact diagnostics and the in-memory router-host reproduction are durable. The existing source lead retains the repairs.
+
+
 ## Current executed scope — qualified Macro0c4493c7
 
 See [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) for exact source/receiver/component identities and proof links.
