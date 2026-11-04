@@ -1,0 +1,31 @@
+{
+  "schema": "d08c.b_to_c_sources.v1",
+  "observed_at_utc": "2026-11-04T02:30:58Z",
+  "observed_at_local": "2026-11-03T20:30:58-06:00",
+  "timezone": "America/Chicago",
+  "law_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "d08_interface_pin": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c",
+  "integration_head": "e89f527e3267b1d1dd27ac7507e9a25983c0c903",
+  "original_c_packet": "291f21aa8e9d757466412549a8d6537d889ab4d8",
+  "b_return_head": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6",
+  "b_contract_blob": "abc4a489227b464b8772df65158c6cbabbc15716",
+  "executed_terminal_pin": "2ded360882b9c721e690907ff363b553781fb920",
+  "protected_terminal_refresh": "d1b8b171f0ad5788e427a0bab96fb8fb3d180b85",
+  "exercised_blobs_unchanged_at_refresh": true,
+  "files": [
+    {
+      "path": "terminal/lib/optionsContractShortlist.ts",
+      "vendored": "upstream/optionsContractShortlist.ts",
+      "bytes": 18045,
+      "sha256": "09407f04ac1c3ccbca439d9a30d9097357fabe367d97c0cdbdbe965ceadae3a4",
+      "git_blob_sha1": "8d42da79f3e5bbda9ea236df93845824feb4900d"
+    },
+    {
+      "path": "terminal/lib/optionsPlanDraft.ts",
+      "vendored": "upstream/optionsPlanDraft.ts",
+      "bytes": 8233,
+      "sha256": "f6b1a182bbf25bc18e2e8db0cf21dff0b7e21299ac6cedddfda4f2e483fc6dc7",
+      "git_blob_sha1": "1b02689501cd26226b61e7a5d3fa8f5868552f7b"
+    }
+  ]
+}
