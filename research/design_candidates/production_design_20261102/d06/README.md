@@ -1,13 +1,14 @@
-# D06 Terminal Phase 2A specification and evidence
+# D06 Terminal specification, evidence and implementation continuation
 
-**Delivery: source specification and bounded live baseline delivered; overall PARTIAL. RIG: draft.** The existing D06 package now includes all-nine-family beta interaction evidence, actual tablet/phone-width measurements, a source-bound Brain/shell handoff, a qualified current-source delta and75 proposed migration cases. Final shell-dependent editable composition and independent design acceptance remain held. Product implementation was not performed.
+**Current: source specification delivered; reader implementation BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED. Overall PARTIAL; RIG draft.** The Chairman authorized building before F01 completion. The independent reader slice now passes 22 focused DOM tests and 57 browser tests (12 intentional viewport skips), with 12 hash-verified local screenshots. [Read the implementation continuation](IMPLEMENTATION_CONTINUATION_20261104.md) and [exact receipt](evidence/implementation_receipt.json). The implementation remains in its original managed Terminal workspace because the publisher preflight refused before effect; no implementation commit, Terminal PR, formal approval or deployment is claimed. Final shell composition and Paper write admission remain separate gates.
 
-The current owner remains the Chairman-assigned D06 Astra Pro receiver, ChatGPT4 / `mastermidx4`. [Draft PR #10655](https://github.com/mastermindx-market-intelligence/macro/pull/10655) and branch `design/d06-terminal-phase2a-20261103-c4` remain the only D06 carrier under [programme Draft #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). No replacement session, production branch, lifecycle system or shared return ledger was created.
+The current owner remains the Chairman-assigned D06 Astra Pro receiver, ChatGPT4 / `mastermidx4`. [Draft PR #10655](https://github.com/mastermindx-market-intelligence/macro/pull/10655) and branch `design/d06-terminal-phase2a-20261103-c4` remain the existing D06 research carrier under [programme Draft #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). No replacement D06 session, lifecycle system or shared return ledger was created. One managed Terminal implementation workspace/branch was acquired for the newly authorized independent slice; its source publication remains blocked.
 
 ## Read the complete package
 
 | Artifact | Purpose |
 | --- | --- |
+| [Implementation continuation](IMPLEMENTATION_CONTINUATION_20261104.md) | Actual reader changes, contracts, tests, screenshots, original workspace and exact publication blocker |
 | [Product and UX specification](PRODUCT_UX_SPEC.md) | Normal journeys, keep/change decisions, chart-first/focused layout, measured available-width rules, responsive/accessibility requirements and Paper reuse |
 | [Feature retention ledger](FEATURE_RETENTION.md) | 76 existing capability groups: 40 RETAIN, 35 IMPROVE, one BLOCKED_DATA; zero removals/relocations; six separate proposed extensions |
 | [Route and backend contracts](ROUTE_DATA_CONTRACTS.md) | Nine canonical families, URL/entity/access/state owners, real producers/APIs, clocks, units, cache and write/readback |
@@ -24,7 +25,7 @@ The current owner remains the Chairman-assigned D06 Astra Pro receiver, ChatGPT4
 
 Exact retained registries: **99 drawing tools, 29 classic indicators, five suites with 31 module references, 15 research panes, 19 gated intervals and nine chart types**. Machine-readable [registry](evidence/retained_registry.json), [feature decisions](evidence/feature_dispositions.json), [migration cases](evidence/migration_cases.json), [live coverage](evidence/live_coverage.json) and [capture metadata](evidence/live_captures.json) accompany the prose.
 
-## What the approved continuation established
+## What the Phase 2A browser continuation established
 
 The user explicitly approved further browser work. The earlier browser-fallback approval gate is cleared and preserved only as historical context in [browser_gate.json](evidence/browser_gate.json).
 
@@ -40,7 +41,7 @@ Material changes now specified from that evidence:
 
 The prior BRAIN01, LAY06, NAV10 and COMP01 extension produced71 specified cases. This continuation adds LAY07, NAV11, DATA09 and SCRIPT06, giving **75 specified, not executed** migration cases. Existing focus/resize/zoom/data cases were strengthened. Successful before-design observations remain separate from migration passes.
 
-## Latest responsive and source continuation
+## Phase 2A responsive and source baseline
 
 The connected Chrome extension later worked and exposed its supported viewport override. This session established signed-in presentation, with entitlement/backend authorization unverified. Account identity, watchlists and settings screenshots are excluded. Its observed dark/English chart has a separately recorded deployment identity.
 
@@ -60,7 +61,7 @@ The current-source delta qualifies company-search context, conservative cache ac
 | Input | Exact identity |
 | --- | --- |
 | All five required programme inputs and scoped census | Macro `6e1862867193ec6486a22001a0e4fb515da20448` |
-| Current protected procedure | Mastermind `9f65957e29eba92245d78609f032aaea523b7cb4`; skillpack1.0.1/bootstrap major1 compatible; required law refreshed, unchanged companions verified/reused and changed provisions reconciled |
+| Current protected procedure | Mastermind `910803421beca53ca25145392725ab2d84c7a8e9`; compatible skillpack1.0.1/bootstrap major1; required laws loaded and unchanged companions verified/reused from the prior9f65957e pin |
 | Earlier INDEX-only compatibility check (historical) | Mastermind `d47cdb5652096e038a8bfb24e431ebe48ccf7ff2`; same compatibility and mission-pin reuse rule; not a claim of reloading all companions at that later pin |
 | Original Terminal source | `3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9` |
 | Later Terminal source delta | `2ded360882b9c721e690907ff363b553781fb920`; ten core chart/reader/Brain/origin blobs unchanged |
@@ -69,7 +70,8 @@ The current-source delta qualifies company-search context, conservative cache ac
 | F01 latest consumed continuation | Draft #10645 at `2d008bf91ccff696a3490e5d45eb9bc8d721ec9a`; F01/1.0.0-candidate.3 and joint candidate.3; PARTIAL / REQUEST_CHANGES / RIG draft |
 | F02 consumed candidate | Draft #10630 at `f7c25c4b9870cff260c2a4b998be18d6c04d36d0`; F02-SYSTEM/1.0.0-candidate.2; partial native writes paused |
 | P00 evidence return | Draft #10626 at `3f27e859438f5ba2d8288735c4d04aa087bfc45c`; BLOCKED_RETURN/PARTIAL, with an actual evidence-only approved review |
-| Prior published D06 evidence freeze | `61d6762cdd417b00aae879bd411a8bb20c50ff63`; extends217477f history on the same branch |
+| Prior published D06 evidence freeze | `d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf`; extends61d6762 history on the same branch |
+| Current Terminal implementation | Base2ded3608; exact working-file hashes in the implementation receipt; no implementation commit yet |
 
 The original assignment pin is unchanged. Later foundation, current procedure and source-delta observations are separately identified. The later DOM deployment token equals the observed Terminal SHA; that is source correspondence, not independent bundle/release attestation. The external Brain asset was not byte-attested.
 
@@ -82,11 +84,12 @@ These are editorial package states, not Executive lifecycle transitions or revie
 | D06.2A.1 Baselines and boundaries | delivered to recorded depth | All-nine-family guest evidence, later measured responsive subset and scoped current Paper correspondence; proof limits explicit |
 | D06.2A.2 Product and retention | specified | Complete source/Paper ledger and retained registries; no feature removal |
 | D06.2A.3 Interaction and data | specified with live findings | Exact identity/clocks, corrected reader/focus/fit semantics, Brain handoff and current-source delta; extensions remain proposed |
-| D06.2A.4 Builder and migration | specified | 75 unique cases, all specified-not-executed; owner-preserving sequence and rollback |
+| D06.2A.4 Builder and migration | specified | 75 unique cases; nine have bounded local-fixture subsets, zero have complete-case qualification; owner-preserving sequence and rollback |
 | D06.2A.5 Evidence return | delivered | 36 beta captures,16 Paper reference captures,two structure reads,sanitized DOM measurements,pins and manifest |
+| D06 reader implementation continuation | built and locally verified; publication blocked | 22 DOM tests,57 browser passes,12 deliberate skips,12 raw PNGs; typed publisher preflight refused before effect |
 | D06.2B Editable composition and review | blocked | Verified joint F01/F02 v1, exact D06/C4 authoring admission, frozen after-artifacts and actual independent RIG/QA01 qualification |
 
-Actual tablet/phone-width browser evidence is now recorded. Real touch/coarse pointer,mobile browser/software keyboard,400%zoom,screen reader/contrast,full responsive/theme/locale coverage,authenticated save/access/races,positive public snapshot,performance,model validity and after-design usability remain unproved. Paper mobile references remain a separate evidence class.
+Actual tablet/phone-width browser evidence is now recorded. Physical touch devices,mobile browser/software keyboard,400%zoom,screen reader/contrast,full responsive/theme/locale coverage,authenticated save/access/races,positive public snapshot,performance,model validity and after-design usability remain unproved. Paper mobile references remain a separate evidence class.
 
 ## Exact existing Paper references
 
@@ -106,6 +109,6 @@ F01's `F01-20261103-c4-state-8-v1` and F02's `f02-c2-macro-light-zh-390-chart-fo
 
 P00 corrected the old catalog mismatch: 16 native write schemas qualify. That is not D06/C4 account/app/target admission. The [10:25UTC original rollout hold](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6601121419) and [later P00 record](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6604289465), updated19:23UTC, still carry original C1/per-seat conditions and do not establish D06/C4 exact admission. Its separate installed Studio host enrollment/activation records do not identify this connected direct app’s runtime or grant admission. Another account’s accepted write and source review are not transferable. [Current gate evidence](EVIDENCE_AND_RETURN.md) records the narrow distinction.
 
-After those exact gates clear, the **same D06 owner** rechecks target writers, composes the held editable variants using this package, freezes the after-artifacts and enters genuine independent review. The existing product owners later implement and prove their assigned contracts only under a separate authorized commission.
+After those exact gates clear, the **same D06 owner** rechecks target writers, composes the held editable variants using this package, freezes the after-artifacts and enters genuine independent review. The Chairman has now authorized independent implementation before F01 completion; the reader slice is built and locally verified. Other product-owner contracts retain their explicit custody and acceptance boundaries.
 
-**FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED for remaining composition/qualification work. MISSION_COMPLETE: false.** The currently executable Phase2A research/source work is durable; the fully accepted design assignment and parent programme remain incomplete. No merge, un-draft, Ready, enqueue, held-PR relabel, deployment or production code change occurred. Shared `SESSION_RETURNS.md` and all other writers remain untouched; no background watcher or automatic continuation is armed.
+**FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED for remaining Terminal publication, composition and qualification. MISSION_COMPLETE: false.** The independent reader implementation and local proof are complete. The same D06 receiver can publish its original Terminal branch after a material same-carrier publisher repair and successful typed preflight; see the exact successor action in the implementation continuation. No merge, un-draft, Ready, enqueue, held-PR relabel or deployment occurred. Shared `SESSION_RETURNS.md` and other writers remain untouched; no background watcher or automatic continuation is armed.

@@ -13,15 +13,15 @@
   },
   "procedure": {
     "repository": "mastermindx-market-intelligence/Mastermind",
-    "loaded_sha": "9f65957e29eba92245d78609f032aaea523b7cb4",
+    "loaded_sha": "910803421beca53ca25145392725ab2d84c7a8e9",
     "schema": "mastermind.sol_skillpack.v1",
     "version": "1.0.1",
     "minimum_bootstrap_major": 1,
     "late_index_only_check_sha": "d47cdb5652096e038a8bfb24e431ebe48ccf7ff2",
     "mission_pin_retained": false,
     "prior_index_only_check_sha": "e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c",
-    "prior_loaded_sha": "b2326bbe30e9988d26199f5e774a482b9c09068a",
-    "refresh_method": "Required current law read at one protected SHA; unchanged companion blobs reused after identity checks; changed Paper integration and review law sections reconciled against previously loaded contents",
+    "prior_loaded_sha": "9f65957e29eba92245d78609f032aaea523b7cb4",
+    "refresh_method": "Required current law loaded at910803421beca53ca25145392725ab2d84c7a8e9; unchanged companions verified against9f65957e; changed review-risk/delivery provisions read.",
     "index_blob": "95b36446601250ccaf298dfb1c9b51fa9823e042",
     "current_material_constraints_loaded": true,
     "assignment_pin_unchanged": true
@@ -81,10 +81,11 @@
     "parent_pr": 10617,
     "parent_later_head": "4c0e54e378dc0b3a447e05372d95f8707259f076",
     "final_identity": "containing immutable Git commit plus evidence/manifest.json",
-    "prior_evidence_freeze": "61d6762cdd417b00aae879bd411a8bb20c50ff63",
+    "prior_evidence_freeze": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
     "prior_evidence_freezes": [
       "217477f80a405af56778563535e5314813897b49",
-      "61d6762cdd417b00aae879bd411a8bb20c50ff63"
+      "61d6762cdd417b00aae879bd411a8bb20c50ff63",
+      "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf"
     ]
   },
   "later_p00": {
@@ -101,5 +102,17 @@
     "latest_original_owner_hold": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6601121419",
     "later_cumulative_record": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6604289465",
     "d06_write_admission": "NOT_ESTABLISHED"
+  },
+  "implementation": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "operation_id": "d06-terminal-reader-resilience-20261103-c4",
+    "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d06-terminal-reader-resilience-20261103-c4",
+    "branch": "sol/web-d06-terminal-reader-resilience-20261103-c4",
+    "base_sha": "2ded360882b9c721e690907ff363b553781fb920",
+    "local_head": "2ded360882b9c721e690907ff363b553781fb920",
+    "implementation_commit": null,
+    "terminal_pr": null,
+    "state": "BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED",
+    "evidence": "implementation_receipt.json"
   }
 }

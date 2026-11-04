@@ -1,6 +1,6 @@
 {
   "artifact": "D06 separately observed foundation and authoring gates",
-  "assembled_at_utc": "2026-11-03T22:06:54.270963+00:00",
+  "assembled_at_utc": "2026-11-04T01:23:04.275006+00:00",
   "f01": {
     "pr": 10645,
     "sha": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
@@ -66,15 +66,47 @@
   "d06": {
     "pr": 10655,
     "branch": "design/d06-terminal-phase2a-20261103-c4",
-    "prepublication_head": "61d6762cdd417b00aae879bd411a8bb20c50ff63",
+    "prepublication_head": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
     "draft": true,
     "formal_rig": "draft",
     "editable_after_designs": 0,
-    "production_changes": 0,
     "mission_complete": false,
     "migration_cases": 75,
     "full_proposed_cases_executed": 0,
     "raw_beta_captures": 36,
-    "raw_paper_captures": 16
-  }
+    "raw_paper_captures": 16,
+    "phase2a_production_changes": 0,
+    "production_code_files_modified": 3,
+    "implementation_test_files": 2,
+    "production_deployments": 0,
+    "local_browser_passes": 57,
+    "local_browser_skips": 12,
+    "local_unit_passes": 22,
+    "local_raw_captures": 12,
+    "partial_proposed_cases": 9,
+    "implementation_state": "BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED",
+    "implementation_receipt": "implementation_receipt.json"
+  },
+  "prior_foundation_observation_at_utc": "2026-11-03T22:06:54.270963+00:00",
+  "build_authority": {
+    "current_outer_user": "Explicit authorization to initiate building before F01 completion",
+    "independent_build_allowed": true,
+    "f01_completion_is_build_prerequisite": false,
+    "final_shell_contract_released": false,
+    "paper_write_admission_granted": false,
+    "ready_merge_enqueue_relabel_deploy_hold_retained": true
+  },
+  "terminal_publication": {
+    "tool": "studio_git_publish_status",
+    "status": "REFUSED",
+    "effect_state": "NOT_APPLIED",
+    "code": "TYPED_GIT_PRECHECK_REFUSED",
+    "terminal_qualified_status": "PRESERVED_DIRTY / WORKSPACE_ONLY_CHANGES_PRESENT",
+    "unqualified_status_error": "workspace is not registered to the source repository",
+    "diagnosis": "Repository-binding mismatch is consistent with the inspected source; deployed gateway configuration/byte identity not independently attested.",
+    "commit_attempted": false,
+    "push_attempted": false,
+    "uncertain_effect": false
+  },
+  "foundation_scope_note": "F01/F02 entries remain the last consumed evidence, not a newly invented release or admission. Their completion does not block this independently authorized reader build."
 }

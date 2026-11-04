@@ -1,5 +1,15 @@
 # D06 evidence, findings and ownership return
 
+## Current implementation return — 2026-11-04 UTC
+
+**BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED; overall PARTIAL; RIG draft.** The latest Chairman message authorizes building before F01 completion. D06 implemented the reader-local disclosure/scroll/focus and 44px target repairs in one managed Terminal workspace. Final verification:22 DOM passes,57 browser passes,12 deliberate viewport skips,TypeScript/lint/diff checks passed,12 raw PNGs inspected and hash-verified. [Complete current return](IMPLEMENTATION_CONTINUATION_20261104.md) and [machine-readable receipt](evidence/implementation_receipt.json) bind exact files, tests and gates.
+
+The original typed publisher refused its read-only preflight with REFUSED/NOT_APPLIED/TYPED_GIT_PRECHECK_REFUSED. No code commit or push was attempted after that refusal. Code remains in operation `d06-terminal-reader-resilience-20261103-c4`; no replacement publisher or GitHub code-write bypass was used. The current protected pin is910803421beca53ca25145392725ab2d84c7a8e9. Paper, shell composition, formal review and release remain separate gates.
+
+## Historical Phase 2A return
+
+The remaining sections preserve the prior `d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf` research freeze. Statements below about unchanged implementation or its9f65957e procedure pin describe that historical phase; the current implementation return above controls the new work.
+
 ## Outcome and authority
 
 Before this source work, D06 had a bounded assignment and strong separate references without one complete source-backed chart/context/return contract. The durable result covers all nine route families,76 retained capability groups, real data/mutation owners,75 proposed migration cases, preserved Paper references and actual beta route plus responsive/state observations. Product implementation is unchanged.
