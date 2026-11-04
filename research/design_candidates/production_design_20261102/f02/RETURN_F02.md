@@ -69,3 +69,82 @@ The later resize/focus proposal response was [posted and read back as comment662
 - **Self-QA readback:** 41/41 in-memory Python renderer tests passed (one existing filesystem-dependent CSS test excluded from this read-only executor); its CSS-only assertions were checked separately. All five GitHub source files were re-fetched and matched the exact proposed text; paired CSS blobs both `b880f98653d788baa72189196642418b016824a5`. Hosted `fences` run `41770001650` and `ci` run `41770001762` were **queued** at last observation; no hosted PASS or browser/production proof claimed. Integration collision with held Bonds PR #8241 and Risk Radar PR #8721 in `lib/illus.py` remains a future source integration gate, not a merge permission.
 - **Original Paper effect remains held:** Same-target board inspection shows eight direct body children and no footer, which does **not** establish `EFFECT_NONE`. [Secretary's original-thread RESULT](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793760413346759) is **BLOCKED / CAPABILITY_GAP_ON_ORIGINAL_CARRIER_RECEIPT**, not a terminal dispatch result. F02-G15 original operation `f02-c2-macro-light-zh-390-chart-footer-20261103-01` remains `EFFECT_UNKNOWN`. Do not replay, switch carrier or perform footer/33-numeric-frame mutation. This is a scoped blocker: source implementation and independent proof can continue.
 - **Exact next safe actions:** Consume terminal original-carrier receipt if/when actually available; independently inspect hosted checks at **#10698 exact current head**, repair any reproducible failures on its existing branch, and perform visual/browser QA of an actual rendered candidate when an authorized preview exists. Only after original-effect resolution resume the 32nd Chinese board and strict full 32-board freeze. Joint F01/F02 v1, RIG and release gates remain separate.
+
+## F02 source hardening — `ad3c8bd3`
+
+The same implementation branch/PR #10698 now has exact head
+[`ad3c8bd3590ab3f6b9d87ac591b9dac09d9a98f9`](https://github.com/mastermindx-market-intelligence/macro/commit/ad3c8bd3590ab3f6b9d87ac591b9dac09d9a98f9)
+(tree `61e825ce944dd23bed4df4f2e83929f1a59ab021`), a fast-forward child of
+`f375eca5`. Five owned files only; no new branch/PR, Paper edit, release/lifecycle
+change, dependency merge or deployment. This section supersedes the prior
+implementation test/CI observations above, not the immutable native/RIG evidence.
+
+### Corrected during current continuation
+
+1. Leading/trailing missing observations now retain the original first/last domain
+   dates. A missing final slot does not turn an older value into current evidence:
+   **Last observed / 最近记录** carries the value's actual observation date and an
+   accessible unavailable-tail explanation.
+2. That historical receipt has a separate non-overlay lane. SVG, reference captions,
+   date corners and gap note share one resizing plot container; the receipt cannot
+   occupy the high last-observed point's plot area.
+3. Global extrema and first/last observed points survive sparse downsampling.
+   The original run identity is restored after sampling, so skipping an entire run
+   cannot connect across a missing interval. Retained samples are bounded by the
+   bucket threshold plus at most two endpoints.
+4. A flat series with sufficient original observations no longer becomes an empty
+   chart solely because a small sample budget retained fewer than four points.
+5. Overflow-safe single-series range arithmetic handles finite extremes and
+   constant very large values. It does not assert freshness or qualify other chart
+   kinds' dropped-null connectivity.
+6. Isolated marks no longer lose contrast through 0.65 opacity or a panel-colored
+   outline. The new currentColor non-scaling stroke retains narrow-width visibility.
+   Historical receipt text uses existing text/type tokens; no parallel palette.
+
+### Verified evidence
+
+| Check | Observation / limit |
+| --- | --- |
+| Full focused renderer test file | **50/50 test functions PASS**, including both filesystem/CSS checks; zero skipped. Direct stdlib invocation, not a pytest CLI claim (pytest is not installed in this executor). New regression cases were observed RED before correction. |
+| Sparse property probes | **4,981 PASS**, deterministic seed `20261104`, lengths 5–500, budgets 4/6/20/60/220: global extrema, endpoints, exact missing counts, bounded samples, finite coordinates and no cross-gap strokes. |
+| Complete-data compatibility | **150/150 byte-identical** comparisons against original main `a971b4e0` for line/area/bars/baseline/drawdown, lengths 4/8/31/220/1000, budgets 60/220, random/flat/descending data. This is the tested matrix, not an all-input compatibility claim. |
+| Published source readback | All five files byte-identical to tested contents at `ad3c8bd3`. `lib/illus.py` blob `ed360c30371d41789530e87661dafce36dde4b29`; tests `b033a370293267adfa48faccb6bf607464e3bf9c`; paired CSS `0f6a82c77209c6d3742960019c90f1feecf4d203`; docs `d92b5fc5233f1ee22b219e532acd825fd6611eeb`. |
+| Source/token accessibility analysis | Gap-note fallback contrast approximately 5.57:1 dark / 5.43:1 light; historical date text exceeds 10:1 against ordinary tag tints. Removed the isolated-mark opacity that produced approximately 2.96:1 in light. Font/layout/pixel-level visual acceptance is **not** established by these calculations. |
+| Hosted exact-head CI | [fences 41773098370](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41773098370) queued; [ci 41773098513](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41773098513) pending at readback. Earlier parent `f375eca5` fences completed SUCCESS; it does **not** qualify this new head. |
+
+The source implementation used parent-owned self-QA and bounded native numerical/
+accessibility reasoning help. Those helper tasks returned and are terminal.
+No mandatory optional reviewer, Fabric worker, or asynchronous external dispatch
+is being awaited; no background execution or watcher is claimed.
+
+### Exact remaining proof boundaries
+
+- **Browser policy:** a generated component-preview `data:` navigation was explicitly
+  refused by the browser URL policy. No generated page loaded, and no alternate
+  protocol/host/browser or indirect execution was used to obtain the refused outcome.
+  Do not retry or republish a preview as a workaround. A newly authorized preview
+  route is required before browser visual/interaction verification. The source-only
+  fixture is not a screenshot, deployment or product acceptance.
+- **Paper:** direct inspection reached Paper Desktop 0.5.18, but the subsequent exact
+  F02-file read returned `UNAVAILABLE / Connection timed out`. That read-only transport
+  failure is not a document effect or terminal receipt. No current board-state change
+  is inferred; earlier durable readbacks remain historical. Original G15 operation
+  `f02-c2-macro-light-zh-390-chart-footer-20261103-01` remains `EFFECT_UNKNOWN` on
+  the same direct carrier and exact target. No replay, replacement, failover, footer
+  or dependent 33-frame writes.
+- **Producer integration:** preserve the documented `scripts/build_crypto.py` date-grid
+  limitation and held #8241/#8721 overlap. Current-main `4a229174` still carried the
+  unchanged original `lib/illus.py` blob `28ad3deaf442d4556326cd60a45b4ff62362492e`;
+  no silent claim of main integration.
+- **Acceptance:** 31 exported/reviewed native boards plus the held 32nd board remain
+  distinct from implemented journeys. Final G03/G06, joint F01/F02, protected RIG/
+  design authority, required CI, merge, deployment and browser acceptance are not
+  waived or proven by this source repair.
+
+**Exact successor action:** consume material exact-`ad3c8bd3` CI results and repair
+reproducible failures on the same branch. Complete theme/locale/responsive, keyboard/
+touch, reduced-motion and real-path checks only through a newly authorized preview
+route. Resume G15-dependent Paper construction only after a real terminal receipt
+or documented canonical reconciliation on the original carrier. Keep both PRs Draft/
+HOLD and all release-effect prohibitions. Do not rebuild the repaired renderer or
+repeat the accepted unchanged 31-board review as a session-start ritual.
