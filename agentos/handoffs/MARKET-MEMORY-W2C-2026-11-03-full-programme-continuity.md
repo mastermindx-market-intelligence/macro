@@ -34,7 +34,8 @@ unresolved:
   effects retain their original carriers.
 - Existing PR 6943 overlaps the W2C record; live readback shows OPEN/Ready at
   6ba94cb42d35df64ce45f2b1598672f810e46fa1. Its September release comment5708024650
-  superseded the old body hold. Reconcile its current release custody before landing this broader record.
+  superseded the old body hold. Fresh readback found labels empty, native auto-merge null and exact-head approval
+  by mastermindx-3. This commission assumes broader record maintenance; the old carrier stays unchanged.
 - The workspace creation awaiting a grant is not retried or replaced. This change uses the verified existing external
   SSD carrier.
 next_actions:
@@ -65,3 +66,5 @@ Commission: https://github.com/mastermindx-market-intelligence/Mastermind/pull/1
 Original root and actual assigning parent: `01a1333c-a475-7052-95a8-72c623fb12e1`.
 
 This is the existing Market Memory programme, not Options Intelligence. The original full masterplan is the acceptance ruler. The W2C activation history is a contained slice, not a replacement for the programme. Local buffer restoration used supported rebind, wave-propose, add, note, edit, accept, block and start commands; no task JSON hand-edit.
+
+R0 recovery was accepted separately after source/custody reconciliation: #6528 remains OPEN Draft at `d69e63adb9ba5d66b36d8dde3a4fe16c848c1869`, labels empty and native auto-merge null; #8694 is MERGED as `20f8f675e6213883ee0f141fe383da1c8d6028c9`. All original unresolved effects remain retained. The original R0 definition requires recovery, not completion of all downstream obligations; an overall-programme-incomplete blocker was circular and removed using supported `mmtask accept`.
