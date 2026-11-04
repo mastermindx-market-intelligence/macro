@@ -71,6 +71,12 @@ timestamp; it never copies a rung into an adjustment identifier.
 
 ## Input contract to be supplied by the existing owners
 
+Massive/Polygon commercial rights are already
+`APPROVED_BY_CHAIRMAN_ATTESTATION` under
+[the standing decision](../agentos/decisions/DEC-COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023.md).
+No repeated licensing approval is required. Source qualification below concerns
+actual access, coverage, point-in-time availability, identity, basis and quality.
+
 An input projection must bind:
 
 - The schema, generation time, expiry, source receipt, declared delay, observed versus
@@ -150,7 +156,7 @@ receipt.
 
 No new scheduler or production cadence is installed. A future approved 30m
 invocation belongs inside the existing source owner and orchestrator, after capacity,
-entitlement and data qualification are verified. Hourly data must not be upsampled
+actual technical access and data qualification are verified. Hourly data must not be upsampled
 into invented 30m coverage.
 
 ## Observation history and publication failures

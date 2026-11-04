@@ -62,5 +62,64 @@
     "post_test_change": "Blank-line formatting only; no executable statements changed."
   },
   "recovery_receipt": "recovery.json",
-  "health_projection": "Original paid run root unverified and EFFECT_UNKNOWN; no returned health implementation incorporated."
+  "health_projection": "Original paid run root unverified and EFFECT_UNKNOWN; no returned health implementation incorporated.",
+  "local_ci_contract": {
+    "command": "python3 scripts/check_contract_delta.py --base 51c35090a624de1e977920e98def2c64488751b3",
+    "exit_code": 0,
+    "introduced": 0,
+    "inherited": 0,
+    "wall_seconds": 562.5,
+    "registration_owner": "prelaunch-hardening",
+    "new_job_added": false,
+    "probes": [
+      {
+        "path": "templates/index.html",
+        "jobs": 137,
+        "base_weight_seconds": 5912,
+        "head_weight_seconds": 5919,
+        "packs": 10
+      },
+      {
+        "path": "scripts/build_free_content.py",
+        "jobs": 137,
+        "base_weight_seconds": 5927,
+        "head_weight_seconds": 5934,
+        "packs": 10
+      },
+      {
+        "path": "engine/prophet/plan_book.py",
+        "jobs": 131,
+        "base_weight_seconds": 5668,
+        "head_weight_seconds": 5675,
+        "packs": 10
+      }
+    ],
+    "source_sha256": {
+      ".github/ci/legacy-jobs.yml": "7d21f3c2570c494655e351ce59c347e53de6c78ff035dd91cfa8c94719e46b5f",
+      ".github/workflows/ci.yml": "eafdb2862a6796bf3dde9905043492fef685cda9f6ee8c98d97237fd95a3027d",
+      "tests/test_ci_pack.py": "cab8e7243a0b5925fe2eae7d4b79ff2bbd2cf1ca0d7efb744e8067252d791635"
+    },
+    "scope": "Canonical paired contract census. Exact latest-head hosted CI and release remain separate."
+  },
+  "agentos_validation": {
+    "command": "python3 scripts/agentos.py validate",
+    "exit_code": 0,
+    "records": 2045,
+    "errors": 0,
+    "warnings": 185,
+    "state": "Existing warnings remain visible; no schema errors."
+  },
+  "standing_source_rights": {
+    "state": "APPROVED_BY_CHAIRMAN_ATTESTATION",
+    "source": "Mastermind@75a6540519cf519edfef7633e74f57b68aef9329/docs/COMMERCIAL_DATA_RIGHTS.md",
+    "technical_qualification_verified": false
+  },
+  "publication_reconciliation": {
+    "head": "4c9c329906de7451006964513b1f272bbb7c3389",
+    "push_action_ref": "319bc43330d55e3a11d858f3e69da921674558c68145d76a7520d841b69c6b96",
+    "initial_response": "EFFECT_UNKNOWN",
+    "canonical_remote_readback": "4c9c329906de7451006964513b1f272bbb7c3389",
+    "original_publisher_status": "APPLIED",
+    "push_replayed": false
+  }
 }

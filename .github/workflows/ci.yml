@@ -2279,7 +2279,7 @@ on:
       - ".github/workflows/prophet-live.yml"
       - "tests/test_prophet_live_pack.py"
       - "tests/test_prophet_live_evaluator.py"
-      # Intraday pivot conformance runs in its code-gated exclusive job,
+      # Intraday pivot conformance runs in the code-gated prelaunch job,
       # including test-only edits; no production data or vendor call is required.
       - "tests/test_prophet_pivot_integration.py"
       - "tests/test_prophet_pivot_surface.py"

@@ -31,11 +31,27 @@ waves:
     title: Entry-timing delta measurement on held-out episodes
     status: todo
     depends_on: [W1]
+  - id: W3
+    title: Granular 3H/30m pivot observation checklist in the existing Stocks live path
+    status: in_progress
+    pr: 10715
+    next_action: >
+      Reconcile the original core and health Fabric runs through their existing
+      carrier; integrate verified returns, complete owner-input wiring and source
+      CI/release, then prove actual deployed monitoring. Draft source is partial;
+      this editorial wave state does not prove a running worker or live service.
 landmines:
   - "A first bake after any backfill looks anomalous by construction — do not read run #1 as steady state."
 do_not_redo:
   - "Queue drain was root-caused and fixed in #5370 — do not re-diagnose the queue."
-next_action: Verify the 22:30Z bake (W1).
+artifacts:
+  - research/prophet_v4/INTRADAY_PIVOT_CHECKLIST_2026-11-03.md
+  - docs/PROPHET_INTRADAY_PIVOT_CHECKLIST.md
+  - agentos/handoffs/PROPHET-US-ENTRY-TIMING-2026-11-04-intraday-pivot.md
+next_action: >
+  Continue the Chairman-assigned W3 addition from PR10715 by reconciling the
+  original uncertain core result. Preserve W0 and the existing W1/W2 scientific
+  completion contract; granular display work does not satisfy that contract.
 ---
 
 ## Context
@@ -43,3 +59,17 @@ next_action: Verify the 22:30Z bake (W1).
 One of five active company P0 objectives (`US_PROPHET_ENTRY_TIMING` in Mastermind
 `config/strategic_state.yml`). The backfill completed and the queue drained on 2026-08-11;
 the open question is whether the first post-backfill bake is clean.
+
+
+## 2026-11-04 bounded implementation addition
+
+The current Chairman request assigns granular live 3H/30m pivot observations to
+W3. Web Sol operation `prophet-us-intraday-pivot-checklist-20261104-c3` owns this
+bounded source/delivery addition. The existing owner field is an accountable-seat
+record, not evidence of a live session or a historical-author approval gate.
+
+PR10715 contains partial collector, integration and UI implementation with synthetic
+proof. The original causal-core and health returns remain unverified; production
+monitoring and entry efficacy are not established. The dated handoff and source
+plan contain the exact effect custody and next actions. Older waves retain their
+existing evidence and acceptance boundaries.

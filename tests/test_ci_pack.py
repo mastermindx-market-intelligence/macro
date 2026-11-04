@@ -5462,9 +5462,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_919),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_934),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_675),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5472,6 +5472,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Prophet 3H/30m checkpoint (2026-11-04, PR #10715): wire the three
+    synthetic capture/integration/JavaScript suites into the existing code-gated
+    prelaunch-hardening job. Paired check_contract_delta measurement against
+    real base 51c35090a624 (same canonical planner) showed index137 jobs / 5912
+    -> 5919 weight-seconds, free137 / 5927 -> 5934, Prophet131 / 5668 -> 5675;
+    all ten packs, no newly selected job. Fund only those seven measured
+    estimated-weight seconds, without padding. The attempted separate exclusive
+    job failed its real import-closure check: integration traverses the existing
+    Prophet/evaluator/reconciler dependencies, so a narrow declaration would omit
+    coverage. Reuse the incumbent job and preserve that dependency coverage.
+    Job-count, pack-count, timeout, admission and selection rules stay unchanged.
+    These are planner estimates, not observed wall-clock or market efficacy.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same

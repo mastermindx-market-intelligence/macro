@@ -20,6 +20,7 @@ Source implementation, passing tests and a PR are not live monitoring or accepte
 - Existing `engine/entry_signal.py` and `engine/prophet_entry_availability.py` retain geometry/availability authority.
 - Existing `engine/prophet_live/` and `scripts/prophet_live_evaluator.py` retain live evaluation and publication.
 - Existing Data OS, market calendar, security identity, corporate-action basis, plan and event owners remain canonical.
+- Massive/Polygon commercial rights are already `APPROVED_BY_CHAIRMAN_ATTESTATION` under `DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023` and protected `docs/COMMERCIAL_DATA_RIGHTS.md` at the same procedure pin. Remaining input checks concern actual technical access, coverage/PIT, basis and quality; they do not reopen that approval.
 - No duplicate collector, scheduler, lifecycle database, notification transport, eligibility engine or browser-scored recommendation.
 - New timing observations cannot turn invalid/unavailable parent evidence into ENTRY_OPEN.
 
@@ -148,10 +149,12 @@ key/account/transport attempt was made, and no runtime facts or writes were obta
    Acceptance must include cross-session baseline receipts, combined knowledge
    clocks, correction-linked invalidation, replay prefixes and semantic event
    deduplication despite repeated observations.
-2. Complete the narrowly selected CI registration and verify its differential gate
-   against base `51c35090a624de1e977920e98def2c64488751b3`. Draft
+2. The measured existing-job registration passed its local differential gate with
+   zero introduced/inherited findings against base
+   `51c35090a624de1e977920e98def2c64488751b3`. Consume exact latest-head hosted CI next. Draft
    [PR #10715](https://github.com/mastermindx-market-intelligence/macro/pull/10715)
-   already exists at published head `e890c78990705d76cfdd942506aa6c9c0211706c`;
+   already exists; the prior published checkpoint is
+   `4c9c329906de7451006964513b1f272bbb7c3389`;
    keep that same branch and PR. Reconcile the independent health result before
    editing its reserved paths or claiming an active freshness check.
 3. Native source qualification must supply complete admitted intraday evidence.
@@ -172,12 +175,18 @@ branch; do not create another collector, scheduler, artifact or event ledger.
 
 ### CI and fallback closure
 
-The first local CI registration put the three new suites in a broad existing job.
-The differential contract gate rejected that expansion: the three protected probe
-selections each increased by seven estimated weight-seconds. No ceiling or test
-was weakened. Registration was moved to an exclusive-path job inside the existing
-CI pack owner, with an explicit Node prerequisite. The revised gate is being
-checked against the same base; exact-head hosted CI remains separate.
+The three suites are registered in the incumbent code-gated prelaunch job with
+its existing Node prerequisite. A proposed separate exclusive job was rejected by
+the real transitive import-closure guard; the integration reaches wider existing
+Prophet dependencies. That job was removed, retaining truthful coverage.
+
+Paired measurement against base `51c35090a624` showed no selected-job or pack
+increase, and seven additional estimated weight-seconds per protected probe:
+index 5912 -> 5919; free-content 5927 -> 5934; Prophet 5668 -> 5675. The existing
+packing test now documents and funds exactly that coverage cost. No job-count,
+pack-count, timeout, admission, selection rule or test coverage is loosened. The
+final differential gate passed (0 introduced, 0 inherited; 562.5 seconds).
+Exact-head hosted CI remains separate.
 
 A focused additional integration run passed 18 tests. It includes the actual lazy
 import failure through `run()`, using supplied inputs and stubbed external writes:
@@ -189,3 +198,18 @@ The partial delivery must keep four gaps separate: original result/effect recove
 actual integrated-engine verification, qualified production inputs, and deployed
 ongoing-monitor/browser proof. Neither a draft PR nor its synthetic browser receipt
 closes those gaps. No durable background execution is claimed.
+
+
+### Durable continuation
+
+Existing `WS:PROPHET-US-ENTRY-TIMING#W3` records this bounded addition. The complete
+recoverable handoff is
+[PROPHET-US-ENTRY-TIMING-2026-11-04-intraday-pivot.md](../../agentos/handoffs/PROPHET-US-ENTRY-TIMING-2026-11-04-intraday-pivot.md).
+Its workstream source blob matched current main before this edit. These records
+remain draft source until the original PR is accepted; no generated view, Executive
+lifecycle, Linear projection or Slack transport was changed. Agent OS validation
+returned zero errors (existing warnings remain visible).
+
+The uncertain push of checkpoint `4c9c3299` was reconciled without replay: GitHub's
+exact remote ref matched, followed by original publisher status `APPLIED`. This
+publication is distinct from the still-unresolved core/health execution effects.
