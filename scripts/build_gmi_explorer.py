@@ -56,6 +56,63 @@ PAIRED_ASSETS = ("gmi.css", "gmi.js")
 SNAPSHOT_DIRNAME = Path("data/symbol_directory/snapshots")
 
 
+# Snapshot-scoped presentation of the one separately cleared product observation
+# in DESIGN_RECORD.md §11.9. This does not grant source rights, graph use, or
+# publication authority to additional records. Other source facts must await the
+# incumbent owner's verified public-fact projection.
+def _field(row: object, *keys: str) -> object:
+    for key in keys:
+        if not isinstance(row, dict):
+            return None
+        row = row.get(key)
+    return row
+
+
+def _current_public_product(issuer: dict, link: dict) -> bool:
+    return (
+        _field(issuer, "node_id") == "co:us:MU"
+        and _field(issuer, "ticker") == "MU"
+        and _field(link, "proposal_id") == "actprop:287edbf7e04b8aba873b7493"
+        and _field(link, "micro_id") == "theme:hbm_packaging"
+        and _field(link, "status") == "RATIFIED"
+        and _field(link, "curation", "decision") == "ACCEPT"
+        and _field(link, "lifecycle") == "planned"
+        and _field(link, "emission_state") == "RIGHTS_FAMILY_UNRESOLVED"
+        and _field(link, "scope", "product") == "24GB 8H HBM3E"
+        and _field(link, "scope", "platform") == "NVIDIA H200"
+        and _field(link, "source", "source_key") == "manual:micron-ir:hbm3e-h200:2024-02-26"
+        and _field(link, "source", "text_sha256") == "f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a"
+        and _field(link, "source", "published_date") == "2024-02-26"
+        and _field(link, "source", "url_if_public") ==
+        "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx"
+    )
+
+
+def _public_render_model(model: dict) -> dict:
+    """Supply only explicitly cleared issuer facts; no raw issuer/edge context."""
+    issuers = []
+    for issuer in model.get("issuers", []):
+        if not isinstance(issuer, dict):
+            continue
+        links = [lk for lk in issuer.get("links", [])
+                 if _current_public_product(issuer, lk)]
+        if links:
+            issuers.append({**issuer, "links": links})
+    return {**model, "issuers": issuers, "edges": [], "party_names": {}}
+
+
+def _remove_stale_issuer_pages(site: Path, public_model: dict) -> None:
+    """Retire generated issuer files after clearance withdrawal; never follow links."""
+    current = {f"gmi-issuer-{issuer['ticker'].lower()}.html"
+               for issuer in public_model["issuers"]}
+    for old in site.glob("gmi-issuer-*.html"):
+        if old.name in current:
+            continue
+        if old.is_symlink() or not old.is_file():
+            raise RuntimeError(f"refusing to replace nonregular GMI issuer output: {old.name}")
+        old.unlink()
+
+
 def _newest_snapshot() -> Path:
     snaps = sorted((ROOT / SNAPSHOT_DIRNAME).glob("*.parquet"), key=lambda p: p.name)
     if not snaps:
@@ -118,17 +175,19 @@ def render_site(model: dict, site_dir: str | Path) -> list[Path]:
     """Render every explorer page (and sync the paired assets) from ``model``."""
     site = Path(site_dir)
     site.mkdir(parents=True, exist_ok=True)
-    env = make_env(model, ROOT / "templates")
+    public_model = _public_render_model(model)
+    _remove_stale_issuer_pages(site, public_model)
+    env = make_env(public_model, ROOT / "templates")
     written: list[Path] = []
     for page, (template, page_key) in TEMPLATES.items():
         write_page(site / page, env.get_template(template).render(
-            model=model, nav_prefix="", page_key=page_key))
+            model=public_model, nav_prefix="", page_key=page_key))
         written.append(site / page)
     template, page_key = ISSUER_TEMPLATE
-    for issuer in model["issuers"]:
+    for issuer in public_model["issuers"]:
         page = f"gmi-issuer-{issuer['ticker'].lower()}.html"
         write_page(site / page, env.get_template(template).render(
-            model=model, nav_prefix="", page_key=page_key, issuer=issuer))
+            model=public_model, nav_prefix="", page_key=page_key, issuer=issuer))
         written.append(site / page)
 
     for name in PAIRED_ASSETS:

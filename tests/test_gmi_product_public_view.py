@@ -86,12 +86,12 @@ def test_company_route_and_shared_shell_remain_integrated(pages):
 
 def test_payload_escapes_source_text(current_model, tmp_path):
     model = deepcopy(current_model)
-    model["issuers"][0]["links"][0]["scope"]["product"] = "</script><img src=x onerror=alert(1)>"
+    model["issuers"][0]["display_name"] = "</script><img src=x onerror=alert(1)>"
     html = next(p for p in render_site(model, tmp_path) if p.name == "gmi.html").read_text()
     soup = BeautifulSoup(html, "html.parser")
     assert not soup.select("img[onerror]")
     payload = json.loads(soup.select_one("#gmi-topic-data").string)
-    assert any("</script>" in (c["product"] or "") for t in payload["topics"] for c in t["connections"])
+    assert any("</script>" in (c["company"] or "") for t in payload["topics"] for c in t["connections"])
 
 
 def test_company_catalogue_keeps_dated_evidence(current_model, pages):
@@ -110,12 +110,17 @@ def test_company_catalogue_keeps_dated_evidence(current_model, pages):
         assert set(source["rel"]) >= {"noopener", "noreferrer"}
 
 
-def test_company_catalogue_preserves_all_links_and_rejects_unsafe_source(current_model, tmp_path):
+def test_company_catalogue_preserves_all_links_and_rejects_unsafe_source(current_model, tmp_path, monkeypatch):
     model = deepcopy(current_model)
     extra = deepcopy(model["issuers"][0]["links"][0])
     extra["scope"]["product"] = "TEST-ONLY-SECOND-PRODUCT"
     extra["source"]["url_if_public"] = "javascript:alert(1)"
     model["issuers"][0]["links"].append(extra)
+    # Isolate downstream multi-record rendering from the separately owned grant.
+    # This synthetic test-only qualification is NOT a production publication grant.
+    from scripts import build_gmi_explorer as product_builder
+    monkeypatch.setattr(product_builder, "_current_public_product",
+                        lambda issuer, lk: lk["curation"]["decision"] == "ACCEPT" and lk["status"] == "RATIFIED")
     html = next(p for p in render_site(model, tmp_path) if p.name == "gmi-companies.html").read_text()
     soup = BeautifulSoup(html, "html.parser")
     assert len(soup.select(".gmi-company-record")) == 2
@@ -135,3 +140,66 @@ def test_company_catalogue_empty_state_is_server_rendered(current_model, tmp_pat
     assert not soup.select_one("[data-company-empty]").has_attr("hidden")
     assert "No company evidence yet" in soup.select_one("[data-company-empty]").get_text()
     assert soup.select_one("[data-company-count]").get_text(strip=True)
+
+
+def test_unqualified_future_company_does_not_enter_public_files(current_model, tmp_path):
+    """ACCEPT/RATIFIED alone cannot serialize another issuer or product."""
+    model = deepcopy(current_model)
+    other = deepcopy(model["issuers"][0])
+    other["node_id"] = "co:us:ZZ"
+    other["ticker"] = "ZZ"
+    other["display_name"] = "PRIVATE-UNQUALIFIED-COMPANY-SENTINEL"
+    other["links"][0]["scope"]["product"] = "PRIVATE-UNQUALIFIED-PRODUCT-SENTINEL"
+    model["issuers"].append(other)
+    pages = {p.name: p.read_text() for p in render_site(model, tmp_path)}
+    assert "gmi-issuer-zz.html" not in pages
+    rendered = "\n".join(pages.values())
+    assert "PRIVATE-UNQUALIFIED-COMPANY-SENTINEL" not in rendered
+    assert "PRIVATE-UNQUALIFIED-PRODUCT-SENTINEL" not in rendered
+    assert "gmi-issuer-mu.html" in pages
+
+
+def test_unqualified_future_link_is_withheld_even_with_accepted_review(current_model, tmp_path):
+    model = deepcopy(current_model)
+    extra = deepcopy(model["issuers"][0]["links"][0])
+    extra["proposal_id"] = "uncleared:future-proposal"
+    extra["scope"]["product"] = "PRIVATE-UNQUALIFIED-LINK-SENTINEL"
+    model["issuers"][0]["links"].append(extra)
+    pages = {p.name: p.read_text() for p in render_site(model, tmp_path)}
+    assert "PRIVATE-UNQUALIFIED-LINK-SENTINEL" not in "\n".join(pages.values())
+    company = BeautifulSoup(pages["gmi-companies.html"], "html.parser")
+    assert len(company.select(".gmi-company-record")) == 1
+
+
+@pytest.mark.parametrize("field,value", [
+    ("proposal_id", "uncleared:future-proposal"),
+    ("scope.product", "PRIVATE-UNCLEARED-FACT-SENTINEL"),
+    ("source.text_sha256", "0" * 64),
+    ("emission_state", "DENIED"),
+])
+def test_current_fact_changes_fail_closed_and_remove_stale_issuer(current_model, tmp_path, field, value):
+    """A source identity/rights change must retire the old generated issuer page."""
+    assert (tmp_path / "gmi-issuer-mu.html") in render_site(current_model, tmp_path)
+    model = deepcopy(current_model)
+    target = model["issuers"][0]["links"][0]
+    parts = field.split(".")
+    for part in parts[:-1]:
+        target = target[part]
+    target[parts[-1]] = value
+    pages = {p.name: p.read_text() for p in render_site(model, tmp_path)}
+    assert "gmi-issuer-mu.html" not in pages
+    assert not (tmp_path / "gmi-issuer-mu.html").exists()
+    combined = "\n".join(pages.values())
+    assert "24GB 8H HBM3E" not in combined
+    assert "PRIVATE-UNCLEARED-FACT-SENTINEL" not in combined
+    assert not BeautifulSoup(pages["gmi-companies.html"], "html.parser").select("[data-company-card]")
+
+
+def test_stale_issuer_prune_refuses_symlink(current_model, tmp_path):
+    """No generated-page pruning may follow a symlink into unrelated output."""
+    target = tmp_path / "unrelated-original.html"
+    target.write_text("SENTINEL-UNTOUCHED")
+    (tmp_path / "gmi-issuer-zz.html").symlink_to(target)
+    with pytest.raises(RuntimeError, match="nonregular GMI issuer output"):
+        render_site(current_model, tmp_path)
+    assert target.read_text() == "SENTINEL-UNTOUCHED"
