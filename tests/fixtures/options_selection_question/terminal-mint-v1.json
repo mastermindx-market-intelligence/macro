@@ -1,0 +1,12 @@
+{
+  "schema": "options.selection_question/v1",
+  "evidence": {
+    "owner": "terminal.options_exposure",
+    "object_type": "options_matrix_selection",
+    "object_id": "v1/SPY/2026-10-15/2026-11-20,call,600//volume,all,all,table",
+    "mode": "pinned",
+    "version_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:bytes:1234:session:2026-10-15",
+    "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "selection": "{\"comparisons\":[],\"primary\":{\"expiry\":\"2026-11-20\",\"side\":\"call\",\"strike\":\"600\"},\"schema\":\"options_matrix_selection.v1\",\"view\":{\"display_mode\":\"table\",\"expiry\":\"all\",\"lens\":\"chain\",\"metric\":\"volume\",\"side\":\"all\"}}"
+}
