@@ -1,14 +1,14 @@
 {
   "schema": "agent_os_state.v1",
   "generator": "scripts/agentos.py status",
-  "source_records_digest": "sha256:2dd5b5f7481ee13bb1dd6d861d1a24f4484c3c5a3b5d63569bce19c545bf4337",
-  "generated_at": "2026-11-04T07:24:42Z",
+  "source_records_digest": "sha256:1a03b79f82d998d94c1c813820c101b3bc187948babbdac67f535c4f740863b2",
+  "generated_at": "2026-11-04T10:51:41Z",
   "inputs": {
     "workstreams": 110,
     "decisions": 551,
     "discoveries": 575,
     "handoffs": 809,
-    "active_builds": "data/governance/active_builds.json@2026-11-04T07:24:42.201621+00:00",
+    "active_builds": "data/governance/active_builds.json@2026-11-04T10:51:41.594464+00:00",
     "active_builds_age_hours": 0.0,
     "worktrees": 1,
     "uncommitted_worktrees": [],
