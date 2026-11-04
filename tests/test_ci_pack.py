@@ -5181,7 +5181,8 @@ CURATED_EXCLUSIVE = {
     # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
     # inference smeared this job's scan roots onto templates/index.html (138
     # jobs / 5,919 s against the 137 / 5,909 probe ceilings). Exclusive with the
-    # exact 55-file non-wildcard closure; nothing under templates/; no ceiling moved.
+    # exact 55-file non-wildcard import closure plus the eight Jinja templates the
+    # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
 }
 
