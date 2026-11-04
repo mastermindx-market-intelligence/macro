@@ -81,3 +81,73 @@ Local parent qualification:
 Original paid proposal remains rr-paper-ui-build-20261104-c3-01 under this operation, controller87900. Controller delivery/launch attempt are observed; provider START and result remain unconfirmed as of this record. No replacement request has been created.
 
 Protected release remains separate: this source author cannot submit its own formal approval or arm the protected release. A future exact UI PR needs one eligible non-author formal review and conditional arming. Existing #10489 and #10513 retain their own carriers and blockers. Normal Macro render and macro-update publication should propagate this shared component to beta; a separate Terminal release is not presently established as necessary.
+
+
+## P2 — Paper implementation and parent integration (2026-11-04)
+
+The sole paid Fabric run was `rr-paper-ui-build-20261104-c3-01` under
+`risk-radar-paper-live-20261104-c3`. Its terminal result was retrieved and its
+proposal diff was verified before one application:
+SHA-256 `2feba46fa6ba2c33fefbd8dcfc01f337790da461589371049a97809af187c993`.
+The worker did not publish, open a PR, deploy, or create a second delivery carrier.
+
+The implementation places the native Risk Radar reading, independent signal
+index and horizon-specific pullback estimates in Paper's continuous overview.
+The connected driver strip opens the existing evidence path. The risk ladder,
+trend/resilience band, sentiment instruments and leadership context are the same
+native DOM nodes when shown in the overview or inspector. Help/date metadata
+travels with those nodes and returns to its original overview slot. There is no
+new feed, risk calculation, polling loop, or duplicated live consumer.
+
+Parent review found and repaired three substantive proposal problems: inferred
+global completeness, metadata lost during detail navigation, and an empty index
+coerced to zero. The integrated version copies native settled coherence and
+source-session context literally, preserves older-input and incomplete-input
+warnings, excludes the hidden live fallback from settled context, and treats
+empty/malformed index values as unavailable. High/low pressure uses the
+locale-stable health tokens. Sentiment copy makes clear that these descriptive
+gauges are not validated trade signals.
+
+The layout also restores each sentiment lens's own source-labelled scale,
+retains its own score and pin, keeps native leadership disclosure behavior, and
+places the unchanged residual-damage metric beside the desktop leadership
+table. Responsive layouts retain the same source content. No Paper sample
+numbers have been substituted for actual model readings.
+
+Observed qualification before main integration:
+
+- Browser run `/tmp/rr-paper-qualified-20261104-c3`: **163 checks passed**,
+  zero page errors, process exit 0. Covers 320/390/768/1440 widths, dark/light,
+  EN/ZH, all inspector destinations, keyboard/focus/scroll restoration,
+  reduced motion, missing and malformed probabilities, contradictory/older/
+  incomplete source states, one-lens sentiment, source tick/value/pin identity,
+  and 200% text fit/horizon readability.
+- `tests/test_risk_radar_workspace.py`,
+  `tests/test_risk_envelope_radar_integration.py`,
+  `tests/test_dashboard_template_render.py`: **134 passed**.
+- Focused sentiment render suite: **8 passed, 112 deselected**.
+- Design ratchet: zero new blocking findings; runtime-style guard within its
+  frozen allowances; template/site assets: 159 synchronized pairs.
+- Native advisory review found no new material semantic regression in the
+  analytical refinement. This is advisory source judgment, not formal
+  GitHub approval or a release receipt.
+- Visual inspection of 200% text identified a stance icon that could shrink
+  into its label. A bounded flex repair and a glyph-overlap assertion were
+  added afterward; final qualification must include that last delta.
+
+These runs render working-tree bytes with per-input hashes; their source-ref
+field names the pre-integration branch head and is not a claim that all tested
+bytes were committed at that older head. Final canonical capture must follow
+the source commit and main integration.
+
+Current main was refreshed to
+`affa0fd2e68723efc9e2cbc0e7c791ab70f5a53d`. Its relevant AGENTS amendment,
+stronger visual-evidence integrity gate, dashboard changes and existing EW-P4
+receipt updates were inspected. Preserve those changes during integration.
+
+The previously observed beta `/macro.html` iframe resolves Risk Radar assets
+from the standalone Macro origin. One qualified Macro publication therefore
+serves both requested consumers. Final delivery still requires the exact-head
+formal non-author approval, independent controller arming, actual merge,
+covering render/publication and successful browser proof on both live paths.
+No merge, deployment, new watcher, or live acceptance is claimed by this record.
