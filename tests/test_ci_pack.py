@@ -5462,9 +5462,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_670),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5472,6 +5472,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    P15.T2.S3 (2026-11-04): paired manifest measurements against protected
+    355527d7d9de at candidate1184ddc9, using the same scope compiler and source
+    tree, have identical selected job IDs (no entrants/exits) for all probes:
+    index137/5912->5914, free-content137/5927->5929, plan-book131/5668->5670.
+    The sole selected-weight delta is unrun-brain-gateway108->110, from adding
+    test_options_question_widget_browser.py to its existing browser command.
+    The separate options-matrix-code39->41 does not select on these probes.
+    Fund exactly these two measured units, retaining every suite, job-count
+    ceiling, selector, ten-pack bound, timeout and admission limit. No padding;
+    these are planning weights, not measured execution times.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
