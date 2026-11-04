@@ -110,10 +110,20 @@ public:
     - /biocatalyst.html
     - /biocatalyst.css
     - /biocatalyst.js
-    # WTI Live Trace presentation assets only; every current value is served
-    # by authenticated /api/ontology/explorer/v1, never by these files.
+    # Ontology presentation/client code only. Every current, scenario and
+    # private-book value remains behind its authenticated API; no payload
+    # directory or future module is admitted by this literal asset list.
     - /ontology.css
     - /ontology.js
+    - /ontology-portfolio.js
+    - /ontology-scenario.js
+    - /ontology-company.js
+    - /ontology-company-contract.js
+    - /ontology-company-controller.js
+    - /ontology-company.css
+    - /ontology-theme.js
+    - /ontology-research.js
+    - /ontology-radar-research.js
     - /stock-dashboard.css
     - /hk-stock-v36.js
     - /canada-stock-v36.js
