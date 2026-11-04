@@ -6,13 +6,13 @@
   "source_carrier": {
     "pr": 10617,
     "branch": "design/paper-production-audit-20261102-ryan",
-    "observed_head": "e00e87cd0e14a27ab030968b404763cfdbb891e5",
+    "observed_head": "23766f48fe574793dbdc44b1b05b3a7dd81ba453",
     "draft": true,
     "state": "open",
     "merged": false,
     "owned_subtree": "research/design_candidates/production_design_20261102/d07/",
     "preparation_head": "b0d827361e7adc266079fa0501789fd005d0794c",
-    "observation_phase": "continuation_preparation",
+    "observation_phase": "frozen_artifact_publication_readback",
     "acting_principal": "mastermindx-3",
     "existing_pr_owner": "mastermindxryan",
     "publication_parent": "e00e87cd0e14a27ab030968b404763cfdbb891e5",
@@ -22,6 +22,13 @@
         "research/design_candidates/production_design_20261102/d05/AUDIT_CHECKPOINT.md",
         "research/design_candidates/production_design_20261102/d05/README.md"
       ],
+      "d07_overlap": false
+    },
+    "receipt_preparation_parent": "b238250bfa00f2ddf50f43752370aaca5cb6d02d",
+    "receipt_parent_delta": {
+      "commits": 1,
+      "changed_paths": 7,
+      "owner_subtree": "d05",
       "d07_overlap": false
     }
   },
@@ -316,17 +323,17 @@
     }
   },
   "pinned_source_targets": {
-    "verified": 119,
+    "verified": 121,
     "reused": 107,
-    "new_or_repinned": 12,
+    "new_or_repinned": 14,
     "receipt": "source-link-verification.json"
   },
   "reference_acceptance": "open",
   "rig_submission": "unsubmitted",
-  "phase2a": "SPECIFICATION_AND_RESEARCH_EXTENDED",
+  "phase2a": "DESIGN_RESEARCH_DELIVERED_WITH_EXPLICIT_OPEN_QUALIFICATIONS",
   "task_studies": "provisional",
   "full_assignment": "PARTIAL",
-  "finalization_classification": "MORE_WORK_EXISTS",
+  "finalization_classification": "CHECKPOINTED_CONTINUATION",
   "mission_complete": false,
   "served_article_continuation": {
     "observed_date_utc": "2026-11-04",
@@ -371,7 +378,7 @@
     "files_verified": 80,
     "recovery_current_continuation": true
   },
-  "publication_state": "PREPARED_AWAITING_ORIGINAL_CARRIER_PUBLICATION",
+  "publication_state": "FROZEN_ARTIFACT_READBACK_VERIFIED",
   "held_returns_readback": [
     {
       "pr": 814,
@@ -425,7 +432,320 @@
     "component_render_assertions": 0,
     "retry_or_alternate_registry": false
   },
-  "source_publication": null,
+  "source_publication": {
+    "commit": "23766f48fe574793dbdc44b1b05b3a7dd81ba453",
+    "parent": "e00e87cd0e14a27ab030968b404763cfdbb891e5",
+    "repository_root_tree": "8dd3ece7e2b26f4bf55f5fba9b4a3b550266c9ab",
+    "d07_tree": "1070d6915cb820e30628571fa9c1cf26cf09e4b7",
+    "manifest_sha256": "3ab4c5bfcb86f31affc9783a0643733d1980ef375a9c99ec8b7ab8e19d221384",
+    "observed_date_utc": "2026-11-04",
+    "file_count": 106,
+    "changed_files": 41,
+    "added_files": 26,
+    "changed_outside_d07": 0,
+    "canonical_ref_readback_matched": true,
+    "complete_changed_body_readback": 41,
+    "reused_unchanged_body_receipts": 65,
+    "reused_from_commit": "b0d827361e7adc266079fa0501789fd005d0794c",
+    "all_106_tree_entries_matched": true,
+    "files": [
+      {
+        "path": "ACCEPTANCE.md",
+        "git_blob": "dc576f1c298e461f0bb67e5dbbf169835d71e899",
+        "bytes": 24815,
+        "sha256": "fa287d0d1ce5b97273250a40505d0c13d3e463c5860c925a24cd72da2be0d733",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "ANALYSIS.md",
+        "git_blob": "dedeb3b04452a249b5d3417d40decc529e41ab36",
+        "bytes": 29516,
+        "sha256": "0afc9f881788c6a289faf880227240d97f7b9e64604eab9933c267c3c796c5d8",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "CONTINUATION.md",
+        "git_blob": "1929764c129854d63f201d53022652f13b670aba",
+        "bytes": 28758,
+        "sha256": "0debe303968e92ba9d77e066d7c8d5c735aa64aaa0f0a53db412ca3596aaa9a2",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "EARNINGS.md",
+        "git_blob": "222723260b913fcad57a4c3af314980b8a05c606",
+        "bytes": 29357,
+        "sha256": "5d54a6d840ede6e2bf9e5fea48003b5dda324aeff78243e838f730624e0c8434",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "EXPERIENCE.md",
+        "git_blob": "2999b5aaa4133ca914e72dd1ba8ee459227efb02",
+        "bytes": 14512,
+        "sha256": "6c87427e37af6d16bfce69ed3d1d57339d7d5afd75e0e77bd2775afbb9c03f07",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "JOURNEY_RETURN.md",
+        "git_blob": "686e7bd7070ccd5ddab86dd6fd85cc835e8fa099",
+        "bytes": 20917,
+        "sha256": "792a9f31cdea4b1a81a88ca880b2a8cf4083c69c33e6bd126b5b642cb9b2bf70",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "README.md",
+        "git_blob": "c4a4d12414ce6f6f20169c0c97a7a47d91716afe",
+        "bytes": 8027,
+        "sha256": "19b659c3d2ef66198be78550b361872cf1343621b30429fb52d2620915c52442",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "RESPONSIVE.md",
+        "git_blob": "a78c760ba6d64d72eada7c998aa6247a209f0852",
+        "bytes": 33435,
+        "sha256": "627a75004dc33bc4020ef354c3e2ccce2a3086ba3eca849287080179d4db6e26",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "RETENTION.md",
+        "git_blob": "1150e5a92aa7e8acc621132d534377022ff76cf3",
+        "bytes": 10461,
+        "sha256": "645d3c6ed4df982a17da61f477bed8a4d97a44de3e00ab83c6a3391fd676c286",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "SEMANTIC_TASKS.md",
+        "git_blob": "4c36fc6c34f19b1d1d0c388e6af27a8821ceb6f1",
+        "bytes": 26841,
+        "sha256": "afa6d08d503d0dfa170dc48e3b3b6f606c1d4ac3a0f7595080377b0c250fcad5",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "SHA256SUMS",
+        "git_blob": "a3a8b4cb79e7bc4489bf1900a63e1ca3e66a7c2c",
+        "bytes": 10855,
+        "sha256": "3ab4c5bfcb86f31affc9783a0643733d1980ef375a9c99ec8b7ab8e19d221384",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/OBSERVATIONS.md",
+        "git_blob": "9c1fce083467c0de030d764aaba5da0d9b33e7d1",
+        "bytes": 8750,
+        "sha256": "147371731abd1813e6160f3710eaa97c6c82f29b1f1bd796d9f778c9905aecdf",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/README.md",
+        "git_blob": "3f7be7006da75cfe8da54645ea0fc930f6195f61",
+        "bytes": 8283,
+        "sha256": "5fb0251b842b687624ff9000682c9a883029e744134203f47d02de0a6945c893",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/article-320.jpg",
+        "git_blob": "73abd134209f070e2c62a73f0d67124c3a6d0e76",
+        "bytes": 39602,
+        "sha256": "5a9406d6bcc5f771ab15e1b7fc36e5bc65a70ac5a0f1dc4e730f43229c712e51",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/article-390.jpg",
+        "git_blob": "b478e435ae7556f5b42e0244999db1a4d49810d0",
+        "bytes": 43049,
+        "sha256": "ebc3773b701566a34ad06e81c5c3ed6e523067fedbdec91e09f4aff06c44e7f9",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/capture.json",
+        "git_blob": "0eb442d83bafee562b6824b6b0a0f89d7255a93a",
+        "bytes": 3705,
+        "sha256": "03014e4a89fd51c461d2d925a71176558a6100636c0c1918c9e8356785834553",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/cn-actuals-320.jpg",
+        "git_blob": "c6e2215555549e35224ab3f66c5df02fac9c6f3e",
+        "bytes": 28145,
+        "sha256": "c534da08c94b2e2969f17cb52e2cc975f7cfa2f00ac208ddccce5965c551a17d",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/cn-actuals-390.jpg",
+        "git_blob": "af533354879791e335231b63310a9c7a69859fc0",
+        "bytes": 32389,
+        "sha256": "a6b8e97bce3f4d6e63b47746ff6d01ab98d692cdb2561460f6ad6ddb82e7e57c",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/cn-actuals-dark-320-bottom.jpg",
+        "git_blob": "5da65582d1500255ceb840d98512a3587ddc367a",
+        "bytes": 29190,
+        "sha256": "2126e834a530b601eee97089a7b94eec0ff191ada5525fc916373b1390feaa81",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/cn-actuals-zh-390.jpg",
+        "git_blob": "7bb3d8f85971582a1347166f2d836d3b1db81211",
+        "bytes": 27289,
+        "sha256": "471993dc1a70e44666ee93f9e111f62a5eb3effef2e18aec262e7c573c50b8f3",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/cn-forecast-desktop.jpg",
+        "git_blob": "f7c2781a59727f54c8db43e2028ff434f51e19ed",
+        "bytes": 129078,
+        "sha256": "8ae0580c71407d999c5b9fb3a77c851962a31e9f46a85f511b05a3d5afe483f7",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/company-search-baba-preview.jpg",
+        "git_blob": "5fc2c9dc82781838ddd19b68abdd16d31e9b2c89",
+        "bytes": 89490,
+        "sha256": "bee2a4ff62941395dd4cd9d28f7e0bef047c0504970e00b8720964d86edb49e7",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "baseline/continuation-20261104/observations.json",
+        "git_blob": "50d52856bae3d9162008436c29ad8e6ed4b87559",
+        "bytes": 5298,
+        "sha256": "22d5dd08d1fe5868ee5f58a017d1f5914ea14e2b65d34e74779fbc0373b2cb94",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/README.md",
+        "git_blob": "ec8a4206bf3ae2320e91c960d91bd45b8f5808c8",
+        "bytes": 9349,
+        "sha256": "cba542f44778b2b9d46d71dc72dff09afe8c7f4d4615a27e0297adcda788cd31",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/continuation-verification.json",
+        "git_blob": "75231052570aa06b8ee6840bc694a4119a787b85",
+        "bytes": 16753,
+        "sha256": "7d32fa5163da3e48ec7aa59a340c3f05389fa400e2808e61ea4464dbd54e8c8c",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/company-search/README.md",
+        "git_blob": "5da4d03ec6360181c62610133e78fa6623bf5c65",
+        "bytes": 2479,
+        "sha256": "84cc5aa25c03f613862ebc32ddda970e8b830831d1eb375f99c4d469b3fc8000",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/company-search/probe.mjs",
+        "git_blob": "701583eb13e24122affcde82555d091c4f3d7c89",
+        "bytes": 6298,
+        "sha256": "556a635db75859abb8aa28c8426fe3b1a01b9a05c4425692be1ca49a9820fc61",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/company-search/results.json",
+        "git_blob": "b80720c212316345db5c47b647f23929c254198d",
+        "bytes": 10728,
+        "sha256": "7df6e69bc67a77d774cf0bcf15b77f627514bbeead1ac16809f860f4e1124dc0",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/company-search/sources/analysisSymbol.ts",
+        "git_blob": "b32106075430767915f66a30a0bc47f8d55fada6",
+        "bytes": 1065,
+        "sha256": "8be2bee6a178eee8d2951a65c4744fb039c8905f964daa022d86e4c575b49776",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/company-search/sources/companySearchContext.ts",
+        "git_blob": "2166bbbccb4d85667acc218ece36b75133c17b14",
+        "bytes": 8870,
+        "sha256": "ee780295ea796509bbfdf92688ddd522144cd38f0fb82925a8ca31acfdaf4b12",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/company-search/sources.json",
+        "git_blob": "d5e4dff2d492d857c5ff1d95cfe2e6031b6fe70e",
+        "bytes": 1059,
+        "sha256": "bfb7a21bf7155c75de78cd1a7229f6773901c3002099611a794858774b045fcf",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/README.md",
+        "git_blob": "d0671e607ce253ce0cbd714735fdada13e0e3a32",
+        "bytes": 4804,
+        "sha256": "340deee6b52ba5057db8bd2baaf277039b368384dd98ef97e5a42e6a9109efa4",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/consumer-results.json",
+        "git_blob": "c6c5f2f1c906f3c68c7614582ee3459fd17e7148",
+        "bytes": 6923,
+        "sha256": "56879ace78960ab25b92873b4d9b65978c4d6a33aa5eb57966c14d24027ca561",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/probe-consumer.mjs",
+        "git_blob": "bb8240913c0d08108fa993e762b7321847215f72",
+        "bytes": 8395,
+        "sha256": "43351345c7f94c3ab3126517eda581ec834ef1a41ef8539678abf211a3b5a077",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/probe-producer.py",
+        "git_blob": "5a3db68155aa5a8446b7dc27e31d920ad354c4c4",
+        "bytes": 4025,
+        "sha256": "2e7a0081c8b1f9ecd8fffb693445f487b5eb54faf99937f8a33a8374b79e2d1a",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/producer-results.json",
+        "git_blob": "0f5409072d29184127bc325f82ce71d80c42ad8c",
+        "bytes": 5776,
+        "sha256": "06d74bc7feefba2cf0a0e37fe44536fdf5eeb3c84d445118623198511c5383f2",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/sources/ForecastPage.tsx",
+        "git_blob": "ef781f5f763ee77a70b15ac9278be9d79357ac88",
+        "bytes": 44147,
+        "sha256": "d8784b341d21e2076f2c58cd485c348c01a3aee01c8f2591b66282e8167f09e0",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/sources/finFormat.ts",
+        "git_blob": "97a7fc601016c5575ebe1531b23c953f9de2aa77",
+        "bytes": 8086,
+        "sha256": "caf690e4d96ae70c47a8a7d2c00fc89dddb5122f3cd72c9e44b781ed50c78f05",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/sources/gen_fund_cn.py",
+        "git_blob": "eaa974c278ded18d4f20b29684fd7cbec2b01f14",
+        "bytes": 59458,
+        "sha256": "2fb10e47869570800ec85a466733e465977c6524fa0253454e9a5e2675e469e7",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/diagnostics/forecast/sources.json",
+        "git_blob": "8088c45ea39bc25f634a5ffee11e1c6b52305d46",
+        "bytes": 2408,
+        "sha256": "967c96a915a369470a8e2d3dc1f51af9af8cf3751339321c05bbee1fc5171783",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      },
+      {
+        "path": "checks/source-link-verification.json",
+        "git_blob": "f60fffb0031596501864b2b9b108720f6fba2f45",
+        "bytes": 46606,
+        "sha256": "3dd22b36d0e28a5efcffbc017bb76412a774415ad4ecc978b481802373e55be8",
+        "status": "BLOB_AND_COMPLETE_BODY_READ_BACK"
+      }
+    ],
+    "ref_update_reconciliation": {
+      "initial_attempt": "MALFORMED_EXPECTED_HEAD_REJECTED_BY_INPUT_VALIDATION",
+      "canonical_head_after_rejection": "e00e87cd0e14a27ab030968b404763cfdbb891e5",
+      "corrected_original_carrier_update": "ACKNOWLEDGED_SUCCESS",
+      "initial_pr_projection": "STALE_OLD_HEAD",
+      "canonical_git_ref_readback": "23766f48fe574793dbdc44b1b05b3a7dd81ba453",
+      "mutation_replayed_after_success": false
+    }
+  },
   "internal_advisory_qa": {
     "roles": [
       "foundation judgment",
@@ -484,13 +804,15 @@
     }
   ],
   "artifact_consistency": {
-    "relative_file_links_checked": 199,
+    "relative_file_links_checked": 201,
     "missing_relative_files": 0,
     "capture_hashes_checked": 8,
     "acceptance_cases": 33,
     "responsive_cases": 12,
     "semantic_oracles": 12,
-    "immutable_linked_targets": 119,
+    "immutable_linked_targets": 121,
     "all_new_source_outputs_reproduced": true
-  }
+  },
+  "continuity_boundary": "Final visual composition is expressly gated on verified joint F01/F02 v1, which remains unreleased. Later production implementation is outside this assignment. Controlled component fixture mounting is blocked in the attempted dependency setup.",
+  "exact_successor_action": "Existing D07 owner reads the verified joint release and reconciled target/writer state, then composes and qualifies the deferred Company/Earnings states. Existing frontend/data owners can run the named fixture and source-contract corrections in their permitted environments."
 }

@@ -2,9 +2,9 @@
   "schema": "d07.pinned-source-target-verification.v1",
   "observed_date_utc": "2026-11-04",
   "scope": "Existence and Git blob identity of immutable source files linked by current D07 Markdown. Semantic findings retain their separate chapters.",
-  "verified": 119,
+  "verified": 121,
   "reused_immutable_target_receipts": 107,
-  "new_or_repinned_reads": 12,
+  "new_or_repinned_reads": 14,
   "previous_receipt_commit": "b0d827361e7adc266079fa0501789fd005d0794c",
   "files": [
     {
@@ -1365,6 +1365,30 @@
       "status": "VERIFIED",
       "blob": "58d9c0f691009e3c94a29341b323062490c9c9dd",
       "receipt": "REUSED_IMMUTABLE_TARGET"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "23766f48fe574793dbdc44b1b05b3a7dd81ba453",
+      "path": "research/design_candidates/production_design_20261102/d07/README.md",
+      "used_by": [
+        "CONTINUATION.md",
+        "README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "c4a4d12414ce6f6f20169c0c97a7a47d91716afe",
+      "receipt": "FROZEN_ARTIFACT_COMPLETE_BODY_READBACK"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "23766f48fe574793dbdc44b1b05b3a7dd81ba453",
+      "path": "research/design_candidates/production_design_20261102/d07/SHA256SUMS",
+      "used_by": [
+        "CONTINUATION.md",
+        "README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "a3a8b4cb79e7bc4489bf1900a63e1ca3e66a7c2c",
+      "receipt": "FROZEN_ARTIFACT_COMPLETE_BODY_READBACK"
     }
   ]
 }
