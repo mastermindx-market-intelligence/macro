@@ -65,3 +65,19 @@ DONE_WHEN: the Paper analytical workflow is visibly implemented with actual sour
 - Macro and beta render different data semantics or beta fails to load versioned assets.
 - Light/Chinese/mobile is claimed from dark-English desktop alone.
 - Generated HTML is hand-patched instead of produced by the existing rendering owner.
+
+## P1 live-path and parent integration observations — 2026-11-04
+
+The connected Chrome session reached both https://www.mastermind-x.com/macro.html and https://beta.mastermind-x.com/macro.html. In beta, the existing Today link opens /macro.html, and the Macro content is embedded in an iframe (observed Chinese title 美国, src about:blank). The original #mx5BtnRisk opens #dlg-risk with rkw-ready on both surfaces. The live before state is the 2026-11-02 snapshot: Caution, 92/100 signal index, 21-session pullback estimate 22%, baseline 18%, limited history, partial internals and dated rotation warning. Beta loaded risk_radar_workspace.css?v=052f114a. This is baseline path proof, not proof of the new implementation.
+
+Local parent qualification:
+- Managed workspace opted into site through scripts/worktree_sparse.py; materialization completed successfully.
+- Existing workspace + envelope integration tests: 64 passed.
+- Immutable component fixture built from 54129b527fd52e0d2db9e023773a6812d5177e7b; installed headless Chromium launch verified.
+- Parent found the old sentiment text directing sizing without validated trade authority. Native dashboard copy now states context rather than validated trade signals, preserves the forward-record accrual qualification, and keeps English/Chinese parity. The existing display-authority assertion was updated to reject the old sizing claim.
+- Preview fixture now loads the separately published fear_euphoria value from site/macrodata/macro_signals.json at the same immutable input commit; no synthesis or invented second gauge.
+- Focused sentiment render checks: 8 passed. A broader sentiment-file run was not a pass: four real-data setup errors (data omitted in this sparse checkout), two insider-engine assertions, and one old sizing-copy assertion. The copy assertion is corrected and the eight render checks pass; engine/data tests are outside this presentation change and have not been claimed green.
+
+Original paid proposal remains rr-paper-ui-build-20261104-c3-01 under this operation, controller87900. Controller delivery/launch attempt are observed; provider START and result remain unconfirmed as of this record. No replacement request has been created.
+
+Protected release remains separate: this source author cannot submit its own formal approval or arm the protected release. A future exact UI PR needs one eligible non-author formal review and conditional arming. Existing #10489 and #10513 retain their own carriers and blockers. Normal Macro render and macro-update publication should propagate this shared component to beta; a separate Terminal release is not presently established as necessary.

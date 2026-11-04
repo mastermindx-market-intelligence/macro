@@ -65,6 +65,9 @@ def render_fixture(output: Path, source_ref: str) -> dict:
             "shadow_escalated": shadow.get("escalated"),
         }
     vm["fear_greed"] = snapshot("site/basketdata/fear_greed.json")
+    # Keep the separately published appetite lens in the immutable fixture too.
+    # The render owner already synthesized it; this harness never recomputes it.
+    vm["fear_euphoria"] = snapshot("site/macrodata/macro_signals.json").get("fear_euphoria")
     vm["vol_weather"] = snapshot("site/basketdata/vol_weather.json")
     vm["leadership_crack"] = snapshot("data/leadership_crack/latest.json")
     pulse = snapshot("site/basketdata/sector_pulse.json")

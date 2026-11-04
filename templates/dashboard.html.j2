@@ -13730,7 +13730,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             <span>{{ t('Greed','贪婪') }}</span>
             <span>{{ t('Euphoria','欣喜') }}</span>
           </div>
-          <div class="rkc-mood-note">{{ t('Use both lenses to size risk — neither is a trade signal.','用两把尺共同控制仓位——两者都不是交易信号。') }}</div>
+          <div class="rkc-mood-note">{{ t('Read both lenses as context; neither is a validated trade signal.','两把尺均为背景参考，都不是经验证的交易信号。') }}</div>
           {# Disagreement line (only when both present and |A-B| >= 25) #}
           {% if _fe_sc is not none and _fg_val is not none and (_fe_sc - _fg_val)|abs >= 25 %}
           <div class="rsx-disagree">
@@ -13814,8 +13814,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
         {# — 8. One merged dialog footer (single as-of for the whole dialog + one caveat line) — #}
         <div class="rsx-dlg-footer">
-          <span class="l-en">Model estimates and mood gauges are display-only context — not forecasts; the response is sizing, not selection; forward records accruing.</span>
-          <span class="l-zh">以上模型估计与情绪读数仅为参考——非预测；应对是仓位控制而非选股；前瞻记录积累中。</span>
+          <span class="l-en">Model estimates and mood gauges provide context, not validated trade signals. Keep horizon, scale and completeness separate. Forward records are accruing.</span>
+          <span class="l-zh">模型估计与情绪读数提供背景参考，并非经验证的交易信号。请区分期限、刻度与数据完整性。前瞻记录积累中。</span>
         </div>
         </div>{# /riskdlg-sentiment #}
         {# MX2-SENTIMENT-END #}        {# — 4. Current rotation + tracked AI-hardware damage cohort — #}
