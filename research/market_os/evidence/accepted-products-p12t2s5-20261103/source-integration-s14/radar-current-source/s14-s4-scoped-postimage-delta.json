@@ -1,0 +1,12 @@
+[
+  {
+    "path": "site/commodities.html",
+    "old": "d872b4c2606c03ccdbe75405858e45309e03ea61",
+    "current": "f402c1f42123ec38ca11dc9c50504c69f0a811f1"
+  },
+  {
+    "path": "templates/dashboard.html.j2",
+    "old": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
+    "current": "4a890c3224898639f680d6b0cefe836a0238d269"
+  }
+]

@@ -1,0 +1,112 @@
+{
+  "task": "P12.T2.S14.S4",
+  "immutable_original_head": "798ad5cb8853b5b37c6409e52909ac39c3deb3d7",
+  "immutable_original_proof": "41805575586/518PASS;actualtested02353d9c/basecb8cad29;notproof of this new composition",
+  "incoming_protected": "e9a88e3cc5e2154b5db73504e41099d502c45c46",
+  "actual_common_base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "both_modified_path_overlap": [],
+  "merge": "clean ordinary local merge, no source resolution/overwrites",
+  "entire_original_own_delta": {
+    "path_count": 246,
+    "all_modes_blobs_preserved": true,
+    "canonical_entries_sha256": "821ba2b1152dd656ee7e216d24ebd3ab2cc7a2d9fe6e405e3b07a9f282faf117"
+  },
+  "entire_incoming_protected_delta": {
+    "path_count": 35,
+    "all_modes_blobs_preserved": true,
+    "canonical_entries_sha256": "7686e64c0656d4cb4dcf2fd98861c0cccb419607799bbef6aa30d0d275ee97ab"
+  },
+  "scoped74": {
+    "unchanged": 72,
+    "changed_context_and_native_paths": [
+      {
+        "path": "site/commodities.html",
+        "old": "d872b4c2606c03ccdbe75405858e45309e03ea61",
+        "current": "f402c1f42123ec38ca11dc9c50504c69f0a811f1"
+      },
+      {
+        "path": "templates/dashboard.html.j2",
+        "old": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
+        "current": "4a890c3224898639f680d6b0cefe836a0238d269"
+      }
+    ],
+    "all_six_CalendarHistory_modes_blobs_unchanged": true
+  },
+  "Radar": {
+    "original_source": "798ad5cb8853b5b37c6409e52909ac39c3deb3d7",
+    "original_proof": "41805575586;518PASS exactoldsource only",
+    "protected": "e9a88e3cc5e2154b5db73504e41099d502c45c46",
+    "merge_base": "52abe2e183833a216267942a99513e6c9cbe062f",
+    "accepted_radar": "095e5cb2a35dbb3998f52fab52ebf3fa78986f2d",
+    "both_changed_paths": [],
+    "radar_all_six_source_native_test_evidence_postimages_exact_accepted": [
+      {
+        "path": "research/evidence/ew_p4_descriptive_ui_20261031/contact-sc-states.png",
+        "mode": "100644",
+        "blob": "7fb8bd13c43a0d054a681c557f32b963ecd844bb",
+        "sha256": "6899e9b12620de8813f588413bf67bc74c5a67c1a3d676ec84f9b4c0a67ddada"
+      },
+      {
+        "path": "research/evidence/ew_p4_descriptive_ui_20261031/receipt.json",
+        "mode": "100644",
+        "blob": "285d395bb7653c630864876a63411de9ca215d15",
+        "sha256": "b5a48fd92581516e010c9a7a44434bcb179467a6859fd5af989284b57ad2e329"
+      },
+      {
+        "path": "research/evidence/ew_p4_descriptive_ui_20261031/shots/sc-unreadable-en-dark-390.png",
+        "mode": "100644",
+        "blob": "193e5aa6664e9195a30c4aed892296612773364f",
+        "sha256": "5eb57c75755390a0daf35a94f3886ac7b4ebe688067ef667dd42a8d41f84f777"
+      },
+      {
+        "path": "site/macro.html",
+        "mode": "100644",
+        "blob": "a092e3801b33e9d6c4227ca4ea0e87ff9c26111c",
+        "sha256": "dc913cfba2a0e98c4c5291bea9b617d842bf5d2f44138225287e5890d4875990"
+      },
+      {
+        "path": "templates/dashboard.html.j2",
+        "mode": "100644",
+        "blob": "4a890c3224898639f680d6b0cefe836a0238d269",
+        "sha256": "dbf09cf36597349029cbd40b1b4387dbb2c2c64483aed03c2bf515251a2b6b49"
+      },
+      {
+        "path": "tests/test_release_radar_date_selection.py",
+        "mode": "100644",
+        "blob": "21b64e44f3876b86f79993fc20180a31735b5e2a",
+        "sha256": "01fea9bf5325262649aeebb5c1eed8ceaecfde3e9c5bac9c961675aaa90a361f"
+      }
+    ],
+    "new_native_emission": "none; accepted protected outputs preserved, no handpatch or producer call",
+    "packet": "S14_S4_FROZEN_LOCAL_COMPOSITION_PACKET.json"
+  },
+  "native_Business": {
+    "all23inputs_assets_unchanged": true,
+    "static_html_sha256": "fb9fc63772787faf97e592bbef4f07f21d0eec379a346a3157e0f5a2296dd2fe",
+    "document_rendered_at": "2026-11-04T08:56:36Z",
+    "no_reemission": true,
+    "all31values_periods_clock_qualification_source_and_output_unchanged": true
+  },
+  "Bonds": "prior qualified body/clocks/CSS unchanged from798;no financial producer",
+  "T11": "entire frozen subtree modes/blobs unchanged;comparator and33exactfragmentexception unchanged",
+  "affected_checks": {
+    "Radar_template_to_current_native_date_selector": "1PASS",
+    "current_protected_Commodity_DOM": "31PASS;OSdenyallnetwork;Node26.5/jsdom26.1,notvisual/hostedNode20"
+  },
+  "changed_risk_adjudication": "No authored runtime/source resolution and no overlapping modified paths. Accepted095e5cb2 Radar sixpostimages and prior six-family implementations preserved exactly; reuse their independent judgments. No additional review restart needed under proportionate execution. Separate-page Forensics runtime/markup/auth untouched;Radar edits confined toexistingrr closure inMacroDashboard.",
+  "consumer_implications": [
+    "Dashboard/nativeMacro receives accepted reactive Radar/date/freshness behavior, exact095 source;no new coupling toForensics standalone page",
+    "new current protected Commodity payload retained, actual DOMcontinuation/currentmembership negatives validated;no source-science/PIT inference",
+    "MacroAPI optionalclockqualification and nativeToday consumer278 remain unchanged;noTerminal dependency orwrites",
+    "History/Bonds/China fullnormalproducer/served obligations remain;no rawVMfabrication ormanualemit"
+  ],
+  "effects": "localmerge+affectedtests only;no push/PR/newCI/refresh/observer/browser/provider/host",
+  "next": "existingCIowner causal route and service qualification before any successorpublication/proof;retain currentcarrier and original518proof",
+  "evidence_sha256": {
+    "S14_S4_FROZEN_LOCAL_COMPOSITION_PACKET.json": "9742cab896d2b2f2b28b3b523418d8aedf7383a054e47d98ad15d644ccd2a2e7",
+    "s14-s4-protected-radar-preservation.json": "fcb06432b083a0fe579cb6d4fd8bc7314cba66b2f0774998b12ec4c96e019d61",
+    "s14-s4-scoped-postimage-delta.json": "a3686041c07382497d8a0dede9b7b3dd0112bcacb6d9aea02603ff704dac1d9c",
+    "s14-s4-radar-native-seam.log": "301726226808a7f1ac42e1954c02d76b997669504cb7109194b64a05e1f31b1f",
+    "s14-s4-current-commodity-dom.log": "225a6db1a3c32fd2bd0cd2e877ca0faec02e526aafd96fb4c01980a744e2e267"
+  }
+}
