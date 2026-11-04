@@ -1375,6 +1375,7 @@ class BrainChatRequest(BaseModel):
     history: list[dict] | None = Field(None, description="Client-sent fallback history (max 12 turns; used only when thread store is absent)")
     context: dict | None = Field(None, description="Optional page/symbol context hint")
     company_source_span: dict | None = Field(None, description="Optional closed exact-source reference; source bytes are never accepted from the client")
+    options_question_reference: dict | None = Field(None, description="Closed pinned Options selection reference; no policy or source bytes")
     mode: str = Field("chat", description="'chat' (default) or 'research' (W6b Deep Research — forces pro lane, raises tool budget, structured multi-section cited report; requires pro quota)")
     images: list[str] | None = Field(None, max_length=4, description="Optional image attachments (W6c vision) — base64 data URIs or https URLs; served by a vision model (Haiku on Fast, Opus on Pro). Invalid/oversized dropped. Max 4.")
 
@@ -1626,6 +1627,8 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         history=history,
         context=body.context,
         company_source_span=body.company_source_span,
+        options_question_reference=body.options_question_reference,
+        options_question_runtime=getattr(request.app.state, "options_question_gateway_runtime", None),
         root=REPO,
         mode=mode,
         images=body.images,
@@ -1701,6 +1704,8 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             history=history,
             context=body.context,
             company_source_span=body.company_source_span,
+            options_question_reference=body.options_question_reference,
+            options_question_runtime=getattr(request.app.state, "options_question_gateway_runtime", None),
             root=REPO,
             mode=mode,
             images=body.images,

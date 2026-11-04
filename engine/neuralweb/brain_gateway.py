@@ -13687,6 +13687,9 @@ def chat(
     guest_ip: str = "",
     account_prefs: dict | None = None,
     user_jwt: str = "",
+    options_question_reference: dict | None = None,
+    options_question_runtime=None,
+    _options_question_channel: str = "/api/brain/chat",
 ) -> dict:
     """Process a brain chat request (non-streaming).
 
@@ -13795,6 +13798,12 @@ def chat(
         # after the pro-eligibility, quota, prescreen and selection gates, so a refused
         # turn performs no user-plane I/O.
 
+    if options_question_reference is not None and (
+            is_guest or not user_jwt or mode != "chat" or _grounded
+            or company_source_span is not None or images or history or thread_id):
+        return {"ok": False, "error": "options_question_unavailable", "lane": lane,
+                "model": "none", "thread_id": None, "citations": [], "degraded": True}
+
     # Exact source grounding is a request-scoped authorization + deterministic
     # resolution gate.  It deliberately precedes quota/provider work and keeps
     # resolved source bytes outside `context`, thread persistence, and response logs.
@@ -13852,6 +13861,41 @@ def chat(
                 "upgrade": "/plans.html",
             }
         return {"quota_exhausted": True, "lane": lane, "tier": tier, "upgrade": "/plans.html"}
+
+    if options_question_reference is not None:
+        # Dedicated exact-source path. Never fall through to generic context,
+        # provider fallback, persistence or tool loops on any failure.
+        try:
+            from engine.neuralweb.options_question_gateway import answer_question, OptionsQuestionRuntime
+            if (type(options_question_runtime) is not OptionsQuestionRuntime
+                    or options_question_runtime.enabled is not True):
+                raise ValueError("options question not activated")
+            if _prescreen_message(clean_msg) is not None:
+                raise ValueError("screened")
+            answer = answer_question(
+                reference=options_question_reference, message=clean_msg,
+                access_token=user_jwt, user_id=user_id,
+                providers=_build_lane_providers(lane, root),
+                runtime=options_question_runtime, channel=_options_question_channel,
+                max_tokens=max_tokens,
+            )
+            reply, filtered = _post_filter_advice(answer["reply"], [])
+            reply = _leak_screen(reply)
+            usage = answer["usage"]
+            _record_token_usage(user_id, lane, usage["input_tokens"], usage["output_tokens"])
+            return {"ok": True, "reply": reply, "citations": [], "lane": lane,
+                    "model": answer["model"], "thread_id": None, "quota": quota_info,
+                    "usage": usage, "filtered": filtered, "degraded": False,
+                    "is_context_only": True, "options_question_receipt": answer["receipt"]}
+        except Exception as exc:
+            if getattr(exc, "effect_unknown", False) is True:
+                return {"ok": False, "error": "options_question_dispatch_effect_unknown",
+                        "dispatch_state": "EFFECT_UNKNOWN", "retry_allowed": False,
+                        "lane": lane, "model": "none", "thread_id": None,
+                        "quota": quota_info, "citations": [], "degraded": True}
+            return {"ok": False, "error": "options_question_unavailable", "lane": lane,
+                    "model": "none", "thread_id": None, "quota": quota_info,
+                    "citations": [], "degraded": True, "is_context_only": True}
 
     # 3b. Input pre-screen (PART B) — runs AFTER the quota increment (probes consume quota,
     #     deterring probing loops) and BEFORE any provider is built (no tokens spent). The
@@ -14261,6 +14305,8 @@ def chat_stream(
     guest_ip: str = "",
     account_prefs: dict | None = None,
     user_jwt: str = "",
+    options_question_reference: dict | None = None,
+    options_question_runtime=None,
 ) -> Generator[str, None, None]:
     """Process a brain chat request (streaming). Yields SSE strings per contract.
 
@@ -14282,6 +14328,25 @@ def chat_stream(
                 chat()'s docstring. Server-derived, never from the body; {} for a guest.
     On quota exhaustion or error, yields a done event with appropriate flags.
     """
+    if options_question_reference is not None:
+        result = chat(
+            message=message, user_id=user_id, lane=lane, thread_id=thread_id,
+            history=history, context=context, company_source_span=company_source_span,
+            root=root, mode=mode, images=images, device_key=device_key,
+            user_email=user_email, is_guest=is_guest, guest_aid=guest_aid,
+            guest_ip=guest_ip, account_prefs=account_prefs, user_jwt=user_jwt,
+            options_question_reference=options_question_reference,
+            options_question_runtime=options_question_runtime,
+            _options_question_channel="/api/brain/stream",
+        )
+        yield "data: " + json.dumps({"type": "meta", "lane": lane,
+                "model": result.get("model", "none"), "thread_id": None,
+                "quota": result.get("quota", {})}) + "\n\n"
+        if result.get("ok") and result.get("reply"):
+            yield "data: " + json.dumps({"type": "delta", "text": result["reply"]}) + "\n\n"
+        yield "data: " + json.dumps({"type": "done", **result}) + "\n\n"
+        return
+
     from lib import ai_costs as _ac  # noqa: PLC0415
 
     # W3: server-owned turn block installed (and any forged one stripped) before use.
