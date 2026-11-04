@@ -70,8 +70,22 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
   <section id="ox-scenario" class="ox-company" aria-labelledby="ox-scenario-title">
     <h2 id="ox-scenario-title">{{ t('Explicit scenario assumption', '明确情景假设') }}</h2>
     <p class="ox-note">{{ t('Live Trace remains observed. This separate evaluation uses your assumption.', '实时路径仍表示观测结果。此独立评估使用您的假设。') }}</p>
-    <form class="ox-company-form" data-scenario-form autocomplete="off"></form>
-    <div data-scenario-result aria-live="polite" aria-busy="false"></div>
+    <form class="ox-company-form" data-scenario-form autocomplete="off">
+      <label class="ox-company-label">{{ t('Assumed input', '假设输入') }}
+        <select name="node" disabled><option value="yahoo:CL=F" data-en="WTI oil" data-zh="WTI 原油">{{ t('WTI oil', 'WTI 原油') }}</option><option value="transmission:real10y_chg63" data-en="10-year real yield change" data-zh="10年期实际收益率变化">{{ t('10-year real yield change', '10年期实际收益率变化') }}</option></select>
+      </label>
+      <label class="ox-company-label">{{ t('Assumed change (%)', '假设变化（%）') }}<input name="magnitude" type="number" step="any" required autocomplete="off" disabled></label>
+      <label class="ox-company-label">{{ t('Assumed path', '假设路径') }}
+        <select name="shape" disabled><option value="terminal_only" data-en="Terminal value only" data-zh="仅指定期末值">{{ t('Terminal value only', '仅指定期末值') }}</option><option value="linear_sessions" data-en="Linear over owner sessions" data-zh="按数据方交易日线性变化">{{ t('Linear over owner sessions', '按数据方交易日线性变化') }}</option><option value="step_at_start" data-en="Immediate step held to horizon" data-zh="期初跳变并维持至期末">{{ t('Immediate step held to horizon', '期初跳变并维持至期末') }}</option></select>
+      </label>
+      <label class="ox-company-label">{{ t('Assumed origin', '假设来源') }}
+        <select name="origin" disabled><option value="unspecified" data-en="Unspecified" data-zh="未指定">{{ t('Unspecified', '未指定') }}</option><option value="supply" data-en="Supply" data-zh="供给">{{ t('Supply', '供给') }}</option><option value="demand" data-en="Demand" data-zh="需求">{{ t('Demand', '需求') }}</option><option value="residual" data-en="Residual" data-zh="残差">{{ t('Residual', '残差') }}</option></select>
+      </label>
+      <p class="ox-note" data-scenario-horizon>{{ t('WTI: 60 owner sessions. Future sessions must come from its owner; none are guessed.', 'WTI：60个数据方交易日。未来交易日必须由数据方提供，不作推测。') }}</p>
+      <button class="ox-cta" type="submit" disabled>{{ t('Evaluate assumption', '评估假设') }}</button>
+      <button class="ox-cta secondary" type="button" data-scenario-clear disabled>{{ t('Clear assumption', '清除假设') }}</button>
+    </form>
+    <div data-scenario-result data-state="module_unavailable" aria-live="polite" aria-busy="false"><p class="ox-note">{{ t('Scenario evaluation is unavailable because its controls have not initialized. The observed path remains available; no evaluation has run.', '情景评估暂不可用，因为控件尚未初始化。仍可查看已观测路径；尚未运行任何评估。') }}</p></div>
   </section>
 
   <section id="ox-portfolio" class="ox-company" aria-labelledby="ox-portfolio-title">
@@ -87,8 +101,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
       <button class="ox-cta" type="button" data-portfolio-read disabled>{{ t('Read my Portfolio', '读取我的投资组合') }}</button>
       <button class="ox-cta secondary" type="button" data-portfolio-clear>{{ t('Clear reading', '清除读数') }}</button>
     </div>
-    <div data-portfolio-result aria-live="polite" aria-busy="false">
-      <p class="ox-note">{{ t('Load a current path reading before reading your Portfolio.', '请先加载当前路径读数，再读取投资组合。') }}</p>
+    <div data-portfolio-result data-state="module_unavailable" aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Portfolio comparison is unavailable because its controls have not initialized. The observed path remains available; no saved data has been read.', '投资组合对照暂不可用，因为控件尚未初始化。仍可查看已观测路径；尚未读取任何已保存数据。') }}</p>
     </div>
   </section>
 

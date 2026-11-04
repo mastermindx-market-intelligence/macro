@@ -156,6 +156,8 @@ export function mountScenario(root) {
   let unsupportedOwner = null;
   let eventOwner = canonical();
   function select(name, label, options) {
+    const existing = form.querySelector('select[name="' + name + '"]');
+    if (existing) return existing;
     const wrap = document.createElement('label'); wrap.className = 'ox-company-label'; wrap.append(words(...label));
     const control = document.createElement('select'); control.name = name;
     for (const [value, en, zh] of options) {
@@ -165,15 +167,17 @@ export function mountScenario(root) {
     wrap.append(control); form.append(wrap); return control;
   }
   const node = select('node', ['Assumed input', '假设输入'], [['yahoo:CL=F', 'WTI oil', 'WTI 原油'], ['transmission:real10y_chg63', '10-year real yield change', '10年期实际收益率变化']]);
-  const label = document.createElement('label'); label.className = 'ox-company-label'; label.append(words('Assumed change (%)', '假设变化（%）'));
-  const magnitude = document.createElement('input'); magnitude.name = 'magnitude'; magnitude.type = 'number';
-  magnitude.step = 'any'; magnitude.required = true; magnitude.autocomplete = 'off'; label.append(magnitude); form.append(label);
+  const magnitude = form.querySelector('input[name="magnitude"]') || document.createElement('input');
+  const label = magnitude.closest('label') || document.createElement('label'); label.className = 'ox-company-label';
+  magnitude.name = 'magnitude'; magnitude.type = 'number'; magnitude.step = 'any'; magnitude.required = true; magnitude.autocomplete = 'off';
+  label.replaceChildren(words('Assumed change (%)', '假设变化（%）'), magnitude); if (!label.parentNode) form.append(label);
   const shape = select('shape', ['Assumed path', '假设路径'], [['terminal_only', 'Terminal value only', '仅指定期末值'], ['linear_sessions', 'Linear over owner sessions', '按数据方交易日线性变化'], ['step_at_start', 'Immediate step held to horizon', '期初跳变并维持至期末']]);
   const origin = select('origin', ['Assumed origin', '假设来源'], [['unspecified', 'Unspecified', '未指定'], ['supply', 'Supply', '供给'], ['demand', 'Demand', '需求'], ['residual', 'Residual', '残差']]);
   let previousNode = node.value;
-  const horizon = text('WTI: 60 owner sessions. Future sessions must come from its owner; none are guessed.', 'WTI：60个数据方交易日。未来交易日必须由数据方提供，不作推测。'); form.append(horizon);
-  const submit = document.createElement('button'); submit.type = 'submit'; submit.className = 'ox-cta'; submit.append(words('Evaluate assumption', '评估假设')); form.append(submit);
-  const clearButton = document.createElement('button'); clearButton.type = 'button'; clearButton.className = 'ox-cta secondary'; clearButton.append(words('Clear assumption', '清除假设')); form.append(clearButton);
+  const horizon = form.querySelector('[data-scenario-horizon]') || text('WTI: 60 owner sessions. Future sessions must come from its owner; none are guessed.', 'WTI：60个数据方交易日。未来交易日必须由数据方提供，不作推测。');
+  if (!horizon.parentNode) form.append(horizon);
+  const submit = form.querySelector('button[type="submit"]') || document.createElement('button'); submit.type = 'submit'; submit.className = 'ox-cta'; submit.replaceChildren(words('Evaluate assumption', '评估假设')); if (!submit.parentNode) form.append(submit);
+  const clearButton = form.querySelector('[data-scenario-clear]') || document.createElement('button'); clearButton.type = 'button'; clearButton.className = 'ox-cta secondary'; clearButton.replaceChildren(words('Clear assumption', '清除假设')); if (!clearButton.parentNode) form.append(clearButton);
   function status(state) {
     output.replaceChildren(); output.dataset.state = state; output.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
     const copy = {
@@ -350,7 +354,8 @@ export function mountScenario(root) {
   root.addEventListener('ontology-reading', receive); root.addEventListener('ontology-source-changed', invalidate);
   window.addEventListener('mdx-auth', auth); window.addEventListener('pagehide', invalidate); document.addEventListener('visibilitychange', hidden); document.addEventListener('langchange', language);
   form.addEventListener('submit', evaluate); form.addEventListener('input', input); form.addEventListener('change', input); clearButton.addEventListener('click', clearClick);
-  status('no_reading'); root.dispatchEvent(new CustomEvent('ontology-consumer-ready'));
+  node.disabled = magnitude.disabled = origin.disabled = clearButton.disabled = false;
+  changedNode(); status('no_reading'); root.dispatchEvent(new CustomEvent('ontology-consumer-ready'));
   return { clear: clearClick, dispose() { disposed = true; invalidate(); output.replaceChildren(); subscription?.unsubscribe();
     root.removeEventListener('ontology-reading', receive); root.removeEventListener('ontology-source-changed', invalidate);
     window.removeEventListener('mdx-auth', auth); window.removeEventListener('pagehide', invalidate); document.removeEventListener('visibilitychange', hidden); document.removeEventListener('langchange', language);
