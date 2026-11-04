@@ -55,7 +55,15 @@ The real manifest also passed `scripts/run_ci_pack.py --workflow .github/ci/lega
 
 ## CI ownership
 
-The new test is registered in the existing `unrun-template-chips` code-gate job as one separate step. The suite and test package initializer are explicitly declared; the existing CI owner infers the builder and runtime dependencies. The existing Foresight page-reader job and command are unchanged.
+The new test is registered in the existing `unrun-template-chips` code-gate job. The suite and test package initializer are explicitly declared; the existing owner infers the builder and runtime dependencies. The existing Foresight page-reader job and command are unchanged.
+
+The first committed candidate `1e9931e0a78e0e15b8714b3a11465440f508e4fa` failed the actual differential gate: three introduced packing-probe findings, each +3 weight-seconds, with zero inherited findings and no newly selected jobs. Its complete receipt is retained under `diagnostics/contract-delta-initial.*`.
+
+The repair combines the new suite with the existing Macro header, OKX retail and CN risk-backdrop suites in one pytest invocation. Every test path and assertion remains; the separate HK `-k` filter and all other commands remain intact. The exact combined command passed **40 tests**. The existing owner's measured job weight is **31 before / 31 after**. No weight override, scope relaxation, budget ceiling, skip, new job or controller change was introduced. The complete differential gate is rerun on the committed repair before publication; its receipt supersedes the initial rejection.
+
+```text
+python -m pytest tests/test_macro_header_compact.py tests/test_okx_retail.py tests/test_w5b_edge_chips.py tests/test_build_foresight_vintage.py -q
+```
 
 The final manifest validates all 384 job definitions. The unchanged owner functions derive 1,085 owned paths for the affected job; selection succeeds for the builder, new suite, page writer, shared-shell helper, site-asset helper, scripts initializer, and tests initializer. The only changed logical job is `unrun-template-chips`; no curated exclusive job changes. See `ci-job-scope.json` and `ci-manifest-final.txt`.
 
@@ -69,3 +77,9 @@ The final manifest validates all 384 job definitions. The unchanged owner functi
 - An initial curated-job placement exposed 132 transitive dependency declarations. The final registration uses the existing inferred code-gate owner; its earlier placement, missing suite declaration, and missing initializer trigger probes remain diagnostics, not acceptance receipts.
 - Nine trailing-whitespace-only lines in the red log were normalized for repository hygiene; assertion messages and outcomes are unchanged.
 - Draft/HOLD remains: no Ready, un-draft, labels, enqueue, auto-merge, merge or deploy. Final F01/F02 joint v1 and formal release gates remain separate.
+
+## Current recovery qualification
+
+After source candidate `1e9931e0`, a material account-authority/continuity update was observed. Protected Mastermind pin was refreshed to `cb8fa9132770b1967d585e323dd72b145c580601` with compatible INDEX/kernel and same-pin companions. Original implementation proof retains its original pin; explicit Draft/HOLD and actual tool/writer/effect boundaries remain.
+
+A full parent-thread and original-host census found **T41 already claimed** in parent comment 6626580297, with an unpublished Radar coverage workspace. It was preserved without a competing edit. The next independent pickup is **T44 evidence-only acceptance proof**, recorded at https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6627822417 . Existing Winner computation and held #7073 changes are not rewritten.

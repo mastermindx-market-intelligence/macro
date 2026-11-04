@@ -44,3 +44,10 @@ Pickup: https://github.com/mastermindx-market-intelligence/macro/pull/10617#issu
 4. The T41 producer/test paths overlap active Radar #10720 (head observed `c54c36409efba413f1eef747852fda86579e3caf`). Preserve that original carrier and its publication repair. Perform fresh source/custody and Paper inspection before taking an authorized design or implementation slice.
 
 Classification at this source checkpoint: MORE_WORK_EXISTS. Continue in the same healthy session after verified publication. No release action is authorized: no Ready, un-draft, labels, enqueue, auto-merge, merge or deploy.
+
+## Later same-session update — supersedes the prepublication next actions above
+
+- Current protected pin: `cb8fa9132770b1967d585e323dd72b145c580601`; see SOURCE_PIN_REFRESH.json. Original implementation remains bound to its original qualified pin.
+- The actual differential gate rejected initial candidate `1e9931e0a78e0e15b8714b3a11465440f508e4fa` for three +3 weight-second packing overruns. No production defect or newly selected job was reported. The CI-only repair combines four compatible suites; exact combined command40 passed; owner weight restored to baseline31. Rerun the actual differential gate on the repair, then publish the original branch as Draft/HOLD.
+- T41 has an existing unpublished owner at `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-coverage-denominator-20261104-c2-22cfb170fbfe93e0`, matching parent6626580297. Do not start a competing T41 slice.
+- T44 proof-only pickup is durable at parent6627822417. Admitted workspace `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-winner-t44-proof-20261104-c2-05a1d4b6b06d54cc`, branch `claude/ssd-d03-winner-t44-proof-20261104-c2-05a1d4b6b06d54cc`, base `ffda5424b75bbbb26e33a4d328043bbfb480e6ff`. No T44 product source has changed. Exact N=11/12 × W/D browser proof is the independent next action while T38's gate runs.

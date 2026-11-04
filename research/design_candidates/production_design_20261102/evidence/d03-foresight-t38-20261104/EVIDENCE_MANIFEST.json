@@ -12,30 +12,38 @@
       "sha256": "5286f0e85a21cb3bb08e2f16ae43f17302becc23b278e2ec8190232741778925"
     },
     ".github/ci/legacy-jobs.yml": {
-      "bytes": 2589429,
-      "sha256": "d15215d748bf8e8ede3ecb285345ed3fd7215beac758ace6d147d214d1be3f95"
+      "bytes": 2589092,
+      "sha256": "faaf63525889e86bec3c8a63dc0557239e0ab22f0ce86a537241e996f0cb7287"
     }
   },
   "evidence_files": {
     "CONTINUATION.md": {
-      "bytes": 3954,
-      "sha256": "b9f2999872a73e572205bfbeda90bd3ac8327d758bd726ca2b9037f8250e661f"
+      "bytes": 5295,
+      "sha256": "47d84a4aa67b1e15b47d76613627c158a2a04ea85a0901b05dcb79916ad16484"
     },
     "MAIN_COMPARISON.json": {
       "bytes": 1866,
       "sha256": "3e69eab9c443b1dfa4d7f54847c6eb0e57bd8fe34baa0687c834360a8bb8cf65"
     },
     "README.md": {
-      "bytes": 7600,
-      "sha256": "32afc7b1293cb296eac563dd843f0b6fb9972ceb72f8e0a22f7e4f40a49b2b5e"
+      "bytes": 9477,
+      "sha256": "19c95298b9835e005dbf628d248d371d1eff0b52f9398647daa43101e9e0f102"
+    },
+    "SOURCE_PIN_REFRESH.json": {
+      "bytes": 1615,
+      "sha256": "7ea70e4ce0845030fa6be49dbd3d20577a214e482a834ee349acbd5e4ffc4093"
     },
     "ci-job-scope.json": {
       "bytes": 1762,
       "sha256": "6e77fb1e23ce8dc594f7b212da057d45d19024c934e6699478b1411d3a216345"
     },
     "ci-manifest-final.txt": {
-      "bytes": 4808,
-      "sha256": "b037e78c18736e9527e2a7b49c0736cf2af4181d5340d24e199b8ee24cdb5561"
+      "bytes": 4881,
+      "sha256": "02a0e6adeee6279b73b0bff5105a230283083e5c1683b9d8ff2bf04c1525d4a0"
+    },
+    "ci-weight-repair.json": {
+      "bytes": 406,
+      "sha256": "19a514862a427ea5cb2758433feb5a8484e73a876200bbc12d86869ba403d14b"
     },
     "diagnostics/ci-catalog-scan-interrupted.txt": {
       "bytes": 281,
@@ -57,9 +65,21 @@
       "bytes": 197,
       "sha256": "b4819116cea9b4e178bf43b73967f980f00b745bf203995da88d1e693ccb5638"
     },
+    "diagnostics/contract-delta-initial.json": {
+      "bytes": 322,
+      "sha256": "1233d2d61488345af0725498921b941555db9225c16fcaa5ab06fe700eada334"
+    },
+    "diagnostics/contract-delta-initial.txt": {
+      "bytes": 2569,
+      "sha256": "9f7ebcc16df5679cdab8cbefc654d0f3a0455033e68ddd2ac0b27e791ebddf1c"
+    },
     "diagnostics/pytest-green-before-fixture-hardening.txt": {
       "bytes": 99,
       "sha256": "da6208654e5e7b8bd95a55c4c4eef00a453534df5b40840fcc9f3a1a04bd912f"
+    },
+    "pytest-combined-ci.txt": {
+      "bytes": 100,
+      "sha256": "2f9e07fdc96951aacece2bcce0228e28e8a5a668a98fc51006589191c77c068c"
     },
     "pytest-final.txt": {
       "bytes": 99,
@@ -72,5 +92,6 @@
   },
   "red_log_normalization": "nine trailing-whitespace-only lines; assertions/outcomes unchanged",
   "runtime_python": "3.14.7",
-  "publication_policy": "Draft/HOLD; no release effects"
+  "publication_policy": "Draft/HOLD; no release effects",
+  "continuation_source_pin": "cb8fa9132770b1967d585e323dd72b145c580601"
 }
