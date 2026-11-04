@@ -102,20 +102,32 @@ try:
                     page.on("pageerror",lambda e:errors.append(str(e)))
                     page.on("response",lambda r:responses.append({"url":r.url,"status":r.status}) if r.status>=400 else None)
                     page.goto(origin+"/us_stocks.html",wait_until="domcontentloaded",timeout=60000)
-                    page.locator("#us-today-grid > .po-card").first.wait_for(state="visible",timeout=30000)
+                    # Public Featured may correctly expose 0 of 12. A missing
+                    # card is not a browser timeout: bind to the native pair's
+                    # verified public membership, and inspect the explicit
+                    # access-empty region instead of fabricating a card.
+                    if summary["public_today_articles"] == 0:
+                        page.locator("#us-today .mx-today-access-empty").wait_for(state="visible",timeout=30000)
+                        assert page.locator("#us-today-grid > .po-card").count() == 0
+                        assert page.locator("#us-today .mx-today-access-cta").is_visible()
+                    else:
+                        page.locator("#us-today-grid > .po-card").first.wait_for(state="visible",timeout=30000)
                     page.evaluate("document.fonts.ready")
                     page.wait_for_timeout(1500)
                     metrics=page.evaluate("""() => {
                       const grid=document.querySelector('#us-today-grid');
-                      const cards=[...grid.querySelectorAll(':scope > .po-card')];
-                      const rect=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}};
+                      const empty=document.querySelector('#us-today .mx-today-access-empty');
+                      const cards=grid?[...grid.querySelectorAll(':scope > .po-card')]:[];
+                      const rect=el=>{if(!el)return null;const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}};
                       return {
                         viewport:innerWidth,documentWidth:document.documentElement.scrollWidth,
                         bodyWidth:document.body.scrollWidth,pageHeight:document.documentElement.scrollHeight,
                         h1:document.querySelector('h1')?.innerText,
                         theme:document.documentElement.getAttribute('data-theme'),
                         lang:document.documentElement.lang,
-                        grid:rect(grid),columns:getComputedStyle(grid).gridTemplateColumns,
+                        grid:rect(grid),columns:grid?getComputedStyle(grid).gridTemplateColumns:null,
+                        empty:empty?{rect:rect(empty),text:empty.innerText.slice(0,300)}:null,
+                        protectedControls:document.querySelectorAll('[data-pvs-plan-target]').length,
                         cards:cards.map(c=>({ticker:c.dataset.ticker,rect:rect(c),text:c.innerText.slice(0,250)})),
                         headings:[...document.querySelectorAll('h1,h2,h3')].filter(e=>e.getClientRects().length).map(e=>({text:e.innerText,y:e.getBoundingClientRect().y})),
                         visibleDialogs:[...document.querySelectorAll('[role=dialog]')].filter(e=>e.getClientRects().length).length
@@ -128,9 +140,14 @@ try:
                     row={"case":label,"metrics":metrics,"page_errors":errors,
                          "failed_local_responses":responses,"blocked_external_urls":sorted(set(denied)),
                          "screenshot":full.name,"screenshot_sha256":hashlib.file_digest(full.open("rb"),"sha256").hexdigest()}
+                    assert metrics["protectedControls"] == 0, (label,"protected Plan control in public HTML")
+                    assert metrics["documentWidth"] <= width, (label,"horizontal overflow",metrics["documentWidth"])
+                    assert not errors, (label,"page errors",errors)
+                    assert bool(metrics["empty"]) == (summary["public_today_articles"] == 0), (label,"public state mismatch")
                     summary["cells"].append(row)
                     (OUT/"observations.json").write_text(json.dumps(summary,indent=2,ensure_ascii=False))
-                    print("CAPTURE",label,"first_card_y",round(metrics["cards"][0]["rect"]["y"],1),
+                    first_y=round(metrics["cards"][0]["rect"]["y"],1) if metrics["cards"] else None
+                    print("CAPTURE",label,"access_empty",bool(metrics["empty"]),"first_card_y",first_y,
                           "overflow",metrics["documentWidth"]-width,"page_errors",len(errors),flush=True)
                     context.close()
         browser.close()
