@@ -22,7 +22,7 @@ reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
 
 ## Complete the original ship chain
 
-This Claude session does not count a Draft, PR, review request, CI wait or handoff as **completed delivery**. Existing `merge-on-green` + verified `CI_HANDOFF` can delegate only a proven idle wait with real return/repair ownership, never `PROVEN_OUTCOME`; the unconditional stop decision is superseded by `DEC:SESSION-OWNED-REVIEW-20261103`. Follow the root [finish-to-release rule](AGENTS.md#finish-to-release-no-draft-graveyard): fix failed checks, advance a qualified Ready candidate, meet real review/hold gates and use the existing protected publisher when eligible, then verify exact merge and consumer proof. Preserve no-self-merge/no-self-approval and other effect boundaries. Do not create a successor PR or stop merely because a PR was published.
+This Claude session does not count a Draft, PR, review request, CI wait or handoff as **completed delivery**. Existing `merge-on-green` plus a **verified actual controller/return path** can delegate only a proven idle wait; current protected main has no `scripts/ci_handoff.py` CLI, never `PROVEN_OUTCOME`; the unconditional stop decision is superseded by `DEC:SESSION-OWNED-REVIEW-20261103`. Follow the root [finish-to-release rule](AGENTS.md#finish-to-release-no-draft-graveyard): fix failed checks, advance a qualified Ready candidate, meet real review/hold gates and use the existing protected publisher when eligible, then verify exact merge and consumer proof. Preserve no-self-merge/no-self-approval and other effect boundaries. Do not create a successor PR or stop merely because a PR was published.
 
 ## Permanent visual rule
 
