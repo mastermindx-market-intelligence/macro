@@ -50,6 +50,8 @@ Immediately before hide, detach, reparent, inertness or modal-placement changes,
 
 Portal and embedded-surface ownership must come from the existing host contract. Do not inspect private cross-origin state or invent another focus coordinator. Capture must precede layout mutation; later BODY focus cannot reconstruct user intent.
 
+Recheck ownership and the current presentation intent immediately before applying a deferred transition. An established competing modal or confirmation owns input even when its content is inside the inspector's DOM subtree. If the captured ownership or intent no longer applies, do not commit its focus, inertness or resource changes; use the existing owner's qualified arbitration outcome. A previously captured inspector target does not authorize acting on a later layer.
+
 ## 4. Proposed transition contract
 
 | Event and established ownership | Proposed presentation outcome | Preserved context and resource duty |
@@ -66,15 +68,25 @@ Portal and embedded-surface ownership must come from the existing host contract.
 
 A native dialog `close` operation used to leave modal placement must not execute user-dismissal effects. It must not clear selection, return to an outside trigger, mark a request stopped or retire retained evidence intent. Keep one presented accessible inspector; framework movement/remount must preserve domain state in the existing owner and may not create another request/save lifecycle. No duplicate Escape handlers may act on the same event.
 
+Adaptation must also preserve an active editable session while its logical control remains valid: current text, caret/selection and ongoing composition. A passive resize must not itself commit, cancel, duplicate or discard input. A gesture already owned by composition or the existing control must not become activation or dismissal in the new presentation. Preserving application-state text alone does not establish preservation of an OS composition session. An implementation that cannot preserve the session needs a qualified existing-owner outcome before this automatic path can be adopted; §7's prohibition on an indefinitely invalid-width dock still applies.
+
+Qualification must observe focus and modal resources during the transition, not only after restoration. Whenever input can be delivered, its qualified owner must not leave focus in a hidden/inert control. Adaptation may release only its own trap, inertness and scroll lock, including when another owner becomes active during the transition.
+
 ### 4.2 Visible control, logical anchor, then compatible raw scroll
 
 Preserve local scroll where possible. If height shrink, zoom or reflow would hide the retained logical control, make the minimum necessary adjustment in the inspector's own scroll container. Do not reset the primary task to the top. Record logical-anchor preservation and raw offsets separately. Exact raw offset cannot take precedence over visible, reachable focus.
+
+Resolve the retained control by logical identity in the current presentation, including its selected object where applicable. Connectivity alone is insufficient: a node that is hidden, inert, disabled or bound to a different logical control/object is not a valid target. Inspector-owned adaptation uses the named in-inspector fallback when the control is invalid. If responsive reflow invalidates primary-task focus during suspension, its existing task owner must supply a named primary-task fallback; do not move focus into evidence or report BODY as preserved focus. Retain the task's input state through its existing owner. An unbound fallback leaves that transition unqualified under §7.
 
 This precedence is an F01 clarification for candidate.5; the earlier F02 response did not independently qualify it. A primary input's caret/selection remains protected in the deliberate-primary branch. Composition/remount handling requires real input-path proof; synthetic composition flags alone do not qualify OS IME behavior.
 
 ### 4.3 Reopen is an explicit, current intent
 
-If identity/access validation is asynchronous, its completion may present evidence only while the same explicit reopen intent, route, owner and selected identity remain current. A later close, navigation, different selection or competing modal prevents that completion from resurrecting the inspector. Retiring presentation intent does not itself cancel the underlying request.
+If identity/access validation is asynchronous, its completion may present evidence only while the same explicit reopen intent, route, owner and retained evidence selection remain current. The binding must distinguish selection replacement from equality of object IDs: after A→B→A, a retired completion for the first A stays retired. The incumbent domain's selection contract determines which changes replace retained evidence; primary focus or an unrelated cursor is not a substitute.
+
+Before applying the result, the existing owner verifies that its source/access validation context remains applicable under domain semantics; otherwise it revalidates or presents the existing changed/stale/denied outcome. This does not prescribe a universal generation-equality rule or a new selection store.
+
+A later evidence dismissal, navigation, replacing selection or competing presentation request accepted by the existing host retires the pending reopen intent. Acceptance of a competing request does not acknowledge visibility or closure; failure of that request does not automatically revive the retired reopen. An unresolved acceptance/arbitration binding remains held under §7. Retiring presentation intent does not itself cancel the underlying request.
 
 Loading, stale, changed, missing, denied and error states retain the incumbent domain's semantics and source clock. The shell must not call stale content fresh, retry a denied action, replace unknown access with a premium/public claim, or invent an API to support the presentation.
 
@@ -88,7 +100,8 @@ Each adopting domain must name the actual persistent recovery affordance, includ
 
 - A visible existing trigger or named persistent fallback, with accessible name identifying evidence and its retained object. It cannot rely on the original row index.
 - A 44px house target and visible keyboard focus; EN/ZH names through the existing localization owner. Theme changes retain identity and presentation intent.
-- A named, visible in-inspector fallback when the original logical control disappears; return outside the inspector is not the adaptation fallback.
+- A named, visible in-inspector fallback when the original logical control becomes ineligible under §4.2; return outside the inspector is not the adaptation fallback.
+- Where responsive reflow can invalidate primary-task focus, a named fallback in that task through its existing owner. Its absence does not authorize focus transfer into evidence.
 - An explicit changed/missing/denied outcome when the object no longer validates, without silently opening a neighboring row.
 - Keyboard and touch access once the owning modal permits background interaction. A recovery control behind another active modal is correctly inert and cannot be claimed as currently reachable.
 
@@ -102,9 +115,13 @@ All facets below are **NOT_RUN**. They refine existing N07/N10/N11/G07, not addi
 | --- | --- | --- |
 | N07 | Deep inspector control focused; cross dock eligibility in both directions, then dismiss deliberately | Adaptation returns outside, loses logical control, duplicates inspector or leaves focused control clipped |
 | N07 | Focus primary input with selected text after using dock; shrink | Modal/inertness steals focus, caret/value changes, or absence of DOM containment alone is used to infer intent |
-| N07 | Remove original inspector control during transition | BODY after removal chooses primary branch instead of the captured owner and named inside fallback |
+| N07 | Remove, hide, inert, disable or rebind the retained inspector control during transition | Connectivity alone selects an invalid target, BODY chooses the primary branch, or the named inside fallback is not used |
+| N07/G07 | Responsive reflow invalidates the focused primary input during suspension | Focus enters evidence, BODY is reported as preserved focus, or the primary-task fallback is unnamed or ineligible |
+| N07/N11/G07 | Real IME composition inside the inspector across both dock/modal directions and in the primary input during suspension; include Enter/Escape, held-key repeat and software-keyboard height changes | Resize commits/cancels composition, loses/duplicates text, changes selection without user intent, or transfers a gesture to another layer |
 | N11 | Other modal or dirty confirmation active; resize below fit | Two modal owners, invalid-width dock retained indefinitely, wrong Escape owner, unlocked later modal or inferred cancellation/save |
 | N11 | Rapid shrink/grow, close/reopen, identity change and delayed callback | An old callback focuses, reveals or releases resources belonging to a later intent |
+| N11 | Capture inspector ownership, then admit another modal/confirmation before commit; also overlap competing accepted presentation requests before either is visible | Stale adaptation steals focus or changes a later owner's resources, competing layers both accept input, or a failed later request resurrects a retired reopen |
+| N10/N11 | Delay reopen validation across A→B→A and across a relevant source/access context change with unchanged object ID | A retired selection intent becomes current by ID equality, or an obsolete validation verdict is applied without the incumbent domain's validity check or outcome |
 | N10 | Pending historical Ask/save during suspension and adaptation | Request identity changes, hidden means Stop/Saved, or Brain close reopens evidence automatically |
 | N10 | Explicit reopen after reorder/removal/access/generation change; delay validation then navigate/close | Reopens by index, silently substitutes identity, lies about access/freshness or resurrects a retired intent |
 | N10/N11 | Suspend, grow and oscillate with original row absent | Surprise reopening or no named persistent recovery control |
@@ -112,7 +129,7 @@ All facets below are **NOT_RUN**. They refine existing N07/N10/N11/G07, not addi
 | G07 | Shrink height, long ZH labels and zoom with focused control below fold | Exact raw scroll preservation hides focus, document resets to top or retained logical anchor is lost |
 | N11/G07 | Browser focus loss, unknown owner, portal/embedded owner and competing-modal branches | Ambiguity silently classified as deliberate primary intent or an unqualified automatic path is shipped |
 
-Each executed facet records exact source/build, before/after presentation, measured width and domain minimum, focus target **before mutation** and after completion, evidence identity/generation, relevant request identity, trap/inertness/scroll-lock owner, locale/theme/input path and limitations. Required coverage includes 1440×900, 820×1180, 390×844, 320px stress, both threshold directions, keyboard/touch, EN/ZH, light/dark, reduced motion and applicable 400% zoom. Representative cells must be named; a few screenshots do not cover every combination.
+Each executed facet records exact source/build, before/after presentation, measured width and domain minimum, focus target **before mutation**, during the transition and after completion, evidence identity/generation and selection intent, validation context, relevant request identity, trap/inertness/scroll-lock owner, any fallback chosen, locale/theme/input path and limitations. Required coverage includes 1440×900, 820×1180, 390×844, 320px stress, both threshold directions, keyboard/touch, EN/ZH, light/dark, reduced motion and applicable 400% zoom. Representative cells must be named; a few screenshots do not cover every combination.
 
 ## 7. Open interface decisions and adoption gate
 
@@ -120,9 +137,9 @@ Each executed facet records exact source/build, before/after presentation, measu
 
 | Required response | Existing owner | Concrete answer needed |
 | --- | --- | --- |
-| Candidate.5 anatomy and resource semantics | F02 | Exact delta concurrence; visible-control/logical-anchor/offset precedence; adaptation distinct from dismissal; actual fallback anatomy |
-| Shared-layer arbitration | F01 with existing host and Brain/D14 where affected | Outcome for proven other modal, browser focus loss, prior removal and unknown portal ownership; no invalid-width dock, second modal or delayed surprise opening |
-| Recovery and retained object | D07/D08 and each adopting domain | Actual persistent trigger, accessible name, in-inspector fallback, exact identity/generation and changed/missing/denied behavior |
+| Candidate.5 anatomy and resource semantics | F02 | Exact delta concurrence; visible-control/logical-anchor/offset precedence; adaptation distinct from dismissal; actual fallback anatomy; active editing-session preservation and transition focus/resource semantics |
+| Shared-layer arbitration | F01 with existing host and Brain/D14 where affected | Outcome for proven other modal, browser focus loss, prior removal and unknown portal ownership; commit-time ownership and competing-request acceptance/supersession/failure behavior; no invalid-width dock, second modal or delayed surprise opening |
+| Recovery and retained object | D07/D08 and each adopting domain | Actual persistent trigger, accessible name, eligible in-inspector fallback and primary-task fallback where applicable; retained-evidence selection replacement/repeated-identity semantics, source/access validation compatibility, exact identity/generation and changed/missing/denied behavior |
 | Focused-reader boundary | D06 | Confirm any adoption is explicit and does not replace its independent width, price-plot/cursor/Ask requirements |
 | Native and product qualification | Existing programme owners | Exact source, represented variants, real input paths and applicable formal QA/RIG disposition; no invented approval |
 
@@ -139,5 +156,10 @@ The existing F02 response satisfies the **proposal-level position on the two foc
 | Visible-control → logical-anchor → compatible raw-offset precedence | Additional F01 clarification; F02/domain response pending |
 | Persistent recovery binding and current-intent async validation | Additional F01 precision; actual domain/host binding pending |
 | Unknown/other-modal path explicitly unqualified, never an indefinite invalid-width dock | Preserves F02's stated constraint; concrete existing-owner outcome pending |
+| Active editable-session preservation and composition/gesture ownership during passive adaptation | Additional F01 clarification; F02/host response and real-input qualification pending |
+| Commit-time ownership checks, repeated-identity/validation-context guards and accepted competing-request supersession | Additional F01 clarification; existing host/domain binding and affected-owner response pending |
+| Retained-control eligibility, primary-task fallback and observation during transitions | Additional F01 clarification; F02/task-owner binding and qualification pending |
+
+These additional clarifications do not replace the two proposed resize branches or extend the proposal concurrence already received from F02. Their exact affected-owner responses remain pending. Candidate.5 remains PROPOSED_NOT_ADOPTED; candidate.4 remains operative.
 
 On adoption, F02 owns the four successor edits identified in its response: `SYSTEM_CONTRACT.md` §6 overlay rule; EvidenceInspector dismissal/adaptation distinction; `INTERACTION_STATES.md` recoverable presentation suspension; and `F01_HANDSHAKE_CANDIDATE.md` responsive-mode-change row. F01 will record their exact resulting source and owner responses. Until then, their accepted bytes and candidate.4 remain intact. No source comment, rendered board, JSX export, green test or merged unrelated PR releases candidate.5.

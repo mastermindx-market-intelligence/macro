@@ -1,6 +1,6 @@
 # F01 directory presentation proposal
 
-**PROPOSED INPUT — NOT ACCEPTED.** This is a complete presentation proposal for exactly the supplied 290 IDs. F03 and the incumbent exporter/domain owners retain registry and access authority. The root remains the sole F01 source/Paper writer. No route, source input, production code or canvas was changed.
+**COMPLETE 290-RECORD PROPOSAL — NOT ADOPTED.** F03 and the incumbent exporter/domain owners retain registry and access authority. The root remains the sole F01 source/Paper writer. The original full proposal below is unchanged; a separately concurred four-ID presentation facet has now been implemented and locally qualified on Draft Terminal #1276, as recorded below. It changes no route, catalog source, title/alias taxonomy or access policy, and makes no canvas mutation or production deployment.
 
 ## Current four-record response — 2026-11-04 UTC
 
@@ -18,6 +18,16 @@ At inspected Terminale48170b6, the actual unchanged generated projection still c
 Implementation must collect the incumbent eligible All results first, then facet by these exact existing IDs. Keep the incumbent category-specific fallback for every other category; do not replace it by filtering a deduplicated All list. Derive total and facet counts from the same query/source snapshot. Show all changes category only and restores ordered full results. Four and12 describe a fixture, not constants. A new matching lesson changes the total without joining the platform facet. Zero facet/nonzero total has a category-only recovery. Preserve native/legacy paths, unknown and public-shell/premium-payload tiers, all seven learning results and the calculator, and current title/alias/localization owners. No title rename, alias expansion, market qualifier or access migration follows from this response.
 
 F03 has not executed runtime/input/access/loading/error/stale cases, released translations or approved every proposal. D08A/B/C/D are design packages, not one-to-one route IDs; equity replay retains its null-canonical boundary. The original proposal and counts below remain historical integrity evidence. Current implementation/proof, if present, must be linked separately with its exact source and cannot turn the historical integrity check into acceptance.
+
+## Implemented four-ID facet — bounded local qualification
+
+The received grouping/reset response is implemented at [Terminal `b14436dd7b9c1296d17455c89f63960c774ab9be`](https://github.com/mastermindx-market-intelligence/mastermind-terminal/commit/b14436dd7b9c1296d17455c89f63960c774ab9be) on Draft #1276, parent `1364256763ba505399399afe7a6b54021f141953`. [Exact evidence](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/b14436dd7b9c1296d17455c89f63960c774ab9be/terminal/docs/pr-crops/f01-directory-options-facet-20261104) binds source hashes, browser cases and screenshots. It collects incumbent All matches first and filters the four IDs above, retaining their order; all seven incumbent categories keep their prior classification/fallback. A canonical path without its reviewed directory identity is excluded from this facet while retaining its original All fallback reachability.
+
+Show all changes category only, preserves the exact query and order, and returns to the first 48-item batch. Added matching lessons change All totals without joining this facet; the calculator remains reachable. Actual browser observations are 12/4 for English `options`, 104/0 for `fund`, and 2/2 for Chinese `期权`. These are observed source corpora, not fixed product counts or expanded Chinese aliases. The new facet control is localized; source titles—including unresolved English text in the Chinese presentation—remain unchanged. Exact href subtitles disambiguate the four destinations.
+
+Qualification: five new component falsifiers failed before implementation; final component/neighbor suites pass 92 cases. Full Chromium passes 34 with 2 intentional skips; the final affected rerun passes 12 after the phone list refinement. Actual keyboard/touch, theme/language, batching and short-height reachability are proven locally. Type/lint pass. The generated projection remains SHA-256 `2bfc0bf51e405abdd61032470d0b04cf1e1114370bd1c1f9b8e9e137d807f8cc`; no tier or unknown-access value changes.
+
+This synchronous bundled projection has no new asynchronous loading/error/freshness owner. Existing host, source and access outcomes remain outside the facet; no stale-data, premium-access or production proof is manufactured. Full 290-record adoption and translations remain held. All 86 complete programme cases remain NOT_RUN.
 
 ## Source and integrity
 

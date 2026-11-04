@@ -1,0 +1,239 @@
+{
+  "schema": "F01.continuation_evidence.v1",
+  "recorded_utc": "2026-11-04T07:31:25Z",
+  "mission": "Continue the existing F01 shared-shell assignment; scoped directory correction/facet implementation and proposed contract hardening",
+  "bounded_outcome": "PROVEN_OUTCOME: published code and local browser/self-QA within stated limits",
+  "overall_acceptance": "PARTIAL / REQUEST_CHANGES / RIG draft; joint v1 unreleased",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 10645,
+    "branch": "design/f01-shared-shell-v1-20261103-c4",
+    "parent": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+    "containing_commit": "The enclosing immutable commit binds this evidence and cumulative manifest",
+    "procedure_pin": "690e5316629815ae3e78f65ebdec2eb87f0cad16",
+    "assignment_common_index_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "bootstrap_major": 1,
+    "skillpack_version": "1.0.1",
+    "candidate4": "OPERATIVE_PROVISIONAL_UNCHANGED",
+    "candidate5": "PROPOSED_NOT_ADOPTED"
+  },
+  "capability_delta": {
+    "before": "The directory lacked an explicit reviewed Options & futures facet; historical source handoff still called the published focus correction in progress.",
+    "after": "The existing draft implementation exposes the four exact existing IDs after incumbent All matching, preserves ordered query recovery, and has verified phone/short-height composition; canonical source now records exact current proof and remaining gates."
+  },
+  "implementation": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "pr": 1276,
+    "draft": true,
+    "branch": "sol/web-f01-directory-focus-correction-20261104-c4",
+    "head": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+    "parent": "1364256763ba505399399afe7a6b54021f141953",
+    "original_1264_merge": "f528a219cc5d73e94e058575e3df83d689632bf9",
+    "original_1264_action": "Externally merged; not performed or ratified by this continuation",
+    "publisher": "Original GitHub connector Git-object API; expected-head update and readback",
+    "operation_id": "f01-directory-focus-correction-20261104-c4",
+    "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/f01-directory-focus-correction-20261104-c4",
+    "local_head_index": "1364256763ba505399399afe7a6b54021f141953",
+    "local_bytes": "All 20 changed source/proof files equal published blobs; local metadata has not advanced to the new GitHub head",
+    "proof": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/b14436dd7b9c1296d17455c89f63960c774ab9be/terminal/docs/pr-crops/f01-directory-options-facet-20261104",
+    "modified_source_files": [
+      {
+        "path": "terminal/components/chrome/shared-shell/ShellDirectory.tsx",
+        "sha256": "f915c6ca84ddb33bf8e00d298044ef2a50281d45cafb5f266c6f7be8b6567b1d",
+        "git_blob_sha": "bb430b1e0725f5a13253aaf9dafe8f0c77b39ec9"
+      },
+      {
+        "path": "terminal/components/chrome/shared-shell/shared-shell.css",
+        "sha256": "e9ff4dc94d5289cbdab9bfe287edc0e7366c758e70ec05c5158846aa4c7991ac",
+        "git_blob_sha": "47b594f62b10b6d4544dbf75422a7818d9571dc5"
+      },
+      {
+        "path": "terminal/lib/sharedShellCopy.ts",
+        "sha256": "b47b1e03d8b6587892392b5c5b956e63f4252cd5967df7548023b314b6922b5f",
+        "git_blob_sha": "5fd9952fed9c8dcfb0ffb8bb63bf5c6e061adb52"
+      },
+      {
+        "path": "terminal/lib/__tests__/sharedShellDirectoryConformance.test.tsx",
+        "sha256": "8e55864a432222d2c5b12029e9196cd3ee699748ddcbcc3daf325a80a384851a",
+        "git_blob_sha": "3af9d4132b1dfe0db6974113bfa74978f93cbab9"
+      },
+      {
+        "path": "terminal/e2e/shared-shell-directory-hardening.spec.ts",
+        "sha256": "040fa14432ef14faef59ca05ef2f0984315e44a9802af1e5b845a1581b6a2eb8",
+        "git_blob_sha": "d7a40312309d7a88887776135e3fc6931671889f"
+      }
+    ],
+    "adjacent_owner": {
+      "pr": 1244,
+      "head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
+      "draft": true,
+      "composition": "Single-file virtual composition passed; title mapping retained; not whole-PR integration"
+    }
+  },
+  "qualification": {
+    "baseline_new_cases": {
+      "passed_prior": 24,
+      "failed_new": 5
+    },
+    "final_component_neighbor": {
+      "passed": 92,
+      "failed": 0
+    },
+    "full_chromium": {
+      "passed": 34,
+      "skipped": 2,
+      "failed": 0,
+      "flaky": 0
+    },
+    "final_affected_chromium": {
+      "passed": 12,
+      "skipped": 0,
+      "failed": 0,
+      "flaky": 0
+    },
+    "lint": "PASS, zero warnings",
+    "typescript": "PASS",
+    "visual": "Actual final 1440/820/390 and 320x420 screenshots self-reviewed; fourth destination reachable",
+    "input": "Actual desktop keyboard and touch tablet/mobile events; actual theme/locale controls",
+    "corpus": {
+      "options": {
+        "all": 12,
+        "facet": 4
+      },
+      "fund": {
+        "all": 104,
+        "facet": 0
+      },
+      "chinese_options": {
+        "query": "期权",
+        "all": 2,
+        "facet": 2
+      }
+    },
+    "catalog_sha256": "2bfc0bf51e405abdd61032470d0b04cf1e1114370bd1c1f9b8e9e137d807f8cc",
+    "limits": [
+      "Chromium local mounted AppShell proof with incumbent dev identity seam and controlled AAPL manifest",
+      "No production authentication, entitlement or remote data-provider proof",
+      "Known development chunk 404 and ERR_ABORTED retained; no new uncaught page errors",
+      "All 86 complete programme cases remain NOT_RUN",
+      "No candidate.5 runtime or real-IME qualification"
+    ]
+  },
+  "ci": {
+    "head": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+    "observed_at_utc": "2026-11-04T07:31:00Z",
+    "observed_state": "19 checks queued; not passed",
+    "previous_focus_head": "1364256763ba505399399afe7a6b54021f141953",
+    "previous_focus_checks": "Observed green; not transferred to the new head",
+    "watcher": "None armed"
+  },
+  "paper": {
+    "carrier": "Original Mastermind Paper direct app, read-only this continuation",
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "page_id": "p-27-0",
+    "page_name": "F01 · Shell system · v1 candidate · Review pending",
+    "observed_boards": [
+      {
+        "id": "6ZY9-0",
+        "name": "A · Macro · Labeled navigation · 1440 EN dark"
+      },
+      {
+        "id": "70WJ-0",
+        "name": "H · Compact navigation · 1280 EN dark"
+      },
+      {
+        "id": "6ZYA-0",
+        "name": "B · Macro · Horizontal navigation · 1440 EN dark"
+      },
+      {
+        "id": "6ZYB-0",
+        "name": "C · Company · Inspector · 1280 EN light"
+      },
+      {
+        "id": "6ZYC-0",
+        "name": "D · Options · 1024 EN dark · Overlay"
+      },
+      {
+        "id": "6ZYD-0",
+        "name": "E · Macro · 390 ZH light"
+      },
+      {
+        "id": "6ZZV-0",
+        "name": "F · Directory · 320 EN dark"
+      },
+      {
+        "id": "6ZZW-0",
+        "name": "G · Drawer · 768 ZH dark"
+      },
+      {
+        "id": "6ZZX-0",
+        "name": "00 · Read me · F01 joint candidate"
+      },
+      {
+        "id": "710Z-0",
+        "name": "I · Access, failure and recovery · State atlas"
+      }
+    ],
+    "inspected_directory_board": "6ZZV-0",
+    "wrapper_snapshot_sha256": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+    "snapshot_limit": "Wrapper active page was p-24-0; exact read result and screenshot targeted F01 p-27-0/6ZZV-0. This read is not a current F01 write grant or mutation binding.",
+    "new_operations": [],
+    "held": [
+      {
+        "operation_id": "F01-20261103-c4-state-8-v1",
+        "target_atlas": "710Z-0",
+        "target": "711X-0",
+        "effect": "EFFECT_UNKNOWN",
+        "next": "Original carrier/runtime owner returns terminal disposition or canonical same-carrier reconciliation; no replay or alternate carrier"
+      },
+      {
+        "operation_id": "F01-20261103-c4-readme-concurrence-v2",
+        "target": "6ZZX-0",
+        "effect": "DOCUMENT_CHANGED",
+        "retry_allowed": false,
+        "next": "Original disposition and lawful same-target metadata successor required"
+      }
+    ]
+  },
+  "owner_responses": {
+    "f03": {
+      "head": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
+      "path": "research/design_candidates/production_design_20261102/f03/F01_OPTIONS_TAXONOMY_RESPONSE.md",
+      "blob": "e01dfc667c1b288635be7b2179c7993d1474dcf4",
+      "scope": "Four-ID grouping/reset only; no complete catalog/title/alias/access adoption"
+    },
+    "f02": {
+      "latest_handshake_head": "6d1f6791408fbb317daf16b647c02465e8d81266",
+      "resize_response_head": "013fdd72e6a387c6121df84082ce1e6c2201d336",
+      "resize_response_blob": "76ffd9adee60a87d74c2a2a78b72c9fcaf604eff",
+      "scope": "Two candidate.5 branches concurred as proposal only; candidate.4 remains operative",
+      "additional_candidate5_responses": "Pending for editing-session preservation, commit-time ownership/validation/request supersession and eligible fallbacks"
+    }
+  },
+  "custody": {
+    "root_writer": "Same F01 ChatGPT Web / mastermidx4",
+    "child": "f01_contract_assessment completed read-only principal contract reasoning and temporary replacement-pair preparation; no remote mutation or external messages",
+    "independent_review": "Optional; no separate review ceremony used as a gate. No new nonauthor approval claimed.",
+    "release_hold": [
+      "No Ready/un-draft",
+      "No merge/enqueue",
+      "No held-PR relabel",
+      "No deployment"
+    ],
+    "new_external_messages": 0
+  },
+  "do_not_redo": [
+    "Verified focus correction and exact scoped facet tests without material change",
+    "Candidate.4 geometry/operative policy",
+    "Retained-capability and directory census",
+    "Original Paper diagnostic scans without new original-carrier evidence",
+    "Historical source review scope; do not extend it to new bytes"
+  ],
+  "exact_next_actions": [
+    "Consume CI at b14436dd7b9c1296d17455c89f63960c774ab9be and repair only actual F01 failures through the same managed operation and original publisher.",
+    "Reconcile local HEAD/index against the published source bytes before any new implementation edit; publication alone did not move local metadata.",
+    "On material affected-owner responses, bind and qualify the exact candidate.5 transition without silently adopting it or taking over another owner.",
+    "On original Paper receipt, reconcile the original operation/target before any canvas mutation; do not replay/re-key/re-home."
+  ],
+  "no_background_promise": true
+}

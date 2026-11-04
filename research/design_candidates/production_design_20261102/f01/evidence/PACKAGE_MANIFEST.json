@@ -1,13 +1,13 @@
 {
   "schema": "F01.cumulative_package_manifest.v1",
   "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
-  "kind": "Candidate.5 proposed amendment; exact F02/F03 responses; focus correction in progress with intermediate self-QA evidence",
+  "kind": "Published scoped four-ID directory facet and focus correction; bounded local browser proof; candidate.5 additional clarifications remain proposed",
   "containing_commit": "The enclosing immutable Git commit binds this manifest; a moving branch name is not the receipt",
-  "parent_before_package": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
-  "files_excluding_self": 178,
-  "total_member_bytes": 6416680,
+  "parent_before_package": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+  "files_excluding_self": 179,
+  "total_member_bytes": 6447372,
   "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline for each member",
-  "aggregate_sha256": "e1b09172cb181de23437916a09a959574300508fc3dedd1fead5b0d72e3c9064",
+  "aggregate_sha256": "6956d0b3cf11c7cb6370bbb816cee66944814dc6ad93d1ae39f5737ba2d71dd2",
   "historical_review_inputs": {
     "candidate2_capture": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
     "candidate3_source_repair": "b55efe221d16ae5e64935af4c60572701b2a43a0",
@@ -35,9 +35,11 @@
     "later_status_amendment_changes_document_blob": true,
     "operative_sections_2_through_5_unchanged": true,
     "administrative_section_6_updated": true,
-    "implementation_review": "REQUESTED_NOT_RECEIVED",
-    "implementation_commit": "f9070aebf61ad88883dad441b195e1060c7671b5",
-    "latest_consumed_F02_freeze": "6b72172aec810aa7795e5a50d4be9ca2dde5cf5b"
+    "implementation_review": "SELF_QA_COMPLETED; optional independent review is not a Web-session gate; no new nonauthor approval claimed",
+    "implementation_commit": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+    "latest_consumed_F02_freeze": "6d1f6791408fbb317daf16b647c02465e8d81266",
+    "historical_implementation_commit": "f9070aebf61ad88883dad441b195e1060c7671b5",
+    "candidate5": "PROPOSED_NOT_ADOPTED; additional editing-session/ownership/validation/fallback responses pending"
   },
   "files": [
     {
@@ -48,9 +50,9 @@
     },
     {
       "path": "BUILDER_AND_MEASUREMENT_PLAN.md",
-      "bytes": 15042,
-      "sha256": "c97fac3e7a64819a9db15b40c8a84118d5f4b8f9507ac0e55077d9825efe4afc",
-      "git_blob_sha": "d395ca67cdd059ea3c420bfe417d77c35b746eba"
+      "bytes": 16483,
+      "sha256": "55cefb2794453a13061530062ed3b860c22b860c7db9d4f2ffc1cc5fda447c7f",
+      "git_blob_sha": "e5f7fb1f11af480f55d49df4d24c878e5a3b8e2e"
     },
     {
       "path": "CONSUMER_INTEGRATION_NOTES.md",
@@ -66,9 +68,9 @@
     },
     {
       "path": "DIRECTORY_PROPOSAL_NOTES.md",
-      "bytes": 13031,
-      "sha256": "a780efdb2cfe9c579ec4337871c952f55586409ce734dcda193b61921e10f5f8",
-      "git_blob_sha": "b04dee1f579bbf2d429087921389c34b36fe1f15"
+      "bytes": 15576,
+      "sha256": "9bf8a09c50ab77f6642af07b1cd6d2a2f91010701bf79360576f77d5b01aa4d8",
+      "git_blob_sha": "1fe8ced0214b4afd7b6a18135142686e15ce9c03"
     },
     {
       "path": "EVIDENCE_AND_REVIEW.md",
@@ -84,15 +86,15 @@
     },
     {
       "path": "IMPLEMENTATION_HANDOFF.md",
-      "bytes": 12566,
-      "sha256": "2e9f8722b7489eb406c5655ce5fa4602ddf630c29811a43625d5fe8ee48c8368",
-      "git_blob_sha": "8f537115597bfa143cbf2a6fa2e08a9438db67b5"
+      "bytes": 16292,
+      "sha256": "d39889770177a84aac1a79e693e826ed4f5803fdd3af3a7b0169bc61e09c373c",
+      "git_blob_sha": "67bcd06d6248fc7934509767b31746c7572361e5"
     },
     {
       "path": "INTERACTION_CONFORMANCE.md",
-      "bytes": 20546,
-      "sha256": "d1238361951a00c725cbdd60eeb95fd557dd9c7a8241b0f91c9b594cc6e44605",
-      "git_blob_sha": "f049556ae4f20d230eef0585c3583e970afbe37f"
+      "bytes": 24099,
+      "sha256": "d10bbc8d35f72f74610a11daacc8e03e2905160039af4344f4568d859b61b7b6",
+      "git_blob_sha": "c0540cd632735f5ddecb484fd53b4e7d2949ca4d"
     },
     {
       "path": "JOINT_SHELL_SYSTEM_CONTRACT.md",
@@ -102,9 +104,9 @@
     },
     {
       "path": "JOINT_SHELL_SYSTEM_CONTRACT_CANDIDATE5.md",
-      "bytes": 19893,
-      "sha256": "f45e0b9ab9bd1e481ca0ea92623ad35562abf0569c82d463f4ba7cfb23d29875",
-      "git_blob_sha": "46c22edd8077d3f3ffda48ed51f72bf9dff4955d"
+      "bytes": 25645,
+      "sha256": "c031c1e61c4caff21ce153c643177d5473c5c5e7a2ec2a3a09a152b63cbe5b4d",
+      "git_blob_sha": "7db3c0598bc22cfb47842406fdd6b28d587bc57f"
     },
     {
       "path": "PRODUCT_UX_SPEC.md",
@@ -114,9 +116,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 14004,
-      "sha256": "65299a743b99a29ef17ff7e751da1231485e7c759a12b1c53bca70fea6b202cb",
-      "git_blob_sha": "40e8887b9e028b0337c04d0e1b6265f1ab35387e"
+      "bytes": 15064,
+      "sha256": "f52f892d82a7fab95a7e53d2738fa7fc0bc4b571c5de324537c2a3f5d9499fe2",
+      "git_blob_sha": "9d9891966afcdbe84334f4f5ea24bd4b46aec0c5"
     },
     {
       "path": "RESIZE_FOCUS_DECISION_PROPOSAL.md",
@@ -126,9 +128,9 @@
     },
     {
       "path": "RETURN_F01.md",
-      "bytes": 32290,
-      "sha256": "5c2f1dade655e4e1c2869834e5d32ed7ce0a40030d88be17fc05d916ae53d73e",
-      "git_blob_sha": "b577efc35aa7f3d33d68f2c1675506b68ca60cdf"
+      "bytes": 34344,
+      "sha256": "ae3a7f0ad2fb6b5690bc56d48b79212a5a972ec3765496aa277a3515c062109e",
+      "git_blob_sha": "14d9f018d35d4ea54cd53d45bc08238bea2e5bbb"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
@@ -315,6 +317,12 @@
       "bytes": 5897,
       "sha256": "590be01ad7fe281ad6929e2e34036a0a3a728348d9921a345f9766653d9f6645",
       "git_blob_sha": "26a57752c4a4d9aca38a00f9548f9c7549f71ffb"
+    },
+    {
+      "path": "evidence/facet_20261104/CONTINUATION.json",
+      "bytes": 10561,
+      "sha256": "8eda70046e433d009ac1e67a7f30feaf9f70c30b17b19fa082de2789fe520429",
+      "git_blob_sha": "d8ee88206a5e8fe3cd934b1ea3a80a8171e91486"
     },
     {
       "path": "evidence/focus_and_candidate5_20261104/OWNER_SOURCE_RECEIPTS.json",
