@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DLX-BULL-20261016",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 43.5,
-  "raw_confidence": 40.5,
-  "delta_vs_base": -16.5,
+  "management_confidence": 40.3,
+  "raw_confidence": 36.4,
+  "delta_vs_base": -19.7,
   "recommended_action": "hold",
-  "human_state": "Needs Follow-Through",
+  "human_state": "Stalling",
   "components": {
-    "validity": 49.5,
+    "validity": 38.0,
     "progress": 0.0,
-    "pace": 58.8,
+    "pace": 52.8,
     "retention": 50.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.594,
+    "dist_to_stop_r": 0.488,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 28.9,
-    "p1": -0.2706,
-    "p2": -0.1353,
+    "horizon_pct_used": 31.1,
+    "p1": -0.3412,
+    "p2": -0.1706,
     "p3": null,
-    "move_r": -0.406,
+    "move_r": -0.512,
     "mfe_r": 0.347,
-    "mae_r": -0.406
+    "mae_r": -0.512
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Weakening",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.5900008392333973,
-  "_mae": -0.6899998474121105,
+  "_mae": -0.8700001525878918,
   "_max_p1": 0.2313728781307443,
   "_first_trigger_ts": "2026-10-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 13,
-  "tau": 0.2889
+  "days_elapsed": 14,
+  "tau": 0.3111
 }

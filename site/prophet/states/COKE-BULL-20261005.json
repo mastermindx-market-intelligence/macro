@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "COKE-BULL-20261005",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 58.3,
-  "raw_confidence": 58.7,
-  "delta_vs_base": -1.7,
+  "management_confidence": 57.9,
+  "raw_confidence": 57.5,
+  "delta_vs_base": -2.1,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 31.3,
-    "pace": 37.7,
+    "progress": 30.1,
+    "pace": 35.3,
     "retention": 50.0,
-    "overlay": 58.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.533,
-    "dist_to_t1_r": 0.967,
-    "dist_to_t2_r": 2.467,
-    "horizon_pct_used": 60.0,
-    "p1": 0.3555,
-    "p2": 0.1778,
+    "dist_to_stop_r": 1.505,
+    "dist_to_t1_r": 0.995,
+    "dist_to_t2_r": 2.495,
+    "horizon_pct_used": 62.2,
+    "p1": 0.337,
+    "p2": 0.1685,
     "p3": null,
-    "move_r": 0.533,
+    "move_r": 0.505,
     "mfe_r": 0.691,
     "mae_r": -0.222
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-07",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 27,
-  "tau": 0.6
+  "days_elapsed": 28,
+  "tau": 0.6222
 }

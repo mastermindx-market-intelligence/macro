@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TBBK-BULL-20260609",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.9,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -4.984,
+    "dist_to_stop_r": -6.422,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 84.4,
-    "p1": -3.9896,
-    "p2": -1.9948,
+    "horizon_pct_used": 86.7,
+    "p1": -4.9479,
+    "p2": -2.474,
     "p3": null,
-    "move_r": -5.984,
+    "move_r": -7.422,
     "mfe_r": 0.875,
-    "mae_r": -5.984
+    "mae_r": -7.422
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.5599993896484392,
-  "_mae": -3.8299999999999983,
+  "_mae": -4.749998168945311,
   "_max_p1": 0.583332697550457,
   "_first_trigger_ts": "2026-09-26",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 38,
-  "tau": 0.8444,
+  "days_elapsed": 39,
+  "tau": 0.8667,
   "closed": true,
   "outcome": "INVALIDATED"
 }
