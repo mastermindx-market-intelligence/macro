@@ -13,12 +13,12 @@
     "evidence_sources": {
       "cn": {
         "dataset": "data/china_filings/filings.parquet",
-        "newest_observation": "2026-11-02",
+        "newest_observation": "2026-11-03",
         "provenance": "CNInfo (\u5de8\u6f6e\u8d44\u8baf\u7f51) SSE+SZSE disclosure metadata (collectors/china_filings.py)"
       },
       "hk": {
         "dataset": "data/hk_shorts/positions.parquet + data/hk_shorts/turnover.parquet",
-        "newest_observation": "2026-11-02",
+        "newest_observation": "2026-11-03",
         "provenance": "SFC official Short Position Reports + HKEX official turnover statistics (collectors/hk_shorts.py)"
       }
     },
@@ -58,11 +58,11 @@
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
   },
   "cik_map_snapshot": "2026-11-03",
-  "code_version": "aba2ddcfe4cb90e4d2106c4a02de3ccb306f0551",
+  "code_version": "9c4e332b0a42bfb4b5ec5dd16ee145868795a090",
   "coverage": {
-    "resolved": 1619,
+    "resolved": 1618,
     "total": 1636,
-    "unresolved": 17,
+    "unresolved": 18,
     "unresolved_names": [
       "ACA",
       "ANGPY",
@@ -74,6 +74,7 @@
       "GATO",
       "HLX",
       "IMPUY",
+      "INDV",
       "KVUE",
       "LXP",
       "MAG",
@@ -163,7 +164,7 @@
     "QQQ": "CURRENT",
     "SPY": "CURRENT"
   },
-  "generated_at": "2026-11-03T05:32:46",
+  "generated_at": "2026-11-04T06:48:19",
   "identity_exceptions": [
     {
       "evidence": "SEC Barnes Group 2025-01-27 8-K/Form 25; Barrick Mining 2025-05-07 Form 6-K Exhibit 99.2; Gold.com 2025-11-12 AMRK->NYSE GOLD transfer announcement; config/theme_graph_identity_breaks.yml GOLD",
@@ -182,14 +183,14 @@
     "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
     "config/delisted_symbols.yml": "c83b53d39a934fdcbe82f655f1979d1a4c14f8c45fb35474e2dc666bec539b5e",
     "data/baskets/membership.json": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
-    "data/breadth/constituents.parquet": "d125a097273102c78b435ff39fccb540f157ae076eedbdb6d372d77b43672b66",
-    "data/china_filings/filings.parquet": "63c14512f6d3e7faa7905a047ec0ba9d32a4ae43d0146c397b11c8274e6e038c",
+    "data/breadth/constituents.parquet": "711555c56b1dc89ef1317e02c4492be412a8c9032a752379fe8b7490be063842",
+    "data/china_filings/filings.parquet": "435dc2c3f90db7e83746613a263a353739b8b00976cefbf1ea9839be48f56639",
     "data/hk_shorts/positions.parquet": "4f76317cfa0b15ac69f78fc8cdf2079e1e82423d90ddc3a8d39fe4bcac945f4b",
-    "data/hk_shorts/turnover.parquet": "396cbd7e9909fb0c00605b462b8a529d05ca45cbe27191218f4c4f82afd842f2",
-    "data/midcap_breadth/constituents.parquet": "ea790e05b5b8cc9b5224b2d2e5b6d882a3541a9baa25a30ad5aeb6e438775a08",
-    "data/smallcap_breadth/constituents.parquet": "5ceb85a4e7471fd108d630fb8dace42d163c370cdec8083b69345065dc4b635e",
+    "data/hk_shorts/turnover.parquet": "e8de82f98d0756a0f57ea209cd996dded03d5cc13f8c079d3053b2899f5becf1",
+    "data/midcap_breadth/constituents.parquet": "a2c42f24f546ef9f4a214fc0f2bc33247126a6a4e1c7f88766010b10edfb3a0a",
+    "data/smallcap_breadth/constituents.parquet": "66b6c854246f8a91c2740d79983c9b1c871a9d6f64388e355df7465b80e16c4e",
     "data/symbol_directory/cik_map": "d5052101d74afd5080fa1592608edf779f44771b1294c927c786bbe7a44f6984",
-    "data/symbol_directory/snapshots": "e913c916abb0ede78de5f591e2346629754e2a8f8bf222b21d8be5570838ca51",
+    "data/symbol_directory/snapshots": "d452a2556e8c1c1fd979ecd9ad0847f68e65ef1cf428d25abbf5548b03799e7f",
     "data/theme_graph/nodes.parquet": "2edf86b9c0dfe0ec7b7c61fdaf0de267c10545047b682df604a812d2540f52d9",
     "lib/ticker_aliases.py": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
   },
@@ -248,8 +249,10 @@
     "GWH",
     "HUCK",
     "IBOC",
+    "INDV",
     "KVUE",
     "LXP",
+    "MLEC",
     "MSGS",
     "RAMP",
     "YFOR",
@@ -266,6 +269,8 @@
         "SEC:US-XNAS-CECO",
         "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-IBOC",
+        "SEC:US-XNAS-INDV",
+        "SEC:US-XNAS-MLEC",
         "SEC:US-XNAS-YYGH",
         "SEC:US-XNYS-ACA",
         "SEC:US-XNYS-CSAN",
@@ -275,7 +280,7 @@
         "SEC:US-XNYS-MSGS",
         "SEC:US-XNYS-RAMP"
       ],
-      "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "reason": "pending-transition fence: 13 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
       "snapshot_date": "2026-11-03",
       "symbol": "CECO"
     },
@@ -285,6 +290,8 @@
         "SEC:US-XNAS-CECO",
         "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-IBOC",
+        "SEC:US-XNAS-INDV",
+        "SEC:US-XNAS-MLEC",
         "SEC:US-XNAS-YYGH",
         "SEC:US-XNYS-ACA",
         "SEC:US-XNYS-CSAN",
@@ -294,7 +301,7 @@
         "SEC:US-XNYS-MSGS",
         "SEC:US-XNYS-RAMP"
       ],
-      "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "reason": "pending-transition fence: 13 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
       "snapshot_date": "2026-11-03",
       "symbol": "IBOC"
     }
@@ -752,7 +759,7 @@
   },
   "seed_counts": {
     "delisted_keys": 11,
-    "directory_symbols": 13279,
+    "directory_symbols": 13276,
     "gmi_seed_keys": 1241,
     "ticker_fixups": 2,
     "ticker_key_migrations": 1,
@@ -838,7 +845,7 @@
     "valid_to": "2026-10-16",
     "vendor": "thetadata"
   },
-  "symbol_directory_snapshot": "2026-11-03",
+  "symbol_directory_snapshot": "2026-11-04",
   "undated_renames": [
     {
       "evidence": "lib/ticker_aliases.py YAHOO_FETCH_ALIASES FI->FISV (vendor LAGS the rename); config.yml breadth.ticker_fixups FISV->FI; no in-repo date for the 2023 change",
@@ -1028,6 +1035,10 @@
       {
         "code": "KVUE",
         "security_id": "SEC:US-XNYS-KVUE"
+      },
+      {
+        "code": "MLEC",
+        "security_id": "SEC:US-XNAS-MLEC"
       },
       {
         "code": "PSKY",
