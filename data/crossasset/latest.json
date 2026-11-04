@@ -1,29 +1,30 @@
 {
-  "date": "2026-11-03",
+  "date": "2026-11-04",
   "regime": "mixed / no clear trend",
-  "breadth": 0.15,
+  "breadth": 0.23,
   "favored": [
     "equity_us",
     "copper",
     "oil",
-    "dollar"
+    "dollar",
+    "equity_intl"
   ],
   "correlation": "diversified",
-  "asof": "2026-11-03",
+  "asof": "2026-11-04",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
     "regime": "mixed / no clear trend",
     "correlation": {
       "verdict": "diversified",
-      "absorption_pctile": 0.22,
+      "absorption_pctile": 0.18,
       "n_markets": 6,
-      "absorption_ratio": 0.337,
-      "mean_abs_corr": 0.205,
+      "absorption_ratio": 0.331,
+      "mean_abs_corr": 0.197,
       "dominant_cluster": [
-        "Commodities",
         "Crypto",
-        "US"
+        "US",
+        "Commodities"
       ],
       "spark_w": [
         0.343,
@@ -129,11 +130,11 @@
         0.362,
         0.36,
         0.34,
-        0.337
+        0.331
       ],
       "spark_asof": "2026-11-06"
     },
-    "breadth": 0.15,
+    "breadth": 0.23,
     "trend_top": [
       {
         "asset": "equity_us",
@@ -156,19 +157,19 @@
         "z": 1.0
       },
       {
-        "asset": "equity_sm",
-        "trend": "mixed",
-        "z": 0.33
+        "asset": "equity_intl",
+        "trend": "up",
+        "z": 1.0
       },
       {
-        "asset": "crypto",
+        "asset": "equity_sm",
         "trend": "mixed",
         "z": 0.33
       }
     ],
     "trend_summary": {
       "n": 13,
-      "n_up": 4,
+      "n_up": 5,
       "n_down": 2
     },
     "intermarket": [
@@ -176,25 +177,25 @@
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "elevated",
-        "pctile": 93.0
+        "pctile": 90.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 79.963,
+        "ratio": 80.197,
         "trend": "mid",
         "pctile": 50.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.025,
+        "ratio": 0.024,
         "trend": "elevated",
-        "pctile": 89.0
+        "pctile": 85.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.189,
+        "ratio": 0.191,
         "trend": "elevated",
-        "pctile": 81.0
+        "pctile": 83.0
       }
     ],
     "carry": {
@@ -203,7 +204,7 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 0.95,
+          "value": 0.88,
           "unit": "%",
           "state": "positive carry"
         },
@@ -233,41 +234,41 @@
           "leader": "Dollar",
           "follower": "HK",
           "lag": 1,
-          "r": 0.254,
-          "t": 4.113,
+          "r": 0.253,
+          "t": 4.111,
           "q": 0.0
         },
         {
           "leader": "US",
           "follower": "HK",
           "lag": 1,
-          "r": 0.285,
-          "t": 3.738,
+          "r": 0.287,
+          "t": 3.73,
           "q": 0.015
         },
         {
           "leader": "Crypto",
           "follower": "HK",
           "lag": 1,
-          "r": 0.238,
-          "t": 3.446,
-          "q": 0.03
+          "r": 0.237,
+          "t": 3.395,
+          "q": 0.035
         },
         {
           "leader": "US",
           "follower": "China",
           "lag": 1,
-          "r": 0.234,
-          "t": 3.259,
+          "r": 0.236,
+          "t": 3.274,
           "q": 0.0413
         },
         {
           "leader": "China",
           "follower": "HK",
           "lag": 1,
-          "r": -0.23,
-          "t": -3.031,
-          "q": 0.072
+          "r": -0.229,
+          "t": -3.023,
+          "q": 0.075
         }
       ],
       "stable": false,
@@ -286,7 +287,7 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-10-30",
+      "asof": "2026-11-02",
       "state": "calm",
       "score": 58.0,
       "spread_bp": 7.0
@@ -324,7 +325,7 @@
           "equity_blind": false
         }
       ],
-      "asof": "2026-10-30"
+      "asof": "2026-11-02"
     },
     "dollar": {
       "usd_dir": "strengthening",
@@ -346,13 +347,13 @@
       ],
       "unstable_n": 0,
       "fx_stress": {
-        "dominant": null,
+        "dominant": "em_crisis_capital_flight",
         "top_key": "em_crisis_capital_flight",
-        "top_val": 40.6
+        "top_val": 76.9
       }
     },
     "shadow": {
-      "pressure_pctile": 0.22,
+      "pressure_pctile": 0.18,
       "incumbent_state": "caution",
       "shadow_state": "caution",
       "escalated": false
