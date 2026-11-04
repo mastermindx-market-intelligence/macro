@@ -1,18 +1,29 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-11-02",
-  "generated_utc": "2026-11-04T02:33:22Z",
+  "as_of": "2026-11-03",
+  "generated_utc": "2026-11-04T10:50:52Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 3,
-    "n_eff": 3.0,
+    "n": 6,
+    "n_eff": 3.76,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 3 candidates \u2248 3.0 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 6 candidates \u2248 3.76 independent bets."
   },
-  "same_thesis_groups": [],
-  "earnings_coverage_frac": 0.667,
+  "same_thesis_groups": [
+    {
+      "members": [
+        "KMT",
+        "PFG",
+        "TKR"
+      ],
+      "size": 3,
+      "basis": "factor-cosine",
+      "label": "Industrials"
+    }
+  ],
+  "earnings_coverage_frac": 0.833,
   "by_ticker": {
     "LTC": {
       "verdict": "new",
@@ -20,7 +31,16 @@
       "basis": "membership-only:r2=0.10<0.2",
       "nearest": [
         {
-          "ticker": "LNTH",
+          "ticker": "PFG",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.10<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "KMT",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
@@ -29,25 +49,168 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "NWBI",
+          "ticker": "TKR",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.10<0.2",
           "shared_groups": [],
-          "same_earnings_week": false
+          "same_earnings_week": true
         }
       ],
       "earnings_leg": {
         "next_date": "2026-11-03",
         "same_week_peers": [
-          "LNTH"
+          "KMT",
+          "LNTH",
+          "TKR",
+          "YUM"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer LNTH at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 LNTH\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer PFG at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 PFG\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+    },
+    "PFG": {
+      "verdict": "duplicate",
+      "max_similarity": 0.7493,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "KMT",
+          "combined": 0.7493,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.7493,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": null
+        },
+        {
+          "ticker": "TKR",
+          "combined": 0.553,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.553,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": null
+        },
+        {
+          "ticker": "LTC",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.10<0.2",
+          "shared_groups": [],
+          "same_earnings_week": null
+        }
+      ],
+      "earnings_leg": {
+        "next_date": null,
+        "same_week_peers": [],
+        "has_data": false
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as KMT \u2014 shared factor profile (similarity 75%).",
+      "why_zh": "\u4e0e KMT \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 75%\uff09\u3002"
+    },
+    "KMT": {
+      "verdict": "duplicate",
+      "max_similarity": 0.9576,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "TKR",
+          "combined": 0.9576,
+          "membership_jaccard": 0.5,
+          "factor_cosine": 0.9576,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Industrials"
+          ],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "PFG",
+          "combined": 0.7493,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.7493,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "LTC",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.10<0.2",
+          "shared_groups": [],
+          "same_earnings_week": true
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-04",
+        "same_week_peers": [
+          "LNTH",
+          "LTC",
+          "TKR",
+          "YUM"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as TKR \u2014 Industrials (similarity 96%).",
+      "why_zh": "\u4e0e TKR \u62bc\u6ce8\u76f8\u540c \u2014 Industrials\uff08\u76f8\u4f3c\u5ea6 96%\uff09\u3002"
+    },
+    "TKR": {
+      "verdict": "duplicate",
+      "max_similarity": 0.9576,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "KMT",
+          "combined": 0.9576,
+          "membership_jaccard": 0.5,
+          "factor_cosine": 0.9576,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Industrials"
+          ],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "PFG",
+          "combined": 0.553,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.553,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "LTC",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.10<0.2",
+          "shared_groups": [],
+          "same_earnings_week": true
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-04",
+        "same_week_peers": [
+          "KMT",
+          "LNTH",
+          "LTC",
+          "YUM"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as KMT \u2014 Industrials (similarity 96%).",
+      "why_zh": "\u4e0e KMT \u62bc\u6ce8\u76f8\u540c \u2014 Industrials\uff08\u76f8\u4f3c\u5ea6 96%\uff09\u3002"
     },
     "LNTH": {
       "verdict": "new",
@@ -64,19 +227,31 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "NWBI",
+          "ticker": "PFG",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.11<0.2",
           "shared_groups": [],
           "same_earnings_week": false
+        },
+        {
+          "ticker": "KMT",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.11<0.2",
+          "shared_groups": [],
+          "same_earnings_week": true
         }
       ],
       "earnings_leg": {
         "next_date": "2026-11-05",
         "same_week_peers": [
-          "LTC"
+          "KMT",
+          "LTC",
+          "TKR",
+          "YUM"
         ],
         "has_data": true
       },
@@ -84,10 +259,10 @@
       "why_en": "Distinct bet \u2014 nearest peer LTC at 0% similarity.",
       "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 LTC\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
     },
-    "NWBI": {
+    "YUM": {
       "verdict": "new",
       "max_similarity": 0.0,
-      "basis": "membership+high-tier-factor",
+      "basis": "membership-only:r2=0.15<0.2",
       "nearest": [
         {
           "ticker": "LTC",
@@ -96,22 +271,36 @@
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.10<0.2",
           "shared_groups": [],
-          "same_earnings_week": null
+          "same_earnings_week": true
         },
         {
-          "ticker": "LNTH",
+          "ticker": "PFG",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.11<0.2",
+          "factor_basis": "beta-read-thin:r2=0.15<0.2",
           "shared_groups": [],
-          "same_earnings_week": null
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "KMT",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.15<0.2",
+          "shared_groups": [],
+          "same_earnings_week": true
         }
       ],
       "earnings_leg": {
-        "next_date": null,
-        "same_week_peers": [],
-        "has_data": false
+        "next_date": "2026-11-03",
+        "same_week_peers": [
+          "KMT",
+          "LNTH",
+          "LTC",
+          "TKR"
+        ],
+        "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Distinct bet \u2014 nearest peer LTC at 0% similarity.",
@@ -119,6 +308,27 @@
     }
   },
   "pair_basis": {
+    "LTC__PFG": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.10<0.2",
+      "shared_groups": []
+    },
+    "LTC__KMT": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.10<0.2",
+      "shared_groups": []
+    },
+    "LTC__TKR": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.10<0.2",
+      "shared_groups": []
+    },
     "LTC__LNTH": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -126,14 +336,79 @@
       "factor_basis": "beta-read-thin:r2=0.10<0.2",
       "shared_groups": []
     },
-    "LTC__NWBI": {
+    "LTC__YUM": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
       "factor_basis": "beta-read-thin:r2=0.10<0.2",
       "shared_groups": []
     },
-    "LNTH__NWBI": {
+    "PFG__KMT": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.7493,
+      "combined": 0.7493,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "PFG__TKR": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.553,
+      "combined": 0.553,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "PFG__LNTH": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.11<0.2",
+      "shared_groups": []
+    },
+    "PFG__YUM": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.15<0.2",
+      "shared_groups": []
+    },
+    "KMT__TKR": {
+      "membership_jaccard": 0.5,
+      "factor_cosine": 0.9576,
+      "combined": 0.9576,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": [
+        "sector:Industrials"
+      ]
+    },
+    "KMT__LNTH": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.11<0.2",
+      "shared_groups": []
+    },
+    "KMT__YUM": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.15<0.2",
+      "shared_groups": []
+    },
+    "TKR__LNTH": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.11<0.2",
+      "shared_groups": []
+    },
+    "TKR__YUM": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.15<0.2",
+      "shared_groups": []
+    },
+    "LNTH__YUM": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -149,8 +424,8 @@
     "new_note": "similarity < 0.35 \u2192 distinct bet"
   },
   "n_eff_by_lane": {
-    "entry_open": 3.0,
-    "setting_up": null
+    "entry_open": 2.9,
+    "setting_up": 1.0
   },
   "source_passport": {
     "factor_betas": {
@@ -161,7 +436,7 @@
     "us_standouts_v2": {
       "path": "site/factordata/us_standouts_v2.json",
       "found": true,
-      "as_of": "2026-11-02"
+      "as_of": "2026-11-03"
     },
     "membership": {
       "path": "data/baskets/membership.json",
