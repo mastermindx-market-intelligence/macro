@@ -321,7 +321,7 @@ def _extract(soup: BeautifulSoup) -> dict[str, object]:
 
 
 def _page(html_attrs: dict[str, object], head_inner: str, body_attrs: dict[str, object],
-          parts: dict[str, object], cfg: dict[str, object], ticker: str,
+          parts: dict[str, object], cfg: dict[str, object],
           page_css: str) -> str:
     cfg_json = json.dumps(cfg, sort_keys=True)
     return f"""<!DOCTYPE html>
@@ -400,7 +400,7 @@ def render(out: Path) -> dict[str, object]:
         if spec.get("inspect") is not None:
             cfg["inspect"] = spec["inspect"]
         name = f"save_{spec['name']}.html"
-        page = _page(html_attrs, head_inner, body_attrs, parts, cfg, parts["ticker"], page_css)
+        page = _page(html_attrs, head_inner, body_attrs, parts, cfg, page_css)
         (out / name).write_text(page, encoding="utf-8")
         pages.append({
             "file": name,
