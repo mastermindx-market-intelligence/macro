@@ -68,7 +68,7 @@
   }
 }</script>
 
-<link rel="stylesheet" href="../assets/css/3c29bc85.css?v=3c29bc85">
+<link rel="stylesheet" href="../assets/css/bdb8adf8.css?v=bdb8adf8">
 
 <link rel="stylesheet" href="../assets/css/17c15c21.css?v=17c15c21">
 <link rel="preload" as="style" href="../product-nav-icons.css?v=432f6a45">
@@ -214,8 +214,8 @@
     <path d="M2 11 C 40 11, 55 4, 90 7 S 150 3, 178 5 S 210 4, 218 3"/>
     <circle class="dot" cx="218" cy="3" r="2.6"/>
   </svg>
-  <h1 class="est-title">Compound Growth for Traders</h1>
-  <p class="est-dek">Return sequencing and drawdowns dominate long-run CAGR. Why the arithmetic mean of annual returns overstates actual wealth growth and what to use instead.</p>
+  <h1 class="est-title" lang="en">Compound Growth for Traders</h1>
+  <p class="est-dek" lang="en">Return sequencing and drawdowns dominate long-run CAGR. Why the arithmetic mean of annual returns overstates actual wealth growth and what to use instead.</p>
   <div class="est-meta">
     <span><span class="l-en">Published</span><span class="l-zh">发布</span> <span class="mono">2026-07-20</span></span>
     
@@ -224,14 +224,19 @@
 
 <div class="art-layout">
   
-  <nav class="art-toc" id="toc" aria-label="On this page">
-    <p class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></p>
-    <a href="#arithmetic-mean-versus-geometric-mean-the-core-difference">Arithmetic mean versus geometric mean: the core difference</a><a href="#why-return-sequencing-dominates-long-run-cagr">Why return sequencing dominates long-run CAGR</a><a href="#common-trap-measuring-performance-by-arithmetic-mean">Common trap: measuring performance by arithmetic mean</a><a href="#how-drawdowns-dominate-long-run-cagr">How drawdowns dominate long-run CAGR</a><a href="#contributions-and-their-real-effect">Contributions and their real effect</a><a href="#honest-time-horizons">Honest time horizons</a><a href="#where-this-breaks">Where this breaks</a>
-  </nav>
+  <details class="art-outline" open>
+    <summary>
+      <span class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></span>
+      <span class="toc-caret" aria-hidden="true"></span>
+    </summary>
+    <nav class="art-toc" id="toc" aria-label="On this page">
+      <a href="#arithmetic-mean-versus-geometric-mean-the-core-difference" lang="en">Arithmetic mean versus geometric mean: the core difference</a><a href="#why-return-sequencing-dominates-long-run-cagr" lang="en">Why return sequencing dominates long-run CAGR</a><a href="#common-trap-measuring-performance-by-arithmetic-mean" lang="en">Common trap: measuring performance by arithmetic mean</a><a href="#how-drawdowns-dominate-long-run-cagr" lang="en">How drawdowns dominate long-run CAGR</a><a href="#contributions-and-their-real-effect" lang="en">Contributions and their real effect</a><a href="#honest-time-horizons" lang="en">Honest time horizons</a><a href="#where-this-breaks" lang="en">Where this breaks</a>
+    </nav>
+  </details>
   
 
   <div class="art-main">
-    <article class="est-prose">
+    <article class="est-prose" lang="en">
       <p>Compounding is often described as a free lunch — let returns build on themselves and wealth grows exponentially. For traders specifically, the mechanism has a critical hidden cost: any year with a negative return does not just reduce gains, it shrinks the base that all future returns must compound against. The arithmetic mean of your annual returns systematically overstates your actual long-run wealth growth whenever any year is negative.</p>
 
 <h2 id="arithmetic-mean-versus-geometric-mean-the-core-difference">Arithmetic mean versus geometric mean: the core difference</h2>
@@ -397,6 +402,18 @@ where P = initial capital, c = contribution per period, i = rate per period, m =
     function spy(){ var y=window.scrollY+96, act=0; hs.forEach(function(h,i){ if(h&&h.offsetTop<=y) act=i; });
       ls.forEach(function(a,i){ a.classList.toggle('active',i===act); }); }
     window.addEventListener('scroll',spy,{passive:true}); spy(); })();
+</script>
+<script>
+  /* TOC disclosure governance: one details, two regimes. Desktop rail stays
+     open (summary inert); mobile starts collapsed, user may expand. Same
+     900px boundary as the estate_css media query. */
+  (function(){ var d=document.querySelector('details.art-outline'); if(!d)return;
+    var mq=window.matchMedia('(max-width:900px)');
+    function sync(){ if(mq.matches) d.removeAttribute('open'); else d.setAttribute('open',''); }
+    if(mq.addEventListener) mq.addEventListener('change',sync);
+    else if(mq.addListener) mq.addListener(sync);
+    d.addEventListener('toggle',function(){ if(!mq.matches&&!d.open) d.setAttribute('open',''); });
+    sync(); })();
 </script>
 
 
