@@ -1,6 +1,6 @@
 """Genuinely recapture EW-P4 before binding its receipt to final, committed render inputs."""
 from pathlib import Path
-import argparse, hashlib, json, subprocess, time
+import argparse, hashlib, json, subprocess, sys, time
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--workspace", type=Path, required=True)
@@ -12,11 +12,13 @@ def git(*parts):
     return subprocess.check_output(["git", *parts], cwd=root, text=True).strip()
 head = git("rev-parse", "HEAD")
 assert head == args.source_head, (head, args.source_head)
-receipt_rel = "research/evidence/ew_p4_descriptive_ui_20261031/receipt.json"
+prior_receipt_rel = "research/evidence/ew_p4_descriptive_ui_20261031/receipt.json"
+receipt_rel = "research/evidence/ew_p4_descriptive_ui_20261104_c2/receipt.json"
 output_rel = str(Path(receipt_rel).parent)
-prior_bytes = subprocess.check_output(["git", "show", head + ":" + receipt_rel], cwd=root)
+prior_bytes = subprocess.check_output(["git", "show", head + ":" + prior_receipt_rel], cwd=root)
 prior = json.loads(prior_bytes)
-assert (root / receipt_rel).read_bytes() == prior_bytes, "Preserve an existing uncommitted receipt; reconcile its owner first."
+assert (root / prior_receipt_rel).read_bytes() == prior_bytes, "Preserve an existing uncommitted receipt; reconcile its owner first."
+assert not (root / output_rel).exists(), "Preserve new capture identity; reconcile the original process before a retry."
 paths = sorted({row["path"] for row in prior["pr_source_equivalence"]["render_files"]} | {
     "templates/_prophet_page.css.j2",
     "templates/_prophet_opportunity_card.html.j2",
@@ -30,7 +32,7 @@ assert not args.log.exists(), "Use the original process/log for reconciliation; 
 started = time.time()
 with args.log.open("x") as log:
     completed = subprocess.run(
-        ["python3", "tests/probe_ew_p4_descriptive_ui_browser.py", "--output", output_rel],
+        [sys.executable, "tests/probe_ew_p4_descriptive_ui_browser.py", "--output", output_rel],
         cwd=root, stdout=log, stderr=subprocess.STDOUT, check=False)
 assert completed.returncode == 0, "Canonical recapture failed; see " + str(args.log)
 assert git("rev-parse", "HEAD") == head, "Source head moved during capture."
@@ -67,7 +69,8 @@ rec["pr_source_equivalence"] = {
 }
 rec["previous_capture"] = {
     "source_revision": prior["source_revision"],
-    "receipt_git_blob": git("rev-parse", head + ":" + receipt_rel),
+    "receipt_path": prior_receipt_rel,
+    "receipt_git_blob": git("rev-parse", head + ":" + prior_receipt_rel),
     "receipt_sha256": hashlib.sha256(prior_bytes).hexdigest(),
 }
 receipt_path.write_text(json.dumps(rec, indent=2, ensure_ascii=False) + "\n")
