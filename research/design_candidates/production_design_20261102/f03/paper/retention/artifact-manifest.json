@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 15449,
-      "sha256": "7dfacac5d098f80a148bb71333355a795c20a5edc1ccafb24fd6e4c7e868d61c",
-      "git_blob_sha": "26b7a2fc158104592408f45f5aeba818a549b21e"
+      "bytes": 17398,
+      "sha256": "b2eed723b21848b6951602a2341bc83e52477fc1d7972f062b6e2a447fed48fc",
+      "git_blob_sha": "605e1fe88244dffa9915ec11e877e716c65a7293"
     },
     {
       "path": "CONTRACT.md",
@@ -41,9 +41,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 18393,
-      "sha256": "8bed907290c808513d7d99a87afcfdcbff99758520019aaefe87d5816a270acf",
-      "git_blob_sha": "d4420b085c3066c17310e7842269dbc10c6a1ace"
+      "bytes": 20064,
+      "sha256": "edd3afa4bf8c26103fd8f11ae09882ea6c51e2cacdda9d512b6b7192ce6c6ec6",
+      "git_blob_sha": "e70b4e2cec9c414b0553ae631e031ef654974844"
     },
     {
       "path": "REPRODUCE.md",
@@ -1210,6 +1210,54 @@
       "git_blob_sha": "2c9e970861784fdd5088906e3bb25a0d818017c8"
     },
     {
+      "path": "paper/exports/original-only-options-20261104/6Y1Q-0.jsx",
+      "bytes": 53595,
+      "sha256": "52c3b005e9f2e0fcb88e244093a4961b68997a042a5ad1c593dfca21e6a583e6",
+      "git_blob_sha": "51f087fb0fe8ae337831ef327e056a5fc99ef915"
+    },
+    {
+      "path": "paper/exports/original-only-options-20261104/6Y8P-0.jsx",
+      "bytes": 54884,
+      "sha256": "a3d35ca4d1c667d7a64730880f772ec433b0bc76a09606c373ac540d4d4f9722",
+      "git_blob_sha": "03c8c1ae82a3d82c0b3e0ea217b4ea15ef8f66a7"
+    },
+    {
+      "path": "paper/exports/original-only-options-20261104/6YFM-0.jsx",
+      "bytes": 70404,
+      "sha256": "25a1a4c58cb2412bec0a1255d0f320c5e009d7b01b23feb2d126d0c8fd067840",
+      "git_blob_sha": "0c986aadd9f21f9db3126f68252959b4eb8dcd1e"
+    },
+    {
+      "path": "paper/exports/original-only-options-20261104/6YP3-1.jsx",
+      "bytes": 88677,
+      "sha256": "3a3530be77848123a8903ca3f80909315f10271bcb52f4d1659488f7771b180f",
+      "git_blob_sha": "c0bb47127c3ac80439fbeb599405d47fe39385d1"
+    },
+    {
+      "path": "paper/exports/original-only-options-20261104/6Z06-1.jsx",
+      "bytes": 43040,
+      "sha256": "20154068485d8b32a49c0a71e2df3e864b2710df98aef880ae766a37ea091112",
+      "git_blob_sha": "d71bf184a6dc3543ae79c9df374524ed6e824a35"
+    },
+    {
+      "path": "paper/exports/original-only-options-20261104/6ZXX-0.jsx",
+      "bytes": 34594,
+      "sha256": "de6a168a04df4695de9484e4ddd22a17be7974e7329d33119fa425dceacc3a94",
+      "git_blob_sha": "ada286ec8f0a3f59b052640f304e3216a141dbfa"
+    },
+    {
+      "path": "paper/exports/original-only-options-20261104/702T-0.jsx",
+      "bytes": 198704,
+      "sha256": "5f8d011e09795f1d5f9a5366124948114f84bb1e5ae40e64e61ae8c7022f95aa",
+      "git_blob_sha": "3bf8b4e74bdcad70589517e1722ce3ae7062ac13"
+    },
+    {
+      "path": "paper/exports/original-only-options-20261104/71QK-0.jsx",
+      "bytes": 73131,
+      "sha256": "babdd2339ea67239a1eca109399217f64ecb2cfcd24769dc49ebb699ffeb13e8",
+      "git_blob_sha": "91b162b1e9a8ed22ed4be3b97429c1182f61a23d"
+    },
+    {
       "path": "paper/exports/original-only-t47-20261104/72OX-0.jsx",
       "bytes": 31051,
       "sha256": "851cad0014e125e2efa10472959bd251224592e327c19baddd660a42bb277d09",
@@ -1322,6 +1370,12 @@
       "bytes": 7416,
       "sha256": "4b78ea781bf70be72e1d791f9acf61269a0db4a87e2329c43a932cea96299615",
       "git_blob_sha": "aa3ed22c4ec5efec190be718599f2df47a1cc301"
+    },
+    {
+      "path": "paper/retention/original-only-options-20261104.json",
+      "bytes": 6373,
+      "sha256": "0485ae4f8e1e1504e353d461503024c631e580f34502588fef64d0e4dac9b80e",
+      "git_blob_sha": "69cd150088a7eb2c2fbb0dd43f668cae8b63c691"
     },
     {
       "path": "paper/retention/original-only-t47-20261104.json",
@@ -1474,5 +1528,15 @@
   },
   "current_original_only_capture_set": "paper/retention/original-only-t47-20261104.json",
   "current_original_only_intraday_capture_set": "paper/retention/original-only-intraday-20261104.json",
-  "current_original_only_f01_capture_set": "paper/retention/original-only-f01-20261104.json"
+  "current_original_only_f01_capture_set": "paper/retention/original-only-f01-20261104.json",
+  "current_original_only_options_capture_set": "paper/retention/original-only-options-20261104.json",
+  "original_only_coverage": {
+    "baseline_missing_copy_page_count": 4,
+    "exact_original_only_board_count": 40,
+    "visible_jsx_board_captures": 40,
+    "reported_page_nodes": 6163,
+    "exported_jsx_id_occurrences": 5386,
+    "unresolved_id_count_difference": 777,
+    "native_retention_proven": false
+  }
 }
