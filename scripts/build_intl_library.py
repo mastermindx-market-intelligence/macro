@@ -308,6 +308,17 @@ def _intl_session_asof(alpha, to_write) -> "tuple[str, bool]":
     return str(pd.Timestamp.utcnow().date()), False
 
 
+def _ledger_lane_armed() -> bool:
+    """Reuse the existing nightly-only predicate for both archival writers.
+
+    Library analysis and display still run on render lanes; forward-ledger
+    writes remain with the canonical owner. Import or predicate failure is
+    contained by each incumbent writer block and never advances its ledger.
+    """
+    from engine.risk_radar_intl_audit import ledger_lane_armed
+    return ledger_lane_armed()
+
+
 def main(alpha: dict | None = None) -> dict | None:
     site = config.ROOT / config.load()["storage"]["site_dir"]
     outdir = site / "intlstockdata"
@@ -448,7 +459,15 @@ def main(alpha: dict | None = None) -> dict | None:
         if _pot.get("call"):
             _icalls.append({**_pot["call"], "level": (_rec.get("tech") or {}).get("price")})
     try:
-        if _icalls:
+        # House law: nightly is the SOLE advancer of data/ forward ledgers. The
+        # render / engine-render / intraday lanes and the closing bell run this build
+        # too, and a mid-session append is PIT-inconsistent (and, idempotent-by-asof,
+        # would permanently displace the nightly row). The gate is the canonical
+        # engine.risk_radar_intl_audit.ledger_lane_armed, delegated to by
+        # _ledger_lane_armed(); the name-score CALL ledger advances ONLY there.
+        # The DISPLAY computation above (the INTL displayed score / band / the call
+        # list itself) is NOT gated — the board renders identically on every lane.
+        if _ledger_lane_armed() and _icalls:
             # session stamp, not host clock — same date key the board publishes
             # (US measured board(D)≡store(D+1) under utcnow stamping;
             # DSC:NAME-SCORE-HAS-TWO-DISAGREEING-MEMORIES). INTL's alpha carries
@@ -462,10 +481,15 @@ def main(alpha: dict | None = None) -> dict | None:
     # conviction stats (potential median/IQR/n + theme score/label) so the pre-registered
     # demotion study can run once ≥180 trading days accrue. Write-only ledger, never fatal.
     try:
-        from engine import conviction_accrual
-        _b2_asof = _session_asof
-        if conviction_accrual.archive_member_conviction("intl", profiles, asof=_b2_asof):
-            log.info("B2 conviction accrual: archived conviction_intl for %s", _b2_asof)
+        # Same house law as the name-score append above: the B2 conviction accrual is
+        # a data/ forward ledger and advances ONLY on the nightly lane (the canonical
+        # ledger_lane_armed gate, delegated to by _ledger_lane_armed). The import
+        # stays inside the gated branch so an off-lane build never even loads it.
+        if _ledger_lane_armed():
+            from engine import conviction_accrual
+            _b2_asof = _session_asof
+            if conviction_accrual.archive_member_conviction("intl", profiles, asof=_b2_asof):
+                log.info("B2 conviction accrual: archived conviction_intl for %s", _b2_asof)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("B2 conviction accrual (intl) failed (%s)", e)
     for safe, rec in to_write:

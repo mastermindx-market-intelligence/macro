@@ -570,7 +570,33 @@ def _cgl_compact_summary(artifact: dict | None) -> dict | None:
 
 
 
-def main() -> int:
+def _retained_library_for_render(receipt):
+    """Read a completed native Library only for an explicit render continuation.
+
+    The trusted caller captures the receipt after the original successful build.
+    It binds current isolated inputs and canonical Library output bytes; it does
+    not grant source rights or authenticate arbitrary filesystem writers.
+    """
+    if receipt is None:
+        return None
+    import os
+    lane = os.environ.get("COLLECT_LANE", "") or os.environ.get("US_LANE", "")
+    if lane.lower() not in {"render", "engine-render"}:
+        raise ValueError("retained Library requires an explicit render lane")
+    from lib.intl_library_retained import load_retained_library
+    return load_retained_library(
+        data_root=config.data_dir(),
+        site_root=Path(config.load()["storage"]["site_dir"]), receipt=receipt)
+
+
+def main(*, retained_library_receipt=None) -> int:
+    # Verify reuse before engine/render writes can change the bound input tree.
+    # A failed receipt never silently falls back to another stock analysis.
+    try:
+        retained_setups = _retained_library_for_render(retained_library_receipt)
+    except Exception as exc:
+        log.error("International retained Library rejected (%s)", type(exc).__name__)
+        return 1
     # A failed/empty render must not leave this attempt's native current feed
     # claiming a ready generation. This is availability, never a data clock.
     try:
@@ -1295,8 +1321,12 @@ def main() -> int:
         # per-stock library + pooled standouts shortlist
         setups = None
         try:
-            from scripts import build_intl_library
-            setups = build_intl_library.main(alpha=alpha)
+            if retained_library_receipt is not None:
+                setups = retained_setups
+                log.info("intl stock library: reused verified completed native outputs")
+            else:
+                from scripts import build_intl_library
+                setups = build_intl_library.main(alpha=alpha)
         except Exception as e:  # noqa: BLE001 — additive
             log.error("intl stock library failed (%s)", e)
 
