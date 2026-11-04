@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-03",
+ "asof": "2026-11-04",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -22,7 +22,7 @@
  "n": 3071,
  "n_failed": 0,
  "fail_pct": 0.0,
- "n_flags": 148,
+ "n_flags": 147,
  "universes": [
   {
    "name": "stocks",
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1806d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1807d past its 2021-11-22 registry bar; overlap corr -0.139"
     },
     {
      "name": "KVUE",
@@ -51,7 +51,7 @@
    "n": 2815,
    "n_failed": 0,
    "fail_pct": 0.0,
-   "n_flags": 146,
+   "n_flags": 145,
    "skipped": false,
    "note": "",
    "failed": [],
@@ -89,7 +89,7 @@
     {
      "name": "ANGPY",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-11-02) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-11-03) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "APEI",
@@ -339,7 +339,7 @@
     {
      "name": "GETY",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-11-02) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-11-03) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "GPRE",
@@ -374,7 +374,7 @@
     {
      "name": "IMPUY",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-11-02) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-11-03) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "INDV",
@@ -505,11 +505,6 @@
      "name": "MYGN",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
-    },
-    {
-     "name": "NATH",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-27) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "NBR",
@@ -684,7 +679,7 @@
     {
      "name": "STRS",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-11-02) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-11-03) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "SVC",
@@ -790,13 +785,13 @@
   }
  ],
  "ledger_identity": {
-  "ledger": "/Users/chriswong/actions-runner-4/_work/macro/macro/data/signal_archive/track_record.parquet",
+  "ledger": "/Users/chriswong/actions-runner-2/_work/macro/macro/data/signal_archive/track_record.parquet",
   "declared_duplicates": [],
   "undeclared_candidates": [],
   "ticker_key_migrations": {
    "SATS": "ECHO"
   },
-  "ledger_rows": 61591
+  "ledger_rows": 61734
  },
  "grace_days": 30,
  "stale_calendar_days": 7,
@@ -804,7 +799,7 @@
   "zombie": 5,
   "rebirth": 3,
   "registry_mismatch": 128,
-  "delisted_printing": 12,
+  "delisted_printing": 11,
   "member_identity": 0
  },
  "stores": [
@@ -815,8 +810,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-11-02",
-     "days_past_death": 1806,
+     "store_tip": "2026-11-03",
+     "days_past_death": 1807,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -1067,8 +1062,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-11-02",
-     "days_past_death": 1263,
+     "store_tip": "2026-11-03",
+     "days_past_death": 1264,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
@@ -1353,8 +1348,8 @@
     {
      "ticker": "DAKT",
      "registry_last": "2021-11-16",
-     "store_tip": "2026-11-02",
-     "days_past_death": 1812,
+     "store_tip": "2026-11-03",
+     "days_past_death": 1813,
      "overlap": {
       "n_overlap": 95,
       "ret_corr_full": 1.0,
@@ -1470,8 +1465,8 @@
     {
      "ticker": "ELME",
      "registry_last": "2026-04-02",
-     "store_tip": "2026-11-02",
-     "days_past_death": 214,
+     "store_tip": "2026-11-03",
+     "days_past_death": 215,
      "overlap": {
       "n_overlap": 1856,
       "ret_corr_full": 1.0,
@@ -1847,8 +1842,8 @@
     {
      "ticker": "MGPI",
      "registry_last": "2025-12-22",
-     "store_tip": "2026-11-02",
-     "days_past_death": 315,
+     "store_tip": "2026-11-03",
+     "days_past_death": 316,
      "overlap": {
       "n_overlap": 1123,
       "ret_corr_full": 0.9999,
@@ -2589,7 +2584,7 @@
    "delisted_printing": [
     {
      "ticker": "ANGPY",
-     "store_tip": "2026-11-02",
+     "store_tip": "2026-11-03",
      "acked": true
     },
     {
@@ -2599,12 +2594,12 @@
     },
     {
      "ticker": "GETY",
-     "store_tip": "2026-11-02",
+     "store_tip": "2026-11-03",
      "acked": false
     },
     {
      "ticker": "IMPUY",
-     "store_tip": "2026-11-02",
+     "store_tip": "2026-11-03",
      "acked": true
     },
     {
@@ -2623,11 +2618,6 @@
      "acked": false
     },
     {
-     "ticker": "NATH",
-     "store_tip": "2026-10-27",
-     "acked": false
-    },
-    {
      "ticker": "RAMP",
      "store_tip": "2026-10-30",
      "acked": false
@@ -2639,7 +2629,7 @@
     },
     {
      "ticker": "STRS",
-     "store_tip": "2026-11-02",
+     "store_tip": "2026-11-03",
      "acked": true
     }
    ]
@@ -2670,7 +2660,6 @@
   "baskets/ohlcv/INDV",
   "baskets/ohlcv/KVUE",
   "baskets/ohlcv/LXP",
-  "baskets/ohlcv/NATH",
   "baskets/ohlcv/RAMP"
  ],
  "unacked_member_identity": [],
