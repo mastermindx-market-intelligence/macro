@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MTSI-BULL-20260813",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 21.6,
@@ -10,23 +10,23 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 3.0,
+    "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.119,
+    "dist_to_stop_r": 0.003,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 171.1,
-    "p1": -0.5875,
-    "p2": -0.2938,
+    "horizon_pct_used": 173.3,
+    "p1": -0.6646,
+    "p2": -0.3323,
     "p3": null,
-    "move_r": -0.881,
+    "move_r": -0.997,
     "mfe_r": 0.219,
-    "mae_r": -0.925
+    "mae_r": -0.997
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 23.170013427734375,
-  "_mae": -97.77000427246094,
+  "_mae": -105.32000732421875,
   "_max_p1": 0.14620611091802727,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 77,
-  "tau": 1.7111,
+  "days_elapsed": 78,
+  "tau": 1.7333,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

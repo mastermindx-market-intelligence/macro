@@ -1,12 +1,12 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-11-02",
-  "generated_utc": "2026-11-02T10:38:25Z",
+  "as_of": "2026-11-03",
+  "generated_utc": "2026-11-03T21:28:05Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 329,
     "by_state": {
-      "overdue": 180,
+      "overdue": 181,
       "due": 35,
       "human_review": 0,
       "missing": 1,
@@ -14,7 +14,7 @@
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 110
+      "accruing": 109
     },
     "n_acknowledged": 0,
     "top_due": {
@@ -22,7 +22,7 @@
       "due_at": "2026-06-22",
       "owner_program": "qualitative-intelligence"
     },
-    "morning_line": "215 due/overdue, 1 missing, 110 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
+    "morning_line": "216 due/overdue, 1 missing, 109 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
   },
   "rows": [
     {
@@ -466,7 +466,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 6932,
-        "n_past_check_by": 6368
+        "n_past_check_by": 6400
       },
       "allowed_actions": [
         "inspect",
@@ -514,7 +514,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 96,
-        "n_past_check_by": 90
+        "n_past_check_by": 91
       },
       "allowed_actions": [
         "inspect",
@@ -642,7 +642,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 56,
-        "n_past_check_by": 29
+        "n_past_check_by": 30
       },
       "allowed_actions": [
         "inspect",
@@ -2383,7 +2383,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 14879,
-        "n_past_check_by": 8972
+        "n_past_check_by": 9209
       },
       "allowed_actions": [
         "inspect",
@@ -2800,7 +2800,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 73,
-        "n_past_check_by": 49
+        "n_past_check_by": 53
       },
       "allowed_actions": [
         "inspect",
@@ -2930,7 +2930,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 203,
-        "n_past_check_by": 119
+        "n_past_check_by": 137
       },
       "allowed_actions": [
         "inspect",
@@ -6017,8 +6017,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-26",
       "as_of": "2026-06-20",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "21d horizon; n_matured>=30; Spearman IC over matured + rolling ~90; per-state directional accuracy.",
         "cadence": "daily",
@@ -7004,13 +7004,45 @@
       "packet": null
     },
     {
+      "clock_id": "experiments:vol-shock-scorecard",
+      "source_system": "experiments",
+      "subject_id": "vol-shock-scorecard",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-11-03",
+      "as_of": null,
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "append daily firing -> resolve 10d-forward rows with realized outcome -> compute hit_rate + by_band; needs a batch of resolved rows for a read.",
+        "cadence": "daily",
+        "status": "measuring",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
       "clock_id": "rule_experiments:disp_gate_1",
       "source_system": "rule_experiments",
       "subject_id": "disp_gate_1",
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-02",
+      "due_at": "2026-11-03",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7042,7 +7074,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-02",
+      "due_at": "2026-11-03",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7074,7 +7106,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-02",
+      "due_at": "2026-11-03",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7106,7 +7138,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-02",
+      "due_at": "2026-11-03",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7177,10 +7209,11 @@
       "readiness": {
         "as_of": "2026-10-16",
         "stale_chips": [
+          "market",
           "reliability",
           "contradictions",
+          "bottom_sensors",
           "options_entry",
-          "cortex",
           "macro_weather",
           "inflation_intelligence",
           "government_revenue"
@@ -7266,7 +7299,7 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 118395,
+        "n_claims": 118396,
         "n_with_falsifier": 1265,
         "falsifier_coverage": "1.1%",
         "blocking_reason": "falsifier coverage 1.1%; not a promotion-grade substrate"
@@ -7283,37 +7316,6 @@
       "evidence_refs": [
         "data/qledger/claims.jsonl"
       ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:vol-shock-scorecard",
-      "source_system": "experiments",
-      "subject_id": "vol-shock-scorecard",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-11-03",
-      "as_of": null,
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "append daily firing -> resolve 10d-forward rows with realized outcome -> compute hit_rate + by_band; needs a batch of resolved rows for a read.",
-        "cadence": "daily",
-        "status": "measuring"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
       "regenerate_cmd": null,
       "acknowledged": false,
       "review": null,
@@ -10224,7 +10226,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 1,
+        "n_open": 2,
         "n_past_check_by": 0
       },
       "allowed_actions": [

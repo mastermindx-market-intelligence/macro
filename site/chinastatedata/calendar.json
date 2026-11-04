@@ -1,7 +1,7 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-11-02",
-  "generated_at_utc": "2026-11-02T16:27:19.670308+00:00",
+  "asof": "2026-11-03",
+  "generated_at_utc": "2026-11-03T15:23:30.744406+00:00",
   "horizon_days": 45,
   "entries": [
     {
@@ -15,30 +15,6 @@
       "source_class": "static",
       "source": "china_calendar.political_windows",
       "approx": true
-    },
-    {
-      "date": "2026-11-02",
-      "window_end": null,
-      "etype": "CAIXIN_M",
-      "label_en": "Caixin Manufacturing PMI",
-      "label_zh": "财新制造业 PMI",
-      "region": "cn",
-      "impact": "medium",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-11-02",
-      "window_end": null,
-      "etype": "HK_PMI",
-      "label_en": "S&P Global HK PMI",
-      "label_zh": "标普全球香港 PMI",
-      "region": "hk",
-      "impact": "medium",
-      "source_class": "rule",
-      "source": "engine.hk_event_calendar",
-      "approx": false
     },
     {
       "date": "2026-11-04",
