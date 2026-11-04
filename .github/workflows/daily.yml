@@ -2756,9 +2756,9 @@ jobs:
           # quotes-worker URL to turn ON browser live prices — build_site bakes it into
           # site/live_config.js. Empty -> live layer stays dormant (no-op). No code edit needed.
           LIVE_QUOTES_WORKER_URL: ${{ vars.LIVE_QUOTES_WORKER_URL }}
-        # The first-class input step already attempted engine.run; this helper
-        # renders from those inputs and never runs a second input refresh.
-        run: bash scripts/ci/daily_engine_regime_dashboard.sh
+        # Signal this plan's earlier attempt. Old queued YAML still calls the
+        # helper without the flag and retains its own single regime refresh.
+        run: bash scripts/ci/daily_engine_regime_dashboard.sh --regime-inputs-attempted
       - name: publish the provisional → nightly confirmation delta (R2 artifact)
         # W-L1. Runs HERE, after the build step, because that is the first moment
         # site/factordata/us_standouts.json is tonight's board of record — the same

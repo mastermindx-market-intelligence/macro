@@ -717,6 +717,13 @@ lanes:
           own accepted as-of dates. Synthesis has a bounded, fail-soft step.
       - id: build_aibrief
         module: scripts.build_aibrief
+      - id: engine_run_legacy_plan
+        module: engine.run
+        note: >
+          Compatibility branch in the core helper for already-queued old YAML
+          plans that check out new main. The current plan passes
+          --regime-inputs-attempted and skips this invocation; each plan attempts
+          the regime refresh exactly once, including a failed current attempt.
       - id: build_shock_deescalation
         module: engine.shock_deescalation
         note: >

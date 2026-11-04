@@ -1225,15 +1225,19 @@ def test_ai_brief_precedes_embedded_pages_and_durable_checkpoint():
         for step in steps
         for module in _extract_modules_from_run(resolve_run_source(step.get("run", ""), REPO_ROOT))
     ]
-    assert modules.count("engine.run") == 1
+    # Both mutually exclusive plan paths are visible to the static DAG census.
+    assert modules.count("engine.run") == 2
+    assert core["run"].endswith(" --regime-inputs-attempted")
     assert modules.count("engine.master_brain") == 1
     assert modules.count("engine.master_brain_scorer") == 1
     assert modules.index("engine.master_brain") < modules.index("scripts.build_site")
     assert modules.index("engine.master_brain") < modules.index("scripts.build_aibrief")
 
 
-def test_ai_brief_real_shell_runs_engine_once_before_consumers(tmp_path):
+@pytest.mark.parametrize("legacy_plan,input_rc", [(False, 0), (True, 0), (False, 2)])
+def test_ai_brief_real_shell_runs_engine_once_before_consumers(tmp_path, legacy_plan, input_rc):
     import os
+    import shlex
     import subprocess
 
     binary = tmp_path / "bin"
@@ -1243,12 +1247,14 @@ def test_ai_brief_real_shell_runs_engine_once_before_consumers(tmp_path):
         '#!/usr/bin/env bash\n'
         'printf "%s\\n" "$2" >> "$BRIEF_TEST_CALLS"\n'
         'case "$2" in\n'
+        '  engine.run) exit "${BRIEF_TEST_INPUT_RC:-0}";;\n'
         '  engine.master_brain) echo current-brief > brief.txt;;\n'
         '  scripts.build_site|scripts.build_aibrief) cat brief.txt > "$2.html";;\n'
         'esac\n'
     )
     python.chmod(0o755)
     calls = tmp_path / "calls"
+    (tmp_path / "brief.txt").write_text("prior-brief\n")
     env = {
         **os.environ,
         "PATH": str(binary) + os.pathsep + os.environ["PATH"],
@@ -1256,6 +1262,7 @@ def test_ai_brief_real_shell_runs_engine_once_before_consumers(tmp_path):
         "GITHUB_STEP_SUMMARY": str(tmp_path / "summary"),
         "GITHUB_OUTPUT": str(tmp_path / "output"),
         "BRIEF_TEST_CALLS": str(calls),
+        "BRIEF_TEST_INPUT_RC": str(input_rc),
     }
     steps = _brief_workflow("daily.yml")["jobs"]["engine"]["steps"]
     selected = [
@@ -1264,19 +1271,37 @@ def test_ai_brief_real_shell_runs_engine_once_before_consumers(tmp_path):
         or s.get("name", "").startswith("master brain scorer")
         or s.get("name") == "AI Daily Brief page (build_aibrief)"
     ]
+    if legacy_plan:
+        selected = [s for s in selected if s.get("id") == "regime_dashboard"]
+    input_outcome = "success"
     for step in selected:
+        if "steps.regime_inputs.outcome" in step.get("if", ""):
+            condition = step["if"].replace("steps.regime_inputs.outcome", repr(input_outcome))
+            if not eval(condition, {"__builtins__": {}}, {}):
+                continue
         if step.get("id") == "regime_dashboard":
-            command = ["bash", str(REPO_ROOT / "scripts/ci/daily_engine_regime_dashboard.sh")]
+            args = [] if legacy_plan else shlex.split(step["run"])[2:]
+            command = ["bash", str(REPO_ROOT / "scripts/ci/daily_engine_regime_dashboard.sh"), *args]
         else:
             command = ["bash", "-e", "-c", step["run"]]
         result = subprocess.run(command, cwd=tmp_path, env=env, capture_output=True, text=True)
-        assert result.returncode == 0, result.stderr
+        if step.get("id") == "regime_inputs" and result.returncode:
+            assert step["continue-on-error"] is True
+            input_outcome = "failure"
+        else:
+            assert result.returncode == 0, result.stderr
     invoked = calls.read_text().splitlines()
-    assert invoked.count("engine.run") == invoked.count("engine.master_brain") == 1
-    assert invoked.index("engine.run") < invoked.index("engine.master_brain")
-    assert invoked.index("engine.master_brain") < invoked.index("scripts.build_site")
-    assert (tmp_path / "scripts.build_site.html").read_text() == "current-brief\n"
-    assert (tmp_path / "scripts.build_aibrief.html").read_text() == "current-brief\n"
+    assert invoked.count("engine.run") == 1
+    assert invoked.index("engine.run") < invoked.index("scripts.build_site")
+    if legacy_plan or input_rc:
+        assert "engine.master_brain" not in invoked
+        assert (tmp_path / "scripts.build_site.html").read_text() == "prior-brief\n"
+    else:
+        assert invoked.count("engine.master_brain") == 1
+        assert invoked.index("engine.run") < invoked.index("engine.master_brain")
+        assert invoked.index("engine.master_brain") < invoked.index("scripts.build_site")
+        assert (tmp_path / "scripts.build_site.html").read_text() == "current-brief\n"
+        assert (tmp_path / "scripts.build_aibrief.html").read_text() == "current-brief\n"
 
 
 def test_brief_completion_handoff_keeps_one_existing_render_queue():
