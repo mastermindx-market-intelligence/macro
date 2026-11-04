@@ -1,0 +1,92 @@
+{
+  "task": "P12.T2.S14.S5",
+  "at": "2026-11-04T13:15:06.916782+00:00",
+  "head": "c0c035ca3de676cc35dea698faa917a5a99cb56f",
+  "merge_current_protected": "0590fe7eb3fe9d59b71c7eade030cc63c6d7a05c",
+  "current_owner_inputs_byteequal079": [
+    "site/macrodata/workspaces/manifest.json",
+    "site/macrodata/workspaces/business_activity/US/latest.json"
+  ],
+  "new_protected_nondata_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "agentos/decisions/DEC-EXECUTIVE-ECOSYSTEM-CURRENT-DIRECTION-20261104.md",
+    "agentos/schema/decision.schema.yml",
+    "agentos/schema/workstream.schema.yml",
+    "agentos/workstreams/WS-EXECUTIVE-ECOSYSTEM-COMPLETION.md",
+    "docs/agentos-plan-adoption.md",
+    "docs/agentos-project-proposal.md",
+    "research/MASTERMIND_AGENT_OS_STATE_SCHEMA.md",
+    "scripts/agentos.py",
+    "scripts/agentos_direction.py",
+    "scripts/agentos_direction_acceptance.py",
+    "scripts/agentos_plan_adoption.py",
+    "scripts/agentos_project_archive.py",
+    "scripts/agentos_project_plan_contract.py",
+    "scripts/agentos_project_proposal.py",
+    "scripts/agentos_standing_instructions.py",
+    "scripts/project_knowledge_recipes.py",
+    "tests/test_agentos_direction.py",
+    "tests/test_agentos_direction_acceptance.py",
+    "tests/test_agentos_direction_owner.py",
+    "tests/test_agentos_plan_adoption.py",
+    "tests/test_agentos_project_archive.py",
+    "tests/test_agentos_project_knowledge_owner.py",
+    "tests/test_agentos_project_plan_contract.py",
+    "tests/test_agentos_project_plan_owner.py",
+    "tests/test_agentos_project_proposal.py",
+    "tests/test_agentos_standing_instructions.py",
+    "tests/test_project_knowledge_recipes.py"
+  ],
+  "root_accepted_family_source": "18e80993b9ab13bf208afc64f32bd24f2c480cb9",
+  "family_paths": {
+    ".github/ci/legacy-jobs.yml": {
+      "mode": "100644",
+      "blob": "d51ed540239541b5c45aad8c26a2adf6c0ff3d6a",
+      "sha256": "6a3ed0fdfd555b60d6d7e1a19e65aab40434dc1fefb1d2ce623aa43032b5738d"
+    },
+    "research/market_os/evidence/country-cycles-p12t48-20261104/COUNTRY_CYCLES_JOURNEY.md": {
+      "mode": "100644",
+      "blob": "7e81432793c74d4606cbad249790a36af92455c3",
+      "sha256": "412eb0bb89d77e28fcbc3baf0c24d9d8a32e0e722e227f45246c41c9ef7367bf"
+    },
+    "scripts/build_subsector_rotation_china_pages.py": {
+      "mode": "100644",
+      "blob": "d30196d700c88edb55d36490d8d5d5d7124bbee1",
+      "sha256": "5e296e0507c834ce316672a21bc4c866765c920deb2f9c9dafc998aa08b2a86a"
+    },
+    "scripts/build_subsector_rotation_pages.py": {
+      "mode": "100644",
+      "blob": "ee09de7c18f446a3df2535db020be9c9cb394235",
+      "sha256": "925cf4f0b0653154532551f2c6b748cdf33bf49a37f8c38da25bb0b9094a6c4d"
+    },
+    "templates/country_cycles.html.j2": {
+      "mode": "100644",
+      "blob": "f2118f7d10c572c70b0261bae7d8be6610c3ce1d",
+      "sha256": "8ee51370943bae123bd7770e2f11d04dc856c8d8e52ee63f01924dca6d47542f"
+    },
+    "templates/subsector_rotation_detail.html.j2": {
+      "mode": "100644",
+      "blob": "9916eb27e6025ff6360e68dcfcf307018fac81e0",
+      "sha256": "16d3f3c43a9c3e625e89575c83ae97cda9b0b3df44cd62671a8ccf031b47d4e4"
+    },
+    "tests/test_sector_cycles.py": {
+      "mode": "100644",
+      "blob": "a19a938f608f97859fe7b9108324d7e8e48665b8",
+      "sha256": "9032973bc7ff22c36d5eb9b2801b62cc958f380b091af305b8c83b8add938cf1"
+    },
+    "tests/test_subsector_rotation.py": {
+      "mode": "100644",
+      "blob": "1b88be6461a47e93bb8d0593841d1855810634e5",
+      "sha256": "3206627a48cfac154dde461fbfe7abcf76a28bf2fbceaae88970ab643128a122"
+    }
+  },
+  "implementation": "ordinary no-commit merge of observed main; resolve only Business by complete canonical current-input rendition; merge reviewed family paths semantically, existing CI additions preserved; no test/guard weakening",
+  "checks": "affected static copy3; Business31 raw/view/reference/source plus tamper refusal; native asset/body/time; exact accepted source/fixtures; CI ownership/packing structural",
+  "holds": "no provider/browser/host/fullfinancial producer/manualCI/duplicateobserver; current518proof not transferred to successor",
+  "native_input_body_stage": {
+    "native_report": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s5-current-business-native/native-render-report.json",
+    "native_report_sha256": "3e8abe459f5177a0735f7d15393e75d4ca84129d77fe23a7fe074d7eb7d0ba22",
+    "corrected_static_guards": "3PASS4.88s; original2RED/1PASS exactcurrentprotectedbody remainsretained",
+    "Fabric": "Original ss-business-current-owner-c0-p12t2s14s5-20261104-01 actualrequest50192/remoteMiniMax-M3 ubuntu3 terminalrc0; deterministicacceptedtrue;31rows+exhaustive8fielddiff;usage receiptmissing,costunknown"
+  }
+}

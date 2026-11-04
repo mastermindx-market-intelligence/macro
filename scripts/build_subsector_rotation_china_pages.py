@@ -57,6 +57,9 @@ def build(site: Path | None = None) -> int:
             # China parameterization of the shared template
             stock_base="china_lookup.html#", back_href="sector_central_china.html#si-movement",
             back_en="China Subsector Rotation map", back_zh="中国子行业轮动图",
+            rotation_feed_clocks=True,
+            rotation_source_asof=data.get("asof"),
+            rotation_feed_generated_utc=data.get("generated_utc"),
         )
         write_page(out_dir / f"{sub['key']}.html", html)
         n += 1

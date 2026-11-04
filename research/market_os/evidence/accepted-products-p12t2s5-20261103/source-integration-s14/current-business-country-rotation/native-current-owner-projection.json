@@ -1,0 +1,430 @@
+{
+  "current_rows": [
+    {
+      "metric_id": "leading_tier_index",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "leading_tier_momentum_6m",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "leading_tier_trend",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "leading_tier_diffusion",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "leading_tier_direction",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "leading_tier_leg_count",
+      "value": 3,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "coincident_tier_index",
+      "value": 36.164210792744576,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "coincident_tier_momentum_6m",
+      "value": -0.12432237847522742,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "coincident_tier_trend",
+      "value": -0.07035658509470347,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "coincident_tier_diffusion",
+      "value": 100.0,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "coincident_tier_direction",
+      "value": "falling",
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "coincident_tier_leg_count",
+      "value": 3,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "lagging_tier_index",
+      "value": 92.72581501010836,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "lagging_tier_momentum_6m",
+      "value": 0.3509669328855409,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "lagging_tier_trend",
+      "value": 0.274571997287994,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "lagging_tier_diffusion",
+      "value": 75.0,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "lagging_tier_direction",
+      "value": "rising",
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "lagging_tier_leg_count",
+      "value": 4,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-09-30",
+      "observed_at": "2026-09-30",
+      "calculation_as_of": "2026-09-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "coincident_lagging_ratio_momentum_6m",
+      "value": -0.4033454193975601,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "recession_signal_state",
+      "value": "off",
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "recession_signal_depth",
+      "value": false,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "recession_signal_breadth",
+      "value": true,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "recession_signal_months_active",
+      "value": 42.0,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "business_cycle_phase",
+      "value": "contraction",
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "recession_signal_oos_catch_rate",
+      "value": 0.667,
+      "status": "PRESENT",
+      "null_reason": null,
+      "reference_period": "2026-11-30",
+      "observed_at": "2026-11-30",
+      "calculation_as_of": "2026-11-30",
+      "freshness": "HISTORICAL_AS_KNOWN",
+      "source_refs": [
+        "engine.business_cycle"
+      ]
+    },
+    {
+      "metric_id": "survey_composite_pmi",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "RIGHTS_BLOCKED",
+      "reference_period": null,
+      "observed_at": null,
+      "calculation_as_of": null,
+      "freshness": "RIGHTS_BLOCKED",
+      "source_refs": [
+        "engine.business_cycle (no survey collector)"
+      ]
+    },
+    {
+      "metric_id": "new_orders_demand",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": null,
+      "observed_at": null,
+      "calculation_as_of": null,
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ]
+    },
+    {
+      "metric_id": "production_utilization",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": null,
+      "observed_at": null,
+      "calculation_as_of": null,
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ]
+    },
+    {
+      "metric_id": "inventory_cycle_phase",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": null,
+      "observed_at": null,
+      "calculation_as_of": null,
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ]
+    },
+    {
+      "metric_id": "capex_orders_growth",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": null,
+      "observed_at": null,
+      "calculation_as_of": null,
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ]
+    },
+    {
+      "metric_id": "shipments_sales_growth",
+      "value": null,
+      "status": "ABSENT",
+      "null_reason": "COMPUTATION_REFUSED",
+      "reference_period": null,
+      "observed_at": null,
+      "calculation_as_of": null,
+      "freshness": "CURRENT",
+      "source_refs": [
+        "engine.business_cycle (blended; not separately published)"
+      ]
+    }
+  ],
+  "changed_rows": [
+    {
+      "metric_id": "leading_tier_leg_count",
+      "changed_fields": [
+        {
+          "field": "value",
+          "old": 2,
+          "new": 3
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "old_rows": 31,
+    "current_rows": 31,
+    "changed_rows": 1,
+    "changed_fields": 1,
+    "unchanged_rows": 30,
+    "added_rows": 0,
+    "removed_rows": 0,
+    "fields_compared_per_row": 8,
+    "metric_id_order_identical": true
+  }
+}
