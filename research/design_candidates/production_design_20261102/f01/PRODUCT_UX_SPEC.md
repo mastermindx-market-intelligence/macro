@@ -90,7 +90,7 @@ Global navigation, All tools, company search, account dialogs and a modal inspec
 
 ### Layer transitions, including the existing Brain
 
-The following are proposed F01 interaction clauses for candidate.4. They require F02 concurrence and the existing Brain/D14/host lifecycle qualification; D06 separately qualifies a focused-Terminal variant. No exposed runtime coordinator or close acknowledgement is invented. Keep transient evidence identity in the existing domain view's in-memory selection, not in a new saved-object or return-state store.
+The following are proposed F01 interaction clauses for candidate.4. F02 has concurred with their candidate.4 policy at e6c28413; they still require the existing Brain/D14/host lifecycle qualification; D06 separately qualifies a focused-Terminal variant. No exposed runtime coordinator or close acknowledgement is invented. Keep transient evidence identity in the existing domain view's in-memory selection, not in a new saved-object or return-state store.
 
 | Current surface and requested action | Required transition | Preserved context and focus |
 | --- | --- | --- |
@@ -160,7 +160,7 @@ Before implementation, reconcile overlapping Terminal #1188/#1191/#1228/#1236 an
 
 Recommended implementation sequence after qualification: (1) owner-agreed presentation mapping and exact-return invariants; (2) scoped shell geometry and retained navigation; (3) inspector coordination and focus; (4) three domain integrations at measured widths; (5) locale/theme and failure cases; (6) source-head-bound browser/keyboard/regression evidence. Each step retains its existing owner. Rollback restores presentation independently of data schemas, writes and route admission.
 
-Implementation entry requires frozen F01/F02 references, reconciled Paper effects, the recorded F02 candidate concurrence, independent product/regression and visual/taste qualification, QA01 integration disposition and retained-feature coverage. This assignment performs design/research only. It authorizes no production implementation, merge, Ready transition, enqueue, relabel or deployment.
+Final foundation/design acceptance requires frozen F01/F02 references, reconciliation of the affected Paper effects, independent product/regression and visual/taste qualification, QA01 integration disposition and retained-feature coverage. F02 candidate.4 policy concurrence is now recorded at e6c28413. The current outer instruction separately authorizes bounded F01 source implementation after hardening, without representing the whole design as accepted. The [current builder slice](BUILDER_AND_MEASUREMENT_PLAN.md#current-authorized-hardening-and-implementation-slice) preserves live source owners and original effect scopes. Merge, Ready transition, enqueue, un-draft, held-PR relabel and deployment remain unauthorized.
 
 ## 11. Builder and existing-consumer supplements
 

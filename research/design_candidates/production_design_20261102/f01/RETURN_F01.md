@@ -4,7 +4,11 @@
 **Current acceptance:** PARTIAL / REQUEST_CHANGES / RIG draft. **Final joint v1: unreleased.**  
 **Existing carrier:** [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), branch `design/f01-shared-shell-v1-20261103-c4`, stacked under [programme #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The enclosing immutable Git commit binds this return and its [package inventory](evidence/PACKAGE_MANIFEST.json).
 
-## Outcome of this continuation
+## Current continuation amendment — 2026-11-04 UTC
+
+**F02 candidate.4 policy concurrence is received**, through existing author mastermindx-2 and exact sourcee6c28413ee74e83950b8c5ff58a34b81e76c1781. [Actual receipt and retained conditions](evidence/hardening_20261104/README.md) supersede the earlier pending-F02 routing status below. The current user now authorizes F01 specification hardening followed by scoped implementation. Existing native/review/RIG/release holds remain. The [builder plan](BUILDER_AND_MEASUREMENT_PLAN.md#current-authorized-hardening-and-implementation-slice) owns this continuation; no other assignment, source writer or Paper target is taken over.
+
+## Outcome of the preceding design/evidence continuation
 
 The current F01 receiver continued the existing source/Paper owner, corrected an overbroad author-imposed pause, made and captured56 prior local Paper corrections and three further F-only operations, obtained isolated artifact-only critiques and separate repair follow-ups, and incorporated D06's later consumer/source evidence into the versioned joint proposal. The source package now defines the complete bounded shared-shell UX, retention, interaction, source/data, responsive/accessibility, build and test requirements. No production behavior was changed.
 
@@ -12,7 +16,7 @@ The six revised selected-direction boards communicate global/local hierarchy, co
 
 The existing independent nonauthor reviewer mastermindxryan has now returned [candidate.4 SOURCE-CONTRACT/HANDOFF approval5760649569](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569), bound to exact head **3e334bd3eabf1d6ecc7980845fbd7a813dd023e1** and semantic freeze **8926b16af4e0c3e5310cdb4cf057390ec04d18ff**. It finds no blocking source-contract coherence defect and permits already assigned domains to consume versioned Phase2A specifications provisionally. It explicitly withholds native/design/RIG/final joint/implementation/release acceptance. The later evidence and F-only correction in this return do not broaden that approval. [Actual review receipts](evidence/review/CANDIDATE4_SOURCE_APPROVALS_20261103.json) preserve both F01 and D06 new source reviews verbatim.
 
-## Latest material result — 4 November 2026
+## Prior material result — 4 November 2026 UTC
 
 - **Candidate.4 source handoff approved:** the actual independent review now covers the current semantic contract, not merely the earlier candidate.2 geometry. Joint contract blob1160f14b108bf0948384f59a249320385a1dfb6c is unchanged by this evidence/native amendment.
 - **Real return journey completed:** Company2016–2021/inner scroll107→Terminal→Back to Analysis preserved the exact NVDA Financials URL but returned2022–2026/no prior inner scroll/BODY focus. [Six captures and exact observations](evidence/live_followup_20261103/README.md) also cover directory query retention at320px and ZH light/dark global/local navigation at390px. These are current-beta baselines, not proposed acceptance passes.

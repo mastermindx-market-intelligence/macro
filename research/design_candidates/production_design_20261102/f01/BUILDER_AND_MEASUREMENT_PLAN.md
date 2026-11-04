@@ -1,6 +1,6 @@
 # F01 — Builder sequence, success measurement and rollback
 
-**Scope:** future implementation guidance for the design candidate. No product code is implemented or authorized by this document. The current reference remains PARTIAL/RIG draft; native repairs and independent qualification are open. Existing source, route, data, preference, save and Brain owners remain authoritative.
+**Scope:** implementation guidance for the design candidate, with the current authorized F01 slice below. The current outer user instruction authorizes hardening followed by scoped implementation; this document itself grants no authority. The current reference remains PARTIAL/RIG draft; native repairs and independent qualification are open. Existing source, route, data, preference, save and Brain owners remain authoritative.
 
 ## Success measures
 
@@ -49,3 +49,22 @@ A directory label proposal is a reviewable presentation input to the incumbent e
 A later rollback should restore the previous shell presentation through the existing source/configuration owner while retaining route registry, data schemas, saved objects, request identity and entitlement state. Do not use rollback as an excuse to replay an uncertain write or regenerate user data. Verify that deep links, focused Terminal and legacy direct/original-page recovery remain serviceable after the presentation rollback. This document does not create or name an unverified feature flag.
 
 No rollout percentage, deployment environment, release command or production authority is assigned here. Those belong to the later commissioned implementation/release path. The present useful output is a concrete, source-bound design and builder package with exact held conditions.
+
+
+## Current authorized hardening and implementation slice
+
+**Mission:** make the incumbent All tools flow explain its result scope, recover from an overrestrictive category and return keyboard focus correctly after close/resize, while preserving exact destinations, existing matching/category semantics and lazy loading. This is F01 under the existing receiver and Draft#10645, not a second shell or Market Intelligence integration. The [current source/concurrence receipt](evidence/hardening_20261104/README.md) binds user scope, compatible law and incumbent source conflicts.
+
+**DONE_WHEN for this slice:** precise source-backed interaction contract, exact-head implementation diff, meaningful before/after regressions, actual rendered browser/keyboard evidence at1440/820/390 plus320 stress, EN/ZH and light/dark, and a recoverable source publication through the lawful original publisher. A narrower test pass does not pass all86 programme cases. No merge/deploy or design acceptance is included.
+
+| Phase | Concrete work | Dependency and completion evidence |
+| --- | --- | --- |
+| Harden | Record F02 concurrence; specify query-wide/filtered/rendered counts, reset/retention semantics, conditional focus and IME/layer ownership; map facets to existing N03–N08/N11/P02/G07 | Actual source contracts, bounded adversarial findings and exact reviewable changes; do not relabel the proposed Options & futures taxonomy as accepted |
+| Qualify source path | Inspect current protected Terminal, managed workspaces and relevant PR file scopes. Preserve #1244's unpublished CI/doc/registry work and directory title/reset changes; preserve #1188's lazy/search-intent seam | One operation-bound workspace via installed mmx-workspace; actual carrier/branch/base receipt, no duplicate F01 session or takeover of a live writer |
+| Implement | Reuse existing ShellDirectory, sharedShellCopy and scoped CSS; make bounded helpers only if they simplify the existing owner. Keep route projection, taxonomy, ranking, SymbolPicker, auth, Brain and runtime loading intact | Exact diff and source identities; an owner conflict stops only its affected integration, not independent specifications/tests |
+| Verify | Exercise nonempty/zero category, all-zero query, >48 results, close/reopen, query/category-only reset, resize with hidden opener, IME Escape, nested ownership, modified link activation and locale/theme changes | Discriminating component tests plus actual mounted-product browser evidence; record failures and fixture/live basis, not invented production proof |
+| Publish and hand off | Publish within the existing F01 assignment through its admitted source carrier; send exact diff/evidence to affected existing shell owners and F02 | Readback of immutable source, Draft state and unresolved independent/release gates; no automatic acceptance |
+
+**Direct principal work:** PRINCIPAL_JUDGMENT for version/ownership/interaction tradeoffs; LOWER_TOTAL_OVERHEAD for the narrow source-status amendment and adjudication. Routine implementation will use a qualified economical route when one is actually admitted; no native labor child or replacement worker is assumed from tool availability. The active native adviser is a read-only principal-judgment consultation, not a source writer, runtime worker or independent design reviewer.
+
+The first slice does not implement the proposed new directory category, Brain lifecycle coordination, focused reader adaptation, domain return-state restoration or wholesale shell geometry. Those have distinct source owners/qualification dependencies. Accepted source-policy concurrence remains useful to all existing consumers while these narrower implementation obligations proceed.
