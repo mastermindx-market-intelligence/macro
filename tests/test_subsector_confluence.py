@@ -25,6 +25,21 @@ def test_us_subsector_js_honesty_has_no_live_or_shishi():
     assert "High confidence — deep coverage" in text
 
 
+def test_us_subsector_js_hero_denominator_falls_back_to_n_listed_for_baskets():
+    """R3A-66 / P20 (2026-11-02): the basket universe's coverage carries n_listed, not
+    n_subsectors (engine.subsector_confluence.compute_basket_confluence, SIC-D-B03), so the
+    shared honesty line must take the denominator per universe — never print "of undefined".
+    Pinned as the expression itself: dropping the fallback, or reading cov.n_subsectors
+    straight into the line again, fails this test."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    text = (root / "templates" / "subsectors.js").read_text(encoding="utf-8")
+    assert "var covTotal = cov.n_subsectors != null ? cov.n_subsectors : cov.n_listed;" in text
+    assert "cov.n_gateable != null && covTotal != null" in text
+    assert "cov.n_subsectors + '</span>" not in text
+    assert text.count("' + covTotal + '</span>") == 2  # EN "of N" and ZH "/N 个"
+
+
 def test_slug():
     assert sc._slug("Software - Infrastructure") == "software-infrastructure"
     assert sc._slug("Diagnostics & Research") == "diagnostics-research"

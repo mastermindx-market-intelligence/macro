@@ -74,8 +74,11 @@ def test_synthetic_page_shows_the_r6_lead_and_minus_four(tmp_path: Path) -> None
     assert packet["advertising_net_change"] == "-4"
     assert ">-4<" in text
     assert "synthetic" in text
-    assert packet["shared_contract_status"] == "unavailable"
-    assert "unavailable" in text
+    # The shared owner's module is on this tree (#7870), so the probe
+    # records it. tests/test_consumer_cyclical_display.py covers the
+    # tree without it (test_absent_contract_records_unavailable_...).
+    assert packet["shared_contract_status"] == "present"
+    assert 'data-contract-status="present"' in text
     assert packet["filing_claim"] is False
     assert 'data-filing-claim="false"' in text
     assert 'data-filing-claim="true"' not in text

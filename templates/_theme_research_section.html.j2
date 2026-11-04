@@ -1,0 +1,38 @@
+{# templates/_theme_research_section.html.j2 — the theme-research section (shared hook 2).
+
+  THE mount markup, rendered from a registration rather than from copy typed
+  into a template. Sol #7780 issuecomment-5813801605, Option A: a second
+  vertical mounts by registering, not by copying this file. Every visible and
+  machine-read string comes from `tr_mount`, the nine-key mapping
+  `engine.market_ontology.theme_research_mounts.mount_context()` returns, so
+  this file names no vertical, no slice and no schema.
+
+  Context (set by the caller, e.g. with `{% raw %}{% with %}{% endraw %}`):
+    tr_mount — the nine-key mount context, rendered verbatim. Two callers
+               reach this file by different routes: the basket page's entry
+               partial re-checks the nine keys and the anchor grammar before
+               including it, and the Theme Tracker includes it directly from a
+               list its page builder composed. Neither route lets a payload
+               reach here — both read a registration.
+
+  Laws:
+    L5 — Mount shape, hidden attribute and API paths stay as reviewed. The
+         section carries NO asset tag: each page emits the stylesheet and the
+         client once of its own — the basket page through its entry partial,
+         the Theme Tracker through its own head and tail — so a page with more
+         than one section still loads one client.
+    L6 — Every visible string flows through `t('en','zh')`; no raw slug ever
+         renders, and both halves are escaped whatever the environment's
+         autoescape setting is.
+    L7 — No analytical data, payload, figure, token or URL beyond the two
+         declared API paths. The research payload arrives later over the
+         entitled API; nothing about it is baked into a static page.
+#}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en|e }}</span><span class="l-zh">{{ (zh if zh else en)|e }}</span>
+{%- endmacro %}
+{%- set _id = 'theme-research-' ~ tr_mount.get('anchor_theme_id') -%}
+<section class="theme-research" id="{{ _id|e }}" data-theme-research-mount data-anchor-theme-id="{{ tr_mount.get('anchor_theme_id')|e }}" data-slices="{{ tr_mount.get('slices')|e }}" data-schema-id="{{ tr_mount.get('schema_id')|e }}" data-evidence-schema-id="{{ tr_mount.get('evidence_schema_id')|e }}" data-slice-labels="{{ tr_mount.get('slice_labels_json')|e }}" data-api-query="/api/themes/v1/research/query" data-api-evidence="/api/themes/v1/research/evidence" hidden aria-labelledby="{{ _id|e }}-title">
+  <h2 id="{{ _id|e }}-title" class="theme-research-title">{{ t(tr_mount.get('title_en'), tr_mount.get('title_zh')) }}</h2>
+  <p class="theme-research-note">{{ t(tr_mount.get('note_en'), tr_mount.get('note_zh')) }}</p>
+</section>

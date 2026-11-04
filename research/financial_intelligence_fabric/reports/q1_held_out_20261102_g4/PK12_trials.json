@@ -1,0 +1,1269 @@
+{
+  "accessions": [
+    {
+      "accession": "0000318154-22-000010",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000318154",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000318154-23-000017",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000318154",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 2,
+        "typed_absence": 1
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000318154-24-000011",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000318154",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-12-31",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 2,
+        "typed_absence": 1
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000882095-22-000007",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000882095",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000882095-23-000007",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000882095",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 6,
+        "not_evaluable": 2
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000882095-24-000007",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000882095",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-12-31",
+      "prediction_states": {
+        "emitted": 6,
+        "not_evaluable": 2
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000914475-22-000013",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000914475",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000914475-23-000011",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000914475",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 6,
+        "not_evaluable": 2
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000914475-24-000054",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000914475",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-12-31",
+      "prediction_states": {
+        "emitted": 6,
+        "not_evaluable": 2
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000939767-22-000026",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000939767",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000939767-23-000019",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000939767",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-30",
+      "prediction_states": {
+        "emitted": 6,
+        "not_evaluable": 2
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000939767-24-000028",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000939767",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-12-29",
+      "prediction_states": {
+        "emitted": 6,
+        "not_evaluable": 2
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000950170-22-002293",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001434316",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000950170-23-003441",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001674416",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 3
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000950170-23-004097",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652130",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2835",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 6,
+        "not_evaluable": 2
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0000950170-23-005067",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001434316",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2836",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 2,
+        "typed_absence": 1
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001628280-22-030869",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000879407",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2834",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-09-30",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 3
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001628280-23-040219",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000879407",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "2834",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-09-30",
+      "prediction_states": {
+        "emitted": 3,
+        "not_evaluable": 4,
+        "typed_absence": 1
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-21-000073",
+      "applicability_reason": "sic_outside_biotech_codes",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7372",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-01-31",
+      "prediction_states": {
+        "typed_absence": 8
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-21-000122",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-04-30",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-21-000212",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-07-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-21-000271",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-10-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-22-000023",
+      "applicability_reason": "sic_outside_biotech_codes",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7372",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-01-31",
+      "prediction_states": {
+        "typed_absence": 8
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-22-000044",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-04-30",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-22-000084",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-07-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-22-000100",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-10-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000030",
+      "applicability_reason": "sic_outside_biotech_codes",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7372",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-01-31",
+      "prediction_states": {
+        "typed_absence": 8
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000102",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-04-30",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000199",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-07-31",
+      "prediction_states": {
+        "typed_absence": 6
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters",
+        "going_concern_or_liquidity_span"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000260",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-10-31",
+      "prediction_states": {
+        "typed_absence": 6
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters",
+        "going_concern_or_liquidity_span"
+      ]
+    },
+    {
+      "accession": "0001652044-21-000010",
+      "applicability_reason": "sic_outside_biotech_codes",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2020-12-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters",
+        "going_concern_or_liquidity_span"
+      ]
+    },
+    {
+      "accession": "0001652044-21-000020",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-03-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001652044-21-000047",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-06-30",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001652044-21-000057",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-09-30",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001652044-22-000019",
+      "applicability_reason": "sic_outside_biotech_codes",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters",
+        "going_concern_or_liquidity_span"
+      ]
+    },
+    {
+      "accession": "0001652044-22-000029",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-03-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001652044-22-000071",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-06-30",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001652044-22-000090",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-09-30",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "applicability_reason": "sic_outside_biotech_codes",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "cash_runway_quarters",
+        "going_concern_or_liquidity_span"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000045",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-03-31",
+      "prediction_states": {
+        "typed_absence": 7
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_runway_quarters"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000070",
+      "applicability_reason": "form_outside_pack_forms",
+      "applicability_state": "not_applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 1,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-06-30",
+      "prediction_states": {
+        "typed_absence": 1
+      },
+      "predictions": 1,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "atm_or_shelf_span",
+        "cash_and_cash_equivalents",
+        "cash_runway_quarters",
+        "equity_financing_proceeds",
+        "net_cash_from_financing_activities",
+        "net_cash_from_operating_activities",
+        "research_and_development_expense",
+        "short_term_investments"
+      ]
+    }
+  ],
+  "exclusions": [],
+  "label_count": 300,
+  "labels_status": "labelled",
+  "pack_id": "PK12",
+  "sic_binding": {
+    "contract_id": "fif-held-out-v1",
+    "order": [
+      "held_out_contract",
+      "sec_submissions_witness"
+    ]
+  },
+  "trial_field_map": {
+    "PK12|0000318154-22-000010|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000318154-22-000010|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000318154-22-000010|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000318154-22-000010|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000318154-22-000010|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000318154-22-000010|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000318154-22-000010|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000318154-22-000010|extract|short_term_investments": "short_term_investments",
+    "PK12|0000318154-23-000017|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000318154-23-000017|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000318154-23-000017|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000318154-23-000017|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000318154-23-000017|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000318154-23-000017|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000318154-23-000017|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000318154-23-000017|extract|short_term_investments": "short_term_investments",
+    "PK12|0000318154-24-000011|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000318154-24-000011|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000318154-24-000011|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000318154-24-000011|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000318154-24-000011|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000318154-24-000011|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000318154-24-000011|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000318154-24-000011|extract|short_term_investments": "short_term_investments",
+    "PK12|0000882095-22-000007|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000882095-22-000007|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000882095-22-000007|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000882095-22-000007|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000882095-22-000007|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000882095-22-000007|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000882095-22-000007|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000882095-22-000007|extract|short_term_investments": "short_term_investments",
+    "PK12|0000882095-23-000007|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000882095-23-000007|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000882095-23-000007|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000882095-23-000007|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000882095-23-000007|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000882095-23-000007|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000882095-23-000007|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000882095-23-000007|extract|short_term_investments": "short_term_investments",
+    "PK12|0000882095-24-000007|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000882095-24-000007|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000882095-24-000007|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000882095-24-000007|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000882095-24-000007|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000882095-24-000007|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000882095-24-000007|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000882095-24-000007|extract|short_term_investments": "short_term_investments",
+    "PK12|0000914475-22-000013|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000914475-22-000013|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000914475-22-000013|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000914475-22-000013|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000914475-22-000013|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000914475-22-000013|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000914475-22-000013|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000914475-22-000013|extract|short_term_investments": "short_term_investments",
+    "PK12|0000914475-23-000011|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000914475-23-000011|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000914475-23-000011|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000914475-23-000011|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000914475-23-000011|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000914475-23-000011|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000914475-23-000011|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000914475-23-000011|extract|short_term_investments": "short_term_investments",
+    "PK12|0000914475-24-000054|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000914475-24-000054|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000914475-24-000054|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000914475-24-000054|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000914475-24-000054|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000914475-24-000054|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000914475-24-000054|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000914475-24-000054|extract|short_term_investments": "short_term_investments",
+    "PK12|0000939767-22-000026|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000939767-22-000026|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000939767-22-000026|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000939767-22-000026|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000939767-22-000026|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000939767-22-000026|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000939767-22-000026|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000939767-22-000026|extract|short_term_investments": "short_term_investments",
+    "PK12|0000939767-23-000019|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000939767-23-000019|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000939767-23-000019|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000939767-23-000019|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000939767-23-000019|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000939767-23-000019|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000939767-23-000019|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000939767-23-000019|extract|short_term_investments": "short_term_investments",
+    "PK12|0000939767-24-000028|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000939767-24-000028|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000939767-24-000028|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000939767-24-000028|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000939767-24-000028|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000939767-24-000028|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000939767-24-000028|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000939767-24-000028|extract|short_term_investments": "short_term_investments",
+    "PK12|0000950170-22-002293|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000950170-22-002293|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000950170-22-002293|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000950170-22-002293|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000950170-22-002293|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000950170-22-002293|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000950170-22-002293|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000950170-22-002293|extract|short_term_investments": "short_term_investments",
+    "PK12|0000950170-23-003441|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000950170-23-003441|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000950170-23-003441|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000950170-23-003441|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000950170-23-003441|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000950170-23-003441|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000950170-23-003441|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000950170-23-003441|extract|short_term_investments": "short_term_investments",
+    "PK12|0000950170-23-004097|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000950170-23-004097|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000950170-23-004097|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000950170-23-004097|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000950170-23-004097|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000950170-23-004097|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000950170-23-004097|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000950170-23-004097|extract|short_term_investments": "short_term_investments",
+    "PK12|0000950170-23-005067|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0000950170-23-005067|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0000950170-23-005067|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0000950170-23-005067|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0000950170-23-005067|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0000950170-23-005067|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0000950170-23-005067|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0000950170-23-005067|extract|short_term_investments": "short_term_investments",
+    "PK12|0001628280-22-030869|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0001628280-22-030869|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001628280-22-030869|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001628280-22-030869|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001628280-22-030869|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001628280-22-030869|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001628280-22-030869|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001628280-22-030869|extract|short_term_investments": "short_term_investments",
+    "PK12|0001628280-23-040219|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0001628280-23-040219|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001628280-23-040219|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001628280-23-040219|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001628280-23-040219|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001628280-23-040219|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001628280-23-040219|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001628280-23-040219|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-21-000073|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0001640147-21-000073|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-21-000073|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-21-000073|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-21-000073|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-21-000073|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-21-000073|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-21-000073|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-21-000122|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-21-000122|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-21-000122|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-21-000122|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-21-000122|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-21-000122|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-21-000122|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-21-000212|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-21-000212|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-21-000212|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-21-000212|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-21-000212|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-21-000212|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-21-000212|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-21-000271|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-21-000271|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-21-000271|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-21-000271|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-21-000271|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-21-000271|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-21-000271|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-22-000023|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0001640147-22-000023|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-22-000023|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-22-000023|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-22-000023|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-22-000023|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-22-000023|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-22-000023|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-22-000044|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-22-000044|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-22-000044|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-22-000044|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-22-000044|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-22-000044|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-22-000044|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-22-000084|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-22-000084|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-22-000084|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-22-000084|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-22-000084|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-22-000084|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-22-000084|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-22-000100|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-22-000100|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-22-000100|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-22-000100|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-22-000100|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-22-000100|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-22-000100|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-23-000030|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0001640147-23-000030|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-23-000030|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-23-000030|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-23-000030|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-23-000030|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-23-000030|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-23-000030|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-23-000102|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-23-000102|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-23-000102|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001640147-23-000102|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-23-000102|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-23-000102|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-23-000102|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-23-000199|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-23-000199|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-23-000199|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-23-000199|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-23-000199|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-23-000199|extract|short_term_investments": "short_term_investments",
+    "PK12|0001640147-23-000260|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001640147-23-000260|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001640147-23-000260|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001640147-23-000260|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001640147-23-000260|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001640147-23-000260|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-21-000010|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0001652044-21-000010|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-21-000010|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-21-000010|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-21-000010|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-21-000010|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-21-000010|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-21-000020|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-21-000020|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-21-000020|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001652044-21-000020|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-21-000020|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-21-000020|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-21-000020|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-21-000047|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-21-000047|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-21-000047|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001652044-21-000047|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-21-000047|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-21-000047|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-21-000047|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-21-000057|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-21-000057|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-21-000057|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001652044-21-000057|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-21-000057|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-21-000057|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-21-000057|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-22-000019|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0001652044-22-000019|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-22-000019|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-22-000019|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-22-000019|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-22-000019|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-22-000019|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-22-000029|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-22-000029|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-22-000029|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001652044-22-000029|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-22-000029|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-22-000029|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-22-000029|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-22-000071|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-22-000071|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-22-000071|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001652044-22-000071|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-22-000071|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-22-000071|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-22-000071|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-22-000090|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-22-000090|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-22-000090|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001652044-22-000090|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-22-000090|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-22-000090|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-22-000090|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-23-000016|extract|atm_or_shelf_span": "atm_or_shelf_span",
+    "PK12|0001652044-23-000016|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-23-000016|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-23-000016|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-23-000016|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-23-000016|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-23-000016|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-23-000045|extract|cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "PK12|0001652044-23-000045|extract|equity_financing_proceeds": "equity_financing_proceeds",
+    "PK12|0001652044-23-000045|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span",
+    "PK12|0001652044-23-000045|extract|net_cash_from_financing_activities": "net_cash_from_financing_activities",
+    "PK12|0001652044-23-000045|extract|net_cash_from_operating_activities": "net_cash_from_operating_activities",
+    "PK12|0001652044-23-000045|extract|research_and_development_expense": "research_and_development_expense",
+    "PK12|0001652044-23-000045|extract|short_term_investments": "short_term_investments",
+    "PK12|0001652044-23-000070|extract|going_concern_or_liquidity_span": "going_concern_or_liquidity_span"
+  }
+}

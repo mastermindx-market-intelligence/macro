@@ -702,6 +702,474 @@ def test_annotation_starts_the_line(capsys):
     out = capsys.readouterr().out.splitlines()
     assert out and out[0].startswith("::error title=page-registry::")
 
+# Source-shaped render-table attribution fixtures; builders are parsed, never run.
+def _gmi_write_fixture(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# fixtures — a source-shaped builder with the GMI symbols renamed
+# ---------------------------------------------------------------------------
+
+# Shaped line-for-line like scripts/build_gmi_explorer.py's render path: a
+# module-literal route table, a literal issuer pair, a table loop whose body
+# writes `site / page`, then the pair unpack and the issuer family loop.
+GADGET_BUILDER = '''
+from lib.pages import write_page
+
+GADGET_TABLE = {
+    "gadget.html": ("gadget_map.html.j2", "map"),
+    "gadget-index.html": ("gadget_index.html.j2", "index"),
+    "gadget-relationships.html": ("gadget_relationships.html.j2", "relationships"),
+    "gadget-coverage.html": ("gadget_coverage.html.j2", "coverage"),
+    "gadget-states.html": ("gadget_states.html.j2", "states"),
+}
+ISSUER_TABLE = ("gadget_issuer.html.j2", "issuer")
+
+
+def render_site(model, site_dir):
+    site = Path(site_dir)
+    env = make_env(model)
+    written = []
+    for page, (template, page_key) in GADGET_TABLE.items():
+        write_page(site / page, env.get_template(template).render(
+            model=model, nav_prefix="", page_key=page_key))
+        written.append(site / page)
+    template, page_key = ISSUER_TABLE
+    for issuer in model["issuers"]:
+        page = f"gadget-issuer-{issuer['ticker'].lower()}.html"
+        write_page(site / page, env.get_template(template).render(
+            model=model, nav_prefix="", page_key=page_key, issuer=issuer))
+        written.append(site / page)
+    return written
+'''
+
+GADGET_BASE = """<html data-theme="light" data-lang>{{ t('Body', '正文') }}</html>"""
+
+GADGET_MAP = """{% extends "_gadget_base.html.j2" %}
+<p>{{ t('Map', '地图') }}</p>
+"""
+
+GADGET_PLAIN = "<p>no helper, no theme</p>\n"
+
+GMI_FIXTURE_ACCESS = """
+schema: site_access.v1
+public:
+  exact:
+    - /
+    - /index.html
+  prefixes: []
+free_registered:
+  exact: []
+  prefixes: []
+deny:
+  exact: []
+  prefixes: []
+premium:
+  default_tier: essential
+  enforced_early:
+    exact: []
+    prefixes: []
+"""
+
+GMI_FIXTURE_TRACKED = [
+    "site/index.html",
+    "site/gadget.html",
+    "site/gadget-index.html",
+    "site/gadget-relationships.html",
+    "site/gadget-coverage.html",
+    "site/gadget-states.html",
+    "site/gadget-issuer-mu.html",
+]
+
+
+def _gmi_fake_git(tracked: list[str], sha: str = "a" * 40):
+    listing = "\n".join(tracked) + "\n"
+
+    def _git(root: Path, args: list[str]):
+        if args[:2] == ["ls-files", "site/*.html"]:
+            return listing
+        if args[0] == "rev-parse":
+            return sha + "\n"
+        return None
+    return _git
+
+
+def _gmi_rows_by_id(rows: list[dict]) -> dict[str, dict]:
+    return {row["page_id"]: row for row in rows}
+
+
+@pytest.fixture()
+def gmi_gadget_repo(tmp_path: Path) -> Path:
+    root = tmp_path / "macro"
+    _gmi_write_fixture(root / "scripts" / "build_gadget_explorer.py", GADGET_BUILDER)
+    _gmi_write_fixture(root / "config" / "site_access.yml", GMI_FIXTURE_ACCESS)
+    _gmi_write_fixture(root / "templates" / "_gadget_base.html.j2", GADGET_BASE)
+    _gmi_write_fixture(root / "templates" / "gadget_map.html.j2", GADGET_MAP)
+    for name in ("gadget_index.html.j2", "gadget_relationships.html.j2",
+                 "gadget_coverage.html.j2", "gadget_issuer.html.j2"):
+        _gmi_write_fixture(root / "templates" / name, GADGET_MAP)  # themed via the chain
+    _gmi_write_fixture(root / "templates" / "gadget_states.html.j2", GADGET_PLAIN)
+    _gmi_write_fixture(root / "lib" / "pages.py", "HAND_AUTHORED_PAGES = frozenset()\n")
+    _gmi_write_fixture(root / "lib" / "seo.py",
+           '_EXCLUDE_PREFIXES = frozenset()\n_EXCLUDE_NAMES = frozenset()\n')
+    _gmi_write_fixture(root / "templates" / "_navlinks.html.j2", "")
+    _gmi_write_fixture(root / "templates" / "_public_nav.html.j2", "")
+    _gmi_write_fixture(root / "templates" / "_public_footer.html.j2", "")
+    return root
+
+
+# ---------------------------------------------------------------------------
+# the five concrete table bindings plus the tracked issuer family
+# ---------------------------------------------------------------------------
+
+EXPECTED_GADGET_SITES = {
+    ("/gadget.html", False, "gadget_map.html.j2"),
+    ("/gadget-index.html", False, "gadget_index.html.j2"),
+    ("/gadget-relationships.html", False, "gadget_relationships.html.j2"),
+    ("/gadget-coverage.html", False, "gadget_coverage.html.j2"),
+    ("/gadget-states.html", False, "gadget_states.html.j2"),
+    ("/gadget-issuer-<lower>.html", True, "gadget_issuer.html.j2"),
+}
+
+
+def test_gmi_five_table_pages_and_issuer_family_resolve_concretely(gmi_gadget_repo):
+    sites, unresolved = reg.scan_write_sites(gmi_gadget_repo / "scripts")
+    got = {(s.route, s.is_family, s.template)
+           for s in sites if s.builder == "scripts/build_gadget_explorer.py"}
+    assert got == EXPECTED_GADGET_SITES
+    # nothing the builder writes is left as a coverage gap
+    assert unresolved == []
+
+
+def test_gmi_table_pages_derive_with_builder_and_template(gmi_gadget_repo):
+    index = _gmi_rows_by_id(reg.derive_macro(gmi_gadget_repo, git=_gmi_fake_git(GMI_FIXTURE_TRACKED))[0])
+    expected_templates = {
+        "macro:gadget": "templates/gadget_map.html.j2",
+        "macro:gadget_index": "templates/gadget_index.html.j2",
+        "macro:gadget_relationships": "templates/gadget_relationships.html.j2",
+        "macro:gadget_coverage": "templates/gadget_coverage.html.j2",
+        "macro:gadget_states": "templates/gadget_states.html.j2",
+    }
+    for page_id, template in expected_templates.items():
+        row = index[page_id]
+        assert row["builder"] == ["scripts/build_gadget_explorer.py"], page_id
+        assert row["source_template"] == template, page_id
+        assert row["generated"] is True, page_id
+        assert any("build_gadget_explorer.py:" in ev
+                   for ev in row["source_evidence"]), page_id
+
+
+def test_gmi_tracked_issuer_page_attributed_through_the_family_write(gmi_gadget_repo):
+    """site/gadget-issuer-mu.html is committed; the family write names its
+    template, and the row says the attribution came through the family."""
+    index = _gmi_rows_by_id(reg.derive_macro(gmi_gadget_repo, git=_gmi_fake_git(GMI_FIXTURE_TRACKED))[0])
+    row = index["macro:gadget_issuer_mu"]
+    assert row["builder"] == ["scripts/build_gadget_explorer.py"]
+    assert row["source_template"] == "templates/gadget_issuer.html.j2"
+    assert any("attributed through the builder's family write" in note
+               for note in row["notes"])
+
+
+def test_gmi_no_false_issuer_attribution_on_the_table_pages(gmi_gadget_repo):
+    """The module-wide assign map binds `page` to the ISSUER f-string; before
+    the fix every table write misresolved onto that family route.  Each table
+    route must carry exactly its own concrete site, and no table page may be
+    attributed as (or through) the issuer family."""
+    sites, _ = reg.scan_write_sites(gmi_gadget_repo / "scripts")
+    mine = [s for s in sites if s.builder == "scripts/build_gadget_explorer.py"]
+    by_route: dict[str, list] = {}
+    for site in mine:
+        by_route.setdefault(site.route, []).append(site)
+    for route in ("/gadget.html", "/gadget-index.html",
+                  "/gadget-relationships.html", "/gadget-coverage.html",
+                  "/gadget-states.html"):
+        assert len(by_route[route]) == 1, route
+        assert by_route[route][0].is_family is False, route
+        assert by_route[route][0].template is not None, route
+    family_routes = [s.route for s in mine if s.is_family]
+    assert family_routes == ["/gadget-issuer-<lower>.html"]
+    index = _gmi_rows_by_id(reg.derive_macro(gmi_gadget_repo, git=_gmi_fake_git(GMI_FIXTURE_TRACKED))[0])
+    assert index["macro:gadget"]["builder"] == ["scripts/build_gadget_explorer.py"]
+
+
+def test_gmi_bilingual_and_themes_derive_through_the_template_chain(gmi_gadget_repo):
+    """gadget_map.html.j2 itself carries no chrome; the chain to
+    _gadget_base.html.j2 (t() helper + data attrs) is what makes it bilingual
+    and themed."""
+    index = _gmi_rows_by_id(reg.derive_macro(gmi_gadget_repo, git=_gmi_fake_git(GMI_FIXTURE_TRACKED))[0])
+    assert index["macro:gadget"]["bilingual"] is True
+    assert index["macro:gadget"]["themes"] == ["light", "dark"]
+    assert index["macro:gadget"]["locales"] == ["en", "zh"]
+    # a page whose template has neither the helper nor a theme attribute
+    assert index["macro:gadget_states"]["bilingual"] is False
+    assert index["macro:gadget_states"]["themes"] == "unknown"
+
+
+# ---------------------------------------------------------------------------
+# refusals — dynamic, reassigned, mutated, unrelated, off-root
+# ---------------------------------------------------------------------------
+
+DYNAMIC_TEMPLATE_BUILDER = '''
+from lib.pages import write_page
+
+LOOSE_TABLE = {
+    "loose.html": (TEMPLATE_NAME, "loose"),
+}
+TEMPLATE_NAME = pick_template()
+
+
+def render_site(model, site_dir):
+    site = Path(site_dir)
+    for page, (template, page_key) in LOOSE_TABLE.items():
+        write_page(site / page, env.get_template(template).render())
+'''
+
+REASSIGNED_TABLE_BUILDER = '''
+from lib.pages import write_page
+
+FLIP_TABLE = {"flip.html": ("flip.html.j2", "flip")}
+
+
+def render_site(model, site_dir):
+    site = Path(site_dir)
+    FLIP_TABLE = {"other.html": ("other.html.j2", "other")}
+    for page, (template, page_key) in FLIP_TABLE.items():
+        write_page(site / page, env.get_template(template).render())
+'''
+
+MUTATED_TABLE_BUILDER = '''
+from lib.pages import write_page
+
+MUT_TABLE = {"mut.html": ("mut.html.j2", "mut")}
+
+
+def render_site(model, site_dir):
+    site = Path(site_dir)
+    MUT_TABLE.update({"extra.html": ("extra.html.j2", "extra")})
+    for page, (template, page_key) in MUT_TABLE.items():
+        write_page(site / page, env.get_template(template).render())
+'''
+
+UNRELATED_DICT_BUILDER = '''
+from lib.pages import write_page
+
+LABELS = {"title.html": "A title", "body.html": "A body"}
+
+
+def render_site(model, site_dir):
+    site = Path(site_dir)
+    write_page(site / "plain.html", env.get_template("plain.html.j2").render())
+'''
+
+TRAVERSAL_BUILDER = '''
+from lib.pages import write_page
+
+BAD_TABLE = {
+    "sub/escape.html": ("escape.html.j2", "escape"),
+    "climb.html": ("../evil.html.j2", "climb"),
+    "format.html": ("{name}.html.j2", "format"),
+    "good.html": ("good.html.j2", "good"),
+}
+OUT_DIR = tmp / "elsewhere"
+
+
+def render_site(model, site_dir):
+    site = Path(site_dir)
+    for page, (template, page_key) in BAD_TABLE.items():
+        write_page(OUT_DIR / page, env.get_template(template).render())
+'''
+
+
+def _gmi_builder_fixture(root: Path, name: str, source: str) -> None:
+    _gmi_write_fixture(root / "scripts" / name, source)
+
+
+def test_gmi_dynamic_template_value_mints_nothing(tmp_path):
+    root = tmp_path / "macro"
+    _gmi_builder_fixture(root, "build_loose.py", DYNAMIC_TEMPLATE_BUILDER)
+    sites, _ = reg.scan_write_sites(root / "scripts")
+    assert [s for s in sites if s.builder == "scripts/build_loose.py"] == []
+
+
+def test_gmi_reassigned_table_is_refused(tmp_path):
+    """A table that is a different mapping in another scope is ambiguous; the
+    census refuses it rather than guessing which mapping the loop saw."""
+    root = tmp_path / "macro"
+    _gmi_builder_fixture(root, "build_flip.py", REASSIGNED_TABLE_BUILDER)
+    sites, _ = reg.scan_write_sites(root / "scripts")
+    assert [s for s in sites if s.builder == "scripts/build_flip.py"] == []
+
+
+def test_gmi_mutated_table_is_refused(tmp_path):
+    root = tmp_path / "macro"
+    _gmi_builder_fixture(root, "build_mut.py", MUTATED_TABLE_BUILDER)
+    sites, _ = reg.scan_write_sites(root / "scripts")
+    assert [s for s in sites if s.builder == "scripts/build_mut.py"] == []
+
+
+def test_gmi_unrelated_dict_constant_mints_no_pages(tmp_path):
+    """A dict of strings that is not a render table produces no route, no row
+    and no builder attribution."""
+    root = tmp_path / "macro"
+    _gmi_builder_fixture(root, "build_labels.py", UNRELATED_DICT_BUILDER)
+    sites, _ = reg.scan_write_sites(root / "scripts")
+    mine = [s for s in sites if s.builder == "scripts/build_labels.py"]
+    assert [(s.route, s.template) for s in mine] == [("/plain.html", "plain.html.j2")]
+
+
+def test_gmi_traversal_off_root_and_format_entries_are_refused(tmp_path):
+    """A table entry with a directory part, a climbing template or a brace
+    placeholder is not a concrete page; and a loop that does not write under
+    the site root attributes nothing even when its table is literal."""
+    root = tmp_path / "macro"
+    _gmi_builder_fixture(root, "build_bad.py", TRAVERSAL_BUILDER)
+    sites, unresolved = reg.scan_write_sites(root / "scripts")
+    mine = [s for s in sites if s.builder == "scripts/build_bad.py"]
+    assert mine == []
+    # the write went somewhere that is not the site root: reported, not guessed
+    assert any("OUT_DIR / page" in expr for _f, expr in unresolved)
+
+
+def test_gmi_wrong_root_write_is_reported_unresolved_not_attributed(tmp_path):
+    root = tmp_path / "macro"
+    _gmi_builder_fixture(root, "build_bad.py", TRAVERSAL_BUILDER)
+    rows, _source = reg.derive_macro(root, git=_gmi_fake_git(
+        ["site/index.html", "site/good.html"]))
+    index = _gmi_rows_by_id(rows)
+    assert "macro:good" in index
+    # none of the refused entries became a row
+    assert "macro:sub_escape" not in index
+    assert "macro:climb" not in index
+    assert "macro:format" not in index
+    assert "macro:escape" not in index
+
+
+def test_gmi_table_loop_write_to_a_non_page_shape_stays_unresolved(tmp_path):
+    """`site / f'{page}.html'` in a table loop is not the shape the binding
+    vouches for: the module-wide map must not get it either."""
+    root = tmp_path / "macro"
+    _gmi_builder_fixture(root, "build_odd.py", '''
+from lib.pages import write_page
+
+ODD_TABLE = {"odd.html": ("odd.html.j2", "odd")}
+
+
+def render_site(model, site_dir):
+    site = Path(site_dir)
+    for page, (template, page_key) in ODD_TABLE.items():
+        write_page(site / (page + ".tmp"), env.get_template(template).render())
+''')
+    sites, unresolved = reg.scan_write_sites(root / "scripts")
+    assert [s for s in sites if s.builder == "scripts/build_odd.py"] == []
+    assert any("page + '.tmp'" in expr.replace('"', "'")
+               for _f, expr in unresolved)
+
+
+# ---------------------------------------------------------------------------
+# the real GMI builder — integration against this repo's own scripts
+# ---------------------------------------------------------------------------
+
+# The scanner reads these builders as AST data, never imports or runs them.
+# Its existing scripts/** scope still covers changes to the real source files.
+REAL_GMI_BUILDER = REPO_ROOT / "scripts" / "build_gmi_explorer.py"  # ci-trigger-closure: data — parse-only builder source; imports are not executed
+
+
+def test_gmi_real_gmi_builder_binds_all_six_surfaces():
+    sites, _unresolved = reg.scan_write_sites(REPO_ROOT / "scripts")
+    mine = [s for s in sites if s.builder == "scripts/build_gmi_explorer.py"]  # ci-trigger-closure: data — builder identity assertion, not an import
+    got = {(s.route, s.is_family, s.template) for s in mine}
+    assert got == {
+        ("/gmi.html", False, "gmi_map.html.j2"),
+        ("/gmi-index.html", False, "gmi_index.html.j2"),
+        ("/gmi-relationships.html", False, "gmi_relationships.html.j2"),
+        ("/gmi-coverage.html", False, "gmi_coverage.html.j2"),
+        ("/gmi-states.html", False, "gmi_states.html.j2"),
+        ("/gmi-issuer-<lower>.html", True, "gmi_issuer.html.j2"),
+    }
+    ontology = [s for s in sites if s.builder == "scripts/build_ontology_explorer.py"]  # ci-trigger-closure: data — builder identity assertion, not an import
+    assert [(s.route, s.template) for s in ontology] == [
+        ("/ontology.html", "ontology.html.j2")]
+
+
+@pytest.mark.parametrize("mutation,table,root,iteration,body", [
+    ("alias = TABLE\nalias['safe.html'] = ('wrong.html.j2', 'x')", None, None, None, ""),
+    ("del TABLE['safe.html']", None, None, None, ""),
+    ("", '{"safe.html": ("safe.html.j2", "safe"), **unknown}', None, None, ""),
+    ("", '{"safe.html": ("/absolute.html.j2", "safe")}', None, None, ""),
+    ("", '{"safe.html": ("safe.html.j2", "safe"), "bad.html": (unknown, "x")}', None, None, ""),
+    ("", None, "pretend_site_dir", None, ""),
+    ("", None, None, "TABLE.items(**options)", ""),
+    ("", None, None, None, '        page = "other.html"\n'),
+    ("", None, None, None, '        template = "other.html.j2"\n'),
+    ("", "read_dynamic_table()", None, None, ""),
+])
+def test_gmi_uncertain_render_table_cannot_inherit_another_loop_binding(
+        tmp_path, mutation, table, root, iteration, body):
+    table = table or '{"safe.html": ("safe.html.j2", "safe")}'
+    root = root or "site"
+    iteration = iteration or "TABLE.items()"
+    source = f'''TABLE = {table}
+{mutation}
+def render():
+    for page, (template, key) in {iteration}:
+{body}        write_page({root} / page, env.get_template(template).render())
+    page = "unrelated.html"
+'''
+    _gmi_builder_fixture(tmp_path, "build_unsafe.py", source)
+    sites, unresolved = reg.scan_write_sites(tmp_path / "scripts")
+    assert sites == []
+    assert unresolved, "An uncertain lexical binding must remain a reported gap"
+
+
+@pytest.mark.parametrize("absolute", [False, True])
+def test_gmi_literal_template_binding_cannot_escape_the_template_root(tmp_path, absolute):
+    root = tmp_path / "macro"
+    escape = root / "escape.html.j2"
+    _gmi_write_fixture(escape, "<html data-theme='light'>{{ t('Outside', '外部') }}</html>")
+    template = str(escape) if absolute else "../escape.html.j2"
+    _gmi_builder_fixture(root, "build_unsafe.py", f'''TEMPLATE = {template!r}
+def render():
+    write_page(site / "unsafe.html", env.get_template(TEMPLATE).render())
+''')
+    rows, _ = reg.derive_macro(root, git=_gmi_fake_git(["site/unsafe.html"]))
+    unsafe = _gmi_rows_by_id(rows)["macro:unsafe"]
+    assert unsafe["source_template"] == "unknown"
+    assert unsafe["bilingual"] == "unknown"
+    assert unsafe["themes"] == "unknown"
+
+
+@pytest.mark.parametrize("body", [
+    '''        if page == "a.html":
+            write_page(site / page, env.get_template(template).render())
+''',
+    '''        if page != "a.html":
+            continue
+        write_page(site / page, env.get_template(template).render())
+''',
+    '''        if page == "b.html":
+            break
+        write_page(site / page, env.get_template(template).render())
+''',
+    '''        write_page(site / page, env.get_template(template).render())
+        break
+''',
+    '''        write_page(site / page, env.get_template(template).render())
+        if page == "a.html":
+            break
+''',
+])
+def test_gmi_filtered_table_loop_does_not_claim_every_literal_entry(tmp_path, body):
+    source = '''TABLE = {"a.html": ("a.html.j2", "a"),
+         "b.html": ("b.html.j2", "b")}
+def render():
+    for page, (template, key) in TABLE.items():
+''' + body + '    page = "unrelated.html"\n'
+    _gmi_builder_fixture(tmp_path, "build_filtered.py", source)
+    sites, unresolved = reg.scan_write_sites(tmp_path / "scripts")
+    assert sites == []
+    assert unresolved
 
 def test_terminal_only_refresh_preserves_other_owners_and_source_pins(monkeypatch, tmp_path, committed):
     import copy

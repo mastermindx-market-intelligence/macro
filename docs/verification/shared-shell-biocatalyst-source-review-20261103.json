@@ -1,0 +1,42 @@
+{
+  "task": "P12.T36",
+  "source_head": "3a2bcdb55c578d395e6bf6e114f7cc86237ff5d2",
+  "source_tree": "8615be6255c4ff40f0601304e656cb3166ecbab3",
+  "base": "26a1478b9d369df28ae42e018aef1feb620270f6",
+  "source_blobs": {
+    "docs/verification/shared-shell-biocatalyst-retained-source-20261103.md": "cbdbf6477f33bbb8f652e05bad0b96f9ce22fca5",
+    "site/biocatalyst.js": "ba5e4b2356012cc429cd3600ceff44b5b3d7ddea",
+    "templates/biocatalyst.js": "ba5e4b2356012cc429cd3600ceff44b5b3d7ddea",
+    "tests/biocatalyst_hydration_harness.js": "2c3613db3b1da23cd898ac296748887c730f23df",
+    "tests/test_biocatalyst_hydration.py": "f692fc9a7ec6e22e410c9fb0f35ef1945837f6cb",
+    "tests/test_biocatalyst_page.py": "be0e664f2f57c65a51333da8ef77bc9d56062e87"
+  },
+  "independent_source_review": {
+    "verdict": "PASS_SCOPED",
+    "reviewer": "01a15e87-3f2b-7411-8ad9-39933bb6bb32",
+    "separation": "Fresh native nonauthor OpenAI review; same provider as author, not cross-provider Fabric or formal CI approval",
+    "receipt_sha256": "19006130d75faa245be1886f691663ccfb8e929de4e0e03ed9ea4f9073d75645",
+    "scope": "Closure ONLY of original selection/late-detail finding; original source/auth/clock/Paper/83check/4healthy proof reused",
+    "finding": "Original delayed-detail REQUEST_CHANGES preserved; original same-reviewer probe on corrected runtime keeps inspector closed/empty/no links after late response."
+  },
+  "proof_boundaries": {
+    "original_head": "21b128b91e3191f584eb79a160b077f2cd4ce9f7",
+    "original_checks": "83 affected PASS; Paper and four healthy semantic readings reused only for unaffected behavior",
+    "finding_checks": "Promise-gated RED on21b\u2192GREEN on3a2;17focusedPASS under OS network denial; no fullsuite/review restart",
+    "current_runtime_sha256": "f0c7d9256cd57afc9b7ea2d343366f5c9ee895a139f7883543900cae120b99a0",
+    "focused_log_sha256": "44629b8e1d5e772231f8ce104ea9e812f7c127e7f83a8233b75bb55151177e69",
+    "field_clocks": "Clinical/source dates remain supplied; operational client-check observations do not originate clinical dates."
+  },
+  "governed_reference": {
+    "file": "01M2WGNCX9475G79JRKJTCM08P",
+    "page": "p-1M-0",
+    "board": "1CN9-0",
+    "state": "2PWT-0"
+  },
+  "non_claims": [
+    "No formal GitHub approval or hosted CI qualification",
+    "No current-entitled/served/nativefocus/pixel/scientific or whole-family acceptance",
+    "No cohort/source/provider/rights expansion",
+    "Source branch publication, protected landing, renderer delivery and served acceptance are separate facts"
+  ]
+}

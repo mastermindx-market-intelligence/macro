@@ -917,6 +917,26 @@ MUST_RESTART = [
     "engine/sector_intelligence/__init__.py",
     "engine/sector_intelligence/contracts.py",
 
+    # Paid theme-research serving closure, reached LAZILY. The registry binds
+    # the semiconductor loader inside `_load_semiconductor_owner_bundle`
+    # (function-local import, deliberate: the loader pulls the Company
+    # Intelligence reader's requests/pandas/pyarrow stack, which
+    # `test_registry_import_closure_stays_light` forbids the registry to drag
+    # into producers). So the chain enters macro-api's `sys.modules` on the
+    # FIRST SERVED REQUEST and stays there for the life of the process — every
+    # bit as import-cached as a module-level import, and invisible to
+    # `test_api_load_time_import_closure_is_covered_by_restart_regex`, which
+    # walks module-level imports only. That blind spot is why these three had
+    # to be found by hand; the Energy seat reported them at #7870
+    # issuecomment-5866433049 item 3. Pinned here so the regex keeps covering
+    # them, since no closure walk will ever re-derive them.
+    "engine/market_ontology/semiconductor_owner_bundle.py",
+    "engine/market_ontology/semiconductor_witness_scope.py",
+    "engine/market_ontology/workspace_projection.py",
+    # The canonical theme-id resolver: the research composer compares an
+    # assertion's `scope.canonical_theme_id` against it on every request.
+    "engine/theme_graph/identity.py",
+
     # Capital Structure serving closure — imported by app/capital_structure.py.
     "engine/capital_structure/__init__.py",
     "engine/capital_structure/event_spine.py",
@@ -1012,11 +1032,17 @@ MUST_RESTART = [
     "engine/earnings_narrative/context_packets.py",
     "engine/earnings_narrative/contracts.py",
     "engine/earnings_narrative/digest.py",
+    "engine/earnings_narrative/economic_interpretation.py",
     "engine/earnings_narrative/private_publication.py",
     "engine/earnings_narrative/promotion.py",
     "engine/earnings_narrative/public_wire.py",
     "engine/earnings_narrative/story.py",
     "engine/earnings_narrative/story_packets.py",
+    "engine/earnings_release/__init__.py",
+    "engine/earnings_release/binding.py",
+    "engine/earnings_release/figures.py",
+    "engine/earnings_release/filing_key.py",
+    "engine/earnings_release/receipts.py",
     "engine/press/__init__.py",
     "engine/press/earnings_adapter.py",
     # CXI packet build reached from brain_gateway (+ its module-level siblings)
