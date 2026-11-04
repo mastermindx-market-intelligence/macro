@@ -1,11 +1,11 @@
 {
-  "artifact": "D06 source specification,beta/Paper baselines,published reader implementation and chart-time evidence",
+  "artifact": "D06 source specification, retained baselines and published reader, feedback, chart-time and embed-language evidence",
   "role": "SOURCE_SPEC_SOURCE_PUBLISHED_LOCAL_PROOF/PARTIAL; not approved final design or released foundation",
   "identity": "containing immutable Git commit plus member hashes",
   "pr": 10655,
-  "prior_published_head": "1f63f2c8318e7819551d5b82d47bc6e1e8700a98",
-  "member_count": 107,
-  "aggregate_sha256": "36fcb9e7710bf631495accbc5ddccd9a19b5230d3b79b0ac6a99e4a969cb8bcc",
+  "prior_published_head": "53af5e535a15e618e0f73ec2b5deffc88df430b9",
+  "member_count": 109,
+  "aggregate_sha256": "c84e3678a42b38bb8599d9c1b55a3fe5ba606c2eb38f7be9455105743f9bfac2",
   "aggregate_rule": "SHA256 of sorted lines: member sha256 + space + relative path + LF",
   "manifest_self_excluded": true,
   "members": [
@@ -83,15 +83,21 @@
     },
     {
       "path": "README.md",
-      "bytes": 16271,
-      "sha256": "97802fc0873c8c94d4407b066ef043774c67e70a6089dd67ee6ddf35ad25464e",
-      "git_blob_sha1": "6ecccce8a15ef2ea975e1cefd23d924d1ca7b416"
+      "bytes": 16962,
+      "sha256": "8cf6650b5c2a931719c8949c7b99c7893d250fab57a6537f3fb5cd1d02ff407b",
+      "git_blob_sha1": "c504555541f9206d1044566c6dbf11c243041455"
     },
     {
       "path": "RESPONSIVE_AND_STATE_AUDIT.md",
       "bytes": 17225,
       "sha256": "4f5c1247e0963a664eea20aa9de2fd1d75b5c2a7615ef5242451fa4c9d9c4aa4",
       "git_blob_sha1": "a3c67b0542743378bc314d5eab0c118eb9d92f44"
+    },
+    {
+      "path": "RESUMED_IMPLEMENTATION_20261104.md",
+      "bytes": 10570,
+      "sha256": "ece3ef94fd6c983d39aa57c7e47d7dc216297e65f726fa2bcbe7d9e78e6c5da7",
+      "git_blob_sha1": "57e9d13d92ea76fc4bcfceda31cafa7a7fba88ff"
     },
     {
       "path": "ROUTE_DATA_CONTRACTS.md",
@@ -632,6 +638,12 @@
       "bytes": 13030,
       "sha256": "34d475012c0191648f2e6bc44576761331cfd2657469163c1652fa5014ebd4b0",
       "git_blob_sha1": "ee64566ff06e944073c110c951b1187782b20634"
+    },
+    {
+      "path": "evidence/resumed_implementation_receipt.json",
+      "bytes": 4427,
+      "sha256": "1ad4712d779c2d3f66fa5e44e5c1a0c3cdc59bc62f59629293c3719a51172054",
+      "git_blob_sha1": "ed9ae8f7a135027256560cb3f4e8c3a287734c00"
     },
     {
       "path": "evidence/retained_registry.json",

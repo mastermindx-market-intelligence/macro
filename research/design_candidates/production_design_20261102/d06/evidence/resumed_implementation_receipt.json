@@ -1,0 +1,115 @@
+{
+  "schema": "d06.resume-implementation.v1",
+  "checkpoint_time": "2026-11-04 06:51:24 UTC",
+  "protected_source": "75a6540519cf519edfef7633e74f57b68aef9329",
+  "programme_source": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "macro_parent": "53af5e535a15e618e0f73ec2b5deffc88df430b9",
+  "terminal": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "pr": 1270,
+    "branch": "sol/web-d06-terminal-reader-resilience-20261103-c4",
+    "operation_id": "d06-terminal-reader-resilience-20261103-c4",
+    "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d06-terminal-reader-resilience-20261103-c4",
+    "head": "d73e55b556c532d09ad144e69be0673db31d035c",
+    "clean_after_push": true,
+    "feedback": {
+      "commit": "fed19d1ac3aa8a716f528c8205651ff60b7b413d",
+      "commit_action": "74c331c6987ae7cd191a6067faa3e00369b02d0494f0af0101b350fb65fe16af",
+      "push_action": "2300f6a2ecdf45238282781ae8e1a7fdbf2226fa76c2e069b484541edbd4333c",
+      "published_blob_matches": 28,
+      "unit_passes": 65,
+      "combined_browser": {
+        "passed": 46,
+        "skipped": 14,
+        "qualification": "before final feedback-only margin refinement"
+      },
+      "final_feedback_browser": {
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0
+      },
+      "inspected_pngs": 12,
+      "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fed19d1ac3aa8a716f528c8205651ff60b7b413d/terminal/docs/pr-crops/d06-reader-feedback/verification.json"
+    },
+    "embed": {
+      "commit": "d73e55b556c532d09ad144e69be0673db31d035c",
+      "commit_action": "46a8ffcdbfd9d7faa9df01d53c27e85b342f2b041dc611a0920150df59372ab4",
+      "push_action": "aa72616ab3f1b4c2ac9201998d2165b19202d578ecae2beadfde7b7dd43e576d",
+      "published_blob_matches": 28,
+      "browser": {
+        "passed": 18,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0
+      },
+      "language_observations": 30,
+      "pngs": 18,
+      "inspected_samples": 6,
+      "lint": {
+        "preexisting_errors": 5,
+        "current_errors": 5,
+        "identical_diagnostics": true,
+        "new_test_errors": 0
+      },
+      "typescript_exit": 0,
+      "receipt_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d73e55b556c532d09ad144e69be0673db31d035c/terminal/docs/pr-crops/d06-embed-language/verification.json"
+    }
+  },
+  "ci": {
+    "prior_head": "0cf50dc0c7db259b284b48632df3f05fcb0fb7b7",
+    "prior_run": 41776880568,
+    "prior_successful_jobs": 17,
+    "current_head": "d73e55b556c532d09ad144e69be0673db31d035c",
+    "current_run": 41788110415,
+    "current_status_at_publication_readback": "pending",
+    "pr_check_run": 41788106052,
+    "pr_check_status_at_publication_readback": "queued",
+    "current_head_qualified": false
+  },
+  "foundation": {
+    "observed_at": "2026-11-04 06:51:24 UTC",
+    "f01_head": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+    "f02_head": "6d1f6791408fbb317daf16b647c02465e8d81266",
+    "joint_v1_released": false,
+    "operative": "candidate.4 provisional",
+    "candidate5_adopted": false
+  },
+  "paper": {
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "page_id": "p-W-0",
+    "desktop_node": "1K9F-0",
+    "mobile_node": "1KNZ-0",
+    "token_hash": "55dd37b7",
+    "read_and_desktop_screenshot_verified": true,
+    "catalog_hash": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+    "read_snapshot_file_scope": "56990c1d183160fd97af75da054690161b6840657045ffcecea33dd2ce8e1c89",
+    "write_binding_observed": true,
+    "c4_per_seat_write_acceptance_established": false,
+    "mutations": 0
+  },
+  "migration": {
+    "cases": 75,
+    "partial": 10,
+    "unexecuted": 65,
+    "fully_qualified": 0,
+    "new_credit": "existing partial A11Y02 only",
+    "retained_macro_images": 72
+  },
+  "release": {
+    "terminal_draft": true,
+    "macro_draft": true,
+    "ready": false,
+    "merge": false,
+    "enqueue": false,
+    "deployed": false,
+    "mission_complete": false
+  },
+  "effects": {
+    "new_unknown": 0,
+    "optional_native_adviser": "accepted / STOP",
+    "external_messages": 0,
+    "background_observer": false
+  },
+  "next_action": "Read exact d73e55b5 hosted check conclusions and repair concrete regressions on the original carrier; consume actual joint foundation release and C4 Paper admission before their dependent lanes."
+}
