@@ -1,6 +1,6 @@
 # Which artifact to build from
 
-**Current status: native writes paused with one unresolved transport outcome. No final repaired-native freeze or repaired-set review has been issued.** The present exports record the observed candidate, including open first-pass defects. The source repair packets are complete specifications of intended corrections; prepared work is not evidence of native application. See [NATIVE_PENDING_WORK.md](NATIVE_PENDING_WORK.md) and [the current return](../RETURN_F02.md).
+**Current status: 31 completed native reference boards are captured; the original Chinese comparison remains held by one unresolved Paper effect. The scoped repaired-set review is pending; full v1 is not accepted.** Use [the current continuation](NATIVE_CONTINUATION_20261104.md), actual current bindings and receipt-backed exports. Historical first-pass defects and preparation statuses are not current application receipts.
 
 **Use the final reviewed native export/capture set together with the current system, source/data and interaction contracts.** The construction packets below preserve authoring provenance. Their original `PREPARED_NOT_APPLIED` fields describe the packet when it was created; actual application is established separately by the observed operation history, current native bindings and captures. Do not rewrite preparation history to make it resemble a runtime receipt.
 
@@ -35,3 +35,7 @@ Original `pattern-lab.html` and `../sheets/` belong to the historical source/sta
 The bare board key, such as `screenshots/macro-dark.jpg`, identifies the current full-board capture when its matching export and final manifest agree. Filenames with `--` generally identify incremental or section captures and must retain their recorded scope. Closed-table captures taken before a modal overlay can be useful paired evidence; a partial table capture cannot stand in for a completed screen. `states-matrix-in-progress.jpg` remains explicitly historical.
 
 Every native design is still separate from executed browser input, focus restoration, touch/scroll, actual 400% reflow, producer/entitlement/save wiring, F01 joint release and formal RIG acceptance. The final review record reports exactly which findings are resolved and which conditions remain carried.
+
+## Historical prototype boundary
+
+`pattern-lab.html` and the earlier static sheet freeze preserve accepted prototype history. Their older focus/viewport demonstrations do not establish candidate.4 conditional focus ownership, usable-width thresholds, or production behavior. Current source contracts and reviewed native exports take precedence for later integration.

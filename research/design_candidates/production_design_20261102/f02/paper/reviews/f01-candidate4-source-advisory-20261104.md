@@ -1,0 +1,73 @@
+# F01 candidate.4 / F02 bounded contract advisory
+
+## Disposition and scope
+
+**QUALIFIED CONCURRENCE — source semantics only.** F01 candidate.4 resolves material ownership ambiguities without requiring a second assistant, inspector, cursor, or navigation state owner. The last examined F02 documents largely adopt these clauses. Two residual F02 focus statements need a conditional-ownership guard if they remain in the frozen artifact set. They are wording contradictions, not evidence of an observed runtime defect.
+
+This was an independent, bounded C3 architectural/adversarial judgment under the assigned **PRINCIPAL_JUDGMENT** route. It is not formal RIG review, Product/Taste acceptance, runtime admission, an attestation of model identity, or non-author GitHub approval. No Paper or browser inspection was performed by this child, and no source/canvas/GitHub mutations or external messages were made. Root remains the sole source/canvas writer. Draft/HOLD and all existing publication restrictions remain intact.
+
+The parent identifies **macro `e6c28413ee74e83950b8c5ff58a34b81e76c1781`** as the current canonical checkpoint. This child did **not** reread that checkpoint. Earlier `90559f29aba4e5f6f7ad05085d886c6d9eb8ab16` is local only and must not be described as the current canonical checkpoint. Findings below refer to the exact sources actually examined; root should apply the two wording recommendations only where still present.
+
+## Evidence boundaries
+
+- Protected law pin: Mastermind `910803421beca53ca25145392725ab2d84c7a8e9`; inherited compatible INDEX binding `mastermind.sol_skillpack.v1`, `1.0.1`, bootstrap 1.
+- F01 semantic contract: [JOINT_SHELL_SYSTEM_CONTRACT.md at 8926b16](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md), blob `1160f14b108bf0948384f59a249320385a1dfb6c`, read directly. The supplied PR #10645 review `5760649569`, its `3e334bd` binding, and later PR head were not independently revalidated here.
+- F02: local SYSTEM_CONTRACT, SOURCE_AND_DATA_CONTRACT, INTERACTION_STATES, F01_HANDSHAKE_CANDIDATE, and `paper/repairs/focus-ownership-v1/` under `/workspace/scratch/55964f568673/f02`. Last examined SOURCE_AND_DATA SHA-256: `1a65397c7a69db1fb4409904b91cb46c7a2c6b23d6ad06982b7b6b842bb576d2`; INTERACTION_STATES: `477bd861391c82d9b06f137d93c4126360d6707ed4584535b9345444a29af06c`. These hashes are evidence snapshots, not a claim that they equal `e6c28413`.
+- Underlying implementation read: MacroBrain [`templates/mm_brain.js` at fc85b04](https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/mm_brain.js), blob `e4d7bd63261c4065d720430589377ff0a7f758f8`; Terminal [`terminal/lib/mastermindBrain.ts` at 3cc8da8](https://github.com/mastermindx-market-intelligence/terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/mastermindBrain.ts). Other D06/search/return details below were assessed as clauses of the pinned F01 contract, not independently rerun in the product.
+
+## Decision table
+
+| Clause | Decision and precise boundary | Acceptance falsifier |
+|---|---|---|
+| Candidate.2 concurrence versus candidate.4 | Retain candidate.2 concurrence for unchanged geometry only. Candidate.4 needs explicit scoped concurrence for the changed ownership, lifecycle, focus, reader, identity, and return clauses. The examined local F02 handshake already supplies that scoped response, with runtime qualifications. Confirm it survives in the frozen checkpoint. | A candidate.2 response is presented as blanket candidate.4 approval, or source-contract concurrence is represented as whole-design acceptance. |
+| Shared ownership | Concur. F01 owns shell policy; F02 owns shared tokens/anatomy, formatting, density, and accessibility conventions. D06 retains focused Terminal/reader/host requirements; Brain/D14 retains lifecycle, requests, and context; existing domain/navigation owners retain their state. | A new coordinator, duplicated assistant, private visibility poller, cursor store, or navigation history owner is introduced to satisfy the contract. |
+| Focus restoration | Concur with F01's conditional ownership rule. Most F02 text and all eight proposed focus-copy fixes use it. **Object to the two residual unconditional statements identified below if still present.** Preserve focus deliberately moved elsewhere; disconnected invokers require a named valid fallback only when restoration is owed. | Closing or changing placement steals focus from a destination the user intentionally selected, focuses a detached element, or restores an old scroll position while leaving the intended trigger hidden. |
+| Brain Close versus Stop | Concur, backed by the examined implementation. Close hides the presentation and does not call stream Stop; the answer can continue. `onClose` runs only when focus was inside Brain, and a `true` return suppresses the built-in launcher fallback. It is not an every-close lifecycle event. | Closing, resizing, suspending, or navigating implicitly cancels a request, marks an uncertain save complete, or treats every close as a focus-return callback. |
+| Brain readiness and host interface | Concur with qualification. `mounted`, the ready event, and successful invocation of `open` do not prove visibility. The examined typed Terminal bridge does not declare the `close`/`onClose` contract that the actual widget supports. This is an integration qualification to resolve, not proof that the live host cannot support it. | A ready signal or opener return is accepted as visible acknowledgment; automatic suspension/arbitration depends on an unqualified host callback; a second lifecycle controller is added. |
+| Overlay and Escape | Concur as target policy: one top modal owns focus and scroll; a dock is nonmodal; explicit reopening restores evidence after Brain suspension. Automatic queued reopening remains held. Brain's source shows ordered Escape handling, but that alone does not prove propagation containment or browser trap/inert behavior. | One Escape stops a stream and also closes an outer layer or resets a chart; two traps coexist; evidence silently reopens or cancels work. |
+| Shared 320px inspector versus D06 reader | Compatible **only as distinct scopes**. The shared 320px inspector plus 24px gap and remaining-primary-content rule does not replace D06's 360px initial reader, requested 300–520px width, or existing reader modes. D06's provisional 640px threshold concerns the actual price plot after axes/tools/gaps/scrollbars, not a generic content container. Requested width survives temporary fitting. | Shared 320px sizing overwrites D06's stored request; a 984px container calculation is substituted for measuring the actual plot; temporary fitting persists a new requested width; a second inspector appears. |
+| Inspection cursor and historical Ask | Concur. Crosshair and bar stepping share one visual inspection cursor; AI locked VLine and Intelligence selection remain separate owner state. Historical Ask requires instrument/listing/market, interval, selected time and basis, context, and data generation before dispatch. Prepared attachments revalidate; dispatched identity stays fixed. | A second committed reader pin appears; a symbol-only opener is treated as historical acknowledgment; current quotes fill missing history; later hover or selection retargets an already dispatched request. |
+| Company/search and return boundaries | Concur at specification level. Preserve preview versus commit, canonical company identity, existing `company_query` and `mmxCompanySearch` ownership, safe-origin and existing parser rules. Generic Terminal entry is distinct from named-company entry. Exact URL restoration and bounded history behavior do not establish full native focus/selection/scroll restoration. | Invalid explicit identity silently uses a stale company; a new return grammar/store appears; Browser Back is conflated with an explicit return action; exact URL recovery is claimed as full UI restoration. |
+| Density | Source convention is desktop dense 40px / comfortable 52px; the general phone-row floor is 48px, with domain-specific exceptions preserved. Parent reports foundations 4DK-0 now reads “Dense 40px · Comfortable 52px · Phone rows ≥48px” and was visually checked. That resolves the reported 48px desktop-comfortable label conflict at the reported checkpoint; no redo is requested. | Desktop comfortable density is again labeled 48px, or the general phone floor erases the Options-specific mobile convention. |
+
+## Two exact wording repairs, conditional on current bytes
+
+### 1. SOURCE_AND_DATA_CONTRACT: visibility after restoration
+
+The last examined statement said that identity-based focus restoration “must leave the matched trigger visible” without stating when the transition owns focus. Replace that sentence with:
+
+> When a transition legitimately owes focus restoration, resolve the invoker by stable identity after sorting, filtering, or a dock-to-overlay transition and leave the connected, focusable target visible; if that invoker no longer exists, use the named valid fallback and applicable announcement. If focus has intentionally moved outside the retiring focus owner, preserve that focus and do not force restoration or scroll. Restoring an old scroll offset and calling `focus({preventScroll:true})` alone does not establish the required visible-target result.
+
+Keep the surrounding limitations on source-only proof, CJK/font rendering, Paper delivery, independent review, and served behavior.
+
+### 2. INTERACTION_STATES: filtered-row acceptance case
+
+The last examined test instructed the reviewer to filter away the row and verify fallback focus without stating whether the inspector owned focus. Replace it with:
+
+> Filter away the current evidence row. With focus still owned by the closing inspector, close it and verify the named connected, focusable, visible fallback and applicable announcement. Repeat after intentionally moving focus outside the inspector; closing it must preserve that focus and must not force fallback focus or scroll. In both cases, retain the evidence identity/invalidation rules and avoid a second inspector.
+
+These changes reconcile the test and visibility requirement with the already adopted conditional policy. They do not require another global redesign.
+
+## Suggested scoped concurrence statement
+
+> F02 retains its candidate.2 concurrence for unchanged geometry and concurs with the source semantics of F01 candidate.4 for shared ownership, conditional focus restoration, Brain Close/Stop and host-callback boundaries, modal ownership, the D06 reader exception, one inspection cursor, historical Ask identity, and canonical company/search return boundaries. This concurrence is bound to the frozen contract and F02 amendment artifacts. It does not qualify native effects, browser focus/trap/inert/Escape behavior, Brain visibility or automatic arbitration, actual price-plot fitting, historical request delivery, full return restoration, whole-design Product/Taste acceptance, or formal non-author approval.
+
+The candidate.2 baseline may remain identified as such if candidate.4's amendment and exact artifact binding are explicit. Do not silently extend the old concurrence to changed semantics.
+
+## Focus packet and native-proof boundary
+
+This child verified all ten manifest member hashes and the aggregate `53645351404a7e155d4f10b5d0ad734dd7fa0d606c3b1e9cc519335ae5e4aec8` for `paper/repairs/focus-ownership-v1/`, and read all eight proposed visible-copy changes. Their conditional focus semantics are compatible. The examined packet was labeled **PREPARED_NOT_APPLIED**; it contains no browser proof. Parent reports subsequent guarded native application. Preserve the prepared packet as historical evidence and bind the execution receipt/checkpoint separately; do not infer native success from preparation hashes. This child did not verify the screenshots, native application, dispatch counts, or current canonical bytes.
+
+## Bounded review-routing interpretation
+
+The examined [SESSION_INDEPENDENT_REVIEW_ROUTING.md at the protected pin](https://github.com/mastermindx-market-intelligence/Mastermind/blob/910803421beca53ca25145392725ab2d84c7a8e9/docs/SESSION_INDEPENDENT_REVIEW_ROUTING.md) separates technical judgment, lawful reviewer execution/provenance, and formal non-author GitHub approval. It explicitly treats itself as a procedure, not a new admission service; Fabric review is not GitHub APPROVED, and ACK/queued/START/terminal return/parent consumption are distinct. It also warns against substituting native Codex child workers for the prescribed paid-Fabric avenue.
+
+**Native independent Product/Taste principals can provide bounded advisory critique of an explicitly frozen artifact set within an already authorized principal-judgment assignment.** Such critique can identify defects and inform root's decisions. It must be labeled advisory and must not be represented as a formally admitted reviewer execution, a substitute for a specifically required Fabric review, or a formal review gate being satisfied merely because the reviewer is a different native child.
+
+For a formal required review, actual eligibility, reviewer independence, appropriate admission/route, immutable artifact scope, trustworthy return, and parent consumption remain separate evidence. For non-author GitHub approval, the authenticated reviewer identity and actual submitted review bound to the applicable current commit remain separate again. An advisory PASS, a different displayed agent name, or a source-contract concurrence proves none of those stages. A frozen source set also does not manufacture native/browser evidence needed by the review's scope.
+
+**Limit:** this child did not finish reading all referenced laws or establish formal eligibility of any proposed native Product/Taste principal. The statement above is a bounded interpretation of advisory scope and the reviewed routing distinctions, not a complete formal-admission ruling. If root needs a formal gate disposition, the relevant referenced law and actual reviewer provenance must be checked by the authorized owner.
+
+## Closeout
+
+The bounded source advisory is complete. There is no architectural objection to F01 candidate.4's changed clauses beyond retaining their qualification boundaries and repairing any surviving unconditional focus wording. Actual Paper effects, browser behavior, Product/Taste acceptance, runtime admission, and formal GitHub approval remain unqualified by this report. Draft/HOLD remains in force.

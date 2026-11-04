@@ -1,0 +1,20 @@
+{
+  "schema": "f02.native-repair.v1",
+  "status": "APPLIED_AND_RECAPTURED",
+  "operation_ids": [
+    "f02-c2-editorial-dark-numeric-frames-20261104-01",
+    "f02-c2-editorial-light-numeric-frames-20261104-01"
+  ],
+  "affected_boards": [
+    {
+      "key": "editorial-dark",
+      "id": "6JX-0"
+    },
+    {
+      "key": "editorial-light",
+      "id": "6NG-0"
+    }
+  ],
+  "actual_changes": "Sixteen numeric/header frame nodes use flex column / align-items:flex-end. Text, raw values, units, anchors and period semantics unchanged. Screenshots inspected after application.",
+  "approval": false
+}

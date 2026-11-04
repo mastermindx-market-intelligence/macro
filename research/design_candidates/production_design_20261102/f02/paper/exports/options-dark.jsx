@@ -174,7 +174,7 @@
                 Type
               </div>
             </div>
-            <div id="5XV-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '104px' }}>
+            <div id="5XV-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="5XW-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
                 Strike · USD
               </div>
@@ -184,17 +184,17 @@
                 Est. side
               </div>
             </div>
-            <div id="5XZ-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '129px' }}>
+            <div id="5XZ-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="5Y0-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
                 Premium · USD
               </div>
             </div>
-            <div id="5Y1-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '103px' }}>
+            <div id="5Y1-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="5Y2-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
                 Contracts
               </div>
             </div>
-            <div id="5Y3-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '55px' }}>
+            <div id="5Y3-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="5Y4-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
                 DTE
               </div>
@@ -236,7 +236,7 @@
                 Call
               </div>
             </div>
-            <div id="5YL-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="5YL-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="5YM-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 120.00
               </div>
@@ -246,17 +246,17 @@
                 ≈ Buy
               </div>
             </div>
-            <div id="5YP-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="5YP-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="5YQ-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 825,000
               </div>
             </div>
-            <div id="5YR-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="5YR-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="5YS-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 1,500
               </div>
             </div>
-            <div id="5YT-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="5YT-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="5YU-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 21
               </div>
@@ -298,7 +298,7 @@
                 Put
               </div>
             </div>
-            <div id="5ZB-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="5ZB-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="5ZC-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 85.00
               </div>
@@ -308,17 +308,17 @@
                 ≈ Sell
               </div>
             </div>
-            <div id="5ZF-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="5ZF-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="5ZG-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 612,000
               </div>
             </div>
-            <div id="5ZH-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="5ZH-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="5ZI-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 1,430
               </div>
             </div>
-            <div id="5ZJ-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="5ZJ-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="5ZK-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 21
               </div>
@@ -360,7 +360,7 @@
                 Call
               </div>
             </div>
-            <div id="601-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="601-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="602-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 42.50
               </div>
@@ -370,17 +370,17 @@
                 Mixed
               </div>
             </div>
-            <div id="605-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="605-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="606-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 540,000
               </div>
             </div>
-            <div id="607-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="607-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="608-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 1,360
               </div>
             </div>
-            <div id="609-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="609-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="60A-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 21
               </div>
@@ -422,7 +422,7 @@
                 Call
               </div>
             </div>
-            <div id="60R-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="60R-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="60S-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 120.00
               </div>
@@ -432,17 +432,17 @@
                 ≈ Buy
               </div>
             </div>
-            <div id="60V-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="60V-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="60W-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 455,000
               </div>
             </div>
-            <div id="60X-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="60X-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="60Y-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 1,290
               </div>
             </div>
-            <div id="60Z-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="60Z-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="610-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 21
               </div>
@@ -484,7 +484,7 @@
                 Put
               </div>
             </div>
-            <div id="61H-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="61H-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="61I-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 85.00
               </div>
@@ -494,17 +494,17 @@
                 ≈ Sell
               </div>
             </div>
-            <div id="61L-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="61L-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="61M-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 425,000
               </div>
             </div>
-            <div id="61N-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="61N-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="61O-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 1,220
               </div>
             </div>
-            <div id="61P-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="61P-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="61Q-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 21
               </div>
@@ -546,7 +546,7 @@
                 Call
               </div>
             </div>
-            <div id="627-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="627-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="628-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 42.50
               </div>
@@ -556,17 +556,17 @@
                 Mixed
               </div>
             </div>
-            <div id="62B-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="62B-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="62C-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 390,000
               </div>
             </div>
-            <div id="62D-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="62D-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="62E-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 1,150
               </div>
             </div>
-            <div id="62F-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="62F-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="62G-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 49
               </div>
@@ -608,7 +608,7 @@
                 Call
               </div>
             </div>
-            <div id="62X-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="62X-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="62Y-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 120.00
               </div>
@@ -618,17 +618,17 @@
                 ≈ Buy
               </div>
             </div>
-            <div id="631-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="631-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="632-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 312,000
               </div>
             </div>
-            <div id="633-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="633-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="634-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 1,080
               </div>
             </div>
-            <div id="635-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="635-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="636-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 49
               </div>
@@ -670,7 +670,7 @@
                 Put
               </div>
             </div>
-            <div id="63N-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="63N-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="63O-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 85.00
               </div>
@@ -680,17 +680,17 @@
                 ≈ Sell
               </div>
             </div>
-            <div id="63R-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="63R-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="63S-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 280,000
               </div>
             </div>
-            <div id="63T-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="63T-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="63U-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 1,010
               </div>
             </div>
-            <div id="63V-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="63V-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="63W-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 49
               </div>
@@ -732,7 +732,7 @@
                 Call
               </div>
             </div>
-            <div id="64D-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="64D-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="64E-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 42.50
               </div>
@@ -742,17 +742,17 @@
                 Mixed
               </div>
             </div>
-            <div id="64H-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="64H-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="64I-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 245,000
               </div>
             </div>
-            <div id="64J-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="64J-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="64K-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 940
               </div>
             </div>
-            <div id="64L-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="64L-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="64M-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 49
               </div>
@@ -794,7 +794,7 @@
                 Call
               </div>
             </div>
-            <div id="653-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="653-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="654-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 120.00
               </div>
@@ -804,17 +804,17 @@
                 ≈ Buy
               </div>
             </div>
-            <div id="657-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="657-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="658-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 195,000
               </div>
             </div>
-            <div id="659-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="659-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="65A-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 870
               </div>
             </div>
-            <div id="65B-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="65B-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="65C-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 49
               </div>
@@ -856,7 +856,7 @@
                 Put
               </div>
             </div>
-            <div id="65T-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="65T-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="65U-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 85.00
               </div>
@@ -866,17 +866,17 @@
                 ≈ Sell
               </div>
             </div>
-            <div id="65X-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="65X-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="65Y-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 145,000
               </div>
             </div>
-            <div id="65Z-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="65Z-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="660-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 800
               </div>
             </div>
-            <div id="661-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="661-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="662-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 49
               </div>
@@ -918,7 +918,7 @@
                 Call
               </div>
             </div>
-            <div id="66J-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
+            <div id="66J-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
               <div id="66K-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 42.50
               </div>
@@ -928,17 +928,17 @@
                 Mixed
               </div>
             </div>
-            <div id="66N-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
+            <div id="66N-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
               <div id="66O-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 120,000
               </div>
             </div>
-            <div id="66P-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
+            <div id="66P-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '103px' }}>
               <div id="66Q-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 730
               </div>
             </div>
-            <div id="66R-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
+            <div id="66R-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '55px' }}>
               <div id="66S-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                 49
               </div>
@@ -974,27 +974,15 @@
           </div>
           <div id="677-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '38px', paddingBottom: '18px', paddingTop: '8px', width: '1168px' }}>
             <svg width="650" height="128" viewBox="0 0 650 128" xmlns="http://www.w3.org/2000/svg" id="678-0" style={{ display: 'inline-block', flexShrink: 0 }}>
-              <text x="0" y="30" fontFamily="Inter" fontSize="13" fill="var(--noir-text-secondary)">
-                20 Nov 2026
-              </text>
+              <text x="0" y="30" fontFamily="Inter" fontSize="13" fill="var(--noir-text-secondary)">{"20 Nov 2026"}</text>
               <rect x="138" y="12" width="380.93" height="24" fill="var(--noir-champagne)" />
-              <text x="530.93" y="30" fontFamily="Inter" fontSize="13" fill="var(--noir-text-primary)">
-                2.857
-              </text>
-              <text x="0" y="74" fontFamily="Inter" fontSize="13" fill="var(--noir-text-secondary)">
-                18 Dec 2026
-              </text>
+              <text x="530.93" y="30" fontFamily="Inter" fontSize="13" fill="var(--noir-text-primary)">{"2.857"}</text>
+              <text x="0" y="74" fontFamily="Inter" fontSize="13" fill="var(--noir-text-secondary)">{"18 Dec 2026"}</text>
               <rect x="138" y="56" width="224.93" height="24" fill="var(--noir-champagne)" />
-              <text x="374.93" y="74" fontFamily="Inter" fontSize="13" fill="var(--noir-text-primary)">
-                1.687
-              </text>
+              <text x="374.93" y="74" fontFamily="Inter" fontSize="13" fill="var(--noir-text-primary)">{"1.687"}</text>
               <line x1="138" y1="95" x2="538" y2="95" stroke="#343434" />
-              <text x="138" y="117" fontFamily="Inter" fontSize="12" fill="var(--noir-text-tertiary)">
-                0
-              </text>
-              <text x="538" y="117" fontFamily="Inter" fontSize="12" textAnchor="end" fill="var(--noir-text-tertiary)">
-                3.0 USD m
-              </text>
+              <text x="138" y="117" fontFamily="Inter" fontSize="12" fill="var(--noir-text-tertiary)">{"0"}</text>
+              <text x="538" y="117" fontFamily="Inter" fontSize="12" textAnchor="end" fill="var(--noir-text-tertiary)">{"3.0 USD m"}</text>
             </svg>
             <div id="67I-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '14px', paddingBlock: '10px', width: '480px' }}>
               <div id="67J-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>

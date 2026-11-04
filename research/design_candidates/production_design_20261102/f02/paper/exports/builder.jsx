@@ -113,29 +113,47 @@
           Future p75 targets: LCP ≤2.5s, INP ≤200ms, CLS ≤0.1; no current measurements asserted. Migrate one consumer slice behind its existing owner, preserve routes/auth/data shape, compare before/after, then expand. Roll back by restoring the prior component/template mapping, not by deleting retained evidence.
         </div>
       </div>
-      <div id="4PD-0" style={{ backgroundColor: 'var(--noir-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '20px', paddingInline: '24px', width: '1344px' }}>
-        <div id="4PE-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>
+      <div id="9QY-0" style={{ backgroundColor: 'var(--noir-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', paddingBlock: '20px', paddingInline: '24px', width: '1344px' }}>
+        <div id="9QZ-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '25px', width: '1296px' }}>
           Review and continuity
         </div>
-        <div id="4PF-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
-          Native Paper construction is a candidate for independent product and visual critique. Existing first-pass reports and repaired static artifact sets remain immutable. PRC-007 consumer-integration qualification remains open. Sector, Prophet and Refraction holds/conditions retain their original authority; this file creates no RIG approval.
+        <div id="9R0-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px', width: '1296px' }}>
+          The native first-pass product and taste reports were frozen before author rationale. Their reports remain unchanged; repairs and later captures have their own immutable artifact set and review. Native advisory critique is not a formal RIG receipt.
+        </div>
+        <div id="9R1-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
+          The reference remains draft. The original Chinese chart-footer operation remains EFFECT_UNKNOWN on its original carrier. Scoped repaired-subset reviews cannot approve that excluded target or the full reference. F01, browser/consumer integration and formal review gates remain carried. Sector, Prophet and Refraction authority conditions retain their original source authority.
+        </div>
+        <div id="9R2-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px', width: '1296px' }}>
+          Exact native review status
+        </div>
+        <div id="9R3-0" style={{ boxSizing: 'border-box', color: 'var(--noir-champagne)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', textDecoration: 'underline 1px', textUnderlinePosition: 'from-font', width: '1296px' }}>
+          https://github.com/mastermindx-market-intelligence/macro/blob/design/f02-system-v1-20261102-c2/research/design_candidates/production_design_20261102/f02/paper/reviews/NATIVE_REVIEW_REPORT.md
         </div>
       </div>
-      <div id="4PH-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div id="4PI-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px' }}>
-          SOURCE PACKAGE / DRAFT #10630
+      <div id="9R5-0" style={{ backgroundColor: 'var(--noir-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', paddingBlock: '20px', paddingInline: '24px', width: '1344px' }}>
+        <div id="9R6-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '25px', width: '1296px' }}>
+          Build and return through the existing owners
         </div>
-        <div id="4PJ-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px' }}>
-          SYSTEM_CONTRACT.md · SOURCE_AND_DATA_CONTRACT.md §11 · INTERACTION_STATES.md
+        <div id="9R7-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px', width: '1296px' }}>
+          Source contract, producer mappings and integration acceptance
         </div>
-        <div id="4PK-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px' }}>
-          CAPABILITY_LEDGER.md · PAPER_RETENTION_LEDGER.md · CONTINUITY_AND_GATES.md · VERIFICATION.md
+        <div id="9R8-0" style={{ boxSizing: 'border-box', color: 'var(--noir-champagne)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', textDecoration: 'underline 1px', textUnderlinePosition: 'from-font', width: '1296px' }}>
+          https://github.com/mastermindx-market-intelligence/macro/blob/design/f02-system-v1-20261102-c2/research/design_candidates/production_design_20261102/f02/SOURCE_AND_DATA_CONTRACT.md
         </div>
-        <div id="4PL-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
-          Reviewed source artifact: d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940
+        <div id="9R9-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px', width: '1296px' }}>
+          Actual board IDs and current native captures
         </div>
-        <div id="4PM-0" style={{ boxSizing: 'border-box', color: 'var(--noir-champagne)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '22px' }}>
-          No global CSS fork. Consumers request versioned contract changes and affected review before adoption.
+        <div id="9RA-0" style={{ boxSizing: 'border-box', color: 'var(--noir-champagne)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', textDecoration: 'underline 1px', textUnderlinePosition: 'from-font', width: '1296px' }}>
+          https://github.com/mastermindx-market-intelligence/macro/blob/design/f02-system-v1-20261102-c2/research/design_candidates/production_design_20261102/f02/paper/NATIVE_BOARD_INDEX.md
+        </div>
+        <div id="9RB-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px', width: '1296px' }}>
+          Retained originals and scoped candidate companions
+        </div>
+        <div id="9RC-0" style={{ boxSizing: 'border-box', color: 'var(--noir-champagne)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', textDecoration: 'underline 1px', textUnderlinePosition: 'from-font', width: '1296px' }}>
+          https://github.com/mastermindx-market-intelligence/macro/blob/design/f02-system-v1-20261102-c2/research/design_candidates/production_design_20261102/f02/paper/native-predecessor-bindings.json
+        </div>
+        <div id="9RD-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
+          36 capabilities: 16 retain + 20 improve. 67 original Paper references: 25 retain + 42 improve. No removals or relocations. The four domain/source roles remain retained and unqualified until their owners provide the required real-path evidence.
         </div>
       </div>
     </div>

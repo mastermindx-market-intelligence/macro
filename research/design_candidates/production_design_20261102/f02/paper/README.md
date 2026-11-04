@@ -1,3 +1,5 @@
+> **Current 4 November continuation:** [The current native evidence and exact hold](NATIVE_CONTINUATION_20261104.md) supersede the historical counts and blanket write-pause statements below. All 32 boards exist; 31 complete capture pairs are scoped for review. The original Chinese comparison alone remains held.
+
 # F02 · Native Paper evidence
 
 **Status: PARTIAL — NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED.** The stable checkpoint records 22 observed boards,435 dispatch records,434 applied responses and one unresolved request. Twenty boards have full capture/export pairs. The state atlas and Chinese390 board are partial; several captured boards await review repairs or appends.

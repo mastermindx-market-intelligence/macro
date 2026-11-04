@@ -443,7 +443,11 @@ class Packager:
                     except (ValueError, TypeError):
                         pass
             touched = set().union(*(node_owners.get(node, set()) for node in nodes)) if nodes else set()
-            source_key = op.get("source_input", {}).get("key")
+            # Historical packets use an object; later observed repairs may use a
+            # source-reference string with an explicit, separately bound board.
+            # Preserve conservative all-board invalidation when neither resolves.
+            source_input = op.get("source_input")
+            source_key = source_input.get("key") if isinstance(source_input, dict) else op.get("board_key")
             if source_key in writer:
                 touched.add(source_key)
             # Unknown affected scope cannot silently make a capture current.
@@ -602,7 +606,11 @@ class Packager:
                 tokens = receipt.get("shared_tokens", receipt.get("tokens", {}))
                 self.check(tokens.get("expected_count") == tokens.get("observed_count") == 20 and tokens.get("original_hash", tokens.get("expected_content_hash")) == tokens.get("observed_hash", tokens.get("observed_content_hash")) == "356191c3" and tokens.get("all_original_names_values_match", True) is True, "RETENTION_TOKEN_DRIFT", path, "shared token count/hash does not match the retained baseline")
                 scope_check = receipt.get("owned_mutation_scope_check", receipt.get("operation_scope_audit"))
-                scope_text = json.dumps(scope_check, ensure_ascii=False).replace("_", " ").upper()
+                # Operation IDs may legitimately contain specimen state names
+                # (for example "save-pending"). Judge the audit's verdict, then
+                # validate every operation's custody booleans and exact set below.
+                scope_verdict = {key: scope_check.get(key) for key in ("status", "state", "verdict") if key in scope_check} if isinstance(scope_check, dict) else scope_check
+                scope_text = json.dumps(scope_verdict, ensure_ascii=False).replace("_", " ").upper()
                 scope_ok = bool(scope_check) and not re.search(r"\b(?:FAIL|FAILED|PENDING|UNKNOWN|VIOLATED)\b", scope_text)
                 if isinstance(scope_check, dict):
                     scope_ok = scope_ok and not scope_check.get("violations") and scope_check.get("passed", True) is not False and scope_check.get("ok", True) is not False

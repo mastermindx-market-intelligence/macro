@@ -101,7 +101,7 @@ Reduced-motion treatment is a meaningful static state. Do not animate numeric tr
 3. Use only a keyboard to select a tab, sort a table, open evidence, traverse and dismiss a modal, and return to the connected current trigger/scroll when that retiring surface owns focus. Separately move focus intentionally to another allowed task before dock closure or placement change; verify that it is not stolen. Exercise nested Escape so only the active owner acts.
 4. Repeat at 320/390px, 400% zoom, EN/ZH chrome, light/dark, long labels, unknown currency and complete-row access.
 5. Change the instrument during an outstanding read; old data must not be relabeled. Preserve existing generation/race guards.
-6. Filter away the current evidence row; close the inspector and verify the named fallback focus and announcement.
+6. Filter away the current evidence row. With focus still owned by the closing inspector, close it and verify the named connected, focusable, visible fallback and applicable announcement. Repeat after intentionally moving focus outside the inspector; closing it must preserve that focus and must not force fallback focus or scroll. In both cases, retain the evidence identity/invalidation rules and avoid a second inspector.
 7. Interrupt a save after sending. Retain request identity and reconcile; never claim failed without confirmation or emit a duplicate blind retry.
 8. Open a focused Terminal route; no additional investor shell or duplicate Brain instance appears.
 9. Compare chart values against displayed marks, including a missing middle observation, an actual zero and a source revision.

@@ -60,12 +60,12 @@
           Comparator policy
         </div>
         <div id="4J3-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
-          65.57% → 66.70% is +1.13 percentage points. Relative change would be +1.72%, with a different label. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.
+          Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.
         </div>
       </div>
       <div id="4IZ-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex' }}>
         <div id="4J1-0" style={{ boxSizing: 'border-box', color: '#1A1C20', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '27px', width: '1036px' }}>
-          Sector participation · illustrative settled observation
+          Component-sector samples · independent of Macro
         </div>
         <div id="4J0-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
           Raw-value sort ↓
@@ -121,7 +121,7 @@
         </div>
         <div id="4IE-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '24px', width: '180px' }}>
           <div id="4IF-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>
-            178 / 184
+            1000 / 1006
           </div>
         </div>
         <div id="4IC-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', width: '270px' }}>
@@ -153,7 +153,7 @@
         </div>
         <div id="4I1-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '24px', width: '180px' }}>
           <div id="4I2-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px' }}>
-            63 / 63
+            250 / 250
           </div>
         </div>
         <div id="4HZ-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', width: '270px' }}>
@@ -233,7 +233,7 @@
           </div>
         </div>
         <div id="4H6-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px' }}>
-          178 / 184 securities · partial coverage · illustrative fixture · connected transport is independent of source freshness.
+          Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250.
         </div>
       </div>
       <div id="4H2-0" style={{ backgroundColor: '#FFFFFF', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '20px', paddingInline: '24px', width: '1344px' }}>

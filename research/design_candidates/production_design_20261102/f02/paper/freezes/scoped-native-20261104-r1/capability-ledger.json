@@ -1,0 +1,391 @@
+{
+  "schema": "f02.capability_retention_projection.v1",
+  "is_canonical_route_registry": false,
+  "rows": [
+    {
+      "id": "CAP-01",
+      "capability": "Shared workspace shell and all destinations",
+      "baseline": "Live beta shell; AppShell; F01",
+      "disposition": "RETAIN",
+      "successor": "Existing F01 destinations, region/context, search, account, focused Terminal and Brain remain reachable.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "F01 frozen composition; specimen chrome is only the observed envelope.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-02",
+      "capability": "Macro regime / risk / forward views",
+      "baseline": "Live /macro.html; dashboard.html.j2",
+      "disposition": "RETAIN",
+      "successor": "All existing regime, risk, Fed-path, sentiment, alerts, calendar and navigation objects remain domain-owned.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "D02/D03; F02 breadth slice does not replace the page.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-03",
+      "capability": "Chart-based comparison",
+      "baseline": "Canonical 2PH-0; live Macro and Company charts",
+      "disposition": "IMPROVE",
+      "successor": "Keep visual history, units, scale and source; show gaps and exact-value alternative.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Actual lib/illus.py missing-value behavior requires later builder repair.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-04",
+      "capability": "Dense native comparison table",
+      "baseline": "Canonical 2O6-0/26J-0; Company/Options live tables",
+      "disposition": "IMPROVE",
+      "successor": "Scoped headers, numeric alignment, local overflow, raw-value sort and explicit coverage.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Existing table/export owners; no global grid-role conversion.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-05",
+      "capability": "Virtualized inspector/replay table",
+      "baseline": "Terminal DataInspector and lib/dataInspector.ts",
+      "disposition": "RETAIN",
+      "successor": "Canonical time/row keys, keyboard selection, row counts/indexes, replay and CSV scope.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "D06/D08D; not reimplemented by the specimen.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-06",
+      "capability": "Metric magnitude and comparator",
+      "baseline": "Canonical 25Z-0",
+      "disposition": "IMPROVE",
+      "successor": "Number plus unit/currency, observation and comparison period; +1.13 pp rather than ambiguous +1.13%.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Domain baseline/comparability mapping.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-07",
+      "capability": "Zero versus unknown",
+      "baseline": "Canonical data/state patterns; source formatters",
+      "disposition": "IMPROVE",
+      "successor": "Reported 0 remains numeric; missing/invalid/not-applicable retain reason and unit.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "No imputation or unsupported source claim.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-08",
+      "capability": "Market direction and convention",
+      "baseline": "Macro direction tokens; Terminal east/red-up",
+      "disposition": "IMPROVE",
+      "successor": "Sign/text and explicit convention remain distinct from language, health and selected state.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "F01 preference migration; incumbent behavior preserved meanwhile.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-09",
+      "capability": "Options side and exposure semantics",
+      "baseline": "Terminal flow-buy/sell and exposure tokens",
+      "disposition": "RETAIN",
+      "successor": "Side classification and signed exposure stay invariant under locale/direction changes.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "D08 meaning, source coverage and color qualification.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-10",
+      "capability": "Tabs and local panels",
+      "baseline": "Canonical 26C-0; Company and Options live tabs",
+      "disposition": "IMPROVE",
+      "successor": "Quiet selected fill, independent focus, correct tab/panel semantics and existing route state.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "F01/domain local navigation ownership.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-11",
+      "capability": "Evidence and LENS access",
+      "baseline": "Canonical 2BK-0; theme.js LENS; Company EvidenceRail",
+      "disposition": "IMPROVE",
+      "successor": "Exact row/field/source context; useful compact evidence; keyboard/touch and close return.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Citation precision stays source-owned; missing precision never invented.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-12",
+      "capability": "Docked and modal inspector",
+      "baseline": "Canonical evidence/detail patterns; EvidenceRail",
+      "disposition": "IMPROVE",
+      "successor": "One active inspector; dock only when primary width supports it; modal focus and scroll restoration.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "F01 dimensions; interactive browser/AT proof open.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-13",
+      "capability": "Freshness, coverage and transport",
+      "baseline": "Canonical 272-0; live Options; flowFreshness",
+      "disposition": "IMPROVE",
+      "successor": "Separate clocks and axes; retain stale/partial observations under correct identity.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Owner-defined cadence and coverage; no global generic TTL.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-14",
+      "capability": "Loading / empty / read error",
+      "baseline": "Canonical 2A7-0/2M3-0",
+      "disposition": "IMPROVE",
+      "successor": "Loading no longer contains EMPTY; empty gives reason; errors retain useful prior data and retry.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Native state construction/evidence binding and review remain in progress; retained originals are not claimed replaced.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-15",
+      "capability": "Callouts and material limitations",
+      "baseline": "Canonical 29H-0/2NG-0 and pattern35W-0",
+      "disposition": "IMPROVE",
+      "successor": "Neutral grouping, concise consequence and recovery; no colored stripe; caveat remains visible.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Domain copy retains meaning.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-16",
+      "capability": "Access and tier gate",
+      "baseline": "Canonical 2RE-0; source tier/access owners",
+      "disposition": "IMPROVE",
+      "successor": "Separate guest, denied, expired and provider unavailable; keep permitted content, no data leak.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Actual server entitlement and route behavior not changed/tested.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-17",
+      "capability": "Buttons and actions",
+      "baseline": "Canonical 28D-0",
+      "disposition": "IMPROVE",
+      "successor": "Clear hierarchy, named icon control, 44px important phone target, explicit pending/disabled.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Callback/data owner supplied by consumer.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-18",
+      "capability": "Disclosure",
+      "baseline": "Canonical 2GG-0/2LX-0",
+      "disposition": "IMPROVE",
+      "successor": "Keyboard/touch expanded state; optional details only; source limitations remain outside when critical.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Existing lazy-read semantics retained.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-19",
+      "capability": "Decision and verdict anatomy",
+      "baseline": "Canonical 28Y-0/2LB-0 and 2BR-0/2GM-0",
+      "disposition": "RETAIN",
+      "successor": "Preserve compact domain verdict, evidence and authorized next step.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "No shared trading command/probability imposed; domain owner qualifies.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-20",
+      "capability": "Count ladder and reconciled counts",
+      "baseline": "Canonical 2CM-0/2HH-0; existing Prophet",
+      "disposition": "RETAIN",
+      "successor": "Exhaustive/disjoint stage counts, denominator and active stage remain explicit.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "Existing Prophet domain semantics; no fused score.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-21",
+      "capability": "Lifecycle rail",
+      "baseline": "Canonical 2E3-0/2IY-0",
+      "disposition": "RETAIN",
+      "successor": "Existing transitions and terminal/pending states retained.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "Domain owns transitions; shared presentation only.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-22",
+      "capability": "Company history and comparability",
+      "baseline": "Live Financials Statements; 17-year range, prior-definition caveat",
+      "disposition": "RETAIN",
+      "successor": "Annual/quarterly, statement types, historical paging, unknown metrics and definition changes remain reachable.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "D07 data/source contract; no compact-summary replacement.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-23",
+      "capability": "Company context and deep views",
+      "baseline": "Analysis route parser, views and identity guards",
+      "disposition": "RETAIN",
+      "successor": "Company/thesis/investigation route/query semantics, citations, source resets and race protection.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "D07/D11/D12/D14; no new route parser.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-24",
+      "capability": "Options workflow and filters",
+      "baseline": "Live /options: Command/Flow/Exposure/Structure/Volatility/Statistics/Prophet",
+      "disposition": "RETAIN",
+      "successor": "All tabs, futures entry, presets, premium/DTE/moneyness/ticker controls and workflow remain.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "D08 integration and slices; F02 tape subset not complete workspace.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-25",
+      "capability": "Options save/share/export and 2,000-row scope",
+      "baseline": "Live Options toolbar",
+      "disposition": "RETAIN",
+      "successor": "Existing saved screens, share and export scope remain reachable and accurately labeled.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "D08/D23; no live mutation attempted.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-26",
+      "capability": "Options sampled statistics and coverage",
+      "baseline": "optionsObservedStatistics.ts / useFlowStream(meta)",
+      "disposition": "RETAIN",
+      "successor": "Exact schema, partitions, counts, invalid/missing publisher distinctions and stale policy.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "Consumer source verified; producer deployment/coverage not certified.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-27",
+      "capability": "Saved-state outcomes",
+      "baseline": "Common contract; D23 owner",
+      "disposition": "IMPROVE",
+      "successor": "Pending/saved/failed/uncertain, preserved draft and owner readback; no navigation write.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "D23 real integration required; local example only.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-28",
+      "capability": "Bilingual and regional behavior",
+      "baseline": "Canonical mobile EN/ZH; source locale rules",
+      "disposition": "IMPROVE",
+      "successor": "Long labels, localized chrome/format, retained listing identity; region is not color convention.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "English editorial body retained; translated full article is not silently added.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-29",
+      "capability": "Public TOC, related content and continuation",
+      "baseline": "Live compound-growth article; seo_article template",
+      "disposition": "RETAIN",
+      "successor": "Existing anchors, canonical links, related calculators, article body and CTA remain reachable.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "D26 authored source/SEO and publication contract.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-30",
+      "capability": "Public publication metadata and numbers",
+      "baseline": "Current public article/template",
+      "disposition": "IMPROVE",
+      "successor": "Publication/update dates distinct from market clocks; explicitly labeled calculation unit/period.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "No invented reading time; existing authored dates and revision behavior retained.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-31",
+      "capability": "Public alert ticker and marketing shell",
+      "baseline": "Live public nav/ticker/footer",
+      "disposition": "RETAIN",
+      "successor": "Public shell not replaced by investor rail; existing destinations remain.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "Observed signed-change/arrow conflict needs public/source owner review; F02 does not fix market data.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-32",
+      "capability": "Reading versus analytical density",
+      "baseline": "Canonical archetype patterns; public/analytical source",
+      "disposition": "IMPROVE",
+      "successor": "Comfortable reading measure versus dense comparisons; no one-card-grid mandate.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Component thresholds consume F01 widths.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-33",
+      "capability": "Icons, focus, selected and touch",
+      "baseline": "Canonical controls plus source icons",
+      "disposition": "IMPROVE",
+      "successor": "CurrentColor anatomy, explicit accessible names, distinct focus/selection, no hover-only task.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Real browser/AT/touch validation still open.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-34",
+      "capability": "Refraction / rejected full-pane treatment",
+      "baseline": "Terminal settings historical ruling; exact Refraction Paper IDs",
+      "disposition": "RETAIN",
+      "successor": "Rejected full-pane design remains rejected; top-strip-only conditions preserved without promotion.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "No general animated/colored border added.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-35",
+      "capability": "Canonical foundations, references and archives",
+      "baseline": "48 canonical + 19 supporting boards",
+      "disposition": "RETAIN",
+      "successor": "All 67 boards have per-ID disposition; no moves, deletions or fake approval.",
+      "reason": "Preserve useful existing capability and its owner.",
+      "dependency": "F03 organization; final native successor binding and review. The accepted direct writer is available; current location does not demote authority.",
+      "reviewer_decision": "pending independent admitted review"
+    },
+    {
+      "id": "CAP-36",
+      "capability": "Shared-source migration and rollback",
+      "baseline": "Macro theme + shared template, Terminal scopes, public estate",
+      "disposition": "IMPROVE",
+      "successor": "Per-source role mapping, collision-safe aliases, companion tests and reversible scoped migration.",
+      "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
+      "dependency": "Later separately authorized implementation; incumbent #7849 preserved.",
+      "reviewer_decision": "pending independent admitted review"
+    }
+  ],
+  "continuation": {
+    "status": "NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED",
+    "progress_receipt": "paper/writer-continuation-progress.json",
+    "gates": "paper/CONTINUATION_GATES_20261103.md",
+    "carrier": "Mastermind Paper direct app",
+    "readme": {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-9-0",
+      "board_id": "47Q-0",
+      "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0",
+      "observation": "Observed new page and own-board move; final source/directory refresh remains unapplied."
+    },
+    "final_role_predecessor_mapping": "Current mapping uses actual IDs and live original retention; final32-board binding remains incomplete.",
+    "qualification": "No frozen F01/F02 release, domain-role qualification, consumer integration, browser behavior, formal RIG or product release is claimed.",
+    "native_boards_observed": 22,
+    "dispatch_records": 435,
+    "applied_responses_observed": 434,
+    "unresolved_operations": 1,
+    "live_retention_receipt": "paper/native-final-retention.json",
+    "native_role_bindings": "paper/native-role-bindings.json",
+    "native_predecessor_bindings": "paper/native-predecessor-bindings.json",
+    "unresolved_bindings": 50,
+    "pending_work": "paper/NATIVE_PENDING_WORK.md",
+    "f01_candidate_concurrence": "F01_HANDSHAKE_CANDIDATE.md"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "schema": "f02.native-role-bindings.v1",
-  "generated_at": "2026-11-03T06:53:40.367282+00:00",
+  "generated_at": "2026-11-04T01:16:54.695457+00:00",
   "input_map_sha256": "ef5c27e7bde424b72db9528729bb831c98a4054291dd88b2d93cf1e9c818a287",
   "roles": [
     {
@@ -299,11 +299,15 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "missing-period-headers": null
+                "missing-period-headers": "90A-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Complete EXM header in both themes retains the question, currency, explicit missing source period, separate retrieval and source action.",
@@ -403,9 +407,9 @@
               ],
               "native_board_id": "56L-0",
               "native_step_ids": {
-                "statement-row-7": "5G2-0",
-                "statement-row-8": "5GL-0",
-                "statement-caveat": "5HN-0"
+                "statement-row-7": "7XS-0",
+                "statement-row-8": "7YU-0",
+                "statement-caveat": "80Y-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -426,9 +430,9 @@
               ],
               "native_board_id": "5HV-0",
               "native_step_ids": {
-                "statement-row-7": "5J4-0",
-                "statement-row-8": "5IM-0",
-                "statement-caveat": "5I2-0"
+                "statement-row-7": "87D-0",
+                "statement-row-8": "88F-0",
+                "statement-caveat": "8AJ-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -515,17 +519,10 @@
                 "combined-light-status": "6Z5-0",
                 "combined-light-action": "6Z9-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "combined-dark-value",
-                "combined-dark-status",
-                "combined-dark-action",
-                "combined-light-value",
-                "combined-light-status",
-                "combined-light-action"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
             {
@@ -537,11 +534,15 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "combined-confirmed-saved": null
+                "combined-confirmed-saved": "94Y-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "A concrete 66.7% observation remains present beside distinct read and write states, including the matched owner-confirmed saved fixture.",
@@ -550,7 +551,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "ChangeValue",
@@ -677,9 +678,9 @@
               ],
               "native_board_id": "56L-0",
               "native_step_ids": {
-                "statement-row-1": "5CW-0",
-                "statement-row-8": "5GL-0",
-                "statement-caveat": "5HN-0"
+                "statement-row-1": "7RG-0",
+                "statement-row-8": "7YU-0",
+                "statement-caveat": "80Y-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -700,9 +701,9 @@
               ],
               "native_board_id": "5HV-0",
               "native_step_ids": {
-                "statement-row-1": "5M4-0",
-                "statement-row-8": "5IM-0",
-                "statement-caveat": "5I2-0"
+                "statement-row-1": "811-0",
+                "statement-row-8": "88F-0",
+                "statement-caveat": "8AJ-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -775,13 +776,11 @@
               ],
               "native_board_id": "4E3-0",
               "native_step_ids": {
-                "core-metric-bps": null
+                "core-metric-bps": "8DG-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
-              "unbound_steps": [
-                "core-metric-bps"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
@@ -852,11 +851,15 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "withheld-comparisons": null
+                "withheld-comparisons": "90T-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Two concrete comparisons retain original values/periods/units but withhold the change: different definitions without restatement, and USD/EUR without authorized FX.",
@@ -865,7 +868,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "FreshnessReceipt",
@@ -1085,16 +1088,10 @@
                 "combined-light-value": "6Z0-0",
                 "combined-light-status": "6Z5-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "state-3",
-                "combined-dark-value",
-                "combined-dark-status",
-                "combined-light-value",
-                "combined-light-status"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -1116,13 +1113,11 @@
               ],
               "native_board_id": "4E3-0",
               "native_step_ids": {
-                "core-metric-unknown-age": null
+                "core-metric-unknown-age": "8DS-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
-              "unbound_steps": [
-                "core-metric-unknown-age"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
@@ -1133,7 +1128,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "DataRow",
@@ -1300,15 +1295,15 @@
               ],
               "native_board_id": "56L-0",
               "native_step_ids": {
-                "statement-row-1": "5CW-0",
-                "statement-row-2": "5DF-0",
-                "statement-row-3": "5DY-0",
-                "statement-row-4": "5EH-0",
-                "statement-row-5": "5F0-0",
-                "statement-row-6": "5FJ-0",
-                "statement-row-7": "5G2-0",
-                "statement-row-8": "5GL-0",
-                "statement-row-9": "5H4-0"
+                "statement-row-1": "7RG-0",
+                "statement-row-2": "7SI-0",
+                "statement-row-3": "7TK-0",
+                "statement-row-4": "7UM-0",
+                "statement-row-5": "7VO-0",
+                "statement-row-6": "7WQ-0",
+                "statement-row-7": "7XS-0",
+                "statement-row-8": "7YU-0",
+                "statement-row-9": "7ZW-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -1335,15 +1330,15 @@
               ],
               "native_board_id": "5HV-0",
               "native_step_ids": {
-                "statement-row-1": "5M4-0",
-                "statement-row-2": "5LM-0",
-                "statement-row-3": "5L4-0",
-                "statement-row-4": "5KM-0",
-                "statement-row-5": "5K4-0",
-                "statement-row-6": "5JM-0",
-                "statement-row-7": "5J4-0",
-                "statement-row-8": "5IM-0",
-                "statement-row-9": "5I4-0"
+                "statement-row-1": "811-0",
+                "statement-row-2": "823-0",
+                "statement-row-3": "835-0",
+                "statement-row-4": "847-0",
+                "statement-row-5": "859-0",
+                "statement-row-6": "86B-0",
+                "statement-row-7": "87D-0",
+                "statement-row-8": "88F-0",
+                "statement-row-9": "89H-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -1491,13 +1486,17 @@
               "input_packets": [
                 "mobile-inputs/supplemental-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "8N8-0",
               "native_step_ids": {
-                "entity": null,
-                "source-identity": null,
-                "returned-selected-row": null
+                "entity": "8NJ-0",
+                "source-identity": "8O3-0",
+                "returned-selected-row": "8P2-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Full first Options row at 320px and matched Chinese Macro evidence/return row.",
@@ -1506,7 +1505,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "TableFrame",
@@ -1624,7 +1623,7 @@
               "native_step_ids": {
                 "statement-caption": "5CA-0",
                 "statement-header": "5CE-0",
-                "statement-caveat": "5HN-0"
+                "statement-caveat": "80Y-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -1647,7 +1646,7 @@
               "native_step_ids": {
                 "statement-caption": "5N3-0",
                 "statement-header": "5MM-0",
-                "statement-caveat": "5I2-0"
+                "statement-caveat": "8AJ-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -1864,19 +1863,23 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "empty-table-context": null,
-                "empty-table-state": null,
-                "unavailable-table-context": null,
-                "unavailable-table-state": null,
-                "retained-table-context": null,
-                "retained-operating-income": null,
-                "retained-pretax-income": null,
-                "retained-net-income": null,
-                "retained-table-error": null
+                "empty-table-context": "91M-0",
+                "empty-table-state": "92X-0",
+                "unavailable-table-context": "929-0",
+                "unavailable-table-state": "933-0",
+                "retained-table-context": "939-0",
+                "retained-operating-income": "95K-0",
+                "retained-pretax-income": "95Y-0",
+                "retained-net-income": "96C-0",
+                "retained-table-error": "96Q-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Three complete table-frame compositions retain EXM identity, requested periods, filters, scoped count/absence, headers, source clock and recovery. The error frame preserves three exact Company fixture rows.",
@@ -2043,7 +2046,7 @@
               "native_board_id": "4LC-0",
               "native_step_ids": {
                 "chart-title": "4LI-0",
-                "chart": "4LM-0",
+                "chart": "7QF-0",
                 "exact-values": "4MN-0",
                 "chart-source": "4ND-0"
               },
@@ -2076,7 +2079,7 @@
               "native_step_ids": {
                 "history-title": "4VR-0",
                 "history-unit": "4VV-0",
-                "history-chart": "4VY-0"
+                "history-chart": "7ON-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -2099,7 +2102,7 @@
               "native_step_ids": {
                 "history-title": "50L-0",
                 "history-unit": "50J-0",
-                "history-chart": "55P-0"
+                "history-chart": "7PJ-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -2260,12 +2263,16 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "unavailable-chart-context": null,
-                "unavailable-chart-state": null
+                "unavailable-chart-context": "93W-0",
+                "unavailable-chart-state": "96W-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Complete unavailable Revenue-history frame retains EXM, requested FY 2010–2026, USD bn, honest unknown scale/source clock, disabled exact values and coverage recovery. No zero or fabricated data marks are drawn.",
@@ -2274,7 +2281,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "Tabs",
@@ -2341,13 +2348,11 @@
               "native_board_id": "4JP-0",
               "native_step_ids": {
                 "tabs": "4JV-0",
-                "supplement-hover-row": null
+                "supplement-hover-row": "8EC-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
-              "unbound_steps": [
-                "supplement-hover-row"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
@@ -2454,13 +2459,17 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "tabs-comparison": null,
-                "tabs-loading-panel": null,
-                "tabs-empty-panel": null
+                "tabs-comparison": "944-0",
+                "tabs-loading-panel": "973-0",
+                "tabs-empty-panel": "97K-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "The same EXM/FY 2025–2026/ZZZ context and selected Table tab have concrete active panels. Loading has no count; completed empty reports zero and offers Clear filter.",
@@ -2469,7 +2478,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "EvidenceTrigger",
@@ -2572,8 +2581,8 @@
               ],
               "native_board_id": "56L-0",
               "native_step_ids": {
-                "statement-row-7": "5G2-0",
-                "statement-row-8": "5GL-0"
+                "statement-row-7": "7XS-0",
+                "statement-row-8": "7YU-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -2593,8 +2602,8 @@
               ],
               "native_board_id": "5HV-0",
               "native_step_ids": {
-                "statement-row-7": "5J4-0",
-                "statement-row-8": "5IM-0"
+                "statement-row-7": "87D-0",
+                "statement-row-8": "88F-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -2660,15 +2669,12 @@
               ],
               "native_board_id": "48W-0",
               "native_step_ids": {
-                "core-icon-evidence": null,
-                "core-icon-sizes": null
+                "core-icon-evidence": "8AQ-0",
+                "core-icon-sizes": "8CE-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-3-0",
-              "unbound_steps": [
-                "core-icon-evidence",
-                "core-icon-sizes"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
@@ -2730,12 +2736,16 @@
               "input_packets": [
                 "mobile-inputs/supplemental-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "8N8-0",
               "native_step_ids": {
-                "return-action": null,
-                "returned-selected-row": null
+                "return-action": "8OM-0",
+                "returned-selected-row": "8P2-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
             {
               "board_key": "options-full-row-evidence-320",
@@ -2919,19 +2929,23 @@
               "input_packets": [
                 "mobile-inputs/mobile-state-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "8G2-0",
               "native_step_ids": {
-                "dock-heading": null,
-                "dock-entity": null,
-                "dock-value": null,
-                "dock-source-0": null,
-                "dock-source-1": null,
-                "dock-source-2": null,
-                "dock-source-3": null,
-                "dock-source-4": null,
-                "dock-footer": null
+                "dock-heading": "8LV-0",
+                "dock-entity": "8M0-0",
+                "dock-value": "8M5-0",
+                "dock-source-0": "8MA-0",
+                "dock-source-1": "8ME-0",
+                "dock-source-2": "8MI-0",
+                "dock-source-3": "8MM-0",
+                "dock-source-4": "8MQ-0",
+                "dock-footer": "8MU-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Complete contextual Macro dock and a narrow-desktop dock composition.",
@@ -3140,24 +3154,28 @@
               "input_packets": [
                 "mobile-inputs/supplemental-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "8N8-0",
               "native_step_ids": {
-                "dialog-header": null,
-                "entity": null,
-                "values": null,
-                "value-0": null,
-                "value-1": null,
-                "value-2": null,
-                "baseline": null,
-                "source-identity": null,
-                "source-clocks": null,
-                "units": null,
-                "coverage-limit": null,
-                "return-action": null,
-                "return-state": null,
-                "returned-selected-row": null
+                "dialog-header": "8NC-0",
+                "entity": "8NJ-0",
+                "values": "8NO-0",
+                "value-0": "8NQ-0",
+                "value-1": "8NU-0",
+                "value-2": "8NY-0",
+                "baseline": "8O2-0",
+                "source-identity": "8O3-0",
+                "source-clocks": "8O6-0",
+                "units": "8OG-0",
+                "coverage-limit": "8OJ-0",
+                "return-action": "8OM-0",
+                "return-state": "8OT-0",
+                "returned-selected-row": "8P2-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Matched Chinese values, source key, critical limits and same-row return state at 390px.",
@@ -3182,17 +3200,21 @@
               "input_packets": [
                 "mobile-inputs/supplemental-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "98N-0",
               "native_step_ids": {
-                "overlay-header": null,
-                "overlay-entity": null,
-                "overlay-values": null,
-                "overlay-source": null,
-                "overlay-clocks": null,
-                "overlay-limit": null,
-                "overlay-return": null
+                "overlay-header": "9D4-0",
+                "overlay-entity": "9DA-0",
+                "overlay-values": "9DE-0",
+                "overlay-source": "9DO-0",
+                "overlay-clocks": "9DR-0",
+                "overlay-limit": "9E1-0",
+                "overlay-return": "9E4-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
             {
               "board_key": "width-1024-overlay",
@@ -3209,17 +3231,21 @@
               "input_packets": [
                 "mobile-inputs/supplemental-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "9EB-0",
               "native_step_ids": {
-                "overlay-header": null,
-                "overlay-entity": null,
-                "overlay-values": null,
-                "overlay-source": null,
-                "overlay-clocks": null,
-                "overlay-limit": null,
-                "overlay-return": null
+                "overlay-header": "9IZ-0",
+                "overlay-entity": "9J5-0",
+                "overlay-values": "9J9-0",
+                "overlay-source": "9JJ-0",
+                "overlay-clocks": "9JM-0",
+                "overlay-limit": "9JW-0",
+                "overlay-return": "9JZ-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
             {
               "board_key": "width-1600-docked",
@@ -3238,19 +3264,23 @@
               "input_packets": [
                 "mobile-inputs/supplemental-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "9K6-0",
               "native_step_ids": {
-                "dock-heading": null,
-                "dock-entity": null,
-                "dock-value": null,
-                "dock-source-0": null,
-                "dock-source-1": null,
-                "dock-source-2": null,
-                "dock-source-3": null,
-                "dock-source-4": null,
-                "dock-footer": null
+                "dock-heading": "9PF-0",
+                "dock-entity": "9PJ-0",
+                "dock-value": "9PN-0",
+                "dock-source-0": "9PR-0",
+                "dock-source-1": "9PU-0",
+                "dock-source-2": "9PX-0",
+                "dock-source-3": "9Q0-0",
+                "dock-source-4": "9Q3-0",
+                "dock-footer": "9Q7-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Prepared content-width classes with concrete comparison and contextual evidence.",
@@ -3272,14 +3302,18 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "unavailable-inspector-context": null,
-                "unavailable-inspector-summary": null,
-                "unavailable-inspector-source-error": null,
-                "unavailable-inspector-return": null
+                "unavailable-inspector-context": "945-0",
+                "unavailable-inspector-summary": "982-0",
+                "unavailable-inspector-source-error": "98F-0",
+                "unavailable-inspector-return": "98K-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "A complete Communication-services inspector retains 66.70%, +1.13 pp, 21/21, baseline, exact source key and original three clocks while unavailable supporting citation detail has typed recovery and close/return.",
@@ -3377,17 +3411,10 @@
                 "state-4": "6SG-0",
                 "state-5": "6SX-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "state-0",
-                "state-1",
-                "state-2",
-                "state-3",
-                "state-4",
-                "state-5"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -3421,17 +3448,10 @@
                 "state-14": "6X6-0",
                 "state-15": "6XN-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "state-6",
-                "state-7",
-                "state-8",
-                "state-9",
-                "state-14",
-                "state-15"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -3454,15 +3474,12 @@
               ],
               "native_board_id": "6Q3-0",
               "native_step_ids": {
-                "supplement-source-unavailable": null,
-                "supplement-access-service-unavailable": null
+                "supplement-source-unavailable": "8EY-0",
+                "supplement-access-service-unavailable": "8FF-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
-              "unbound_steps": [
-                "supplement-source-unavailable",
-                "supplement-access-service-unavailable"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
@@ -3522,17 +3539,10 @@
                 "combined-light-status": "6Z5-0",
                 "combined-light-action": "6Z9-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "combined-dark-value",
-                "combined-dark-status",
-                "combined-dark-action",
-                "combined-light-value",
-                "combined-light-status",
-                "combined-light-action"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -3554,13 +3564,11 @@
               ],
               "native_board_id": "4E3-0",
               "native_step_ids": {
-                "core-metric-unknown-age": null
+                "core-metric-unknown-age": "8DS-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
-              "unbound_steps": [
-                "core-metric-unknown-age"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
@@ -3582,12 +3590,16 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "not-yet-published-state": null,
-                "unquantified-coverage-state": null
+                "not-yet-published-state": "94B-0",
+                "unquantified-coverage-state": "94J-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Concrete source/calendar context and last-observation recovery accompany not-published input. A separate coverage fixture retains seven available records, an explicitly unknown eligible total and no computed fraction.",
@@ -3596,7 +3608,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "Callout",
@@ -3669,7 +3681,7 @@
               ],
               "native_board_id": "56L-0",
               "native_step_ids": {
-                "statement-caveat": "5HN-0"
+                "statement-caveat": "80Y-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -3688,7 +3700,7 @@
               ],
               "native_board_id": "5HV-0",
               "native_step_ids": {
-                "statement-caveat": "5I2-0"
+                "statement-caveat": "8AJ-0"
               },
               "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-6-0",
@@ -3866,11 +3878,15 @@
               "input_packets": [
                 "mobile-inputs/supplemental-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "8N8-0",
               "native_step_ids": {
-                "coverage-limit": null
+                "coverage-limit": "8OJ-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Critical caveat remains outside optional disclosure and available at narrow widths.",
@@ -3879,7 +3895,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "DetailDisclosure",
@@ -4180,12 +4196,10 @@
               "native_step_ids": {
                 "state-10": "6VA-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "state-10"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -4213,14 +4227,10 @@
                 "state-12": "6W8-0",
                 "state-13": "6WP-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "state-4",
-                "state-12",
-                "state-13"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
             {
@@ -4283,12 +4293,16 @@
               "input_packets": [
                 "mobile-inputs/supplemental-boards.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "8N8-0",
               "native_step_ids": {
-                "dialog-header": null,
-                "return-action": null
+                "dialog-header": "8NC-0",
+                "return-action": "8OM-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-5-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Visible target geometry and contextual return labels at 320/390px.",
@@ -4297,7 +4311,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "SaveFeedback",
@@ -4350,15 +4364,10 @@
                 "state-12": "6W8-0",
                 "state-13": "6WP-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "state-10",
-                "state-11",
-                "state-12",
-                "state-13"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -4386,14 +4395,10 @@
                 "combined-dark-value": "6YG-0",
                 "combined-dark-status": "6YL-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "combined-dark-heading",
-                "combined-dark-value",
-                "combined-dark-status"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             },
             {
@@ -4405,11 +4410,15 @@
               "input_packets": [
                 "fault-composition-inputs.json"
               ],
-              "native_board_id": null,
+              "native_board_id": "905-0",
               "native_step_ids": {
-                "combined-confirmed-saved": null
+                "combined-confirmed-saved": "94Y-0"
               },
-              "binding_status": "NATIVE_BOARD_PENDING"
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+              "native_page_id": "p-4-0",
+              "unbound_steps": [],
+              "steps_not_in_current_export": [],
+              "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
           "native_can_show_after_binding_and_review": "Matched before/after design retains 66.7%, +1.13 pp, 7/8, 30 Oct 20:00 source and both read caveats after an owner-confirmed illustrative saved result.",
@@ -4436,14 +4445,10 @@
                 "combined-light-status": "6Z5-0",
                 "combined-light-action": "6Z9-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "combined-light-value",
-                "combined-light-status",
-                "combined-light-action"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -4483,7 +4488,7 @@
         "Verify context preservation on valid sign-in/plan/session recovery; navigation/theme/language remain read-only."
       ],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "TierGate",
@@ -4641,15 +4646,10 @@
                 "combined-light-status": "6Z5-0",
                 "combined-light-action": "6Z9-0"
               },
-              "binding_status": "FINAL_EXPORT_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-4-0",
               "unbound_steps": [],
-              "steps_not_in_current_export": [
-                "state-6",
-                "state-8",
-                "combined-light-status",
-                "combined-light-action"
-              ],
+              "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
           ],
@@ -4664,7 +4664,7 @@
         "Do not serve paid Options data on denial/uncertainty or revoke unrelated public evidence by transplanting this resource policy."
       ],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "Icon",
@@ -4716,17 +4716,13 @@
               ],
               "native_board_id": "48W-0",
               "native_step_ids": {
-                "core-icon-evidence": null,
-                "core-icon-direction": null,
-                "core-icon-recovery": null
+                "core-icon-evidence": "8AQ-0",
+                "core-icon-direction": "8BQ-0",
+                "core-icon-recovery": "8B8-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-3-0",
-              "unbound_steps": [
-                "core-icon-evidence",
-                "core-icon-direction",
-                "core-icon-recovery"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
@@ -4749,13 +4745,11 @@
               ],
               "native_board_id": "48W-0",
               "native_step_ids": {
-                "core-icon-sizes": null
+                "core-icon-sizes": "8CE-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-3-0",
-              "unbound_steps": [
-                "core-icon-sizes"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
@@ -4778,13 +4772,11 @@
               ],
               "native_board_id": "48W-0",
               "native_step_ids": {
-                "core-icon-direction": null
+                "core-icon-direction": "8BQ-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-3-0",
-              "unbound_steps": [
-                "core-icon-direction"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
@@ -4807,13 +4799,11 @@
               ],
               "native_board_id": "48W-0",
               "native_step_ids": {
-                "core-icon-reuse-contract": null
+                "core-icon-reuse-contract": "8D7-0"
               },
-              "binding_status": "NATIVE_STEP_PENDING",
+              "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
               "native_page_id": "p-3-0",
-              "unbound_steps": [
-                "core-icon-reuse-contract"
-              ],
+              "unbound_steps": [],
               "steps_not_in_current_export": [],
               "qualification": "Design evidence binding only; no runtime or RIG approval"
             }
@@ -4824,7 +4814,7 @@
       ],
       "required_qualifiers": [],
       "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP",
-      "native_projection_status": "NATIVE_BINDINGS_IN_PROGRESS"
+      "native_projection_status": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
     },
     {
       "role": "CountLadder",
@@ -5087,15 +5077,15 @@
           "native_board_id": "56L-0",
           "native_step_ids": {
             "history-chart": "596-0",
-            "statement-row-1": "5CW-0",
-            "statement-row-2": "5DF-0",
-            "statement-row-3": "5DY-0",
-            "statement-row-4": "5EH-0",
-            "statement-row-5": "5F0-0",
-            "statement-row-6": "5FJ-0",
-            "statement-row-7": "5G2-0",
-            "statement-row-8": "5GL-0",
-            "statement-row-9": "5H4-0"
+            "statement-row-1": "7RG-0",
+            "statement-row-2": "7SI-0",
+            "statement-row-3": "7TK-0",
+            "statement-row-4": "7UM-0",
+            "statement-row-5": "7VO-0",
+            "statement-row-6": "7WQ-0",
+            "statement-row-7": "7XS-0",
+            "statement-row-8": "7YU-0",
+            "statement-row-9": "7ZW-0"
           },
           "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
           "native_page_id": "p-6-0",
@@ -5274,27 +5264,10 @@
             "state-14": "6X6-0",
             "state-15": "6XN-0"
           },
-          "binding_status": "FINAL_EXPORT_PENDING",
+          "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
           "native_page_id": "p-4-0",
           "unbound_steps": [],
-          "steps_not_in_current_export": [
-            "state-0",
-            "state-1",
-            "state-2",
-            "state-3",
-            "state-4",
-            "state-5",
-            "state-6",
-            "state-7",
-            "state-8",
-            "state-9",
-            "state-10",
-            "state-11",
-            "state-12",
-            "state-13",
-            "state-14",
-            "state-15"
-          ],
+          "steps_not_in_current_export": [],
           "qualification": "Design evidence binding only; no runtime or RIG approval"
         }
       ],
@@ -5320,14 +5293,10 @@
             "meaning-1": "6ZO-0",
             "meaning-2": "6ZT-0"
           },
-          "binding_status": "FINAL_EXPORT_PENDING",
+          "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
           "native_page_id": "p-4-0",
           "unbound_steps": [],
-          "steps_not_in_current_export": [
-            "meaning-0",
-            "meaning-1",
-            "meaning-2"
-          ],
+          "steps_not_in_current_export": [],
           "qualification": "Design evidence binding only; no runtime or RIG approval"
         },
         {
@@ -5415,12 +5384,16 @@
           "input_packets": [
             "mobile-inputs/supplemental-boards.json"
           ],
-          "native_board_id": null,
+          "native_board_id": "98N-0",
           "native_step_ids": {
-            "scene": null,
-            "overlay": null
+            "scene": "98Q-0",
+            "overlay": "9D2-0"
           },
-          "binding_status": "NATIVE_BOARD_PENDING"
+          "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+          "native_page_id": "p-5-0",
+          "unbound_steps": [],
+          "steps_not_in_current_export": [],
+          "qualification": "Design evidence binding only; no runtime or RIG approval"
         },
         {
           "board_key": "width-1024-overlay",
@@ -5432,12 +5405,16 @@
           "input_packets": [
             "mobile-inputs/supplemental-boards.json"
           ],
-          "native_board_id": null,
+          "native_board_id": "9EB-0",
           "native_step_ids": {
-            "scene": null,
-            "overlay": null
+            "scene": "9EE-0",
+            "overlay": "9IX-0"
           },
-          "binding_status": "NATIVE_BOARD_PENDING"
+          "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+          "native_page_id": "p-5-0",
+          "unbound_steps": [],
+          "steps_not_in_current_export": [],
+          "qualification": "Design evidence binding only; no runtime or RIG approval"
         },
         {
           "board_key": "macro-docked-1280",
@@ -5450,13 +5427,17 @@
           "input_packets": [
             "mobile-inputs/mobile-state-boards.json"
           ],
-          "native_board_id": null,
+          "native_board_id": "8G2-0",
           "native_step_ids": {
-            "workspace": null,
-            "split": null,
-            "dock": null
+            "workspace": "8GA-0",
+            "split": "8H9-0",
+            "dock": "8HD-0"
           },
-          "binding_status": "NATIVE_BOARD_PENDING"
+          "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+          "native_page_id": "p-5-0",
+          "unbound_steps": [],
+          "steps_not_in_current_export": [],
+          "qualification": "Design evidence binding only; no runtime or RIG approval"
         },
         {
           "board_key": "macro-dark",
@@ -5490,13 +5471,17 @@
           "input_packets": [
             "mobile-inputs/supplemental-boards.json"
           ],
-          "native_board_id": null,
+          "native_board_id": "9K6-0",
           "native_step_ids": {
-            "workspace": null,
-            "split": null,
-            "dock": null
+            "workspace": "9KC-0",
+            "split": "9L2-0",
+            "dock": "9L9-0"
           },
-          "binding_status": "NATIVE_BOARD_PENDING"
+          "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
+          "native_page_id": "p-5-0",
+          "unbound_steps": [],
+          "steps_not_in_current_export": [],
+          "qualification": "Design evidence binding only; no runtime or RIG approval"
         }
       ],
       "limit": "320/390/768/1024/1280/1440/1600 construction inputs are not measured viewport, 400%-zoom, touch or keyboard tests; F01 joint freeze remains open."
@@ -5518,7 +5503,7 @@
           "native_board_id": "4LC-0",
           "native_step_ids": {
             "chart-title": "4LI-0",
-            "chart": "4LM-0",
+            "chart": "7QF-0",
             "exact-values": "4MN-0"
           },
           "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
@@ -5540,7 +5525,7 @@
           "native_board_id": "4PO-0",
           "native_step_ids": {
             "history-unit": "4VV-0",
-            "history-chart": "4VY-0"
+            "history-chart": "7ON-0"
           },
           "binding_status": "ACTUAL_IDS_PRESENT_IN_EXPORT",
           "native_page_id": "p-6-0",
@@ -5561,59 +5546,6 @@
       ]
     },
     {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "combined-dark-value",
-        "combined-dark-status",
-        "combined-dark-action",
-        "combined-light-value",
-        "combined-light-status",
-        "combined-light-action"
-      ]
-    },
-    {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "metrics",
-      "missing": [
-        "core-metric-bps"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "state-3",
-        "combined-dark-value",
-        "combined-dark-status",
-        "combined-light-value",
-        "combined-light-status"
-      ]
-    },
-    {
-      "board": "metrics",
-      "missing": [
-        "core-metric-unknown-age"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "macro-zh-evidence-return-390",
-      "reason": "board absent"
-    },
-    {
       "board": "macro-light-zh-390",
       "missing": [],
       "not_in_export": [
@@ -5625,46 +5557,11 @@
       ]
     },
     {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "controls",
-      "missing": [
-        "supplement-hover-row"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "foundations",
-      "missing": [
-        "core-icon-evidence",
-        "core-icon-sizes"
-      ],
-      "not_in_export": []
-    },
-    {
       "board": "macro-light-zh-390",
       "missing": [],
       "not_in_export": [
         "sector-3"
       ]
-    },
-    {
-      "board": "macro-zh-evidence-return-390",
-      "reason": "board absent"
-    },
-    {
-      "board": "macro-docked-1280",
-      "reason": "board absent"
     },
     {
       "board": "macro-light-zh-390",
@@ -5672,208 +5569,6 @@
       "not_in_export": [
         "metric",
         "sector-3"
-      ]
-    },
-    {
-      "board": "macro-zh-evidence-return-390",
-      "reason": "board absent"
-    },
-    {
-      "board": "width-768-overlay",
-      "reason": "board absent"
-    },
-    {
-      "board": "width-1024-overlay",
-      "reason": "board absent"
-    },
-    {
-      "board": "width-1600-docked",
-      "reason": "board absent"
-    },
-    {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "state-0",
-        "state-1",
-        "state-2",
-        "state-3",
-        "state-4",
-        "state-5"
-      ]
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "state-6",
-        "state-7",
-        "state-8",
-        "state-9",
-        "state-14",
-        "state-15"
-      ]
-    },
-    {
-      "board": "states-matrix",
-      "missing": [
-        "supplement-source-unavailable",
-        "supplement-access-service-unavailable"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "combined-dark-value",
-        "combined-dark-status",
-        "combined-dark-action",
-        "combined-light-value",
-        "combined-light-status",
-        "combined-light-action"
-      ]
-    },
-    {
-      "board": "metrics",
-      "missing": [
-        "core-metric-unknown-age"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "macro-zh-evidence-return-390",
-      "reason": "board absent"
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "state-10"
-      ]
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "state-4",
-        "state-12",
-        "state-13"
-      ]
-    },
-    {
-      "board": "macro-zh-evidence-return-390",
-      "reason": "board absent"
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "state-10",
-        "state-11",
-        "state-12",
-        "state-13"
-      ]
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "combined-dark-heading",
-        "combined-dark-value",
-        "combined-dark-status"
-      ]
-    },
-    {
-      "board": "fault-compositions",
-      "reason": "board absent"
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "combined-light-value",
-        "combined-light-status",
-        "combined-light-action"
-      ]
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "state-6",
-        "state-8",
-        "combined-light-status",
-        "combined-light-action"
-      ]
-    },
-    {
-      "board": "foundations",
-      "missing": [
-        "core-icon-evidence",
-        "core-icon-direction",
-        "core-icon-recovery"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "foundations",
-      "missing": [
-        "core-icon-sizes"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "foundations",
-      "missing": [
-        "core-icon-direction"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "foundations",
-      "missing": [
-        "core-icon-reuse-contract"
-      ],
-      "not_in_export": []
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "state-0",
-        "state-1",
-        "state-2",
-        "state-3",
-        "state-4",
-        "state-5",
-        "state-6",
-        "state-7",
-        "state-8",
-        "state-9",
-        "state-10",
-        "state-11",
-        "state-12",
-        "state-13",
-        "state-14",
-        "state-15"
-      ]
-    },
-    {
-      "board": "states-matrix",
-      "missing": [],
-      "not_in_export": [
-        "meaning-0",
-        "meaning-1",
-        "meaning-2"
       ]
     },
     {
@@ -5884,22 +5579,6 @@
         "metric",
         "sector-3"
       ]
-    },
-    {
-      "board": "width-768-overlay",
-      "reason": "board absent"
-    },
-    {
-      "board": "width-1024-overlay",
-      "reason": "board absent"
-    },
-    {
-      "board": "macro-docked-1280",
-      "reason": "board absent"
-    },
-    {
-      "board": "width-1600-docked",
-      "reason": "board absent"
     }
   ],
   "not_proved": [
@@ -5921,6 +5600,6 @@
       "LifecycleRail",
       "DecisionRow / VerdictHero"
     ],
-    "unresolved_binding_count": 50
+    "unresolved_binding_count": 5
   }
 }

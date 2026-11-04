@@ -1,0 +1,12 @@
+{
+  "review": "f01-candidate4-source-advisory-20261104.md",
+  "scope": "Independent native source advisory; not formal RIG or GitHub approval",
+  "review_sha256": "780142bf4ec72ab490cc3a679685fc29278a997ced4beb557cf00bf8f2658d29",
+  "adjudication": "Qualified concurrence; both surviving unconditional focus statements verified and repaired",
+  "fixed_files": [
+    "SOURCE_AND_DATA_CONTRACT.md",
+    "INTERACTION_STATES.md"
+  ],
+  "paper_density": "4DK-0 corrected under f02-c2-foundations-density-20261104-01",
+  "runtime_or_visual_acceptance": false
+}

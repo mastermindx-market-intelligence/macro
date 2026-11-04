@@ -1,3 +1,5 @@
+> **Current 4 November continuation:** [The current native evidence and exact hold](paper/NATIVE_CONTINUATION_20261104.md) supersede the historical counts and blanket write-pause statements below. All 32 boards exist; 31 complete capture pairs are scoped for review. The original Chinese comparison alone remains held.
+
 # Continuity and remaining gates
 
 ## Current continuation status — NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED

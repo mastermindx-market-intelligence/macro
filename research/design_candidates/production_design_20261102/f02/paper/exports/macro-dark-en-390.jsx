@@ -75,17 +75,17 @@
             <div id="7DP-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '18px', width: '164px' }}>
               Sector / source
             </div>
-            <div id="7DQ-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7DQ-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7DR-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '18px', textAlign: 'right' }}>
                 Above 50D ↓
               </div>
             </div>
-            <div id="7DS-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7DS-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7DT-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '18px', textAlign: 'right' }}>
                 Change · pp
               </div>
             </div>
-            <div id="7DU-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7DU-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7DV-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 500, lineHeight: '18px' }}>
                 Coverage
               </div>
@@ -105,17 +105,17 @@
                 Source
               </div>
             </div>
-            <div id="7E3-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7E3-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7E4-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 72.4%
               </div>
             </div>
-            <div id="7E5-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7E5-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7E6-0" style={{ boxSizing: 'border-box', color: '#B0D4B9', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 +2.10
               </div>
             </div>
-            <div id="7E7-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7E7-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7E8-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 286 / 286
               </div>
@@ -135,17 +135,17 @@
                 Source
               </div>
             </div>
-            <div id="7EG-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7EG-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7EH-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 70.8%
               </div>
             </div>
-            <div id="7EI-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7EI-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7EJ-0" style={{ boxSizing: 'border-box', color: '#B0D4B9', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 +1.50
               </div>
             </div>
-            <div id="7EK-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7EK-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7EL-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 267 / 267
               </div>
@@ -165,17 +165,17 @@
                 Source
               </div>
             </div>
-            <div id="7ET-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7ET-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7EU-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 69.2%
               </div>
             </div>
-            <div id="7EV-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7EV-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7EW-0" style={{ boxSizing: 'border-box', color: '#B0D4B9', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 +0.60
               </div>
             </div>
-            <div id="7EX-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7EX-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7EY-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 500 / 500
               </div>
@@ -195,17 +195,17 @@
                 Source
               </div>
             </div>
-            <div id="7F6-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7F6-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7F7-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 66.7%
               </div>
             </div>
-            <div id="7F8-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7F8-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7F9-0" style={{ boxSizing: 'border-box', color: '#B0D4B9', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 +1.13
               </div>
             </div>
-            <div id="7FA-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7FA-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7FB-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 177 / 177
               </div>
@@ -225,17 +225,17 @@
                 Source
               </div>
             </div>
-            <div id="7FJ-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7FJ-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7FK-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 63.5%
               </div>
             </div>
-            <div id="7FL-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7FL-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7FM-0" style={{ boxSizing: 'border-box', color: '#EFA6AD', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 -0.80
               </div>
             </div>
-            <div id="7FN-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7FN-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7FO-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 375 / 375
               </div>
@@ -255,17 +255,17 @@
                 Source
               </div>
             </div>
-            <div id="7FW-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7FW-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7FX-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 61.1%
               </div>
             </div>
-            <div id="7FY-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7FY-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7FZ-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 0.00
               </div>
             </div>
-            <div id="7G0-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7G0-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7G1-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 54 / 54
               </div>
@@ -285,17 +285,17 @@
                 Source
               </div>
             </div>
-            <div id="7G9-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7G9-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7GA-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 58.3%
               </div>
             </div>
-            <div id="7GB-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7GB-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7GC-0" style={{ boxSizing: 'border-box', color: '#EFA6AD', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 -1.20
               </div>
             </div>
-            <div id="7GD-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7GD-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7GE-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 333 / 333
               </div>
@@ -315,17 +315,17 @@
                 Source
               </div>
             </div>
-            <div id="7GM-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7GM-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7GN-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 55.6%
               </div>
             </div>
-            <div id="7GO-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7GO-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7GP-0" style={{ boxSizing: 'border-box', color: '#B0D4B9', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 +0.40
               </div>
             </div>
-            <div id="7GQ-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7GQ-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7GR-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 250 / 250
               </div>
@@ -345,17 +345,17 @@
                 Source
               </div>
             </div>
-            <div id="7GZ-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7GZ-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7H0-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 52.2%
               </div>
             </div>
-            <div id="7H1-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7H1-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7H2-0" style={{ boxSizing: 'border-box', color: '#EFA6AD', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 -0.60
               </div>
             </div>
-            <div id="7H3-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7H3-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7H4-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 500 / 500
               </div>
@@ -375,17 +375,17 @@
                 Source
               </div>
             </div>
-            <div id="7HC-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
+            <div id="7HC-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '88px' }}>
               <div id="7HD-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 —
               </div>
             </div>
-            <div id="7HE-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
+            <div id="7HE-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingRight: '12px', textAlign: 'right', width: '96px' }}>
               <div id="7HF-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right' }}>
                 —
               </div>
             </div>
-            <div id="7HG-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingLeft: '12px', width: '130px' }}>
+            <div id="7HG-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingLeft: '12px', textAlign: 'right', width: '130px' }}>
               <div id="7HH-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
                 0 / 82
               </div>
@@ -468,7 +468,7 @@
             Build contract / F02 candidate 2
           </div>
           <div id="7IP-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px' }}>
-            Build contract: important controls are 44px. Full-row evidence requires no hover. Selection and focus stay independent. Close/Escape restores the same entity, source and scroll context. Canvas geometry does not prove keyboard, touch or 400% zoom behavior.
+            Build contract: important controls are 44px; full-row evidence needs no hover. Selection and focus are independent. Close preserves entity, source and scroll; restore focus only if the retiring surface owns it. Preserve later focus elsewhere. Keyboard, touch and 400% proof remain open.
           </div>
           <div id="7IQ-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
             F01 joint shell freeze remains open · all values illustrative

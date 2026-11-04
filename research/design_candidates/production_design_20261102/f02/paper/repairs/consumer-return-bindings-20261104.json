@@ -1,0 +1,165 @@
+{
+  "schema": "f02.native-consumer-return-bindings.v1",
+  "observed_at": "2026-11-04T01:12:26.467Z",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "company_fy2025_eps": {
+    "observation": "EXM / diluted EPS / FY2025 / USD per share",
+    "value": 2.07,
+    "prior_value": 1.2,
+    "change_percent": 72.5,
+    "companion_board": "8PF-0",
+    "current_sources": [
+      {
+        "board": "56L-0",
+        "row": "7XS-0",
+        "cell": "7YD-0",
+        "value_frame": "7YE-0",
+        "change_frame": "7YG-0"
+      },
+      {
+        "board": "5HV-0",
+        "row": "87D-0",
+        "cell": "87Y-0",
+        "value_frame": "87Z-0",
+        "change_frame": "881-0"
+      }
+    ],
+    "return_model": "Same actual fiscal-year cell/row identity, selection and both scroll offsets when focus restoration is owed; intentionally moved focus preserved. FY2026 unavailable remains separate."
+  },
+  "editorial_calculation": {
+    "companion_board": "8R5-0",
+    "source_triggers": [
+      {
+        "board": "6JX-0",
+        "trigger": "6MH-0",
+        "text": "6MI-0"
+      },
+      {
+        "board": "6NG-0",
+        "trigger": "6O7-0",
+        "text": "6O8-0"
+      },
+      {
+        "board": "8TF-0",
+        "trigger": "8UE-0"
+      }
+    ],
+    "return_model": "Same calculation anchor/source trigger when focus restoration is owed; article position and intentional outside focus preserved."
+  },
+  "readbacks": [
+    {
+      "key": "dark",
+      "nodeId": "7XS-0",
+      "response": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"children\": [\n    {\n      \"id\": \"7XT-0\",\n      \"name\": \"Diluted earnings per share\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"7XY-0\",\n      \"name\": \"Diluted earnings per share / FY 2022 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"7Y3-0\",\n      \"name\": \"Diluted earnings per share / FY 2023 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"7Y8-0\",\n      \"name\": \"Diluted earnings per share / FY 2024 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"7YD-0\",\n      \"name\": \"Diluted earnings per share / FY 2025 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"7YI-0\",\n      \"name\": \"Diluted earnings per share / FY 2026 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"7YN-0\",\n      \"name\": \"Latest change / FY 2026 versus FY 2025\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"7YQ-0\",\n      \"name\": \"Evidence / Diluted earnings per share\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ],\n  \"count\": 8\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "key": "light",
+      "nodeId": "87D-0",
+      "response": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"children\": [\n    {\n      \"id\": \"87E-0\",\n      \"name\": \"Diluted earnings per share\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"87J-0\",\n      \"name\": \"Diluted earnings per share / FY 2022 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"87O-0\",\n      \"name\": \"Diluted earnings per share / FY 2023 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"87T-0\",\n      \"name\": \"Diluted earnings per share / FY 2024 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"87Y-0\",\n      \"name\": \"Diluted earnings per share / FY 2025 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"883-0\",\n      \"name\": \"Diluted earnings per share / FY 2026 / value and annual change\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"888-0\",\n      \"name\": \"Latest change / FY 2026 versus FY 2025\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"88B-0\",\n      \"name\": \"Evidence / Diluted earnings per share\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ],\n  \"count\": 8\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "nodeId": "7YD-0",
+      "response": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"children\": [\n    {\n      \"id\": \"7YE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"7YG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ],\n  \"count\": 2\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "nodeId": "87Y-0",
+      "response": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"children\": [\n    {\n      \"id\": \"87Z-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"881-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ],\n  \"count\": 2\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "key": "ed-dark",
+      "nodeId": "6MH-0",
+      "response": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"children\": [\n    {\n      \"id\": \"6MI-0\",\n      \"name\": \"Inspect the calculat…\",\n      \"component\": \"Text\",\n      \"childCount\": 0,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ],\n  \"count\": 1\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "key": "ed-light",
+      "nodeId": "6O7-0",
+      "response": {
+        "state": "OBSERVED",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"children\": [\n    {\n      \"id\": \"6O8-0\",\n      \"name\": \"Inspect the calculat…\",\n      \"component\": \"Text\",\n      \"childCount\": 0,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ],\n  \"count\": 1\n}"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "browser_execution": "NOT_RUN",
+  "approval": false
+}

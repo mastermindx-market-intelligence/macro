@@ -1,0 +1,28 @@
+{
+  "operation_id": "f02-c2-macro-zh-evidence-return-390-provenance-and-return-20261104-01",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "mapping": {
+    "baseline": "8O2-0",
+    "source-identity": "8O3-0",
+    "source-clocks": "8O6-0",
+    "units": "8OG-0",
+    "coverage-limit": "8OJ-0",
+    "return-action": "8OM-0",
+    "modal-contract": "8OO-0"
+  },
+  "readback": {
+    "state": "OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"children\": [\n    {\n      \"id\": \"8NJ-0\",\n      \"name\": \"准确的行业身份\",\n      \"component\": \"Frame\",\n      \"childCount\": 3,\n      \"worldX\": 2400,\n      \"worldY\": 339,\n      \"x\": 20,\n      \"y\": 20\n    },\n    {\n      \"id\": \"8NO-0\",\n      \"name\": \"完整选中行的数值\",\n      \"component\": \"Frame\",\n      \"childCount\": 3,\n      \"worldX\": 2400,\n      \"worldY\": 439,\n      \"x\": 20,\n      \"y\": 120\n    },\n    {\n      \"id\": \"8O2-0\",\n      \"name\": \"通信示例：118/177 × 100 =…\",\n      \"component\": \"Text\",\n      \"childCount\": 0,\n      \"worldX\": 2400,\n      \"worldY\": 587,\n      \"x\": 20,\n      \"y\": 268\n    },\n    {\n      \"id\": \"8O3-0\",\n      \"name\": \"来源标识\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": 2400,\n      \"worldY\": 666,\n      \"x\": 20,\n      \"y\": 347\n    },\n    {\n      \"id\": \"8O6-0\",\n      \"name\": \"三个时钟分别记录\",\n      \"component\": \"Frame\",\n      \"childCount\": 3,\n      \"worldX\": 2400,\n      \"worldY\": 744,\n      \"x\": 20,\n      \"y\": 425\n    },\n    {\n      \"id\": \"8OG-0\",\n      \"name\": \"单位与范围\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": 2400,\n      \"worldY\": 836,\n      \"x\": 20,\n      \"y\": 517\n    },\n    {\n      \"id\": \"8OJ-0\",\n      \"name\": \"不能混用的覆盖范围\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": 2400,\n      \"worldY\": 914,\n      \"x\": 20,\n      \"y\": 595\n    },\n    {\n      \"id\": \"8OM-0\",\n      \"name\": \"返回“通信服务”行 control\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": 2400,\n      \"worldY\": 1030,\n      \"x\": 20,\n      \"y\": 711\n    },\n    {\n      \"id\": \"8OO-0\",\n      \"name\": \"相邻交互说明\",\n      \"component\": \"Frame\",\n      \"childCount\": 3,\n      \"worldX\": 2400,\n      \"worldY\": 1090,\n      \"x\": 20,\n      \"y\": 771\n    }\n  ],\n  \"count\": 9\n}"
+        }
+      ]
+    }
+  }
+}

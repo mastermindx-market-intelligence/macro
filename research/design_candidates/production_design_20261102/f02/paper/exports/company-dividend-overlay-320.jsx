@@ -167,7 +167,7 @@
             Build contract
           </div>
           <div id="72X-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px' }}>
-            One named modal; background inert. Tab stays inside; Escape closes. Restore the source trigger by stable entity/field/period identity after sort. If removed, focus the named table heading and announce the change.
+            One named modal; background inert, Tab contained. Active-owner Escape closes it. If the closing surface owns focus, restore the current source trigger by entity/field/period; if absent, use the named table heading and explain. Preserve later focus elsewhere.
           </div>
           <div id="72W-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px' }}>
             Retain table scroll and draft state. No save is caused by open, close, navigation or language. Browser/keyboard/400% qualification remains open.

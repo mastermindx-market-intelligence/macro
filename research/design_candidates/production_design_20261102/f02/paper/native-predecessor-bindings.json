@@ -1,6 +1,6 @@
 {
   "schema": "f02.native-predecessor-bindings.v1",
-  "generated_at": "2026-11-03T06:53:40.367282+00:00",
+  "generated_at": "2026-11-04T01:16:54.695457+00:00",
   "counts": {
     "IMPROVE": 42,
     "RETAIN": 25
@@ -62,9 +62,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "foundations",
@@ -119,9 +119,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "foundations",
@@ -212,9 +212,9 @@
         {
           "board_key": "macro-zh-evidence-return-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
@@ -277,9 +277,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "grammar",
@@ -327,9 +327,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "grammar",
@@ -836,9 +836,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-dark",
@@ -935,9 +935,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "metrics",
@@ -999,9 +999,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-dark",
@@ -1070,9 +1070,9 @@
         {
           "board_key": "macro-zh-evidence-return-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "options-dark",
@@ -1219,9 +1219,9 @@
         {
           "board_key": "macro-zh-evidence-return-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "options-dark",
@@ -1276,9 +1276,9 @@
         {
           "board_key": "macro-zh-evidence-return-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "options-full-row-evidence-320",
@@ -1386,9 +1386,9 @@
         {
           "board_key": "macro-zh-evidence-return-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "options-dark",
@@ -1443,9 +1443,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "metrics",
@@ -1514,9 +1514,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "foundations",
@@ -1542,9 +1542,9 @@
         {
           "board_key": "macro-docked-1280",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8G2-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-light",
@@ -1563,9 +1563,9 @@
         {
           "board_key": "macro-zh-evidence-return-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "options-dark",
@@ -1591,23 +1591,23 @@
         {
           "board_key": "width-1024-overlay",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "9EB-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "width-1600-docked",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "9K6-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "width-768-overlay",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "98N-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
@@ -1874,9 +1874,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "metrics",
@@ -1959,9 +1959,9 @@
         {
           "board_key": "macro-zh-evidence-return-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "options-dark",
@@ -2037,9 +2037,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-dark",
@@ -2122,9 +2122,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "grammar",
@@ -2229,9 +2229,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "states-matrix",
@@ -2265,9 +2265,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "states-matrix",
@@ -2416,9 +2416,9 @@
         {
           "board_key": "macro-zh-evidence-return-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
@@ -2452,9 +2452,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "grammar",
@@ -2502,9 +2502,9 @@
         {
           "board_key": "fault-compositions",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "grammar",
