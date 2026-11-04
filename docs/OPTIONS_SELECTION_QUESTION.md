@@ -34,3 +34,13 @@ repair and pass after it; the normal source and revocation path stays qualified.
 This is bounded prompt serialization, not a general prompt-injection guarantee
 or authority for external disclosure. The prepare/final-dispatch producer API
 remains unchanged.
+
+## P15.T2.S3 — explicit singleton consumer
+
+`MMBrain.submitOptionsQuestion(reference)` stages a frozen request selector and opens the existing composer. It does not send, grant access or attach model-ready source bytes. Only explicit user Send posts once through the existing authenticated stream proxy. The body contains message, lane, chat mode, the exact reference and language; it carries no thread, history, image, company context or source fallback. `clearOptionsQuestion(reference)` withdraws only matching ownership, including late-response painting. The Terminal owner must call it when its selection/root/session or mounted scope changes.
+
+Question mode suppresses ordinary draft persistence, run recovery and regeneration. Consumed/withdrawn references cannot downgrade into generic chat. Explicit New Chat or opening an existing conversation restores the ordinary path. Unknown network/dispatch outcomes do not claim non-delivery and are not retried. The server remains responsible for fresh principal, source, channel and processor-use admission.
+
+The original GLM widget return (options3d-question-widget-20261104-r1, artifact48bb0a0e) is REPAIR_REQUIRED/NOT_ACCEPTED: full-widget initialization failed before the public API mounted; ordinary draft/recovery and real unknown-response handling also required repair. Parent repairs are SELF_REVIEWED, not independent approval. Current tests:29 state-machine cases,6 actual DOM lifecycle cases,12 EN/ZH dark/light responsive browser cells, plus the existing widget/history regression owner (95 pytest cases total, including the12 browser cells and one Node-suite wrapper). Canonical asset parity and existing CI packing pass. The initial integrated test invocation overlapped parent asset materialization and correctly tripped the data-write guard; the stable-tree rerun passed95 with no skips. No guard was disabled.
+
+This is qualified consumer source only. Terminal capture/mount, gateway publication/review, technical enrollment, protected installation and authenticated production proof remain separate. No Save, enrollment, valuation, frozen-operation recovery or permission is inferred.
