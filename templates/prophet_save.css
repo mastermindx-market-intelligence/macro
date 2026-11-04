@@ -1,4 +1,4 @@
-.prophet-save-dialog{width:min(100% - 32px,520px);max-height:calc(100dvh - 32px);padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text)}
+.prophet-save-dialog{box-sizing:border-box;width:min(100% - 32px,520px);max-height:calc(100dvh - 32px);padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text)}
 .prophet-save-dialog::backdrop{background:var(--pv-dialog-backdrop)}
 .prophet-save-head{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3,12px)}
 .prophet-save-head h2{font-size:var(--fs-h2);margin:0}

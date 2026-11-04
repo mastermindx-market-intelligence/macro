@@ -303,7 +303,7 @@
     {# Policy-shock de-escalation fresh-entry caution chip (PS-R3: display de-escalation only —
        no reordering, no removal. Ranks computed on pre-shock data; this chip is the only change.) #}
     {% if shock_state is defined and shock_state and shock_state.get('active') %}
-    <div style="margin:6px 0 10px;padding:8px 12px;border-radius:8px;border-left:4px solid var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--panel2));font-size:13px;font-weight:600">
+    <div style="margin:6px 0 10px;padding:8px 12px;border-radius:var(--r-ctl,8px);border:1px solid var(--line);background:var(--panel2);font-size:var(--fs-sm);font-weight:600">
       <span class="ab-shock-ic">{{ icon('alert') }}</span> <span class="l-en">Market shock active — new entries are less predictable. The order below has not been changed and uses pre-shock data. Active until {{ shock_state.get('expires', '') }}.</span><span class="l-zh">市场冲击仍在 — 新入场更难判断。下方顺序未作调整，使用的是冲击前数据。有效期至 {{ shock_state.get('expires', '') }}。</span>
     </div>
     {% endif %}
