@@ -221,9 +221,9 @@
     },
     {
       "path": "CONTINUITY.md",
-      "bytes": 28136,
-      "sha256": "6f6d029f8f3352d05fad16bcb64e7e65403bc8d2fc152e0a63fcd78907971566",
-      "git_blob_sha": "d728a482591ef8983bf8d2d943c801e56380f63a"
+      "bytes": 29082,
+      "sha256": "7d97541f05397de78b50751dd0d001b136f484130a06742862a77a55d5736e48",
+      "git_blob_sha": "698466b83785b4c16e80eaf2776fb5824d8379b7"
     },
     {
       "path": "CONTRACT.md",
@@ -1474,6 +1474,12 @@
       "git_blob_sha": "beeecb610ea5266804f3530f21e59856143ab169"
     },
     {
+      "path": "paper/retention/shared-start-here-pair-difference-20261104.json",
+      "bytes": 4208,
+      "sha256": "031042b6d530c510ac56b48606fe631fb4d813c6cd1fe08f97b51ab862f0982f",
+      "git_blob_sha": "59777a08a4cb0564565a2bfd30daacdb341f837e"
+    },
+    {
       "path": "paper/retention/svg-asset-preflight-20261104.json",
       "bytes": 24072,
       "sha256": "f392ed0820ec470533eb9fd9893216c5210bf9a960c0e0227fa4153641b1ca57",
@@ -1698,5 +1704,6 @@
   "current_native_backup_negative_assessment": "paper/retention/native-file-pair-assessment-20261104.json",
   "current_native_backup_verifier": "tools/verify_native_backup.py",
   "current_native_backup_tests": "tools/test_verify_native_backup.py",
+  "current_shared_start_here_difference": "paper/retention/shared-start-here-pair-difference-20261104.json",
   "native_backup_restore_accepted": false
 }
