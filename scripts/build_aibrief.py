@@ -37,10 +37,36 @@ ASSETS = ("theme.css", "theme.js", "aibrief.js")
 
 # Plain-word translations for liquidity states
 _LIQUIDITY_PLAIN = {
+    # Canonical liquidity_plumbing.v1 headline.state values.
+    "benign_liquidity_tailwind": (
+        "Liquidity is expanding on Fed balance-sheet support — supportive context only",
+        "流动性因美联储资产负债表扩张而改善——仅为有利背景",
+    ),
+    "mechanical_liquidity_tailwind": (
+        "Liquidity is improving mechanically (Treasury/RRP) — transient support",
+        "流动性呈机械性改善（财政部／RRP）——只是暂时支撑",
+    ),
     "stress_liquidity_expansion": (
         "Money is technically expanding but conditions are stressed — treat cautiously",
         "流动性技术上扩张但压力较大，谨慎对待",
     ),
+    "neutral_with_buffer": (
+        "Liquidity is roughly neutral, with a cushion still in place",
+        "流动性大体中性，仍有缓冲垫",
+    ),
+    "neutral_hollow": (
+        "Liquidity is neutral, with a limited effective buffer",
+        "流动性大体中性，但有效缓冲有限",
+    ),
+    "orderly_drain": (
+        "Liquidity is draining in an orderly way — a headwind",
+        "流动性有序回落——构成阻力",
+    ),
+    "data_degraded": (
+        "No dependable current liquidity reading",
+        "暂无可靠的当前流动性读数",
+    ),
+    # Legacy states kept for backwards compatibility.
     "clean_liquidity_expansion": (
         "Liquidity is expanding — a supportive backdrop",
         "流动性扩张，总体利好",
@@ -55,11 +81,20 @@ _LIQUIDITY_PLAIN = {
     ),
 }
 
+# Unknown or missing states in a present artifact must not imply neutrality.
+_LIQUIDITY_UNKNOWN_PLAIN = (
+    "Liquidity reading unavailable — current state unknown",
+    "流动性读数不可用——当前状态未知",
+)
+
 # Plain-word translations for cortex status
 _CORTEX_PLAIN = {
+    # The source reason may be model_unavailable rather than rate limiting —
+    # keep the copy generic and truthful instead of asserting a cause the
+    # source did not report, and never imply a successful model review.
     "degraded": (
-        "Rate-limited overnight — ran on dashboards alone",
-        "隔夜遭速率限制，仅依靠看板运行",
+        "Overnight review unavailable — dashboard data only",
+        "隔夜复盘不可用——仅有看板数据",
     ),
     "ok": (
         "Ran successfully",
@@ -166,7 +201,8 @@ def _gather_context_strip(data_dir: Path) -> dict:
       regime_label_en, regime_label_zh, regime_asof
       contradiction_line_en, contradiction_line_zh
       contradiction_tip_en, contradiction_tip_zh
-      liquidity_en, liquidity_zh
+      liquidity_en, liquidity_zh  (plain words; an unknown or missing source
+        state yields an unavailable/unknown phrase, never a neutral claim)
       cortex_en, cortex_zh, cortex_status
       strip_asof (earliest as_of among artifacts read)
       absent (bool) — True if ALL three reads failed
@@ -252,8 +288,12 @@ def _gather_context_strip(data_dir: Path) -> dict:
     lp = _load_json_safe(data_dir / "neuralweb" / "liquidity_plumbing.json")
     if lp:
         headline = lp.get("headline") or {}
-        state = headline.get("state", "neutral")
-        pair = _LIQUIDITY_PLAIN.get(state, _LIQUIDITY_PLAIN["neutral"])
+        raw_state = headline.get("state")
+        state = raw_state.strip().lower() if isinstance(raw_state, str) else ""
+        pair = _LIQUIDITY_PLAIN.get(state)
+        if pair is None:
+            # Unknown or missing canonical state — say so, never claim neutral.
+            pair = _LIQUIDITY_UNKNOWN_PLAIN
         out["liquidity_en"] = pair[0]
         out["liquidity_zh"] = pair[1]
         lp_asof = lp.get("asof", "")
