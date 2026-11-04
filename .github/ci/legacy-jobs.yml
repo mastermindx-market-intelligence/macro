@@ -13611,6 +13611,7 @@ jobs:
           tests/test_fundamental_forensics_lane_c2_bac_periods.py
           tests/test_fundamental_forensics_header_period_composition.py
           tests/test_fundamental_forensics_displayed_title_fold.py
+          tests/test_fundamental_forensics_bare_year_columns.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q
@@ -15232,12 +15233,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      # The four suites and their measured import closure (inference's owned tier).
+      # The five suites and their measured import closure (inference's owned tier).
       - "tests/test_company_management_outlook_contract.py"
       - "tests/test_company_management_outlook.py"
       - "tests/test_market_ontology_technology_economic_change.py"
-      - "tests/test_market_ontology_technology_research_registration.py"
       - "tests/fixtures/technology_economic_change/conformant_assertion.json"
+      - "tests/test_market_ontology_technology_research_registration.py"
+      - "tests/test_market_ontology_technology_dossier_page.py"
+      - "tests/test_market_ontology_technology_published_signal.py"
       - "contracts/company_intelligence/management_outlook_comparison.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.evidence.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -15249,6 +15252,10 @@ jobs:
       - "engine/company_intelligence/views.py"
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
+      - "engine/market_ontology/technology_dossier_page.py"
+      - "engine/market_ontology/technology_published_signal.py"
+      # One fragment template, named literally. Do not widen this to templates/**.
+      - "templates/_technology_economic_change_page.html.j2"
       - "engine/theme_graph/__init__.py"
       # engine/market_ontology/__init__.py runs on every import of the two subjects
       # and loads exposure_map; inference does not follow implicit parent-package
@@ -15270,8 +15277,11 @@ jobs:
       - "engine/market_ontology/theme_research_registry.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       # technology_economic_change import_module's theme_research_binding for
-      # the cutoff clock helpers (le, readable, is_instant, parse_clock,
-      # parse_day); the absent-binding arm blocks it in sys.modules.
+      # canonical_text and for the cutoff clock helpers (le, readable,
+      # is_instant, parse_clock, parse_day); the absent-binding arm blocks it
+      # in sys.modules. Registration treats the shell as theme_research_registry
+      # plus theme_research_binding; shared_shell_unavailable is that pair not
+      # both importable.
       - "engine/market_ontology/theme_research_binding.py"
       # The owned import closure of those modules: the data files
       # curation_assertion.py reads, then the modules
@@ -15380,7 +15390,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests jsonschema
       - name: Technology ex-Semis boundary (comparison contract + calculator + economic-change composer)
-        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py -q
+        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py tests/test_market_ontology_technology_dossier_page.py tests/test_market_ontology_technology_published_signal.py -q
 
   cn-standout-audit:
     if: ${{ false }}
@@ -49508,6 +49518,7 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "scripts/__init__.py"
+      - "scripts/audit_china_gold_premium.py"
       - "scripts/build_commodities.py"
       - "scripts/check_commodity_publication.py"
       - "scripts/check_site_asset_refs.py"
@@ -49516,6 +49527,7 @@ jobs:
       - "site/commodities.html"
       - "site/theme.css"
       - "templates/_commodity_decision_workspace.html.j2"
+      - "templates/_china_gold_premium.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
       - "templates/commodity-workspace.js"
@@ -49535,6 +49547,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
+      - "tests/test_china_gold_premium.py"
       - "tests/test_commodity_publication.py"
       - "tests/test_commodity_presentation_render.py"
       - "tests/test_commodity_supply_context.py"

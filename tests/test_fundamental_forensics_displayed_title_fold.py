@@ -548,7 +548,7 @@ def test_ttl1a4_reconstruct_statement_passes_context_dimensions(
     dimension signature, empty for an undimensioned context."""
     seen: dict[str, object] = {}
 
-    def fake_parse(html: str, *, title, context_dimensions=None):
+    def fake_parse(html: str, *, title, context_dimensions=None, period_end=None):
         seen["contexts"] = dict(context_dimensions)
         raise StatementGraphError("stop", refusal_code="displayed_table_absent")
 
