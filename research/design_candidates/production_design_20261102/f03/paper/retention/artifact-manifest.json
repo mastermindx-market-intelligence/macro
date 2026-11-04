@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 17398,
-      "sha256": "b2eed723b21848b6951602a2341bc83e52477fc1d7972f062b6e2a447fed48fc",
-      "git_blob_sha": "605e1fe88244dffa9915ec11e877e716c65a7293"
+      "bytes": 19235,
+      "sha256": "563a53704b14bae6c1bd87d5cd87615c6349ce7c93e7c92cd62684411a8e3e07",
+      "git_blob_sha": "57f02c79102eb2b673519f08b846edfc74091814"
     },
     {
       "path": "CONTRACT.md",
@@ -41,9 +41,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 20064,
-      "sha256": "edd3afa4bf8c26103fd8f11ae09882ea6c51e2cacdda9d512b6b7192ce6c6ec6",
-      "git_blob_sha": "e70b4e2cec9c414b0553ae631e031ef654974844"
+      "bytes": 21903,
+      "sha256": "657373ecb90a9d45e961729657d11000fd8a3b6decf2a38705106a59382ee9ee",
+      "git_blob_sha": "69f6cd22047dc39781e793067909a20c16344636"
     },
     {
       "path": "REPRODUCE.md",
@@ -1360,6 +1360,36 @@
       "git_blob_sha": "34ff8b099195c36117b8eebe5a8a03728f265833"
     },
     {
+      "path": "paper/retention/native-tree-summary-f01-20261104.json",
+      "bytes": 118659,
+      "sha256": "acf027f1eef4e812fa1c02820a07bc8a942260f87113798a00e58f0b681f2a35",
+      "git_blob_sha": "1e03787252369ad4d95203c98beebdb3489277d6"
+    },
+    {
+      "path": "paper/retention/native-tree-summary-intraday-20261104.json",
+      "bytes": 43451,
+      "sha256": "9b23d8a162736f30a962ce9121da6b45da031882537b01dc9871d947f88f90fa",
+      "git_blob_sha": "5a3548a9c710fe70f739adf6cd82ead765f4f055"
+    },
+    {
+      "path": "paper/retention/native-tree-summary-options-20261104.json",
+      "bytes": 156411,
+      "sha256": "3f01336ebced1cd68de6f50605f30e535a7878ed61d55c3ca6cc5b8da1ab361d",
+      "git_blob_sha": "03ec3cd5f60a025c1cb93da1a2dfba3461ce23b5"
+    },
+    {
+      "path": "paper/retention/native-tree-summary-t47-20261104.json",
+      "bytes": 62684,
+      "sha256": "4bec5dad4f9e6ae403ffa29d31141060e74e8475dc866a1cba679664278de2a7",
+      "git_blob_sha": "177c6be5a88102d5bd2e09f0b6ec28a79008acad"
+    },
+    {
+      "path": "paper/retention/native-tree-vs-jsx-reconciliation-20261104.json",
+      "bytes": 32272,
+      "sha256": "baee5fa077f3478149e6149cef6bb7127b6654327a9cdc5f6aebd778de85ec84",
+      "git_blob_sha": "0efa090ec574b12c0f2729adc3df23f5306aec29"
+    },
+    {
       "path": "paper/retention/original-only-f01-20261104.json",
       "bytes": 9648,
       "sha256": "be18d508527621ee0683d5fb09c84071e517beb707036776fcabe364bd21e177",
@@ -1535,8 +1565,14 @@
     "exact_original_only_board_count": 40,
     "visible_jsx_board_captures": 40,
     "reported_page_nodes": 6163,
-    "exported_jsx_id_occurrences": 5386,
-    "unresolved_id_count_difference": 777,
+    "board_native_nodes_in_tree": 6159,
+    "jsx_native_paper_ids": 5362,
+    "svg_visual_elements_without_jsx_paper_ids": 797,
+    "generated_svg_jsx_ids": 24,
+    "naive_jsx_id_occurrences": 5386,
+    "naive_gap_explained": 777,
+    "all_non_svg_native_node_ids_matched": true,
     "native_retention_proven": false
-  }
+  },
+  "current_native_tree_reconciliation": "paper/retention/native-tree-vs-jsx-reconciliation-20261104.json"
 }
