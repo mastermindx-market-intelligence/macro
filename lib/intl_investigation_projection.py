@@ -37,6 +37,7 @@ SUPPORTED_UNITS = {
     "JP.yield_10y": "percent",
     "JP.annual_current_account": "percent_gdp",
     "EZ.policy_rate": "percent",
+    "GB.policy_rate": "percent",
     "EZ.gdp_yoy": "percent",
     "EZ.cpi_yoy": "percent",
     "EZ.annual_current_account": "percent_gdp",

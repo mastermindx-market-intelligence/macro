@@ -4,10 +4,12 @@ invocation (checkout holding only a dir's few git-committed files) must never
 replace the full one. Pure-helper tests — no boto3/creds needed."""
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -1250,3 +1252,547 @@ def test_cli_passes_stock_source_file_only_when_given(monkeypatch):
                                  '--stock-ticker','MU','--stock-source-file','/tmp/feed/MU.json'])
  assert p.main()==0
  assert seen['stock_ticker']=='MU' and seen['stock_source_file']=='/tmp/feed/MU.json'
+
+
+# ── the International generation current pointer: publication ORDER ──────────
+# `feeds/intl_generation_current.json` is a CURRENT-VALUE pointer: it names the
+# immutable generation a consumer must read. It used to ride the ordinary
+# concurrent delta pass, so it could land BEFORE the generation it names — a
+# consumer could read a pointer whose artifact was not on R2 yet, and on a run
+# where that artifact's upload failed, a pointer naming a generation that never
+# landed at all.
+#
+# The pointer is committed only after its EXACT immutable dependency set is in
+# place: the content-addressed descriptor witness, the generation artifact and
+# (when the artifact declares one) the policy-points artifact. Each must have
+# uploaded, or be ALREADY hash-identical remote. Nothing is inferred from a
+# filename: a dependency that is not in the published set is not published.
+
+_INTL_UUID = "6f1b2c3d-4e5f-4a6b-8c9d-0e1f2a3b4c5d"
+_INTL_GEN = f"im-workspace-generation:{_INTL_UUID}"
+# Captured at import time: the tests below patch time.sleep to keep the
+# incumbent retry backoff fast, and the ordering fake still needs a REAL
+# delay to reorder thread completion.
+_REAL_SLEEP = time.sleep
+
+
+class _OrderedS3(_FakeS3):
+    """The incumbent fake plus a full SEQUENCE of remote effects (uploads and
+    the manifest put, in the order they happened), an optional per-key delay
+    (to reorder thread completion), an on-upload hook (to rewrite a file
+    mid-run) and a real LIST view of the seeded objects (ETag == md5, as a
+    single-part R2 object)."""
+
+    def __init__(self, fail_keys=(), objects=None, delays=None):
+        super().__init__(fail_keys=fail_keys, objects=objects)
+        self.delays = dict(delays or {})
+        self.sequence: list[str] = []
+        self.on_upload = None
+
+    def list_objects_v2(self, **kw):
+        prefix = kw.get("Prefix", "")
+        contents = [{"Key": k, "ETag": '"%s"' % hashlib.md5(v).hexdigest(), "Size": len(v)}
+                    for k, v in self.objects.items() if k.startswith(prefix)]
+        return {"Contents": contents, "IsTruncated": False}
+
+    def upload_file(self, filename, bucket, key, ExtraArgs=None, Config=None):
+        if self.delays.get(key):
+            _REAL_SLEEP(self.delays[key])
+        super().upload_file(filename, bucket, key, ExtraArgs=ExtraArgs, Config=Config)
+        self.sequence.append(key)
+        if self.on_upload is not None:
+            self.on_upload(key)
+
+    def put_object(self, **kw):
+        self.sequence.append(kw["Key"])
+        super().put_object(**kw)
+
+
+def _write_current_bytes(base: Path, names: dict, raw: bytes) -> None:
+    """Write the pointer AND a matching content-addressed descriptor witness
+    from arbitrary bytes — the witness stays byte-identical to the pointer, so
+    the ONLY defect left is whatever is inside those bytes."""
+    (base / "intl_generation_current.json").write_bytes(raw)
+    old = names.get("descriptor")
+    if old:
+        (base / old).unlink()
+    name = f"intl_generation_descriptor_{hashlib.sha256(raw).hexdigest()}.json"
+    (base / name).write_bytes(raw)
+    names["current"] = "intl_generation_current.json"
+    names["descriptor"] = name
+
+
+def _write_current(base: Path, names: dict, current: dict) -> None:
+    """Write the pointer AND its content-addressed descriptor witness together
+    — the witness is a byte-identical copy of the pointer."""
+    _write_current_bytes(base, names, json.dumps(current, sort_keys=True).encode())
+
+
+def _rewrite_artifact(base: Path, names: dict, parts: dict, artifact: dict,
+                      uuid: str = _INTL_UUID) -> None:
+    """Replace the generation artifact and re-derive everything that names it
+    (the pointer's declared name/hash/bytes, then the witness)."""
+    raw = json.dumps(artifact, sort_keys=True).encode()
+    sha = hashlib.sha256(raw).hexdigest()
+    name = f"intl_generation_{uuid}_{sha}.json"
+    old = names.get("artifact")
+    if old:
+        (base / old).unlink()
+    (base / name).write_bytes(raw)
+    names["artifact"] = name
+    parts["artifact"] = artifact
+    current = dict(parts["current"])
+    current["artifact_name"] = name
+    current["artifact_sha256"] = sha
+    current["artifact_bytes"] = len(raw)
+    parts["current"] = current
+    _write_current(base, names, current)
+
+
+def _rewrite_policy(base: Path, names: dict, parts: dict, policy: dict,
+                    uuid: str = _INTL_UUID) -> None:
+    """Replace the policy-points artifact and re-derive the reference chain."""
+    raw = json.dumps(policy, sort_keys=True).encode()
+    sha = hashlib.sha256(raw).hexdigest()
+    name = f"intl_policy_points_{uuid}_{sha}.json"
+    old = names.get("policy")
+    if old:
+        (base / old).unlink()
+    (base / name).write_bytes(raw)
+    names["policy"] = name
+    parts["policy"] = policy
+    artifact = dict(parts["artifact"])
+    artifact["policy_points_ref"] = {"artifact_name": name, "artifact_sha256": sha,
+                                     "artifact_bytes": len(raw)}
+    _rewrite_artifact(base, names, parts, artifact, uuid=uuid)
+
+
+def _intl_feeds(tmp_path, monkeypatch, s3, *, state="ready", with_policy=True,
+                uuid: str = _INTL_UUID, gen: str = _INTL_GEN):
+    """Build site/feeds around an International generation pointer.
+
+    Returns (pr2, base, names, parts). `names` maps a role to the local file
+    name (current / descriptor / artifact / policy / other); `parts` holds the
+    JSON documents, so a test can rewrite one of them and re-derive the rest.
+    `uuid`/`gen` let a test build a tree whose generation id is itself the
+    defect (the whole tree stays self-consistent, so the id is the ONLY thing
+    wrong).
+    """
+    import lib.config as config
+    import scripts.publish_r2 as pr2
+    base = tmp_path / "site" / "feeds"
+    base.mkdir(parents=True)
+    names: dict[str, str] = {}
+    parts: dict[str, dict] = {}
+
+    policy_ref = None
+    if state == "ready" and with_policy:
+        policy = {"schema": "intl.policy_points.v1", "generation": gen,
+                  "points": [{"id": "p1", "value": 1.5}]}
+        raw = json.dumps(policy, sort_keys=True).encode()
+        sha = hashlib.sha256(raw).hexdigest()
+        name = f"intl_policy_points_{uuid}_{sha}.json"
+        (base / name).write_bytes(raw)
+        names["policy"] = name
+        parts["policy"] = policy
+        policy_ref = {"artifact_name": name, "artifact_sha256": sha,
+                      "artifact_bytes": len(raw), "mapping_identity": "a" * 64, "qualification_identity": "b" * 64}
+
+    if state == "ready":
+        artifact = {"schema": "intl.workspace_generation.v1", "generation": gen,
+                    "policy_points_ref": policy_ref}
+        raw = json.dumps(artifact, sort_keys=True).encode()
+        sha = hashlib.sha256(raw).hexdigest()
+        name = f"intl_generation_{uuid}_{sha}.json"
+        (base / name).write_bytes(raw)
+        names["artifact"] = name
+        parts["artifact"] = artifact
+
+    if state == "unavailable":
+        current = {"schema": "intl.workspace_generation_current.v1",
+                   "state": "unavailable", "generation": None, "artifact_name": None,
+                   "artifact_sha256": None, "artifact_bytes": None,
+                   "policy_points_ref": None}
+    else:
+        current = {"schema": "intl.workspace_generation_current.v1", "state": "ready",
+                   "generation": gen, "artifact_name": names["artifact"],
+                   "artifact_sha256": hashlib.sha256(
+                       (base / names["artifact"]).read_bytes()).hexdigest(),
+                   "artifact_bytes": (base / names["artifact"]).stat().st_size,
+                   "policy_points_ref": None}
+    parts["current"] = current
+    _write_current(base, names, current)
+
+    # An ordinary feed file, unrelated to the pointer — an UNRELATED failure
+    # is made of.
+    (base / "other_feed.json").write_text('{"other": true}', encoding="utf-8")
+    names["other"] = "other_feed.json"
+
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "load",
+                        lambda: {"storage": {"site_dir": "site", "data_dir": "data"}})
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: s3)
+    monkeypatch.setenv("R2_BUCKET", "test-bucket")
+    return pr2, base, names, parts
+
+
+def test_intl_pointer_lands_after_every_referenced_immutable_upload(tmp_path, monkeypatch):
+    """THE defect. The pointer may not land before the immutable generation it
+    names. The fake delays one dependency past the other uploads' thread
+    completion, so only a real ordering guarantee — not luck — puts the
+    pointer last."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+    s3.delays[f"feeds/{names['artifact']}"] = 0.3
+    assert pr2.publish(["feeds"], workers=4) == 0
+    seq = s3.sequence
+    pointer = "feeds/intl_generation_current.json"
+    # the thread completion really WAS reordered: the delayed dependency
+    # finished after the ordinary feed file
+    assert seq.index(f"feeds/{names['artifact']}") > seq.index("feeds/other_feed.json")
+    # …and the pointer still landed after EVERY immutable it references
+    for role in ("descriptor", "artifact", "policy"):
+        assert seq.index(f"feeds/{names[role]}") < seq.index(pointer)
+    # the manifest stays LAST, exactly as the incumbent puts it
+    assert seq[-1] == "feeds/_manifest.json"
+    manifests = [i for i, k in enumerate(seq) if k == "feeds/_manifest.json"]
+    assert manifests and all(seq.index(pointer) < i for i in manifests)
+
+
+def test_intl_dependency_failure_leaves_the_pointer_unuploaded_and_the_manifest_unwritten(
+        tmp_path, monkeypatch):
+    """The generation artifact failed: the pointer must not advance onto a
+    generation that is not on R2, and the manifest must not list a tree whose
+    pointer never landed."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+    monkeypatch.setattr(pr2.time, "sleep", lambda s: None)
+    s3.fail_keys.add(f"feeds/{names['artifact']}")
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" not in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def test_intl_unrelated_feed_failure_still_commits_the_pointer_but_withholds_the_manifest(
+        tmp_path, monkeypatch):
+    """An unrelated feed's failure must not hold back a valid, independent
+    International pointer — the pointer's own dependency set is complete. The
+    FULL manifest is still withheld under the incumbent any-failure rule."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+    monkeypatch.setattr(pr2.time, "sleep", lambda s: None)
+    s3.fail_keys.add("feeds/other_feed.json")
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def test_intl_pointer_upload_failure_withholds_the_manifest(tmp_path, monkeypatch):
+    """A pointer upload failure counts as a failure: the manifest lists the
+    pointer, so it may not be replaced while the pointer is not in place."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+    monkeypatch.setattr(pr2.time, "sleep", lambda s: None)
+    s3.fail_keys.add("feeds/intl_generation_current.json")
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" not in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def test_intl_pointer_accepts_dependencies_already_identical_remote(tmp_path, monkeypatch):
+    """The incumbent md5/ETag delta is enough to satisfy the dependency: an
+    unchanged dependency is ALREADY hash-identical remote, so the pointer may
+    advance without re-uploading it."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+    for role in ("descriptor", "artifact", "policy"):
+        s3.objects[f"feeds/{names[role]}"] = (base / names[role]).read_bytes()
+    assert pr2.publish(["feeds"], workers=4) == 0
+    assert "feeds/intl_generation_current.json" in s3.uploaded
+    assert f"feeds/{names['descriptor']}" not in s3.uploaded
+    assert f"feeds/{names['artifact']}" not in s3.uploaded
+    assert f"feeds/{names['policy']}" not in s3.uploaded
+    assert s3.manifest_puts == ["feeds/_manifest.json"]
+
+
+def test_intl_pointer_refuses_a_dependency_rewritten_mid_run(tmp_path, monkeypatch):
+    """A dependency whose bytes changed during the run would leave the remote
+    holding one generation while the pointer declares another — a MIXED
+    generation. The pointer must not advance."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+
+    def _rewrite(key):
+        if key == f"feeds/{names['artifact']}":
+            (base / names["artifact"]).write_bytes(
+                b'{"schema":"intl.workspace_generation.v1"}')
+
+    s3.on_upload = _rewrite
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" not in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def _mutate_intl(base: Path, names: dict, parts: dict, mutation: str) -> None:
+    """Break exactly ONE thing in the local descriptor/dependency set.
+
+    Each mutation leaves everything else VERIFIABLE — the descriptor still
+    matches the pointer byte-for-byte, the rest of the document is intact — so
+    the defect under test is the only thing that can refuse the pointer.
+    """
+    if mutation == "current_not_json":
+        _write_current_bytes(base, names, b'{"schema": "intl.workspace')
+    elif mutation == "current_duplicate_keys":
+        raw = json.dumps(parts["current"], sort_keys=True).encode()
+        raw = raw.replace(
+            b'"schema": "intl.workspace_generation_current.v1"',
+            b'"schema": "intl.workspace_generation_current.v1", '
+            b'"schema": "intl.workspace_generation_current.v1"')
+        _write_current_bytes(base, names, raw)
+    elif mutation == "current_nonfinite":
+        current = dict(parts["current"])
+        current["probe"] = float("nan")
+        _write_current_bytes(base, names,
+                             json.dumps(current, sort_keys=True).encode())
+    elif mutation == "current_oversize":
+        current = dict(parts["current"])
+        current["pad"] = "x" * (256 * 1024)
+        _write_current_bytes(base, names,
+                             json.dumps(current, sort_keys=True).encode())
+    elif mutation == "current_wrong_schema":
+        current = dict(parts["current"])
+        current["schema"] = "intl.workspace_generation_current.v2"
+        _write_current(base, names, current)
+    elif mutation == "current_bad_state":
+        current = dict(parts["current"])
+        current["state"] = "pending"
+        _write_current(base, names, current)
+    elif mutation == "current_symlink":
+        real = base / "real_current.json"
+        real.write_bytes((base / names["current"]).read_bytes())
+        (base / names["current"]).unlink()
+        (base / names["current"]).symlink_to(real)
+    elif mutation == "descriptor_missing":
+        (base / names["descriptor"]).unlink()
+    elif mutation == "descriptor_differs":
+        (base / names["descriptor"]).write_bytes(
+            b'{"schema":"intl.workspace_generation_current.v1"}')
+    elif mutation == "descriptor_symlink":
+        real = base / "real_descriptor.json"
+        real.write_bytes((base / names["descriptor"]).read_bytes())
+        (base / names["descriptor"]).unlink()
+        (base / names["descriptor"]).symlink_to(real)
+    elif mutation == "artifact_missing":
+        (base / names["artifact"]).unlink()
+    elif mutation == "artifact_hash_mismatch":
+        (base / names["artifact"]).write_bytes(
+            b'{"schema":"intl.workspace_generation.v1"}')
+    elif mutation == "artifact_bytes_mismatch":
+        current = dict(parts["current"])
+        current["artifact_bytes"] = current["artifact_bytes"] + 1
+        _write_current(base, names, current)
+    elif mutation == "artifact_schema_mismatch":
+        artifact = dict(parts["artifact"])
+        artifact["schema"] = "intl.workspace_generation.v2"
+        _rewrite_artifact(base, names, parts, artifact)
+    elif mutation == "artifact_generation_mismatch":
+        artifact = dict(parts["artifact"])
+        artifact["generation"] = ("im-workspace-generation:"
+                                  "11111111-2222-4333-8444-555555555555")
+        _rewrite_artifact(base, names, parts, artifact)
+    elif mutation == "artifact_name_wrong_form":
+        raw = (base / names["artifact"]).read_bytes()
+        sha = hashlib.sha256(raw).hexdigest()
+        wrong = f"intl_gen_{_INTL_UUID}_{sha}.json"
+        (base / names["artifact"]).rename(base / wrong)
+        names["artifact"] = wrong
+        current = dict(parts["current"])
+        current["artifact_name"] = wrong
+        parts["current"] = current
+        _write_current(base, names, current)
+    elif mutation == "policy_ref_extra_field":
+        artifact = dict(parts["artifact"])
+        ref = dict(artifact["policy_points_ref"])
+        ref["extra"] = 1
+        artifact["policy_points_ref"] = ref
+        _rewrite_artifact(base, names, parts, artifact)
+    elif mutation == "artifact_symlink":
+        real = base / "real_artifact.json"
+        real.write_bytes((base / names["artifact"]).read_bytes())
+        (base / names["artifact"]).unlink()
+        (base / names["artifact"]).symlink_to(real)
+    elif mutation == "policy_missing":
+        (base / names["policy"]).unlink()
+    elif mutation == "policy_schema_mismatch":
+        policy = dict(parts["policy"])
+        policy["schema"] = "intl.policy_points.v2"
+        _rewrite_policy(base, names, parts, policy)
+    elif mutation == "policy_generation_mismatch":
+        policy = dict(parts["policy"])
+        policy["generation"] = ("im-workspace-generation:"
+                                "11111111-2222-4333-8444-555555555555")
+        _rewrite_policy(base, names, parts, policy)
+    elif mutation == "policy_symlink":
+        real = base / "real_policy.json"
+        real.write_bytes((base / names["policy"]).read_bytes())
+        (base / names["policy"]).unlink()
+        (base / names["policy"]).symlink_to(real)
+    else:
+        raise AssertionError(mutation)
+
+
+@pytest.mark.parametrize("mutation", [
+    "current_not_json", "current_duplicate_keys", "current_nonfinite",
+    "current_oversize", "current_wrong_schema", "current_bad_state",
+    "current_symlink",
+    "descriptor_missing", "descriptor_differs", "descriptor_symlink",
+    "artifact_missing", "artifact_hash_mismatch", "artifact_bytes_mismatch",
+    "artifact_schema_mismatch", "artifact_generation_mismatch", "artifact_symlink",
+    "artifact_name_wrong_form",
+    "policy_missing", "policy_schema_mismatch", "policy_generation_mismatch",
+    "policy_symlink", "policy_ref_extra_field",
+])
+def test_intl_pointer_refuses_a_broken_local_set(tmp_path, monkeypatch, mutation):
+    """No pointer may be published when the local descriptor/dependency set does
+    not verify: a corrupt pointer, a missing or mismatched dependency, a
+    generation that names ANOTHER generation, or a symlink posing as a file.
+    Nothing is inferred from a filename — the bytes must verify."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+    _mutate_intl(base, names, parts, mutation)
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" not in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def test_intl_pointer_refuses_a_generation_that_is_not_a_uuid4(tmp_path, monkeypatch):
+    """The generation id must be `im-workspace-generation:<uuid4>`. The whole
+    tree is self-consistent here — the id itself is the ONLY defect."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3,
+                                          uuid="not-a-uuid",
+                                          gen="im-workspace-generation:not-a-uuid")
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" not in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def test_intl_pointer_refuses_a_generation_without_its_prefix(tmp_path, monkeypatch):
+    """`im-workspace-generation:` is part of the id, not decoration: the same
+    tree built with a foreign prefix must not be published either. The uuid
+    part stays as it is, so the prefix is the ONLY defect."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(
+        tmp_path, monkeypatch, s3,
+        gen=f"xm-workspace-generation:{_INTL_UUID}")
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" not in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def test_intl_unavailable_revocation_needs_only_the_descriptor_witness(tmp_path, monkeypatch):
+    """A revocation announces that NO generation is live. It has no source
+    dependency beyond the descriptor witness — the old data is exactly what is
+    NOT required — and no fallback to a previous generation is invented."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3, state="unavailable")
+    assert "artifact" not in names and "policy" not in names
+    assert pr2.publish(["feeds"], workers=4) == 0
+    assert "feeds/intl_generation_current.json" in s3.uploaded
+    assert f"feeds/{names['descriptor']}" in s3.uploaded
+    assert s3.manifest_puts == ["feeds/_manifest.json"]
+
+
+def test_intl_unavailable_revocation_without_its_witness_advances_nothing(tmp_path, monkeypatch):
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3, state="unavailable")
+    (base / names["descriptor"]).unlink()
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" not in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def test_intl_unavailable_pointer_may_not_carry_a_generation(tmp_path, monkeypatch):
+    """A revocation carries NULL generation/artifact fields. One that smuggles
+    a generation in is not a revocation, and it must not be published as one."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3, state="unavailable")
+    current = dict(parts["current"])
+    current["generation"] = _INTL_GEN
+    _write_current(base, names, current)
+    assert pr2.publish(["feeds"], workers=4) == 1
+    assert "feeds/intl_generation_current.json" not in s3.uploaded
+    assert s3.manifest_puts == []
+
+
+def test_intl_current_json_outside_feeds_is_unchanged(tmp_path, monkeypatch):
+    """The special case is scoped to the feeds plane. A file with the same name
+    in any other dir keeps the incumbent behaviour: an ordinary concurrent
+    upload, and the dir's manifest as usual."""
+    import lib.config as config
+    import scripts.publish_r2 as pr2
+    s3 = _OrderedS3()
+    d = tmp_path / "site" / "stockdata"
+    d.mkdir(parents=True)
+    (d / "intl_generation_current.json").write_text('{"schema":"whatever"}',
+                                                     encoding="utf-8")
+    (d / "A.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "load",
+                        lambda: {"storage": {"site_dir": "site", "data_dir": "data"}})
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: s3)
+    monkeypatch.setenv("R2_BUCKET", "test-bucket")
+    assert pr2.publish(["stockdata"], workers=4) == 0
+    assert "stockdata/intl_generation_current.json" in s3.uploaded
+    assert s3.manifest_puts == ["stockdata/_manifest.json"]
+
+
+def test_intl_no_manifest_commits_the_pointer_without_replacing_the_full_manifest(
+        tmp_path, monkeypatch):
+    """--no-manifest still lets the self-contained pointer commit (its own
+    dependency set is complete), and it still never replaces the full
+    manifest — no bypass, no force flag."""
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+    s3.objects["feeds/_manifest.json"] = json.dumps(
+        {"dir": "feeds", "count": 5000, "files": []}).encode()
+    assert pr2.publish(["feeds"], manifest=False, workers=4) == 0
+    assert "feeds/intl_generation_current.json" in s3.uploaded
+    assert s3.manifest_puts == []
+    assert json.loads(s3.objects["feeds/_manifest.json"])["count"] == 5000
+
+
+def test_intl_dry_run_uploads_nothing(tmp_path, monkeypatch):
+    s3 = _OrderedS3()
+    pr2, base, names, parts = _intl_feeds(tmp_path, monkeypatch, s3)
+    assert pr2.publish(["feeds"], dry_run=True, workers=4) == 0
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_intl_pointer_rewrite_during_dependency_upload_cannot_advance(tmp_path,monkeypatch):
+    s3=_OrderedS3()
+    _,base,names,parts=_intl_feeds(tmp_path,monkeypatch,s3)
+    original=(base/names['current']).read_bytes()
+    def mutate(key):
+        if key=='feeds/'+names['artifact']:
+            (base/names['current']).write_bytes(b'{}')
+    s3.on_upload=mutate
+    assert p.publish(['feeds'],workers=1)==1
+    assert 'feeds/intl_generation_current.json' not in s3.objects
+    assert not list(base.glob('.intl-current-*.json'))
+
+
+def test_intl_pointer_upload_uses_validated_snapshot_if_original_changes_on_open(tmp_path,monkeypatch):
+    s3=_OrderedS3();_,base,names,parts=_intl_feeds(tmp_path,monkeypatch,s3)
+    original=(base/names['current']).read_bytes();upload=s3.upload_file
+    def rewrite_before_read(filename,bucket,key,**kw):
+        if key=='feeds/intl_generation_current.json':
+            (base/names['current']).write_bytes(b'{}')
+            assert filename != str(base/names['current'])
+            assert kw['ExtraArgs']['ContentType']=='application/json'
+        return upload(filename,bucket,key,**kw)
+    s3.upload_file=rewrite_before_read
+    assert p.publish(['feeds'],workers=1)==0
+    assert s3.objects['feeds/intl_generation_current.json']==original
+    assert not list(base.glob('.intl-current-*.json'))

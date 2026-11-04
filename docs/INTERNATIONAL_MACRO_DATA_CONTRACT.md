@@ -419,3 +419,139 @@ and the exact native source; it does not call this an IMF actual, an EA20 statis
 a Japan field or a composite country-risk verdict. The exact source-scoped
 Eurostat statistical reuse decision and existing commercial/nonresponsibility
 conditions apply. This branch supplies no permission for the separate IMF field.
+
+
+## Official BoE Bank Rate admission
+
+The incumbent configured `IntlMacroAdapter` official override `GB_bank_rate_official`
+collects only Bank of England IUDBEDR, the daily Official Bank Rate in percent.
+It is a nominal administered policy point (`bank_rate`), distinct from the
+existing SONIA carry leg, a market rate or a range midpoint. The source is the
+Bank's native IADB revised-data XML endpoint, with one calendar-year request.
+An explicit data-relative `native_input: {response, receipt}` on that configured
+series imports the exact retained official edition through the same ordinary
+collector, successful `store.upsert` and post-store evidence path without a fetch.
+It validates original successful acquisition status/hash/URL, the native series
+and requested dates, and request ≤ response receipt ≤ local verification ≤
+successful commit ≤ evaluation. Post-store evidence failure is contained by the
+existing base adapter and never retries acquisition.
+
+The immutable capture binds original XML and current canonical stored bytes.
+A reader checks the selector against its original content-addressed sidecar and
+revalidates native observed rows against storage. Historical cache rows outside
+the native response do not become authenticated source observations, and an
+explicit withheld native row cannot expose an older stored value. Exact dated
+policy comparison requires actual endpoint membership; it never fills or picks
+a nearest date. Current display reuses the existing daily 12-day application
+age rule. Deliberately selected historical endpoints are separately labeled
+latest-vintage reads, with no original-known claim or current-display age loan.
+
+Economic observation dates remain dates. Per-row `LAST_UPDATED` is retained as
+raw source text with **unknown timezone**, not converted to UTC or substituted
+for publication time. Revision-vintage, independent release and numerical
+calculation clocks remain null where not supplied. Collection/commit/build clocks
+are distinct. Acquisition success supplies no disclosure decision.
+
+The source-specific publication policy is scoped to Bank-origin IUDBEDR under
+[the Bank's database terms](https://www.bankofengland.co.uk/legal), which grant
+Open Government Licence reuse for the database subject to listed exclusions.
+This binding does not extend to FX, SONIA or third-party series. Required
+attribution is “Source: Bank of England. Contains public sector information
+licensed under the Open Government Licence v3.0.” Link the Bank's terms and the
+licence at point of use; imply no endorsement. The publisher adopts the policy
+only for the exact field and immutable receipt. Metadata or value permission
+that is missing, unknown or denied cannot be inferred from that notice, a source
+URL, a successful request or the stored numbers.
+
+The existing `engine.intl_rates.compare_policy_points` remains the numerical
+owner for ECB deposit facility versus BoE official Bank Rate comparisons. Both
+source labels and fixed dates must be explicit. A supported nominal-point mapping
+is an application method decision, not an assertion of identical operating
+frameworks or an economic stance comparison. No Saved admission, user identity,
+authentication, source-generation installation or permission to apply SQL is
+created by this producer contract.
+
+
+## Official ECB BoE policy comparison
+
+The native source composition invokes the unchanged
+`engine.intl_rates.compare_policy_points` through
+`lib.intl_policy_publication.compare_native_policy_points`. Only the explicit
+`intl-ecb-boe-nominal-policy-point-v1` mapping of ECB deposit facility and BoE
+Official Bank Rate is adopted here. The separate
+`intl.policy_comparison_publication` policy binds method, exact pair, selected
+fixed dates and actual ECB materialization/BoE receipt identity. Unknown or denied
+mapping/source permission, incompatible identity or any missing exact endpoint
+withholds every comparison number and reference. Current field freshness remains
+independent of a deliberately historical latest-vintage comparison.
+
+The retained actual-source fixed-date proof is 2026-08-28 to 2026-09-30.
+Exact qualified native endpoint membership is required for a selected date pair;
+no horizon, nearest-row search or user URL supplies an observation. The normal
+producer never supplies a principal, Saved ID, revision or user question. The
+existing native controlled preview owns authenticated same-record context and
+all Save/reopen/undo operations. A source result is not native admission, an
+authenticated preview, an installed feed or a Saved write. No date-pair grid or
+client-side arithmetic is introduced. The existing authenticated Macro service
+family is the callable host; source wiring does not activate or restart it.
+
+## International generation feeds and native policy preview
+
+The incumbent `build_intl` publisher exports only its admitted native field
+contracts, before presentation mounts drop their permission evidence. The
+`intl.workspace_generation.v1` artifact carries the actual workspace nonce,
+explicit native contexts and field roster, original source clocks, receipt-bound
+content/qualification identities, and policy section digests. Negative rows have
+explicit null content, qualification and policy identities and no dynamic value,
+source URL or source clock. An empty configured context has no invented fields.
+Public artifacts contain no account, question, private Saved state or user query.
+The existing optional private `IntlResolvedPacket` sink remains independent.
+
+Local source files live under `data/intl/publication/generations/`. The existing
+`build_feeds` plane copies them byte for byte to flat `site/feeds/` names:
+`intl_generation_<uuid>_<sha256>.json`, its hash-bound
+`intl_generation_descriptor_<sha256>.json` witness, and
+`intl_generation_current.json`. A missing or failed build declares unavailable;
+readers do not substitute an earlier generation. The existing R2 publisher
+uploads exact immutable dependencies before committing the validated current
+bytes. An unrelated feed failure still withholds the full feed manifest but does
+not prevent an otherwise complete International pointer or revocation. A partial
+fixture must use the incumbent no-manifest path and never replace a full manifest.
+
+An optional `policy_points_ref` names one same-generation immutable
+`intl_policy_points_<uuid>_<sha256>.json` with its byte length, mapping identity
+and source qualification identity. This is the original ECB deposit-facility and
+BoE Bank Rate daily evidence, including explicitly withheld original rows,
+separate collection/store clocks and unknown provider publication/vintage clocks.
+It is not a grid of comparisons. The exact native instrument references are
+`EZ.policy_rate` and `GB.policy_rate`; their instrument IDs remain
+`deposit_facility` and `bank_rate`. This projection requires the separately
+configured `intl.policy_comparison_publication` decision above and both source
+policies. A readable file or successful acquisition is not that decision.
+
+The existing authenticated FastAPI service exposes
+`POST /api/macro/policy-preview`. It accepts generation/fingerprint and the native
+settings selectors, authenticates before source reads, and returns private,
+no-store responses. It maps `revision_policy` explicitly to the unchanged Python
+comparator's `vintage_policy`. Only exact supplied fixed dates and latest-vintage
+source points can qualify this source mapping; missing dates, owner horizons and
+original-known requests remain unavailable. The service computes no client-side
+or alternate arithmetic, stores no Saved record, and returns no credential.
+
+The service reads the existing deployment-owned R2 origin resolved by
+`app.main._flow_r2_base`: `R2_PUBLIC_BASE` when present, otherwise the committed
+`r2_data_plane.public_base`. It appends only fixed flat feed names beneath
+`/feeds/`. Reads are bounded, HTTPS-only and request-local, with no redirects,
+retry, stale cache, arbitrary request URL or Git/filesystem fallback. It verifies
+the exact pinned generation and referenced points, checks the fresh current
+policies, and rechecks the current descriptor before returning a result. R2
+publication does not imply that these gitignored feeds exist in `site.served`.
+
+A qualified release therefore includes the generated International page, its
+immutable generation/point feeds before the current descriptor, and the API code
+and mount through the normal `app/deploy/update.sh` service path. That updater's
+existing verified `macro-api` restart includes the exact policy reader/comparator
+import closure, including source-only helper changes. Source checks, local
+transport doubles, feed publication, service restart, authenticated native use
+and protected installation remain separate proof boundaries. No new service,
+credential, Caddy JSON route, SQL activation or second data plane is introduced.

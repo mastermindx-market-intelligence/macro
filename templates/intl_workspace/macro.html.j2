@@ -67,6 +67,13 @@
     {% endif %}
     {% set metric_field = metric.get('field') %}
     {% set metric_instrument = metric.get('instrument') %}
+    {% set boe_disclosed = market_id == 'GB' and field.key == 'policy_rate' and metric_quality in ['qualified', 'stale'] and metric_value is not none and metric_instrument is mapping and metric_instrument.kind == 'official_policy' and metric_instrument.id == 'bank_rate' and metric_instrument.market_id == 'GB' and metric.get('source_reference') is string and metric.get('source_reference').startswith('https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp?') %}
+    {% if boe_disclosed %}
+      <aside class="intl-macro__source-notice">
+        <p><span class="l-en">Source: Bank of England · Official Bank Rate.</span><span class="l-zh" lang="zh">来源：英格兰银行 · 官方银行利率。</span></p>
+        <a href="{{ metric.get('source_reference')|e }}" target="_blank" rel="noopener"><span class="l-en">Bank of England source data</span><span class="l-zh" lang="zh">英格兰银行来源数据</span></a>
+      </aside>
+    {% endif %}
     {% if market_id == 'EZ' and field.key == 'policy_rate' and metric_quality in ['qualified', 'stale'] and metric_value is not none and metric_instrument is not none and metric_instrument.kind == 'official_policy' and metric_instrument.id == 'deposit_facility' and metric_instrument.market_id == 'EZ' %}
       {% if source_notice_exact %}
         <aside class="intl-macro__source-notice">
@@ -100,6 +107,7 @@
           <div><dt><span class="l-en">Source reference</span><span class="l-zh" lang="zh">来源引用</span></dt><dd class="intl-macro__source-reference intl-macro__reference" tabindex="0">{{ metric.get('source_reference')|e }}</dd></div>
           {% if metric.get('evidence_key') is not none %}<div><dt><span class="l-en">Evidence key</span><span class="l-zh" lang="zh">证据键</span></dt><dd class="intl-macro__reference" tabindex="0">{{ metric.get('evidence_key')|e }}</dd></div>{% endif %}
         </dl>
+        {% if boe_disclosed %}<p><span class="l-en">Contains public sector information licensed under the Open Government Licence v3.0. No endorsement is implied.</span><span class="l-zh" lang="zh">含根据开放政府许可协议第3.0版授权的公共部门信息。不表示获得官方认可。</span> <a href="https://www.bankofengland.co.uk/legal" target="_blank" rel="noopener"><span class="l-en">Bank database terms</span><span class="l-zh" lang="zh">银行数据库条款</span></a> · <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener"><span class="l-en">Open Government Licence v3.0</span><span class="l-zh" lang="zh">开放政府许可协议第3.0版</span></a></p>{% endif %}
         {% if eurostat_disclosed %}<p><span class="l-en">Period labels are normalized for display. Eurostat is not responsible for Mastermind's presentation, translations or interpretations.</span><span class="l-zh" lang="zh">统计期标签已规范化显示。Eurostat 不对 Mastermind 的呈现、翻译或解读负责。</span></p>{% endif %}
       </details>
     {% endif %}

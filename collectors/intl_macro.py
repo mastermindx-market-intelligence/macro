@@ -63,6 +63,8 @@ class IntlMacroAdapter(Adapter):
         self.source_meta: dict[str, dict[str, Any]] = {}
         self._jp_yield_response = None
         self._eurostat_responses = {}
+        self._boe_response = None
+        self._ecb_policy_response = None
 
     def _fetch_fred(self, fid: str) -> pd.DataFrame:
         r = self.http_get(
@@ -103,6 +105,20 @@ class IntlMacroAdapter(Adapter):
         return "ok" if 0 <= age <= spec["max_age_days"] else "stale"
 
     def after_store_commit(self, name, returned, merged, *, committed_at):
+        if name == "ez_depo_rate" and self._ecb_policy_response is not None:
+            from lib.intl_ecb_policy_publication import capture_ecb_policy_commit
+            pending, self._ecb_policy_response = self._ecb_policy_response, None
+            capture_ecb_policy_commit(data_root=config.data_dir(), returned=returned,
+                                      committed_at=committed_at, **pending)
+            return
+        if name == "GB_bank_rate_official" and self._boe_response is not None:
+            from lib.intl_boe_publication import capture_boe_commit
+            pending, self._boe_response = self._boe_response, None
+            # The base adapter contains a post-store evidence failure. Consume
+            # the response first so it can never trigger another acquisition.
+            capture_boe_commit(data_root=config.data_dir(), returned=returned,
+                               committed_at=committed_at, **pending)
+            return
         pending = getattr(self, "_eurostat_responses", {}).pop(name, None)
         if pending is not None:
             from lib.intl_eurostat_publication import capture_eurostat_commit
@@ -234,11 +250,159 @@ class IntlMacroAdapter(Adapter):
             raise ValueError("eurostat: no numeric observations")
         return pd.Series(values).sort_index()
 
+    def _fetch_boe_bank_rate(self, spec, *, requested_at, timeout):
+        """The native official daily policy series, never the SONIA carry leg."""
+        from urllib.parse import urlencode, urlsplit, parse_qs
+        from lib.intl_boe_source import parse_bank_rate_xml
+        from lib.intl_macro_publication import _read_stable_once
+        import hashlib
+
+        if (spec.get("provider") != "boe" or spec.get("series_key") != "IUDBEDR"
+                or spec.get("unit") != "percent"):
+            raise ValueError("BoE configured field contract mismatch")
+        endpoint = "https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp"
+        native = spec.get("native_input")
+        if native is not None:
+            if type(native) is not dict or set(native) != {"response", "receipt"}:
+                raise ValueError("invalid retained BoE input configuration")
+            root = config.data_dir().resolve()
+            def retained(key):
+                value = native[key]
+                if type(value) is not str or Path(value).is_absolute() or ".." in Path(value).parts:
+                    raise ValueError("retained BoE input must be data relative")
+                path = (root / value).resolve()
+                path.relative_to(root)
+                return _read_stable_once(path, 8 * 1024 * 1024)
+            raw = retained("response")
+            receipt = json.loads(retained("receipt"))
+            if receipt.get("status") != 200 or receipt.get("sha256") != hashlib.sha256(raw).hexdigest():
+                raise ValueError("retained BoE acquisition identity mismatch")
+            url, requested_at = receipt.get("url_final"), receipt.get("requested_at")
+            received_at = receipt.get("settled_at")
+        else:
+            today = datetime.now(timezone.utc).date()
+            # Revised-data XML is bounded to one calendar year by the native
+            # provider contract. A new year is not a fabricated historical read.
+            months = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+            params = {"CodeVer": "new", "xml.x": "yes", "Datefrom": f"01/Jan/{today.year}",
+                      "Dateto": f"{today.day:02d}/{months[today.month - 1]}/{today.year}",
+                      "SeriesCodes": "IUDBEDR", "VPD": "N", "VFD": "Y", "VUD": "A"}
+            response = self.http_get(endpoint, params=params, retries=1, timeout=timeout)
+            if response.status_code != 200:
+                raise ValueError("BoE source request did not succeed")
+            raw, url = response.content, response.url
+            received_at = datetime.now(timezone.utc).isoformat()
+        # Reject a retained/mutated foreign carrier before accepting any source.
+        if type(url) is not str:
+            raise ValueError("BoE source URL missing")
+        parsed_url = urlsplit(url)
+        if (parsed_url.scheme != "https" or parsed_url.netloc != "www.bankofengland.co.uk"
+                or parsed_url.path != "/boeapps/database/_iadb-fromshowcolumns.asp"
+                or parsed_url.fragment):
+            raise ValueError("BoE source URL mismatch")
+        query = parse_qs(parsed_url.query, keep_blank_values=True, strict_parsing=True)
+        expected = {"CodeVer": "new", "xml.x": "yes", "SeriesCodes": "IUDBEDR", "VPD": "N", "VFD": "Y", "VUD": "A"}
+        if (set(query) != set(expected) | {"Datefrom", "Dateto"}
+                or any(query[k] != [v] for k, v in expected.items())
+                or any(len(query[k]) != 1 for k in ("Datefrom", "Dateto"))):
+            raise ValueError("BoE source query mismatch")
+        def source_date(value):
+            bits = value.split("/")
+            months = {v: i + 1 for i, v in enumerate(("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))}
+            if len(bits) != 3 or len(bits[0]) != 2 or len(bits[2]) != 4 or bits[1] not in months:
+                raise ValueError("BoE source date mismatch")
+            from datetime import date
+            return date(int(bits[2]), months[bits[1]], int(bits[0]))
+        start, end = (source_date(query[k][0]) for k in ("Datefrom", "Dateto"))
+        if start.year != end.year or end < start:
+            raise ValueError("BoE revised-data interval exceeds native one-year range")
+        parsed = parse_bank_rate_xml(raw)
+        rows = parsed["observations"]
+        if not rows or any(not start <= datetime.fromisoformat(r["date"]).date() <= end for r in rows):
+            raise ValueError("BoE observations outside requested interval")
+        verified = datetime.now(timezone.utc).isoformat()
+        def utc(value):
+            if type(value) is not str:
+                raise ValueError("BoE source clock missing")
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            if parsed.tzinfo is None or parsed.utcoffset() != timezone.utc.utcoffset(parsed):
+                raise ValueError("BoE source clock must be UTC")
+            return parsed
+        if not utc(requested_at) <= utc(received_at) <= utc(verified):
+            raise ValueError("BoE source chronology mismatch")
+        column = "GB_bank_rate_official"
+        frame = pd.DataFrame({column: [r["value"] for r in rows]}, index=pd.to_datetime([r["date"] for r in rows]))
+        self._boe_response = dict(response_bytes=raw, source_url=url, requested_at=requested_at,
+                                 response_received_at=received_at, input_verified_at=verified)
+        self.source_meta[column] = {"provider": "boe", "source_id": "IUDBEDR", "source_url": url,
+            "requested_at": requested_at, "source_updated": rows[-1]["source_updated_raw"],
+            "source_updated_timezone": None, "last_observation": rows[-1]["date"], "unit": "percent",
+            "release_period_semantics": "Daily supplied official Bank Rate; source LAST_UPDATED timezone unknown",
+            "status": "official_pending_store_evidence"}
+        return frame
+
+    def _fetch_ecb_deposit(self, spec, *, requested_at, timeout):
+        """Preserve original exact-series flags before committing observed rows."""
+        from lib.intl_ecb_policy_publication import SOURCE_URL, SOURCE_ID, _utc
+        from lib.intl_ecb_policy_source import parse_ecb_policy_csv
+        from lib.intl_macro_publication import _read_stable_once, _reject_duplicate_keys
+        import hashlib
+        if (spec.get("provider") != "ecb" or spec.get("series_key") not in {SOURCE_ID, "FM/" + SOURCE_ID}
+                or (spec.get("series_key") == SOURCE_ID and spec.get("flow") != "FM")
+                or spec.get("unit") != "PCPA" or spec.get("start_period", "1999-01-01") != "1999-01-01"
+                or spec.get("base_url", "https://data-api.ecb.europa.eu/service/data") != "https://data-api.ecb.europa.eu/service/data"):
+            raise ValueError("ECB exact deposit-series configuration mismatch")
+        native = spec.get("native_input")
+        if native is not None:
+            if type(native) is not dict or set(native) != {"response", "receipt"}:
+                raise ValueError("invalid retained ECB input configuration")
+            root = config.data_dir().resolve()
+            def retained(key):
+                value = native[key]
+                if type(value) is not str or Path(value).is_absolute() or ".." in Path(value).parts:
+                    raise ValueError("retained ECB input must be data relative")
+                path = (root / value).resolve(); path.relative_to(root)
+                return _read_stable_once(path, 8 * 1024 * 1024)
+            raw = retained("response")
+            receipt = json.loads(retained("receipt"), object_pairs_hook=_reject_duplicate_keys)
+            if (receipt.get("status") != 200 or receipt.get("url") != SOURCE_URL
+                    or receipt.get("sha256") != hashlib.sha256(raw).hexdigest()):
+                raise ValueError("retained ECB response identity mismatch")
+            requested_at, received = receipt.get("requested_at"), receipt.get("received_at")
+        else:
+            response = self.http_get(SOURCE_URL.split("?")[0],
+                params={"format": "csvdata", "startPeriod": "1999-01-01"}, retries=1, timeout=timeout)
+            if response.status_code != 200 or response.url != SOURCE_URL:
+                raise ValueError("unrecognized ECB response")
+            raw, received = response.content, datetime.now(timezone.utc).isoformat()
+        parsed = parse_ecb_policy_csv(raw)
+        verified = datetime.now(timezone.utc).isoformat()
+        if not _utc(requested_at) <= _utc(received) <= _utc(verified):
+            raise ValueError("ECB response chronology mismatch")
+        rows = [row for row in parsed["observations"] if row["status"] == "observed"]
+        if not rows:
+            raise ValueError("ECB original response has no observed rows")
+        frame = pd.DataFrame({"ez_depo_rate": [row["value"] for row in rows]},
+                             index=pd.to_datetime([row["date"] for row in rows]))
+        self._ecb_policy_response = dict(response_bytes=raw, source_url=SOURCE_URL,
+            requested_at=requested_at, response_received_at=received, input_verified_at=verified)
+        self.source_meta["ez_depo_rate"] = {"provider": "ecb", "source_id": SOURCE_ID,
+            "source_url": SOURCE_URL, "requested_at": requested_at,
+            "source_updated": parsed["observations"][-1]["date"],
+            "last_observation": rows[-1]["date"], "unit": "PCPA",
+            "release_period_semantics": spec.get("release_period_semantics"),
+            "status": "official" if parsed["observations"][-1]["status"] == "observed" else "official_withheld"}
+        return frame
+
     def _fetch_official(self, stored_col: str, spec: dict[str, Any]) -> pd.DataFrame:
         provider = str(spec["provider"])
         retries = int(spec.get("retries", self.cfg.get("retries", 3)))
         timeout = int(spec.get("timeout_s", 20))
         requested_at = datetime.now(timezone.utc).isoformat()
+        if stored_col == "ez_depo_rate":
+            return self._fetch_ecb_deposit(spec, requested_at=requested_at, timeout=timeout)
+        if stored_col == "GB_bank_rate_official":
+            return self._fetch_boe_bank_rate(spec, requested_at=requested_at, timeout=timeout)
         native_period_fields = {"EZ_gdp_yoy_official": "EZ.gdp_yoy", "EZ_hicp_yoy_official": "EZ.cpi_yoy",
                                 "EZ_current_account_gdp_official": "EZ.annual_current_account"}
         if stored_col in native_period_fields:

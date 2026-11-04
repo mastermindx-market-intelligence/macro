@@ -130,33 +130,37 @@ def _history_publication_sources(receipts):
     return sources
 
 
-def _project_investigation_sink(*, workspace, request, sink, measures, materialized, decisions):
-    """Project an explicit caller selection against this actual workspace.
+def _native_policy_document_sha256(decisions):
+    """Hash the actual adopted policy section; never a receipt nonce/mtime."""
+    import hashlib
+    import re
+    document = Path(__file__).resolve().parent.parent / "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md"
+    text = document.read_text(encoding="utf-8")
+    headings = list(re.finditer(r"^(#{1,6})[ \t]+(.+?)[ \t]*$", text, re.MULTILINE))
+    result = {}
+    for sid, decision in decisions.items():
+        if type(decision) is not dict or decision.get("owner_ref") != "scripts/build_intl.py":
+            continue
+        ref = decision.get("policy_ref")
+        prefix = "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#"
+        if type(ref) is not str or not ref.startswith(prefix):
+            continue
+        anchor = ref[len(prefix):]
+        matches = [i for i, h in enumerate(headings)
+                   if re.sub(r"[^a-z0-9 -]", "", h.group(2).lower()).replace(" ", "-") == anchor]
+        if len(matches) != 1:
+            continue
+        index = matches[0]
+        end = next((h.start() for h in headings[index + 1:]
+                    if len(h.group(1)) <= len(headings[index].group(1))), len(text))
+        result[sid] = hashlib.sha256(text[headings[index].start():end].encode()).hexdigest()
+    return result
 
-    The optional, private result is never rendered or persisted here. Native
-    readers and admission helpers remain the source/store/permission boundary.
-    No URL, receipt nonce or build clock supplies missing owner context.
-    """
-    from lib.intl_investigation_projection import project_intl_resolved_packet
 
-    cfg = workspace["config"]
-    ctx = request.get("context") if type(request) is dict else None
-    if type(ctx) is not dict:
-        raise ValueError("invalid_investigation_context")
-    generation = cfg["source_reference"]
-    if (ctx.get("researchMarket") not in cfg["markets"]
-            or ctx.get("periodIdentity") not in cfg["horizons"]
-            or ctx.get("currencyBasis") not in cfg["bases"]
-            or ctx.get("returnBasis") != "price"
-            or not workspace.get("panels")
-            or any(p.get("generation") != generation for p in workspace["panels"])):
-        raise ValueError("investigation_workspace_scope_mismatch")
-    selected = ctx.get("selectedMeasureIds")
-    if type(selected) is not list or any(type(sid) is not str for sid in selected):
-        raise ValueError("invalid_investigation_selection")
-    selected_measures = {sid: measures[sid] for sid in selected if sid in measures}
+def _native_investigation_evidence(*, measures, materialized, decisions):
+    """Original native evidence shared by private packets/public generation."""
     evidence = {}
-    for sid, measure in selected_measures.items():
+    for sid, measure in measures.items():
         source = materialized[sid]
         receipt = source.get("receipt") or {}
         native = receipt.get("source") or {}
@@ -186,6 +190,36 @@ def _project_investigation_sink(*, workspace, request, sink, measures, materiali
                 "committed_at": receipt.get("committed_at"),
             },
         }
+    return evidence
+
+
+def _project_investigation_sink(*, workspace, request, sink, measures, materialized, decisions):
+    """Project an explicit caller selection against this actual workspace.
+
+    The optional, private result is never rendered or persisted here. Native
+    readers and admission helpers remain the source/store/permission boundary.
+    No URL, receipt nonce or build clock supplies missing owner context.
+    """
+    from lib.intl_investigation_projection import project_intl_resolved_packet
+
+    cfg = workspace["config"]
+    ctx = request.get("context") if type(request) is dict else None
+    if type(ctx) is not dict:
+        raise ValueError("invalid_investigation_context")
+    generation = cfg["source_reference"]
+    if (ctx.get("researchMarket") not in cfg["markets"]
+            or ctx.get("periodIdentity") not in cfg["horizons"]
+            or ctx.get("currencyBasis") not in cfg["bases"]
+            or ctx.get("returnBasis") != "price"
+            or not workspace.get("panels")
+            or any(p.get("generation") != generation for p in workspace["panels"])):
+        raise ValueError("investigation_workspace_scope_mismatch")
+    selected = ctx.get("selectedMeasureIds")
+    if type(selected) is not list or any(type(sid) is not str for sid in selected):
+        raise ValueError("invalid_investigation_selection")
+    selected_measures = {sid: measures[sid] for sid in selected if sid in measures}
+    evidence = _native_investigation_evidence(
+        measures=selected_measures, materialized=materialized, decisions=decisions)
     projected = project_intl_resolved_packet(
         request=request,
         native_binding={
@@ -200,13 +234,16 @@ def _project_investigation_sink(*, workspace, request, sink, measures, materiali
 
 def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
                            history_sources=None, chart_source_sink=None,
-                           investigation_request=None, investigation_sink=None):
+                           investigation_request=None, investigation_sink=None,
+                           generation_sink=None):
     """Compose independent evidence-qualified views under the narrow EOD grant."""
     from engine.intl_inputs import countries
 
     if chart_source_sink is not None and (
             type(chart_source_sink) is not dict or chart_source_sink):
         raise ValueError("invalid_international_chart_sink")
+    if generation_sink is not None and (type(generation_sink) is not dict or generation_sink):
+        raise ValueError("invalid_international_generation_sink")
     if ((investigation_request is None) != (investigation_sink is None)
             or (investigation_sink is not None
                 and (type(investigation_sink) is not dict or investigation_sink))):
@@ -259,6 +296,8 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         read_eurostat_materialization, admit_eurostat_field, admit_eurostat_annual_field,
     )
 
+    from lib.intl_boe_publication import read_boe_materialization, admit_boe_policy_field
+
     adopted_policies = (config.load().get("intl") or {}).get("field_publication", {})
 
     def publication_decision(field, materialized):
@@ -273,6 +312,10 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
                 "metadata": policy["metadata"], "value_permission": policy["value_permission"],
                 "binding": {"field": field, "receipt_sha256": materialized.get("receipt_sha256")}}
 
+    boe_materialized = read_boe_materialization(data_root=data_root)
+    boe_decision = publication_decision("GB.policy_rate", boe_materialized)
+    boe_measure = admit_boe_policy_field(
+        boe_materialized, evaluated_at=evaluated_at, publication_decision=boe_decision)
     jp_yield = read_jp_yield_materialization(data_root=data_root)
     jp_decision = publication_decision("JP.yield_10y", jp_yield)
     jp_measure = admit_jp_yield_field(
@@ -286,6 +329,8 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
     eurostat = {}
     investigation_materialized = {"JP.yield_10y": jp_yield, "JP.annual_current_account": annual}
     investigation_decisions = {"JP.yield_10y": jp_decision, "JP.annual_current_account": annual_decision}
+    investigation_materialized["GB.policy_rate"] = boe_materialized
+    investigation_decisions["GB.policy_rate"] = boe_decision
     for field in EUROSTAT_FIELDS:
         materialized = read_eurostat_materialization(field=field, data_root=data_root)
         decision = publication_decision(field, materialized)
@@ -308,23 +353,53 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
     ecb_decision = {}
     measure = _ecb_publication_measure(
         ecb_materialized, evaluated_at=evaluated_at, generation=generation,
-        decision_sink=ecb_decision if investigation_sink is not None else None,
+        decision_sink=ecb_decision,
     )
+    native_measures = {"JP.yield_10y": jp_measure, "JP.annual_current_account": annual_field["measure"],
+                       "EZ.policy_rate": measure, "GB.policy_rate": boe_measure,
+                       EUROSTAT_ANNUAL_FIELD: ez_annual_field["measure"],
+                       **{field: item["measure"] for field, item in eurostat.items()}}
+    investigation_materialized["EZ.policy_rate"] = ecb_materialized
+    investigation_decisions["EZ.policy_rate"] = ecb_decision.get("decision")
+    if generation_sink is not None:
+        try:
+            from lib.intl_generation_publication import build_generation_contract
+            generation_sink["contract"] = build_generation_contract(
+                config={**{key: workspace["config"][key] for key in ("markets", "horizons", "bases")},
+                        "fields": {market: [sid.split(".", 1)[1] for sid in native_measures
+                                    if sid.startswith(market + ".")]
+                                   for market in workspace["config"]["markets"]}},
+                binding_version=workspace.get("binding_version"),
+                generation=workspace["config"]["source_reference"],
+                measures=native_measures,
+                evidence=_native_investigation_evidence(measures=native_measures,
+                    materialized=investigation_materialized, decisions=investigation_decisions),
+                evaluated_at=evaluated_at,
+                policy_document_sha256=_native_policy_document_sha256(investigation_decisions))
+            from lib.intl_policy_publication import build_policy_points, MAPPING_POLICY
+            from lib.intl_ecb_policy_publication import read_ecb_policy_materialization
+            mapping_digest = _native_policy_document_sha256({"mapping": {
+                "owner_ref": "scripts/build_intl.py", "policy_ref": MAPPING_POLICY}}).get("mapping")
+            if mapping_digest is not None:
+                generation_sink["policy_points"] = build_policy_points(
+                    generation=generation, ecb=read_ecb_policy_materialization(data_root=data_root),
+                    boe=boe_materialized, policies=generation_sink["contract"]["policies"],
+                    mapping_policy=(config.load().get("intl") or {}).get("policy_comparison_publication"),
+                    mapping_document_sha256=mapping_digest, evaluated_at=evaluated_at)
+
+        except Exception as exc:
+            log.error("International generation unavailable (%s)", type(exc).__name__)
     if investigation_sink is not None:
         # Capture original admitted contracts before mounts intentionally drop
         # permissions/support. This transient sink is never put in templates.
-        investigation_materialized["EZ.policy_rate"] = ecb_materialized
-        investigation_decisions["EZ.policy_rate"] = ecb_decision.get("decision")
         _project_investigation_sink(
             workspace=workspace, request=investigation_request, sink=investigation_sink,
-            measures={"JP.yield_10y": jp_measure, "JP.annual_current_account": annual_field["measure"],
-                      "EZ.policy_rate": measure, EUROSTAT_ANNUAL_FIELD: ez_annual_field["measure"],
-                      **{field: item["measure"] for field, item in eurostat.items()}},
+            measures=native_measures,
             materialized=investigation_materialized, decisions=investigation_decisions,
         )
     try:
         mounted = attach_macros(
-            workspace, registry=registry, measures={"EZ.policy_rate": measure, "JP.yield_10y": jp_measure,
+            workspace, registry=registry, measures={"EZ.policy_rate": measure, "GB.policy_rate": boe_measure, "JP.yield_10y": jp_measure,
                                                   **{field: item["measure"] for field, item in eurostat.items()}},
             cycle_evidence={}, destinations={},
             field_evidence={field: item["evidence"] for field, item in eurostat.items() if item["evidence"] is not None},
@@ -496,6 +571,13 @@ def _cgl_compact_summary(artifact: dict | None) -> dict | None:
 
 
 def main() -> int:
+    # A failed/empty render must not leave this attempt's native current feed
+    # claiming a ready generation. This is availability, never a data clock.
+    try:
+        from lib.intl_generation_publication import publish_unavailable_generation
+        publish_unavailable_generation(data_root=config.data_dir())
+    except Exception as exc:
+        log.error("International current generation invalidation failed (%s)", type(exc).__name__)
     try:
         from engine.intl_run import run
         latest = run()
@@ -1237,13 +1319,14 @@ def main() -> int:
 
         workspace = None
         chart_source_sink = {}
+        generation_sink = {}
         try:
             workspace = _publication_workspace(
                 _wr_intl_raw, data_root=config.data_dir(),
                 evaluated_at=datetime.now(timezone.utc).isoformat(),
                 risk_desk=_intl_risk_payload, cgl=_cgl_artifact,
                 history_sources=_history_publication_sources(_intl_history_receipts),
-                chart_source_sink=chart_source_sink,
+                chart_source_sink=chart_source_sink, generation_sink=generation_sink,
             )
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)
@@ -1296,6 +1379,21 @@ def main() -> int:
         )
         write_page(site / "intl.html", macro_html)
         write_page(site / "intl_stocks.html", stocks_html)
+        try:
+            from lib.intl_generation_publication import publish_generation, publish_unavailable_generation
+            if generation_sink.get("contract") is not None:
+                contract = dict(generation_sink["contract"])
+                points = generation_sink.get("policy_points")
+                if points is not None:
+                    from lib.intl_policy_publication import publish_policy_points
+                    contract["policy_points_ref"] = publish_policy_points(data_root=config.data_dir(), contract=points)
+                publish_generation(data_root=config.data_dir(), contract=contract)
+            else:
+                publish_unavailable_generation(data_root=config.data_dir())
+        except Exception as exc:
+            # A file/publication failure never re-runs a collector. Dependent
+            # native readers remain unavailable until exact bytes are served.
+            log.error("International generation publication failed (%s)", type(exc).__name__)
         log.info("wrote intl.html + intl_stocks.html (%d economies, %d standouts)",
                  vm["summary"]["n"], len((setups or {}).get("buy") or []))
 

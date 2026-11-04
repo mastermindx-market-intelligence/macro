@@ -7137,6 +7137,11 @@ intl:
   # Exact Eurostat EA21 series only; source access, valid post-store evidence
   # and point-of-use attribution remain independently required.
   field_publication:
+    GB.policy_rate:
+      status: confirmed
+      policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-boe-bank-rate-admission
+      metadata: allowed
+      value_permission: allowed
     EZ.gdp_yoy:
       status: confirmed
       policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-eurostat-ea21-gdp-and-hicp
@@ -7153,6 +7158,13 @@ intl:
       metadata: allowed
       value_permission: allowed
 
+  # Narrow named nominal-point mapping; the incumbent service owns previews.
+  # Saved identity/question and controlled preview remain native owner inputs.
+  policy_comparison_publication:
+    status: confirmed
+    policy_ref: docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-boe-policy-comparison
+    metadata: allowed
+    value_permission: allowed
   # -- Plane A: prices (group=intl) — yfinance indices + vol + FX -------------
   yahoo:
     retries: 3
@@ -7172,6 +7184,13 @@ intl:
     # operational plane; parser/unit/release-period failure keeps the fallback
     # or last-known-good parquet and records the error in provenance.json.
     official_series:
+      GB_bank_rate_official:
+        provider: boe
+        series_key: IUDBEDR
+        unit: percent
+        retries: 1
+        timeout_s: 20
+        release_period_semantics: Daily official Bank Rate; original LAST_UPDATED has unknown timezone
       ez_depo_rate:
         provider: ecb
         flow: FM
