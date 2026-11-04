@@ -703,6 +703,80 @@ def test_annotation_starts_the_line(capsys):
     assert out and out[0].startswith("::error title=page-registry::")
 
 
+def test_gmi_source_classification_does_not_grant_a_new_shell_audience():
+    """Actual source overrides must close the real exporter, not just describe a hold."""
+    import copy
+    from scripts.export_shared_shell_routes import derive_projection
+
+    routes = {
+        "macro:gmi": "/gmi.html",
+        "macro:gmi_index": "/gmi-index.html",
+        "macro:gmi_coverage": "/gmi-coverage.html",
+        "macro:gmi_issuer_mu": "/gmi-issuer-mu.html",
+        "macro:gmi_relationships": "/gmi-relationships.html",
+        "macro:gmi_states": "/gmi-states.html",
+        "macro:expectation_surface": "/expectation_surface.html",
+        "macro:consumer_cyclical_plnt": "/consumer_cyclical_plnt.html",
+    }
+    rows = []
+    for page_id, route in routes.items():
+        row = reg.blank_row(page_id, "macro", route)
+        # The published HTML shell policy is independent of downstream purpose.
+        row.update(lifecycle="live", access_shell="anonymous",
+                   payload_tier="public_shell_premium_payload")
+        row["known_contracts"] = ["site_access.v1:default_insider"]
+        rows.append(row)
+    original = copy.deepcopy(rows)
+    overlay = reg.load_overrides(OVERRIDES)
+    assert reg.apply_overrides(rows, {key: overlay[key] for key in routes},
+                               source_name=str(OVERRIDES)) == []
+    held = {"macro:gmi_issuer_mu", "macro:gmi_relationships",
+            "macro:expectation_surface"}
+    for before, after in zip(original, rows):
+        assert "site_access.v1:default_insider" in after["known_contracts"]
+        if after["page_id"] in held:
+            assert all(after[key] == before[key]
+                       for key in ("lifecycle", "access_shell", "payload_tier"))
+            assert "shared_shell:admission_withheld" in after["known_contracts"]
+    index = rows_by_id(rows)
+    assert index["macro:gmi_states"]["lifecycle"] == "internal"
+    assert index["macro:consumer_cyclical_plnt"]["lifecycle"] == "parked"
+    pin = "a" * 40
+    doc = {"schema": reg.SCHEMA, "generated_at": "2026-11-02T00:00:00Z",
+           "sources": {"macro": {"sha": pin}, "terminal": {"sha": "b" * 40},
+                       "mastermind": {"sha": "c" * 40}}, "pages": rows}
+    # PLNT is a diagnostic builder write, not committed HTML. Keep it out of
+    # the tracked inventory; its parked row must also reject a stale copy.
+    tracked = [path for key, path in routes.items()
+               if key != "macro:consumer_cyclical_plnt"]
+    def project(candidate, paths):
+        return derive_projection(candidate, paths, {"exact": [], "prefixes": []},
+                                 {}, registry_digest="fixture", inventory_ref=pin,
+                                 document_paths=set(paths))
+    result = project(doc, tracked)
+    assert result["legacyPaths"] == ["/gmi-coverage.html", "/gmi-index.html", "/gmi.html"]
+    reasons = {entry["path"]: entry["reason"]
+               for entry in result["coverage"]["excluded"]}
+    assert reasons == {
+        "/expectation_surface.html": "consumer_admission_withheld",
+        "/gmi-issuer-mu.html": "consumer_admission_withheld",
+        "/gmi-relationships.html": "consumer_admission_withheld",
+        "/gmi-states.html": "lifecycle_internal",
+    }
+    assert {entry["href"] for entry in result["directory"]} == set(result["legacyPaths"])
+    stale = project(doc, tracked + [routes["macro:consumer_cyclical_plnt"]])
+    assert {entry["path"]: entry["reason"] for entry in stale["coverage"]["excluded"]}[
+        "/consumer_cyclical_plnt.html"] == "lifecycle_parked"
+    # A hypothetical exact-surface qualification must not qualify a sibling.
+    # Removing this marker in a fixture is not a real purpose grant.
+    qualified = copy.deepcopy(doc)
+    for row in qualified["pages"]:
+        if row["page_id"] == "macro:gmi_relationships":
+            row["known_contracts"].remove("shared_shell:admission_withheld")
+    admitted = project(qualified, tracked)
+    assert set(admitted["legacyPaths"]) - set(result["legacyPaths"]) == {
+        "/gmi-relationships.html"}
+    assert "/gmi-issuer-mu.html" not in admitted["legacyPaths"]
 
 
 # Source-shaped render-table attribution fixtures; builders are parsed, never run.
