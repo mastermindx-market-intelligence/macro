@@ -42,7 +42,7 @@ def main():
     check('HTML and assignment JSON share exact returns',embedded['sessions']==sessions)
     native=read('paper/native-progress.json'); meta=read('data/provenance.json')
     check('current effects derived from original native log',meta['directory']['paper_mutations']==sum(x['state']=='APPLIED_RESPONSE_OBSERVED' for x in native['operations']))
-    check('source law continuation separated from original pin',meta['procedure_sha']=='c57adacb338fe837c7d585f1e372c64d9b0118ec' and meta['continuation_procedure_sha']=='86a454807bc48540d98e07ece3da454f7b2341cf')
+    check('source law continuation separated from original and prior pins',meta['procedure_sha']=='c57adacb338fe837c7d585f1e372c64d9b0118ec' and meta['continuation_procedure_sha']=='8eb375fe081339be759888f74a7c93d855727190' and native['previous_continuation_protected_procedure']=='86a454807bc48540d98e07ece3da454f7b2341cf')
     check('native operation IDs unique',len(native['operations'])==len({x['operation_id'] for x in native['operations']}))
     unresolved=[x['operation_id'] for x in native['operations'] if x['state']=='EFFECT_UNKNOWN']
     check('unknown effects exactly match original ledger and projection',set(unresolved)=={x['operation_id'] for x in native['unresolved_effects']} and meta['directory']['paper_unresolved_operation_ids']==unresolved and meta['directory']['paper_unresolved_effects']==len(unresolved))

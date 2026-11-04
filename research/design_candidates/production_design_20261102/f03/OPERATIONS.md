@@ -1,6 +1,6 @@
 # F03 — supported organization and preservation specification
 
-**No cross-file migration action in this plan has been dispatched.** The [301-row resource-action ledger](data/resource-action-ledger.json) remains proposed with exact original identities and null destination/readback fields. Separately, [native-progress.json](paper/native-progress.json) now records **142 unique observed-applied original-carrier operations and zero unresolved F03 effects**, including existing directory refinements, navigation, completed lookup boards and working-indicator releases. These are not resource transfers or approval receipts.
+**No cross-file migration action in this plan has been dispatched.** The [301-row resource-action ledger](data/resource-action-ledger.json) remains proposed with exact original identities and null destination/readback fields. Separately, [native-progress.json](paper/native-progress.json) now records **144 unique observed-applied original-carrier operations and zero unresolved F03 effects**, including existing directory refinements, navigation, completed lookup boards, the later structural-coverage note and working-indicator releases. These are not resource transfers or approval receipts.
 
 ## Current capability, custody and pending effect
 
@@ -80,7 +80,7 @@ At the frozen package baseline, the 193 expanded pages include 16 archive-labell
 
 Literal allocation would concentrate Prophet (11 pages/184 boards), Company (9/163), International (12/138), Forex (3/130), OS Conversations/Daily (10/119), Options Plan/Review (7/106) and Ontology (6/98). Domain owners must qualify a coherent working set before F03 splits or transfers it. The directory's role separation is the first step; copying all history to a new name would reproduce clutter.
 
-Compare-last scope includes MASTERMIND PAGES (copy) `01M5HVW84WZFE62DREB6QB9ZDJ` (57 listed pages), archived DUPLICATE DO NOT EDIT `01M3NQQ5KHTEZ50AGPT3RAD4BN` (36), Young harmony variants, test canaries and empty defaults. The 106 unexpanded pages have F03 organization stewardship, with domain content ownership explicitly unknown. They are not silently assigned to a product or approved for disposal.
+Compare-last scope includes MASTERMIND PAGES (copy) `01M5HVW84WZFE62DREB6QB9ZDJ` (57 listed pages), archived DUPLICATE DO NOT EDIT `01M3NQQ5KHTEZ50AGPT3RAD4BN` (36), Young harmony variants, test canaries and empty defaults. The 106 baseline listed-only pages now have separately recorded structural reads and 1,837 complete artboard identities; F03 organization stewardship does not establish domain ownership. Two capped responses were completed through exact root and node reads. Paper warned that further changes to DUPLICATE DO NOT EDIT may cause data loss; no edit was attempted there. Structural observations, repeated IDs and zero-artboard results do not approve disposal. Full-content/successor comparison and property-specific preservation remain required.
 
 D20's PROPHET `p-2-1` is a shared Hong Kong/Canada reference. Separate proposed regional files still lack exact destination identities. Missing dedicated allocations for Today, Macro Systems, Futures/Replay, Funds/Ownership, Strategy Evidence, the additional China and public families, and QA Review Evidence remain explicit gaps, not unowned assignment IDs.
 

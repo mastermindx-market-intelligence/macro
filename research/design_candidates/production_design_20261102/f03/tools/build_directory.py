@@ -7,6 +7,7 @@ registry/exporter, Paper adapter, RIG and runtime retain their existing ownershi
 from __future__ import annotations
 import argparse, collections, copy, csv, gzip, hashlib, html, json, re, shutil
 from pathlib import Path
+from page_observations import attach_page_observations
 
 PACKAGE = '6e1862867193ec6486a22001a0e4fb515da20448'
 PROCEDURE = 'c57adacb338fe837c7d585f1e372c64d9b0118ec'
@@ -168,6 +169,7 @@ def refresh_returns(out):
     curation = load(Path(__file__).with_name('curation.json'))
     apply_assignment_returns(data['sessions'], curation)
     observe_directory_progress(data, out)
+    attach_page_observations(data, out)
     dump(out/'data/assignment-directory.json', data['sessions'])
     dump(out/'data/provenance.json', data['metadata'])
     render_directory(out, data, set(curation.get('assignment_returns', {})) | {'F03'})
@@ -346,6 +348,7 @@ def main():
       'source_rule':'Canonical registry fields retain literal unknown; null belongs only to unobserved F03 projection metadata.'}
     data={'metadata':metadata,'sessions':sessions,'pages':pages,'artboards':board_rows,'routes':route_rows,'source_deltas':delta_rows,'destinations':destinations,'changes':changes,'inventory_gaps':inventory_gaps}
     observe_directory_progress(data, out)
+    attach_page_observations(data, out)
     for name,value in [('provenance',metadata),('assignment-directory',sessions),('paper-page-directory',pages),('paper-artboard-directory',board_rows),
       ('route-assignment-projection',route_rows),('source-delta-projection',delta_rows),('proposed-destinations',destinations),('resource-action-ledger',ledger),('live-delta',changes)]:dump(out/'data'/f'{name}.json',value)
     (out/'evidence').mkdir(exist_ok=True)
@@ -396,6 +399,15 @@ def render_directory(out, data, updated_ids=None):
         text+='\n## Source deltas outside canonical registry\n\n'
         text+=table(['Route','Source','Disposition'],[[f"`{r['route']}`",r['source'],r['disposition']] for r in ds]) if ds else 'None assigned in the nine-row annex.\n'
         text+='\n## Recorded lineage and unresolved evidence\n\nRecorded history claims are not candidate approvals. [Detailed preservation and operation contract](../OPERATIONS.md).\n\n'
+        if s['id'] == 'F03' and data.get('page_observations'):
+            observations = data['page_observations']
+            structural = data['metadata']['structural_observations']
+            text+='### Later structural inspection of baseline listed-only pages\n\n'
+            text+=f"{len(observations)} of {structural['baseline_listed_only_pages']} pages were read by exact identity; {structural['observed_artboards']} complete compound artboard identities are now searchable in the interactive directory. {structural['zero_artboard_pages']} pages returned zero artboards. The original page/artboard census, product ownership, lineage and 301 undispatched actions remain unchanged.\n\n"
+            text+=f"[Exact read evidence and all board identities](../{structural['evidence']}) · [Interactive search](../directory.html#view=references&owner=F03&q=structural+observation)\n\n"
+            text+='Metadata inspection is not full-content comparison or disposal approval. Paper reported a file-size/data-loss warning on one retained file; no mutation was attempted there. Two capped 100-board lists were completed through exact root summaries and 26 individual board reads.\n\n'
+            text+=table(['Exact file / page','Observed name','Boards / initial list','Read completed (UTC)','Provider warning'],[[f"[{p['file_id']} / {p['page_id']}]({p['url']})",p['page_name'],f"{p['artboard_count']} / {p['initial_returned_artboards']}",p['completed_at_utc'],'; '.join(p['warnings']) or 'None returned'] for p in observations])
+            text+='\n'
         for p in refs:
             for rel in p['recorded_successors']:
                 text+=f"- {p['paper_file_id']} / {p['paper_page_id']} → [recorded destination](https://app.paper.design/file/{rel['target_file_id']}/{rel['target_page_id']}); [source](../{rel['evidence']}). {rel['qualification']}\n"
@@ -404,6 +416,9 @@ def render_directory(out, data, updated_ids=None):
         (out/'assignments'/f"{s['id']}.md").write_text(text)
     index='# Design programme directory\n\n**Source directory available · directory refinements observed where logged · 301 cross-file organization actions NOT_DISPATCHED · reference approvals not established.**\n\nChoose a family below. Its entry exposes the exact references and contract status; one further link opens the source or Paper page. A missing approved candidate is reported in the same place.\n\n[Interactive directory](directory.html) · [Organization contract](CONTRACT.md) · [Evidence and return](README.md) · [Fresh inventory](evidence/inventory-receipt.json)\n\n'
     index+=table(['Assignment','User task','Routes / deltas','Reference status'],[[f"[{s['id']} — {s['title']}](assignments/{s['id']}.md)",s['job'],f"{len(s['canonical_registry_ids'])} canonical / {len(s['source_deltas'])} delta; {len(s['delegated_registry_ids'])} delegated",'Approval not established; see entry'] for s in sessions])
+    if data.get('page_observations'):
+        structural = data['metadata']['structural_observations']
+        index+=f"\n## Later structural coverage\n\nAll {structural['observed_pages']} formerly listed-only page targets were inspected by exact identity, exposing {structural['observed_artboards']} searchable artboard identities across retained files. [Observed pages, timestamps and preservation limits](assignments/F03.md#later-structural-inspection-of-baseline-listed-only-pages). Frozen baseline counts and ownership are unchanged; this is not physical organization or disposal approval.\n"
     (out/'DIRECTORY.md').write_text(index)
     payload=json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
     template=Path(__file__).with_name('directory.template.html').read_text()

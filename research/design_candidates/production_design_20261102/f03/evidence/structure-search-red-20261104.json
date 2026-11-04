@@ -1,0 +1,9 @@
+{
+  "kind": "red_first_source_logic_probe_not_browser_acceptance",
+  "source_head": "d0682f23f8a4b2b18ac6e767cdbcaa1cb4b0afb2",
+  "query": "01M5HVW84WZFE62DREB6QB9ZDJ/p-N-1/6NKK-0",
+  "expected_results": 1,
+  "actual_results": 0,
+  "defect_reproduced": true,
+  "observed_board_source": "Original-carrier exact-file get_node_info 6NKK-0 after truncated page list"
+}

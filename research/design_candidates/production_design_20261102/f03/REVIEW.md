@@ -1,5 +1,17 @@
 # F03 review and verification record
 
+## Latest continuation — listed-page structural coverage
+
+**101 preservation/return checks, 62 source-logic probes and 26 structural-evidence checks PASS.** These are bounded source checks; no browser or acceptance result is inferred. The prior checks and visual records below retain their historical counts.
+
+All 106 baseline listed-only pages were read on their exact file/page identities. The final evidence contains 1,837 compound artboard identities and 12 successful zero-artboard pages. Two 100-item truncations were resolved through complete root summaries and 26 individual node reads. Raw receipt/digest reconstruction rejects failed reads, mismatched file/page/URL, duplicate identities, incomplete tails, invalid geometry and stale/missing evidence. The warning-bearing duplicate file was never edited.
+
+The source search defect was reproduced before repair; new probes exercise both capped tails, repeated IDs across copied files, nullable product owners, F03 stewardship, exact board navigation, retained query/filter/Back context, warnings, zero-artboard limits, English/Chinese labels and escaping. A bounded read-only adviser identified a timestamp-validation weakness: arbitrary offsets had been accepted while completion used string ordering. The validator now requires the actual fixed-millisecond UTC Z receipt format, with three offset/precision falsifiers. The original capture values already used that format. No other actionable identity/navigation defect was found in that bounded pass; this advice is not a review gate.
+
+The only native addition is the dated structural-coverage note on existing `5G0X-2`. Root inspected its actual full-board screenshot and close-up, verified readable hierarchy and no clipping, and checked exact JSX preservation. All 176 existing node IDs/content/style lines are retained; two note nodes were added. The scoped all-status comment reads both returned zero threads. Only the owned board's working indicator was released. [Self-QA](paper/reviews/structural-coverage-self-qa-20261104.md), [capture hashes](paper/continuations/structural-coverage-20261104-captures.json) and [preservation evidence](evidence/structural-coverage-preservation-20261104.json) bind the result. Cumulative native state is **144 unique APPLIED operations, zero unresolved F03 effects**.
+
+The 106-page discovery/search gap is closed at the structural level. Full-content/successor comparison, product ownership, retention/archival decisions, physical organization, final foundation binding and real input/accessibility proof remain open. The earlier browser preview refusal was not retried or rerouted. This continuation does not re-certify the unchanged mobile/light/Chinese native compositions or the historical 399-input suite.
+
 **Reviewers performed no Paper mutations. No formal RIG approval, independent GitHub APPROVED review or product acceptance is supplied here.** The original source-review sections below are historical; current source and native artifact amendments are recorded separately at the end. Reference acceptance, implementation, deployment and served proof remain separate.
 
 ## Review method and independence

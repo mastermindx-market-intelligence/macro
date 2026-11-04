@@ -320,7 +320,7 @@
       "result": "PASS"
     },
     {
-      "name": "source law continuation separated from original pin",
+      "name": "source law continuation separated from original and prior pins",
       "result": "PASS"
     },
     {

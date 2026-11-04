@@ -164,6 +164,64 @@ check('Pending operation display rejects text and timestamp injection',()=>{
  const s=run(`effectWarning(${JSON.stringify({directory:{paper_unresolved_operation_ids:['<img src=x onerror=alert(1)>']},native_effect_observed_at:'" onload="x'})})`);
  assert.doesNotMatch(s,/<img|datetime="" onload=/);assert.match(s,/&lt;img/);assert.match(s,/&quot; onload=&quot;/);
 });
+check('Later structural reads expose all 106 pages and 1837 compound board identities',()=>{
+ assert.equal(run('data.page_observations.length'),106);assert.equal(run('observedBoards.length'),1837);
+ assert.equal(run('new Set(observedBoards.map(boardKey)).size'),1837);
+ assert.equal(run('data.pages.length'),301);assert.equal(run('data.artboards.length'),2450);
+ assert.equal(run("referenceView({view:'references',q:'structural observation',owner:'F03'},'structural observation').n"),106);
+ assert.equal(run("referenceView({view:'references',q:'structural observation',owner:'D16'},'structural observation').n"),0);
+});
+check('Supplemental tail boards are searchable through their exact file/page/board identity',()=>{
+ for(const q of ['01M5HVW84WZFE62DREB6QB9ZDJ/p-N-1/6NKK-0','01M3NQQ5KHTEZ50AGPT3RAD4BN/p-12-3/5F9X-0']){
+  const st={view:'references',q,owner:'F03'};
+  const r=run(`referenceView(${JSON.stringify(st)},${JSON.stringify(q.toLowerCase())})`);
+  assert.equal(r.n,1);assert.match(r.html,/Initial list was capped/);assert.match(r.html,/Later structural observation/);
+  const a=run(`assignmentView(${JSON.stringify({...st,view:'assignments'})},${JSON.stringify(q.toLowerCase())})`);
+  assert.equal(a.n,1);assert.match(a.html,/session=F03/);assert.doesNotMatch(a.html,/session=(?:null|undefined)/);
+ }
+});
+check('Repeated short board IDs do not collapse copied files or inherit product ownership',()=>{
+ const all=run('observedBoards');const b=all.find(b=>all.some(x=>x.artboard_id===b.artboard_id&&x.paper_file_id!==b.paper_file_id));
+ assert.ok(b);const same=all.filter(x=>x.artboard_id===b.artboard_id);assert.ok(same.length>1);
+ for(const x of same){const q=x.paper_file_id+'/'+x.paper_page_id+'/'+x.artboard_id;assert.equal(run(`referenceView({view:'references',q:${JSON.stringify(q)},owner:''},${JSON.stringify(q.toLowerCase())}).n`),1);}
+ assert.ok(run('observedBoards.every(b=>b.product_owner===null&&b.page_custodian==="F03"&&b.observed_role_labels.length===0)'));
+ const owner=run(`boardOwner(${JSON.stringify(b)})`);assert.match(owner,/Not established/);assert.match(owner,/Organization steward/);
+});
+check('Observed board navigation preserves query, owner, exact page, focus and Back context',()=>{
+ const q='01M5HVW84WZFE62DREB6QB9ZDJ/p-N-1/6NKK-0';
+ const b=run(`observedBoards.find(b=>b.paper_file_id+'/'+b.paper_page_id+'/'+b.artboard_id==='${q}')`);
+ const st={view:'references',q,owner:'F03'};
+ const h=run(`entry('F03',${JSON.stringify(st)},${JSON.stringify(b)})`);const p=new URLSearchParams(h.slice(1));
+ assert.equal(p.get('q'),q);assert.equal(p.get('owner'),'F03');assert.equal(p.get('page'),b.paper_file_id+'/'+b.paper_page_id);assert.equal(p.get('board'),b.artboard_id);
+ location.hash=h;run('render(true)');assert.ok(element('board-'+b.paper_file_id+'-'+b.paper_page_id+'-'+b.artboard_id).focused);
+ const s=element('content').innerHTML;assert.match(s,/Back to results/);assert.ok(s.includes('q='+encodeURIComponent(q)+'&amp;owner=F03'));assert.match(s,/Exact board URL not verified/);
+});
+check('Zero-artboard observations remain successful reads without becoming completion or disposal',()=>{
+ const pages=run('data.page_observations.filter(p=>p.artboard_count===0)');assert.equal(pages.length,12);
+ for(const p of pages){const q=p.file_id+'/'+p.page_id;const r=run(`referenceView({view:'references',q:'${q}',owner:''},'${q.toLowerCase()}')`);assert.equal(r.n,1);assert.match(r.html,/0 artboards observed/);assert.match(r.html,/full-content comparison and safe disposal are not established/);}
+});
+check('Provider data-loss warning stays on the exact duplicate file and does not spread to other copies',()=>{
+ for(const [file,page,warn] of [['01M3NQQ5KHTEZ50AGPT3RAD4BN','p-12-3',true],['01M5HVW84WZFE62DREB6QB9ZDJ','p-N-1',false]]){
+  const q=file+'/'+page;const r=run(`referenceView({view:'references',q:'${q}',owner:''},'${q.toLowerCase()}')`);
+  assert.equal(r.n,1);assert.equal(r.html.includes('Further changes will result in data loss'),warn);
+  if(warn)assert.match(r.html,/No edit was attempted/);
+ }
+});
+check('Coverage row reports completed metadata discovery and links the exact observation scope',()=>{
+ const r=run("structuralChange({view:'changes',q:'',owner:''})");assert.match(r.name,/106 of 106/);assert.match(r.text,/1837/);assert.match(r.text,/0 pages remain without structural reads/);
+ const p=new URLSearchParams(r.url.slice(1));assert.equal(p.get('view'),'references');assert.equal(p.get('owner'),'F03');assert.equal(p.get('q'),'structural observation');
+});
+check('Chinese structural chrome preserves exact observed identities and cautious ownership',()=>{
+ run("lang='zh'");const q='01M5HVW84WZFE62DREB6QB9ZDJ/p-N-1/6NKK-0';
+ const r=run(`referenceView({view:'references',q:'${q}',owner:'F03'},'${q.toLowerCase()}')`);
+ assert.equal(r.n,1);assert.match(r.html,/结构观察/);assert.match(r.html,/基线仅列出/);assert.match(r.html,/产品负责人/);assert.match(r.html,/6NKK-0/);run("lang='en'");
+});
+check('Observed names and provider warnings are escaped without executable markup',()=>{
+ const q='01M5HVW84WZFE62DREB6QB9ZDJ/p-N-1';
+ const old=run(`JSON.parse(JSON.stringify(observationMap.get('${q}')))`);const bad={...old,file_name:'<img src=x onerror=alert(1)>',page_name:'<svg onload=alert(1)>',warnings:['<script>alert(1)</script>'],completed_at_utc:'" onload="x'};
+ run(`observationMap.set('${q}',${JSON.stringify(bad)})`);
+ try{const s=run(`structuralEvidence(data.pages.find(p=>pageKey(p)==='${q}'))`);assert.doesNotMatch(s,/<(?:img|svg|script)\b|datetime="" onload=/);assert.match(s,/&lt;img/);assert.match(s,/&lt;script/);assert.match(s,/&quot; onload=&quot;/);}finally{run(`observationMap.set('${q}',${JSON.stringify(old)})`);}
+});
 check('EN and ZH reference views render against recursively frozen source data',()=>{
  run("(function freeze(x){if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.freeze(x);for(const v of Object.values(x))freeze(v);}})(data)");
  const before=run('JSON.stringify(data)');

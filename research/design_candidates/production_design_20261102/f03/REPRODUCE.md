@@ -15,10 +15,12 @@ From this extracted F03 directory, use an existing readable Macro checkout conta
 ```bash
 python3 tools/materialize_inputs.py --repo /absolute/path/to/existing/macro --output /absolute/path/to/f03-inputs
 f03_rebuild_dir=$(mktemp -d /tmp/f03-rebuild.XXXXXX)
-mkdir -p "$f03_rebuild_dir/paper"
+mkdir -p "$f03_rebuild_dir/paper/continuations"
 cp paper/native-progress.json "$f03_rebuild_dir/paper/native-progress.json"
+cp paper/continuations/listed-page-expansion-20261104.json paper/continuations/listed-page-expansion-20261104.raw.json.gz "$f03_rebuild_dir/paper/continuations/"
 python3 tools/build_directory.py --inputs /absolute/path/to/f03-inputs --evidence ./evidence --output "$f03_rebuild_dir"
 node tools/verify_directory.mjs "$f03_rebuild_dir"
+python3 -B tools/verify_page_observations.py "$f03_rebuild_dir"
 python3 tools/verify_data.py --inputs /absolute/path/to/f03-inputs --output "$f03_rebuild_dir" --skip-doc-links
 ```
 
@@ -44,14 +46,23 @@ From this complete owned F03 package:
 python3 tools/build_directory.py --refresh-returns --output .
 python3 -B tools/verify_returns.py .
 node tools/verify_directory.mjs .
+python3 -B tools/verify_page_observations.py .
 ```
 
 The overlay requires every evidence field explicitly, including null native candidates and null RIG receipts. Omission of a previously observed return is rejected rather than interpreted as a withdrawal. An actual withdrawal requires an explicit source-bound replacement observation. All rows validate before any are applied; immutable-source links reject dot-segment normalization. Candidate page IDs and Read me page/board IDs remain separate.
 
 Current operation counts come exclusively from `paper/native-progress.json`; the full-baseline command block above seeds that exact file before building. Without it, temporary output has no current-effect input and must not be represented as a current native package. The complete delivered package, including authored contracts, captures and review evidence, remains the verification target. The old 399-input suite is historical unless separately rerun with its pinned inputs.
 
-`verify_returns.py` additionally compares nine frozen artifacts to their prior-head SHA256/Git blobs and all 36 assignments' non-evidence fields to their prior-head digests. Its 101 checks and the 53 script probes are source checks, not browser/Paper interaction or approval. Keep the two curation mirrors byte-equivalent; update source observations, not the generated JSON by hand.
+`verify_returns.py` additionally compares nine frozen artifacts to their prior-head SHA256/Git blobs and all 36 assignments' non-evidence fields to their prior-head digests. Its 101 checks, the 62 script probes and the 26 structural-evidence checks are source checks, not browser/Paper interaction or approval. Keep the two curation mirrors byte-equivalent; update source observations, not the generated JSON by hand.
 
-The returned-reference join is computed at render time from existing inputs, not persisted as another inventory. Native-effect projection similarly uses the one original ledger: known applied operations, exact unresolved IDs and unresolved count are separate. Do not delete a truthful unknown to make a verifier green. Duplicate IDs or mismatched unresolved sets fail generation. The current saved package has 142 unique APPLIED operations and zero unresolved F03 effects. The historical unknown is preserved with its original-target reconciliation and deliberate same-carrier completion. Pending/resolved tests use isolated synthetic fixtures; a test cannot clear the actual ledger.
+The returned-reference join is computed at render time from existing inputs, not persisted as another inventory. Native-effect projection similarly uses the one original ledger: known applied operations, exact unresolved IDs and unresolved count are separate. Do not delete a truthful unknown to make a verifier green. Duplicate IDs or mismatched unresolved sets fail generation. The current saved package has 144 unique APPLIED operations and zero unresolved F03 effects. The historical unknown is preserved with its original-target reconciliation and deliberate same-carrier completion. Pending/resolved tests use isolated synthetic fixtures; a test cannot clear the actual ledger.
+
+## Later structural observations
+
+`tools/page_observations.py` reconstructs the observation from 136 original read receipts, checks the raw gzip SHA-256 and matches every normalized row before attaching any search projection. Both evidence files seeded above are required for this continuation. Missing previously recorded evidence fails generation rather than preserving a stale completion claim. The gzip uses deterministic `mtime=0`; its SHA-256 is `ef6acf0ff80886afa28f762ee3caf34825b4a6f69b4b228a0e5bec2bb2a43728`.
+
+The validator requires exact file/page/URL binding, unique compound identities, finite-or-unmeasured geometry, fixed-millisecond UTC Z times and successful OBSERVED receipts. The two capped lists require complete root summaries and exact parent-bound node reads for their 26 tails. The 26 checks include failed-read, wrong-file/page, duplicate, missing-tail, warning, offset/precision and digest falsifiers. No live tool is called during a rebuild.
+
+The HTML joins these structural observations for search while preserving the original page/artboard files and null product-owner/approval meanings. A copied short ID never inherits another file's ownership or lineage. Twelve zero-artboard observations are successful metadata reads, not completion or disposal findings. The DUPLICATE DO NOT EDIT data-loss warning is retained verbatim. Original-directory note/capture evidence is independent of this read-only file inspection.
 
 Navigation receipts retain the original 102-page before/after lists, exact mutation responses, named-directory JSX hashes/equality and limits. They do not establish every node/comment in each shared file, resource relocation or browser execution. New lookup design inputs record the initial plan, not the final repaired artifact. Read the initial operations, subsequent reconciliation/completion/repair/release receipts, current native ledger and `paper/continuations/reference-lookup-20261104-captures-final.json` together. All three final JPEG/JSX pairs are exact native evidence, not input-path proof.

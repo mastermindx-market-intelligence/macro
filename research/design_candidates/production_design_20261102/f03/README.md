@@ -1,6 +1,6 @@
 # F03 — Paper organization, coverage and design integration
 
-**PARTIAL — review-directory search and navigation implemented; three new native lookup boards completed and visually checked.** The original uncertain component is reconciled and applied on its original carrier. The prior refinements and the three new final r2 screenshot/JSX pairs are retained. Cross-file organization and real interaction acceptance remain open. The existing F03 branch and original Paper directory targets are retained. This is the design programme's review companion, not a deployed product directory or a replacement route registry. Draft/HOLD remains unchanged.
+**PARTIAL — all 106 baseline listed-only pages now have verified structural observations, and their 1,837 compound artboard identities are searchable.** The original inventory, returned-reference lookup, native compositions and reconciled effects are retained. The existing Start Here board has a dated coverage note, checked in actual Paper screenshots. Cross-file organization, content/successor comparison and real interaction acceptance remain open. This is the design programme's review companion, not a deployed product directory or a replacement route registry. Draft/HOLD remains unchanged.
 
 ## Start here
 
@@ -12,7 +12,19 @@
 
 GitHub renders the Markdown entries directly; it displays the HTML companion as source. Open the complete extracted package together for its relative HTML links. Browser execution and production deployment are not implied.
 
-## Implemented in this continuation
+## Latest continuation — structural discovery and search
+
+The [dated read observation](paper/continuations/listed-page-expansion-20261104.json) covers **106 exact pages in 12 files**, with **1,837 complete artboard identities** and **12 successful zero-artboard reads**. Its 136 original receipts are retained in the [compressed raw capture](paper/continuations/listed-page-expansion-20261104.raw.json.gz). The read window was 04 Nov 2026, 08:08:10.061–08:21:02.485 UTC.
+
+Two responses stopped at 100 items despite reporting 101 and 125 artboards. Complete root summaries and 26 exact individual-board reads resolved those tails. Failed or partial reads cannot become zero-artboard/completed claims. Every identity is bound to its file and page; copies with repeated short IDs stay distinct.
+
+The [reproduced search gap](evidence/structure-search-red-20261104.json) is fixed. Paper references and Assignments can find the new names, IDs and full file/page/board tuples, including the formerly omitted tail boards. The directory preserves query, assignment filter, exact board focus target and Back context. F03 is organization steward; product owners and candidate approvals remain unestablished. The original 301-page/2,450-board data files are byte-identical.
+
+Paper returned a file-size/data-loss warning for `01M3NQQ5KHTEZ50AGPT3RAD4BN` (DUPLICATE DO NOT EDIT). The warning is retained on its exact 36 page observations. That file received no edit. A zero-artboard result or a matching copied ID is not a retention, archival or ownership decision.
+
+[F03's entry](assignments/F03.md) lists all 106 observations. The existing native Start Here board `5G0X-2` now points readers to the structural-observation search; only footer nodes `73VL-0` / `73VM-0` were added. All 176 pre-existing JSX node IDs and text/style lines are unchanged. [Actual captures](paper/continuations/structural-coverage-20261104-captures.json), [scoped preservation](evidence/structural-coverage-preservation-20261104.json) and [visual self-QA](paper/reviews/structural-coverage-self-qa-20261104.md) bind this addition.
+
+## Retained preceding continuation
 
 The exact existing Start Here pages now appear **first**, with navigation arrows, in MASTERMIND PAGES and Terminal. Previously they were 18th of 60 and 17th of 42. All 102 page IDs/names and other pages' relative order are preserved. The main directory and Terminal index have byte-equal before/after JSX for this navigation-only slice. [Preservation evidence](evidence/navigation-preservation-20261104.json) states the property-specific limits.
 
@@ -65,13 +77,13 @@ Read the [reconciliation](evidence/reference-lookup-reconciliation-20261104.json
 | Frozen source inventory | 14,025 tracked Macro HTML paths, 14,014 full documents, 13,989 included legacy paths; separate 29 Terminal-module/seven Mastermind-handler source enumeration |
 | Current source returns | Eight source-pinned observations in existing curation; not a fresh estate census or admission of new routes |
 
-The original assignment package remains `6e1862867193ec6486a22001a0e4fb515da20448`. Initial inventory procedure pin `c57adacb338fe837c7d585f1e372c64d9b0118ec` remains historical provenance. This continuation uses compatible protected Mastermind pin **`86a454807bc48540d98e07ece3da454f7b2341cf`**. The preceding F03 source head is `e1ac30e1405d5fed4fa1a79d623a066505d47c52`; the containing commit and manifest bind this amendment, without a fabricated self-referential SHA.
+The original assignment package remains `6e1862867193ec6486a22001a0e4fb515da20448`. Initial inventory procedure pin `c57adacb338fe837c7d585f1e372c64d9b0118ec` and prior continuation pin `86a454807bc48540d98e07ece3da454f7b2341cf` remain historical provenance. This continuation uses compatible protected Mastermind pin **`8eb375fe081339be759888f74a7c93d855727190`**. The preceding F03 source head is `d0682f23f8a4b2b18ac6e767cdbcaa1cb4b0afb2`; the containing commit and manifest bind this amendment, without a fabricated self-referential SHA.
 
 ## Verification and remaining gates
 
-Current source verification is **101 bounded return/identity checks plus 53 source-logic probes**. Their receipts are in [return checks](evidence/return-refresh-checks.json) and [directory probes](evidence/return-directory-logic-checks.json). The original 399-input suite is retained as historical evidence, not falsely reported as rerun. Independent source advice found four real defects despite earlier passing tests; all four implementation findings were repaired and rechecked.
+Current source verification is **101 preservation/return checks, 62 source-logic probes and 26 read-evidence checks**. Their receipts are in [return checks](evidence/return-refresh-checks.json), [directory probes](evidence/return-directory-logic-checks.json) and [structural-evidence checks](evidence/structure-evidence-checks-20261104.json). The original 399-input suite remains historical evidence. A bounded optional source advisory found a timestamp-ordering defect; the reader now requires the actual fixed-millisecond UTC Z capture format, with offset and mixed-precision falsifiers. Current capture identities and counts were unaffected.
 
-The independent native advisory inspected all six final artifacts and both relevant before-images across its passes. Six P2 visual findings and three subsequent scoped copy/findability repairs closed; one disclosed P3 remains for dense expanded technical addresses. Actual first/affected/final records are in [REVIEW.md](REVIEW.md), with [six final JPEG/JSX pairs](paper/continuations/pro-enhancement-20261104-captures-final.json). Those six r4 pairs remain unchanged; the lookup work has its own three final r2 pairs. The cumulative native ledger now has **142 unique observed-applied operations and zero unresolved F03 effects**. None is an approval or cross-file resource move. Optional read-only consumer audits found no defect in the new reference join or effect-banner isolation; they are advice, not acceptance gates.
+The preceding native advisory inspected all six final artifacts and both relevant before-images across its passes. Six P2 visual findings and three subsequent scoped copy/findability repairs closed; one disclosed P3 remains for dense expanded technical addresses. Actual records are in [REVIEW.md](REVIEW.md), with [six final JPEG/JSX pairs](paper/continuations/pro-enhancement-20261104-captures-final.json). Those six r4 pairs and the lookup work's three r2 pairs remain unchanged. The cumulative native ledger now has **144 unique observed-applied operations and zero unresolved F03 effects**: the prior 142 plus this note and its scoped indicator release. None is an approval or cross-file resource move.
 
 [F03's scoped Options taxonomy concurrence](F01_OPTIONS_TAXONOMY_RESPONSE.md) binds exactly four existing route identities and category-only search reset semantics. It does not approve the whole 290-record proposal or confuse four design packages with four routes.
 
@@ -81,6 +93,6 @@ The independent native advisory inspected all six final artifacts and both relev
 | Final foundation binding | F01 candidate.4 / F02 candidate.2 policy inputs are provisional; final joint/native qualification is still absent |
 | Binding reference/release approval | Formal RIG and protected non-author release requirements remain; optional independent source/design review does not block implementation under the current Chairman waiver |
 | Real interaction/accessibility | Paper link activation, keyboard/touch, actual shell content widths, zoom/reflow and browser paths remain unverified; the earlier denied data-URL preview was not retried or rerouted |
-| Other domain/lineage coverage | Unreturned assignments and 106 listed-only pages retain their explicit baseline gaps; no disposal or approval inferred |
+| Other domain/lineage coverage | Structural discovery of all 106 baseline listed-only pages is complete. Unreturned domain requirements, content/successor comparison and retention decisions remain open; no disposal or approval inferred |
 
 No F01/F02/D08 uncertain or refused operation was retried or relocated. No product route, provider, production service, merge, Ready/un-draft, queue, label or deployment was changed. F03 SUCCESS still requires the assigned physical organization and complete preservation/acceptance evidence; this implemented directory improvement is substantial partial delivery, not that final claim.

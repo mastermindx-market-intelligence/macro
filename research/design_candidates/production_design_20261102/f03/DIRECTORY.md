@@ -44,3 +44,7 @@ Choose a family below. Its entry exposes the exact references and contract statu
 | [D26 — Public site, editorial, learning and utilities](assignments/D26.md) | Give prospective and anonymous users a coherent public experience, accurate product descriptions and clear transitions into beta. | 23 canonical / 0 delta; 0 delegated | Approval not established; see entry |
 | [D27 — Internal Mastermind OS and administration](assignments/D27.md) | Preserve internal executive and administrative workflows as a distinct product, with truthful permission and action-state communication. | 12 canonical / 0 delta; 0 delegated | Approval not established; see entry |
 | [QA01 — Independent integration and production-design re-audit](assignments/QA01.md) | Verify coverage, retained capabilities, cross-product journeys and builder contracts against frozen references before implementation is commissioned. | 0 canonical / 0 delta; 0 delegated | Approval not established; see entry |
+
+## Later structural coverage
+
+All 106 formerly listed-only page targets were inspected by exact identity, exposing 1837 searchable artboard identities across retained files. [Observed pages, timestamps and preservation limits](assignments/F03.md#later-structural-inspection-of-baseline-listed-only-pages). Frozen baseline counts and ownership are unchanged; this is not physical organization or disposal approval.

@@ -42,7 +42,7 @@
     "proposed_destinations": 51,
     "page_records": 301,
     "new_reference_approvals": 0,
-    "paper_mutations": 142,
+    "paper_mutations": 144,
     "paper_unresolved_effects": 0,
     "paper_unresolved_operation_ids": []
   },
@@ -97,8 +97,8 @@
   "native_projection_warning": "17 native routes are inherited from the registry, not a fresh native-module census or route admission.",
   "source_rule": "Canonical registry fields retain literal unknown; null belongs only to unobserved F03 projection metadata.",
   "native_effect_evidence": "paper/native-progress.json",
-  "continuation_procedure_sha": "86a454807bc48540d98e07ece3da454f7b2341cf",
-  "native_effect_observed_at": "2026-11-04T05:43:17.430Z",
+  "continuation_procedure_sha": "8eb375fe081339be759888f74a7c93d855727190",
+  "native_effect_observed_at": "2026-11-04T08:35:26.470Z",
   "assignment_return_observations": [
     {
       "id": "F01",
@@ -141,5 +141,18 @@
       "source_head": "a6ffdef508eb6f6293c74242f85d50d8c8843e6f"
     }
   ],
-  "baseline_scope_note": "Original 299 listed pages + two observations and 2450 boards remain frozen; later returns are separate observations, not a recensus."
+  "baseline_scope_note": "Original 299 listed pages + two observations and 2450 boards remain frozen; later returns are separate observations, not a recensus.",
+  "structural_observations": {
+    "evidence": "paper/continuations/listed-page-expansion-20261104.json",
+    "sha256": "f2a5dae9c0f7dc167eceb7604cb28b808f78774ad4c100b7ff817ac503e7b98d",
+    "source_head": "d0682f23f8a4b2b18ac6e767cdbcaa1cb4b0afb2",
+    "procedure_sha": "8eb375fe081339be759888f74a7c93d855727190",
+    "baseline_listed_only_pages": 106,
+    "observed_pages": 106,
+    "remaining_pages": 0,
+    "observed_artboards": 1837,
+    "zero_artboard_pages": 12,
+    "warning_files": 1,
+    "qualification": "Structural metadata only; full content, visual quality, comments, assets, link preservation, product ownership, successor relationships, disposal, reference approval and input-path acceptance remain unestablished. The snapshot is a drift guard, not a full-content revision."
+  }
 }

@@ -9,7 +9,7 @@ F03 owns directory integration, identity preservation, organization metadata and
 | Input | Exact identity / observed state |
 | --- | --- |
 | Assignment package | Macro `6e1862867193ec6486a22001a0e4fb515da20448`; parent draft PR [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) |
-| Protected procedure source | Current compatible Mastermind pin `86a454807bc48540d98e07ece3da454f7b2341cf`; skillpack version `1.0.1`. Initial census pin `c57adacb338fe837c7d585f1e372c64d9b0118ec` remains historical provenance |
+| Protected procedure source | Current compatible Mastermind pin `8eb375fe081339be759888f74a7c93d855727190`; skillpack version `1.0.1`. Initial census pin `c57adacb338fe837c7d585f1e372c64d9b0118ec` and prior continuation `86a454807bc48540d98e07ece3da454f7b2341cf` remain historical provenance |
 | Frozen Macro inventory source | `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e`; not a claim about today's default-branch tip |
 | Frozen Terminal enumeration source | `b79b1e136290978ff7675087de979bb1b42b3713` |
 | Original directory | MASTERMIND PAGES `01M2WGNCX9475G79JRKJTCM08P / p-1P-0`, boards `5G0X-2`, `5G1H-2`, `5G1Z-2` |
@@ -39,7 +39,7 @@ The source artifact adds exact-ID search, assignment filters, a portable text fa
 | Existing capability / evidence | Disposition | Result / owner |
 | --- | --- | --- |
 | Paper start directories and cross-page links | IMPROVE | Main/Terminal directory refinements retained; original Start Here pages moved to first with arrows; all 102 page IDs/names and other pages' relative order preserved. Original directory JSX unchanged by the navigation slice |
-| 299 listed pages, 193 expanded pages, 2,450 boards | RETAIN | Every baseline page and expanded board preserved in the projection; 106 listed-only pages are visibly unexpanded |
+| 299 listed pages, 193 expanded pages, 2,450 boards | RETAIN | Every baseline page and expanded board preserved. The 106 baseline listed-only pages now expose separate later structural evidence, without rewriting the census |
 | New Intraday Flow page and Sector R4 file/page | RETAIN | Separate live-delta records; no fabricated boards or reassignment of live custody |
 | All 348 canonical route IDs and existing primary ownership | RETAIN | One primary row per existing ID; slices are delegated associations; no canonical ID duplication |
 | Nine source additions/exclusions | RETAIN | Separate annex with null canonical IDs; existing route admission owner must resolve them |
@@ -163,7 +163,7 @@ Paper success additionally requires applied organization, exact source-to-destin
 | Write catalog and supported resource operations | P00 + original adapter owner | Installed carrier reports qualified catalog; admitted operation and supported schema, not merely merged source |
 | Foundation release binding | F01 / F02 | Frozen shell/system source and Paper artifact identities plus review receipts |
 | Current candidates and complete product contracts | Respective Dxx owner | Exact candidate set, durable contract, retention ledger, inherited-condition disposition and actual review state |
-| 106 unexpanded pages and copy/test comparison | F03 + original/domain custodians | Content comparison and named successor/retention reason before archival |
+| 106 baseline listed-only pages and copy/test comparison | F03 + original/domain custodians | Structural metadata now observed for all 106, including 1,837 complete board identities. Full-content comparison and named successor/retention reason remain required before archival |
 | Route admission and remaining scope qualification | Existing registry/export owner; F03 tracks; D27 for OS | Use attached Macro + 29 Terminal/7 Mastermind source inventories; resolve admission, Mastermind OS feature-view coverage and representative family edge cases |
 | Rendered responsive, locale, focus and zoom proof | F03 / QA01 | Supported preview context and actual interaction/capture matrix; source-only reasoning cannot close it |
 | Binding reference/release qualification | Existing RIG/release authorities | Only genuinely required approval receipts bound to exact artifacts; optional technical/design review is not an implementation stop. Protected non-author release approval remains binding |

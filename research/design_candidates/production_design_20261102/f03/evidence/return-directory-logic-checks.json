@@ -211,6 +211,42 @@
       "result": "PASS"
     },
     {
+      "name": "Later structural reads expose all 106 pages and 1837 compound board identities",
+      "result": "PASS"
+    },
+    {
+      "name": "Supplemental tail boards are searchable through their exact file/page/board identity",
+      "result": "PASS"
+    },
+    {
+      "name": "Repeated short board IDs do not collapse copied files or inherit product ownership",
+      "result": "PASS"
+    },
+    {
+      "name": "Observed board navigation preserves query, owner, exact page, focus and Back context",
+      "result": "PASS"
+    },
+    {
+      "name": "Zero-artboard observations remain successful reads without becoming completion or disposal",
+      "result": "PASS"
+    },
+    {
+      "name": "Provider data-loss warning stays on the exact duplicate file and does not spread to other copies",
+      "result": "PASS"
+    },
+    {
+      "name": "Coverage row reports completed metadata discovery and links the exact observation scope",
+      "result": "PASS"
+    },
+    {
+      "name": "Chinese structural chrome preserves exact observed identities and cautious ownership",
+      "result": "PASS"
+    },
+    {
+      "name": "Observed names and provider warnings are escaped without executable markup",
+      "result": "PASS"
+    },
+    {
       "name": "EN and ZH reference views render against recursively frozen source data",
       "result": "PASS"
     }

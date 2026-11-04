@@ -2,7 +2,7 @@
   "schema": "f03.native_progress.v1",
   "assignment": "F03",
   "status": "PARTIAL_IMPLEMENTED_NATIVE_OBSERVED_NOT_ACCEPTED",
-  "observed_at": "2026-11-04T05:43:17.430Z",
+  "observed_at": "2026-11-04T08:35:26.470Z",
   "source_base": "3dc736ef07090166a569cd5368b33b06b6dc2d42",
   "protected_procedure": "b4a5a8925c6c1412dac67ba296cf65ee81c4d4c8",
   "carrier": "Mastermind Paper direct app",
@@ -158,6 +158,26 @@
       "frozen_page_count": 301,
       "reconciliation": "../evidence/reference-lookup-reconciliation-20261104.json",
       "working_indicators_released": true
+    },
+    "structural_coverage": {
+      "observed_pages": 106,
+      "observed_files": 12,
+      "observed_artboards": 1837,
+      "zero_artboard_pages": 12,
+      "read_receipts": 136,
+      "capped_lists_completed": 2,
+      "supplemental_artboard_reads": 26,
+      "evidence": "continuations/listed-page-expansion-20261104.json",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "5G0X-2",
+      "new_note_ids": [
+        "73VL-0",
+        "73VM-0"
+      ],
+      "working_indicator_released": true,
+      "self_qa": "reviews/structural-coverage-self-qa-20261104.md",
+      "qualification": "Read-only structural metadata and original-directory note; no copied-file edit, ownership, full-content comparison, disposal, interaction or approval claim."
     }
   },
   "operations": [
@@ -2004,6 +2024,38 @@
       "receipt": "continuations/reference-lookup-finish-20261104.json",
       "production_acceptance": false,
       "visual_readback": "continuations/reference-lookup-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-structural-coverage-summary-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at_utc": "2026-11-04T08:33:45.528Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_artboard_id": "5G0X-2",
+      "target_node_id": "6ZS2-0",
+      "expected_snapshot": "d420f4ac4dadd7130839792fcad32593b64397b642b4a0c81241ced62defdbc5",
+      "after_snapshot": "d420f4ac4dadd7130839792fcad32593b64397b642b4a0c81241ced62defdbc5",
+      "receipt": "continuations/structural-coverage-20261104-operations.json",
+      "production_acceptance": false,
+      "protected_procedure": "8eb375fe081339be759888f74a7c93d855727190",
+      "visual_readback": "continuations/structural-coverage-20261104-captures.json"
+    },
+    {
+      "operation_id": "f03-20261104-structural-coverage-finish-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at_utc": "2026-11-04T08:35:02.655Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_artboard_id": "5G0X-2",
+      "target_node_id": null,
+      "expected_snapshot": "d420f4ac4dadd7130839792fcad32593b64397b642b4a0c81241ced62defdbc5",
+      "after_snapshot": "d420f4ac4dadd7130839792fcad32593b64397b642b4a0c81241ced62defdbc5",
+      "receipt": "continuations/structural-coverage-20261104-operations.json",
+      "production_acceptance": false,
+      "protected_procedure": "8eb375fe081339be759888f74a7c93d855727190",
+      "visual_readback": "continuations/structural-coverage-20261104-captures.json"
     }
   ],
   "unresolved_effects": [],
@@ -2023,7 +2075,7 @@
     "Optional independent source/design review does not block implementation under the current Chairman waiver. Binding RIG/reference qualification and protected non-author release approval remain separate.",
     "Native Paper link activation and browser keyboard/touch/reflow proof are unverified; Paper JSX stripped anchor semantics.",
     "All 301 cross-file resource action rows remain NOT_DISPATCHED, pending supported-operation qualification and preservation evidence.",
-    "Other assignment returns and unexpanded/unowned source pages remain at explicitly frozen baseline observations; no whole-estate recensus was performed."
+    "Unreturned domain requirements and full-content/successor comparison remain open. All 106 baseline listed-only page identities now have separately recorded structural reads; the frozen census and all resource actions are unchanged."
   ],
   "held": [
     "Folder creation/resource moves/archive operations blocked by adapter",
@@ -2031,10 +2083,10 @@
     "Blank-file create/clone held by client publication contract",
     "Native link activation and browser/assistive interaction acceptance unverified"
   ],
-  "next_action": "Preserve the completed 142-operation native/source implementation and final capture sets. Advance only new qualified source/design findings or materially changed foundation returns; physical transfers remain blocked on supported installed operations and preservation, real interaction proof on an authorized supported context. Binding reference/release approvals are separate; optional review is not a continuation gate.",
+  "next_action": "Preserve 144 applied operations, zero unresolved F03 effects and the completed 106-page structural observation. Obtain qualified content/successor and property-preservation evidence before any disposal. Physical transfers still require supported installed operations; actual input/accessibility proof requires an authorized supported context. Final foundation/reference/release gates remain separate.",
   "no_merge_or_deploy": true,
-  "continuation_source_head": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
-  "continuation_protected_procedure": "86a454807bc48540d98e07ece3da454f7b2341cf",
+  "continuation_source_head": "d0682f23f8a4b2b18ac6e767cdbcaa1cb4b0afb2",
+  "continuation_protected_procedure": "8eb375fe081339be759888f74a7c93d855727190",
   "visual_advisory": {
     "state": "CLOSED_STOP_SCOPED_NOT_FORMAL_APPROVAL",
     "first_pass": "reviews/native-visual-first-pass-20261104.md",
@@ -2052,6 +2104,9 @@
     "continuations/reference-lookup-fit-20261104.json",
     "continuations/reference-lookup-visual-repairs-20261104.json",
     "continuations/reference-lookup-finish-20261104.json",
-    "continuations/reference-lookup-provenance-reconciled-20261104.json"
-  ]
+    "continuations/reference-lookup-provenance-reconciled-20261104.json",
+    "continuations/structural-coverage-20261104-operations.json"
+  ],
+  "previous_continuation_source_head": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
+  "previous_continuation_protected_procedure": "86a454807bc48540d98e07ece3da454f7b2341cf"
 }
