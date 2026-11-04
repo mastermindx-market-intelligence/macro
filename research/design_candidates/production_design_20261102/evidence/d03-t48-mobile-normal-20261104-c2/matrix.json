@@ -93,7 +93,7 @@
   "requires_after_matrix": [
     "F01/F02 shared-shell v1 binding",
     "live real-source/entitlement semantics",
-    "keyboard/touch/focus/reduced-motion and WCAG measurements",
+    "keyboard/touch/focus/reduced-motion and complete WCAG including non-text and runtime states",
     "authenticated Save/list readback and signed-in Sources-to-Plan-to-same-card return",
     "real served browser end-to-end proof",
     "formal RIG and user acceptance"
@@ -101,5 +101,15 @@
   "known_held_effects": [
     "T49 original row 11OR-0 operation EFFECT_UNKNOWN; untouched",
     "T45/T51 original Fabric effects not replayed"
-  ]
+  ],
+  "static_text_contrast": {
+    "method": "JSX inline foreground vs nearest explicit ancestor background, sRGB relative luminance",
+    "normal_text_min": 4.5,
+    "large_text_min": 3,
+    "total_text_nodes": 568,
+    "failed": 0,
+    "min_light": 5.02,
+    "min_dark": 5.93,
+    "not_full_wcag": true
+  }
 }

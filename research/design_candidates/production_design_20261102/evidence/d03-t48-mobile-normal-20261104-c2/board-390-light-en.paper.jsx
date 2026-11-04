@@ -18,7 +18,7 @@
       </div>
       <div id="11P5-0" style={{ alignItems: 'center', backgroundColor: '#FFFFFF', borderBottomColor: '#E2E6EC', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '65px', justifyContent: 'space-between', paddingInline: '19px', width: '390px' }}>
         <div id="11P6-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-          <div id="11P7-0" style={{ boxSizing: 'border-box', color: '#6A7688', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', lineHeight: '14px' }}>
+          <div id="11P7-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', lineHeight: '14px' }}>
             MASTERMIND
           </div>
           <div id="11P8-0" style={{ boxSizing: 'border-box', color: '#16202E', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 700, lineHeight: '20px' }}>
@@ -40,7 +40,7 @@
       </div>
       <div id="11PF-0" style={{ backgroundColor: '#FFFFFF', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '13px', paddingBottom: '20px', paddingInline: '20px', paddingTop: '28px', width: '390px' }}>
         <div id="11PG-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
-          <div id="11PH-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', lineHeight: '14px' }}>
+          <div id="11PH-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', lineHeight: '14px' }}>
             US EQUITIES / RESEARCH
           </div>
           <div id="11PI-0" style={{ backgroundColor: '#F1F0FD', borderRadius: '999px', boxSizing: 'border-box', display: 'inline-block', paddingBlock: '5px', paddingInline: '8px' }}>
@@ -56,20 +56,20 @@
           The market is moving. Entry conditions still matter. Start with the strongest evidence, then challenge the thesis.
         </div>
         <div id="11PM-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
-          <div id="11PN-0" style={{ boxSizing: 'border-box', color: '#69788B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+          <div id="11PN-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
             Demo board · 2 selected
           </div>
-          <div id="11PO-0" style={{ boxSizing: 'border-box', color: '#69788B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+          <div id="11PO-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
             •
           </div>
-          <div id="11PP-0" style={{ boxSizing: 'border-box', color: '#69788B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+          <div id="11PP-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
             Nov 3 example
           </div>
         </div>
       </div>
       <div id="11PR-0" style={{ alignItems: 'center', backgroundColor: '#F1F3F7', borderRadius: '14px', boxSizing: 'border-box', display: 'flex', gap: '10px', justifyContent: 'space-between', marginBottom: '8px', marginLeft: '20px', marginRight: '20px', marginTop: '14px', paddingBlock: '13px', paddingInline: '14px', width: '350px' }}>
         <div id="11PS-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div id="11PT-0" style={{ boxSizing: 'border-box', color: '#6B7A8F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', lineHeight: '12px' }}>
+          <div id="11PT-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', lineHeight: '12px' }}>
             EXAMPLE MARKET CONTEXT
           </div>
           <div id="11PU-0" style={{ boxSizing: 'border-box', color: '#22334C', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '18px' }}>
@@ -80,7 +80,7 @@
           <div id="11PW-0" style={{ boxSizing: 'border-box', color: '#263B59', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '16px', fontWeight: 700, lineHeight: '20px' }}>
             41%
           </div>
-          <div id="11PX-0" style={{ boxSizing: 'border-box', color: '#6B7A8F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', lineHeight: '12px' }}>
+          <div id="11PX-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', lineHeight: '12px' }}>
             Breadth · example
           </div>
         </div>
@@ -107,7 +107,7 @@
           <div id="11Q9-0" style={{ boxSizing: 'border-box', color: '#1C2C42', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '17px', fontWeight: 800, lineHeight: '22px' }}>
             Worth a closer look
           </div>
-          <div id="11QA-0" style={{ boxSizing: 'border-box', color: '#69788B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="11QA-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             2 shown of 14 illustrative candidates
           </div>
         </div>
@@ -121,19 +121,19 @@
             <div id="11QG-0" style={{ boxSizing: 'border-box', color: '#1B293E', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '19px', fontWeight: 800, lineHeight: '24px' }}>
               INTC
             </div>
-            <div id="11QH-0" style={{ boxSizing: 'border-box', color: '#66768C', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+            <div id="11QH-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
               Intel · US · illustrative
             </div>
           </div>
           <div id="11QI-0" style={{ backgroundColor: '#F5EDD7', borderRadius: '999px', boxSizing: 'border-box', paddingBlock: '7px', paddingInline: '9px' }}>
-            <div id="11QJ-0" style={{ boxSizing: 'border-box', color: '#866321', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '14px' }}>
+            <div id="11QJ-0" style={{ boxSizing: 'border-box', color: '#735418', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '14px' }}>
               WAIT · NOT CLEARED
             </div>
           </div>
         </div>
         <div id="11QK-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
           <div id="11QL-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div id="11QM-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="11QM-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               EXAMPLE QUOTE
             </div>
             <div id="11QN-0" style={{ alignItems: 'baseline', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
@@ -159,7 +159,7 @@
           </div>
         </div>
         <div id="11R1-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <div id="11R2-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', lineHeight: '14px' }}>
+          <div id="11R2-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', lineHeight: '14px' }}>
             CURRENT PUBLISHED READ · SAMPLE
           </div>
           <div id="11R3-0" style={{ boxSizing: 'border-box', color: '#23334B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '20px' }}>
@@ -168,7 +168,7 @@
         </div>
         <div id="11R4-0" style={{ backgroundColor: '#F6F7FA', borderRadius: '11px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '11px', paddingInline: '12px' }}>
           <div id="11R5-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '4px' }}>
-            <div id="11R6-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
+            <div id="11R6-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
               NEXT CONDITION
             </div>
             <div id="11R7-0" style={{ boxSizing: 'border-box', color: '#34465F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -177,7 +177,7 @@
           </div>
           <div id="11R8-0" style={{ backgroundColor: '#E0E5ED', boxSizing: 'border-box', flexShrink: 0, width: '1px' }} />
           <div id="11R9-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '4px' }}>
-            <div id="11RA-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
+            <div id="11RA-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
               INVALIDATION
             </div>
             <div id="11RB-0" style={{ boxSizing: 'border-box', color: '#34465F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -186,10 +186,10 @@
           </div>
         </div>
         <div id="11RC-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-          <div id="11RD-0" style={{ boxSizing: 'border-box', color: '#758397', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="11RD-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             Quote observation · Nov 3, 09:41 ET
           </div>
-          <div id="11RE-0" style={{ boxSizing: 'border-box', color: '#758397', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="11RE-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             Assessment publication · Nov 2, 17:00 ET
           </div>
         </div>
@@ -212,7 +212,7 @@
             <div id="11RO-0" style={{ boxSizing: 'border-box', color: '#1B293E', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '19px', fontWeight: 800, lineHeight: '24px' }}>
               MSFT
             </div>
-            <div id="11RP-0" style={{ boxSizing: 'border-box', color: '#66768C', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+            <div id="11RP-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
               Microsoft · US · illustrative
             </div>
           </div>
@@ -224,7 +224,7 @@
         </div>
         <div id="11RS-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
           <div id="11RT-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div id="11RU-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="11RU-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               EXAMPLE QUOTE
             </div>
             <div id="11RV-0" style={{ alignItems: 'baseline', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
@@ -250,7 +250,7 @@
           </div>
         </div>
         <div id="11S9-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <div id="11SA-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', lineHeight: '14px' }}>
+          <div id="11SA-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', lineHeight: '14px' }}>
             CURRENT PUBLISHED READ · SAMPLE
           </div>
           <div id="11SB-0" style={{ boxSizing: 'border-box', color: '#23334B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '20px' }}>
@@ -259,7 +259,7 @@
         </div>
         <div id="11SC-0" style={{ backgroundColor: '#F6F7FA', borderRadius: '11px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '11px', paddingInline: '12px' }}>
           <div id="11SD-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '4px' }}>
-            <div id="11SE-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
+            <div id="11SE-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
               NEXT CONDITION
             </div>
             <div id="11SF-0" style={{ boxSizing: 'border-box', color: '#34465F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -268,7 +268,7 @@
           </div>
           <div id="11SG-0" style={{ backgroundColor: '#E0E5ED', boxSizing: 'border-box', flexShrink: 0, width: '1px' }} />
           <div id="11SH-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '4px' }}>
-            <div id="11SI-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
+            <div id="11SI-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
               INVALIDATION
             </div>
             <div id="11SJ-0" style={{ boxSizing: 'border-box', color: '#34465F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -277,10 +277,10 @@
           </div>
         </div>
         <div id="11SK-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-          <div id="11SL-0" style={{ boxSizing: 'border-box', color: '#758397', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="11SL-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             Quote observation · Nov 3, 09:41 ET
           </div>
-          <div id="11SM-0" style={{ boxSizing: 'border-box', color: '#758397', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="11SM-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             Assessment publication · Nov 2, 17:00 ET
           </div>
         </div>
@@ -300,14 +300,14 @@
       <div id="11ST-0" style={{ backgroundColor: '#E9EEF5', borderRadius: '18px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '12px', marginLeft: '20px', marginRight: '20px', marginTop: '6px', padding: '17px', width: '350px' }}>
         <div id="11SU-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
           <div id="11SV-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div id="11SW-0" style={{ boxSizing: 'border-box', color: '#677891', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.8px', lineHeight: '14px' }}>
+            <div id="11SW-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.8px', lineHeight: '14px' }}>
               COMPARE · 2 SELECTED
             </div>
             <div id="11SX-0" style={{ boxSizing: 'border-box', color: '#1A2A40', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontWeight: 800, lineHeight: '22px' }}>
               Challenge the setup
             </div>
           </div>
-          <div id="11SY-0" style={{ boxSizing: 'border-box', color: '#47688D', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
+          <div id="11SY-0" style={{ boxSizing: 'border-box', color: '#406183', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
             Clear all
           </div>
         </div>
@@ -316,13 +316,13 @@
             <div id="11T1-0" style={{ boxSizing: 'border-box', color: '#1A2A40', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 800, lineHeight: '18px' }}>
               INTC
             </div>
-            <div id="11T2-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="11T2-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               Wait / unconfirmed
             </div>
             <div id="11T3-0" style={{ boxSizing: 'border-box', color: '#2D3F59', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
               Range reclaim
             </div>
-            <div id="11T4-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="11T4-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               Assessed Nov 2
             </div>
           </div>
@@ -330,13 +330,13 @@
             <div id="11T6-0" style={{ boxSizing: 'border-box', color: '#1A2A40', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 800, lineHeight: '18px' }}>
               MSFT
             </div>
-            <div id="11T7-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="11T7-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               Partial evidence
             </div>
             <div id="11T8-0" style={{ boxSizing: 'border-box', color: '#2D3F59', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
               Breadth confirm
             </div>
-            <div id="11T9-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="11T9-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               Assessed Nov 2
             </div>
           </div>
@@ -345,7 +345,7 @@
           <div id="11TB-0" style={{ boxSizing: 'border-box', color: '#2B405D', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
             Each source keeps its own clock and condition.
           </div>
-          <div id="11TC-0" style={{ boxSizing: 'border-box', color: '#66778E', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
+          <div id="11TC-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
             No calculated winner. A newer quote never renews an older assessment. Compare details and source evidence before saving.
           </div>
         </div>
@@ -368,7 +368,7 @@
             </div>
           </div>
         </div>
-        <div id="11TM-0" style={{ boxSizing: 'border-box', color: '#718097', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
+        <div id="11TM-0" style={{ boxSizing: 'border-box', color: '#53647B', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
           Illustrative design data only. Save requires explicit account-list confirmation and readback. Sources and related plans do not execute trades.
         </div>
       </div>

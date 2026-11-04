@@ -18,7 +18,7 @@
       </div>
       <div id="12BH-0" style={{ alignItems: 'center', backgroundColor: '#FFFFFF', borderBottomColor: '#E2E6EC', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '65px', justifyContent: 'space-between', paddingInline: '19px', width: '390px' }}>
         <div id="12BN-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-          <div id="12BP-0" style={{ boxSizing: 'border-box', color: '#6A7688', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', lineHeight: '14px' }}>
+          <div id="12BP-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', lineHeight: '14px' }}>
             MASTERMIND
           </div>
           <div id="12BO-0" style={{ boxSizing: 'border-box', color: '#16202E', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 700, lineHeight: '20px' }}>
@@ -40,7 +40,7 @@
       </div>
       <div id="12B6-0" style={{ backgroundColor: '#FFFFFF', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '13px', paddingBottom: '20px', paddingInline: '20px', paddingTop: '28px', width: '390px' }}>
         <div id="12BD-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
-          <div id="12BG-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', lineHeight: '14px' }}>
+          <div id="12BG-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', lineHeight: '14px' }}>
             美股 / 研究
           </div>
           <div id="12BE-0" style={{ backgroundColor: '#F1F0FD', borderRadius: '999px', boxSizing: 'border-box', display: 'inline-block', paddingBlock: '5px', paddingInline: '8px' }}>
@@ -56,20 +56,20 @@
           市场正在变化。先核实证据，再看入场条件，最后检验失效风险。
         </div>
         <div id="12B7-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
-          <div id="12BA-0" style={{ boxSizing: 'border-box', color: '#69788B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+          <div id="12BA-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
             演示看板 · 已选 2 个
           </div>
-          <div id="12B9-0" style={{ boxSizing: 'border-box', color: '#69788B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+          <div id="12B9-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
             •
           </div>
-          <div id="12B8-0" style={{ boxSizing: 'border-box', color: '#69788B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+          <div id="12B8-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
             11 月 3 日示例
           </div>
         </div>
       </div>
       <div id="12AZ-0" style={{ alignItems: 'center', backgroundColor: '#F1F3F7', borderRadius: '14px', boxSizing: 'border-box', display: 'flex', gap: '10px', justifyContent: 'space-between', marginBottom: '8px', marginLeft: '20px', marginRight: '20px', marginTop: '14px', paddingBlock: '13px', paddingInline: '14px', width: '350px' }}>
         <div id="12B3-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div id="12B5-0" style={{ boxSizing: 'border-box', color: '#6B7A8F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', lineHeight: '12px' }}>
+          <div id="12B5-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', lineHeight: '12px' }}>
             市场环境 · 示例
           </div>
           <div id="12B4-0" style={{ boxSizing: 'border-box', color: '#22334C', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '18px' }}>
@@ -80,7 +80,7 @@
           <div id="12B2-0" style={{ boxSizing: 'border-box', color: '#263B59', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '16px', fontWeight: 700, lineHeight: '20px' }}>
             41%
           </div>
-          <div id="12B1-0" style={{ boxSizing: 'border-box', color: '#6B7A8F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', lineHeight: '12px' }}>
+          <div id="12B1-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', lineHeight: '12px' }}>
             市场广度 · 示例
           </div>
         </div>
@@ -107,7 +107,7 @@
           <div id="12AR-0" style={{ boxSizing: 'border-box', color: '#1C2C42', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '17px', fontWeight: 800, lineHeight: '22px' }}>
             值得进一步研究
           </div>
-          <div id="12AQ-0" style={{ boxSizing: 'border-box', color: '#69788B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="12AQ-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             展示 2 / 14 个示例候选
           </div>
         </div>
@@ -121,19 +121,19 @@
             <div id="12AM-0" style={{ boxSizing: 'border-box', color: '#1B293E', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '19px', fontWeight: 800, lineHeight: '24px' }}>
               INTC
             </div>
-            <div id="12AL-0" style={{ boxSizing: 'border-box', color: '#66768C', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+            <div id="12AL-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
               英特尔 · 美股 · 示例
             </div>
           </div>
           <div id="12AI-0" style={{ backgroundColor: '#F5EDD7', borderRadius: '999px', boxSizing: 'border-box', paddingBlock: '7px', paddingInline: '9px' }}>
-            <div id="12AJ-0" style={{ boxSizing: 'border-box', color: '#866321', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '14px' }}>
+            <div id="12AJ-0" style={{ boxSizing: 'border-box', color: '#735418', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '14px' }}>
               等待 · 尚未确认
             </div>
           </div>
         </div>
         <div id="12A0-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
           <div id="12AC-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div id="12AG-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="12AG-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               报价 · 示例
             </div>
             <div id="12AD-0" style={{ alignItems: 'baseline', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
@@ -159,7 +159,7 @@
           </div>
         </div>
         <div id="129X-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <div id="129Z-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', lineHeight: '14px' }}>
+          <div id="129Z-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', lineHeight: '14px' }}>
             已发布研判 · 示例
           </div>
           <div id="129Y-0" style={{ boxSizing: 'border-box', color: '#23334B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '20px' }}>
@@ -168,7 +168,7 @@
         </div>
         <div id="129P-0" style={{ backgroundColor: '#F6F7FA', borderRadius: '11px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '11px', paddingInline: '12px' }}>
           <div id="129U-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '4px' }}>
-            <div id="129W-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
+            <div id="129W-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
               下一触发条件
             </div>
             <div id="129V-0" style={{ boxSizing: 'border-box', color: '#34465F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -177,7 +177,7 @@
           </div>
           <div id="129T-0" style={{ backgroundColor: '#E0E5ED', boxSizing: 'border-box', flexShrink: 0, width: '1px' }} />
           <div id="129Q-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '4px' }}>
-            <div id="129S-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
+            <div id="129S-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
               失效条件
             </div>
             <div id="129R-0" style={{ boxSizing: 'border-box', color: '#34465F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -186,10 +186,10 @@
           </div>
         </div>
         <div id="129M-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-          <div id="129O-0" style={{ boxSizing: 'border-box', color: '#758397', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="129O-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             报价观测 · 11月3日 09:41 美东
           </div>
-          <div id="129N-0" style={{ boxSizing: 'border-box', color: '#758397', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="129N-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             研判发布 · 11月2日 17:00 美东
           </div>
         </div>
@@ -212,7 +212,7 @@
             <div id="129F-0" style={{ boxSizing: 'border-box', color: '#1B293E', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '19px', fontWeight: 800, lineHeight: '24px' }}>
               MSFT
             </div>
-            <div id="129E-0" style={{ boxSizing: 'border-box', color: '#66768C', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+            <div id="129E-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
               微软 · 美股 · 示例
             </div>
           </div>
@@ -224,7 +224,7 @@
         </div>
         <div id="128T-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
           <div id="1295-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div id="1299-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="1299-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               报价 · 示例
             </div>
             <div id="1296-0" style={{ alignItems: 'baseline', boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
@@ -250,7 +250,7 @@
           </div>
         </div>
         <div id="128Q-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <div id="128S-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', lineHeight: '14px' }}>
+          <div id="128S-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', lineHeight: '14px' }}>
             已发布研判 · 示例
           </div>
           <div id="128R-0" style={{ boxSizing: 'border-box', color: '#23334B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 700, lineHeight: '20px' }}>
@@ -259,7 +259,7 @@
         </div>
         <div id="128I-0" style={{ backgroundColor: '#F6F7FA', borderRadius: '11px', boxSizing: 'border-box', display: 'flex', gap: '12px', paddingBlock: '11px', paddingInline: '12px' }}>
           <div id="128N-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '4px' }}>
-            <div id="128P-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
+            <div id="128P-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
               下一触发条件
             </div>
             <div id="128O-0" style={{ boxSizing: 'border-box', color: '#34465F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -268,7 +268,7 @@
           </div>
           <div id="128M-0" style={{ backgroundColor: '#E0E5ED', boxSizing: 'border-box', flexShrink: 0, width: '1px' }} />
           <div id="128J-0" style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '4px' }}>
-            <div id="128L-0" style={{ boxSizing: 'border-box', color: '#718097', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
+            <div id="128L-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: 700, lineHeight: '12px' }}>
               失效条件
             </div>
             <div id="128K-0" style={{ boxSizing: 'border-box', color: '#34465F', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '17px' }}>
@@ -277,10 +277,10 @@
           </div>
         </div>
         <div id="128F-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-          <div id="128H-0" style={{ boxSizing: 'border-box', color: '#758397', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="128H-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             报价观测 · 11月3日 09:41 美东
           </div>
-          <div id="128G-0" style={{ boxSizing: 'border-box', color: '#758397', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+          <div id="128G-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
             研判发布 · 11月2日 17:00 美东
           </div>
         </div>
@@ -300,14 +300,14 @@
       <div id="127N-0" style={{ backgroundColor: '#E9EEF5', borderRadius: '18px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '12px', marginLeft: '20px', marginRight: '20px', marginTop: '6px', padding: '17px', width: '350px' }}>
         <div id="1284-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
           <div id="1286-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div id="1288-0" style={{ boxSizing: 'border-box', color: '#677891', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.8px', lineHeight: '14px' }}>
+            <div id="1288-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.8px', lineHeight: '14px' }}>
               对比 · 已选 2 个
             </div>
             <div id="1287-0" style={{ boxSizing: 'border-box', color: '#1A2A40', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontWeight: 800, lineHeight: '22px' }}>
               检验交易前提
             </div>
           </div>
-          <div id="1285-0" style={{ boxSizing: 'border-box', color: '#47688D', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
+          <div id="1285-0" style={{ boxSizing: 'border-box', color: '#406183', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
             清空
           </div>
         </div>
@@ -316,13 +316,13 @@
             <div id="1283-0" style={{ boxSizing: 'border-box', color: '#1A2A40', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 800, lineHeight: '18px' }}>
               INTC
             </div>
-            <div id="1282-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="1282-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               等待 / 未确认
             </div>
             <div id="1281-0" style={{ boxSizing: 'border-box', color: '#2D3F59', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
               区间收复
             </div>
-            <div id="1280-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="1280-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               11月2日研判
             </div>
           </div>
@@ -330,13 +330,13 @@
             <div id="127Y-0" style={{ boxSizing: 'border-box', color: '#1A2A40', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '15px', fontWeight: 800, lineHeight: '18px' }}>
               MSFT
             </div>
-            <div id="127X-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="127X-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               证据不完整
             </div>
             <div id="127W-0" style={{ boxSizing: 'border-box', color: '#2D3F59', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
               广度确认
             </div>
-            <div id="127V-0" style={{ boxSizing: 'border-box', color: '#63748B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+            <div id="127V-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
               11月2日研判
             </div>
           </div>
@@ -345,7 +345,7 @@
           <div id="127S-0" style={{ boxSizing: 'border-box', color: '#2B405D', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: 700, lineHeight: '16px' }}>
             各来源各有时间与触发条件。
           </div>
-          <div id="127R-0" style={{ boxSizing: 'border-box', color: '#66778E', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
+          <div id="127R-0" style={{ boxSizing: 'border-box', color: '#53647B', display: 'inline-block', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
             未计算“最佳候选”。新报价不等于旧研判已更新。请核对详情及来源，再决定是否保存。
           </div>
         </div>
@@ -368,7 +368,7 @@
             </div>
           </div>
         </div>
-        <div id="127H-0" style={{ boxSizing: 'border-box', color: '#718097', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
+        <div id="127H-0" style={{ boxSizing: 'border-box', color: '#53647B', fontFamily: 'system-ui, sans-serif', fontSize: '11px', lineHeight: '17px' }}>
           仅供界面演示。保存须明确选择账户清单并读回确认。来源与关联计划不会执行交易。
         </div>
       </div>

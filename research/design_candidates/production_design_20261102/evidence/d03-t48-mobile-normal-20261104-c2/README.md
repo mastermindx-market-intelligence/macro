@@ -1,4 +1,4 @@
-> **Continuation update (2026-11-04 UTC):** The following README is the original two-state light/English checkpoint. The later six-board dark/Chinese extension, complete eight-state native Paper matrix and current #9495 native-publication/test status are in [MATRIX.md](MATRIX.md). Statements below about dark/ZH remaining or the original native-pair run being pending are historical, superseded by that addendum. All Draft/HOLD release restrictions remain.
+> **Continuation update (2026-11-04 UTC):** The following README is the original two-state light/English checkpoint. The later six-board dark/Chinese extension, complete eight-state native Paper matrix, static text-contrast audit, and current #9495 native-publication/test status are in [MATRIX.md](MATRIX.md). Statements below about dark/ZH remaining or the original native-pair run being pending are historical, superseded by that addendum. All Draft/HOLD release restrictions remain.
 
 # D03 T48 — mobile normal-data scan and compare (Paper-native, provisional)
 
