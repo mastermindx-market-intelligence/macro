@@ -1,0 +1,14 @@
+{"phase": "start", "out": "/private/tmp/d03-foresight-compose-20261104-pdzh_wxi/proof/browser-complete-assets"}
+{"phase": "context-complete", "width": 320, "theme": "light", "lang": "en", "cases": 3}
+{"phase": "context-complete", "width": 320, "theme": "light", "lang": "zh", "cases": 6}
+{"phase": "context-complete", "width": 320, "theme": "dark", "lang": "en", "cases": 9}
+{"phase": "context-complete", "width": 320, "theme": "dark", "lang": "zh", "cases": 12}
+{"phase": "context-complete", "width": 390, "theme": "light", "lang": "en", "cases": 15}
+{"phase": "context-complete", "width": 390, "theme": "light", "lang": "zh", "cases": 18}
+{"phase": "context-complete", "width": 390, "theme": "dark", "lang": "en", "cases": 21}
+{"phase": "context-complete", "width": 390, "theme": "dark", "lang": "zh", "cases": 24}
+{"phase": "context-complete", "width": 1440, "theme": "light", "lang": "en", "cases": 27}
+{"phase": "context-complete", "width": 1440, "theme": "light", "lang": "zh", "cases": 30}
+{"phase": "context-complete", "width": 1440, "theme": "dark", "lang": "en", "cases": 33}
+{"phase": "context-complete", "width": 1440, "theme": "dark", "lang": "zh", "cases": 36}
+{"phase": "complete", "out": "/private/tmp/d03-foresight-compose-20261104-pdzh_wxi/proof/browser-complete-assets", "case_count": 36, "min_contrast": 5.329661159549015, "page_overflow_cases": 0, "page_errors": []}

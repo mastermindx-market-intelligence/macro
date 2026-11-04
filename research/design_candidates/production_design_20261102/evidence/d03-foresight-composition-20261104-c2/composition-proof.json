@@ -1,0 +1,345 @@
+{
+  "created_at_utc": "2026-11-04T09:15:11.724348+00:00",
+  "kind": "isolated virtual template composition; no branch/source mutation",
+  "source_commits": {
+    "T35": "8b9ed9a0b63b6771f6b0f637c2a1df1e3cba5d53",
+    "T36": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+    "T37": "e488b0a00951747e2cab89ecc1d867f470746dc3"
+  },
+  "base_commit": "51c35090a624de1e977920e98def2c64488751b3",
+  "common_template_git_blob": "91915538514ce1c6d3f0f754779ebcd02dd946dd",
+  "merge_method": [
+    "git merge-file --stdout --diff3 T36 base T35",
+    "git merge-file --stdout --diff3 T35_T36 base T37"
+  ],
+  "merge_exit_codes": [
+    0,
+    0
+  ],
+  "composed_template_sha256": "bb9610d3162db361b40fa2536470c6b8323d2b984dad9a450c0c034eba3f1d94",
+  "input_files": [
+    {
+      "path": "templates/_all_tools_menu.html.j2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+      "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17"
+    },
+    {
+      "path": "templates/_navlinks.html.j2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+      "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83"
+    },
+    {
+      "path": "templates/_seo_head.html.j2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+      "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee"
+    },
+    {
+      "path": "templates/_site_nav.html.j2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+      "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376"
+    },
+    {
+      "path": "templates/report_base.html.j2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "17d3681f669655c4b7f5dfbd4d9935eb12b47cab",
+      "sha256": "d675e773ae3a23c7b220d26d98c09ab5bfa02c0d692e5878131692c14bf50df1"
+    },
+    {
+      "path": "templates/theme.css",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+      "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+    },
+    {
+      "path": "templates/theme.js",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+      "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+    },
+    {
+      "path": "tests/test_foresight_page_analyst_zh.py",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "cceb56158d01ef485f2492c53a45c5e32438cb5f",
+      "sha256": "61ebab921f8bcbd60f89945a108ac9de1b13e9d5743e9455db188fc5eedd1ab4"
+    },
+    {
+      "path": "tests/test_foresight_page_fingerprint_depth.py",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "be0a93a1aac6db633b3d29d3526362b4e64b4ecb",
+      "sha256": "3c396a6006510487ff2ef624bae45261c686fa45a23673fbd9afc0b4fa7201bb"
+    },
+    {
+      "path": "tests/test_foresight_page_flag_ledger.py",
+      "commit": "e488b0a00951747e2cab89ecc1d867f470746dc3",
+      "git_blob": "e10aff0b4286709fec9a4f48dafad800da9a3bb2",
+      "sha256": "471b320a5c4412ab59b5cbdf11cdf8f39e2ada05b5f87d0cb42d398247eb1471"
+    },
+    {
+      "path": "tests/test_foresight_page_score_base.py",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "7784f22dc03267064acff8465920152f986d7a42",
+      "sha256": "c6e197a62c174cf0deb63dee8682fef00e9c2f614413d1a83f1f5b6cba2a9a9c"
+    },
+    {
+      "path": "tests/test_foresight_page_trend_state.py",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "6aef352d7419aba49ecac8dc552737fbdb0576fc",
+      "sha256": "dbc48b7e1b505cbfa8992030a0e2a191701403faffff8c47656977c35f2976c2"
+    },
+    {
+      "path": "tests/test_foresight_page_dislocation_state.py",
+      "commit": "8b9ed9a0b63b6771f6b0f637c2a1df1e3cba5d53",
+      "git_blob": "81730075c037c4798f01fa437e85b182f1b738c9",
+      "sha256": "c0bde00645dc4de9f909339e0c0b74dffa0abd2197df1adc3907446597c88a28"
+    },
+    {
+      "path": "tests/conftest.py",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc",
+      "sha256": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425"
+    },
+    {
+      "path": "templates/_icons.html.j2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "0ada914d14ffca25498ed186d681d1a7b7f82697",
+      "sha256": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab",
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/account.js",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "bee3f81cb1db0578633b8cb70e28d70d51c4e47f",
+      "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/fonts/Inter-400.woff2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "f15b025d666269fb07daf0263e54231481e4289c",
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/fonts/Inter-600.woff2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "d1897949fda5c7fc5f04622df43a3fcba5b89d84",
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/fonts/Inter-700.woff2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "a68fb101cd9224aa7bb6ca80356b5132c40c6f3f",
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/fonts/Inter-800.woff2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "74a16d45945264434aa7409e79549c626ebcdfb1",
+      "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/live.js",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "7e91599afb20a69c4010d5dc36c85439381d529f",
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/logo_config.js",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "523923f9f424a144f4a0cf3e4814e2ea36392474",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/navigation-refresh.css",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "2c96dbf6f96da1c5c7fab58d9314cc3fb06d15d1",
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/product-nav-icons.css",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "58336d2b2521c7c4d126c0ddc11f08a5045d28dc",
+      "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/stock-logos.js",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/terminal_overlay.js",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "e0f7c9747f1f9d38eb526f4794f0db0bcf695a7a",
+      "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf",
+      "runtime_asset": true,
+      "same_blob_at_all_three_heads": true
+    },
+    {
+      "path": "templates/fonts/Inter-500.woff2",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "54f0a595dd3c76344a980109e7517ed42416de93",
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+    },
+    {
+      "path": "templates/nav_market.js",
+      "commit": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "git_blob": "37c7ac74301661d0bc4fe1997bb37d572a8573bb",
+      "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+    }
+  ],
+  "fixture_only": true,
+  "source_or_branch_mutations": false,
+  "pytest": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_foresight_page_analyst_zh.py",
+      "tests/test_foresight_page_fingerprint_depth.py",
+      "tests/test_foresight_page_flag_ledger.py",
+      "tests/test_foresight_page_score_base.py",
+      "tests/test_foresight_page_trend_state.py",
+      "tests/test_foresight_page_dislocation_state.py",
+      "-q",
+      "--tb=short",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 0,
+    "output": "........................................................................ [ 69%]\n................................                                         [100%]\n104 passed in 17.08s\n"
+  },
+  "source_inputs_unchanged": true,
+  "composed_template_unchanged": true,
+  "data_or_site_created": false,
+  "prior_attempts": [
+    {
+      "exit_code": 1,
+      "summary": "102 failed / 2 passed because the isolated snapshot omitted T35-added _icons.html.j2 dependency; not a product-source failure",
+      "log": "test-result-incomplete-snapshot.txt",
+      "log_sha256": "7265ec7c72530cdba6474460b4fe351035bc1e6f700be21b5c623095708e9c7c"
+    }
+  ],
+  "complete_static_template_closure": [
+    "_all_tools_menu.html.j2",
+    "_icons.html.j2",
+    "_navlinks.html.j2",
+    "_seo_head.html.j2",
+    "_site_nav.html.j2",
+    "foresight.html.j2",
+    "report_base.html.j2"
+  ],
+  "snapshot_dependency_correction": [
+    "templates/_icons.html.j2"
+  ],
+  "runtime_asset_correction": {
+    "diagnostic": "diagnostic/overflow-diagnostic.json",
+    "missing_assets": [
+      "templates/account.js",
+      "templates/fonts/Inter-400.woff2",
+      "templates/fonts/Inter-600.woff2",
+      "templates/fonts/Inter-700.woff2",
+      "templates/fonts/Inter-800.woff2",
+      "templates/live.js",
+      "templates/logo_config.js",
+      "templates/navigation-refresh.css",
+      "templates/product-nav-icons.css",
+      "templates/stock-logos.js",
+      "templates/terminal_overlay.js"
+    ],
+    "expected_unavailable_stub": [
+      "/case/live_config.js"
+    ],
+    "cross_head_differences": [],
+    "reason": "Isolated snapshot omitted original navigation CSS/JS and fonts; hidden navigation text caused 20px overflow. Product source unchanged.",
+    "final_closure_correction": {
+      "paths": [
+        "templates/fonts/Inter-500.woff2",
+        "templates/nav_market.js"
+      ],
+      "all_three_heads_have_identical_blobs": true,
+      "reason": "Prior successful browser receipt still recorded these two tracked assets as stubbed; include exact source bytes before final evidence freeze."
+    }
+  },
+  "browser_attempts": [
+    {
+      "directory": "browser",
+      "exit_code": 1,
+      "completed_cases": 24,
+      "failure": "1440px desktop overflow from missing runtime assets in isolated snapshot; diagnostic identified hidden nav labels",
+      "log": "browser.log"
+    },
+    {
+      "directory": "browser-verified",
+      "exit_code": 0,
+      "completed_cases": 36,
+      "qualification": "36 successful cases, but tracked Inter-500 font and nav_market.js were still stubbed. Superseded by browser-complete-assets final run.",
+      "log": "browser-verified.log"
+    }
+  ],
+  "final_browser": {
+    "report": "browser/browser-proof.json",
+    "log": "browser.log",
+    "run_receipt": "browser-run.json",
+    "command": [
+      "python3",
+      "/tmp/d03-foresight-compose-20261104-pdzh_wxi/proof/verify_composition_browser.py",
+      "--repo",
+      "/tmp/d03-foresight-compose-20261104-pdzh_wxi",
+      "--out",
+      "/tmp/d03-foresight-compose-20261104-pdzh_wxi/proof/browser-complete-assets"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 17.601,
+    "completed_at_utc": "2026-11-04T09:40:11.137981+00:00",
+    "metrics": {
+      "case_count": 36,
+      "joint_case_count": 36,
+      "min_measured_contrast": 5.329661159549015,
+      "min_measured_font_px": 12,
+      "page_errors": 0,
+      "page_overflow_cases": 0,
+      "measured_text_overflow_count": 0,
+      "stubbed_requests": [
+        "/case/live_config.js"
+      ]
+    },
+    "verifier_sha256": "f4ea5fda1cc9e01084f173f8ff1384bd1bd29b0862c73d635f67d804460367af"
+  },
+  "visual_inspection": {
+    "inspected_at_utc": "2026-11-04T09:43:42.227839+00:00",
+    "images": [
+      "browser/joint-record-limited-hot-1440-light-en.png",
+      "browser/joint-record-limited-hot-320-dark-zh.png",
+      "browser/joint-open-limited-hot-390-light-en.png"
+    ],
+    "target_disclosures": "Legible, wrapping, coherent unavailable/unconfirmed/pending/control states.",
+    "remaining_observation": "Existing floating assistant control partly covers historical-members row in 320px dark ZH region capture; pending/control chips unaffected. Preserve for existing T48/T49/shared-shell qualification. No global overlay fix or full-page accessibility acceptance claimed."
+  },
+  "final_source_inputs_unchanged": true,
+  "law_pin": "8eb375fe081339be759888f74a7c93d855727190",
+  "archived_prior_attempts": "diagnostics.tar.gz",
+  "package_scope": "Evidence only; no source branches or live data mutated; no whole-PR integration, deploy, release or D03 completion."
+}
