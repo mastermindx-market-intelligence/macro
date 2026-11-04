@@ -1,13 +1,13 @@
 {
   "schema": "F01.cumulative_package_manifest.v1",
   "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
-  "kind": "Published scoped four-ID directory facet and focus correction; bounded local browser proof; candidate.5 additional clarifications remain proposed",
+  "kind": "Published scoped four-ID facet and focus correction; proposed candidate.5 guards; local metadata reconciled and live CI execution recorded",
   "containing_commit": "The enclosing immutable Git commit binds this manifest; a moving branch name is not the receipt",
-  "parent_before_package": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+  "parent_before_package": "3c619de3a3339d205df0a1229503e1ca25e3bcce",
   "files_excluding_self": 179,
-  "total_member_bytes": 6447372,
+  "total_member_bytes": 6448862,
   "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline for each member",
-  "aggregate_sha256": "6956d0b3cf11c7cb6370bbb816cee66944814dc6ad93d1ae39f5737ba2d71dd2",
+  "aggregate_sha256": "e978d6176f87491ee988d170dfbcdf0a9524d0f5d3f81ea0d3135a26c83e78e5",
   "historical_review_inputs": {
     "candidate2_capture": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
     "candidate3_source_repair": "b55efe221d16ae5e64935af4c60572701b2a43a0",
@@ -24,7 +24,8 @@
     "directory_product_first_pass_sha256": "4d895736e44edb2b436e2cf3b74c21d962283fd038ea0e1b7b33af5c1df5ae30",
     "directory_visual_first_pass_sha256": "e7eba1ad36df5abe14422ce210482d18c96e651a87f89e975994f72e743d6062",
     "directory_followup_capture_aggregate": "14a09641470f3bbad0cd6d4ed1d6a0335f4ce1299c03d97910ae97a18c5896d2",
-    "directory_and_live_evidence_freeze": "0763afb2cb7e9916a720c879a8721d4dd487b5cd"
+    "directory_and_live_evidence_freeze": "0763afb2cb7e9916a720c879a8721d4dd487b5cd",
+    "facet_contract_source_freeze": "3c619de3a3339d205df0a1229503e1ca25e3bcce"
   },
   "source_review_scope": {
     "F01_review_id": 5760649569,
@@ -86,9 +87,9 @@
     },
     {
       "path": "IMPLEMENTATION_HANDOFF.md",
-      "bytes": 16292,
-      "sha256": "d39889770177a84aac1a79e693e826ed4f5803fdd3af3a7b0169bc61e09c373c",
-      "git_blob_sha": "67bcd06d6248fc7934509767b31746c7572361e5"
+      "bytes": 16668,
+      "sha256": "f9c8cbc4043793678b4dee9975e1b42d52474d13c8c724e15cabe6cc86521aa8",
+      "git_blob_sha": "1ac0e97010a3c974229e852247ccea26437ae2c1"
     },
     {
       "path": "INTERACTION_CONFORMANCE.md",
@@ -320,9 +321,9 @@
     },
     {
       "path": "evidence/facet_20261104/CONTINUATION.json",
-      "bytes": 10561,
-      "sha256": "8eda70046e433d009ac1e67a7f30feaf9f70c30b17b19fa082de2789fe520429",
-      "git_blob_sha": "d8ee88206a5e8fe3cd934b1ea3a80a8171e91486"
+      "bytes": 11675,
+      "sha256": "e4cdb4e7b2a554de5b0c2e40bd461e14948e73a131ade8a2bd457860baaca90d",
+      "git_blob_sha": "6d6e1359de535bc369a8eaa363ed0b4cc9671dd5"
     },
     {
       "path": "evidence/focus_and_candidate5_20261104/OWNER_SOURCE_RECEIPTS.json",

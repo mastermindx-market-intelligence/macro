@@ -1,6 +1,6 @@
 {
   "schema": "F01.continuation_evidence.v1",
-  "recorded_utc": "2026-11-04T07:31:25Z",
+  "recorded_utc": "2026-11-04T07:37:53Z",
   "mission": "Continue the existing F01 shared-shell assignment; scoped directory correction/facet implementation and proposed contract hardening",
   "bounded_outcome": "PROVEN_OUTCOME: published code and local browser/self-QA within stated limits",
   "overall_acceptance": "PARTIAL / REQUEST_CHANGES / RIG draft; joint v1 unreleased",
@@ -8,14 +8,16 @@
     "repository": "mastermindx-market-intelligence/macro",
     "pr": 10645,
     "branch": "design/f01-shared-shell-v1-20261103-c4",
-    "parent": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+    "parent": "3c619de3a3339d205df0a1229503e1ca25e3bcce",
     "containing_commit": "The enclosing immutable commit binds this evidence and cumulative manifest",
     "procedure_pin": "690e5316629815ae3e78f65ebdec2eb87f0cad16",
     "assignment_common_index_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
     "bootstrap_major": 1,
     "skillpack_version": "1.0.1",
     "candidate4": "OPERATIVE_PROVISIONAL_UNCHANGED",
-    "candidate5": "PROPOSED_NOT_ADOPTED"
+    "candidate5": "PROPOSED_NOT_ADOPTED",
+    "original_parent_before_facet": "dcba5d618051a1de05dbc5db08254a0fb31dfc15",
+    "facet_contract_freeze": "3c619de3a3339d205df0a1229503e1ca25e3bcce"
   },
   "capability_delta": {
     "before": "The directory lacked an explicit reviewed Options & futures facet; historical source handoff still called the published focus correction in progress.",
@@ -33,8 +35,8 @@
     "publisher": "Original GitHub connector Git-object API; expected-head update and readback",
     "operation_id": "f01-directory-focus-correction-20261104-c4",
     "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/f01-directory-focus-correction-20261104-c4",
-    "local_head_index": "1364256763ba505399399afe7a6b54021f141953",
-    "local_bytes": "All 20 changed source/proof files equal published blobs; local metadata has not advanced to the new GitHub head",
+    "local_head_index": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+    "local_bytes": "All 20 source/proof files match published blobs; local HEAD/index now match the published head and tracked source is clean.",
     "proof": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/b14436dd7b9c1296d17455c89f63960c774ab9be/terminal/docs/pr-crops/f01-directory-options-facet-20261104",
     "modified_source_files": [
       {
@@ -68,6 +70,16 @@
       "head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
       "draft": true,
       "composition": "Single-file virtual composition passed; title mapping retained; not whole-PR integration"
+    },
+    "local_reconciliation": {
+      "state": "RECONCILED",
+      "from": "1364256763ba505399399afe7a6b54021f141953",
+      "to": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+      "method": "Read-only exact-commit fetch, full published blob comparison, local mixed reset only after all custody/byte preconditions passed",
+      "tracked_clean": true,
+      "verified_files": 20,
+      "source_bytes_overwritten": 0,
+      "remote_mutations": 0
     }
   },
   "qualification": {
@@ -121,11 +133,21 @@
   },
   "ci": {
     "head": "b14436dd7b9c1296d17455c89f63960c774ab9be",
-    "observed_at_utc": "2026-11-04T07:31:00Z",
-    "observed_state": "19 checks queued; not passed",
+    "observed_at_utc": "2026-11-04T07:37:53Z",
+    "observed_state": "1 success, 5 in progress, 13 queued, 1 neutral CodeQL summary; no observed failure; required checks incomplete",
     "previous_focus_head": "1364256763ba505399399afe7a6b54021f141953",
     "previous_focus_checks": "Observed green; not transferred to the new head",
-    "watcher": "None armed"
+    "watcher": "None armed",
+    "total_checks": 20,
+    "summary": {
+      "success": 1,
+      "in_progress": 5,
+      "queued": 13,
+      "neutral": 1
+    },
+    "main_workflow_run": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41792754660",
+    "codeql_run": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41792747683",
+    "execution": "DURABLE_EXECUTION_RUNNING in incumbent GitHub Actions only; not an assistant daemon"
   },
   "paper": {
     "carrier": "Original Mastermind Paper direct app, read-only this continuation",
@@ -227,11 +249,11 @@
     "Candidate.4 geometry/operative policy",
     "Retained-capability and directory census",
     "Original Paper diagnostic scans without new original-carrier evidence",
-    "Historical source review scope; do not extend it to new bytes"
+    "Historical source review scope; do not extend it to new bytes",
+    "Completed local HEAD/index reconciliation to b14436dd without a later material change"
   ],
   "exact_next_actions": [
     "Consume CI at b14436dd7b9c1296d17455c89f63960c774ab9be and repair only actual F01 failures through the same managed operation and original publisher.",
-    "Reconcile local HEAD/index against the published source bytes before any new implementation edit; publication alone did not move local metadata.",
     "On material affected-owner responses, bind and qualify the exact candidate.5 transition without silently adopting it or taking over another owner.",
     "On original Paper receipt, reconcile the original operation/target before any canvas mutation; do not replay/re-key/re-home."
   ],
