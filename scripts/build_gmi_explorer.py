@@ -257,7 +257,10 @@ def render_site(model: dict, site_dir: str | Path) -> list[Path]:
     if site.is_symlink():
         raise RuntimeError(f"refusing nonregular GMI output directory: {site}")
     site.mkdir(parents=True, exist_ok=True)
-    for name in (*TEMPLATES, *PAIRED_ASSETS):
+    # The page registry's conservative AST scanner recognizes only items()
+    # as an immutable table read; a direct table unpack is deliberately held.
+    fixed_pages = [page for page, _ in TEMPLATES.items()]
+    for name in (*fixed_pages, *PAIRED_ASSETS):
         output = site / name
         if output.is_symlink() or (output.exists() and not output.is_file()):
             raise RuntimeError(f"refusing to replace nonregular GMI output: {name}")

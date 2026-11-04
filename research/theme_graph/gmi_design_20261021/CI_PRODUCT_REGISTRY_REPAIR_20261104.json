@@ -1,0 +1,85 @@
+{
+  "schema": "gmi.registry_scanner_compatibility_repair.v1",
+  "parent_head": "d6500a8398d11d717ca4af7015d557c61fb084b1",
+  "pr": 10676,
+  "existing_ci": {
+    "run": 41801221560,
+    "status": "failure",
+    "fences": 41801221276,
+    "fences_conclusion": "success",
+    "failed_pack": "ci-pack-8",
+    "failed_job": "product-experience-registry",
+    "failing_test": "tests/test_build_product_page_registry.py::test_gmi_real_gmi_builder_binds_all_seven_surfaces",
+    "hosted_job": "126479195469",
+    "root_cause": "Conservative AST registry _reassigned_or_mutated only permits TEMPLATES.items() reads and a literal named tuple unpack; added preflight read via (*TEMPLATES, *PAIRED_ASSETS) caused all six fixed page table routes to become unresolved, leaving the issuer family."
+  },
+  "candidate": {
+    "source_path": "scripts/build_gmi_explorer.py",
+    "old_blob": "96789b43ca2b9ca7b612400913b9697704094233",
+    "new_blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+    "registry_scanner_blob": "1e359523bffcc9c74f33e4b0557f853c5c8546e6",
+    "registry_scanner_changed": false,
+    "source_test_changed": false,
+    "change": "Retain the prewrite fixed-page/asset symlink safety check but obtain fixed pages through the scanner-supported .items() call before combining with paired asset names."
+  },
+  "tests": {
+    "exact_7_scanner_routes": true,
+    "unresolved_gmi_write_sites": 0,
+    "gmi_suites": "186 passed in 77.50s (0:01:17)",
+    "gmi_suites_exit": 0,
+    "gmi_suites_elapsed_seconds": 78.44
+  },
+  "source_bound_input_count": 130,
+  "unexpected_source_input_changes": [],
+  "render_preservation": {
+    "count": 9,
+    "byte_identical": {
+      "gmi-companies.html": true,
+      "gmi-coverage.html": true,
+      "gmi-index.html": true,
+      "gmi-issuer-mu.html": true,
+      "gmi-relationships.html": true,
+      "gmi-states.html": true,
+      "gmi.css": true,
+      "gmi.html": true,
+      "gmi.js": true
+    }
+  },
+  "limits": [
+    "Actual CI on the successor head must conclude independently; no synthetic CI green is claimed.",
+    "Browser evidence remains applicable only to unchanged nine generated files, and has not been rerun.",
+    "This does not qualify product registry Shared Shell consumer rights or include P12.T9 registry changes.",
+    "Paper boards and original model-run EFFECT_UNKNOWN are unchanged."
+  ],
+  "local_logs": {
+    "gmi_tests": "pytest.log",
+    "candidate_patch": "candidate.patch"
+  },
+  "ci_regression_exact_test_replay": {
+    "case": "tests/test_build_product_page_registry.py::test_gmi_real_gmi_builder_binds_all_seven_surfaces",
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_build_product_page_registry.py -k test_gmi_real_gmi_builder_binds_all_seven_surfaces -q -p no:cacheprovider",
+    "source_blobs": {
+      "scripts/build_product_page_registry.py": "1e359523bffcc9c74f33e4b0557f853c5c8546e6",
+      "tests/test_build_product_page_registry.py": "cd3f8a7f9677d87c30a041b758da2e81697371c7",
+      "scripts/build_ontology_explorer.py": "597dba23fb8f4bd377d0cd41193e6fc04a7e5650"
+    },
+    "exit_code": 0,
+    "summary": "1 passed, 80 deselected in 0.34s",
+    "mirror_scope": "Isolated verification mirror with exact scanner, exact test and actual ontology builder at parent SHA; none modified.",
+    "initial_mirror_limitation": "First isolated replay lacked scripts/build_ontology_explorer.py; its remaining ontology assertion failed on missing fixture. Staging that exact file cleared the environment failure without source changes.",
+    "local_log": "registry-test-complete.log"
+  },
+  "protected_law_pin": "mastermindx-market-intelligence/Mastermind master@124df8d533dd01400a7dc514ac98b92b2d63186e; Sol Skillpack 1.0.1/bootstrap 1",
+  "what_was_not_changed": [
+    "Existing registry scanner/code and #10696 owner branch",
+    "GMI product-registry test",
+    "Accepted public model and nine generated page/asset bytes",
+    "Paper source and 10 boards",
+    "Original unknown-effect model run",
+    "PR state, publication/indexing or site-access classifications"
+  ],
+  "evidence": {
+    "local_red": "ci-pack-8 hosted job 126479195469 and direct scan reproduction",
+    "local_green": "registry-test-complete.log, pytest.log, candidate.patch, rendered 9-file byte comparison"
+  }
+}
