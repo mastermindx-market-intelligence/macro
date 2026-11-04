@@ -538,13 +538,40 @@ def test_auth_token_is_never_disclosed(preview):
     assert "_access_token" not in repr(preview.calls[0])
 
 
+def _app_main_imports(source):
+    import ast
+    return [node for node in ast.walk(ast.parse(source)) if
+            (isinstance(node, ast.Import) and any(
+                alias.name == "app.main" or alias.name.startswith("app.main.")
+                for alias in node.names)) or
+            (isinstance(node, ast.ImportFrom) and (
+                node.module == "app.main" or
+                (node.module == "app" and any(alias.name == "main" for alias in node.names)) or
+                (node.level == 1 and (node.module == "main" or
+                    (node.module is None and any(alias.name == "main" for alias in node.names))))))]
+
+
 def test_the_source_helper_is_imported_lazily_inside_the_route():
+    import ast
     source = Path(macro_policy_preview.__file__).read_text()
-    imports = [line for line in source.splitlines()
-               if "intl_policy_publication" in line and "import" in line]
+    tree = ast.parse(source)
+    route = next(node for node in tree.body if isinstance(node, ast.AsyncFunctionDef)
+                 and node.name == "macro_policy_preview")
+    imports = [node for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)
+               and node.module == "lib.intl_policy_publication"]
     assert imports
-    assert all(line.startswith((" ", "\t")) for line in imports)
-    assert "app.main" not in source
+    assert all(node in set(ast.walk(route)) for node in imports)
+    assert not _app_main_imports(source)
+
+
+@pytest.mark.parametrize("statement", ["import app.main", "from app.main import require_user",
+    "from app import main", "from .main import require_user", "from . import main"])
+def test_import_guard_rejects_real_application_dependency(statement):
+    assert _app_main_imports(statement)
+
+
+def test_import_guard_ignores_explanatory_comments():
+    assert not _app_main_imports("# Prefer the narrow interface over an app.main cycle.\npass\n")
 
 
 @pytest.mark.parametrize("case", ["schema_wrong", "schema_missing", "extra_key",
