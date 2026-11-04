@@ -279,6 +279,11 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
     sd_dir, out_name, stock_base = REGIONS.get(region, REGIONS["us"])
     ti = data.get("theme_intel") or {}
     tmap = {t["id"]: t for t in ti.get("themes", [])}
+    # Theme scoring is optional; regional prices can still be usable without it.
+    # Keep their supplied identity and clock, never a US benchmark or roster date.
+    source_as_of = ti.get("as_of") or data.get("as_of")
+    bench_label = ti.get("bench_label") or data.get("benchmark_label") or "—"
+    bench_label_zh = ti.get("bench_label_zh") or data.get("benchmark_label_zh") or bench_label
     out_dir = site / out_name
     out_dir.mkdir(parents=True, exist_ok=True)
     tmpl = env.get_template("basket_detail.html.j2")
@@ -307,7 +312,7 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
             "act_now": basket_score.act_now_stocks(members, th),
             "history": basket_history.score_series(bid, "score", region),
             "timeline": basket_history.change_timeline(bid, region=region),
-            "as_of": ti.get("as_of") or b.get("created"),
+            "as_of": source_as_of,
             "market_concentration": ti.get("market_concentration") or {},
             "leadership_receipt": lr,
             # US hub merged into Sector Intelligence (sector_central.html, 2026-08) and the
@@ -318,8 +323,8 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
                      else "../sector_central_china.html#si-explore" if region == "china"
                      else f"../baskets_{region}.html"),
             "region": region,                          # for the cross-market narrative chip lookup
-            "bench_label": ti.get("bench_label", "S&P 500"),       # regional benchmark for the "vs <bench>" labels
-            "bench_label_zh": ti.get("bench_label_zh", "标普500"),
+            "bench_label": bench_label,
+            "bench_label_zh": bench_label_zh,
         }
         html = tmpl.render(detail_json=json.dumps(detail, separators=(",", ":"), default=str),
                            basket_name=b.get("name", bid), generated_utc=built,
