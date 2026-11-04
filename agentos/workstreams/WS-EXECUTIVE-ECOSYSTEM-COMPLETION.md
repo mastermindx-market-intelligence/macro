@@ -1,4 +1,6 @@
 ---
+decisions: ["DEC:EXECUTIVE-ECOSYSTEM-CURRENT-DIRECTION-20261104"]
+accepted_direction: "DEC:EXECUTIVE-ECOSYSTEM-CURRENT-DIRECTION-20261104"
 key: EXECUTIVE-ECOSYSTEM-COMPLETION
 title: Executive Ecosystem Completion — Executive OS, Subagent Fabric, Mastermind OS app and continuity proven as one multi-level path
 objective: >
