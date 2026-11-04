@@ -1,6 +1,55 @@
 # D04 — resumed design and implementation, 2026-11-04 UTC
 
-**Latest: Confluence #10705 CI is closed; standalone US heatmap return is published and locally verified in held Draft #10719 at `5c3195cfb8b9644ce20526e94617ac1cb2268ecc`. Fences passed; exact-head CI remains in progress.**
+## Current continuation — searchable US Lists and lifecycle proof
+
+The “Resume discovery package” session was recovered under protected Mastermind **`700eef54bca4a2dc4e30d94a6b30dcfa733ad57c`**. INDEX 1.0.1 / bootstrap-major 1 is compatible. Prior accepted package and Confluence work were retained. Current Web self-QA applies; release holds and platform rules remain binding.
+
+### Published List-access outcome
+
+[Held source #10719](https://github.com/mastermindx-market-intelligence/macro/pull/10719) now publishes **`61844ffd1b6e53d8e63122141b1125b3d6219bd3`**, parent `a538aa35e3cb5268fe834ff4da1098b68cbe9fa9`. Original managed operation/workspace/branch remains `d04-us-heatmap-return-20261104` / `/Volumes/Mastermind/agent-workspaces/macro/web/d04-us-heatmap-return-20261104` / `sol/web-d04-us-heatmap-return-20261104`. Root remains sole source writer. Commit and push returned **APPLIED**; local and remote match, clean/index synced. GitHub independently read back the new PR head and validation blob `c3c05200e7a6be25a68354e6cdc285253c7c612f`.
+
+Desktop Map/List and existing phone List expose every supplied company and Theme member, including members beyond treemap/hover-card limits. Ticker/EN/ZH search, matched/full counts, native disclosures, missing-versus-zero labels, per-map configuration and exercised keyboard/overlay return preserve current owners. No new save store, router, auth, producer or shared-shell controller was introduced.
+
+| Verified evidence | Result |
+| --- | --- |
+| Final-harness Chromium journeys | **45 passed**, zero page errors; 29 functional captures |
+| Canonical matrix | **24 verified PNGs:** 8 rest + 8 focus + 8 hover; desktop/mobile × EN/ZH × dark/light |
+| Source checks | **89 Node / 84 Python passed**; affected 15 import/logging tests rerun on final harness |
+| Complete committed-data access | **503 companies; 268 subsectors; 2,339 parent/member contexts** |
+| Scoped disclosure label contrast | Minimum **5.219:1**; not whole-page certification |
+| Receipt/source integrity | All product hashes match; final browser also matches final harness; PNG SHA256/bytes/dimensions and capture module verified |
+
+[Behavior, self-QA and limits](https://github.com/mastermindx-market-intelligence/macro/blob/61844ffd1b6e53d8e63122141b1125b3d6219bd3/mockups/evidence/d04-us-heatmap-return-20261104/README.md) · [final receipt](https://github.com/mastermindx-market-intelligence/macro/blob/61844ffd1b6e53d8e63122141b1125b3d6219bd3/mockups/evidence/d04-us-heatmap-return-20261104/final-validation.json) · [functional report](https://github.com/mastermindx-market-intelligence/macro/blob/61844ffd1b6e53d8e63122141b1125b3d6219bd3/ux-evidence/d04-us-heatmap-return-20261104/browser-report.json) · [canonical manifest](https://github.com/mastermindx-market-intelligence/macro/blob/61844ffd1b6e53d8e63122141b1125b3d6219bd3/mockups/evidence/d04-us-heatmap-return-20261104/manifest.json).
+
+The stale receipt's real failure—missing focus/hover declarations—is preserved in the new receipt. The corrected 24-state manifest passed the actual acquired-base diff gate. The older committed-data/contrast probes retain their earlier harness hash; all four product hashes match. A fresh final-harness functional run and fresh affected hygiene checks close that mismatch honestly. One unavailable local Terminal endpoint in the screenshot scene remains visible in its raw console record; it is separate from the functional suite's zero page errors.
+
+This adds scoped evidence for A025/A050/A051/A052/A053 and existing return cases. **All 75 whole-programme cases remain NOT_RUN_PRODUCT_ACCEPTANCE**, and the 25 inherited conditions are unchanged. No production Terminal/auth/cross-origin, Safari/physical-device, field-performance or account-save acceptance is inferred.
+
+### Hosted verification
+
+The earlier introduced import-pinning failure in ci **41800565111** at `5c3195cf` was repaired at `a538aa35`; exact repair-head **ci 41821362101 and fences 41821362098 succeeded**. No rerun of those successful workflows was dispatched.
+
+For List head `61844ffd1b6e53d8e63122141b1125b3d6219bd3`, [fences 41897634617](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41897634617) succeeded; [ci 41897635363](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41897635363) is observed in progress. This snapshot is not full CI success or merge eligibility.
+
+### Current dependency evidence
+
+- F01 #10645 head `dce261d07ebc993e8a9579cca2200e445b6636d4`: candidate.4 operative, candidate.5 proposed/not adopted; final joint v1 unreleased. Root consumed its exact implementation handoff.
+- F02 #10630 head `6db372b13e208ace22b6d3472a9dbcc9b61ff888`: source #10698 advances separately; original G15 effect remains unknown. Resize-owner support is for a versioned successor, not unilateral adoption or new inspector-state ownership.
+- D23 retains shared persistence/mutation/reconciliation ownership; no qualified D04 mutation binding was consumed.
+- Actual native Mastermind Paper inspect/catalog plus exact file `01M3NSZGE8JWN2EZCSF0DT05RM`, page `p-8-1` read now observes Paper 0.5.18, catalog `03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4`, `TOOL_SCOPED_CONTRACT_V1`, accepted writes and no incompatible write tools. This supersedes a blanket catalog blocker from the legacy Studio adapter. No prepare/edit, installation, active-file switch or unknown-effect replay occurred; exact future target/custody/snapshot and final F01/F02 qualification still apply.
+- Held regional #7967/#8144 own their access/live-refresh/shared-overlay seams. No combined-branch acceptance or transfer of ownership occurred.
+
+### Active next bounded slice
+
+Measure the existing US heatmap's A063 rendering/lifecycle behavior at committed density, at 1440/390/320 CSS pixels. Record action-to-frame observations, repeated switch/overlay cycles, refreshed-listener and interval balance, comparable DOM/heap counters and request counts. Inspect expanded Theme disclosure rerenders and history writes; repair only demonstrated defects in the original source owner. Preserve full supplied-member reachability, filtering, native history, focus and return. Field p75 targets remain **LCP≤2.5s / INP≤200ms / CLS≤0.1** from the existing build contract; instrumented local timings do not establish them.
+
+DONE_WHEN: a source-bound reproducible receipt records the observed volumes, method, lifecycle results and any causal repair, with affected journeys verified and original-owner publication reconciled. Native reasoning advice was accepted/STOP; it was not a mandatory reviewer, implementation worker or formal approval. The separate original Fabric commission retains EFFECT_UNKNOWN, without retry, replacement or result consumption.
+
+**State: MORE_WORK_EXISTS — attended source work continues after this durable checkpoint.** #10705, #10719 and #7727 remain held drafts. No merge, Ready/un-draft, enqueue, auto-merge, held relabel or deployment is authorized or performed.
+
+## Historical implementation record
+
+The sections below retain their original sources, timestamps and narrower earlier results. Current head/CI/dependency/next-action facts above supersede old pending-CI and blanket Paper-blocker wording.
 
 ## Current authority and bounded outcome
 
