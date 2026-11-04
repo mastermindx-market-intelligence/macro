@@ -1,0 +1,250 @@
+{
+  "document_kind": "Current F02 receiver adjudication of original-carrier document effect; not a Paper tool result or operation lifecycle record",
+  "prepared_at": "2026-11-04T20:31:05.283287+00:00",
+  "protected_source_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+  "design_input_head": "6db372b13e208ace22b6d3472a9dbcc9b61ff888",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "board_id": "7IS-0",
+  "target_node_id": "7J4-0",
+  "original_operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+  "original_transport": {
+    "state": "TRANSPORT_ERROR_EFFECT_UNRESOLVED",
+    "started_at": "2026-11-03T06:32:57.235Z",
+    "completed_at": "2026-11-03T06:33:17.706Z",
+    "error_code": "UNAVAILABLE",
+    "error_message": "Connection timed out.",
+    "retry_allowed": false
+  },
+  "original_historical_dispatch_application_outcome": "UNKNOWN; no terminal response recovered",
+  "original_arguments_sha256": "b2c9f148a3e7d202bcb50a0160d59de6daed64cb433a0e40850b4aff6c176d99",
+  "original_arguments_sha256_serialization": "UTF-8 JSON object with sorted keys, ensure_ascii=false, separators comma/colon, no trailing newline",
+  "original_html_sha256": "6e77280834e8641f52fb6c4f83e3d55540f68747f84af3f44d44e69f74ef491f",
+  "original_html_sha256_serialization": "UTF-8 raw HTML string bytes; 806 bytes; no trailing newline; not a JSON string hash",
+  "payload_hash_explanation": {
+    "dispatched_html": {
+      "path": "/workspace/scratch/0638a6b73079/f02-g15-forensics/live-reconciliation/g15-dispatched-payload.html",
+      "bytes": 806,
+      "sha256": "6e77280834e8641f52fb6c4f83e3d55540f68747f84af3f44d44e69f74ef491f",
+      "encoding": "UTF-8 raw string bytes; no trailing newline"
+    },
+    "earlier_local_html_export": {
+      "path": "/workspace/scratch/0638a6b73079/f02-g15-forensics/g15-original-html.html",
+      "bytes": 808,
+      "sha256": "23c9679543d87db628c6fda14dbca84f0baedd46ac4fc078aa9e23bcd87e0a19",
+      "difference": "The earlier local export appends exactly two LF bytes to the dispatched payload. Its file hash is not the raw dispatched-payload hash."
+    },
+    "all_three_original_journal_argument_html_fields_match_runtime_raw_html": true
+  },
+  "current_document_effect_finding": "ABSENT_ON_RECONCILIATION",
+  "finding_semantics": "Descriptive current document-effect conclusion only. Not an upstream tool enum, canonical operation not_found, cancellation receipt, EFFECT_NONE, or APPLIED_RESPONSE_OBSERVED.",
+  "comparison_summary": {
+    "comparison_pass": true,
+    "method": "All expected IDs come from successful receipts, with the board root from create_artboard. Parent links are reconstructed from each actual original HTML payload aligned to its createdNodes list, including receipt-backed Frame/Text expansion of padded leaf divs and explicit alignment checks. Current parents come independently from the complete returned tree indentation.",
+    "expected_node_count": 190,
+    "observed_tree_node_count": 190,
+    "observed_tree_requested_depth": 10,
+    "observed_max_depth": 5,
+    "expected_body_children": [
+      "7J6-0",
+      "7JE-0",
+      "7JL-0",
+      "7JQ-0",
+      "7JT-0",
+      "7NQ-0",
+      "7NT-0",
+      "7NX-0"
+    ],
+    "observed_body_children": [
+      "7J6-0",
+      "7JE-0",
+      "7JL-0",
+      "7JQ-0",
+      "7JT-0",
+      "7NQ-0",
+      "7NT-0",
+      "7NX-0"
+    ],
+    "missing_expected_ids": [],
+    "unexplained_ids": [],
+    "parent_differences": [],
+    "name_or_type_differences": [],
+    "child_order_differences": [],
+    "jsx_id_count": 174,
+    "jsx_unknown_ids": [],
+    "jsx_missing_non_svg_ids": [],
+    "jsx_duplicate_ids": {},
+    "jsx_note": "The JSX exporter can inline SVG content without native SVG descendant IDs. Complete native ID/parent accounting uses the independent full tree response.",
+    "g15_sentinel_presence": {
+      "Chart coverage and exact-value action": {
+        "jsx": false,
+        "tree": false
+      },
+      "Gap and coverage": {
+        "jsx": false,
+        "tree": false
+      },
+      "709/1063 = 66.70% · 历史7/8": {
+        "jsx": false,
+        "tree": false
+      },
+      "查看准确数值 control": {
+        "jsx": false,
+        "tree": false
+      },
+      "查看准确数值": {
+        "jsx": false,
+        "tree": false
+      }
+    }
+  },
+  "evidence": [
+    {
+      "path": "board-before.jsx",
+      "bytes": 41342,
+      "sha256": "adf6f90dea30d3773916cb06ecae4ff8f2794855364cea7813bea14c97343a6c"
+    },
+    {
+      "path": "board-before-read.json",
+      "bytes": 42974,
+      "sha256": "846bba94619ba887318339cef4f8ebb3c5d8101a8c4aa1ff651e5f577c68b6d4"
+    },
+    {
+      "path": "tree-before-read.json",
+      "bytes": 12150,
+      "sha256": "4110496f76c054ecf163bdffc93305c9185e6747551465bf5d43f9c17a988f22"
+    },
+    {
+      "path": "screenshot-before-metadata.json",
+      "bytes": 434,
+      "sha256": "c9f21d4606c0c8d1af990cf2a5a9bdf89d2a3b31e2c53b9c5083f75def1453f6"
+    },
+    {
+      "path": "board-before.jpg",
+      "bytes": 69446,
+      "sha256": "563f312cf109a91e992fcd317905ebd8b48d93fd8808c184d4375857e15427e9"
+    },
+    {
+      "path": "historical-operations-411-434.json",
+      "bytes": 101113,
+      "sha256": "776975d755f14a68ac9185044f13dd38a71e0c09404ee576590bdcb6c7659b22"
+    },
+    {
+      "path": "structural-comparison.json",
+      "bytes": 81419,
+      "sha256": "329c9a9bb1d5b8fcc67a9265709657c79e179717c083349a428a3fb18294ddf2"
+    },
+    {
+      "path": "historical-capture-byte-comparison.json",
+      "bytes": 2947,
+      "sha256": "0416cd09d219c51ef722b14d48a664d9bf9279914c3458c057e1461dd2a32898"
+    },
+    {
+      "path": "g15-dispatched-payload.html",
+      "bytes": 806,
+      "sha256": "6e77280834e8641f52fb6c4f83e3d55540f68747f84af3f44d44e69f74ef491f"
+    }
+  ],
+  "historical_capture_byte_comparison": {
+    "original_recorded_capture_at": "2026-11-03T06:40:32.467Z",
+    "original_recorded_operations_through": 435,
+    "both_fresh_full_board_jsx_and_jpeg_equal_original_capture_bytes": true,
+    "details": {
+      "path": "/workspace/scratch/0638a6b73079/f02-g15-forensics/live-reconciliation/historical-capture-byte-comparison.json",
+      "bytes": 2947,
+      "sha256": "0416cd09d219c51ef722b14d48a664d9bf9279914c3458c057e1461dd2a32898"
+    }
+  },
+  "source_law": [
+    {
+      "path": "docs/PAPER_DESIGN_INTEGRATION.md",
+      "git_blob": "0388874dd7c7e32ddfd22c87e93aa123d845635f",
+      "lines": [
+        660,
+        679
+      ],
+      "rule": "Inspect the original document and reconcile on the same carrier; no automatic replay/resumable mutation transport; operation ID is correlation only; snapshot is not serializable isolation."
+    },
+    {
+      "path": "skills/paper-design-workflow/SKILL.md",
+      "git_blob": "1c8c8c713e3648a0f503477494b3d0c334e63665",
+      "lines": [
+        128,
+        129
+      ],
+      "rule": "Stop writes and reconcile the exact effect on the same carrier; never blindly replay or mint a new ID to retry."
+    },
+    {
+      "path": "skills/paper-design-workflow/references/connection.md",
+      "git_blob": "4498df7752f3827f9208481a2980d77a7199eb10",
+      "lines": [
+        172,
+        175
+      ],
+      "rule": "Original-carrier fence remains until post-read/effect reconciliation."
+    },
+    {
+      "path": "docs/sol_skills/SESSION_RELIABILITY.md",
+      "git_blob": "095f2165c3a6a57561e1e17ce14fcbcd0ef64eb9",
+      "lines": [
+        102,
+        113
+      ],
+      "rule": "Canonical readback can prove accepted/conflicted/absent/still unknown; a fresh generation of the same carrier is not failover."
+    },
+    {
+      "path": "docs/sol_skills/RECONCILE_STATE.md",
+      "git_blob": "e72bb4e6609eb61a042cee8c30367869672e7ca9",
+      "lines": [
+        120,
+        148
+      ],
+      "rule": "Unavailable/ambiguous status remains uncertain; timeout does not prove the mutation stopped; genuinely changed work requires a new explicit key."
+    },
+    {
+      "path": "integrations/paper_desktop/bridge.py",
+      "git_blob": "5f23c971bf8501ad1621e76eed64fee60a87dbfa",
+      "lines": [
+        1064,
+        1067
+      ],
+      "rule": "No persistent duplicate/retry ledger; caller owns effect reconciliation."
+    }
+  ],
+  "law_interpretation": "Paper-specific law designates original-document exact-effect inspection as the recovery mechanism. It does not mandate a historical terminal response or formal backend-drain certificate. Current absence can be reconciled while preserving the unknown historical transport outcome. The generic fail-closed rule still applies if the exact current effect remains ambiguous.",
+  "parent_reported_context_not_independently_attested_by_this_file": [
+    "The original C2 v20 dispatcher process has retired; current exact-file reads use the original bound C2 carrier generation.",
+    "Many later same-file edits completed on the original carrier.",
+    "No current overlapping writer is reported for board 7IS-0.",
+    "Paper main process has not restarted since November 1; adapter retirement alone is not a backend cancellation receipt.",
+    "Root performed a file-wide search for the distinct footer content; these broader search responses are not embedded in this local tree comparison."
+  ],
+  "residual_limits": [
+    "Proves the current target board structure and absent intended/partial appended nodes; does not prove the original call never applied and was later undone.",
+    "Does not provide a request-level terminal response or mathematical proof of backend causal extinction.",
+    "No independent screenshot visual acceptance is claimed by this structural comparison.",
+    "No exact read timestamp is fabricated: the supplied read files contain no timestamp; root must bind them to its actual tool-call observation when publishing.",
+    "Root review, canonical publication/readback and fresh same-carrier guard checks precede any dependent edit."
+  ],
+  "falsifiers_retain_hold": [
+    "Unexplained/missing/reparented node or unaccounted-for target change.",
+    "Concrete evidence the original request is still queued/running/replayable.",
+    "Unqualified current file/carrier/schema binding or overlapping live writer.",
+    "The recovered original payload does not completely describe the dispatched work."
+  ],
+  "proposed_next_action": "Publish/read back this adjudication in the existing F02 owner, then acquire a fresh exact-target/current-schema guard and complete only the missing corrected groups/numeric formatting on the original carrier. Preserve the historical G15 transport record; verify post-read, screenshot, retention and the complete native freeze.",
+  "paper_mutations_performed_by_this_preparation": 0,
+  "original_runtime_and_historical_journal_modified": false,
+  "adjudication": {
+    "actor": "/root — current assigned F02 receiver",
+    "accepted_at_utc": "2026-11-04T20:32:18Z",
+    "decision": "ACCEPT_CURRENT_EFFECT_ABSENT_FOR_FRESH_GUARDED_COMPLETION",
+    "source_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+    "actual_before_screenshot_visually_inspected": true,
+    "canonical_publication_readback_required_before_dependent_edit": true,
+    "original_carrier": "Mastermind Paper direct, original C2 binding",
+    "no_concrete_pending_or_replayable_original_request_evidenced": true,
+    "no_overlapping_writer_evidenced_for_target": true,
+    "upstream_read_timestamp": null,
+    "read_time_qualification": "Fresh reads were made in this attended continuation before this adjudication; exact upstream timestamps are not returned. The next edit independently requires a new exact-target snapshot."
+  }
+}

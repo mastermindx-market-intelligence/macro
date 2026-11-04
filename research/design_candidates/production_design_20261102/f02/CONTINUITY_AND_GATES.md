@@ -1,5 +1,15 @@
 # Continuity and remaining gates
 
+## Active continuation — 2026-11-04 20:32 UTC
+
+**G15 current document effect is reconciled as absent.** The original transport response remains unobserved and the historical journal is unchanged. The current F02 receiver compared all 190 native nodes, parent links, names/types and sibling order against successful pre-G15 receipts; there are zero missing or unexplained nodes. The complete current JSX and actual JPEG also match the original 2026-11-03 06:40:32.467 UTC in-progress capture byte for byte. [Decision and exact evidence](paper/repairs/g15-reconciliation-20261104/reconciliation-decision.md).
+
+This is a documented current-effect finding on the original Mastermind Paper direct carrier, not a fabricated upstream terminal receipt. Protected source `700eef54bca4a2dc4e30d94a6b30dcfa733ad57c` permits canonical original-document readback to establish absence; it does not require a nonexistent operation ledger or formal backend-drain certificate. The affected target may proceed to fresh-guarded, bounded completion after canonical readback of this decision. The two missing groups, 33 numeric frames, five dependent bindings, complete freeze and final native checks are still work to execute; this checkpoint does not claim them complete.
+
+Source PR #10698 head `6e245059af5870d35eb48e34d641e50f38617cc1` has now completed CI run `41801079017` successfully (all 12 packs and ci-gate), with fences run `41801079069` successful. The local producer/compact-line phase has 81 focused tests passing and 24 browser geometry/reveal cases passing; publication of that newer source is still pending. The original Draft/HOLD release boundary remains in effect.
+
+This section supersedes earlier current-state statements that G15 requires an unavailable historical terminal receipt or that the 6e245059 CI run remains active. Historical observations below remain unchanged.
+
 ## Current continuation
 
 The current [return](RETURN_F02.md) and [native evidence](paper/NATIVE_CONTINUATION_20261104.md) bind 32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f, 32 boards, 31 complete pairs and 649 applied responses plus the original held operation. The immutable 31-board review is scoped; full qualification is not inferred. Shared illustration source #10698 is now `6e245059af5870d35eb48e34d641e50f38617cc1`: eight actual canonical captures and 24 normal-scroll/reduced-motion browser checks passed, with a matching evidence receipt and passing local visual gate. Hosted exact-head CI remains in progress. See RETURN_F02.md for current source/effect custody and proof limits.
@@ -57,3 +67,4 @@ These are preservation/adoption conditions, not an assertion that F02 is the suc
 ## Later review findings
 
 Independent native advisory findings and later scoped dispositions are recorded by ID in paper/reviews/NATIVE_REVIEW_REPORT.md with before/after artifact identities and disposition. Any surviving blocker remains explicit in the return. Final RIG disposition remains the designated authority's responsibility, separate from the designer's repairs and static verification.
+

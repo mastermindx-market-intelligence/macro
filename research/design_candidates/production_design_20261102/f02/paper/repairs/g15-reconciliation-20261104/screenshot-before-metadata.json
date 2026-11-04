@@ -1,0 +1,16 @@
+{
+  "state": "OBSERVED",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+      },
+      {
+        "type": "image",
+        "mimeType": "image/jpeg",
+        "rendered_as_mcp_image": true
+      }
+    ]
+  }
+}

@@ -1,5 +1,15 @@
 # F02 Design System — current return
 
+## Active continuation — 2026-11-04 20:32 UTC
+
+**G15 current document effect is reconciled as absent.** The original transport response remains unobserved and the historical journal is unchanged. The current F02 receiver compared all 190 native nodes, parent links, names/types and sibling order against successful pre-G15 receipts; there are zero missing or unexplained nodes. The complete current JSX and actual JPEG also match the original 2026-11-03 06:40:32.467 UTC in-progress capture byte for byte. [Decision and exact evidence](paper/repairs/g15-reconciliation-20261104/reconciliation-decision.md).
+
+This is a documented current-effect finding on the original Mastermind Paper direct carrier, not a fabricated upstream terminal receipt. Protected source `700eef54bca4a2dc4e30d94a6b30dcfa733ad57c` permits canonical original-document readback to establish absence; it does not require a nonexistent operation ledger or formal backend-drain certificate. The affected target may proceed to fresh-guarded, bounded completion after canonical readback of this decision. The two missing groups, 33 numeric frames, five dependent bindings, complete freeze and final native checks are still work to execute; this checkpoint does not claim them complete.
+
+Source PR #10698 head `6e245059af5870d35eb48e34d641e50f38617cc1` has now completed CI run `41801079017` successfully (all 12 packs and ci-gate), with fences run `41801079069` successful. The local producer/compact-line phase has 81 focused tests passing and 24 browser geometry/reveal cases passing; publication of that newer source is still pending. The original Draft/HOLD release boundary remains in effect.
+
+This section supersedes earlier current-state statements that G15 requires an unavailable historical terminal receipt or that the 6e245059 CI run remains active. Historical observations below remain unchanged.
+
 **Latest component-proof checkpoint — 4 November 2026, 08:48 UTC:** implementation [#10698](https://github.com/mastermindx-market-intelligence/macro/pull/10698) is at **`6e245059af5870d35eb48e34d641e50f38617cc1`**. The actual changed illustration component now has **8/8 canonical browser captures**, visual self-QA of all eight images, **24/24 normal-scroll/reduced-motion browser checks** at 1440/390/320px, and a matching committed `EVIDENCE.yml`. The repository's visual-evidence gate passes locally against the actual changed CSS diff. All 17 published files read back byte-for-byte. [Exact proof and reproduction](https://github.com/mastermindx-market-intelligence/macro/blob/6e245059af5870d35eb48e34d641e50f38617cc1/mockups/evidence/f02-illus-gap-20261104/README.md).
 
 **Classification: DURABLE_EXECUTION_RUNNING. MISSION_COMPLETE: false.** Exact-head hosted [CI 41801079017](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801079017) is running: `ci-plan` passed, `contract-delta` and four packs are running, and eight packs are queued at 08:48 UTC. [Fences 41801079069](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801079069) completed successfully. GitHub reports `mergeable:true` at the exact source/base pair; there is no verified conflict to repair. No hosted PASS, merge or product acceptance is claimed. Paper G15 remains **EFFECT_UNKNOWN** after fresh same-target inspection and recovery of the original caller journal. Both PRs remain Draft/HOLD. The final section supersedes earlier source/browser/catalog observations while preserving their historical evidence and the native/joint/release boundaries.
@@ -478,3 +488,4 @@ full-set acceptance is permitted. Other accepted native work and the original
   Paper-dependent work. No archived author, optional reviewer or imaginary background
   chat is being awaited. The three bounded read-only helper assignments have returned
   and received ACCEPTED / STOP; no watcher was created.
+
