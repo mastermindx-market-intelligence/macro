@@ -360,6 +360,12 @@ MAX_PULL_CAP = 100
 COMMIT_FILE_PAGE_READ_CAP = 100
 FULL_SWEEP_FIXED_REQUESTS = 87
 AUTHORITY_RUN_LOOKUP_CAP = 8
+# Review and commit-authorship inventory is read ONLY at the final merge edge.
+# The existing 120-call shared reserve funds their worst-case 6 x 5 reads
+# between budget polls. Charging every evaluated PR would unfairly reduce the
+# sweep window even when no PR reaches a merge.
+REVIEW_PAGE_CAP = 3
+PR_AUTHOR_COMMIT_PAGE_CAP = 3
 MAX_REQUESTS_PER_PULL = 19 + AUTHORITY_RUN_LOOKUP_CAP
 # A 25-pull reference pass now models 87 fixed + 25 x up-to-27 + 8 refresh
 # attempts = 770 calls. The floor retains the reference 90-percent bound while
@@ -6732,6 +6738,141 @@ def reprove(
     return "conflict"
 
 
+def _complete_release_inventory(
+    repo: str,
+    number: int,
+    resource: str,
+    token: str,
+    page_cap: int,
+) -> list[dict[str, Any]] | None:
+    """Bounded GitHub PR inventory; never accept a truncated or failed read."""
+    rows: list[dict[str, Any]] = []
+    for page in range(1, page_cap + 1):
+        query = urllib.parse.urlencode({"per_page": "100", "page": str(page)})
+        try:
+            status, payload = _request(
+                "GET",
+                f"{GITHUB_API}/repos/{repo}/pulls/{number}/{resource}?{query}",
+                token,
+            )
+        except Exception:
+            return None
+        if (
+            status != 200
+            or not isinstance(payload, list)
+            or len(payload) > 100
+            or any(not isinstance(item, dict) for item in payload)
+        ):
+            return None
+        rows.extend(payload)
+        if len(payload) < 100:
+            return rows
+    return None  # A full last page needs another page; cap means UNKNOWN.
+
+
+def formal_review_release_gate(
+    repo: str, pull: dict[str, Any], read_token: str
+) -> tuple[bool, str]:
+    """Review ONCE, release without another human actor after all machine gates.
+
+    This is a terminal gate only: call after exact-head CI, live PR/source
+    authorization, current-main proof, and the complete recorded-HOLD scan.
+    The label never supplies GitHub review authority. Failed/incomplete review
+    or authorship reads refuse the irreversible merge, never fail open.
+    """
+    head_sha = str((pull.get("head") or {}).get("sha") or "")
+    author = str((pull.get("user") or {}).get("login") or "").casefold()
+    try:
+        number = int(pull.get("number"))
+    except (TypeError, ValueError):
+        return False, "review-pr-identity-unknown"
+    if not re.fullmatch(r"[0-9a-fA-F]{40}", head_sha) or not author or number <= 0:
+        return False, "review-pr-identity-unknown"
+    reviews = _complete_release_inventory(
+        repo, number, "reviews", read_token, REVIEW_PAGE_CAP
+    )
+    if reviews is None:
+        return False, "review-inventory-unreadable"
+    commits = _complete_release_inventory(
+        repo, number, "commits", read_token, PR_AUTHOR_COMMIT_PAGE_CAP
+    )
+    if not commits:
+        return False, "review-authorship-unreadable"
+
+    authors: set[str] = {author}
+    for entry in commits:
+        commit = entry.get("commit")
+        if not isinstance(commit, dict):
+            return False, "review-authorship-unreadable"
+        for role in ("author", "committer"):
+            identity = entry.get(role)
+            raw = commit.get(role)
+            if not isinstance(raw, dict):
+                return False, "review-authorship-unreadable"
+            if isinstance(identity, dict) and identity.get("login"):
+                authors.add(str(identity["login"]).casefold())
+            for field in ("name", "email"):
+                value = str(raw.get(field) or "").strip().casefold()
+                if value:
+                    authors.add(value)
+        message = str(commit.get("message") or "")
+        for match in re.finditer(
+            r"(?im)^co-authored-by:\s*(.*?)\s*<([^>]+)>", message
+        ):
+            authors.update({match.group(1).strip().casefold(),
+                            match.group(2).strip().casefold()})
+
+    decisions: list[tuple[str, int, str, str, str]] = []
+    for row in reviews:
+        state = str(row.get("state") or "").upper()
+        if state not in {"APPROVED", "CHANGES_REQUESTED", "DISMISSED"}:
+            continue
+        who = row.get("user")
+        submitted = str(row.get("submitted_at") or "")
+        ident = row.get("id")
+        if (
+            not isinstance(who, dict)
+            or not who.get("login")
+            or not submitted
+            or _parse_dt(submitted) is None
+            or not isinstance(ident, int)
+            or isinstance(ident, bool)
+        ):
+            return False, "review-state-unverifiable"
+        # An automation/bot or an unverified account type is not a distinct
+        # human reviewer merely because it can submit a GitHub review record.
+        if state == "APPROVED" and who.get("type") != "User":
+            continue
+        decisions.append(
+            (submitted, ident, str(who["login"]).casefold(), state,
+             str(row.get("commit_id") or "").lower())
+        )
+
+    last_by_reviewer: dict[str, tuple[str, str]] = {}
+    for _submitted, _id, login, state, commit_sha in sorted(decisions):
+        last_by_reviewer[login] = (state, commit_sha)
+
+    if any(state == "CHANGES_REQUESTED"
+           for state, _commit in last_by_reviewer.values()):
+        return False, "review-changes-requested"
+
+    for login, (state, commit_sha) in last_by_reviewer.items():
+        if state != "APPROVED" or commit_sha != head_sha.lower():
+            continue
+        if login in authors:
+            continue
+        # Detect account usernames inside standard GitHub noreply addresses,
+        # including numbered +login aliases; coauthors may lack linked accounts.
+        if any(
+            email.endswith("@users.noreply.github.com")
+            and (email.split("@", 1)[0].split("+")[-1] == login)
+            for email in authors
+        ):
+            continue
+        return True, "review-approved"
+    return False, "review-missing-current-independent-approval"
+
+
 def sweep_pull(
     repo: str,
     pull: dict[str, Any],
@@ -7408,6 +7549,37 @@ def sweep_pull(
             "ending this snapshot so the next sweep can re-read live state.",
         )
         return "merge-unknown"
+
+    # A PR may be armed by its author ahead of review: that is intent, not
+    # authority. Verify one actual independent APPROVED review for this exact
+    # head here, after recorded holds and before any irreversible merge call.
+    # Pay for these late-only reads from the existing mid-sweep reserve,
+    # not the evaluation cap. Rate-limit telemetry itself spends zero core calls.
+    # If telemetry is unavailable, each actual review read still fails closed.
+    try:
+        review_quota = core_rate_limit(read_token)
+    except Exception:
+        review_quota = None
+    if (
+        review_quota is not None
+        and review_quota[0]
+        < RATE_LIMIT_RESERVE + REVIEW_PAGE_CAP + PR_AUTHOR_COMMIT_PAGE_CAP
+    ):
+        _annotate(
+            "notice", "merge-on-green review gate",
+            f"PR #{number}: late review inventory deferred to preserve the "
+            "shared API reserve; no merge.",
+        )
+        return "review-budget-deferred"
+    approved, review_reason = formal_review_release_gate(repo, pull, read_token)
+    if not approved:
+        _annotate(
+            "notice",
+            "merge-on-green review gate",
+            f"PR #{number}: {review_reason}; no merge. The existing label "
+            "remains armed for a subsequent qualified review/sweep.",
+        )
+        return review_reason
 
     merge_payload = {"merge_method": "squash", "sha": head_sha}
 

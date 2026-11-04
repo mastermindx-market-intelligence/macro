@@ -31,6 +31,7 @@ REAL_REFRESH_LEASE_RESERVATION_COUNT = MOG.refresh_lease_reservation_count
 REAL_PREPARE_REFRESH_LEASE = MOG.prepare_refresh_lease
 REAL_SERIALIZED_REFRESH_AUTHORITY = MOG.serialized_refresh_authority
 REAL_ENSURE_SELF_WAKE = MOG.ensure_self_wake
+REAL_FORMAL_REVIEW_RELEASE_GATE = MOG.formal_review_release_gate
 REAL_LEASE_RECONCILE_PASS = MOG.lease_reconcile_pass
 WORKFLOW = ROOT / ".github" / "workflows" / "merge-on-green.yml"
 BASELINE_WORKFLOW = ROOT / ".github" / "workflows" / "integration-baseline.yml"
@@ -61,6 +62,12 @@ def _no_unstubbed_http(monkeypatch):
         )
 
     monkeypatch.setattr(MOG, "_request", refuse)
+    # Existing sweep regression cases isolate CI/HOLD/lease behavior. Dedicated
+    # release-gate tests restore the real gate and exercise live review reads.
+    monkeypatch.setattr(
+        MOG, "formal_review_release_gate",
+        lambda *_a, **_k: (True, "review-approved"),
+    )
     # `core_rate_limit` propagates its caller's exceptions, so without a neutral
     # default every pre-budget `main()` test would die on the guard above rather than
     # on what it is about. A healthy budget is the pre-2026-08-07 behaviour; tests
@@ -10074,3 +10081,89 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+
+@pytest.mark.parametrize("approved", [False, True])
+def test_formal_review_gate_is_wired_into_the_actual_irreversible_merge_path(
+    monkeypatch, approved
+):
+    """A pre-armed label plus clean CI/HOLDs must not bypass live review."""
+    calls = _fake_api(
+        monkeypatch,
+        check_pages={
+            1: {"total_count": 1, "check_runs": [_run("ci-pack-1", conclusion="success")]}
+        },
+        pull_payload={"user": {"login": "builder"}},
+    )
+    previous_request = MOG._request
+    observed = []
+
+    def review_request(method, url, token, payload=None):
+        if method == "GET" and "/pulls/4242/reviews?" in url:
+            observed.append("reviews")
+            return 200, (
+                [{
+                    "id": 901,
+                    "state": "APPROVED",
+                    "user": {"login": "independent", "type": "User"},
+                    "submitted_at": "2026-11-03T18:00:00Z",
+                    "commit_id": "a" * 40,
+                }] if approved else []
+            )
+        if method == "GET" and "/pulls/4242/commits?" in url:
+            observed.append("commits")
+            return 200, [{
+                "author": {"login": "builder"},
+                "committer": {"login": "builder"},
+                "commit": {
+                    "author": {"name": "Builder", "email": "builder@users.noreply.github.com"},
+                    "committer": {"name": "Builder", "email": "builder@users.noreply.github.com"},
+                    "message": "scoped change",
+                },
+            }]
+        return previous_request(method, url, token, payload)
+
+    monkeypatch.setattr(MOG, "_request", review_request)
+    monkeypatch.setattr(
+        MOG, "formal_review_release_gate", REAL_FORMAL_REVIEW_RELEASE_GATE
+    )
+    pull = {**_pull(), "user": {"login": "builder"}}
+    verdict = MOG.sweep_pull(
+        "acme/widgets", pull, "read", "write", _freshness()
+    )
+    assert observed == ["reviews", "commits"]
+    merges = [c for c in calls if c[0] == "PUT" and c[1].endswith("/merge")]
+    if approved:
+        assert verdict == "merged"
+        assert len(merges) == 1
+    else:
+        assert verdict == "review-missing-current-independent-approval"
+        assert merges == []
+
+
+
+def test_final_review_reads_defer_without_spending_the_shared_api_reserve(
+    monkeypatch,
+):
+    calls = _fake_api(
+        monkeypatch,
+        check_pages={
+            1: {"total_count": 1, "check_runs": [_run("ci-pack-1", conclusion="success")]}
+        },
+    )
+    monkeypatch.setattr(
+        MOG, "core_rate_limit",
+        lambda _token: (
+            MOG.RATE_LIMIT_RESERVE
+            + MOG.REVIEW_PAGE_CAP
+            + MOG.PR_AUTHOR_COMMIT_PAGE_CAP - 1,
+            1000,
+        ),
+    )
+    assert MOG.sweep_pull(
+        "acme/widgets", _pull(), "read", "write", _freshness()
+    ) == "review-budget-deferred"
+    assert not any(
+        method == "PUT" and url.endswith("/merge") for method, url, _ in calls
+    )
