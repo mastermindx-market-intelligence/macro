@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 23463,
-      "sha256": "7827e32dee78cc0025c03bad31b42b91d3f377d5ecf3e9b84024c6d310ee5dfa",
-      "git_blob_sha": "f4eeff0b5ee91ef4dc9caf19fdb2d442bfadf63c"
+      "bytes": 25339,
+      "sha256": "04327d64e9c3393e4da345b2dfbc621478e29f5aa05ccd074eafbe1987973be3",
+      "git_blob_sha": "0c81660128d5a035492bd44783ec77694ae700b0"
     },
     {
       "path": "CONTRACT.md",
@@ -41,9 +41,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 25850,
-      "sha256": "5db5720593cf80ce871ef9bf76124acb71e4bc9a81fe5962bb3664164bb0ed45",
-      "git_blob_sha": "cef77fecc135705fb73ece20977dab26cc0500b7"
+      "bytes": 27356,
+      "sha256": "99f217bb9054c4e47ee03ef4f93a82810cc92dd4c9c1841ab59262bd6f520c12",
+      "git_blob_sha": "6866c1f60ebbfeb6b0dae1af58aff001c96c669b"
     },
     {
       "path": "REPRODUCE.md",
@@ -1066,6 +1066,42 @@
       "git_blob_sha": "8ae65e0068b215ae48b4ddd7a4e34bb796ce440a"
     },
     {
+      "path": "paper/exports/original-only-d06-20261104/743I-0.jsx",
+      "bytes": 23370,
+      "sha256": "2e5b45180d0cbc75d1539b0e5042fc9ddde319d71a3625d079b0eda4b8149d5c",
+      "git_blob_sha": "2cf38d91eb3b640f39fa3b60f5ccf5a42f17f9d9"
+    },
+    {
+      "path": "paper/exports/original-only-d06-20261104/743J-0.jsx",
+      "bytes": 26357,
+      "sha256": "c5a9f29df3ca02527b785b00badca8a7fc7242cfdebc0cf1912c4f61d9b82c9f",
+      "git_blob_sha": "6f7ec4daffb09db034c28cfc0c348e55d7d2fd92"
+    },
+    {
+      "path": "paper/exports/original-only-d06-20261104/743K-0.jsx",
+      "bytes": 39501,
+      "sha256": "9f951ea18b9a7b81a7bb01c061588eaf142b4916af58ad655106afbd06e5568d",
+      "git_blob_sha": "5825ef73b1e50148a9452d5fea2cb09ff3a2c48e"
+    },
+    {
+      "path": "paper/exports/original-only-d06-20261104/743L-0.jsx",
+      "bytes": 19626,
+      "sha256": "87adc3935bd093a771348ca794abe54450e154ecb4999432fe7c0e7693912367",
+      "git_blob_sha": "ef41f0d91bafd86d05b89e2cfcae8b03ac087760"
+    },
+    {
+      "path": "paper/exports/original-only-d06-20261104/743M-0.jsx",
+      "bytes": 1332,
+      "sha256": "49ac2715691fa41c1dacccc8831207cc047f18253eb090704830ed193b07675a",
+      "git_blob_sha": "f64cacf01b7c05287db8d2646214509c22ca62bb"
+    },
+    {
+      "path": "paper/exports/original-only-d06-20261104/743N-0.jsx",
+      "bytes": 4374,
+      "sha256": "e1e482246139f3826ab701ecc69004535873dec3366440a58045d3151291269c",
+      "git_blob_sha": "ee688cde5b0baa914ae9690c4e6b53d06524813c"
+    },
+    {
       "path": "paper/exports/original-only-f01-20261104/6ZY9-0.jsx",
       "bytes": 35542,
       "sha256": "35282f357fa51c301f71de3c6cbd8c7097f76b4bc85c4274308ac24b31401307",
@@ -1366,6 +1402,12 @@
       "git_blob_sha": "84cf6f658d7fac628797ee05371f8a8dbb5b6b39"
     },
     {
+      "path": "paper/retention/native-tree-summary-d06-20261104.json",
+      "bytes": 34253,
+      "sha256": "cf1681368b4c764ef1c2196b64e520832b8723a0e3d88d4721e27665492197f3",
+      "git_blob_sha": "7eb9adb63aab02ffbd26c44c311e1af02131e954"
+    },
+    {
       "path": "paper/retention/native-tree-summary-f01-20261104.json",
       "bytes": 118659,
       "sha256": "acf027f1eef4e812fa1c02820a07bc8a942260f87113798a00e58f0b681f2a35",
@@ -1400,6 +1442,12 @@
       "bytes": 5344,
       "sha256": "b3e8e948fadcf8ed06b412a1418d9caf6a56b5a3b2a6b868a08c8f1c84e90826",
       "git_blob_sha": "a8465de5de0858cc18c3b42ebb91f3169c807615"
+    },
+    {
+      "path": "paper/retention/original-only-d06-code-capture-20261104.json",
+      "bytes": 7185,
+      "sha256": "18c8080a6817bf2a113589d28cfdb620c6b65178e06bfc65d54c99cce94969b5",
+      "git_blob_sha": "214af0ed1260159f6fcdd494ccaea7ded8971890"
     },
     {
       "path": "paper/retention/original-only-f01-20261104.json",
@@ -1587,14 +1635,14 @@
   "original_only_coverage": {
     "baseline_missing_copy_page_count": 4,
     "exact_original_only_board_count": 46,
-    "visible_jsx_board_captures": 40,
+    "visible_jsx_board_captures": 46,
     "reported_page_nodes": 6755,
-    "board_native_nodes_in_tree": 6159,
-    "jsx_native_paper_ids": 5362,
-    "svg_visual_elements_without_jsx_paper_ids": 797,
+    "board_native_nodes_in_tree": 6750,
+    "jsx_native_paper_ids": 5749,
+    "svg_visual_elements_without_jsx_paper_ids": 1001,
     "generated_svg_jsx_ids": 24,
-    "naive_jsx_id_occurrences": 5386,
-    "naive_gap_explained": 777,
+    "naive_jsx_id_occurrences": 5773,
+    "naive_gap_explained": 982,
     "all_non_svg_native_node_ids_matched": true,
     "native_retention_proven": false,
     "prior_four_page_missing_copy_page_count": 4,
@@ -1606,17 +1654,20 @@
       "p-29-0",
       "p-28-0"
     ],
-    "metadata_only_D06_board_count": 6,
+    "metadata_only_D06_board_count": 0,
     "reported_page_nodes_scoped_to": "Five original-only pages: prior four 6163, D06 592",
-    "board_native_nodes_in_tree_scoped_to": "Prior four pages/40 boards only; D06 native tree not yet captured",
-    "jsx_reconciliation_fields_scoped_to": "Prior four pages/40 boards only; excludes six D06 metadata-only boards",
+    "board_native_nodes_in_tree_scoped_to": "All five original-only pages/46 boards (including D06); excludes five page roots",
+    "jsx_reconciliation_fields_scoped_to": "All five original-only pages/46 boards; D06 captured with native trees and visible JSX",
     "additional_F03_directory_artboards_missing_copy": 7,
     "current_total_original_artboard_placements_missing_copy": 53,
-    "native_backup_qualification": "NOT_QUALIFIED_DO_NOT_EXECUTE"
+    "native_backup_qualification": "NOT_QUALIFIED_DO_NOT_EXECUTE",
+    "generated_svg_jsx_ids_scoped_to": "Prior Options boards only; D06 has zero generated non-Paper JSX IDs"
   },
   "current_native_tree_reconciliation": "paper/retention/native-tree-vs-jsx-reconciliation-20261104.json",
   "current_svg_asset_preflight": "paper/retention/svg-asset-preflight-20261104.json",
   "current_resource_capability_preflight": "paper/retention/resource-capability-preflight-20261104.json",
   "current_original_only_d06_exposure": "paper/retention/original-only-d06-20261104.json",
-  "current_native_backup_method_qualification": "paper/retention/native-backup-method-qualification-20261104.json"
+  "current_native_backup_method_qualification": "paper/retention/native-backup-method-qualification-20261104.json",
+  "current_original_only_d06_capture_set": "paper/retention/original-only-d06-code-capture-20261104.json",
+  "current_native_tree_D06_reconciliation": "paper/retention/native-tree-summary-d06-20261104.json"
 }
