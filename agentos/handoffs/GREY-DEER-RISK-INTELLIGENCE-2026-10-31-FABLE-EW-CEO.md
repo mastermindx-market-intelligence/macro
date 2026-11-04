@@ -32,7 +32,7 @@ changed:
   - path: research/grey_deer/README.md
     what: Current next action dated 2026-10-31 pointing at the adoption record; the 2026-10-17 section retained as history.
   - path: research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md
-    what: Records r4 (2026-11-01) - section 7 receipts table for every merged EW wave through EW-P4 #10350; records r5 added EW-P4-FU #10364 and the first EW-P5 pack census (run ew-p5-packs-20261101T071404Z-518ae7cd); no pack marked PASS; records r6 (2026-11-02) added EW-P4-ACT #10394 (983c6b0798e2) and EW-P5 FU2 #10401 (20a05db07376) and the EW-P1 first-session note.
+    what: Records r4 (2026-11-01) - section 7 receipts table for every merged EW wave through EW-P4 #10350; records r5 added EW-P4-FU #10364 and the first EW-P5 pack census (run ew-p5-packs-20261101T071404Z-518ae7cd); no pack marked PASS; records r6 (2026-11-02) added EW-P4-ACT #10394 (983c6b0798e2) and EW-P5 FU2 #10401 (20a05db07376) and the EW-P1 first-session note; records r7 (2026-11-03) added the EW-P1 second session and PRODUCTION_PROOF, the FU2 render coverage and the r6 merge.
 verified:
   - claim: data/qledger/claims.jsonl on main is 206 bytes under GitHub's 100 MiB single-file limit.
     command: >-
@@ -53,6 +53,15 @@ verified:
   - claim: #10104 conflicts with main in exactly six files.
     command: git merge-tree --write-tree origin/main a324b7fc1f15e18393482ab18c4d97e12ebcbabe
     result: CONFLICT in .github/ci/legacy-jobs.yml, app/deploy/update.sh, lib/user_prefs.py, tests/test_account_prefs.py, tests/test_alert_delivery_drain.py, tests/test_ci_pack.py; merge-base c9608be2.
+  - claim: EW-P1 repair restores the nightly engine data commit (two natural sessions after the carve c2772cc44ef5).
+    command: >-
+      seat watcher v3: hourly git-only read of origin/main for `engine: regime update <date>` landing dates after c2772cc44ef5 with data/risk_envelope/latest.json changed; gh api actions/runs/41378879186 and /41634890986 (+/jobs) for the producing runs
+    result: >-
+      Session 2026-11-02: b0a37dfbaff4 10:20:35Z, 9d7925b30a01 10:40:00Z (daily.yml EST-cron run 41378879186; latest.json as_of 2026-10-30). Session 2026-11-03: 4e08d434708e (20:43:31Z) and dfeed92a98a8 (21:30:18Z), both `engine: regime update 2026-11-03` by dashboard-bot; data/risk_envelope/latest.json as_of advanced 2026-10-30 -> 2026-11-02 in the first commit (the second changed only observed_at/produced_at). Producer of the second: daily.yml run 41634890986, a workflow_dispatch fired at 12:20:34Z by the repo's own prophet-rescue self-heal lane (its scheduled run 41634822528 at 12:20:05Z, which itself concluded failure after dispatching; the dispatched daily run's actor and triggering actor are github-actions[bot]) after the EST-cron run 41575308126's engine job failed (09:30:58Z-09:40:58Z); collect 12:20:44Z-15:29:53Z success, collect_tail success, engine job 17:05:41Z-21:38:14Z cancelled after both commits had landed. Not a seat or human dispatch. Watcher exit EW_P1_TWO_SESSIONS_LANDED 2026-11-03T21:43:35Z. PRODUCTION_PROOF recorded in the workstream (records r7). Acceptance rule as amended by the r7 seat ruling, made after session 2 was observed: a daily.yml run on main fired by its own cron or dispatched by the repo's scheduled prophet-rescue.yml self-heal lane counts; a seat or human dispatch does not.
+  - claim: "EW-P5 FU2 #10401 (squash 20a05db07376) is covered by a successful main render."
+    command: gh run list --workflow render.yml --branch main (seat watcher, 10-minute ticks) + git merge-base --is-ancestor 20a05db0 eea8ad4d
+    result: >-
+      render.yml push run 41466419158 at eea8ad4d (a main descendant of the FU2 squash 20a05db0, verified with git merge-base) completed success at 2026-11-02T19:13:04Z (created 14:54:36Z); the run at the squash itself (41462692720) was cancelled by lane coalescing. Production reads are 401 for the seat, so no browser proof is claimed.
   - claim: The Agent OS record set validates after this change.
     command: python3 scripts/agentos.py validate
     result: see the records PR body for the exact exit code and warning count at the pushed head.
@@ -66,17 +75,9 @@ verified:
     result: >-
       ew-p5-packs-20261101T071404Z-518ae7cd: pytest 1069 passed, 17 skipped, 0 failed, 0 errors; node 20 of 20; pytest exit 0, node exit 0.
 unverified:
-  - claim: EW-P1 repair restores the nightly engine data commit.
-    what_would_verify: >-
-      Two natural engine sessions after the carve (scheduled daily.yml runs on main, never a seat dispatch) in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances.
-      One of two observed: 2026-11-02 (b0a37dfbaff4, 9d7925b30a01). The second is the next natural engine session; observed by the seat's hourly git-only read, never polled or dispatched.
   - claim: #10219's failing check names.
     what_would_verify: One bounded `gh pr checks 10219` after the CI-wait cooldown (REDUNDANT POLL blocked the second read).
 unresolved:
-  - >-
-    EW-P1 acceptance: two natural engine SESSIONS after the incumbent carve #10255 (merged c2772cc4, 06:29:41Z). The first landed 2026-11-02
-    (b0a37dfbaff4 10:20:35Z, 9d7925b30a01 10:40:00Z; latest.json advanced). A session lands one to five engine commits (census since 2026-10-01), so the earlier
-    commit-counting watcher's exit proved one session, not two; PRODUCTION_PROOF is not recorded. The sessions-counting watcher runs hourly, git-only.
   - >-
     #10221's three engine-script hunks are not taken over; #10221 remains the orphaned carrier for the pair check until a successor is decided. QLedger publication (data/qledger + site/qledger) stays unpublished; owner #10079 (inert/NOT_CUT_OVER).
   - >-
@@ -90,8 +91,8 @@ next_actions:
   - >-
     Seat: EW-P5-FU repairs (S02/S12 live-overlay precedence merged as #10371 a7628775, O06 publish-before-record, then O01, C05, U02, U09 and the sparse-tree guard), each as its own PR with a fresh non-authoring review. EW-P4-ACT (the latest_observation producer) needs its own activation gate and is not a UI fix.
   - >-
-    Seat: when the sessions-counting watcher reports a second natural engine session (a distinct landing date with latest.json advanced),
-    record PRODUCTION_PROOF for EW-P1 in this workstream (never before; neither a merge of #10255 nor two commits from one night is proof).
+    Seat: EW-P1 PRODUCTION_PROOF is recorded (records r7, 2026-11-03: sessions 2026-11-02 and 2026-11-03); do not re-open it. FU2 #10401
+    is render-covered by run 41466419158; the FU3 carve-outs and the second named pack run remain.
   - >-
     Seat: EW-P4-ACT #10394 (983c6b0798e2) and EW-P5 FU2 #10401 (20a05db07376) are MERGED only. Next: FU3 carve-outs as their own PR with a fresh
     non-authoring review; then the second named EW-P5 pack run at the new main head (adds tests/test_qledger_carve.py, re-maps the stale rows).

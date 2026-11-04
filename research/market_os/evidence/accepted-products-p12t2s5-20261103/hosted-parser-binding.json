@@ -1,0 +1,46 @@
+{
+  "source_log_sha256": "4b79fb6b5f10919d4cd43b94667271b8a03a3495fbe0f30672f6d36479b95e33",
+  "run": 41729104897,
+  "tested_merge": "eb598a3a9dd77ac96754a4d695fb01bde0e1f7e3",
+  "observed_hosted_packages": "beautifulsoup4-4.15.0, soupsieve-4.0, html5lib-1.1; declared dependency installation has no lxml",
+  "named_causal_two_match": true,
+  "remaining_local": "12 newly unqualified exact hosted nodes:9PASS,3RED. Two summary-template paths fixed in current protected10675; J9 assertion shape remains. No inherited19 credit.",
+  "records": [
+    {
+      "line": 618,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T22:34:22.2544429Z Successfully installed MarkupSafe-3.0.4 attrs-26.1.0 beautifulsoup4-4.15.0 certifi-2026.10.23 charset_normalizer-3.5.2 cloudpickle-3.1.2 et-xmlfile-2.0.0 html5lib-1.1 idna-3.20 iniconfig-2.3.1 jinja2-3.1.6 joblib-1.6.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 narwhals-2.28.0 numpy-2.5.4 openpyxl-3.1.5 packaging-26.3 pandas-3.1.0 plotly-7.1.0 pluggy-1.7.0 pyarrow-26.0.1 pygments-2.21.0 pytest-9.2.0 python-dateutil-4.0.0 pyyaml-6.0.3 referencing-0.37.0 requests-2.34.2 rjsmin-1.2.5 rpds-py-2026.9.1 scikit-learn-1.9.1 scipy-1.18.1 six-1.17.0 soupsieve-4.0 threadpoolctl-3.7.0 typing-extensions-4.16.0 tzdata-2026.6 urllib3-2.8.0 webencodings-0.6.1"
+    },
+    {
+      "line": 1338,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T22:38:39.9219465Z FAILED tests/test_prophet_card_shared.py::test_setup_table_fallback_missing_values_never_enrich_from_other_population - AttributeError: 'NoneType' object has no attribute 'text'"
+    },
+    {
+      "line": 1343,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T22:38:39.9243223Z FAILED tests/test_prophet_journey_reconcile.py::test_j6_pass_all_fields_preserved - AssertionError: {'id': '', 'status': 'FAIL', 'expected': 'template source body present', 'observed': 'no template .pvs-body-source for ticker', ...}"
+    },
+    {
+      "line": 1493,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T22:39:05.7723424Z Successfully installed MarkupSafe-3.0.4 beautifulsoup4-4.15.0 certifi-2026.10.23 charset_normalizer-3.5.2 cloudpickle-3.1.2 et-xmlfile-2.0.0 idna-3.20 iniconfig-2.3.1 jinja2-3.1.6 joblib-1.6.0 narwhals-2.28.0 numpy-2.5.4 openpyxl-3.1.5 packaging-26.3 pandas-3.1.0 plotly-7.1.0 pluggy-1.7.0 pyarrow-26.0.1 pygments-2.21.0 pytest-9.2.0 python-dateutil-4.0.0 pyyaml-6.0.3 requests-2.34.2 scikit-learn-1.9.1 scipy-1.18.1 soupsieve-4.0 threadpoolctl-3.7.0 typing-extensions-4.16.0 tzdata-2026.6 urllib3-2.8.0"
+    },
+    {
+      "line": 1953,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T22:51:53.8853168Z Successfully installed beautifulsoup4-4.15.0 certifi-2026.10.23 cffi-2.1.1 charset_normalizer-3.5.2 curl_cffi-0.17.0 idna-3.20 iniconfig-2.3.1 lxml-6.1.3 numpy-2.5.4 packaging-26.3 pandas-3.1.0 peewee-4.5.3 platformdirs-4.14.3 pluggy-1.7.0 protobuf-7.36.2 pyarrow-26.0.1 pycparser-3.12 pygments-2.21.0 pytest-9.2.0 python-dateutil-4.0.0 pytz-2026.6 pyyaml-6.0.3 requests-2.34.2 soupsieve-4.0 typing-extensions-4.16.0 tzdata-2026.6 urllib3-2.8.0 websockets-17.4 yfinance-1.8.0"
+    },
+    {
+      "line": 2238,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T22:53:45.3320314Z Successfully installed MarkupSafe-3.0.4 attrs-26.1.0 beautifulsoup4-4.15.0 certifi-2026.10.23 charset_normalizer-3.5.2 idna-3.20 iniconfig-2.3.1 jinja2-3.1.6 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 lxml-6.1.3 numpy-2.5.4 packaging-26.3 pandas-3.1.0 pluggy-1.7.0 pyarrow-26.0.1 pygments-2.21.0 pytest-9.2.0 python-dateutil-4.0.0 pyyaml-6.0.3 referencing-0.37.0 requests-2.34.2 rjsmin-1.2.5 rpds-py-2026.9.1 soupsieve-4.0 typing-extensions-4.16.0 tzdata-2026.6 urllib3-2.8.0"
+    },
+    {
+      "line": 2501,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T22:58:33.8216274Z Successfully installed MarkupSafe-3.0.4 attrs-26.1.0 beautifulsoup4-4.15.0 certifi-2026.10.23 charset_normalizer-3.5.2 cloudpickle-3.1.2 et-xmlfile-2.0.0 html5lib-1.1 idna-3.20 iniconfig-2.3.1 jinja2-3.1.6 joblib-1.6.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 narwhals-2.28.0 numpy-2.5.4 openpyxl-3.1.5 packaging-26.3 pandas-3.1.0 plotly-7.1.0 pluggy-1.7.0 pyarrow-26.0.1 pygments-2.21.0 pytest-9.2.0 python-dateutil-4.0.0 pyyaml-6.0.3 referencing-0.37.0 requests-2.34.2 rjsmin-1.2.5 rpds-py-2026.9.1 scikit-learn-1.9.1 scipy-1.18.1 six-1.17.0 soupsieve-4.0 threadpoolctl-3.7.0 typing-extensions-4.16.0 tzdata-2026.6 urllib3-2.8.0 webencodings-0.6.1"
+    },
+    {
+      "line": 3058,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T23:02:48.8746049Z FAILED tests/test_prophet_card_shared.py::test_setup_table_fallback_missing_values_never_enrich_from_other_population"
+    },
+    {
+      "line": 3060,
+      "text": "ci-pack-4\tvalidate and run legacy CI pack\t2026-11-03T23:02:48.8747618Z FAILED tests/test_prophet_journey_reconcile.py::test_j6_pass_all_fields_preserved"
+    }
+  ]
+}

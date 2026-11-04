@@ -1,11 +1,11 @@
 {
  "meta": {
-  "fingerprint": "736f8843a587f3be",
-  "computed_at": "2026-11-03T12:12:11.438478+00:00",
+  "fingerprint": "550e0be71a1b4927",
+  "computed_at": "2026-11-03T23:00:54.223560+00:00",
   "max_date": "2026-11-02",
   "version": "m2.v1",
-  "universe_n": 253,
-  "computed_n": 253,
+  "universe_n": 255,
+  "computed_n": 255,
   "skipped_n": 0,
   "failed_n": 0,
   "note": "Daily-bar approximation over typical price (H+L+C)/3 \u2014 not intraday-true VWAP. Display-tier context; not a signal."
@@ -1419,6 +1419,38 @@
     }
    }
   },
+  "CHD": {
+   "as_of": "2026-11-02",
+   "close": 110.45,
+   "vwap_w": 109.32,
+   "profile": {
+    "poc": 96.2797,
+    "va_low": 93.1084,
+    "va_high": 100.3571,
+    "window": 126,
+    "poc_dist_pct": 14.72,
+    "in_value_area": false
+   },
+   "avwap": {
+    "earnings_proxy": {
+     "value": 108.6851,
+     "anchor_date": "2026-10-30",
+     "sessions_since": 1,
+     "sessions_held": 1,
+     "dist_pct": 1.62
+    },
+    "ytd": {
+     "value": 96.5872,
+     "anchor_date": "2026-01-02",
+     "dist_pct": 14.35
+    },
+    "low_52w": {
+     "value": 95.4967,
+     "anchor_date": "2025-12-08",
+     "dist_pct": 15.66
+    }
+   }
+  },
   "CHTR": {
    "as_of": "2026-11-02",
    "close": 115.54,
@@ -2312,6 +2344,38 @@
      "value": 179.4669,
      "anchor_date": "2025-12-18",
      "dist_pct": -1.96
+    }
+   }
+  },
+  "DLTR": {
+   "as_of": "2026-11-02",
+   "close": 138.6,
+   "vwap_w": 137.4367,
+   "profile": {
+    "poc": 113.7498,
+    "va_low": 110.4054,
+    "va_high": 130.4717,
+    "window": 126,
+    "poc_dist_pct": 21.85,
+    "in_value_area": false
+   },
+   "avwap": {
+    "earnings_proxy": {
+     "value": 119.4716,
+     "anchor_date": "2026-09-18",
+     "sessions_since": 31,
+     "sessions_held": 20,
+     "dist_pct": 16.01
+    },
+    "ytd": {
+     "value": 115.9552,
+     "anchor_date": "2026-01-02",
+     "dist_pct": 19.53
+    },
+    "low_52w": {
+     "value": 117.5368,
+     "anchor_date": "2026-05-13",
+     "dist_pct": 17.92
     }
    }
   },
@@ -4334,7 +4398,7 @@
   "KVUE": {
    "as_of": "2026-10-30",
    "close": 19.31,
-   "vwap_w": 19.4757,
+   "vwap_w": 19.4756,
    "profile": {
     "poc": 17.602,
     "va_low": 17.5246,
@@ -4352,7 +4416,7 @@
      "dist_pct": -0.99
     },
     "ytd": {
-     "value": 17.5648,
+     "value": 17.5647,
      "anchor_date": "2026-01-02",
      "dist_pct": 9.94
     },

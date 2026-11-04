@@ -1,0 +1,104 @@
+{
+  "at": "2026-11-04T00:10:21.999176+00:00",
+  "task": "P12.T2.S10",
+  "base": "705603262cf7252b6810db7f58327cb252895a52",
+  "premerge_parent": "e15390a157bf9e10c214c31a4e951941926f855a",
+  "earlier_source_review": "826 PASS remains historical only; postimages superseded by protected10675, no automatic final review transfer",
+  "parser": [
+    {
+      "path": "scripts/prophet_journey_reconcile.py",
+      "current_protected_blob": "52a6a0f715258b5bff470ab8fff451f9a6f4f5c6",
+      "candidate_blob": "52a6a0f715258b5bff470ab8fff451f9a6f4f5c6",
+      "sha256": "89876d2011d06945c46bbd79b6142c3d4c81f8c2d55d01b8953987072a3351a3"
+    },
+    {
+      "path": "tests/test_prophet_plan_relation.py",
+      "current_protected_blob": "9ca72304a0739f425544fda0769dd16bcf84693f",
+      "candidate_blob": "9ca72304a0739f425544fda0769dd16bcf84693f",
+      "sha256": "e24e0b3dcc2c26a6c2b24a56c70bf537a2c43b7500dc097d3bc08e390e5f536c"
+    },
+    {
+      "path": "tests/test_prophet_card_shared.py",
+      "current_protected_blob": "012ddbbc7cb4d0543d2439c693cc09fc6069fb23",
+      "candidate_blob": "d75d42b2eb234935d9fe1f49d4b3db28a16c08e4",
+      "sha256": "cfba47df65641729005809b8f03e0e10146edabbb25a760c0febf38541917b6c"
+    },
+    {
+      "path": "tests/test_prophet_journey_reconcile.py",
+      "current_protected_blob": "7f7498d8f1e4b82ccbdbe4486de2f86b9c2a61df",
+      "candidate_blob": "89999147e2157e9bb3cd1dc63e10fadefa8cb056",
+      "sha256": "13ec70dc09d6dd84d1d65c5a5701321b8faaef87de7d8737f56c287ace02b816"
+    }
+  ],
+  "context_equal_reviewed": {
+    "templates/_prophet_setup_detail.html.j2": "5301d512aa339d66395f4b0dd1a253dba6124ef56567ce2655a65b97cdce35c9",
+    "templates/dashboard.html.j2": "1566173af17972f7d7701bd59a8bae1fd3ae7bed8dddc4c912ec05871eb94667",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+  },
+  "four_family_runtime_modes_preserved_from_accepted_s8_parent": {
+    "Bonds": [
+      {
+        "path": "engine/intl_bonds.py",
+        "blob": "e30591b0c2d5837dc2cd62feef09e5b81cd3e54e"
+      },
+      {
+        "path": "templates/bonds.html.j2",
+        "blob": "816f1038305914424278caad76d623b8dab505ea"
+      },
+      {
+        "path": "tests/test_bonds_glance_copy.py",
+        "blob": "2bdf08958feeaa88218f1859c2891aed27af6b03"
+      }
+    ],
+    "Forensics": [
+      {
+        "path": "site/fundamental_forensics.js",
+        "blob": "45ade618ae2ae78d1093bc23df98dd3ffc6f9fca"
+      },
+      {
+        "path": "templates/fundamental_forensics.js",
+        "blob": "45ade618ae2ae78d1093bc23df98dd3ffc6f9fca"
+      },
+      {
+        "path": "tests/fundamental_forensics_drawer_resume.test.mjs",
+        "blob": "703c119c384409f84b3d5437ea1bdc9daea84ea3"
+      },
+      {
+        "path": "tests/test_fundamental_forensics_ui.py",
+        "blob": "1c50d2bd449975ebb21741d2dcabc254654cf235"
+      }
+    ],
+    "BusinessActivity": [
+      {
+        "path": "templates/_macro_suite_shell.html.j2",
+        "blob": "c6f4f50623c0d80a772606da32ad8791be8825e7"
+      },
+      {
+        "path": "templates/macro_business_activity.html.j2",
+        "blob": "35478ddfc09f6665895737297a27bf3caf4e540d"
+      },
+      {
+        "path": "tests/test_macro_suite_pages.py",
+        "blob": "5be8804188d241d54bc20f1c14407455eefac3d8"
+      }
+    ],
+    "ChinaHub": [
+      {
+        "path": "templates/china_intel.html.j2",
+        "blob": "34e3b08bcfc6f7ef6edaad6ad93050185673c707"
+      },
+      {
+        "path": "tests/test_china_intel_visits_render.py",
+        "blob": "ba4151ecfabcd457687013fe15a5e8f6a4692b38"
+      }
+    ]
+  },
+  "resolution": "Use current protected10675 runtime/helper and plan-relation test exactly; preserve reviewed stronger hostile-inert test enumeration. Final J9 test only isolates four fixture paths with tmp_path; all assertions unchanged. The transient list-shape proposal was falsified and discarded.",
+  "causal_checks": [
+    "Original actual12 new nodes:9PASS3RED, retained",
+    "Current protected summary+hostile controls4PASS; temporary incorrect list assertion1RED, retained",
+    "Clean\u2192contaminated originaltest reproducesJ9TypeError; isolated tmp_path same stale sibling\u2192GREEN; final targeted pytest1PASS2.68s"
+  ],
+  "contract": "Original cancelled job log has no differential result, only operation canceled; cause remainsUNKNOWN. Prior local exact tested merge/base all5classes0introduced0inherited is not hosted clearance.",
+  "holds": "No browser/new capture/provider/full Bonds producer/native China hub producer/manual CI replay/host/serving. Retained Business native proof is only its pinned12c input cut, not refreshed acquisition or current emitted generation."
+}

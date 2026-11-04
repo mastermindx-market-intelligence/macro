@@ -1,0 +1,28 @@
+J1 N/A card with data-ticker AMD in the US board
+J2 N/A table row present
+J3 N/A grid row present
+J4 PASS AMD present in ['buy']; lane reconciled
+J5 PASS native-id, kind, asof, entry-status bound
+J6 PASS every displayed body equals the template and source fields are supported
+J7 N/A pool container present
+J8 FAIL supported plan relation state
+J9 FAIL source-bound clocks remain valid without runtime quote evidence
+J10 PASS no cross-market hrefs; every data-mkt == US
+J11 PASS no internal enum tokens in displayed text
+J12 PASS alert absent or sources genuinely empty
+RESULT: FAIL
+CONTROL clean shared fixture PASS
+J1 N/A card with data-ticker AMD in the US board
+J2 N/A table row present
+J3 N/A grid row present
+J4 PASS AMD present in ['buy']; lane reconciled
+J5 PASS native-id, kind, asof, entry-status bound
+J6 PASS every displayed body equals the template and source fields are supported
+J7 N/A pool container present
+J8 FAIL supported plan relation state
+J9 FAIL all clocks bound to their sources
+J10 PASS no cross-market hrefs; every data-mkt == US
+J11 PASS no internal enum tokens in displayed text
+J12 PASS alert absent or sources genuinely empty
+RESULT: FAIL
+CAUSAL RED stale sibling runtime switches J9 observed shape: list indices must be integers or slices, not str

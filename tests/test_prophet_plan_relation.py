@@ -338,12 +338,14 @@ def test_three_presenters_render_the_same_plan_relation_body():
     board = env.get_template("_us_board_cards.html.j2").render(
         items=[row], sg_any=False, bs_adj=False, xu_allfeat=False, trg_map={}, rw_en="", rw_zh="",
         plan_rel=relation, plan_rel_by_ticker={"LFUS": relation["plans"]})
-    table = str(module.table_action(row, None, plan_rel=relation))
-    rendered = [BeautifulSoup(fragment, "html.parser").select_one(".pvs-plan-relation")
-                for fragment in (expected, pool, board)]
-    table_source = BeautifulSoup(table, "html.parser").select_one("template.pvs-body-source")
-    assert table_source is not None
-    rendered.append(table_source.select_one(".pvs-plan-relation"))
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; the table presenter's body sits in template.pvs-body-source, so
+    # select on the template element itself, which reaches it on 2.x and 4.x.
+    table = BeautifulSoup(str(module.table_action(row, None, plan_rel=relation)),
+                          "html.parser").select_one("template.pvs-body-source")
+    assert table is not None
+    rendered = [BeautifulSoup(fragment, "html.parser").select_one(".pvs-plan-relation") for fragment in
+                (expected, pool, board)] + [table.select_one(".pvs-plan-relation")]
     normalized = [" ".join(str(node).split()) for node in rendered]
     assert normalized[0] == normalized[1] == normalized[2] == normalized[3]
 
