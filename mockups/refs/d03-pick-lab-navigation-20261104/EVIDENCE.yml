@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/us_stocks_lab.html.j2
+manifest: mockups/refs/d03-pick-lab-navigation-20261104/manifest.json

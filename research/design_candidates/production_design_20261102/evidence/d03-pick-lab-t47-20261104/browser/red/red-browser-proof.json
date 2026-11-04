@@ -1,0 +1,37 @@
+{
+  "fixture_only": true,
+  "source_hashes": {
+    "templates/us_stocks_lab.html.j2": "d4682965533c12837ccaf4c4667e5ed656996bf47362a35f5e05c611f8485441",
+    "engine/pick_lab/render.py": "17c7ca9a55eb50d36d0df75883a78ff196a44b8d7ffe0d1cd2ddb2c8ead605dc",
+    "tests/test_pick_lab_navigation.py": "4ed36ce4c4bc1d36343af0d463301c2a09a8ba9fdc5f3d7813bf6e963cdc1972",
+    "tests/test_pick_lab_render.py": "b2989e39c5b6bc2990308558512fedf7176a88a34a5fd4bed4b304af0b60aff6",
+    "tests/js/pick_lab_navigation_harness.cjs": "fc9f39b5962ceeee7c7b457eff4d93e6c652ecfa9d6cb549aec1b2ea0a9e8f67",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "templates/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "templates/shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+    "templates/data_base.js": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+  },
+  "browser": "151.0.7922.34",
+  "observed_failures": [
+    "selected-tab state absent",
+    "ArrowRight does not activate next section",
+    "book drill has no visible destination focus",
+    "reduced-motion drill still requests smooth scrolling"
+  ],
+  "focus_after_drill": {
+    "tag": "BODY",
+    "visible": true,
+    "bookFocus": false
+  },
+  "scroll_calls": [
+    {
+      "id": "ab-plab_1d_pure",
+      "behavior": "smooth",
+      "block": "start"
+    }
+  ],
+  "page_errors": []
+}
