@@ -500,6 +500,40 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+@pytest.mark.parametrize("token,zh", [
+    ("expansion", "扩张"), ("slowdown", "放缓"),
+    ("contraction", "收缩"), ("recovery", "复苏"),
+])
+def test_business_cycle_phase_labels_preserve_native_value(token, zh) -> None:
+    from lib.macro_suite_labels import label
+
+    assert label("owner_value", token) == {"en": token.capitalize(), "zh": zh}
+
+
+def test_business_depth_breadth_caution_keeps_original_source() -> None:
+    from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer
+
+    source = {
+        "en": "BREADTH (the share of leading legs weakening) has crossed the "
+              "calibrated recession-risk cutoff, but the leading tier's 6-month "
+              "momentum DEPTH has not -- the weakening is broad but shallow; "
+              "the owner's 3 D's rule requires both to fire together before a "
+              "recession-risk signal is asserted.",
+        "zh": "广度已达阈值，但深度尚未确认；两者必须同时触发。",
+    }
+    before = dict(source)
+    reading, original = apply_plain_producer(source)
+
+    assert source == original == before
+    assert original is not source
+    assert reading is not None and reading != PLAIN_FALLBACK
+    assert "not deep enough to confirm recession risk" in reading["en"]
+    assert "Both breadth and depth must meet their thresholds" in reading["en"]
+    assert "广度与深度必须同时达到各自阈值" in reading["zh"]
+    assert guard.find_violations(
+        f'<main><p>{reading["en"]}</p><p>{reading["zh"]}</p></main>') == []
+
+
 def test_labor_coverage_refusal_is_plain_without_claiming_neutral() -> None:
     from html import escape
     from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer
