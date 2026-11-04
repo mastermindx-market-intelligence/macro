@@ -20,3 +20,14 @@ optional:
   supersedes:    {type: list, items: "DEC:<KEY>", note: must be reciprocated by superseded_by}
   superseded_by: {type: string, note: set on the OLD record; never delete a decision}
   review_by:     {type: date, note: for decisions taken under acknowledged uncertainty}
+  project_plan_adoption:
+    type: object
+    closed: true
+    schema: agentos.project_plan_adoption.v1
+    required: [schema, work_ref, adopted_source, predecessor, proposal_source, display_revision]
+    note: >-
+      An explicitly authored planning content decision for exactly one affects WS.
+      adopted_source binds repository/path/commit/exact Git-byte SHA256; predecessor
+      is null or an existing reciprocal supersession DEC. proposal_source and
+      display_revision are explicit nullable declarations. This is not execution
+      admission, protected publication, source-read authority or product acceptance.

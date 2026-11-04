@@ -268,6 +268,51 @@ chooses — not reconstructed later, because reconstruction is exactly what fail
 | `supersedes` | ◻ | list[`DEC:`] | |
 | `superseded_by` | ◻ | `DEC:` | Set on the OLD record when a new one lands. Never delete. |
 | `review_by` | ◻ | date | For decisions taken under acknowledged uncertainty. |
+| `project_plan_adoption` | ◻ | closed object | Explicit planning content decision; §2.1. Absence makes no adoption claim. |
+
+### §2.1 Optional planning content decision and proposal
+
+`project_plan_adoption` has exactly `schema`, `work_ref`, `adopted_source`,
+`predecessor`, `proposal_source`, and `display_revision`. Its schema is
+`agentos.project_plan_adoption.v1`. The selected `WS:<KEY>` must occur in the
+decision's existing `affects` list. `adopted_source` contains exactly repository,
+relative Markdown path, immutable 40-character Git commit and `content_sha256`
+of the exact Git bytes. Supported repositories are the existing Macro and
+Mastermind repositories. A Macro workstream reference must name this exact WS.
+References are data, never authority to fetch a path, repository, network endpoint
+or credentials. Bodies resolve only from already-qualified captured source roots.
+An unavailable referenced body stays unresolved; digest metadata is not a read or
+a content comparison.
+
+`predecessor` is null for an explicitly chosen first baseline or the exact prior
+`DEC:<KEY>`. Successor `supersedes` and predecessor `superseded_by` must reciprocate.
+The pure selector refuses incomplete, cyclic, competing or disconnected lineage;
+dates never elect a winner. `proposal_source` is null or an exact source reference.
+`display_revision` is null or a literal authored label, never an inferred version.
+The current authored WS may evolve independently of the retained adopted bytes.
+Legacy decisions without this optional field retain their existing meaning.
+
+A proposal is an immutable Markdown artifact associated through the existing
+workstream `artifacts` field, not a second plan or task registry. Its closed
+`agentos.project_plan_proposal.v1` header contains `schema`, `proposal_id`,
+`work_ref`, `base_adoption`, `base_source`, `candidate_sha256`, `rationale`, and
+`evidence`. The candidate hash binds exact proposed UTF-8 bytes; the actual owner
+must separately bind the enclosing artifact and the candidate body. The proposal
+artifact starts with an exact `---` line, its YAML header, and a closing `---`
+line, each terminated by LF or CRLF. Every byte after the closing fence's line
+terminator is the candidate body, including leading blank lines, indentation,
+line endings and any UTF-8 BOM in that body. The existing owner YAML loader parses
+the header; `parse_project_plan_proposal` preserves this exact byte boundary.
+A proposal's base must match the selected adopted decision and its exact source reference.
+With no adopted baseline, null `base_adoption` records a comparison basis only.
+It does not establish acceptance. No declaration creates a Job, dispatch,
+permission, adoption command, protected release or runtime/product acceptance.
+
+The existing `draft-decision` serializer validates and preserves this optional
+metadata and remains stdout-only. The pure expected-predecessor check is not a
+write transaction. The commissioned Git writer must qualify actual captured
+source, check the current lineage against its exact publication base, and use
+the normal protected publication path; no stale write is authorized by a draft.
 
 ### Relationship to `DO_NOT_REBUILD.md`
 

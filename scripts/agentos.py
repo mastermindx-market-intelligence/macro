@@ -105,6 +105,7 @@ import argparse
 import datetime as _dt
 import fnmatch
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -1185,6 +1186,63 @@ def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None)
     return out
 
 
+def _project_plan_contract() -> Any:
+    """Load the owner helper from this exact source tree, only when declared.
+
+    Captured legacy records need no new helper. A captured owner that declares the
+    extension must include its sibling helper; ambient PYTHONPATH is not authority.
+    """
+    source = Path(__file__).resolve().with_name("agentos_project_plan_contract.py")
+    spec = importlib.util.spec_from_file_location("_agentos_project_plan_contract", source)
+    if spec is None or spec.loader is None:
+        raise ImportError("PLAN_CONTRACT_UNAVAILABLE")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _validated_project_plan_adoption(rec: dict[str, Any]) -> dict[str, Any]:
+    contract = _project_plan_contract()
+    value = rec.get("project_plan_adoption")
+    work_ref = value.get("work_ref") if isinstance(value, dict) else None
+    adoption = contract.validate_adoption(value, work_ref=work_ref)
+    affects = rec.get("affects")
+    if not isinstance(affects, list) or adoption["work_ref"] not in affects:
+        raise contract.PlanContentError("WORK_REF_MISMATCH")
+    predecessor = adoption["predecessor"]
+    if predecessor is not None:
+        if predecessor == "DEC:" + str(rec.get("key")):
+            raise contract.PlanContentError("LINEAGE_CONFLICT")
+        if not isinstance(rec.get("supersedes"), list) or predecessor not in rec["supersedes"]:
+            raise contract.PlanContentError("LINEAGE_INCOMPLETE")
+    return adoption
+
+
+def parse_project_plan_proposal(raw_bytes: bytes, *, work_ref: str) -> tuple[dict[str, Any], bytes]:
+    """Parse an already-captured artifact without normalizing candidate bytes.
+
+    The existing generic record splitter intentionally consumes whitespace after
+    its fence. Proposal content hashes require an exact byte boundary instead.
+    YAML interpretation still belongs to this existing Agent OS source owner.
+    No path/ref is resolved and this function cannot qualify a captured source.
+    """
+    contract = _project_plan_contract()
+    if type(raw_bytes) is not bytes or not 0 < len(raw_bytes) <= 262144:
+        raise contract.PlanContentError("CONTENT_OVER_BUDGET")
+    match = re.fullmatch(rb"---(?:\r\n|\n)(.*?)(?:\r\n|\n)---(?:\r\n|\n)(.*)",
+                         raw_bytes, re.DOTALL)
+    if match is None:
+        raise contract.PlanContentError("INVALID_PROPOSAL")
+    try:
+        header = _yaml_safe_load(match.group(1).decode("utf-8"))
+    except (UnicodeDecodeError, yaml.YAMLError):
+        raise contract.PlanContentError("INVALID_PROPOSAL") from None
+    candidate = match.group(2)
+    validated = contract.validate_proposal(header, work_ref=work_ref,
+                                            candidate_bytes=candidate)
+    return validated, candidate
+
+
 def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
     for field in ("key", "question", "answer", "rationale", "alternatives",
@@ -1208,6 +1266,15 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     # Same defect class as superseded_by, one field over: `_refs` silently drops a bare
     # key, so an unshaped `supersedes` entry used to skip the reciprocity check entirely.
     _check_citations(rec, "supersedes", "DEC", path, out)
+    if "project_plan_adoption" in rec:
+        try:
+            _validated_project_plan_adoption(rec)
+        except (ImportError, OSError):
+            out.append(Problem(path, "bad-project-plan-adoption",
+                               "PLAN_CONTRACT_UNAVAILABLE", hard=True))
+        except ValueError as exc:
+            # The helper emits closed value-free codes, never record content.
+            out.append(Problem(path, "bad-project-plan-adoption", str(exc), hard=True))
 
     alts = rec.get("alternatives")
     if isinstance(alts, list):
@@ -1229,6 +1296,26 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
         out.append(Problem(path, "review-overdue",
                            f"review_by {review_by} has passed", hard=False))
     return out
+
+
+def select_project_plan_adoption(records: list[dict[str, Any]], *, work_ref: str) -> Any:
+    """Join already-captured DEC records through their actual owner validator.
+
+    This is a read projection, not a registry or permission. The caller owns the
+    capture and source revision; no record or referenced content is opened here.
+    """
+    contract = _project_plan_contract()
+    current = contract.select_current_adoption(records, work_ref=work_ref)
+    for rec in records:
+        if "project_plan_adoption" not in rec:
+            continue
+        metadata = rec.get("project_plan_adoption")
+        if (isinstance(metadata, dict) and metadata.get("work_ref") == work_ref
+                or isinstance(rec.get("affects"), list) and work_ref in rec["affects"]):
+            path = Path("agentos/decisions") / ("DEC-" + str(rec.get("key")) + ".md")
+            if any(problem.hard for problem in check_decision(rec, path)):
+                raise contract.PlanContentError("INVALID_ADOPTION")
+    return current
 
 
 def _evaluation_finding_error(value: Any) -> str | None:
@@ -2113,6 +2200,13 @@ def draft_decision(payload: dict[str, Any]) -> str:
         if optional == "review_by":
             _require_iso_date(payload[optional], "review_by")
         rec[optional] = payload[optional]
+    if "project_plan_adoption" in payload:
+        try:
+            rec["project_plan_adoption"] = _validated_project_plan_adoption(payload)
+        except (ImportError, OSError):
+            _die("PLAN_CONTRACT_UNAVAILABLE")
+        except ValueError as exc:
+            _die(str(exc))
     path = f"agentos/decisions/DEC-{key}.md"
     text = (
         _yaml_frontmatter(rec)
