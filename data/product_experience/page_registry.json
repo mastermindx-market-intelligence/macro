@@ -1,16 +1,19 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-04T03:25:00Z",
+  "generated_at": "2026-11-04T04:22:35Z",
   "sources": {
     "macro": {
       "available": true,
       "root": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/shared-shell-catalog-gates-current-20261103-8348a95921f818a4",
       "ref": "HEAD",
-      "sha": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03",
+      "sha": "ec7eae774e493bbd535926dde7c2437c02daa25d",
       "page_inventory": "git ls-files site/*.html",
       "tracked_html_pages": 14025,
       "write_page_sites": 167,
       "write_page_unresolved": 40,
+      "public_carrier_held_write_sites": [
+        "scripts/build_consumer_cyclical_plnt_page.py:121 /consumer_cyclical_plnt.html"
+      ],
       "unresolved_write_sites": [
         "scripts/build_am_edition.py: html_out_path",
         "scripts/build_biocatalyst.py: page_temp",
@@ -2675,55 +2678,6 @@
         "templates/congress_trades.html.j2"
       ],
       "notes": []
-    },
-    {
-      "page_id": "macro:consumer_cyclical_plnt",
-      "repo": "macro",
-      "route": "/consumer_cyclical_plnt.html",
-      "route_kind": "page",
-      "source_template": "templates/consumer_cyclical_plnt.html.j2",
-      "builder": [
-        "scripts/build_consumer_cyclical_plnt_page.py"
-      ],
-      "data_sources": [],
-      "access_shell": "anonymous",
-      "payload_tier": "public_shell_premium_payload",
-      "nav_family": "none",
-      "archetype": "instrument_analyzer",
-      "design_system": {
-        "compliant": false
-      },
-      "primary_user_question": "",
-      "owner": "unowned",
-      "lifecycle": "parked",
-      "priority": "unclassified",
-      "generated": true,
-      "bilingual": true,
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "locales": [
-        "en",
-        "zh"
-      ],
-      "known_contracts": [
-        "site_access.v1:default_insider",
-        "shared_shell:admission_withheld"
-      ],
-      "open_prs": [],
-      "source_evidence": [
-        "config/site_access.yml",
-        "config/site_access.yml:1",
-        "scripts/build_consumer_cyclical_plnt_page.py",
-        "scripts/build_consumer_cyclical_plnt_page.py:116",
-        "templates/consumer_cyclical_plnt.html.j2"
-      ],
-      "notes": [
-        "template attributed by name match; no write_page() call site names it",
-        "written by a builder but not committed under site/",
-        "Diagnostic builder-write inventory only: the synthetic fixture card was withdrawn from the public carrier by Product Trust F-6 (#10237/#10268), and has no committed site HTML. Preserve its public-build refusal and consumer exclusion."
-      ]
     },
     {
       "page_id": "macro:country_cycles",
