@@ -5453,6 +5453,24 @@ jobs:
             /*
             !/site/
             !/data/
+            !/mockups/**/*.png
+            !/mockups/**/*.jpg
+            !/mockups/**/*.jpeg
+            !/mockups/**/*.webp
+            !/mockups/**/*.gif
+            !/mockups/**/*.mp4
+            !/mockups/**/*.mov
+            !/mockups/**/*.pdf
+            !/mockups/**/*.zip
+            !/verify_shots/**/*.png
+            !/verify_shots/**/*.jpg
+            !/verify_shots/**/*.jpeg
+            !/verify_shots/**/*.webp
+            !/verify_shots/**/*.gif
+            !/verify_shots/**/*.mp4
+            !/verify_shots/**/*.mov
+            !/verify_shots/**/*.pdf
+            !/verify_shots/**/*.zip
           sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:

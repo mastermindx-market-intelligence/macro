@@ -2081,7 +2081,8 @@ def test_migration_original_release_upload_apply_outcome_and_rooted_idle(migrati
     assert mog.migration_register_is_idle(s.repo,s.read,pointer,repository_id=17,protected_controller_sha='4'*40)
     assert len([c for c in state['calls'] if c[0]=='PATCH'])==1
     # Two ordinary index generations conserve the same authenticated root.
-    indexer=stages.AnchorIndexer(mog,s.repo,s.read,s.context,deadline=stages.time.time()+240)
+    indexer=stages.AnchorIndexer(mog,s.repo,s.read,s.context,deadline=stages.time.time()+240,
+                                 clock=stages.time.time,sleep=stages.time.sleep)
     for artifact in (900,901):
         state['description']=mog.shared_register_text('a2 idle',aid)  # modeled prior positive finalization
         next_state=stages.IndexState(artifact,7,migration_root=aid)

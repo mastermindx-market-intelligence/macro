@@ -1416,23 +1416,24 @@ def test_shared_controller_wake_cannot_execute_candidate_or_skip_reservation(mut
     policy = _admission_policy_module()
     doc=yaml.safe_load((WORKFLOWS/'merge-on-green.yml').read_text())
     job=doc['jobs']['sweep']; steps=job['steps']
+    by_id = {step.get('id'): step for step in steps if step.get('id')}
     if mutation=='candidate-ref': steps[0]['with']['ref']='${{ github.event.pull_request.head.sha }}'
     elif mutation=='persist-token': steps[0]['with']['persist-credentials']=True
     elif mutation=='new-job': doc['jobs']['candidate']={'runs-on':'ubuntu-latest','steps':[{'run':'echo untrusted'}]}
     elif mutation=='global-env': doc['env']={'PATH':'${{ github.event.pull_request.title }}'}
     elif mutation=='cancel-active': job['concurrency']['cancel-in-progress']=True
     elif mutation=='per-pr-group': job['concurrency']['group']='per-pr-${{ github.event.pull_request.number }}'
-    elif mutation=='missing-ready': steps[5]['if']=steps[5]['if'].replace("steps.admission_prepare.outputs.ready == 'true'",'true')
-    elif mutation=='skip-prepared': steps[8]['if']='true'
-    elif mutation=='foreign-read-token': steps[3]['env']['READ_TOKEN']='${{ secrets.ADMIN_GH_TOKEN }}'
-    elif mutation=='foreign-check-token': steps[2]['env']['CHECKS_TOKEN']='${{ secrets.ADMIN_GH_TOKEN }}'
-    elif mutation=='untrusted-command': steps[8]['run']='python3 scripts/${{ github.event.pull_request.title }}'
+    elif mutation=='missing-ready': by_id['admission_reserve']['if']=by_id['admission_reserve']['if'].replace("steps.admission_prepare.outputs.ready == 'true'",'true')
+    elif mutation=='skip-prepared': by_id['admission_dispatch']['if']='true'
+    elif mutation=='foreign-read-token': by_id['admission_prepare']['env']['READ_TOKEN']='${{ secrets.ADMIN_GH_TOKEN }}'
+    elif mutation=='foreign-check-token': by_id['admission_dispatch']['env']['CHECKS_TOKEN']='${{ secrets.ADMIN_GH_TOKEN }}'
+    elif mutation=='untrusted-command': by_id['admission_dispatch']['run']='python3 scripts/${{ github.event.pull_request.title }}'
     elif mutation=='reordered-upload': steps[6],steps[8]=steps[8],steps[6]
     elif mutation=='extra-upload': steps.append({'uses':'actions/upload-artifact@v4'})
     elif mutation=='wrong-trigger': doc.get('on',doc.get(True))['pull_request_target']={'branches':['main']}
     elif mutation=='job-container': job['container']='untrusted/image:latest'
     elif mutation=='job-service': job['services']={'untrusted':{'image':'untrusted/image:latest'}}
-    else: steps[6]['with']['overwrite']=True
+    else: by_id['admission_prepared']['with']['overwrite']=True
     assert policy._shared_admission_controller_r2_findings('.github/workflows/merge-on-green.yml',doc)
 
 

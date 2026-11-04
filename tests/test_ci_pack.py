@@ -4413,6 +4413,10 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Y7 #10656 scratch-only: retain measured named imports; drop opaque fallback selection.
+    "engine-render-guards",
+    "market-memory-contract",
+    "capital-structure-intelligence",
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
     # Qledger suites retain all named imports; opaque fixture roots are audited.
@@ -4425,6 +4429,7 @@ CURATED_EXCLUSIVE = {
     "admin-research-tools",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
+    "ontology-explorer-static-contracts",  # preserves original ontology non-browser groups in separate bounded job
     # DR3: exact closure isolates the observation consumer; no packing ceiling change.
     "rotation-observation-delivery",
 
@@ -4481,6 +4486,7 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    "ci-admission-source-contracts",  # admission suites retain explicit source owner after split
     "bot-session-recovery-browser",  # R5 Bot auth recovery: curated browser scope owns its two ancestor initializers.
     "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on

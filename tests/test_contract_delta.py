@@ -572,6 +572,59 @@ def test_sparse_caller_gets_a_base_tree_with_the_same_cone(tmp_path: Path, monke
     assert not tree.exists()
 
 
+def test_noncone_caller_base_mirrors_exact_binary_exclusions(tmp_path: Path, monkeypatch) -> None:
+    """PR/base must use identical non-cone source selection, not full-base fallback."""
+    repo = _make_repo(tmp_path)
+    (repo / "mockups").mkdir()
+    (repo / "mockups" / "evidence.png").write_bytes(b"test image")
+    (repo / "mockups" / "guard.py").write_text("GUARD = 1\n")
+    _git("add", "-A", cwd=repo)
+    _git("commit", "-q", "-m", "media fixture", cwd=repo)
+    (repo / "engine" / "x.py").write_text("X = 3\n")
+    _git("commit", "-q", "-am", "new head", cwd=repo)
+
+    rules = ["/*", "!/data/", "!/mockups/**/*.png"]
+    _git("sparse-checkout", "set", "--no-cone", "--", *rules, cwd=repo)
+    assert CCD.caller_sparse_cone(repo) is None
+    assert CCD.caller_sparse_noncone_rules(repo) == rules
+    assert not (repo / "data" / "big.txt").exists()
+    assert not (repo / "mockups" / "evidence.png").exists()
+    assert (repo / "mockups" / "guard.py").exists()
+
+    monkeypatch.setenv(CCD.TEMP_ROOT_ENV, str(tmp_path))
+    tree, _sha, cleanup = CCD.materialize_base_tree("HEAD~1", repo_root=repo)
+    try:
+        assert _git("config", "--get", "core.sparseCheckoutCone", cwd=tree).strip() == "false"
+        assert CCD.caller_sparse_noncone_rules(tree) == rules
+        assert (tree / "engine" / "x.py").read_text() == "X = 2\n"
+        assert (tree / "mockups" / "guard.py").exists()
+        assert not (tree / "mockups" / "evidence.png").exists()
+        assert not (tree / "data" / "big.txt").exists()
+        assert "mockups/evidence.png" in _git("ls-tree", "-r", "--name-only", "HEAD", cwd=tree)
+        assert _git("status", "--porcelain", cwd=tree) == ""
+    finally:
+        cleanup()
+    assert not tree.exists()
+
+
+def test_contract_delta_checkout_excludes_media_but_keeps_source_and_proof() -> None:
+    job = _ci_jobs()["contract-delta"]
+    checkout = _step_named(job, "check out the exact candidate")
+    assert checkout is not None
+    opts = checkout["with"]
+    rules = opts["sparse-checkout"].splitlines()
+    assert opts["sparse-checkout-cone-mode"] is False
+    assert opts["filter"] == "blob:none"
+    assert opts["fetch-depth"] == 1
+    assert rules[:3] == ["/*", "!/site/", "!/data/"]
+    assert set(rules[3:]) == {
+        f"!/{root}/**/*.{ext}"
+        for root in ("mockups", "verify_shots")
+        for ext in ("png", "jpg", "jpeg", "webp", "gif", "mp4", "mov", "pdf", "zip")
+    }
+    assert len(rules[3:]) == 18
+
+
 def test_caller_sparse_cone_is_none_for_a_full_checkout(tmp_path: Path) -> None:
     repo = _make_repo(tmp_path)
     assert CCD.caller_sparse_cone(repo) is None
