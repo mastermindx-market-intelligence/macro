@@ -22,7 +22,7 @@ Omission of `production_mode` preserves the existing legacy route. Presence sele
 
 Selection does not enable a mode. `config/provider_production_modes.v1.json` remains authoritative and both modes ship disabled. The GLM profile additionally remains unqualified pending its required canary. This change installs no credentials and does not grant a provider profile, pool claim or production entitlement.
 
-For the separate Mastermind Brain dispatcher, the paired consumer selects `BOT_LLM_BACKEND=production_mode` and `BOT_LLM_PRODUCTION_MODE=minimax_payg_api`. Its compatible owner must include this PR's MiniMax `max_retries=0` transport fix. [Full cross-repository implementation notes](https://github.com/mastermindx-market-intelligence/Mastermind/blob/2bcfb4cf21852beafe15d4edcfe5dda0e51f90ac/docs/brain/production_inference.md).
+For the separate Mastermind Brain dispatcher, the paired consumer selects `BOT_LLM_BACKEND=production_mode` and `BOT_LLM_PRODUCTION_MODE=minimax_payg_api`. Its compatible owner must include this PR's MiniMax `max_retries=0` transport fix. [Full cross-repository implementation notes](https://github.com/mastermindx-market-intelligence/Mastermind/blob/389efa1f0f0d61f7bdfeda077e112029563ed6ea/docs/brain/production_inference.md).
 
 ## Failure, accounting and cache behavior
 
@@ -42,6 +42,6 @@ From this Macro checkout:
 PYTHONPATH=. python -m unittest discover -s tests -p test_master_brain_production_composition.py -v
 ```
 
-Fourteen local composition tests passed through actual synthesis, the owner and temporary incumbent ledgers; only the SDK/network boundary is substituted during normal execution tests. The suite is also registered in the existing `unrun-brain-desks` packed CI job. The paired Mastermind CIO composition has fourteen additional passing local tests and a dedicated required CI job pinned to compatible Macro source.
+Fourteen local composition tests passed through actual synthesis, the owner and temporary incumbent ledgers; only the SDK/network boundary is substituted during normal execution tests. The suite is also registered in the existing `unrun-brain-desks` packed CI job. The paired Mastermind CIO composition has fourteen additional passing local tests and a required composition step within existing Mastermind CI shard zero, pinned to compatible Macro source.
 
 These results are source proof. They do not establish deployed configuration, live credentials, native shared admission, production inference, browser behavior or release acceptance. Full Fabric integration and retirement of existing bypasses remain open in the parent programme.
