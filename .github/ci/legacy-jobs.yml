@@ -58,6 +58,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -295,6 +297,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2463,6 +2467,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3538,6 +3544,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -8130,6 +8138,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -10639,6 +10649,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -10991,6 +11003,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11362,6 +11376,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -12368,6 +12384,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -16612,6 +16630,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -19085,6 +19105,8 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -20888,6 +20910,8 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -23012,6 +23036,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/intl_transmission_evidence.py"
       - "config/intl_transmission_channels_v1.json"
       - "tests/test_intl_transmission_evidence.py"
@@ -23168,6 +23194,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -23607,6 +23635,8 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -23942,6 +23972,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -26536,6 +26568,8 @@ jobs:
     # RIC E0 frozen-spec retrospective runners (2026-10-14): M0 coherent requalification (H1, family ric_mri_coherent_requal_v1, n=13) and X0 release reaction (H3, family ric_x0_release_reaction_v1, n=8). Both ran ONCE against frozen protocols; these suites pin the runners' rules, receipts and committed results. Hermetic: synthetic fixtures and committed research/ receipts only, no network, no data/ reads or writes, no ledger writes.
     timeout-minutes: 10
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -26953,6 +26987,8 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/options_hub_retention.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -30730,6 +30766,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -31806,6 +31844,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -34591,6 +34631,8 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -35197,6 +35239,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -40360,6 +40404,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -42010,6 +42056,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -43675,6 +43723,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -44949,6 +44999,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -48637,6 +48689,8 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -48904,6 +48958,8 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"
@@ -49535,6 +49591,8 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
@@ -49711,6 +49769,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -50005,6 +50065,8 @@ jobs:
     # Exclude only opaque whole-root inference from the builder's dormant I/O;
     # packing ceilings, all named dependencies and test assertions stay intact.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -50141,6 +50203,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
