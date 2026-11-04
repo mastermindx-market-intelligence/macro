@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Regime History — {{ latest.date }}</title>
-{% set seo_title = "US Regime History — Mastermind" %}{% set seo_desc = "Every US market regime call on the record — when regimes flipped, what was said, and how it played out." %}{% set seo_path = "history.html" %}
+{% set seo_title = "US Regime History — Mastermind" %}{% set seo_desc = "Reconstructed US regime history with S&P 500 overlays and regime durations. Earlier classifications may change when recalculated." %}{% set seo_path = "history.html" %}
 {% include "_seo_head.html.j2" %}
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
@@ -62,7 +62,7 @@
 
   <div class="panel">
     <h2>{{ t('Three years of regimes over the S&P 500', '标普500 三年周期叠加') }}
-      {{ help("The S&P 500 with the regime active at each time shaded behind it — how the classifier actually behaved in real conditions.", "标普500 走势，并以底色标出每个时段所处的周期 — 展示分类器在真实环境中的实际表现。") }}
+      {{ help("The S&P 500 with reconstructed regime history from the classifier used for that calculation. Recalculating the history can change earlier classifications.", "标普500走势及当次计算所用分类器重建的周期历史。重新计算可能改变早期分类。") }}
     </h2>
     {{ chart_regime | safe }}
     <div class="legend">

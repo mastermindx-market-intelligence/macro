@@ -1,11 +1,11 @@
 {
   "status": "stale",
-  "checked_at": "2026-11-03T14:50:16.077451+00:00",
+  "checked_at": "2026-11-04T07:13:06.861419+00:00",
   "threshold_sessions": 3,
   "store_max": "2026-11-03",
   "n_members": 702,
   "n_stale": 1,
-  "n_behind_within_threshold": 3,
+  "n_behind_within_threshold": 1,
   "stale": {
     "PSKY": {
       "last": "2026-10-16",

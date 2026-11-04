@@ -1,0 +1,32 @@
+PASS current publication renders only its actual owner-qualified links, including none
+PASS actual current publication initializes and preserves its source-only relationship fallback
+PASS canonical empty-cohort view invents no company and retains each owner continuation
+PASS retained qualified owner is rendered by the canonical template under its own fixture fingerprint
+PASS default overview and dated evidence
+PASS commodity selection hides overview hero and keeps URL context
+PASS company continuation preserves owner fields and the current investigation
+PASS relationships carries a selected explanation without treating it as evidence
+PASS changing explanation changes the mechanism and its evidence questions together
+PASS company return transport is bounded, single-encoded and idempotent
+PASS research exposes explanation and requires a session window
+PASS per-commodity draft preserves its explanation and exact numeric condition
+PASS export includes a recoverable evidence appendix and stays inactive
+PASS Gold export retains its regional proxy and excludes petroleum context
+PASS incompatible or incomplete imports do not silently change their semantics
+PASS import restores the same explanation into relationships and research
+PASS a stale import preserves the active investigation
+PASS malformed assets and deeply nested imports reject without changing the investigation
+PASS a delayed earlier import cannot overwrite the most recent file selection
+PASS a rejected outdated file read cannot clear the newer import status
+PASS comparison selection is bounded to four without losing the chosen assets
+PASS comparison uses the selected exact publisher window
+PASS gold physical handoff opens its real owner panel
+PASS return restores the selected commodity and closes advanced analytics
+PASS company return follows Gold and the selected comparison window
+PASS partial coverage has a real selected-commodity fallback
+PASS Chinese native controls show Chinese labels
+PASS keyboard tabs move selection and focus together
+PASS browser history restores the previous view
+PASS direct hash and repeated language renders keep the exact company return
+PASS rendered DOM has no duplicate IDs or event errors
+RESULT 31 rendered-DOM journeys passed; this is not a visual-layout proof.

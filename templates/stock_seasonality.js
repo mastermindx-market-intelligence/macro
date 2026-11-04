@@ -829,22 +829,33 @@
     });
   }
 
+  /* The LATEST selection owns the request. pickGeneration advances for every
+     nonempty selection — including one that lands on the already-loaded symbol —
+     so any entity still in flight from an earlier pick is stale by the time it
+     settles: it can no longer overwrite the chart, the URL, or the notices a
+     newer selection has already answered. */
+  var pickGeneration = 0;
   function pick(sym) {
-    if (!sym || sym === state.symbol) { closePop(); return; }
+    if (!sym) { closePop(); return; }
+    var generation = ++pickGeneration;
     note("sx-err", false); note("sx-nocov", false);
+    if (sym === state.symbol) { closePop(); return; }
     fetch(entityUrl(sym), { credentials: "omit" })
       .then(function (r) {
+        if (generation !== pickGeneration) return null;
         if (r.status === 404) { note("sx-nocov", true); return null; }
         if (!r.ok) throw new Error("http " + r.status);
         return r.json();
       })
       .then(function (j) {
+        if (generation !== pickGeneration) return;
         if (!j || !j.years || !j.years.length) return;
         adopt(j);
       })
       .catch(function () {
         /* Cross-origin fetch has more ways to fail than a same-origin one. Keep the
            symbol already on screen and say what happened — never blank the page. */
+        if (generation !== pickGeneration) return;
         note("sx-err", true);
       });
     closePop();

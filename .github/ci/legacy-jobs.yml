@@ -14257,6 +14257,8 @@ jobs:
     # build_free_content (5,816 > 5,810) packing probes. scope: exclusive pins it to the
     # suites' static import closure (run_ci_pack.inferred_as_if_not_exclusive on main
     # d5d0be27, 26 files, no probe file in it); the probe ceilings stay fixed.
+    # P12.T45: History copy uses this same offline Jinja/SEO contract. Only the
+    # template and pure render test are added; no regime engine/data execution.
     paths:
       - "config/site_access.yml"
       - "engine/__init__.py"
@@ -14274,6 +14276,7 @@ jobs:
       - "scripts/build_reports.py"
       - "scripts/build_research_pages.py"
       - "scripts/build_research_vault.py"
+      - "templates/history.html.j2"
       - "templates/_seo_head.html.j2"
       - "templates/_site_nav.html.j2"
       - "templates/report_base.html.j2"
@@ -14282,6 +14285,7 @@ jobs:
       - "templates/research_report.html.j2"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - "tests/test_history_provenance_copy.py"
       - "tests/test_reports_hub_span.py"
       - "tests/test_research_pages_hub_claims.py"
       - "tests/test_research_pages_record_claims.py"
@@ -14296,6 +14300,8 @@ jobs:
         run: pip install pytest jinja2 pyyaml
       - name: Research record claims — hub span, index hub claims, per-report record claims
         run: python -m pytest tests/test_reports_hub_span.py tests/test_research_pages_hub_claims.py tests/test_research_pages_record_claims.py -q -p no:cacheprovider
+      - name: History provenance copy — reconstructed classifications, EN/ZH help and shared SEO
+        run: python -m pytest tests/test_history_provenance_copy.py -q -p no:cacheprovider
   china-board-breadth:
     if: ${{ false }}
     gate: code
@@ -48178,6 +48184,10 @@ jobs:
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_ledger.test.mjs tests/js/radar_panel_claims_tile.test.mjs
       - name: radar_panel.js trail dates, promise horizon, stocks-tab read split
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_trail.test.mjs tests/js/radar_panel_horizon.test.mjs tests/js/radar_panel_names.test.mjs tests/js/radar_panel_open_checks.test.mjs
+      - name: Calendar Clock latest-selected symbol identity
+        run: |
+          cmp templates/stock_seasonality.js site/stock_seasonality.js
+          node tests/js/test_stock_seasonality_selection.cjs templates/stock_seasonality.js
 
   sni-s2-event-response:
     if: ${{ false }}
