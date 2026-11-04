@@ -8,6 +8,7 @@
 {% set payload = gs_panel.payload %}
 {% set specimen = payload.specimen|default(false) %}
 {% set abstain = payload.abstain_copy %}
+{% set actionable_markets = (intl_workspace|default({})).get('config', {}).get('markets', []) %}
 {% call gs.gs_panel_root(view='dossier', panel=gs_panel) %}
 {{ gs.gs_page_header(
      t('Global surveillance · dossier', '全球监控 · 市场档案'),
@@ -24,7 +25,11 @@
       <div class="intl-gs__pickergroup" data-region-group="{{ group.key|e }}">
         <p class="intl-gs__pickergrouplabel">{{ t(group.label_en, group.label_zh) }}</p>
         {% for entry in group.markets %}
+        {% if entry.id in actionable_markets %}
         <a class="intl-gs__picklink" data-gs-market-row="{{ entry.id|e }}" data-gs-select-market="{{ entry.id|e }}" href="?view=dossier&amp;market={{ entry.id|e }}">{{ t(entry.name_en, entry.name_zh) }}{% if group.key == 'aggregates' %} <span class="intl-gs__pickagg">{{ t('aggregate', '聚合') }}</span>{% endif %}</a>
+        {% else %}
+        <span class="intl-gs__picklink" data-gs-market-row="{{ entry.id|e }}" aria-disabled="true">{{ t(entry.name_en, entry.name_zh) }} <small>{{ t('Selection unavailable in this workspace', '当前工作区不支持选择') }}</small></span>
+        {% endif %}
         {% endfor %}
       </div>
       {% endfor %}
@@ -213,7 +218,11 @@
     <div class="intl-gs__peers">
       <p class="intl-gs__peers__title">{{ t('Region peers', '同区同伴') }}</p>
       {% for peer in market.peers %}
+      {% if peer.id in actionable_markets %}
       <a class="intl-gs__peer" data-gs-select-market="{{ peer.id|e }}" data-gs-open="dossier" href="?view=dossier&amp;market={{ peer.id|e }}">
+      {% else %}
+      <div class="intl-gs__peer" aria-disabled="true"><small>{{ t('Selection unavailable in this workspace', '当前工作区不支持选择') }}</small>
+      {% endif %}
         <span class="intl-gs__peer__name">{{ t(peer.name_en, peer.name_zh) }}</span>
         {% if peer.state == 'number' and peer.value_pct is not none and peer.clock %}
         <span class="intl-gs__peer__val">{{ gs.gs_signed(peer.value_pct, 2, '%', 'up' if peer.value_pct > 0 else 'down') }}</span>
@@ -223,7 +232,7 @@
         {% else %}
         {{ gs.gs_state_chip('abstain') }}{% if peer.reason_pairs %} <span class="intl-gs__peer__reason">{{ t(peer.reason_pairs[0][0], peer.reason_pairs[0][1]) }}</span>{% endif %}
         {% endif %}
-      </a>
+      {% if peer.id in actionable_markets %}</a>{% else %}</div>{% endif %}
       {% endfor %}
       {% if not market.peers %}<p class="intl-gs__footnote">{{ t('An aggregate has no same-region peers.', '聚合无同区同伴。') }}</p>{% endif %}
     </div>
