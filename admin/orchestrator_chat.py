@@ -255,9 +255,8 @@ _FABRIC_TOOL_TOKEN_RE = re.compile(r"^[A-Za-z0-9_.-]{1,64}\Z")
 _FABRIC_STOP_REASONS = frozenset({"end_turn", "tool_use", "max_tokens",
                                   "stop_sequence", "stop", "length"})
 _MAX_REQUEST_ID_CHARS = 64
-# The declared workload floor the owner-side resolver sets once the Fabric
-# transport is qualified for it.  Its mere PRESENCE refuses the turn before a
-# factory is invoked; no workload policy or admission claim is added here.
+# The declared workload floor is composed by the exact trusted owner factory.
+# Unowned callbacks cannot attest to it and remain refused when it is present.
 _FABRIC_WORKLOAD_PROFILE_ENV = "MM_PROVIDER_WORKLOAD_PROFILE"
 # The ledger note marking a settled row as PARTIAL known usage, and the
 # bounded uncertainty slugs (never an exception message, prompt or endpoint).
@@ -1103,10 +1102,10 @@ def _chat_fabric(repo: Path, msg: str, history, *, fabric_provider_factory,
     secret.  The factory is called exactly once per logical turn, and the
     client it returns is used for that turn only.
 
-    Two gates run BEFORE a factory or client are constructed: an EXPLICIT turn
-    id must be usable (a malformed one is refused; only an ABSENT id is
-    generated, once), and the transport must not be qualified-but-unfloored —
-    the presence of the workload-profile variable refuses the turn.
+    An explicit turn id must be usable before a factory is constructed. Only
+    an absent id is generated, once. The trusted owner factory composes the
+    startup and host workload floors; unowned callbacks are refused whenever
+    the host declares a workload profile.
     """
     # An EXPLICIT turn id is validated before anything is constructed.  Only
     # an absent id may be generated, and it is generated exactly once.
@@ -1117,10 +1116,13 @@ def _chat_fabric(repo: Path, msg: str, history, *, fabric_provider_factory,
         if turn_id is None:
             return _fabric_degraded_result(repo, reason="invalid_request_id",
                                            text="invalid request id")
-    # The declared workload floor gate: the mere presence of the variable
-    # refuses the turn, even when it is empty.  Its VALUE is never read,
-    # logged or echoed.
-    if _FABRIC_WORKLOAD_PROFILE_ENV in os.environ:
+    # Only the exact trusted owner factory composes the startup and host
+    # workload floors before credential resolution. Arbitrary callbacks cannot
+    # attest to that policy and remain refused whenever a host floor is present.
+    from engine.provider_production_modes import ApplicationFabricFactory
+
+    if (_FABRIC_WORKLOAD_PROFILE_ENV in os.environ
+            and type(fabric_provider_factory) is not ApplicationFabricFactory):
         return _fabric_degraded_result(
             repo, reason="fabric_workload_profile_present",
             text="fabric transport not qualified for this workload")

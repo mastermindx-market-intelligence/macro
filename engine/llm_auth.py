@@ -369,7 +369,7 @@ def is_fabric_selection(providers: list[dict]) -> bool:
     return False
 
 
-def build_fabric_provider(factory, *, request_id: str) -> dict:
+def build_fabric_provider(factory, *, request_id: str, workload_cfg=None) -> dict:
     """Compose one server-injected, turn-scoped client without discovering keys.
 
     The existing service container owns the immutable factory. It must construct a
@@ -379,14 +379,22 @@ def build_fabric_provider(factory, *, request_id: str) -> dict:
     """
     if not isinstance(request_id, str) or not _FABRIC_ID.fullmatch(request_id) or len(request_id) > 96:
         raise FabricProviderError("fabric_request_identity_invalid")
-    # The incumbent workload guard has not yet qualified this transport. A host
-    # floor must never be bypassed by injecting a client before build_providers.
-    if "MM_PROVIDER_WORKLOAD_PROFILE" in os.environ:
-        raise FabricProviderError("fabric_workload_policy_unqualified")
     if not callable(factory):
         raise FabricProviderError("fabric_binding_missing")
+    from engine.provider_production_modes import ApplicationFabricFactory
+
+    owned_factory = type(factory) is ApplicationFabricFactory
+    # A generic injected callable is not proof of workload qualification. Only
+    # the incumbent owner may compose the real host/startup/caller intersection.
+    if not owned_factory and ("MM_PROVIDER_WORKLOAD_PROFILE" in os.environ
+            or (isinstance(workload_cfg, dict) and "workload_profile" in workload_cfg)):
+        raise FabricProviderError("fabric_workload_policy_unqualified")
+    workload = None
     try:
-        bound = factory()
+        if owned_factory:
+            bound, workload = factory._bind_with_workload(workload_cfg)
+        else:
+            bound = factory()
     except Exception:
         raise FabricProviderError("fabric_binding_unavailable") from None
     if not isinstance(bound, dict) or set(bound) != _FABRIC_BINDING_KEYS:
@@ -407,6 +415,8 @@ def build_fabric_provider(factory, *, request_id: str) -> dict:
         "_fabric_known_responses": 0,
     }
     provider["client"] = _FabricConsumerClient(bound["client"], provider)
+    if workload is not None:
+        provider["workload_policy"] = workload.receipt()
     return provider
 
 
@@ -1264,7 +1274,8 @@ def build_providers(
     ----------
     cfg:
         Brain config dict with standard keys:
-          provider_order    (list[str])  — Codex is auto-inserted unless disabled
+          workload_profile  (str)        — trusted purpose; server environment may narrow it
+          provider_order    (list[str])  — explicit in profiled mode; no implicit Codex
           oauth_token_env   (str)        — env-var for OAuth token
           api_key_env       (str)        — env-var for Anthropic API key
           deepseek_key_env  (str)        — env-var for DeepSeek key
@@ -1291,19 +1302,24 @@ def build_providers(
     if type(fabric_selected) is not bool:
         raise FabricProviderError("fabric_selection_invalid")
     if fabric_selected:
-        if "workload_profile" in cfg:
-            raise FabricProviderError("fabric_workload_policy_unqualified")
-        return [build_fabric_provider(fabric_provider_factory, request_id=request_id)]
+        return [build_fabric_provider(fabric_provider_factory, request_id=request_id,
+                                      workload_cfg=cfg)]
     if "fabric" in (cfg.get("provider_order") or []):
         raise FabricProviderError("fabric_binding_not_selected")
 
+    from engine.provider_workload_policy import HOST_PROFILE_ENV, decide_workload
+
+    # Incumbent #7179 guard: decide trusted purpose before discovering credentials.
+    workload = decide_workload(cfg, host_profile=os.environ.get(HOST_PROFILE_ENV))
     from lib import config as _config
 
     OAUTH_BETA = "oauth-2025-04-20"
     DEEPSEEK_DEFAULT_BASE = "https://api.deepseek.com/anthropic"
 
-    configured_order = list(
-        cfg.get("provider_order") or ["oauth", "anthropic", "deepseek"]
+    configured_order = (
+        list(workload.allowed_order) if workload is not None else list(
+            cfg.get("provider_order") or ["oauth", "anthropic", "deepseek"]
+        )
     )
     opus = opus_model or cfg.get("opus_model", "claude-opus-4-8")
     ds_model = deepseek_model or cfg.get("deepseek_model", "deepseek-v4-pro")
@@ -1312,7 +1328,8 @@ def build_providers(
     # after the OAuth pool, before metered API providers. DeepSeek-only/Anthropic-
     # only lanes keep their existing order and receive Codex as the last resort.
     order = list(configured_order)
-    if "codex" not in order and cfg.get("codex_provider", True) is not False:
+    if (workload is None and "codex" not in order
+            and cfg.get("codex_provider", True) is not False):
         if "oauth" in order:
             order.insert(order.index("oauth") + 1, "codex")
         else:
@@ -1689,6 +1706,11 @@ def build_providers(
                 )
         except Exception as e:  # noqa: BLE001
             log.debug("llm_auth: provider cooldown ordering failed (%s)", e)
+
+    # Only this closed policy projection is safe to publish, never credentials.
+    if workload is not None:
+        for prov in out:
+            prov["workload_policy"] = workload.receipt()
 
     # Inject usage attribution metadata from cfg into every provider descriptor.
     # _capture_usage() reads these keys to populate the ai_costs ledger row.

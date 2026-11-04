@@ -249,9 +249,9 @@ def authenticated_admin(monkeypatch, tmp_path):
 
 
 @contextmanager
-def admin_surface(factory):
+def admin_surface(factory=None, *, selected=True):
     from admin import server
-    httpd = server._build_server("127.0.0.1", 0, fabric_selected=True,
+    httpd = server._build_server("127.0.0.1", 0, fabric_selected=selected,
                                  fabric_provider_factory=factory)
     httpd.daemon_threads = True
     thread = threading.Thread(target=lambda: httpd.serve_forever(poll_interval=0.01), daemon=True)
@@ -352,3 +352,106 @@ def test_admin_auth_and_csrf_refuse_before_gateway(gateway_module, tmp_path,
     assert response.status_code == (403 if authenticated else 401)
     assert factory.call_count == 0 and calls == wire == []
     assert snapshot["shared_used_in_window"] == 0
+
+
+def configure_owned_application(monkeypatch, root, url):
+    """Synthetic qualification; use the real owner, policy and capability broker."""
+    import time
+    import yaml
+    from engine import provider_production_modes as owner
+
+    config = root / "config"
+    config.mkdir(exist_ok=True)
+    source = Path(__file__).resolve().parents[1] / "config"
+    (config / "provider_workloads.v1.json").write_bytes(
+        (source / "provider_workloads.v1.json").read_bytes())
+    transport = owner._ApplicationFabricTransport(
+        url, "TEST_FABRIC_PROXY_TOKEN", "fixture-provider", MODEL, "unknown",
+        "fabric:paired-owner", "paired_owner_capability",
+        qualified=True, application_allowed=True,
+    )
+    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, "paired_fixture_v1", transport)
+    document = json.loads((source / "provider_production_modes.v1.json").read_text())
+    row = {key: getattr(transport, key) for key in owner._APPLICATION_IDENTITY_FIELDS}
+    row.update(transport_id="paired_fixture_v1", enabled=True, application_allowed=True,
+               qualification=owner.PROFILE_QUALIFIED_CANARY,
+               qualification_ref="fixture:paired-source-only", qualified_until=time.time()+3600)
+    document["application_fabric_modes"] = {"shared_fabric": row}
+    (config / "provider_production_modes.v1.json").write_text(json.dumps(document))
+    manifest = {"capabilities": [{"capability_id": "paired_owner_capability",
+        "secret_ref": "TEST_FABRIC_PROXY_TOKEN", "kill_state": "active",
+        "allowed_lanes": ["brain", "admin-orchestrator"]}]}
+    path = config / "capability_manifest.yml"
+    path.write_text(yaml.safe_dump(manifest))
+    monkeypatch.setenv("TEST_FABRIC_PROXY_TOKEN", PROXY_TOKEN)
+    monkeypatch.setenv("MM_PROVIDER_APPLICATION_MODE", "shared_fabric")
+    monkeypatch.setenv("MM_PROVIDER_WORKLOAD_PROFILE", "site_interactive")
+    return path, manifest
+
+
+def test_admin_startup_owner_reaches_gateway_and_observes_revocation(
+        gateway_module, tmp_path, authenticated_admin, monkeypatch):
+    import yaml
+    from admin import paths
+
+    first = packet(tool=True)
+    first["choices"][0]["message"]["tool_calls"][0]["function"]["name"] = "read_health"
+    with owner_gateway(gateway_module, tmp_path, [first, packet()]) as (url, calls, wire, asgi):
+        path, manifest = configure_owned_application(monkeypatch, tmp_path, url)
+        monkeypatch.setattr(paths, "ROOT", tmp_path)
+        # Use real startup selection; even an explicit false cannot weaken it.
+        with admin_surface(selected=False) as client:
+            admin_login(client)
+            result = client.post("/api/orchestrator/chat", json={
+                "message": "Read service health.", "fabric_selected": False,
+                "fabric_provider_factory": "forged", "workload_profile": "development_agent"}).json()
+            assert not result["degraded"] and result["provider"] == "fixture-provider"
+            assert result["model"] == MODEL and result["input_tokens"] == 22
+            manifest["capabilities"][0]["kill_state"] = "killed"
+            path.write_text(yaml.safe_dump(manifest))
+            refused = client.post("/api/orchestrator/chat", json={"message": "Read again."}).json()
+            assert refused["degraded"]
+        snapshot = status(asgi)
+    assert len(calls) == len(wire) == 2 and snapshot["shared_used_in_window"] == 2
+    rows = [json.loads(line) for line in (tmp_path / "data/ai_costs/usage.jsonl").read_text().splitlines()]
+    assert len(rows) == 1 and rows[0]["provider"] == "fixture-provider"
+
+
+@pytest.mark.parametrize("streaming", [False, True])
+def test_public_http_startup_owner_composes_real_brain_and_gateway(
+        gateway_module, tmp_path, public_brain, monkeypatch, streaming):
+    import app.main as main
+
+    costs, tokens, tool, _ = public_brain
+    monkeypatch.setattr(main, "REPO", tmp_path)
+    monkeypatch.setattr(main, "_brain_track_event", lambda *a: None)
+    monkeypatch.setattr(main, "_brain_throttle_check", lambda *a: None)
+    # Save/restorable server state before running the actual startup compositor.
+    monkeypatch.setattr(main.app.state, "fabric_selected", False)
+    monkeypatch.setattr(main.app.state, "fabric_provider_factory", None)
+    user = {"id": "owner-http-" + str(streaming), "email": "", "user_metadata": {}}
+    main.app.dependency_overrides[main._brain_user_or_guest] = lambda: user
+    try:
+        with owner_gateway(gateway_module, tmp_path, [packet(tool=True), packet()]) as (url, calls, wire, asgi):
+            configure_owned_application(monkeypatch, tmp_path, url)
+            main._configure_brain_fabric()
+            with TestClient(main.app) as client:
+                route = "/api/brain/stream" if streaming else "/api/brain/chat"
+                response = client.post(route, json={"message": "Explain the market context.",
+                    "lane": "pro", "fabric_selected": False, "fabric_provider_factory": "forged"})
+                assert response.status_code == 200, response.text
+                if streaming:
+                    events = [json.loads(x[6:]) for x in response.text.splitlines() if x.startswith("data: ")]
+                    result = next(e for e in reversed(events) if e["type"] == "done")
+                    run_id = next(e["run_id"] for e in events if e["type"] == "run")
+                    assert client.get(f"/api/brain/runs/{run_id}").status_code == 200
+                else:
+                    result = response.json()
+                assert not result.get("degraded")
+            snapshot = status(asgi)
+        assert len(calls) == len(wire) == 2 and tool.call_count == 1
+        assert snapshot["shared_used_in_window"] == 2 and snapshot["pending"] == 0
+        assert len(costs) == 1 and costs[0]["provider"] == "fixture-provider"
+        assert costs[0]["input_tokens"] == 22
+    finally:
+        main.app.dependency_overrides.pop(main._brain_user_or_guest, None)

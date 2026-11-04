@@ -2055,6 +2055,14 @@ def _build_server(host: str, port: int, *, fabric_selected=False,
     binding is not an entitlement check.  It is stored on the server object and
     the Handler reads it from there — never from the request.
     """
+    from engine.provider_production_modes import configured_application_fabric
+    from .paths import ROOT
+
+    host_selected, host_factory = configured_application_fabric(
+        lane="admin-orchestrator", workload_profile="site_interactive", root=ROOT)
+    if host_selected:
+        # An explicit false/callback cannot weaken the trusted host selection.
+        fabric_selected, fabric_provider_factory = True, host_factory
     httpd = ThreadingHTTPServer((host, port), Handler)
     httpd.fabric_selected = fabric_selected
     httpd.fabric_provider_factory = fabric_provider_factory

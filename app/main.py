@@ -133,6 +133,19 @@ app = FastAPI(title="macro API", version="0.1.0")
 log = logging.getLogger("macro.api")
 
 
+def _configure_brain_fabric() -> None:
+    """Read the host selector once; request content never selects a provider."""
+    from engine.provider_production_modes import configured_application_fabric
+
+    selected, factory = configured_application_fabric(
+        lane="brain", workload_profile="site_interactive", root=REPO)
+    app.state.fabric_selected = selected
+    app.state.fabric_provider_factory = factory
+
+
+_configure_brain_fabric()
+
+
 class _NoStoreAPI:
     """Every /api/* response is per-user — never let a shared cache keep one.
 
@@ -1484,8 +1497,8 @@ def _brain_module():
 def _brain_fabric_selection(request: Request) -> dict:
     """Server startup injection only; never derive a binding from request content.
 
-    Production installs no default. Explicit selection without a factory is
-    forwarded intact so the gateway refuses instead of using legacy credentials.
+    Startup installs the trusted host-selected owner factory. Selection without
+    a valid factory is forwarded intact so the gateway refuses before dispatch.
     """
     selected = getattr(request.app.state, "fabric_selected", False)
     if selected is False:
