@@ -47,7 +47,111 @@ function opts(extra) {
 function view(p, o) { return api.buildView(p || fixture(), opts(o)); }
 """
 
+NATIVE_PRELUDE = r"""
+function evidence(extra={}) {
+ return Object.assign({schema:'sector_cycles.evidence.v1',status:'verified',
+  publicationId:'cycp1-'+ 'a'.repeat(64),asOf:'2026-10-30',region:'us',
+  spine:{schema:'sector_cycles.sector_spine.v1',scope:'us_sectors_11',sha256:'b'.repeat(64)},
+  parts:{core:'verified',series:'verified',narr:'source_unavailable',dna:'verified'},
+  sources:{narr:{status:'source_unavailable'},dna:{status:'available'}}},extra);
+}
+function nativeOpts(extra={}) {return Object.assign({requirePublication:true,
+ evidence:evidence(),expectedPublicationId:'cycp1-'+'a'.repeat(64)},extra);}
+"""
+PRELUDE += NATIVE_PRELUDE
+
 CASES = {
+    "verified_status_requires_verified_core_part_before_payload_read": r"""
+      for(const parts of [null,{}, {core:'pending'}, {core:'integrity_failed'}]) {
+        const p=new Proxy({}, {get(){throw Error('unverified core accessed');}});
+        assert.equal(view(p,nativeOpts({evidence:evidence({parts})})).state,'unavailable');
+      }
+    """,
+    "native_mount_adapter_is_available_without_automatic_boot": r"""
+      assert.equal(typeof api.mountFromNative,'function');
+      assert.equal(globalThis.document,undefined);
+    """,
+    "publication_pending_never_evaluates_payload": r"""
+      const p=new Proxy({}, {get(){throw Error('unverified payload accessed');}});
+      assert.equal(view(p,nativeOpts({evidence:evidence({status:'pending'})})).state,'loading');
+    """,
+    "native_publication_is_bound_in_successful_view": r"""
+      const v=view(fixture(),nativeOpts());assert.equal(v.state,'ready');
+      assert.equal(v.publication.id,'cycp1-'+'a'.repeat(64));
+      assert.equal(v.publication.status,'verified');assert.equal(v.history.state,'ready');
+    """,
+    "same_day_different_publication_is_not_same_snapshot": r"""
+      const p=new Proxy({}, {get(){throw Error('mismatched payload accessed');}});
+      assert.equal(view(p,nativeOpts({expectedPublicationId:'cycp1-'+'c'.repeat(64)})).state,'incompatible_generation');
+    """,
+    "unverified_or_invalid_receipt_never_exposes_data": r"""
+      for(const status of ['legacy_unverified','integrity_failed','invalid_payload','verification_unavailable','mystery']) {
+        const p=new Proxy({}, {get(){throw Error('unverified payload accessed');}});
+        assert.equal(view(p,nativeOpts({evidence:evidence({status})})).state,'unavailable',status);
+      }
+    """,
+    "superseded_source_clears_snapshot_claim": r"""
+      const v=view(fixture(),nativeOpts({evidence:evidence({status:'superseded'})}));
+      assert.equal(v.state,'incompatible_generation');assert.equal(v.relative,undefined);
+    """,
+    "missing_or_malformed_publication_binding_is_not_optional": r"""
+      for(const expectedPublicationId of [undefined,null,'','cycp1-bad']) {
+        assert.equal(view(fixture(),nativeOpts({expectedPublicationId})).state,'unavailable');
+      }
+      for(const e of [null,{},evidence({schema:'other'}),evidence({publicationId:'bad'})]) {
+        assert.equal(view(fixture(),nativeOpts({evidence:e})).state,'unavailable');
+      }
+    """,
+    "native_receipt_region_and_session_must_match_payload": r"""
+      for(const e of [evidence({region:'china'}),evidence({asOf:'2026-10-29'})]) {
+        const v=view(fixture(),nativeOpts({evidence:e}));
+        assert.equal(v.state,'incompatible_generation');assert.equal(v.relative,undefined);
+      }
+    """,
+    "expected_sector_spine_is_exact_not_a_date_only_join": r"""
+      const expected={schema:'sector_cycles.sector_spine.v1',scope:'us_sectors_11',sha256:'b'.repeat(64)};
+      assert.equal(view(fixture(),nativeOpts({expectedSpine:expected})).state,'ready');
+      for(const change of [{sha256:'c'.repeat(64)},{scope:'china:sectors'},{schema:'other'}]) {
+        assert.equal(view(fixture(),nativeOpts({expectedSpine:{...expected,...change}})).state,'incompatible_generation');
+      }
+    """,
+    "unverified_nonsector_series_does_not_draw_even_if_arrays_exist": r"""
+      for(const family of ['baskets','nasdaq','russell']) for(const status of ['pending','invalid_payload','incompatible_publication','integrity_failed','unavailable','legacy_unverified']) {
+        const p=fixture();const rec=p.sectors.pop();rec.kind=family==='baskets'?'basket':family;p[family]=[rec];
+        const v=view(p,nativeOpts({family,evidence:evidence({parts:{core:'verified',series:status}})}));
+        assert.equal(v.state,'ready');assert.equal(v.relative.value,6.1);
+        assert.equal(v.chart.hasHistory,false);assert.equal(v.history.rows.length,0);
+      }
+    """,
+    "verified_sector_core_history_survives_optional_series_failure": r"""
+      for(const status of ['pending','invalid_payload','incompatible_publication','unavailable']) {
+        const v=view(fixture(),nativeOpts({evidence:evidence({parts:{core:'verified',series:status}})}));
+        assert.equal(v.chart.hasHistory,true);assert.equal(v.history.sourcePart,'core');
+        assert.equal(v.history.rows.length,2);
+      }
+    """,
+    "optional_annotation_failure_does_not_erase_verified_core": r"""
+      const v=view(fixture(),nativeOpts({evidence:evidence({parts:{core:'verified',series:'verified',narr:'quarantined',dna:'unavailable'}})}));
+      assert.equal(v.state,'ready');assert.equal(v.history.state,'ready');
+      assert.equal(v.publication.parts.narr,'quarantined');
+    """,
+    "exact_values_preserve_observations_and_zero": r"""
+      const p=fixture();p.sectors[0].osc=[{x:2026.1,v:0},{x:2026.2,v:100}];
+      const v=view(p);assert.deepEqual(v.history.rows,[{x:2026.1,value:0},{x:2026.2,value:100}]);
+      v.history.rows[0].value=91;assert.equal(p.sectors[0].osc[0].v,0);
+    """,
+    "malformed_history_is_withheld_not_silently_filtered": r"""
+      for(const bad of [{x:2026.2,v:null},{x:2026.2,v:'71'},{x:NaN,v:50},{x:2026.2,v:101}]) {
+        const p=fixture();p.sectors[0].osc.push(bad);const v=view(p);
+        assert.equal(v.history.state,'invalid');assert.equal(v.chart.hasHistory,false);
+        assert.equal(v.history.rows.length,0);assert.equal(v.relative.value,6.1);
+      }
+    """,
+    "out_of_order_or_repeated_coordinates_are_not_a_valid_series": r"""
+      for(const x of [2026.1,2026.05]) {
+        const p=fixture();p.sectors[0].osc[1].x=x;assert.equal(view(p).history.state,'invalid');
+      }
+    """,
     "legacy_classifier_is_never_labelled_ontology": r"""
       for(const source of ['legacy_fallback',undefined,'unknown']) {
         const p=fixture();p.sectors[0].now.phase_v2_source=source;

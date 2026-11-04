@@ -57,6 +57,12 @@ try:
       assert len(labels)>=2,labels
       assert all(b['left']-a['right']>=3.5 for a,b in zip(labels,labels[1:])),('overlapping_date_labels',width,theme,locale,labels)
       assert min(metrics['buttons'])>=44 and metrics['chartCount']==1 and metrics['state']=='ready',metrics
+      assert page.locator('.sdc-values > summary').count()==1,'Exact values must be implemented, not a decorative label'
+      page.keyboard.press('Tab');assert page.evaluate('document.activeElement.parentElement.classList.contains("sdc-values")')
+      page.keyboard.press('Enter');assert page.locator('.sdc-values').get_attribute('open') is not None
+      assert page.locator('.sdc-values tbody tr').count()==28
+      assert page.locator('.sdc-values tbody tr').first.inner_text()=='2024\t25'
+      page.keyboard.press('Enter');assert page.locator('.sdc-values').get_attribute('open') is None
       page.keyboard.press('Tab');assert page.evaluate('document.activeElement.classList.contains("sdc-action")')
       page.keyboard.press('Enter');assert page.evaluate('calls[0].action')=='members'
       assert page.evaluate('calls[0].id')=='xle' and page.evaluate('calls[0].asOf')=='2026-10-30'
@@ -83,6 +89,26 @@ try:
        assert page.locator('.sdc').get_attribute('data-state')==state
       page.evaluate('component.update(source,addHost({expectedAsOf:"2026-10-29"}))')
       assert page.locator('.sdc').get_attribute('data-state')=='incompatible_generation' and '+6.1%' not in page.locator('#subject').inner_text()
+      # Invalid attached history must be distinguished from absent history; valid facts survive.
+      page.evaluate('''()=>{const invalid=structuredClone(source);invalid.sectors[0].osc[1].v=null;component.update(invalid,addHost());}''')
+      assert page.locator('.sdc-history').get_attribute('data-state')=='invalid'
+      assert page.locator('.sdc-chart svg').count()==0 and page.locator('.sdc-values').count()==0
+      assert '+6.1%' in page.locator('#subject').inner_text()
+      assert page.locator('.sdc-chart').inner_text() != ('尚未附上历史序列' if locale=='zh' else 'History not attached')
+      # Exact-value pagination remains bounded and source order survives navigation.
+      page.evaluate('''()=>{const many=structuredClone(source);many.sectors[0].osc=Array.from({length:122},(_,i)=>({x:2000+i/12,v:i%101}));
+       component.update(many,Object.assign(addHost(),{onSources:undefined}));}''')
+      page.locator('.sdc-values > summary').click();assert page.locator('.sdc-values tbody tr').count()==50
+      page.locator('.sdc-page').last.click();assert page.locator('.sdc-values tbody tr').count()==50
+      page.locator('.sdc-page').last.click();assert page.locator('.sdc-values tbody tr').count()==22
+      assert page.locator('.sdc-page').last.is_disabled()
+      page.locator('.sdc-page').first.click();assert page.locator('.sdc-values tbody tr').count()==50
+      page.locator('.sdc-action').last.click();assert page.locator('.sdc-sources').get_attribute('open') is not None
+      assert page.evaluate('document.activeElement.parentElement.classList.contains("sdc-sources")')
+      assert page.locator('.sdc-source-list dd').count()==7
+      assert not page.evaluate('document.documentElement.scrollWidth>innerWidth+1')
+      page.evaluate('component.update(source,addHost({accessState:"forbidden"}))')
+      assert page.locator('.sdc-values').count()==0 and page.locator('.sdc-sources').count()==0
       page.evaluate('component.destroy();component.update(source,addHost())');assert page.locator('#subject').inner_html()==''
       assert errors==[],errors
       results.append({'width':width,'theme':theme,'locale':locale,'status':'passed','checks':metrics});page.close()

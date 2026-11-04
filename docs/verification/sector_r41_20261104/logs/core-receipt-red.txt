@@ -1,0 +1,43 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_cycle_dossier_boundary[verified_status_requires_verified_core_part_before_payload_read] _
+
+case = 'verified_status_requires_verified_core_part_before_payload_read'
+
+    @pytest.mark.parametrize("case", CASES, ids=CASES.keys())
+    def test_cycle_dossier_boundary(case: str) -> None:
+        assert MODULE.is_file(), "Dossier Cycle source component is not implemented"
+        if not NODE:
+            pytest.skip("Node is required for the real JavaScript boundary test")
+        result = subprocess.run(
+            [NODE, "-e", PRELUDE + CASES[case], str(MODULE)],
+            text=True, capture_output=True, timeout=15, check=False,
+        )
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: [eval]:43
+E                 const p=new Proxy({}, {get(){throw Error('unverified core accessed');}});
+E                                              ^
+E
+E         Error: unverified core accessed
+E             at Object.get ([eval]:43:44)
+E             at Object.buildView (/Volumes/Mastermind/agent-workspaces/macro/web/sector-r41-dossier-cycle-impl-20261104-sol-001/templates/sector_dossier_cycle.js:144:101)
+E             at view ([eval]:30:34)
+E             at [eval]:44:22
+E             at runScriptInThisContext (node:internal/vm:219:10)
+E             at node:internal/process/execution:483:12
+E             at [eval]-wrapper:6:24
+E             at runScriptInContext (node:internal/process/execution:481:60)
+E             at evalFunction (node:internal/process/execution:315:30)
+E             at evalTypeScript (node:internal/process/execution:327:3)
+E
+E         Node.js v26.5.0
+E
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '-e', "\nconst assert = require('node:assert/strict');\nconst api = r...nternal/process/execution:315:30)\n    at evalTypeScript (node:internal/process/execution:327:3)\n\nNode.js v26.5.0\n").returncode
+
+tests/test_sector_dossier_cycle_js.py:334: AssertionError
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_sector_dossier_cycle_js.py::test_cycle_dossier_boundary[verified_status_requires_verified_core_part_before_payload_read]
+1 failed, 48 deselected in 10.88s

@@ -56,3 +56,17 @@ Current phase: finish this disjoint presentation component, run real browser che
 Direct-work rationale: CRITICAL_PATH_SHORTCUT and UNIQUE_APPROVED_ACCESS for same-workspace recovery, native design-to-code integration and actual browser proof. No worker is claimed running. The original root remains sector-central-redesign-20260921-sol-001. Execution and evidence continue in this owned source tree; no protected/held PR release action.
 
 Open falsifiers before acceptance: ontology source marked legacy_fallback must not be relabelled as ontology; 0/null and per-family dates remain distinct; negative access must purge old rendering; JS must have no HTML injection; 320–1440 layouts must remain readable; chart interactions and exact return must work against original D05 renderer, not a mock.
+
+## Continuation: native evidence receiver and usable disclosures (2026-11-04)
+
+Current #10703 source at `2e6c45899a9aeb7f90f03f85272aaff3ca42f4eb` has repaired duplicate controls and now owns `SectorCyclesEvidence()` (`sector_cycles.evidence.v1`). Do not replay that repair or its browser job. #10707 remains sole writer of its component paths; the older dirty Fable Dossier file remains read-only. The protected 93c8c3 pin's INDEX, active/reconciliation/Paper/continuity blobs were compared with current75a654 and are unchanged.
+
+Next bounded implementation: add an explicit `mountFromNative(root, owner, options)` adapter that consumes the existing evidence receipt rather than hashes/fetches independently. The host must supply settled access, selected identity and expected publication; denied/pending never reads the payload. A superseded, mismatched or unverified source cannot expose the old facts/chart. Existing source lifecycle events refresh the same mounted view; destroy removes those listeners. Actions recheck the active receipt before handing context back. No new router, auth, store or verifier.
+
+Complete the Paper-design Exact values and Sources disclosure with real semantic DOM over valid producer observations, no fabricated history. Malformed series remain unavailable while valid core facts survive. Publication/source/basis and legacy-vs-ontology meaning stay visible. Add real RED→GREEN Node and Chromium coverage, then recapture the governed visual matrix. Consume actual producer/renderer source as immutable dependencies in component-only tests, not a duplicate full-route worker.
+
+Direct ownership: LOWER_TOTAL_OVERHEAD and PRINCIPAL_JUDGMENT for integrating this existing source-owned component. Original safety-denied integration audit is not retried or substituted. D05 source/browser custody remains with the existing root, coordinated in Slack thread1793768002.626429. General CI queueing is not a source-work hold. No merge, Ready, un-draft, enqueue, relabel, deploy, or production-data write.
+
+## Recovery qualification completed locally
+
+Native dependency pin is now a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14 (producer/verifier dependency bytes unchanged from2e6). Verified publication-bound adapter, Exact values, source disclosures, same-publication focus/zoom retention and invalid-history presentation are implemented. The added core-receipt, focus-loss, stale-action and history-state regressions were observed RED before repair. Existing standalone Dossier dirty paths remain preserved; no second route or producer is created. Published baseline CI/fences success is not a successor-head claim. Original Fabric browser status is now terminal/result-available, pending authorized parent consumption.

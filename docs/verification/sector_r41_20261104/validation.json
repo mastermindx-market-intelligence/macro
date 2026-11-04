@@ -1,29 +1,34 @@
 {
-  "observed_at": "2026-11-04T05:45:06.998023+00:00",
+  "observed_at": "2026-11-04T07:43:02.103653+00:00",
   "operation_id": "sector-r41-dossier-cycle-impl-20261104-sol-001",
   "base_sha": "4a2291747fd2d8d364a3838e1ed2263636bc64a6",
+  "previous_published_head": "672bae2b85dd0101ed8185644e63c3af008e4759",
   "component_state": "BUILT_NOT_PROVEN",
   "production_mounted": false,
   "mission_complete": false,
   "source_sha256": {
-    "templates/sector_dossier_cycle.js": "cbe692eef16c020f7c6d5ad815fe3db847ba746dbada26bb1e18e7dad583a698",
-    "templates/sector_dossier_cycle.css": "22533a0d20b6a08bfe4fe81d7b83033a4c86fb17e4f01f7b05fba6dafde36a0f",
-    "tests/test_sector_dossier_cycle_js.py": "c5399d56bd38c26b4cfe7f5e7d803765db7e0acbb8d006480d56b815e6d5f38e",
-    ".github/ci/legacy-jobs.yml": "167087544054f7351e4940f81ef63ca9469c493cd269a56a34116407bc3ee529"
+    "templates/sector_dossier_cycle.js": "6f2f9522e475158faa54bb268b9f9f5a3f784a5c76e4f8d36f9e8a10885fa03b",
+    "templates/sector_dossier_cycle.css": "41cc2ceb9cf9ae03eb9d9f16c9c864fa4d5c379564c537ec8795c523686fdd8c",
+    "tests/test_sector_dossier_cycle_js.py": "c286553e2f918a3861f1bff13679e50a77b718a21f460d150e9cfeaf1e02c132",
+    ".github/ci/legacy-jobs.yml": "167087544054f7351e4940f81ef63ca9469c493cd269a56a34116407bc3ee529",
+    "docs/verification/sector_r41_20261104/verify_native_receiver.py": "53538ba4c2bb593ff2f8196625c48689de5e888667add1704d1019e9a8e37880"
   },
   "focused_tests": {
-    "passed": 130,
+    "passed": 146,
     "skipped": 3,
     "failed": 0
   },
-  "ci_scope_tests": {
-    "passed": 2,
-    "failed": 0
+  "native_receiver": {
+    "status": "passed",
+    "scenarios": 4,
+    "upstream": "a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14",
+    "scope": "component with original producer/verifier; not full route"
   },
   "component_browser": {
     "passed_cases": 16,
     "native_chart_zoom_retained": true,
-    "overlapping_date_labels": false,
+    "exact_values_and_sources": true,
+    "denied_superseded_focus_retained": true,
     "fixture": "synthetic, not live"
   },
   "canonical_visual_capture": {
@@ -37,18 +42,25 @@
     "blocking_findings": 0
   },
   "runtime_style_guard": "passed",
+  "baseline_hosted_ci": {
+    "head": "672bae2b85dd0101ed8185644e63c3af008e4759",
+    "ci_run": 41781511987,
+    "ci": "success",
+    "fences_run": 41781511946,
+    "fences": "success"
+  },
+  "successor_hosted_ci": "not_yet_submitted",
   "native_route_proof": {
     "pr": 10703,
-    "head": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
-    "status": "FAILED_DUPLICATE_CONTROL_IDS",
-    "writer_untouched": true
+    "head": "a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14",
+    "status": "original worker TERMINAL; parent verification required",
+    "duplicate_id_finding": "repaired upstream; historical failed artifacts retained"
   },
-  "hosted_ci": "not_yet_submitted",
   "remaining": [
-    "production mount and canonical Company/return integration",
-    "original D05 Fabric effect reconciliation",
-    "native route duplicate-ID repair and full browser proof",
-    "shared design acceptance and all release holds"
+    "original Dossier host lifecycle/custody composition",
+    "canonical Company/return integration",
+    "original native browser result parent consumption",
+    "shared design acceptance, auth/save journeys and all release holds"
   ],
-  "whole_repository_suite": "not run; data remains sparse, focused suite only"
+  "whole_repository_suite": "not run; data remains sparse; focused suites and exact component/browser proof only"
 }
