@@ -70,10 +70,9 @@ def edges(tmp_path_factory) -> tuple[dict, Path]:
 
 
 # --------------------------------------------------------------- S1 issuer
-def test_issuer_page_per_issuer(live):
-    model, site = live
-    for issuer in model["issuers"]:
-        assert (site / f"gmi-issuer-{issuer['ticker'].lower()}.html").exists()
+def test_issuer_pages_follow_current_cleared_specimen(live):
+    _, site = live
+    assert {page.name for page in site.glob("gmi-issuer-*.html")} == {"gmi-issuer-mu.html"}
 
 
 def test_s1_hygiene_live_and_held(live, held):
@@ -83,15 +82,12 @@ def test_s1_hygiene_live_and_held(live, held):
 
 
 def test_s1_live_shows_reviewed_dated_product_evidence(live):
-    model, site = live
-    for issuer in model["issuers"]:
-        main = _main(site / f"gmi-issuer-{issuer['ticker'].lower()}.html")
-        accepted = [link for link in issuer["links"]
-                    if link["curation"]["decision"] == "ACCEPT" and link["status"] == "RATIFIED"]
-        assert main.count('<article class="gmi-evidence-card">') == len(accepted)
-        for link in accepted:
-            assert link["proposal_id"] in main
-        assert "Current delivery, deal size and revenue exposure are not established" in main
+    _, site = live
+    main = _main(site / "gmi-issuer-mu.html")
+    assert main.count('<article class="gmi-evidence-card">') == 1
+    assert "actprop:287edbf7e04b8aba873b7493" in main
+    assert "24GB 8H HBM3E" in main
+    assert "Current delivery, deal size and revenue exposure are not established" in main
 
 
 def test_s1_unreviewed_connections_do_not_become_product_evidence(held):

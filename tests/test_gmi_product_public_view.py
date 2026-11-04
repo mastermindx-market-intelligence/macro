@@ -84,10 +84,16 @@ def test_company_route_and_shared_shell_remain_integrated(pages):
     assert company.select_one("link[rel='canonical']")["href"].endswith("gmi-companies.html")
 
 
-def test_payload_escapes_source_text(current_model, tmp_path):
-    model = deepcopy(current_model)
+def test_payload_escapes_source_text(current_model):
+    from scripts import build_gmi_explorer as product_builder
+    from scripts.gmi_explorer.present import make_env
+
+    # Qualify template escaping after projection. A changed raw issuer name
+    # cannot authorize a production fact; that is tested separately below.
+    model = product_builder._public_render_model(current_model)
     model["issuers"][0]["display_name"] = "</script><img src=x onerror=alert(1)>"
-    html = next(p for p in render_site(model, tmp_path) if p.name == "gmi.html").read_text()
+    html = make_env(model, product_builder.ROOT / "templates").get_template(
+        "gmi_map.html.j2").render(model=model, nav_prefix="", page_key="map")
     soup = BeautifulSoup(html, "html.parser")
     assert not soup.select("img[onerror]")
     payload = json.loads(soup.select_one("#gmi-topic-data").string)
@@ -96,13 +102,15 @@ def test_payload_escapes_source_text(current_model, tmp_path):
 
 def test_company_catalogue_keeps_dated_evidence(current_model, pages):
     soup = BeautifulSoup(pages["gmi-companies.html"], "html.parser")
-    eligible = [link for issuer in current_model["issuers"] for link in issuer["links"]
-                if link["curation"]["decision"] == "ACCEPT" and link["status"] == "RATIFIED"]
+    issuer = next(row for row in current_model["issuers"] if row["ticker"] == "MU")
+    cleared = next(link for link in issuer["links"]
+                   if link["proposal_id"] == "actprop:287edbf7e04b8aba873b7493")
     records = soup.select(".gmi-company-record")
-    assert len(records) == len(eligible)
+    # Raw ACCEPT/RATIFIED membership is not the public-fact boundary.
+    assert len(records) == 1
     assert soup.select_one("[data-company-count]").get_text(strip=True)
     assert soup.select_one("[data-company-guide]")
-    for record, link in zip(records, eligible):
+    for record, link in zip(records, [cleared]):
         assert link["scope"]["product"] in record.get_text(" ", strip=True)
         assert record.select_one(".gmi-evidence-date .gmi-stage")
         source = record.select_one(".gmi-source-link a")
@@ -236,3 +244,36 @@ def test_public_template_model_is_strictly_allowlisted(current_model):
                       "PRIVATE-PARTY-SENTINEL", "SECRET-TICKER-SENTINEL",
                       "graph_membership_use", "correction_lineage", "counterparty_issuer_id"):
         assert forbidden not in json.dumps(public)
+
+
+@pytest.mark.parametrize("field", [
+    "display_name",
+    "exchange",
+    "links.0.micro_en",
+    "links.0.micro_zh",
+    "links.0.source.label_en",
+    "links.0.source.label_zh",
+])
+def test_current_fact_attribution_changes_fail_closed(current_model, tmp_path, field):
+    """The same receipt cannot publish an altered company, theme or source label."""
+    assert (tmp_path / "gmi-issuer-mu.html") in render_site(current_model, tmp_path)
+    model = deepcopy(current_model)
+    target = model["issuers"][0]
+    parts = field.split(".")
+    for part in parts[:-1]:
+        target = target[int(part)] if isinstance(target, list) else target[part]
+    target[parts[-1]] = "ALTERED-PUBLIC-ATTRIBUTION-SENTINEL"
+    pages = {p.name: p.read_text() for p in render_site(model, tmp_path)}
+    assert len(pages) == 6
+    assert "gmi-issuer-mu.html" not in pages
+    assert not (tmp_path / "gmi-issuer-mu.html").exists()
+    combined = "\n".join(pages.values())
+    for withheld in ("ALTERED-PUBLIC-ATTRIBUTION-SENTINEL", "24GB 8H HBM3E",
+                     "actprop:287edbf7e04b8aba873b7493", "gmi-issuer-mu.html"):
+        assert withheld not in combined
+    soup = BeautifulSoup(pages["gmi-companies.html"], "html.parser")
+    assert not soup.select(".gmi-company-record")
+    assert "No company evidence yet" in soup.select_one("[data-company-empty]").get_text()
+    payload = json.loads(BeautifulSoup(pages["gmi.html"], "html.parser")
+                         .select_one("#gmi-topic-data").string)
+    assert all(not topic["connections"] for topic in payload["topics"])

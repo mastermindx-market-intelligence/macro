@@ -72,8 +72,14 @@ def _current_public_product(issuer: dict, link: dict) -> bool:
     return (
         _field(issuer, "node_id") == "co:us:MU"
         and _field(issuer, "ticker") == "MU"
+        # The cleared sentence includes its display attribution. Raw labels
+        # cannot rename the issuer or source while retaining the same receipt.
+        and _field(issuer, "display_name") == "Micron Technology"
+        and _field(issuer, "exchange") == "Nasdaq"
         and _field(link, "proposal_id") == "actprop:287edbf7e04b8aba873b7493"
         and _field(link, "micro_id") == "theme:hbm_packaging"
+        and _field(link, "micro_en") == "HBM & advanced packaging"
+        and _field(link, "micro_zh") == "HBM 与先进封装"
         and _field(link, "status") == "RATIFIED"
         and _field(link, "curation", "decision") == "ACCEPT"
         and _field(link, "lifecycle") == "planned"
@@ -83,6 +89,8 @@ def _current_public_product(issuer: dict, link: dict) -> bool:
         and _field(link, "source", "source_key") == "manual:micron-ir:hbm3e-h200:2024-02-26"
         and _field(link, "source", "text_sha256") == "f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a"
         and _field(link, "source", "published_date") == "2024-02-26"
+        and _field(link, "source", "label_en") == "Company source"
+        and _field(link, "source", "label_zh") == "公司来源"
         and _field(link, "source", "url_if_public") ==
         "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx"
     )
