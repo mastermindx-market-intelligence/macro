@@ -1,0 +1,1019 @@
+{
+  "at": "2026-10-20T16:26:06.757805+00:00",
+  "revisions": {
+    "B": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+    "H": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+    "M": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+    "T": "11ad3c513bc73c9f03a06363ea9b810e0308b574"
+  },
+  "bound_path_count": 82,
+  "H_all82_git_blobs_match_accepted_lineage": true,
+  "complete_intersection_not_API_capped": true,
+  "differences_from_H": {
+    "B": [
+      {
+        "path": "lib/shared_shell.py",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": null,
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614"
+        },
+        "value": null
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "roles": [
+          "current-bound-manifest"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "46a2dd32306c5cc7b050b09350fbcdda97b18484"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "3138f62959985ca31869d956545ca37db1135ddd"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "46a2dd32306c5cc7b050b09350fbcdda97b18484"
+        }
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "roles": [
+          "actual-produced-output",
+          "manifest-browser-binding"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4b0a31b95a807dcacf6bffad53d7c72721f5ddae"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "f5f2f4682b81ff6ced744675870c7dc6b47a0414"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4b0a31b95a807dcacf6bffad53d7c72721f5ddae"
+        }
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "roles": [
+          "actual-produced-output",
+          "manifest-browser-binding"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "aa59c4c13d864861ba360b219e50c3db42f74e10"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "87b8d6a2f9b4263b97cb26b01370d3b18b21afe6"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "aa59c4c13d864861ba360b219e50c3db42f74e10"
+        }
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "roles": [
+          "actual-produced-output",
+          "manifest-fixture-binding"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "8354afa6a4c056ee6ea767686c4087f10f1ccbe1"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "0fd1c761dbd973c9c78662a0c15a7f045e2b0a9c"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "8354afa6a4c056ee6ea767686c4087f10f1ccbe1"
+        }
+      },
+      {
+        "path": "site/account.js",
+        "roles": [
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "686701685cdd37e998c83f13e22b6e59f111eea0"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "17b9e0feb4a5c3071bf536f3e7e9b5c5b4475783"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "686701685cdd37e998c83f13e22b6e59f111eea0"
+        }
+      },
+      {
+        "path": "site/mm_brain.js",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "f9d382de676f8f11e0eec13442532846353cd51c"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4e80e6ef461f5a2e825fe6d16a5a1b1dcb2df01e"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "f9d382de676f8f11e0eec13442532846353cd51c"
+        }
+      },
+      {
+        "path": "site/nav_market.js",
+        "roles": [
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4edee693e1e6d4391de3482b2a618057df686e56"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "b9eb71bc7660cabebcfabebeaa6972cb1374bad3"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4edee693e1e6d4391de3482b2a618057df686e56"
+        }
+      },
+      {
+        "path": "site/navigation-refresh.css",
+        "roles": [
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "2c96dbf6f96da1c5c7fab58d9314cc3fb06d15d1"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+        }
+      },
+      {
+        "path": "site/shared_shell.css",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": null,
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b"
+        },
+        "value": null
+      },
+      {
+        "path": "site/shared_shell_bridge.js",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": null,
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "dd501dc2dd846b19190c430c0d093452b8d5f322"
+        },
+        "value": null
+      },
+      {
+        "path": "site/stocktable.js",
+        "roles": [
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fe9b07af769d3f8f10fa5fd394cef82f474f1a30"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "7b486c90f64ac055b6920ba3df8908444c42f60b"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fe9b07af769d3f8f10fa5fd394cef82f474f1a30"
+        }
+      },
+      {
+        "path": "site/theme.js",
+        "roles": [
+          "actual-producing-source",
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "57332ac123c1b088d3d359e7d048ecba81334c8e"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "36c27ded05b6729a9fd36e9640d8adada579ffdd"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "57332ac123c1b088d3d359e7d048ecba81334c8e"
+        }
+      },
+      {
+        "path": "templates/_site_nav.html.j2",
+        "roles": [
+          "recorded-construction-input"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "ef099f86ae57adcbf4e485c7b442c4e965ec6b3e"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "ef099f86ae57adcbf4e485c7b442c4e965ec6b3e"
+        }
+      },
+      {
+        "path": "templates/canada.html.j2",
+        "roles": [
+          "actual-producing-source",
+          "recorded-construction-input"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "849a6c531ebc1327341ee22a4de0ee6e2f5349ab"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "1465046662b4d7258558866984d8a191dbe963df"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "849a6c531ebc1327341ee22a4de0ee6e2f5349ab"
+        }
+      },
+      {
+        "path": "templates/hk.html.j2",
+        "roles": [
+          "actual-producing-source",
+          "recorded-construction-input"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fe76cb5ae8462146e5bf03edf1b5ce8f4bcc6377"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "0efe56c833cbd8c195e47764a821a89a00b4ca90"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fe76cb5ae8462146e5bf03edf1b5ce8f4bcc6377"
+        }
+      }
+    ],
+    "M": [
+      {
+        "path": "lib/shared_shell.py",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": null,
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614"
+        },
+        "value": null
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "roles": [
+          "current-bound-manifest"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "46a2dd32306c5cc7b050b09350fbcdda97b18484"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "3138f62959985ca31869d956545ca37db1135ddd"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "e09810e1a7f79c9501273c38b2997f0db5fadbe9"
+        }
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "roles": [
+          "actual-produced-output",
+          "manifest-browser-binding"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4b0a31b95a807dcacf6bffad53d7c72721f5ddae"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "f5f2f4682b81ff6ced744675870c7dc6b47a0414"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "30b15565cc68a6284449285c7f51425dc5cf8911"
+        }
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "roles": [
+          "actual-produced-output",
+          "manifest-browser-binding"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "aa59c4c13d864861ba360b219e50c3db42f74e10"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "87b8d6a2f9b4263b97cb26b01370d3b18b21afe6"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "a82c7dfda7b341d879f69b4698bd8f3a2b5bb6a5"
+        }
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "roles": [
+          "actual-produced-output",
+          "manifest-fixture-binding"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "8354afa6a4c056ee6ea767686c4087f10f1ccbe1"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "0fd1c761dbd973c9c78662a0c15a7f045e2b0a9c"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "8354afa6a4c056ee6ea767686c4087f10f1ccbe1"
+        }
+      },
+      {
+        "path": "site/account.js",
+        "roles": [
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "686701685cdd37e998c83f13e22b6e59f111eea0"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "17b9e0feb4a5c3071bf536f3e7e9b5c5b4475783"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "686701685cdd37e998c83f13e22b6e59f111eea0"
+        }
+      },
+      {
+        "path": "site/mm_brain.js",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "f9d382de676f8f11e0eec13442532846353cd51c"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4e80e6ef461f5a2e825fe6d16a5a1b1dcb2df01e"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "5b8c1e4aceea20d13ed8406b5f7fc553b03920d2"
+        }
+      },
+      {
+        "path": "site/nav_market.js",
+        "roles": [
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4edee693e1e6d4391de3482b2a618057df686e56"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "b9eb71bc7660cabebcfabebeaa6972cb1374bad3"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4edee693e1e6d4391de3482b2a618057df686e56"
+        }
+      },
+      {
+        "path": "site/navigation-refresh.css",
+        "roles": [
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "2c96dbf6f96da1c5c7fab58d9314cc3fb06d15d1"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+        }
+      },
+      {
+        "path": "site/shared_shell.css",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": null,
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b"
+        },
+        "value": null
+      },
+      {
+        "path": "site/shared_shell_bridge.js",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": null,
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "dd501dc2dd846b19190c430c0d093452b8d5f322"
+        },
+        "value": null
+      },
+      {
+        "path": "site/stocktable.js",
+        "roles": [
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fe9b07af769d3f8f10fa5fd394cef82f474f1a30"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "7b486c90f64ac055b6920ba3df8908444c42f60b"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fe9b07af769d3f8f10fa5fd394cef82f474f1a30"
+        }
+      },
+      {
+        "path": "site/theme.js",
+        "roles": [
+          "actual-producing-source",
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "57332ac123c1b088d3d359e7d048ecba81334c8e"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "36c27ded05b6729a9fd36e9640d8adada579ffdd"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "c01640ed301976544e72375e9a1ef886d8614b3d"
+        }
+      },
+      {
+        "path": "templates/_site_nav.html.j2",
+        "roles": [
+          "recorded-construction-input"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "ef099f86ae57adcbf4e485c7b442c4e965ec6b3e"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "ef099f86ae57adcbf4e485c7b442c4e965ec6b3e"
+        }
+      },
+      {
+        "path": "templates/canada.html.j2",
+        "roles": [
+          "actual-producing-source",
+          "recorded-construction-input"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "849a6c531ebc1327341ee22a4de0ee6e2f5349ab"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "1465046662b4d7258558866984d8a191dbe963df"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "849a6c531ebc1327341ee22a4de0ee6e2f5349ab"
+        }
+      },
+      {
+        "path": "templates/hk.html.j2",
+        "roles": [
+          "actual-producing-source",
+          "recorded-construction-input"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fe76cb5ae8462146e5bf03edf1b5ce8f4bcc6377"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "0efe56c833cbd8c195e47764a821a89a00b4ca90"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "fe76cb5ae8462146e5bf03edf1b5ce8f4bcc6377"
+        }
+      }
+    ],
+    "T": [
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "roles": [
+          "current-bound-manifest"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "46a2dd32306c5cc7b050b09350fbcdda97b18484"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "3138f62959985ca31869d956545ca37db1135ddd"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "1cdec62118ed5ca2869c5ac0edaa6d9ed5d99993"
+        }
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "roles": [
+          "actual-produced-output",
+          "manifest-browser-binding"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4b0a31b95a807dcacf6bffad53d7c72721f5ddae"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "f5f2f4682b81ff6ced744675870c7dc6b47a0414"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "ff8d4f10d9a2856fe42532642389fdfa80b03b53"
+        }
+      },
+      {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "roles": [
+          "actual-produced-output",
+          "manifest-browser-binding"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "aa59c4c13d864861ba360b219e50c3db42f74e10"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "87b8d6a2f9b4263b97cb26b01370d3b18b21afe6"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "b65875aee62a8734ff4d0d5021342de7894554bb"
+        }
+      },
+      {
+        "path": "site/mm_brain.js",
+        "roles": [
+          "actual-producing-source"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "f9d382de676f8f11e0eec13442532846353cd51c"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4e80e6ef461f5a2e825fe6d16a5a1b1dcb2df01e"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "4f467d576fd0b8bb59fca5f2dca177995967f3cf"
+        }
+      },
+      {
+        "path": "site/theme.js",
+        "roles": [
+          "actual-producing-source",
+          "recorded-loaded-asset"
+        ],
+        "B": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "57332ac123c1b088d3d359e7d048ecba81334c8e"
+        },
+        "H": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "36c27ded05b6729a9fd36e9640d8adada579ffdd"
+        },
+        "value": {
+          "mode": "100644",
+          "kind": "blob",
+          "blob": "09336d061837e53a4631c3b838591ab3a24aafc1"
+        }
+      }
+    ]
+  },
+  "aliases": {
+    "B": {
+      "manifest.json": {
+        "bytes": 59860,
+        "sha256": "c542fcb716e66aee38de063cf9468112eab9f76d7820f94826d87dfb7b799eb3",
+        "top_keys": [
+          "axes",
+          "excluded",
+          "generated_at",
+          "historical_baseline",
+          "honesty",
+          "outcome",
+          "pages",
+          "repair_extension",
+          "repair_extension_history",
+          "schema",
+          "selection",
+          "target",
+          "tool",
+          "totals"
+        ],
+        "history": null,
+        "generated_at": "2026-09-06T14:18:49Z"
+      },
+      "mobile-layout.json": {
+        "bytes": 489572,
+        "sha256": "ac18d84e1215319474db31347fc652d2d318c0601aeaf4e49d2b4e7eeb20bc89",
+        "top_keys": [
+          "schema",
+          "proof_class",
+          "claims",
+          "verifier",
+          "browser",
+          "fixture_receipt",
+          "fixture_assets_root",
+          "fixture_market",
+          "historical_baseline",
+          "input_html",
+          "rendered_owner_cases",
+          "construction_inputs",
+          "loaded_assets",
+          "viewport",
+          "desktop_viewport",
+          "acceptance",
+          "expansion_reachability",
+          "fragment_navigation",
+          "desktop",
+          "owner_projection_matrix",
+          "pass",
+          "states"
+        ],
+        "history": null,
+        "generated_at": null
+      },
+      "mobile-layout-canada.json": {
+        "bytes": 497151,
+        "sha256": "63d8d81729c74b5581f74ab11e6a3ed730adad3e07a1e07f10b5ccd960cd054b",
+        "top_keys": [
+          "schema",
+          "proof_class",
+          "claims",
+          "verifier",
+          "browser",
+          "fixture_receipt",
+          "fixture_assets_root",
+          "fixture_market",
+          "historical_baseline",
+          "input_html",
+          "rendered_owner_cases",
+          "construction_inputs",
+          "loaded_assets",
+          "viewport",
+          "desktop_viewport",
+          "acceptance",
+          "expansion_reachability",
+          "fragment_navigation",
+          "desktop",
+          "owner_projection_matrix",
+          "pass",
+          "states"
+        ],
+        "history": null,
+        "generated_at": null
+      }
+    },
+    "H": {
+      "manifest.json": {
+        "bytes": 75805,
+        "sha256": "14f79d2a743a267eca2f20e6f6029339b3fccdd7957eabed65898528482a84c0",
+        "top_keys": [
+          "axes",
+          "excluded",
+          "generated_at",
+          "historical_baseline",
+          "honesty",
+          "outcome",
+          "pages",
+          "repair_extension",
+          "repair_extension_history",
+          "schema",
+          "selection",
+          "target",
+          "tool",
+          "totals"
+        ],
+        "history": null,
+        "generated_at": "2026-09-06T14:18:49Z"
+      },
+      "mobile-layout.json": {
+        "bytes": 489480,
+        "sha256": "d8c5ae26d3b2d733dc5a2bc55664152cbc7f091707c115fb09ccfd57991c138c",
+        "top_keys": [
+          "schema",
+          "proof_class",
+          "claims",
+          "verifier",
+          "browser",
+          "fixture_receipt",
+          "fixture_assets_root",
+          "fixture_market",
+          "historical_baseline",
+          "input_html",
+          "rendered_owner_cases",
+          "construction_inputs",
+          "loaded_assets",
+          "viewport",
+          "desktop_viewport",
+          "acceptance",
+          "expansion_reachability",
+          "fragment_navigation",
+          "desktop",
+          "owner_projection_matrix",
+          "pass",
+          "states"
+        ],
+        "history": null,
+        "generated_at": null
+      },
+      "mobile-layout-canada.json": {
+        "bytes": 497059,
+        "sha256": "34b07d01d0a5333485fce08023cfaae451844725e3f18b4ba5fe180272435b70",
+        "top_keys": [
+          "schema",
+          "proof_class",
+          "claims",
+          "verifier",
+          "browser",
+          "fixture_receipt",
+          "fixture_assets_root",
+          "fixture_market",
+          "historical_baseline",
+          "input_html",
+          "rendered_owner_cases",
+          "construction_inputs",
+          "loaded_assets",
+          "viewport",
+          "desktop_viewport",
+          "acceptance",
+          "expansion_reachability",
+          "fragment_navigation",
+          "desktop",
+          "owner_projection_matrix",
+          "pass",
+          "states"
+        ],
+        "history": null,
+        "generated_at": null
+      }
+    },
+    "M": {
+      "manifest.json": {
+        "bytes": 59860,
+        "sha256": "330c620d173928a9d7772fe07e179404c08ec2f5f3ba9e2ba37bbe0a6fc81fb9",
+        "top_keys": [
+          "axes",
+          "excluded",
+          "generated_at",
+          "historical_baseline",
+          "honesty",
+          "outcome",
+          "pages",
+          "repair_extension",
+          "repair_extension_history",
+          "schema",
+          "selection",
+          "target",
+          "tool",
+          "totals"
+        ],
+        "history": null,
+        "generated_at": "2026-09-06T14:18:49Z"
+      },
+      "mobile-layout.json": {
+        "bytes": 489480,
+        "sha256": "72db88ebeed2874ea2177deae1795ad19d07198b57692370ccee9ab553b72892",
+        "top_keys": [
+          "schema",
+          "proof_class",
+          "claims",
+          "verifier",
+          "browser",
+          "fixture_receipt",
+          "fixture_assets_root",
+          "fixture_market",
+          "historical_baseline",
+          "input_html",
+          "rendered_owner_cases",
+          "construction_inputs",
+          "loaded_assets",
+          "viewport",
+          "desktop_viewport",
+          "acceptance",
+          "expansion_reachability",
+          "fragment_navigation",
+          "desktop",
+          "owner_projection_matrix",
+          "pass",
+          "states"
+        ],
+        "history": null,
+        "generated_at": null
+      },
+      "mobile-layout-canada.json": {
+        "bytes": 497059,
+        "sha256": "fc993e8734a7f5b60c49ccc6619bd7ead4d6ec63458f773b414f02f78415083a",
+        "top_keys": [
+          "schema",
+          "proof_class",
+          "claims",
+          "verifier",
+          "browser",
+          "fixture_receipt",
+          "fixture_assets_root",
+          "fixture_market",
+          "historical_baseline",
+          "input_html",
+          "rendered_owner_cases",
+          "construction_inputs",
+          "loaded_assets",
+          "viewport",
+          "desktop_viewport",
+          "acceptance",
+          "expansion_reachability",
+          "fragment_navigation",
+          "desktop",
+          "owner_projection_matrix",
+          "pass",
+          "states"
+        ],
+        "history": null,
+        "generated_at": null
+      }
+    }
+  },
+  "scope": "Immutable finite-input/provenance comparison only, not resolved-source acceptance or new producer run."
+}

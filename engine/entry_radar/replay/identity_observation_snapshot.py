@@ -22,6 +22,7 @@ from lib.dataos.identity import (
     ReferenceReadReceipt,
     ReferenceSnapshot,
     VendorAliasTable,
+    _ob_load,
     validate_reference_snapshot,
 )
 
@@ -50,6 +51,21 @@ class IdentitySnapshotRead:
             original_reference=context["prospective_reference"],
             snapshot_contexts=(self.snapshot,),
         )
+
+
+@dataclass(frozen=True, slots=True)
+class LegacyReferenceRead:
+    """Complete captured LEGACY bytes; no native proof or availability clock."""
+
+    receipt_bytes: bytes
+    artifact_bytes: tuple[tuple[str, bytes], ...]
+    mode: str = "LEGACY"
+
+    def records(self, name: str) -> list[dict[str, Any]]:
+        """Decode only immutable captured bytes, never reopen a latest path."""
+        if name not in REFERENCE_ARTIFACTS:
+            raise IdentityError("identity snapshot: unknown reference member")
+        return _parquet_records(dict(self.artifact_bytes)[name], name)
 
 
 def _clock(value: int) -> int:
@@ -190,6 +206,76 @@ def _parquet_records(raw: bytes, name: str) -> list[dict[str, Any]]:
         raise IdentityError(f"identity snapshot: unreadable Parquet {name}") from exc
 
 
+def _read_reference_bytes(directory: str | Path, *, legacy: bool = False):
+    """Capture existing bytes; only the LEGACY seam adds cooperative root SH.
+
+    Native acquisition preserves its incumbent behavior, including writer-owned
+    EX readback. LEGACY assumes local POSIX flock and cooperating participants;
+    it does not fence old/noncooperating writers, other hosts or Git publication.
+    """
+    if not isinstance(directory, (str, Path)):
+        raise IdentityError("identity snapshot: an absolute local directory is required")
+    root = Path(directory)
+    if not root.is_absolute() or ".." in root.parts:
+        raise IdentityError("identity snapshot: an absolute local directory is required")
+    if legacy:
+        try:
+            import fcntl
+        except ImportError as exc:
+            raise IdentityError("identity snapshot locking unsupported on this host") from exc
+    try:
+        fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+                     | getattr(os, "O_CLOEXEC", 0))
+    except OSError as exc:
+        raise IdentityError("identity snapshot directory unavailable") from exc
+    try:
+        if legacy:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+            except BlockingIOError as exc:
+                raise IdentityError("identity snapshot writer busy") from exc
+        held = os.fstat(fd)
+        def check_target():
+            now = os.stat(root, follow_symlinks=False)
+            if not stat.S_ISDIR(now.st_mode) or (now.st_dev, now.st_ino) != (held.st_dev, held.st_ino):
+                raise IdentityError("identity snapshot directory changed during read")
+        check_target()
+        if legacy:
+            try:
+                os.stat(".identity", dir_fd=fd, follow_symlinks=False)
+            except FileNotFoundError:
+                pass
+            else:
+                raise IdentityError("identity snapshot native layout requires native acquisition")
+        receipt_before = _read_file(fd, "_receipt.json", 9 * _MIB)
+        artifacts = {name: _read_file(fd, name, 64 * _MIB) for name in REFERENCE_ARTIFACTS}
+        receipt_after = _read_file(fd, "_receipt.json", 9 * _MIB)
+        check_target()
+        if receipt_before != receipt_after:
+            raise IdentityError("identity observations: receipt changed during read")
+    except OSError as exc:
+        raise IdentityError("identity snapshot directory/locking unavailable") from exc
+    finally:
+        os.close(fd)
+    return receipt_before, artifacts
+
+
+def read_reference_generation(directory: str | Path) -> LegacyReferenceRead:
+    """Capture the complete legacy root under SH; native mode has no fallback.
+
+    Trusted local configuration only. A prospective legacy probe alone grants
+    no native identity proof. Native publication/history or layout requires the
+    separately qualified native reader; this API never creates a read receipt.
+    """
+    receipt, artifacts = _read_reference_bytes(directory, legacy=True)
+    context = _ob_load(receipt, 9 * _MIB)
+    if type(context) is not dict:
+        raise IdentityError("identity snapshot: legacy receipt object required")
+    if {"publication", "identity_observations"} & context.keys():
+        raise IdentityError("identity snapshot native context requires native acquisition")
+    return LegacyReferenceRead(receipt, tuple((name, artifacts[name]) for name in REFERENCE_ARTIFACTS))
+
+
 def read_identity_snapshot(directory: str | Path) -> IdentitySnapshotRead:
     """Read one existing generation at the actual completion clock, without I/O writes.
 
@@ -197,29 +283,11 @@ def read_identity_snapshot(directory: str | Path) -> IdentitySnapshotRead:
     No supplied cutoff or filesystem timestamp can become a read-availability clock.
     A native validation error creates no read receipt and no legacy fallback.
     """
-    if not isinstance(directory, (str, Path)):
-        raise IdentityError("identity snapshot: an absolute local directory is required")
-    root = Path(directory)
-    if not root.is_absolute() or ".." in root.parts:
-        raise IdentityError("identity snapshot: an absolute local directory is required")
     started = _clock(time.time_ns())
-    try:
-        fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-                     | getattr(os, "O_CLOEXEC", 0))
-    except OSError as exc:
-        raise IdentityError("identity snapshot directory unavailable") from exc
-    try:
-        receipt_before = _read_file(fd, "_receipt.json", 9 * _MIB)
-        artifacts = {name: _read_file(fd, name, 64 * _MIB) for name in REFERENCE_ARTIFACTS}
-        receipt_after = _read_file(fd, "_receipt.json", 9 * _MIB)
-    finally:
-        os.close(fd)
-    # Do not decode potentially large Parquets after an already-observed torn read.
-    if receipt_before != receipt_after:
-        raise IdentityError("identity observations: receipt changed during read")
+    receipt_before, artifacts = _read_reference_bytes(directory)
     aliases = _parquet_records(artifacts["vendor_aliases.parquet"], "vendor_aliases.parquet")
     master = _parquet_records(artifacts["security_master.parquet"], "security_master.parquet")
-    snapshot = validate_reference_snapshot(receipt_before, artifacts, receipt_after,
+    snapshot = validate_reference_snapshot(receipt_before, artifacts, receipt_before,
                                           alias_records=aliases, master_records=master)
     completed = _clock(time.time_ns())
     if started > completed:

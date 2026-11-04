@@ -10,6 +10,7 @@ import gzip
 import hashlib
 import itertools
 import json
+import math
 import sys
 import types
 from pathlib import Path
@@ -280,3 +281,398 @@ def test_publication_denial_still_archives_and_closes_real_stream(lake, monkeypa
     assert result["publication"]["final_invalidation_delivered"] is False
     assert "publication stopped for this invocation" in caplog.text
     assert "SECRET_PROVIDER_BODY" not in caplog.text
+
+
+# Bounded stream-failure diagnostics (Fabric implementation, integrated into
+# the existing explicitly selected Tiingo CI suite).
+DIAG_FAKE_KEY = "OFFLINE_DUMMY_KEY_NEVER_ISSUED"
+DIAG_SENTINEL = "SENTINEL_SECRET_PAYLOAD_DO_NOT_LOG_7c1f"
+DIAG_ALLOWED_FIELDS = {"stage", "category", "attempt", "elapsed"}
+DIAG_FRAME = ('{"service":"boats","data":["T","2026-10-09T01:00:01Z",0,'
+         '"AMD",100.02,25,"@","F","","X"]}')
+DIAG_RECEIVED_AT = datetime(2026, 10, 9, 1, 0, 1, 100000, tzinfo=timezone.utc)
+
+
+class DiagClock:
+    """Deterministic monotonic clock; the real time module is never used."""
+
+    def __init__(self):
+        self.t = 0.0
+        self.sleeps = []
+
+    def monotonic(self):
+        return self.t
+
+    def sleep(self, seconds):
+        self.sleeps.append(seconds)
+        self.t += seconds
+
+
+class DiagArchive:
+    """In-memory stand-in; no filesystem, no receipts, no real storage."""
+
+    def __init__(self, fail=False):
+        self.batches = []
+        self.fail = fail
+
+    def store_boats_batch(self, frames):
+        if self.fail:
+            raise OSError(DIAG_SENTINEL)
+        kept = list(frames)
+        self.batches.append(kept)
+        return {"new_raw": bool(kept),
+                "raw_bytes": sum(len(raw.encode("utf-8")) for _, raw in kept)}
+
+
+class DiagSocket:
+    """Fake websocket socket: scripted outcomes only, zero endpoint code."""
+
+    def __init__(self, script, clock, *, fail_settimeout=None, fail_send=None):
+        self.script = list(script)
+        self.clock = clock
+        self.fail_settimeout = fail_settimeout
+        self.fail_send = fail_send
+        self.timeouts = []
+        self.sent = []
+        self.closed = 0
+
+    def settimeout(self, seconds):
+        if self.fail_settimeout is not None:
+            raise self.fail_settimeout
+        self.timeouts.append(seconds)
+
+    def send(self, payload):
+        if self.fail_send is not None:
+            raise self.fail_send
+        self.sent.append(payload)
+
+    def recv(self):
+        # A leading TICK repeats: idle receive timeouts never exhaust the
+        # script, so they can only ever be ordinary bounded-stream control
+        # flow, never a scripted transport break.
+        if self.script and self.script[0] is DIAG_TICK:
+            self.clock.t += 3
+            raise TimeoutError(DIAG_SENTINEL)
+        action = self.script.pop(0) if self.script else None
+        if action is None:
+            raise RuntimeError(DIAG_SENTINEL)
+        return action
+
+    def close(self):
+        self.closed += 1
+
+
+DIAG_TICK = object()
+
+
+class DiagHarness:
+    """Installs faked websocket/read_key/time/utc_now for one bounded run."""
+
+    def __init__(self, monkeypatch, scripts, *, connect_error=None,
+                 fail_settimeout=None, fail_send=None, observer_error=None,
+                 archive=None, max_seconds=30, websocket_types=None,
+                 observer_error_kind="connected"):
+        self.clock = DiagClock()
+        self.sockets = []
+        self.events = []
+        self.archived_payloads = []
+        self.archive = archive if archive is not None else DiagArchive()
+        self.max_seconds = max_seconds
+        scripts = list(scripts)
+        built = self.sockets
+
+        def establish(*args, **kwargs):
+            if connect_error is not None:
+                raise connect_error
+            assert args == (ing.BOATS_WS,)
+            assert kwargs["timeout"] == 8
+            socket = DiagSocket(scripts.pop(0), self.clock,
+                                    fail_settimeout=fail_settimeout,
+                                    fail_send=fail_send)
+            built.append(socket)
+            return socket
+
+        def observer(kind, payload=None):
+            self.events.append(kind)
+            if kind == "archived":
+                self.archived_payloads.append(payload)
+            if observer_error is not None and kind == observer_error_kind:
+                raise observer_error
+
+        stub = types.SimpleNamespace(create_connection=establish,
+                                     WebSocketException=(websocket_types.WebSocketException if websocket_types else RuntimeError),
+                                     WebSocketTimeoutException=(websocket_types.WebSocketTimeoutException if websocket_types else TimeoutError))
+        monkeypatch.setitem(sys.modules, "websocket", stub)
+        monkeypatch.setattr(ing, "read_key", lambda: DIAG_FAKE_KEY)
+        monkeypatch.setattr(ing, "time", self.clock)
+        monkeypatch.setattr(ing, "utc_now", lambda: DIAG_RECEIVED_AT)
+        self.observer = observer
+
+    def run(self, **overrides):
+        kwargs = dict(max_seconds=self.max_seconds, max_messages=2000000,
+                      batch_messages=1000, flush_seconds=10,
+                      archive=self.archive, observer=self.observer)
+        kwargs.update(overrides)
+        return ing.boats_stream(**kwargs)
+
+
+def assert_diag_record_wellformed(record, max_seconds):
+    """Contract shape: only the four allowed fields, all bounded and finite."""
+    assert set(record) == DIAG_ALLOWED_FIELDS
+    assert record["stage"] in ing.STREAM_FAILURE_STAGES
+    assert record["category"] in ing.STREAM_FAILURE_CATEGORIES
+    assert type(record["attempt"]) is int
+    assert 1 <= record["attempt"] <= 5
+    assert type(record["elapsed"]) is float
+    assert math.isfinite(record["elapsed"])
+    assert 0.0 <= record["elapsed"] <= float(max_seconds)
+
+
+def test_each_failure_site_is_recorded_with_its_own_distinct_stage(monkeypatch):
+    expected = {
+        "connect": ("connect", "transport"),
+        "configure": ("configure", "transport"),
+        "subscribe": ("subscribe", "transport"),
+        "receive": ("receive", "transport"),
+        "observer": ("observer", "callback"),
+    }
+    seen_stages = []
+    for site, (stage, category) in expected.items():
+        harness = DiagHarness(
+            monkeypatch, [[]] * 5,
+            connect_error=OSError(DIAG_SENTINEL) if site == "connect" else None,
+            fail_settimeout=OSError(DIAG_SENTINEL) if site == "configure" else None,
+            fail_send=OSError(DIAG_SENTINEL) if site == "subscribe" else None,
+            observer_error=OSError(DIAG_SENTINEL) if site == "observer" else None,
+        )
+        result = harness.run(max_messages=1)
+        failures = result["failures"]
+        # Five exhausted attempts -> exactly five retained records, one per
+        # attempt identity, capped and never exceeding five.
+        assert result["transport_breaks"] == 5
+        assert len(failures) == 5
+        assert [record["attempt"] for record in failures] == [1, 2, 3, 4, 5]
+        for record in failures:
+            assert_diag_record_wellformed(record, harness.max_seconds)
+            assert (record["stage"], record["category"]) == (stage, category)
+        # Elapsed is a finite bounded monotonic duration, nondecreasing.
+        elapsed = [record["elapsed"] for record in failures]
+        assert elapsed == sorted(elapsed)
+        assert elapsed[0] == 0.0
+        seen_stages.append(stage)
+        # Cleanup: every created socket closed exactly once; the 3s same-socket
+        # timeout was applied wherever the attempt got past connect.
+        for socket in harness.sockets:
+            assert socket.closed == 1
+            assert socket.timeouts == ([] if site == "configure" else [3])
+        assert harness.clock.sleeps == [2, 4, 8, 12]
+        serialized = json.dumps(result, allow_nan=False, sort_keys=True)
+        assert DIAG_SENTINEL not in serialized
+        assert DIAG_FAKE_KEY not in serialized
+    # The five injected sites are pairwise distinct from each other and none
+    # is reported as the observer callback or the archive storage boundary.
+    assert len(set(seen_stages)) == 5
+    assert "observer" in seen_stages and "storage" not in seen_stages
+
+
+def test_connect_timeout_reports_timeout_category_not_transport(monkeypatch):
+    connect = {"transport": OSError(DIAG_SENTINEL), "timeout": TimeoutError(DIAG_SENTINEL)}
+    categories = {}
+    for kind, error in connect.items():
+        harness = DiagHarness(monkeypatch, [[]], connect_error=error)
+        result = harness.run(max_messages=1)
+        assert result["connections"] == 0
+        assert len(result["failures"]) == 5
+        categories[kind] = {record["category"] for record in result["failures"]}
+        assert {record["stage"] for record in result["failures"]} == {"connect"}
+    assert categories["transport"] == {"transport"}
+    assert categories["timeout"] == {"timeout"}
+    assert categories["timeout"] != categories["transport"]
+
+
+def test_receive_timeout_is_control_flow_not_a_recorded_failure(monkeypatch):
+    harness = DiagHarness(monkeypatch, [[DIAG_TICK]], max_seconds=9)
+    result = harness.run(max_messages=5)
+    # Same socket reused for the whole bounded run; 3s same-socket timeout.
+    assert len(harness.sockets) == 1
+    socket = harness.sockets[0]
+    assert socket.timeouts == [3] and socket.closed == 1
+    assert result["connections"] == 1 and result["transport_breaks"] == 0
+    # Idle receive timeouts are ordinary bounded-stream control flow: no
+    # failure record, no transport break, no backoff sleep, no reconnect.
+    assert result["failures"] == []
+    assert harness.clock.sleeps == [] and harness.clock.t == 9
+    assert harness.events == ["connected", "tick", "tick", "tick",
+                              "disconnected", "ended"]
+
+
+def test_returned_counts_serialize_with_only_finite_allowed_fields(monkeypatch):
+    harness = DiagHarness(monkeypatch, [[], [DIAG_FRAME]])
+    result = harness.run(max_messages=1)
+    # Attempt 1 breaks at receive; attempt 2 delivers one frame and the
+    # bounded run ends and archives it after display eligibility closes.
+    assert result["transport_breaks"] == 1 and result["connections"] == 2
+    assert result["raw_messages"] == 1 and result["segments"] == 1
+    assert result["bytes"] == len(DIAG_FRAME.encode("utf-8"))
+    # Additive only: every original counts field survives unchanged.
+    assert set(result) == {"connections", "transport_breaks", "raw_messages",
+                           "segments", "bytes", "coverage_proven", "failures"}
+    assert result["coverage_proven"] is False
+    assert len(result["failures"]) == 1
+    record = result["failures"][0]
+    assert (record["stage"], record["category"], record["attempt"]) == (
+        "receive", "transport", 1)
+    assert_diag_record_wellformed(record, harness.max_seconds)
+    # Only finite JSON: allow_nan=False proves no NaN/Infinity slipped in.
+    serialized = json.dumps(result, allow_nan=False, sort_keys=True)
+    assert DIAG_SENTINEL not in serialized and DIAG_FAKE_KEY not in serialized
+    # Display payload stays raw-content-only and free of failure metadata,
+    # and archival still happens only after display eligibility closes.
+    assert harness.events == ["connected", "gap", "disconnected", "connected",
+                              "disconnected", "archived", "ended"]
+    assert len(harness.archived_payloads) == 1
+    frames = harness.archived_payloads[0]["frames"]
+    assert frames == ((DIAG_RECEIVED_AT, DIAG_FRAME),)
+    assert "failures" not in harness.archived_payloads[0]
+    assert DIAG_SENTINEL not in json.dumps(harness.archived_payloads, default=str)
+
+
+@pytest.mark.parametrize("scenario", ["vendor_rejection", "auth_material",
+                                      "storage_failure"])
+def test_terminal_paths_propagate_and_return_no_diagnostics(monkeypatch,
+                                                            scenario):
+    if scenario == "vendor_rejection":
+        script = [json.dumps({"messageType": "E",
+                              "response": {"private": DIAG_SENTINEL}})]
+        harness = DiagHarness(monkeypatch, [script])
+        match = "subscription rejected"
+    elif scenario == "auth_material":
+        script = [json.dumps({"note": DIAG_FAKE_KEY})]
+        harness = DiagHarness(monkeypatch, [script])
+        match = "sensitive authentication material"
+    else:
+        harness = DiagHarness(monkeypatch, [[DIAG_FRAME]], archive=DiagArchive(fail=True))
+        match = "storage failed"
+    returned = None
+    message_budget = 10 if scenario != "storage_failure" else 1
+    with pytest.raises(ing.TiingoArchiveError, match=match) as excinfo:
+        returned = harness.run(max_messages=message_budget)
+    # Disclosure: terminal exceptions propagate unconverted, so this run has
+    # NO returned counts and therefore no failure-record list at all — the
+    # diagnostics contract only exists on runs that return normally.
+    assert returned is None
+    # Still no sentinel/credential/vendor-body leakage on the raised path.
+    assert DIAG_SENTINEL not in str(excinfo.value)
+    assert DIAG_FAKE_KEY not in str(excinfo.value)
+    assert "archived" not in harness.events and harness.archive.batches == []
+    assert harness.events[-1] == "ended"
+    for socket in harness.sockets:
+        assert socket.closed == 1
+    # Terminal auth/storage failures are never laundered into retriable
+    # transport records: nothing was classified as a callback/storage record.
+    assert harness.events.count("error") + harness.events.count("gap") <= 1
+
+
+@pytest.mark.parametrize("kind", ["closed", "connect_timeout"])
+def test_diagnostics_real_websocket_exception_taxonomy(monkeypatch, kind):
+    # Use installed websocket-client exception classes with a fake connection;
+    # the Fabric executor could only check alias classes in its environment.
+    import websocket as websocket_types
+
+    if kind == "connect_timeout":
+        error = websocket_types.WebSocketTimeoutException(DIAG_SENTINEL)
+        expected = ("connect", "timeout")
+        harness = DiagHarness(monkeypatch, [[]], connect_error=error,
+                              websocket_types=websocket_types)
+    else:
+        harness = DiagHarness(monkeypatch, [[]] * 5,
+                              websocket_types=websocket_types)
+
+        def closed(_socket):
+            raise websocket_types.WebSocketConnectionClosedException(DIAG_SENTINEL)
+
+        monkeypatch.setattr(DiagSocket, "recv", closed)
+        expected = ("receive", "transport")
+    result = harness.run(max_messages=1)
+    assert len(result["failures"]) == 5
+    assert {(r["stage"], r["category"]) for r in result["failures"]} == {expected}
+    assert harness.clock.sleeps == [2, 4, 8, 12]
+    assert all(socket.closed == 1 for socket in harness.sockets)
+    assert DIAG_SENTINEL not in json.dumps(result, allow_nan=False)
+
+
+def test_diagnostics_archived_callback_is_not_a_receive_or_storage_failure(monkeypatch):
+    # Fail the observer only after an immutable archive return while eligibility
+    # is open, rather than at connected: this exercises the nested flush edge.
+    harness = DiagHarness(monkeypatch, [[DIAG_FRAME] * 100] + [[]] * 4,
+                          observer_error=OSError(DIAG_SENTINEL),
+                          observer_error_kind="archived")
+    result = harness.run(batch_messages=100)
+    assert result["failures"][0]["stage"] == "observer"
+    assert result["failures"][0]["category"] == "callback"
+    assert [r["stage"] for r in result["failures"][1:]] == ["receive"] * 4
+    assert result["raw_messages"] == 100 and result["segments"] == 1
+    assert len(harness.archive.batches) == 1
+    assert result["transport_breaks"] == 5  # preserve legacy counter semantics
+    assert all(socket.closed == 1 for socket in harness.sockets)
+    assert harness.events[-1] == "ended"
+    assert DIAG_SENTINEL not in json.dumps(result, allow_nan=False)
+
+
+def test_diagnostics_successful_callback_does_not_own_a_later_failure(monkeypatch):
+    harness = DiagHarness(monkeypatch, [[]] * 5)
+    original_observer = harness.observer
+    original_clock = harness.clock.monotonic
+    fail_next_read = False
+
+    def observer(kind, payload=None):
+        nonlocal fail_next_read
+        original_observer(kind, payload)
+        if kind == "connected":
+            fail_next_read = True
+
+    def monotonic():
+        nonlocal fail_next_read
+        if fail_next_read:
+            fail_next_read = False
+            raise OSError(DIAG_SENTINEL)
+        return original_clock()
+
+    # A successful callback must not retain ownership of an exception raised
+    # after it returned. The stage remains the last reached operation boundary;
+    # the record is not a claim about the remote server or its close cause.
+    monkeypatch.setattr(harness.clock, "monotonic", monotonic)
+    result = harness.run(observer=observer)
+    assert len(result["failures"]) == 5
+    assert all(record["stage"] != "observer" for record in result["failures"])
+    assert all(record["category"] != "callback" for record in result["failures"])
+    assert all(socket.closed == 1 for socket in harness.sockets)
+    assert DIAG_SENTINEL not in json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize("bad_duration", [float("nan"), float("inf"), -float("inf"), -1.0])
+def test_diagnostics_invalid_duration_cannot_escape_finite_json(monkeypatch, bad_duration):
+    harness = DiagHarness(monkeypatch, [[]])
+    original_clock = harness.clock.monotonic
+    next_duration = None
+
+    def monotonic():
+        nonlocal next_duration
+        if next_duration is not None:
+            value, next_duration = next_duration, None
+            return value
+        return original_clock()
+
+    def fail_connect(*_args, **_kwargs):
+        nonlocal next_duration
+        next_duration = bad_duration
+        raise OSError(DIAG_SENTINEL)
+
+    monkeypatch.setattr(harness.clock, "monotonic", monotonic)
+    monkeypatch.setattr(sys.modules["websocket"], "create_connection", fail_connect)
+    result = harness.run()
+    assert len(result["failures"]) == 5
+    for record in result["failures"]:
+        assert_diag_record_wellformed(record, harness.max_seconds)
+        assert record["elapsed"] == 0.0
+    assert DIAG_SENTINEL not in json.dumps(result, allow_nan=False)
