@@ -11,23 +11,23 @@
   "min_mdv20_usd": 5000000.0,
   "mdv_window": 20,
   "min_history_bars": 159,
-  "store_n": 10765,
-  "kept_n": 2017,
-  "excluded_n": 8748,
+  "store_n": 10274,
+  "kept_n": 1940,
+  "excluded_n": 8334,
   "excluded_by_reason": {
-   "below_liquidity_floor": 2646,
-   "below_price_floor": 718,
-   "not_trading": 4659,
-   "thin_history": 725
+   "below_liquidity_floor": 2504,
+   "below_price_floor": 692,
+   "not_trading": 4450,
+   "thin_history": 688
   },
   "price_through": "2026-10-30",
   "curated_n": 3171,
-  "curated_overlap_n": 1180,
-  "scan_n": 837,
+  "curated_overlap_n": 1146,
+  "scan_n": 794,
   "store_manifest": {
-   "n_tickers": 21813,
-   "latest_date": "2026-10-30",
-   "updated_at": "2026-11-03T02:56:21.000004+00:00"
+   "n_tickers": 20882,
+   "latest_date": "2026-11-02",
+   "updated_at": "2026-11-04T04:07:50.525103+00:00"
   }
  },
  "bases": {
@@ -35,13 +35,13 @@
   "universe": "engine.us_scan_universe.resolve over data/massive_stock_day, minus the curated universe (the two tiers are disjoint by construction)."
  },
  "summary": {
-  "store_n": 10765,
-  "floored_n": 2017,
-  "curated_overlap_n": 1180,
-  "scan_n": 837,
-  "panel_n": 837,
+  "store_n": 10274,
+  "floored_n": 1940,
+  "curated_overlap_n": 1146,
+  "scan_n": 794,
+  "panel_n": 794,
   "runners_n": 150,
-  "runners_eligible_today_n": 7,
+  "runners_eligible_today_n": 8,
   "runners_never_eligible_n": 48,
   "runners_never_eligible_pct": 0.32,
   "runners_eligible_days": {
@@ -56,18 +56,18 @@
  },
  "excluder_hist": {
   "not_topped_veto(macd_bear)": 39,
-  "not_topped_veto(stoch_bear+macd_bear)": 37,
+  "not_topped_veto(stoch_bear+macd_bear)": 36,
   "not_topped_veto(stoch_ob)": 28,
   "not_topped_veto(stoch_ob+stoch_bear)": 26,
+  "ELIGIBLE": 8,
   "not_topped_veto(stoch_bear)": 8,
-  "ELIGIBLE": 7,
   "freshness_expired": 3,
   "no_cross": 1,
   "not_topped_veto(stoch_ob+stoch_bear+macd_bear)": 1
  },
  "excluder_family_hist": {
-  "not_topped_veto": 139,
-  "ELIGIBLE": 7,
+  "not_topped_veto": 138,
+  "ELIGIBLE": 8,
   "freshness_expired": 3,
   "no_cross": 1
  },
@@ -3480,38 +3480,6 @@
    "excluder_family": "not_topped_veto"
   },
   {
-   "ticker": "JOYY",
-   "r63_pct": 8.6,
-   "sector": "?",
-   "off_index": true,
-   "coverage_reason": "not_in_curated_universe",
-   "eligible_today": false,
-   "tier_today": NaN,
-   "days_eligible": 6,
-   "first_eligible": "2026-09-11",
-   "fwd_ret_from_first_pct": 3.96,
-   "tiers_seen": [
-    "T1"
-   ],
-   "stoch_ob": false,
-   "stoch_bear": true,
-   "macd_bear": true,
-   "rsi_block": false,
-   "k3": 27.5,
-   "d3": 53.9,
-   "rsi3d": 57.1,
-   "t1_ticks": 12,
-   "t2_ticks": 73,
-   "t2raw_ticks": 16,
-   "recent3": true,
-   "veto_legs": [
-    "stoch_bear",
-    "macd_bear"
-   ],
-   "excluder": "not_topped_veto(stoch_bear+macd_bear)",
-   "excluder_family": "not_topped_veto"
-  },
-  {
    "ticker": "EFXT",
    "r63_pct": 8.5,
    "sector": "?",
@@ -4682,6 +4650,35 @@
    ],
    "excluder": "not_topped_veto(macd_bear)",
    "excluder_family": "not_topped_veto"
+  },
+  {
+   "ticker": "FDL",
+   "r63_pct": 4.2,
+   "sector": "?",
+   "off_index": true,
+   "coverage_reason": "not_in_curated_universe",
+   "eligible_today": true,
+   "tier_today": "T1",
+   "days_eligible": 6,
+   "first_eligible": "2026-10-23",
+   "fwd_ret_from_first_pct": 1.68,
+   "tiers_seen": [
+    "T1"
+   ],
+   "stoch_ob": false,
+   "stoch_bear": false,
+   "macd_bear": false,
+   "rsi_block": true,
+   "k3": 79.9,
+   "d3": 69.5,
+   "rsi3d": 65.3,
+   "t1_ticks": 2,
+   "t2_ticks": 6,
+   "t2raw_ticks": 6,
+   "recent3": true,
+   "veto_legs": [],
+   "excluder": "ELIGIBLE",
+   "excluder_family": "ELIGIBLE"
   }
  ],
  "degraded": []
