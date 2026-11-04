@@ -14,9 +14,43 @@ cli.add_argument("--output", type=Path, required=True)
 args = cli.parse_args()
 root = args.workspace.resolve()
 sys.path.insert(0, str(root))
-from tests.test_dashboard_template_render import _base_vm, _env
+from tests.test_dashboard_template_render import _base_vm, _board_row, _env
 from tests.test_prophet_plan_relation import _lfus_book, _relation
-from tests.test_prophet_setup_sections import _body_html
+
+
+def _body_html(*, plan_rel):
+    """Build the synthetic detail from its real Jinja owner, not another PR's test module."""
+    row = _board_row(
+        ticker="LFUS", name="Littelfuse", sector="Industrials",
+        price=33.5, price_as_of="2026-10-14T20:00:00-04:00",
+        signal_asof="2026-10-13", stage="basing",
+        entry_signal={
+            "status": "buy_soon", "headline": "Near entry", "headline_zh": "接近入场",
+            "buy_zone": {"low": 32.0, "high": 34.0}, "stop": 30.5,
+            "chase_above": 36.0,
+        },
+        signal={"reason": "Base depth and RS", "above200": True,
+                "weekly_bull": False, "provisional": False,
+                "tier_observed_date": "2026-10-12"},
+        hold={"invalidation": 29.75},
+    )
+    display = {
+        "cautions": [{"en": "Do not chase the breakout", "zh": "请勿追高"}],
+        "assessment_detail": {"en": "Assessment detail copy", "zh": "评估说明文案"},
+        "evidence_profile": {
+            "scores": [{"key": "trend", "label": {"en": "Trend", "zh": "趋势"},
+                        "value": 61.0}],
+            "abstaining": [{"en": "Quality", "zh": "质量"}],
+        },
+        "chart": {"asof": "2026-10-14"},
+        "context": {"href": "https://example.test/context",
+                    "label": {"en": "Context", "zh": "背景"}},
+        "memory_href": "https://example.test/mm",
+    }
+    return _env().get_template("_prophet_setup_detail.html.j2").module.body(
+        row, "board", "2026-10-09", plan_rel, display=display,
+    )
+
 
 head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
 paths = ["templates/dashboard.html.j2", "templates/_prophet_setup_detail.html.j2",
