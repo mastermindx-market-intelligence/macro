@@ -1,5 +1,38 @@
 # International Markets Paper implementation — Waves 1–3
 
+## Production completion — 4 November 2026
+
+The final Paper implementation and local source qualification are recorded in `research/reference_integrity/intl-country-intelligence-20261020/production_completion_20261103/IMPLEMENTATION.md` and `REPORT.json`. Protected procedure remains Mastermind2b12028b3910303e85d8e591fd40bb35c779ab78. The same original operation, branch and draft PR9596 remain the delivery carrier.
+
+IM-D4 is in progress. Mainbb3b7273f1e9ccb869b6500c97871093eb22005a is genuinely integrated in the original pending merge. Native Macro publication status and two-parent fences are available; old capability refusals are historical. Final commit/push and actual production adoption still require their own receipts.
+
+The country-centered Paper hierarchy is retained. Dossier, Scanner and Coverage now load as84 exact-hash/generation-bound presentation assets, reducing initial HTML by83.4%. The final research picker, KPI hierarchy, badge wrapping and mobile spacing pass local real-browser checks. Shared-header geometry is reused from its existing bounded owner. The narrow public presentation path and no-store rule are qualified against actual Caddy adaptation and access tests; no installed serving change is claimed.
+
+The final ordinary build uses511 exact committed inputs without reacquisition. Controller188, shared-header/frozen/nav122, access54 plus final generated closure, and P0B128 browser/144 integrity results are retained with their exact source and scope. Full canonical visual captures, corrected actual-page journeys, earlier failures and all raw logs are bound in the report/archive. Test totals overlap and are not additive.
+
+Next: exact-tree native commit/readback, preserve the integrated base and source while clearing only stale merge metadata, same-branch typed push, current-head hosted CI and distinct independent technical review. Draft/HOLD, formal CHANGES_REQUESTED disposition, applicable actual-parent/F10/W3U, normal publication/serving policy, full-history FX acceptance, subsequent refresh and user design acceptance remain open. Held R2 is not retried or replaced. MISSION_COMPLETE remains false.
+
+Historical sections below retain prior-state evidence and are superseded by this current release frontier where explicitly stated.
+
+## Design reset — 3 November 2026
+
+The current Chairman explicitly rejected the previous local design as 4/10. Prior green tests establish recorded behavior only; the visual/product result is REJECTED_BY_DESIGN. No previous local preview was deployed. This continues the original country-cockpit operation, branch and PR9596, preserving the pending two-parent merge.
+
+Protected procedure is pinned at Mastermind e39a617b6771cb6b07323a533b4cf9db7e78900a. The required procedure paths have no Git delta from the verified b4a5a89 pin. Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG was freshly read: R12 Country Intelligence p-G-0 (DW7-0/DMX-0), and R14 Global Surveillance p-I-0 (G9J-0/GWG-0/IRV-0). R14 supplies visual composition guidance, not permission to publish its specimen data or replace the country-centered product job.
+
+| Task | Dependency | Work and DONE_WHEN | Evidence/review |
+| --- | --- | --- | --- |
+| IM-D1 · reviewed | Current source and design identity | Reassess actual Paper screenshots against the rejected implementation; identify hierarchy, palette, density and workflow defects | Fresh native screenshots/JSX, exact source baseline; principal advisory design judgment |
+| IM-D2 · complete_in_source | IM-D1 | Recompose the country workflow using a compact seven-country outlook strip, visible observation band, balanced forecast/policy/conditions columns, restrained shared tokens, responsive tools discovery | Actual ordinary build, reviewed desktop/mobile images; no invented financial outputs |
+| IM-D3 · verified_locally | IM-D2 | Verify country selection, real dates/values, evidence, deep links, keyboard, no-JS, resize, EN/ZH and dark/light; fix material findings | Focused source tests and real browser captures, preserving initial failures |
+| IM-D4 · blocked | IM-D3 plus publication capability | Independent source review, supported Macro pending-merge publisher, current-main reconciliation, hosted CI and real served adoption | Original publisher gate is unchanged; no raw-Git or alternate-writer bypass |
+
+The same principal retains source/design integration for PRINCIPAL_JUDGMENT and UNIQUE_APPROVED_ACCESS. The native advisory child supplies architectural critique only, not paid-provider labor or formal approval. WHY NOT FABLE: this is a bounded visual/product decision and existing-carrier implementation; no separate scarce-principal continuity is required. The held prior Fabric attempt is not retried.
+
+The final design reset is bound in `research/reference_integrity/intl-country-intelligence-20261020/design_reset_20261103/DESIGN_RESET.md` and `REPORT.json`: 158 focused tests, 20 responsive states across all seven countries, eight workbench selections, 26 unique canonical observations and fresh 128-case shared-theme fixture proof. Initial failures and corrections are retained. Principal image review found no remaining concrete visual blocker in the inspected captures; formal review, production performance/publication and user acceptance remain open.
+
+This plan is saved in the incumbent local source carrier, NOT_CANONICALLY_PERSISTED to GitHub because the supported Macro publisher remains unavailable. That release dependency does not block permitted design/source work. Prior proof archives remain immutable. Current recovery remains on WS:PAPER-INTERNATIONAL-WAVES and OWNER_CHECKPOINT.md.
+
 ## Acceptance is the user journey
 
 Deliver the received IM-00 foundation and IM-01 through IM-10 views through the existing International Python/Jinja/CSS/JavaScript product. Preserve all 18 legacy research families, stocks mode, country routes, existing source/auth/publication owners, and truthful source/rights/quality states. Completion requires independent exact-candidate review, actual browser and rights evidence, served publication, and a subsequent normal publication preserving the result. Source tests, native Paper references, and all-null placeholders do not satisfy that outcome.

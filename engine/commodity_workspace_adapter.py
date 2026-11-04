@@ -2,6 +2,8 @@
 
 The caller supplies its current commodity snapshot. Related artifacts retain their
 own dates, including the possible one-publication lag of commodity ratio context.
+The normal renderer may hand off its already-computed Gold display projection;
+this does not replace or redate the independently published ratio context.
 Company links come exclusively from the existing Transmission/Data OS adapter.
 """
 from __future__ import annotations
@@ -69,12 +71,13 @@ def attach_company_continuations(workspace: dict, chain_state: dict | None, root
 
 
 def workspace_from_publications(snapshot: dict, *, root: Path, data_root: Path | None = None,
-                                physical_context: dict | None = None) -> dict:
+                                physical_context: dict | None = None,
+                                gold_publication: dict | None = None) -> dict:
     data_root = data_root if data_root is not None else root / "data"
     chains = read_publication(data_root / "transmission" / "chain_state.json")
     workspace = build_workspace(snapshot,
         transmission=read_publication(data_root / "transmission" / "latest.json"),
         fx=read_publication(data_root / "forex" / "latest.json"), chain_state=chains,
         commodity_latest=read_publication(data_root / "commodity" / "latest.json"),
-        physical_context=physical_context)
+        physical_context=physical_context, gold_publication=gold_publication)
     return attach_company_continuations(workspace, chains, root)

@@ -333,6 +333,42 @@ def _assert_international_canonical_fetch(
     ), 'International must invoke the exact canonical-main helper without swallowing failure'
 
 
+def _assert_ruling_graph_exact_base_contract(definition: dict[str, object]) -> None:
+    """Ruling-graph uses exact tested-tree ancestry instead of a moving fetch.
+
+    A missing base must fail closed and never skip H1/H2/W1; the replay
+    identity is distinct from PR-head first-parent and normal main baseline.
+    """
+    gates = [step for step in definition.get("steps", [])
+             if isinstance(step, dict)
+             and step.get("name") == "conflict checker (hard fail on new FDR family or privacy boundary violations)"]
+    assert len(gates) == 1
+    command = str(gates[0].get("run", ""))
+    assert "git fetch" not in command
+    required = (
+        'head_sha="$(git rev-parse --verify HEAD)"',
+        'git rev-list --parents -n 1 HEAD',
+        'git rev-parse --verify \'HEAD^1\'',
+        'CI_DISABLE_BASE_REPLAY',
+        'CI_SEMANTIC_ROLE',
+        'CI_TESTED_TREE_SHA',
+        'CI_BASE_SHA',
+        'TESTED_BASE_SHA',
+        'GITHUB_EVENT_NAME',
+        'workflow_dispatch',
+        'TESTED_TREE_SHA',
+        'git cat-file -e "${TESTED_BASE_SHA}^{commit}"',
+        'git merge-base --is-ancestor "$TESTED_BASE_SHA" HEAD',
+        'RULING_DIFF_BASE="$TESTED_BASE_SHA" python scripts/check_ruling_conflicts.py',
+        '::error::ruling-graph',
+        'head=$head_sha',
+    )
+    for evidence in required:
+        assert evidence in command, f"ruling-graph missing exact-base fence: {evidence}"
+    assert command.index("git cat-file -e") < command.index("python scripts/check_ruling_conflicts.py")
+    assert command.index("git merge-base --is-ancestor") < command.index("python scripts/check_ruling_conflicts.py")
+
+
 def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
     payload = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
     consumers: dict[str, dict[str, object]] = {}
@@ -357,6 +393,8 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
         if job_id in _INTERNATIONAL_CANONICAL_JOBS:
             _assert_international_canonical_fetch(
                 definition, *_INTERNATIONAL_CANONICAL_JOBS[job_id])
+        elif job_id == "ruling-graph":
+            _assert_ruling_graph_exact_base_contract(definition)
         else:
             assert any(
                 "git fetch origin " in run and "github.base_ref" in run for run in runs

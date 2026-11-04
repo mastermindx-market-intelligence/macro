@@ -158,6 +158,72 @@ def test_intl_workspace_dependencies_are_public_presentation_assets():
         assert (ROOT / "templates" / asset[1:]).read_bytes() == (SITE / asset[1:]).read_bytes()
 
 
+
+def test_intl_deferred_presentation_is_published_public_and_never_immutable():
+    """Every page descriptor resolves to coherent public presentation bytes."""
+    import json
+
+    prefix = "/assets/intl-workspace/"
+    pattern = prefix + "*"
+    assert prefix in POLICY["public"]["prefixes"]
+    assert prefix not in RUNTIME_ARTIFACT_PREFIXES
+    html = (SITE / "intl.html").read_text()
+    descriptors = [
+        json.loads(raw)
+        for raw in re.findall(
+            r'<script[^>]*data-im-deferred-manifest[^>]*>(.*?)</script>',
+            html,
+            flags=re.S,
+        )
+    ]
+    assert descriptors, "The public policy must land with the real emitted page."
+    referenced = set()
+    for descriptor in descriptors:
+        for asset in descriptor["variants"].values():
+            route = "/" + asset["url"]
+            assert route.startswith(prefix) and route.endswith(".json")
+            raw = (SITE / asset["url"]).read_bytes()
+            assert len(raw) == asset["bytes"]
+            assert hashlib.sha256(raw).hexdigest() == asset["sha256"]
+            assert json.loads(raw)["generation"] == descriptor["generation"]
+            referenced.add(route)
+    emitted = {"/" + str(path.relative_to(SITE))
+               for path in (SITE / prefix.strip("/")).glob("*.json")}
+    assert emitted == referenced
+
+    for matcher in ("reg_asset", "reg_asset_err"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, re.S | re.M)
+        assert block
+        paths = {token for line in block.group(1).splitlines()
+                 if line.lstrip().startswith("not path ")
+                 for token in shlex.split(line.lstrip().removeprefix("not path "))}
+        assert pattern in paths
+        assert all(any(fnmatchcase(route, p) for p in paths) for route in referenced)
+    for matcher in ("public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, re.S | re.M)
+        assert block
+        paths = {token for line in block.group(1).splitlines()
+                 if line.lstrip().startswith("path ")
+                 for token in shlex.split(line.lstrip().removeprefix("path "))}
+        assert not any(fnmatchcase(route, p) for route in referenced for p in paths)
+    assert re.search(r"@intl_workspace_fragments\s+path\s+/assets/intl-workspace/\*", CADDY)
+    assert re.search(
+        r'header\s+@intl_workspace_fragments\s+Cache-Control\s+"no-store"', CADDY
+    )
+    # This header has no query condition: ?v=sha requests receive no-store too.
+    cache_match = re.search(r"@intl_workspace_fragments\s+path\s+([^\n]+)", CADDY)
+    assert cache_match and shlex.split(cache_match.group(1)) == [pattern]
+    protected = (
+        "/assets/intl-workspace-private/country_inputs.json",
+        "/intl_macro/country_inputs.json", "/data/intl_macro/provenance.json",
+        "/macrodata/intl_macro/country_inputs.json", "/api/intl-workspace",
+    )
+    assert not any(fnmatchcase(route, pattern) for route in protected)
+    workflow = yaml.load((ROOT / ".github/workflows/render.yml").read_text(),
+                         Loader=yaml.BaseLoader)
+    assert "lib/intl_workspace_fragments.py" in workflow["on"]["push"]["paths"]
+
+
 def test_help_build_clock_is_one_exact_public_ui_asset():
     """Public Help must load its local clock; nearby resources stay gated."""
     asset = "/help_refresh.js"

@@ -3544,3 +3544,49 @@ html[data-theme="light"]{
 html[data-theme="light"] {
   --imc-country-line: color-mix(in srgb, var(--link) 35%, var(--line));
 }
+
+
+/* International research surfaces from Paper R12/R14.
+   Dedicated aliases preserve this page's approved paper/ink palette when the
+   shared soft-contrast preference rebinds the estate's generic --bg/--text.
+   Other pages do not consume these tokens. */
+:root{
+  --imc-canvas:#0f1115;--imc-surface:#181b21;--imc-raised:#1e222a;
+  --imc-text:#d7dce3;--imc-muted:#8b93a1;--imc-rule:#3a4150;
+}
+html[data-theme="light"]{
+  --imc-canvas:#f7f8fa;--imc-surface:#ffffff;--imc-raised:#eef1f6;
+  --imc-text:#1c2430;--imc-muted:#5d6b7e;--imc-rule:#c9ccd1;
+}
+
+/* Shared navigation stability, adopted from Macro #9495:
+   39dca322 / ed94ad75 / 5370b9f5. Append-only composition preserves the
+   incumbent theme bytes and International Paper aliases. The existing
+   adaptive controller still owns final single/stacked placement. */
+.site-nav{grid-template-columns:minmax(0,1fr) auto auto;column-gap:10px;row-gap:8px}
+nav.site-nav .nav-search{grid-column:2;grid-row:2;justify-self:end;position:relative;min-width:0;width:128px;max-width:none;height:40px}
+.nav-search input{height:40px}
+nav.site-nav .nav-ctrls{grid-column:3;grid-row:2;justify-self:end;align-self:center;display:flex;align-items:center;gap:10px;min-height:40px}
+@media(max-width:900px){
+ nav.site-nav{column-gap:8px;row-gap:8px}
+ nav.site-nav .nav-ctrls{grid-column:1/-1;grid-row:1;margin-top:0;justify-self:end;flex-wrap:wrap;justify-content:flex-end;min-width:0;gap:8px}
+ nav.site-nav .nav-links{grid-column:1/-1;grid-row:3}
+ nav.site-nav .nav-search{grid-column:1/-1;grid-row:2;width:100%}
+ nav.site-nav a.nav-link{padding:6px 8px;font-size:12.5px}
+ nav.site-nav .nav-brand .brand-word{display:none}
+ nav.site-nav:not(.has-nav-toggle) .nav-drill-panel[inert]{display:none}
+}
+@media(max-width:560px){nav.site-nav .nav-ctrls .ai-brief-link{padding:8px 12px;font-size:12px;gap:5px}}
+@media(max-width:360px){
+ nav.site-nav .nav-ctrls{gap:6px}
+ nav.site-nav .nav-ctrls .ai-brief-link{padding:7px 10px;font-size:11.5px;gap:4px}
+}
+@media(min-width:901px){
+ nav.site-nav .nav-links{flex-wrap:nowrap;gap:2px}
+ nav.site-nav a.nav-link{min-height:40px;display:inline-flex;align-items:center;padding:0 9px;border-radius:var(--r-btn,10px)}
+}
+@media(min-width:901px) and (max-width:1100px){
+ nav.site-nav:not([data-nav-layout]) .nav-brand .brand-word{display:none}
+ nav.site-nav .nav-links{gap:1px}
+ nav.site-nav a.nav-link{padding-inline:8px}
+}

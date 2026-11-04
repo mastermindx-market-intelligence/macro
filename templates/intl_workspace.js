@@ -1256,6 +1256,7 @@
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
       '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
+    selector += ',[data-gs-market],[data-gs-market-row],[data-gs-select-market]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
@@ -1266,6 +1267,9 @@
         if (node.matches('[data-im-scenario-tab]')) attrs.push('aria-pressed');
         if (node.matches('[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error]')) text=true;
       }
+      if (node.matches('[data-gs-market]')) attrs.push('hidden');
+      if (node.matches('[data-gs-market-row]')) attrs.push('data-gs-selected');
+      if (node.matches('[data-gs-select-market]')) attrs.push('aria-current','aria-disabled','tabindex','href','title');
       if (node.matches('[data-im-heading]')) attrs.push('tabindex');
       if (node.matches('[data-im-library-static]')) attrs.push('data-horizon','data-basis','data-im-library-enhanced');
       if (node.matches('[data-im-library-group]')) attrs.push('data-im-library-active');
@@ -1303,7 +1307,12 @@
 
   function rememberNodes(controller, snapshot) {
     snapshot.forEach(function (entry) {
-      if (!controller.original.some(function (old) { return old.node === entry.node; })) controller.original.push(entry);
+      var deferred = entry.node.closest('[data-im-deferred]');
+      if (deferred && entry.node !== deferred) return;
+      if (!controller.originalNodes.has(entry.node)) {
+        controller.original.push(entry);
+        controller.originalNodes.add(entry.node);
+      }
     });
   }
 
@@ -1342,6 +1351,324 @@
     }
     return true;
   }
+
+  /* Static research fragments belong to the existing workspace lifecycle. A
+   * selection commits synchronously; only its presentation loads asynchronously.
+   * Cache strings, never detached dossier trees, and never mix publications. */
+  var DEFERRED_SCHEMA = 'intl-workspace-fragments.v1';
+  var DEFERRED_LIMIT = 4 * 1024 * 1024;
+  var DEFERRED_IDENTITY = {panel_id:'id', generation:'data-im-generation', view:'data-view',
+    horizon:'data-horizon', basis:'data-basis', return_basis:'data-return-basis', source:'data-source'};
+
+  function deferredIdentity(node, descriptor) {
+    return Object.keys(DEFERRED_IDENTITY).every(function (key) {
+      return node.getAttribute(DEFERRED_IDENTITY[key]) === descriptor[key];
+    });
+  }
+
+  function prepareDeferred(controller) {
+    var entries = owned(controller.root, '[data-im-panel][data-im-deferred]').map(function (panel) {
+      var manifests = Array.from(panel.children).filter(function (node) { return node.matches('script[type="application/json"][data-im-deferred-manifest]'); });
+      var fallbacks = Array.from(panel.children).filter(function (node) { return node.hasAttribute('data-im-deferred-fallback'); });
+      if (manifests.length !== 1 || fallbacks.length !== 1) throw new TypeError('Invalid deferred research shell');
+      var descriptor = JSON.parse(manifests[0].textContent);
+      if (descriptor.schema !== DEFERRED_SCHEMA || !deferredIdentity(panel, descriptor) ||
+          descriptor.generation !== controller.config.source_reference || controller.bindingVersion !== 2 ||
+          !['dossier','scanner','coverage'].includes(descriptor.view) ||
+          !Array.isArray(descriptor.markets) || new Set(descriptor.markets).size !== descriptor.markets.length ||
+          descriptor.markets.some(function (market) { return !/^[A-Z]{2}$/.test(market); }) ||
+          !descriptor.variants || Array.isArray(descriptor.variants) || typeof descriptor.variants !== 'object') throw new TypeError('Invalid deferred research identity');
+      var keys = Object.keys(descriptor.variants).sort();
+      if (descriptor.view === 'dossier' ?
+          !descriptor.markets.includes(descriptor.default_market) || JSON.stringify(keys) !== JSON.stringify(descriptor.markets.slice().sort()) :
+          JSON.stringify(keys) !== '["default"]') throw new TypeError('Invalid deferred research membership');
+      keys.forEach(function (key) {
+        var ref = descriptor.variants[key];
+        var slot = descriptor.view === 'dossier' ? 'dossier-' + key : descriptor.view + '-' + descriptor.horizon + '-' + descriptor.basis;
+        if (!ref || ref.url !== 'assets/intl-workspace/' + slot + '.json' || !/^[0-9a-f]{64}$/.test(ref.sha256) ||
+            !Number.isInteger(ref.bytes) || ref.bytes < 1 || ref.bytes > DEFERRED_LIMIT) throw new TypeError('Invalid deferred research asset');
+      });
+      return {panel:panel, descriptor:descriptor, manifest:manifests[0], fallback:fallbacks[0],
+        pristine:Array.from(panel.childNodes), loadedKey:null, failedKey:null};
+    });
+    return {entries:entries, cache:new Map(), bytes:0, openStates:new Map(), request:null,
+      queued:false, selectionKey:null, source:controller.config.source_reference, epoch:0};
+  }
+
+  function deferredSelection(controller) {
+    if (!controller.state || !controller.deferred) return null;
+    var panels = panelFor(controller, controller.state);
+    if (panels.length !== 1 || panels[0].hidden) return null;
+    var entry = controller.deferred.entries.find(function (item) { return item.panel === panels[0]; });
+    if (!entry || entry.descriptor.generation !== controller.state.source_reference || !deferredIdentity(entry.panel,entry.descriptor)) return null;
+    var descriptor = entry.descriptor;
+    var variant = descriptor.view === 'dossier' ?
+      (descriptor.markets.includes(controller.state.selected_market) ? controller.state.selected_market : descriptor.default_market) : 'default';
+    var ref = descriptor.variants[variant];
+    return {entry:entry, variant:variant, ref:ref, key:descriptor.panel_id + ':' + variant + ':' + ref.sha256};
+  }
+
+  function deferredStatus(entry, state) {
+    var messages = {
+      idle:['Open this view to load its research.','打开此视图以加载研究内容。'],
+      loading:['Loading this research view…','正在加载此研究视图…'],
+      error:['This research view could not be loaded. Your selection is preserved.','暂时无法加载此研究视图。您的选择已保留。'],
+      changed:['This research snapshot has changed. Reload to continue.','此研究快照已更新。请重新加载以继续。']
+    };
+    var message = messages[state] || messages.error;
+    var status = entry.fallback.querySelector('[data-im-deferred-status]');
+    status.querySelector('.l-en').textContent = message[0];
+    status.querySelector('.l-zh').textContent = message[1];
+    entry.fallback.querySelector('[data-im-deferred-retry]').hidden = state !== 'error';
+    entry.fallback.querySelector('[data-im-deferred-reload]').hidden = state !== 'changed';
+    entry.panel.setAttribute('data-im-deferred-state', state);
+    entry.panel.setAttribute('aria-busy', String(state === 'loading'));
+  }
+
+  function releaseDeferred(controller, entry) {
+    entry.focusAfterLoad = false;
+    if (entry.loadedKey) {
+      var states = controller.deferred.openStates;
+      states.delete(entry.loadedKey);
+      states.set(entry.loadedKey, Array.from(entry.panel.querySelectorAll('details')).reduce(function (open, node, index) {
+        if (node.open) open.push(index);
+        return open;
+      }, []));
+      while (states.size > 8) states.delete(states.keys().next().value);
+      entry.panel.replaceChildren.apply(entry.panel, entry.pristine);
+      entry.loadedKey = null;
+    }
+    deferredStatus(entry, 'idle');
+  }
+
+  function cancelDeferredRequest(controller) {
+    var deferred = controller.deferred;
+    if (deferred && deferred.request) {
+      var request = deferred.request;
+      deferred.request = null;
+      if (request.abort) request.abort.abort();
+    }
+  }
+
+  function resetDeferred(controller) {
+    var deferred = controller.deferred;
+    if (!deferred) return;
+    cancelDeferredRequest(controller);
+    deferred.epoch += 1;
+    deferred.selectionKey = null;
+    deferred.cache.clear();
+    deferred.bytes = 0;
+    deferred.entries.forEach(function (entry) {
+      releaseDeferred(controller, entry);
+      entry.failedKey = null;
+      entry.panel.removeAttribute('data-im-deferred-state');
+    });
+    deferred.openStates.clear();
+  }
+
+  function captureDeferred(controller) {
+    var deferred = controller.deferred;
+    if (!deferred || !deferred.entries.length) return null;
+    return {cache:new Map(deferred.cache),bytes:deferred.bytes,openStates:new Map(deferred.openStates),selectionKey:deferred.selectionKey,
+      entries:deferred.entries.map(function (entry) {
+        return {entry:entry,children:Array.from(entry.panel.childNodes),loadedKey:entry.loadedKey,failedKey:entry.failedKey,
+          focusAfterLoad:entry.focusAfterLoad,status:entry.panel.getAttribute('data-im-deferred-state'),busy:entry.panel.getAttribute('aria-busy'),
+          labels:Array.from(entry.fallback.querySelectorAll('[data-im-deferred-status] span')).map(function (node) { return node.textContent; }),
+          retryHidden:entry.fallback.querySelector('[data-im-deferred-retry]').hidden,reloadHidden:entry.fallback.querySelector('[data-im-deferred-reload]').hidden};
+      })};
+  }
+
+  function restoreDeferred(controller, snapshot) {
+    if (!snapshot) return;
+    var deferred = controller.deferred;
+    cancelDeferredRequest(controller);
+    deferred.epoch += 1;
+    deferred.cache = snapshot.cache;
+    deferred.bytes = snapshot.bytes;
+    deferred.openStates = snapshot.openStates;
+    deferred.selectionKey = snapshot.selectionKey;
+    snapshot.entries.forEach(function (saved) {
+      var entry = saved.entry;
+      entry.panel.replaceChildren.apply(entry.panel,saved.children);
+      entry.loadedKey=saved.loadedKey;entry.failedKey=saved.failedKey;entry.focusAfterLoad=saved.focusAfterLoad;
+      if (saved.status === null) entry.panel.removeAttribute('data-im-deferred-state');
+      else entry.panel.setAttribute('data-im-deferred-state',saved.status);
+      entry.panel.setAttribute('aria-busy',saved.busy);
+      Array.from(entry.fallback.querySelectorAll('[data-im-deferred-status] span')).forEach(function (node,index) { node.textContent=saved.labels[index]; });
+      entry.fallback.querySelector('[data-im-deferred-retry]').hidden=saved.retryHidden;
+      entry.fallback.querySelector('[data-im-deferred-reload]').hidden=saved.reloadHidden;
+    });
+    scheduleDeferred(controller);
+  }
+
+  function deferredError(changed) {
+    var error = new Error('Research fragment unavailable');
+    error.snapshotChanged = !!changed;
+    return error;
+  }
+
+  function validateDeferredMarkup(controller, selection, bundle) {
+    var descriptor = selection.entry.descriptor;
+    var item = bundle && bundle.fragments && bundle.fragments[descriptor.panel_id];
+    if (!bundle || bundle.schema !== DEFERRED_SCHEMA || bundle.generation !== descriptor.generation || !item ||
+        Object.keys(DEFERRED_IDENTITY).some(function (key) { return item[key] !== descriptor[key]; }) ||
+        item.market !== selection.variant || typeof item.html !== 'string' ||
+        JSON.stringify(item.markets) !== JSON.stringify(descriptor.view === 'dossier' ? [selection.variant] : descriptor.markets)) throw deferredError(true);
+    var document = controller.root.ownerDocument;
+    var template = document.createElement('template');
+    template.innerHTML = item.html;
+    var roots = Array.from(template.content.children);
+    if (roots.length !== 1 || template.content.querySelectorAll('[data-im-panel]').length !== 1 ||
+        !roots[0].hasAttribute('data-im-panel') || !deferredIdentity(roots[0], descriptor) ||
+        roots[0].getAttribute('aria-labelledby') !== selection.entry.panel.getAttribute('aria-labelledby') ||
+        template.content.querySelector('[data-im-workspace],[data-im-deferred],iframe,object,embed,base,link,meta,style')) throw deferredError(true);
+    var ids = new Set();
+    Array.from(template.content.querySelectorAll('*')).forEach(function (node) {
+      if (node.id) {
+        var existing = document.getElementById(node.id);
+        if (ids.has(node.id) || (existing && !selection.entry.panel.contains(existing))) throw deferredError(true);
+        ids.add(node.id);
+      }
+      if (node.tagName === 'SCRIPT' && (node.getAttribute('type') !== 'application/json' || node.hasAttribute('src'))) throw deferredError(true);
+      if (node.hasAttribute('data-im-generation') && node.getAttribute('data-im-generation') !== descriptor.generation) throw deferredError(true);
+      Array.from(node.attributes).forEach(function (attribute) {
+        if (/^on/i.test(attribute.name) || (['href','src','xlink:href','action','formaction'].includes(attribute.name) &&
+            /^[\s\u0000-\u0020]*(?:javascript|vbscript|data):/i.test(attribute.value.replace(/[\t\n\r]/g,'')))) throw deferredError(true);
+      });
+    });
+    var markets = Array.from(new Set(Array.from(template.content.querySelectorAll('[data-gs-market]')).map(function (node) { return node.getAttribute('data-gs-market'); }))).sort();
+    if (JSON.stringify(markets) !== JSON.stringify(item.markets.slice().sort())) throw deferredError(true);
+    if (descriptor.view === 'dossier') {
+      var scopes = roots[0].querySelectorAll('[data-gs-market-scope]');
+      if (scopes.length !== 1 || scopes[0].children.length !== 1 || scopes[0].children[0].getAttribute('data-gs-market') !== selection.variant) throw deferredError(true);
+    }
+    return roots[0];
+  }
+
+  function attachDeferred(controller, selection, bundle) {
+    var entry = selection.entry;
+    var content = validateDeferredMarkup(controller, selection, bundle);
+    var activeElement = controller.root.ownerDocument.activeElement;
+    var restoreKeyboardFocus = entry.fallback.contains(activeElement) ||
+      (entry.focusAfterLoad && activeElement === controller.root.ownerDocument.body);
+    try {
+      entry.panel.replaceChildren.apply(entry.panel, [entry.manifest].concat(Array.from(content.childNodes)));
+      var savedOpen = controller.deferred.openStates.get(selection.key);
+      if (savedOpen) Array.from(entry.panel.querySelectorAll('details')).forEach(function (node,index) { node.open = savedOpen.includes(index); });
+      paintGsMarket(controller,controller.state);
+      paintInspectorFallbacks(controller,controller.state);
+      entry.panel.setAttribute('data-im-deferred-state','ready');
+      entry.panel.setAttribute('aria-busy','false');
+      entry.loadedKey = selection.key;
+      entry.failedKey = null;
+    } catch (error) {
+      entry.panel.replaceChildren.apply(entry.panel,entry.pristine);
+      entry.loadedKey = null;
+      throw error;
+    }
+    entry.focusAfterLoad = false;
+    if (restoreKeyboardFocus) {
+      var heading = entry.panel.querySelector('h2,h3');
+      if (heading) {
+        heading.setAttribute('tabindex','-1');
+        try { heading.focus({preventScroll:true}); } catch (_) { /* Valid content remains usable if the browser refuses focus. */ }
+      }
+    }
+  }
+
+  function cacheDeferred(deferred, ref, bundle) {
+    var key = ref.sha256;
+    if (deferred.cache.has(key)) { var hit=deferred.cache.get(key); deferred.cache.delete(key); deferred.cache.set(key,hit); return; }
+    deferred.cache.set(key,{bundle:bundle,bytes:ref.bytes});
+    deferred.bytes += ref.bytes;
+    while (deferred.cache.size > 6 || deferred.bytes > DEFERRED_LIMIT) {
+      var oldest = deferred.cache.keys().next().value;
+      deferred.bytes -= deferred.cache.get(oldest).bytes;
+      deferred.cache.delete(oldest);
+    }
+  }
+
+  function syncDeferred(controller) {
+    if (!controller.live || !controller.deferred || !controller.deferred.entries.length) return;
+    var deferred = controller.deferred;
+    var selection = deferredSelection(controller);
+    var key = selection && selection.key;
+    if (deferred.request && deferred.request.key !== key) cancelDeferredRequest(controller);
+    var origin = controller.pendingScenario && controller.pendingScenario.originFocus;
+    deferred.entries.forEach(function (entry) {
+      var pinned = origin && entry.panel.contains(origin);
+      if (entry.loadedKey && (!selection || entry !== selection.entry || entry.loadedKey !== key) && !pinned) releaseDeferred(controller,entry);
+    });
+    if (deferred.selectionKey !== key && selection) selection.entry.failedKey = null;
+    deferred.selectionKey = key;
+    if (!selection || selection.entry.loadedKey === key || selection.entry.failedKey === key || (deferred.request && deferred.request.key === key)) return;
+    var entry = selection.entry;
+    deferredStatus(entry,'loading');
+    var cached = deferred.cache.get(selection.ref.sha256);
+    if (cached) {
+      try { attachDeferred(controller,selection,cached.bundle); cacheDeferred(deferred,selection.ref,cached.bundle); }
+      catch (error) { entry.failedKey=key; deferredStatus(entry,error.snapshotChanged?'changed':'error'); }
+      return;
+    }
+    var window = controller.environment.window;
+    var request = {key:key,epoch:deferred.epoch,abort:window.AbortController ? new window.AbortController() : null};
+    deferred.request = request;
+    function current() {
+      var now = controller.live && deferredSelection(controller);
+      return !!(now && now.key === key && deferred.request === request && request.epoch === deferred.epoch);
+    }
+    Promise.resolve().then(function () {
+      if (!current()) throw deferredError(false);
+      if (!window.fetch || !window.crypto || !window.crypto.subtle || !window.TextDecoder) throw deferredError(false);
+      var url = new window.URL(selection.ref.url,window.location.href);
+      if (url.origin !== window.location.origin) throw deferredError(true);
+      url.searchParams.set('v',selection.ref.sha256);
+      return window.fetch(url.href,{credentials:'same-origin',cache:'no-store',redirect:'error',signal:request.abort ? request.abort.signal : undefined});
+    }).then(function (response) {
+      if (!current()) throw deferredError(false);
+      if (!response.ok) throw deferredError(false);
+      return response.arrayBuffer();
+    }).then(function (bytes) {
+      if (!current()) throw deferredError(false);
+      if (bytes.byteLength !== selection.ref.bytes) throw deferredError(true);
+      return window.crypto.subtle.digest('SHA-256',bytes).then(function (digest) {
+        var hash = Array.from(new Uint8Array(digest)).map(function (byte) { return byte.toString(16).padStart(2,'0'); }).join('');
+        if (hash !== selection.ref.sha256) throw deferredError(true);
+        return JSON.parse(new window.TextDecoder('utf-8',{fatal:true}).decode(bytes));
+      });
+    }).then(function (bundle) {
+      if (!current()) return;
+      attachDeferred(controller,selection,bundle);
+      cacheDeferred(deferred,selection.ref,bundle);
+      deferred.request = null;
+    }).catch(function (error) {
+      if (!current()) return;
+      deferred.request = null;
+      entry.failedKey = key;
+      deferredStatus(entry,error.snapshotChanged?'changed':'error');
+    });
+  }
+
+  function scheduleDeferred(controller) {
+    var deferred = controller.deferred;
+    if (!deferred || !deferred.entries.length || deferred.queued) return;
+    deferred.queued = true;
+    Promise.resolve().then(function () { deferred.queued=false; syncDeferred(controller); });
+  }
+
+  function deferredEvent(controller,event) {
+    if (event.type !== 'click' || !event.target || !event.target.closest) return false;
+    var retry = event.target.closest('button[data-im-deferred-retry]');
+    if (!retry || retry.closest('[data-im-workspace]') !== controller.root) return false;
+    var selection = deferredSelection(controller);
+    if (!selection || !selection.entry.fallback.contains(retry) || retry.hidden) return false;
+    event.preventDefault();
+    selection.entry.focusAfterLoad = selection.entry.fallback.contains(controller.root.ownerDocument.activeElement);
+    selection.entry.failedKey = null;
+    scheduleDeferred(controller);
+    return true;
+  }
+
 
   function panelFor(controller, state) {
     return owned(controller.root, '[data-im-panel]').filter(function (panel) {
@@ -1725,6 +2052,7 @@
       controller.state = state;
       controller.issues = reported;
       controller.serializedQuery = serialized.query;
+      scheduleDeferred(controller);
       return {ok:true, state:state, issues:reported, intent:null};
     } catch (error) {
       restoreRoot(controller.root, snapshot);
@@ -1797,13 +2125,16 @@
     // The X6 element-existence rule governs the surveillance market seam; a
     // page that carries no [data-gs-market] surface at all keeps the incumbent
     // legacy market semantics (history/macro selection never had gs elements).
-    return !!controller.root.querySelector('[data-gs-market], [data-gs-market-scope]');
+    return !!controller.root.querySelector('[data-gs-market], [data-gs-market-scope]') || !!(controller.deferred && controller.deferred.entries.length);
   }
 
   function gsMarketPresent(controller, marketId) {
     return marketId !== null && /^[A-Z]{2}$/.test(marketId)
       && controller.config.markets.indexOf(marketId) !== -1
-      && !!controller.root.querySelector('[data-gs-market="' + marketId + '"]');
+      && (!!controller.root.querySelector('[data-gs-market="' + marketId + '"]') ||
+          !!(controller.deferred && controller.deferred.entries.some(function (entry) {
+            return entry.descriptor.generation === (controller.state ? controller.state.source_reference : controller.config.source_reference) && entry.descriptor.markets.includes(marketId);
+          })));
   }
 
   // W2F-X X6: a configured market without document content is not a selection.
@@ -1860,6 +2191,14 @@
       else row.removeAttribute('data-gs-selected');
     });
     owned(root, '[data-gs-select-market]').forEach(function (link) {
+      // The catalogue can describe jurisdictions outside this workspace's
+      // configured research coverage. Do not advertise an inoperative selection.
+      if (!controller.config.markets.includes(link.getAttribute('data-gs-select-market'))) {
+        link.setAttribute('aria-disabled','true');
+        link.setAttribute('tabindex','-1');
+        link.removeAttribute('href');
+        link.setAttribute('title',normalLanguage(root) === 'zh' ? '此市场尚未纳入本工作台的研究覆盖。' : 'This market is outside this workspace’s configured research coverage.');
+      }
       if (selected !== null && link.getAttribute('data-gs-select-market') === selected) link.setAttribute('aria-current', 'true');
       else link.removeAttribute('aria-current');
     });
@@ -1875,7 +2214,8 @@
     if (!link || link.disabled || link.closest('[data-im-workspace]') !== controller.root) return false;
     event.preventDefault();
     var marketId = link.getAttribute('data-gs-select-market') || null;
-    if (gsMarketPresent(controller, marketId) && marketId !== controller.state.selected_market) {
+    if (!gsMarketPresent(controller, marketId)) return true;
+    if (marketId !== controller.state.selected_market) {
       dispatch(controller, { type: 'select_market', market_id: marketId });
     }
     var openView = link.getAttribute('data-gs-open');
@@ -1917,6 +2257,7 @@
   }
 
   function clickOrChange(controller, event) {
+    if (deferredEvent(controller,event)) return;
     if (gsMarketEvent(controller,event)) return;
     if (scenarioEvent(controller,event)) return;
     if (riskEvent(controller,event)) return;
@@ -1959,6 +2300,7 @@
     var previousSerialized = controller.serializedQuery;
     var previousIssues = controller.issues;
     var previousPending = controller.pendingScenario;
+    var previousDeferred = captureDeferred(controller);
     var failed = true;
     try {
       if (controller.inspector) visuallyCloseInspector(controller, { release: true });
@@ -1977,6 +2319,8 @@
         });
         controller.pendingScenario=rebound;
       }
+      resetDeferred(controller);
+      scheduleDeferred(controller);
       failed = false;
       return { ok: true, state: expanded.state, issues: reported, intent: { type: 'invalidate_source_bound_context' } };
     } catch (_) {
@@ -1988,6 +2332,7 @@
         controller.issues = previousIssues;
         controller.pendingScenario = previousPending;
         controller.serializedQuery = previousSerialized;
+        restoreDeferred(controller, previousDeferred);
         restoreRoot(controller.root, previousNodes);
         if (inspectorSnap) rehydrateInspector(controller, inspectorSnap);
       }
@@ -2024,10 +2369,12 @@
       root: root, config: config, bindingVersion: bindingVersion, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
       state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null, querySource:null
     };
+    controller.deferred = prepareDeferred(controller);
     controller.library = prepareLibrary(root,config);
     controller.inspectorHost = prepareInspector(controller);
     var snapshot = snapshotRoot(root);
     controller.original = snapshot.slice();
+    controller.originalNodes = new Set(snapshot.map(function (entry) { return entry.node; }));
     var installed = { listeners: false, popstate: false, observer: null };
     try {
       required(root, '[data-im-heading]').setAttribute('tabindex', '-1');
@@ -2078,6 +2425,7 @@
         var panels = panelFor(controller,controller.state);
         if (panels.length === 1 && !panels[0].hidden) paintCompare(controller,comparePlan(controller,panels[0],controller.state));
         applyInspectorLanguage(controller);
+        paintGsMarket(controller,controller.state);
         if (controller.inspector) applyInspectorMode(controller, controller.inspector.mode, controller.inspector.field, { focus: false });
         paintInspectorFallbacks(controller, controller.state);
       });
@@ -2096,6 +2444,7 @@
       HANDLES.set(root, handle);
       return handle;
     } catch (error) {
+      resetDeferred(controller);
       teardownInspector(controller);
       if (controller.observer) controller.observer.disconnect();
       if (controller.onClick) root.removeEventListener('click', controller.onClick, false);
@@ -2112,6 +2461,7 @@
   function destroy(controller) {
     if (!controller.live) return false;
     controller.live = false;
+    resetDeferred(controller);
     teardownInspector(controller);
     controller.state = null;
     controller.scenarioDraft = null;

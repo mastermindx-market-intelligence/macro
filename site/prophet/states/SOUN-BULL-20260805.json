@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SOUN-BULL-20260805",
-  "asof": "2026-11-01",
+  "asof": "2026-11-03",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.0,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 46.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.526,
+    "dist_to_stop_r": -0.558,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 191.1,
-    "p1": -1.0174,
-    "p2": -0.5087,
+    "horizon_pct_used": 195.6,
+    "p1": -1.0388,
+    "p2": -0.5194,
     "p3": null,
-    "move_r": -1.526,
+    "move_r": -1.558,
     "mfe_r": 0.0,
-    "mae_r": -1.542
+    "mae_r": -1.558
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.5776367230132564e-07,
-  "_mae": -3.8394999694824214,
+  "_mae": -3.880000133514404,
   "_max_p1": 1.2256055483301887e-07,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111,
+  "days_elapsed": 88,
+  "tau": 1.9556,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

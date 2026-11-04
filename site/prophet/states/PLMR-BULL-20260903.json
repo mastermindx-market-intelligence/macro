@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PLMR-BULL-20260903",
-  "asof": "2026-11-01",
+  "asof": "2026-11-03",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.9,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 9.9,
-    "pace": 12.7,
-    "retention": 50.6,
-    "overlay": 58.9
+    "progress": 13.9,
+    "pace": 10.0,
+    "retention": 79.8,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.115,
-    "dist_to_t1_r": 1.385,
-    "dist_to_t2_r": 2.885,
-    "horizon_pct_used": 128.9,
-    "p1": 0.0766,
-    "p2": 0.0383,
+    "dist_to_stop_r": 1.181,
+    "dist_to_t1_r": 1.319,
+    "dist_to_t2_r": 2.819,
+    "horizon_pct_used": 133.3,
+    "p1": 0.1207,
+    "p2": 0.0603,
     "p3": null,
-    "move_r": 0.115,
+    "move_r": 0.181,
     "mfe_r": 0.227,
     "mae_r": -0.338
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 58,
-  "tau": 1.2889,
+  "days_elapsed": 60,
+  "tau": 1.3333,
   "closed": true,
   "outcome": "EXPIRED"
 }

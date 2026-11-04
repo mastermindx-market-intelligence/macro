@@ -1,0 +1,1509 @@
+{
+  "accessions": [
+    {
+      "accession": "0000018230-21-000063",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "3531",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2020-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 4
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0000018230-21-000151",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-03-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000018230-21-000221",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-06-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000018230-21-000260",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-09-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000018230-22-000050",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "3531",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 4
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0000018230-22-000112",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-03-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000018230-22-000183",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-06-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000018230-22-000223",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 1,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-09-30",
+      "prediction_states": {
+        "typed_absence": 1
+      },
+      "predictions": 1,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000018230-23-000011",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 1,
+      "form": "10-K",
+      "issuer_sic": "3531",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 3
+      },
+      "predictions": 5,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0000018230-23-000022",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 1,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-03-31",
+      "prediction_states": {
+        "typed_absence": 1
+      },
+      "predictions": 1,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000070858-21-000023",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "6021",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2020-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 4
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0000070858-21-000063",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-03-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000070858-21-000084",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-06-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000070858-21-000107",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-09-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000070858-22-000062",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "6021",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 4
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0000070858-22-000088",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-03-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000070858-22-000112",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-06-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000070858-22-000131",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-09-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000070858-23-000142",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-03-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000320193-22-000007",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3571",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-25",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000320193-22-000059",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3571",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-03-26",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000320193-22-000070",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3571",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-06-25",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000320193-22-000108",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-K",
+      "issuer_sic": "3571",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-09-24",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 2
+      },
+      "predictions": 4,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0000320193-23-000006",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-Q",
+      "issuer_sic": "3571",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {},
+      "predictions": 0,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000320193-23-000064",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-Q",
+      "issuer_sic": "3571",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-04-01",
+      "prediction_states": {},
+      "predictions": 0,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000320193-23-000077",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-Q",
+      "issuer_sic": "3571",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-07-01",
+      "prediction_states": {},
+      "predictions": 0,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000320193-23-000106",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-K",
+      "issuer_sic": "3571",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-09-30",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 2
+      },
+      "predictions": 4,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0000320193-24-000006",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-Q",
+      "issuer_sic": "3571",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-12-30",
+      "prediction_states": {},
+      "predictions": 0,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-K",
+      "issuer_sic": "3571",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2024-09-28",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 2
+      },
+      "predictions": 4,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0001640147-21-000073",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7372",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-01-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": []
+    },
+    {
+      "accession": "0001640147-21-000122",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-04-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001640147-21-000212",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-07-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001640147-21-000271",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-10-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001640147-22-000023",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7372",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-01-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": []
+    },
+    {
+      "accession": "0001640147-22-000044",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-04-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001640147-22-000084",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-07-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001640147-22-000100",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-10-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000102",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7372",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-04-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001652044-21-000010",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7370",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2020-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": []
+    },
+    {
+      "accession": "0001652044-21-000020",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-03-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001652044-21-000047",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-06-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001652044-21-000057",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-09-30",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001652044-22-000019",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7370",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2021-12-31",
+      "prediction_states": {
+        "not_evaluable": 2,
+        "typed_absence": 6
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": []
+    },
+    {
+      "accession": "0001652044-22-000029",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-03-31",
+      "prediction_states": {
+        "typed_absence": 2
+      },
+      "predictions": 2,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001652044-22-000071",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-06-30",
+      "prediction_states": {},
+      "predictions": 0,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001652044-22-000090",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-09-30",
+      "prediction_states": {},
+      "predictions": 0,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 3,
+      "form": "10-K",
+      "issuer_sic": "7370",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 1,
+        "not_evaluable": 2,
+        "typed_absence": 2
+      },
+      "predictions": 5,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": []
+    },
+    {
+      "accession": "0001652044-23-000045",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 2,
+      "form": "10-Q",
+      "issuer_sic": "7370",
+      "labels": 2,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-03-31",
+      "prediction_states": {},
+      "predictions": 0,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "number_of_operating_segments",
+        "product_service_revenue",
+        "segment_definition_change_note",
+        "segment_reporting_text_block",
+        "unallocated_corporate_and_eliminations"
+      ]
+    }
+  ],
+  "exclusions": [
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000018230-22-000223|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000018230-23-000011|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000018230-23-000022|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0000320193-22-000108|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000320193-22-000108|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0000320193-23-000006|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000320193-23-000006|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0000320193-23-000064|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000320193-23-000064|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0000320193-23-000077|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000320193-23-000077|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0000320193-23-000106|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000320193-23-000106|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0000320193-24-000006|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000320193-24-000006|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0000320193-24-000123|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0000320193-24-000123|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0001652044-22-000071|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0001652044-22-000071|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0001652044-22-000090|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0001652044-22-000090|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:geographic_revenue",
+      "trial_id": "PK03|0001652044-23-000016|extract|geographic_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0001652044-23-000016|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0001652044-23-000016|extract|segment_revenue"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_profit_or_loss",
+      "trial_id": "PK03|0001652044-23-000045|extract|segment_profit_or_loss"
+    },
+    {
+      "exclusion_reason": "duplicate_prediction_target:segment_revenue",
+      "trial_id": "PK03|0001652044-23-000045|extract|segment_revenue"
+    }
+  ],
+  "label_count": 158,
+  "labels_status": "labelled",
+  "pack_id": "PK03",
+  "sic_binding": {
+    "contract_id": "fif-held-out-v1",
+    "order": [
+      "held_out_contract",
+      "sec_submissions_witness"
+    ]
+  },
+  "trial_field_map": {
+    "PK03|0000018230-21-000063|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000018230-21-000063|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000018230-21-000063|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-21-000063|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000018230-21-000063|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-21-000063|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0000018230-21-000151|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-21-000151|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-21-000221|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-21-000221|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-21-000260|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-21-000260|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-22-000050|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000018230-22-000050|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000018230-22-000050|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-22-000050|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000018230-22-000050|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-22-000050|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0000018230-22-000112|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-22-000112|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-22-000183|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-22-000183|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-22-000223|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-22-000223|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-23-000011|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000018230-23-000011|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000018230-23-000011|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-23-000011|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000018230-23-000011|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-23-000011|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0000018230-23-000022|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-23-000022|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-21-000023|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000070858-21-000023|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000070858-21-000023|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-21-000023|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000070858-21-000023|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-21-000023|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0000070858-21-000063|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-21-000063|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-21-000084|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-21-000084|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-21-000107|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-21-000107|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-22-000062|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000070858-22-000062|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000070858-22-000062|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-22-000062|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000070858-22-000062|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-22-000062|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0000070858-22-000088|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-22-000088|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-22-000112|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-22-000112|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-22-000131|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-22-000131|extract|segment_revenue": "segment_revenue",
+    "PK03|0000070858-23-000142|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000070858-23-000142|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-22-000007|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-22-000007|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-22-000059|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-22-000059|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-22-000070|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-22-000070|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-22-000108|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000320193-22-000108|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000320193-22-000108|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-22-000108|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000320193-22-000108|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-22-000108|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0000320193-23-000006|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-23-000006|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-23-000064|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-23-000064|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-23-000077|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-23-000077|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-23-000106|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000320193-23-000106|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000320193-23-000106|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-23-000106|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000320193-23-000106|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-23-000106|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0000320193-24-000006|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-24-000006|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-24-000123|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000320193-24-000123|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000320193-24-000123|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-24-000123|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000320193-24-000123|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-24-000123|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0001640147-21-000073|extract|geographic_revenue": "geographic_revenue",
+    "PK03|0001640147-21-000073|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0001640147-21-000073|extract|product_service_revenue": "product_service_revenue",
+    "PK03|0001640147-21-000073|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0001640147-21-000073|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-21-000073|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0001640147-21-000073|extract|segment_revenue": "segment_revenue",
+    "PK03|0001640147-21-000073|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0001640147-21-000122|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-21-000122|extract|segment_revenue": "segment_revenue",
+    "PK03|0001640147-21-000212|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-21-000212|extract|segment_revenue": "segment_revenue",
+    "PK03|0001640147-21-000271|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-21-000271|extract|segment_revenue": "segment_revenue",
+    "PK03|0001640147-22-000023|extract|geographic_revenue": "geographic_revenue",
+    "PK03|0001640147-22-000023|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0001640147-22-000023|extract|product_service_revenue": "product_service_revenue",
+    "PK03|0001640147-22-000023|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0001640147-22-000023|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-22-000023|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0001640147-22-000023|extract|segment_revenue": "segment_revenue",
+    "PK03|0001640147-22-000023|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0001640147-22-000044|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-22-000044|extract|segment_revenue": "segment_revenue",
+    "PK03|0001640147-22-000084|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-22-000084|extract|segment_revenue": "segment_revenue",
+    "PK03|0001640147-22-000100|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-22-000100|extract|segment_revenue": "segment_revenue",
+    "PK03|0001640147-23-000102|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001640147-23-000102|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-21-000010|extract|geographic_revenue": "geographic_revenue",
+    "PK03|0001652044-21-000010|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0001652044-21-000010|extract|product_service_revenue": "product_service_revenue",
+    "PK03|0001652044-21-000010|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0001652044-21-000010|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-21-000010|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0001652044-21-000010|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-21-000010|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0001652044-21-000020|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-21-000020|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-21-000047|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-21-000047|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-21-000057|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-21-000057|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-22-000019|extract|geographic_revenue": "geographic_revenue",
+    "PK03|0001652044-22-000019|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0001652044-22-000019|extract|product_service_revenue": "product_service_revenue",
+    "PK03|0001652044-22-000019|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0001652044-22-000019|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-22-000019|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0001652044-22-000019|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-22-000019|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0001652044-22-000029|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-22-000029|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-22-000071|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-22-000071|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-22-000090|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-22-000090|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-23-000016|extract|geographic_revenue": "geographic_revenue",
+    "PK03|0001652044-23-000016|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0001652044-23-000016|extract|product_service_revenue": "product_service_revenue",
+    "PK03|0001652044-23-000016|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0001652044-23-000016|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-23-000016|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0001652044-23-000016|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-23-000016|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0001652044-23-000045|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-23-000045|extract|segment_revenue": "segment_revenue"
+  }
+}

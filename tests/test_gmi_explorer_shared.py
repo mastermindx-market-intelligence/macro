@@ -74,7 +74,8 @@ def test_theme_links_shape(model):
     for link in model["theme_links"]:
         assert link["kind"] in {"held", "adm"}
         assert link["micro_id"] in model["micros"]
-        assert link["name"], "display name = resolver name, filing-name fallback (GAP 21)"
+        assert link["name"], ("display name = symbol-directory name, ticker fallback "
+                              "(DEC:GMI-ISSUER-DISPLAY-NAME-SOURCE)")
         assert model["micros"][link["micro_id"]]["kind"] == link["kind"]
 
 

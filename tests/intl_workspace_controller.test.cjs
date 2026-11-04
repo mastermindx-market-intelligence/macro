@@ -2516,3 +2516,44 @@ for (const admitted of [false, true]) {
     });
   }
 }
+
+
+test('unequal-window returns remain visible through enhancement, basis changes and collapse', async () => {
+  const { execFileSync } = require('node:child_process');
+  const render = (basis, contextId) => {
+    const rows = ['JP', 'GB'].map((market, slot) => {
+      const window = {start:slot ? '2026-09-30' : '2026-10-01',end:'2026-10-29'};
+      const metric = {value:(basis === 'local' ? 2.5 : 1.25) + slot,unit:'percent',quality:'qualified',reason:null,window};
+      return {slot,market_id:market,name_en:market,name_zh:market,index_id:market,index_label:market,
+        metric,local:metric,usd:metric,fx_contribution:{...metric,value:0,unit:'percentage_points'}};
+    });
+    const overview = {context:{horizon:'1m',currency_basis:basis,return_basis:'price',source_reference:'fixture:v1'},
+      configured_count:2,eligible_count:2,ranking_count:0,ranking_status:'unavailable',ranking_reason:'unequal_windows',
+      focus_ids:[],rows,summary:{kind:'unavailable'}};
+    const script = "import json,sys; from jinja2 import Environment,FileSystemLoader; d=json.load(sys.stdin); print(Environment(loader=FileSystemLoader('templates/intl_workspace'),autoescape=False).get_template('overview.html.j2').render(**d))";
+    return execFileSync(process.env.PYTHON || 'python3', ['-c', script], {
+      cwd:path.join(__dirname,'..'), input:JSON.stringify({overview,context_id:contextId}), encoding:'utf8'
+    });
+  };
+  const markup=workspaceMarkup()
+    .replace(/<article data-im-panel data-view="overview"[^>]*>Qualified<\/article>/,render('usd_unhedged','im-overview-0'))
+    .replace(/<article data-im-panel data-view="overview"[^>]*>Local<\/article>/,render('local','im-overview-1'));
+  await withPage(async page => {
+    const handle=await mount(page,'',markup);
+    assert.equal(await page.evaluate(h=>h.getState().expanded,handle),false);
+    const visible=()=>page.locator('[data-im-panel][data-view="overview"]:visible');
+    assert.equal(await visible().locator('[data-im-unranked-item]').count(),2);
+    assert.equal(await visible().locator('[data-im-unranked-list]').isVisible(),true);
+    assert.equal(await visible().locator('[data-im-expanded-region]').isHidden(),true);
+    assert.equal(await visible().locator('[data-im-unranked-item]').first().locator('[data-im-return]').innerText(),'+1.25%');
+    assert.equal(await visible().locator('[data-im-return-window]').first().innerText(),'2026-10-01–2026-10-29');
+    await page.click('[data-im-action="set_basis"]');
+    assert.equal(await visible().locator('[data-im-unranked-list]').isVisible(),true);
+    assert.equal(await visible().locator('[data-im-unranked-item]').first().locator('[data-im-return]').innerText(),'+2.50%');
+    await visible().locator('[data-im-expansion-trigger]').click();
+    await visible().locator('[data-im-expansion-trigger]').click();
+    assert.equal(await visible().locator('[data-im-expanded-region]').isHidden(),true);
+    assert.equal(await visible().locator('[data-im-unranked-list]').isVisible(),true);
+    assert.equal(await visible().locator('[data-im-focus-item]').count(),0);
+  });
+});

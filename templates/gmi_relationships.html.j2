@@ -54,9 +54,20 @@
 {#- the species strip: counts from the package manifest; the first species with
     a documented edge is --on (the specimen's single-edge state), zero counts
     are --zero (seat GAP 9). -#}
-{% set sp_counts = model.edge_package.counts.edges_by_species if E else {} %}
+{% set sp_counts = model.edge_package.counts.edges_by_species if E and model.edge_package else {} %}
 {% set on_k = namespace(k=none) %}
 {% if E %}{% for k, en, zh in SPECIES %}{% if on_k.k is none and sp_counts.get(k, 0) > 0 %}{% set on_k.k = k %}{% endif %}{% endfor %}{% endif %}
+{#- the page-level envelope receipt (DEC:GMI-RELATIONSHIP-ENVELOPE-CONTRACT):
+    the relationships package prints beside its edges at display tier —
+    package id, as-of, adoption state in plain words, the package's own
+    counts, and the display-only use. The use line prints only while every
+    authority flag is false; edges here never rank, size or gate. -#}
+{% if E and model.edge_package %}
+{% set pk = model.edge_package %}
+{% set pk_auth = (pk.get('authority') or {}).values() | select | list %}
+<div class="gmi-ident"><span class="gmi-ink-info gmi-ident-st">{{ t('Proposed — read from filings, not reviewed yet', '拟议 · 来自披露文件，尚未审核') if pk.adoption_state == 'proposed' else unset }}</span>
+<span class="gmi-foot">{{ t('Package', '数据包') }} {{ mono(pk.package_id[:12]) }} · {{ t('As of ' ~ (pk.as_of|de), '截至 ' ~ (pk.as_of|dz)) }} · {{ t(pk.counts.edges|num ~ ' documented', '已记录 ' ~ pk.counts.edges|num ~ ' 条') }} · {{ t(pk.counts.non_edges|num ~ ' other mentions checked', '另核对 ' ~ pk.counts.non_edges|num ~ ' 处提及') }}{% if not pk_auth %} · {{ t('Display only — never a rank, size or gate input', '仅供展示 — 绝不作为排序、仓位或准入依据') }}{% endif %}</span></div>
+{% endif %}
 <div class="gmi-species">{% for k, en, zh in SPECIES %}{% set c = sp_counts.get(k, 0) if E else 0 %}{% set on = on_k.k == k %}<button type="button" class="gmi-spec{% if on %} gmi-spec--on{% elif c == 0 %} gmi-spec--zero{% endif %}" aria-pressed="{{ 'true' if on else 'false' }}">{{ t(en, zh) }}<b>{{ c }}</b></button>{% endfor %}</div>
 <p class="gmi-foot">{{ t('Zero means none documented yet, not none exist.', '为零表示尚未记录，而非不存在。') }}</p>
 {#- the one theme-link panel: kind held -> held words, kind adm -> admitted
@@ -98,10 +109,11 @@
 {% endif %}
 {%- endmacro %}
 {#- the coverage side panel: coverage is not measured per company yet -#}
-{% macro cov_panel() -%}
+{#- n_read: distinct issuers the envelope searched (coverage state assessed / no_supported_result); none or 1 keeps the one-company text -#}
+{% macro cov_panel(n_read=none) -%}
 <section class="gmi-panel">{{ sec('How complete is this?', '覆盖程度') }}
 <div class="mx-empty gmi-empty-inline"><div class="mx-empty-line">{{ t('Not measured yet', '尚未衡量') }}</div>
-<div class="mx-empty-why">{{ t('Filings from one company have been read so far. Zero elsewhere means none documented yet, not none exist.', '目前仅读取了一家公司的披露文件。其他处为零，表示尚未记录，而非不存在。') }}</div></div></section>
+<div class="mx-empty-why">{% if n_read and n_read > 1 %}{{ t('Filings from ' ~ n_read|num ~ ' companies have been read so far. Zero elsewhere means none documented yet, not none exist.', '目前已读取 ' ~ n_read|num ~ ' 家公司的披露文件。其他处为零，表示尚未记录，而非不存在。') }}{% else %}{{ t('Filings from one company have been read so far. Zero elsewhere means none documented yet, not none exist.', '目前仅读取了一家公司的披露文件。其他处为零，表示尚未记录，而非不存在。') }}{% endif %}</div></div></section>
 {%- endmacro %}
 {% if E %}
 {% set edge = model.edges[0] %}
@@ -122,7 +134,7 @@
 <span class="gmi-chip gmi-chip--upd">{{ ic('refresh', 14) }}{% if edge.last_assessed_at %}{{ t('Read updated · ' ~ (edge.last_assessed_at|de), '读取已更新 · ' ~ (edge.last_assessed_at|dz)) }}{% else %}{{ t('Update history not tracked yet', '尚未跟踪更新记录') }}{% endif %}</span></div>
 <div class="gmi-mag"><div>{% if cm and cm.value is not none %}{% set pct = (cm.value * 100)|round|int %}{% set per = cm.period.label %}
 <div class="gmi-mag-num">{{ pct }}<small>%</small></div>
-<div class="gmi-mag-cap">{{ t('of ' ~ party_a ~ '’ revenue came from ' ~ party_b ~ ' in ' ~ per, party_a ~ ' ' ~ fy_zh(per) ~ '营收来自 ' ~ party_b ~ ' 的占比') }}</div></div>
+<div class="gmi-mag-cap">{{ t('of ' ~ party_a ~ ('’' if party_a.endswith('s') else '’s') ~ ' revenue came from ' ~ party_b ~ ' in ' ~ per, party_a ~ ' ' ~ fy_zh(per) ~ '营收来自 ' ~ party_b ~ ' 的占比') }}</div></div>
 <div class="gmi-hist" aria-hidden="true">{% set hist = namespace(dd={}) %}{% for h in edge.magnitude_history %}{% set _ = hist.dd.update({h.period.label: h.value}) %}{% endfor %}{% for lab, v in hist.dd.items() %}<div class="gmi-hist-col{% if loop.last %} gmi-hist-col--now{% endif %}"><span class="gmi-hist-v">{{ (v * 100)|round|int }}%</span><span class="gmi-hist-bar" style="height:{{ (v * 90)|round|int }}px"></span><span class="gmi-hist-p">{{ t(fy_en(lab), fy_zh(lab)) }}</span></div>{% endfor %}</div>
 {% else %}
 <div class="gmi-mag-num">—</div>
@@ -189,7 +201,7 @@
     dict(cls=('to-none',), pip='doc', lvl=t(rb[0], rb[1]) if rb else unset, name=t(party_b), edge=t('next step', '下一步')),
     dict(cls=('none',), pip='none', name=t('No documented links from ' ~ party_b ~ ' yet', '尚无 ' ~ party_b ~ ' 的已记录关联')),
 ], kind='edges') }}
-<p class="gmi-note">{{ t('Paths list documented links only. They do not estimate how far an effect spreads.', '路径仅列出已记录的关联，不估算影响的传导范围。') }}</p></section></div><div class="gmi-col-side">{{ link_panel() }}{{ cov_panel() }}</div></div>
+<p class="gmi-note">{{ t('Paths list documented links only. They do not estimate how far an effect spreads.', '路径仅列出已记录的关联，不估算影响的传导范围。') }}</p></section></div><div class="gmi-col-side">{{ link_panel() }}{% set cov_ids = namespace(s=[]) %}{% for c in ((model.edge_package or {}).get('coverage') or []) %}{% if c.state in ('assessed', 'no_supported_result') and c.issuer_id not in cov_ids.s %}{% set cov_ids.s = cov_ids.s + [c.issuer_id] %}{% endif %}{% endfor %}{{ cov_panel(cov_ids.s|length) }}</div></div>
 {% else %}
 <section class="gmi-band" aria-labelledby="rel-h"><div class="gmi-band-card">
 <div class="mx-empty gmi-empty-inline"><div class="mx-empty-line" id="rel-h">{{ t('No documented relationships yet', '尚无已记录的关系') }}</div>

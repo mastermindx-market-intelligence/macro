@@ -1,9 +1,9 @@
 ---
 key: PAPER-INTERNATIONAL-WAVES
 title: International Markets Paper implementation Waves 1–3
-objective: Deliver the Chairman-rebriefed International product centered on country economic and market
-  interpretation, attributed projected paths and conditional developments. Keep legacy comparison and Saved tools
-  subordinate; require truthful source qualification, independent review, served journeys and normal publication.
+objective: Deliver the Chairman-rebriefed International product centered on country economic and market interpretation,
+  attributed projected paths and conditional developments. Keep legacy comparison and Saved tools subordinate;
+  require truthful source qualification, independent review, served journeys and normal publication.
 status: active
 program: international-risk-intelligence
 repos:
@@ -68,6 +68,9 @@ owns_paths:
 - research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/**
 - tests/test_intl_country_cockpit.py
 - tests/test_intl_currency_observation.py
+- mockups/evidence/intl-country-polish-20261103/**
+- mockups/evidence/intl-overview-polish-20261103/**
+- research/reference_integrity/intl-country-intelligence-20261020/completion_20261103/**
 - tests/fixtures/intl_currency_observations_20261020.json
 - collectors/intl_weo.py
 - collectors/intl_policy_sources.py
@@ -80,6 +83,28 @@ owns_paths:
 - tests/test_intl_outlook_interpretation.py
 - tests/fixtures/intl_weo_october_2026_tables.json
 - tests/fixtures/intl_weo_october_2026_fiscal_api.json
+- mockups/evidence/intl-design-reset-20261103/**
+- research/reference_integrity/intl-country-intelligence-20261020/design_reset_20261103/**
+- templates/theme.css
+- site/theme.css
+- site/intl_workspace.css
+- lib/intl_workspace_fragments.py
+- tests/test_intl_workspace_fragments.py
+- tests/intl_workspace_deferred.test.cjs
+- tests/test_intl_gs_dislocations_view.py
+- tests/test_intl_gs_transmission_view.py
+- tests/test_site_access_boundary.py
+- site/assets/intl-workspace/**
+- site/intl.html
+- site/intl_workspace.js
+- templates/_site_nav.html.j2
+- templates/chat.html
+- site/chat.html
+- config/site_access.yml
+- app/deploy/Caddyfile
+- .github/workflows/render.yml
+- .github/ci/legacy-jobs.yml
+- research/reference_integrity/intl-country-intelligence-20261020/production_completion_20261103/**
 waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
@@ -91,16 +116,16 @@ waves:
   status: in_progress
   depends_on:
   - IM00
-  next_action: Actual Overview mount, scoped independent source review, 21 render/composition cases, 27 Chrome cases
-    and canonical visual matrix are accepted. Live qualification, authenticated served proof and normal publication
-    remain required.
+  next_action: Actual Overview mount, scoped independent source review, 21 render/composition cases, 27 Chrome
+    cases and canonical visual matrix are accepted. Live qualification, authenticated served proof and normal
+    publication remain required.
 - id: IM02
   title: Compare and Rotation
   status: in_progress
   depends_on:
   - IM00
-  next_action: Compare projection, mount and browser integration source accepted in existing carrier. Complete production
-    qualification and served acceptance.
+  next_action: Compare projection, mount and browser integration source accepted in existing carrier. Complete
+    production qualification and served acceptance.
 - id: IM03
   title: Country Inspector and Evidence
   status: in_progress
@@ -123,7 +148,8 @@ waves:
   - IM00
   - IM03
   next_action: Risk assembly, mount, dual-theme UI and copied-input publisher independently accepted; final source159,
-    render/publication222 and Risk browser40 pass. Real qualified source families and served acceptance remain open.
+    render/publication222 and Risk browser40 pass. Real qualified source families and served acceptance remain
+    open.
 - id: IM06
   title: History and Scenarios
   status: in_progress
@@ -131,14 +157,14 @@ waves:
   - IM00
   - IM03
   next_action: History/scenario UI and same-read publication are independently accepted. Actual-page matrix40,
-    canonical captures48 and focus24 pass. Projector/publication review37, integrated foundation1269 and
-    render/publication334 pass. Qualify real source inputs and complete served acceptance.
+    canonical captures48 and focus24 pass. Projector/publication review37, integrated foundation1269 and render/publication334
+    pass. Qualify real source inputs and complete served acceptance.
 - id: IM07
   title: Library and deterministic search
   status: in_progress
   next_action: Public catalogue and verified existing destinations are mounted through the sole controller. Parent
-    Chrome61 and render/source tests plus independent final source review pass; complete final CI/publication and
-    served acceptance.
+    Chrome61 and render/source tests plus independent final source review pass; complete final CI/publication
+    and served acceptance.
   depends_on:
   - IM00
 - id: IM08
@@ -154,19 +180,33 @@ waves:
 - id: IM10
   title: Qualified policy comparison
   status: in_progress
-  next_action: Pure four-point comparison accepted with105 frozen checks. Source mappings, preview UI and
-    same-record Saved integration remain open.
+  next_action: Pure four-point comparison accepted with105 frozen checks. Source mappings, preview UI and same-record
+    Saved integration remain open.
   depends_on:
   - IM04
   - IM08
   - IM09
-next_action: Publish the independently accepted Tools navigation repair and its completed exact-source
-  evidence on original draft PR9596 after repository guards, then verify current-head hosted CI.
-  Ordinary build, seven-country equivalence, standalone fragments/history and all actual-parent repair
-  checks pass; full parent acceptance retains the saved-focus failure and transport-query warning.
-  Continue those bounded integration repairs and final data-review evidence reconciliation, preserving
-  the separate FX custody, ordinary render/updater and served-user release conditions.
+next_action: Read production_completion_20261103/IMPLEMENTATION.md and REPORT.json. Final Paper source, deferred-view
+  performance repair, shared-header adoption, coherent generated seed and narrow public asset policy are locally
+  qualified. Publish through original PR9596 using exact native HEAD/base/tree fences, then exact-head hosted
+  CI and a distinct admitted independent review. Preserve Draft/HOLD, formal blocking-review custody and held
+  R2. Complete actual-parent/F10/W3U and ordinary served/FX/refresh acceptance. No deployment is claimed.
 artifacts:
+- research/reference_integrity/intl-country-intelligence-20261020/production_completion_20261103/implementation-evidence.tar.gz
+- research/reference_integrity/intl-country-intelligence-20261020/production_completion_20261103/REPORT.json
+- research/reference_integrity/intl-country-intelligence-20261020/production_completion_20261103/IMPLEMENTATION.md
+- research/reference_integrity/intl-country-intelligence-20261020/design_reset_20261103/DESIGN_RESET.md
+- research/reference_integrity/intl-country-intelligence-20261020/design_reset_20261103/REPORT.json
+- mockups/evidence/intl-design-reset-20261103/country/EVIDENCE.yml
+- mockups/evidence/intl-design-reset-20261103/tools/EVIDENCE.yml
+- research/reference_integrity/intl-country-intelligence-20261020/completion_20261103/POLISH.md
+- research/reference_integrity/intl-country-intelligence-20261020/completion_20261103/POLISH.json
+- research/reference_integrity/intl-country-intelligence-20261020/completion_20261103/polish-evidence.tar.gz
+- mockups/evidence/intl-country-polish-20261103/EVIDENCE.yml
+- mockups/evidence/intl-overview-polish-20261103/EVIDENCE.yml
+- research/reference_integrity/intl-country-intelligence-20261020/completion_20261103/CHECKPOINT.md
+- research/reference_integrity/intl-country-intelligence-20261020/completion_20261103/EVIDENCE.json
+- research/reference_integrity/intl-country-intelligence-20261020/completion_20261103/evidence.tar.gz
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.json
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.md
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/currency_prepublication_source_snapshot.json
@@ -373,3 +413,38 @@ Fresh actual P0B capture passes128 cases with16 screenshots and an exact21-objec
 The exact b380435c ordinary International build uses510 verified retained inputs and43 assets. HTMLSHA bf8066967a885bd226ccc1abe622e626349e431d11c38cda6e19331751d9edae. All seven approved country sections remain exact;22/22 landings and28/28 country/history checks pass. Two actual desktop/narrow Japan images were inspected. Later main2e731877 has a clean prospective merge with zero changed-path overlap; all42 static assets and59 P0B dependencies remain identical.
 
 The original Draft PR remains9596. Current PR metadata and the registered publication status own subsequent evidence commits, push and exact-head CI. Recover from research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/CHECKPOINT.md and main_composition_6a4_20261022/. Both query-worker attempts remain terminal with execution absence unproven and retry false; no query fix was applied. Actual-parent focus, production FX custody and served adoption remain open.
+
+## 3 November 2026 — Paper implementation recovery and publication capability boundary
+
+Current Chairman leadership assignment continues original operation/branch/PR9596. Main c6ac417 is integrated in a conflict-free pending merge from owned 851c6ab; no replacement worktree, carrier or worker budget was created. The substantial country dashboard is built and visually checked against Paper R12. The overview now shows individually qualified unequal-window returns with their own dates before expansion, without a ranking. The 258 actual CI dependency omissions are covered, and current-source shared P0B evidence is recaptured with 128 cases/16 screenshots while preserving 33 historical extensions.
+
+Verified: 70 overview + 443 country/source/build tests; 12 browser states/84 country opens/12 research, Back and no-JavaScript journeys; one actual-template controller regression; 14 integration cases plus 11 explicitly skipped full-data GMI cases. The build uses 510 committed inputs and preserves stale/missing-data withholding. Original failures remain archived, not relabelled green.
+
+Publishing remains blocked by the observed ChatGPT4 Mastermind-only, single-parent native publisher. Its Macro status refusal is NOT_APPLIED; no commit/push/merge/deployment was attempted. The exact remaining connection requirement, retained merge parents, source/build hashes, all receipts and archive readback are recorded in completion_20261103. Current-head independent review, hosted CI and actual production journeys remain open. Historical ownership/FX/held-worker and PR8754 egress conditions are preserved.
+
+## 3 November 2026 — refined implementation verified; release blocked
+
+Tested source c9dcd331bb3a59d029604a09273751eaca1bbeee remains in the original pending merge. The three country runtime files retain final matrix proof; the final overview uses 511 verified inputs and passes eight real value/date/currency journeys plus eight canonical captures. Qualified unequal-window returns appear before expansion with a compact notice and readable daily dates. 445 country tests, 73 overview tests and 20 navigation cases pass within recorded scope.
+
+The 280-member polish-evidence.tar.gz preserves source, generated output, captures, failures and corrections; POLISH.json retains complete local candidate paths. The preceding 79-member archive is immutable. Publisher capability, main reconciliation, independent review, hosted full-data CI, shared-header/performance, actual-parent and served acceptance remain open. No deployment or new worker dispatch occurred.
+
+## 3 November 2026 — design reset after explicit visual rejection
+
+The preceding local polish was rejected by the Chairman as 4/10 and is not design acceptance. The new reset reads actual Paper R12 and R14 references and recomposes the country research workflow: neutral Paper surfaces, seven-country forecast selection, combined economic/market observations, a full-width growth chart, readable policy/conditions/fiscal content and a discoverable research workbench. Qualified unequal-window returns now align in rows, and an inactive surveillance wrapper no longer leaves a blank band. No specimen facts or new financial owner were introduced.
+
+Tested source 44e97000aa1c2625f0081fb612666fda4b098b41 passes 158 focused tests, 20 responsive EN/ZH/theme/width states with all seven countries, five additional native journey groups, eight exact workbench selections and 26 unique canonical observations. Required shared-theme proof was genuinely reminted at the pinned runtime: 128 browser cases/16 screenshots. Source/design/evidence gates pass within their recorded scope. All first failures are retained alongside the corrections.
+
+The current original-carrier checkpoint is design_reset_20261103/DESIGN_RESET.md and REPORT.json, with complete reproduction inputs and evidence archives. Fresh publication status still refuses NOT_APPLIED; PR9596 remains draft at 851c6ab. The current main, independent review, hosted full-data CI, shared-header cold-load movement/large-DOM performance, actual-parent findings, normal publication and actual served acceptance remain open. No new commit, push, merge, deployment, worker dispatch or Paper mutation occurred. This local checkpoint is not canonical GitHub/AgentOS adoption.
+
+
+## 4 November 2026 — production candidate qualified; original publication continues
+
+This current section supersedes the earlier publisher-unavailable and large-DOM/header frontier. The Chairman continuation retains the original operation, branch and PR9596. Protected procedure remains pinned at Mastermind 2b12028b3910303e85d8e591fd40bb35c779ab78. Macro main bb3b7273f1e9ccb869b6500c97871093eb22005a is genuinely integrated; HEAD851c6ab and original MERGE_HEADc6ac417 remain until the exactly fenced native publication. The native Macro status and two-parent capability now work; no raw publication bypass is introduced.
+
+The final candidate keeps the Paper country hierarchy and moves only Dossier, Scanner and Coverage presentation into84 generation/hash-bound assets. Initial HTML falls from23,104,850 to3,844,803 bytes; the country rest requests no fragment. Existing view/state/data owners remain. The compact seven-market picker, readable Scanner cards and mobile two-column question/clock layout remove the recorded density and overflow defects. Bounded shared-header geometry is reused from Macro#9495 and the ordinary Chat nav synchronizer.
+
+Current-source controller proof passes188/188; shared-header/frozen-builder/nav proof122; public serving/access54 plus final regenerated asset closure; P0B128 browser cases/16 screenshots and144 integrity tests. Actual country/deferred/eager/Inspector/Scenario/native journeys and current visual capture receipts preserve their exact scopes and all initial observer or product failures. Final build uses the same511 committed inputs, with no reacquisition. The exact generated HTML and84 assets are seeded coherently only in the source worktree. A narrow public presentation prefix/no-store rule and renderer helper trigger are validated; installed Caddy and production publication remain unproven.
+
+IMPLEMENTATION.md and REPORT.json carry the executable next steps and evidence archive. Superseded static preview files/images were consolidated with exact member readback and no active code consumer; all JSON effect/review receipts and executable verification sources stay at their original paths. The earlier R3 archives remain immutable. Do not replay the held query worker, resurrect a publisher blocker superseded by capability evidence, or claim a local pass as design/production acceptance.
+
+The next action is exact-tree native commit/readback, stale merge-metadata reconciliation, and same-branch typed push, then current-head CI and distinct independent review. Formal CHANGES_REQUESTED disposition, Draft/HOLD, applicable actual-parent findings, F10/W3U, normal renderer/updater/serving policy, full-history FX acceptance and a subsequent refresh remain release obligations. Current mission is incomplete, with useful authorized work continuing.

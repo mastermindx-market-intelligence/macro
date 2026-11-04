@@ -835,3 +835,128 @@ test('G newer outside, missing, country and query destinations cancel pending re
     } finally { await context.close(); }
   }
 });
+
+
+// Standalone presentation checks exercise the production controller with real
+// scroll geometry. This fixture does not stand in for Terminal acceptance.
+async function createPresentationPage({ compact = false } = {}) {
+  const context = await browser.newContext({ viewport: { width: 1200, height: 800 } });
+  const page = await context.newPage();
+  const countries = ['JP', 'KR', 'TW', 'IN', 'AU', 'GB', 'EZ'];
+  const html = `<!doctype html><html><head><style>
+    body { margin: 0; font: 14px/1.5 system-ui; }
+    .imc-toolbar-anchor { height: 50px; }
+    .imc-toolbar { display: flex; height: 50px; background: white; }
+    .imc-toolbar.is-stuck { position: fixed; top: 0; left: 0; width: 100%; }
+    .imc-nav { display: flex; flex: 1; gap: 12px; }
+    .imc-nav a { display: flex; align-items: center; }
+    .imc-assistant-slot { width: 40px; height: 40px; }
+    .imc-country-rail { display: flex; overflow-x: auto; width: 100%; }
+    .imc-country-rail a { flex: 0 0 140px; white-space: nowrap; }
+    #imc-countries { height: ${compact ? 190 : 1300}px; }
+    #imc-connections { height: 240px; }
+    #intl-analysis-tools > summary { height: 50px; }
+    #intl-analysis-tools > div { height: 1400px; }
+    [id] { scroll-margin-top: 70px; }
+  </style></head><body>
+    <main data-im-country-analysis>
+      <div class="imc-toolbar-anchor"><div class="imc-toolbar">
+        <nav class="imc-nav">
+          <a href="#imc-countries" data-imc-section="imc-countries">Countries</a>
+          <a href="#imc-connections" data-imc-section="imc-connections">Connections</a>
+          <a href="#intl-analysis-tools" data-imc-section="intl-analysis-tools">Data & tools</a>
+        </nav><div class="imc-assistant-slot"></div>
+      </div></div>
+      <section id="imc-countries">
+        <nav class="imc-country-rail">${countries.map(cc =>
+          `<a href="#imc-country-${cc}" data-imc-country="${cc}">${cc}</a>`).join('')}</nav>
+        ${countries.map(cc => `<details class="imc-country" id="imc-country-${cc}" name="country" ${cc === 'GB' ? 'open' : ''}><summary>${cc}</summary><p>Country reading</p></details>`).join('')}
+      </section>
+      <section id="imc-connections"><h2>Global connections</h2><p>Connections reading</p></section>
+    </main>
+    <details id="intl-analysis-tools"><summary>Data & tools</summary><div>Research reading</div></details>
+    <script>${CONTROLLER}</script>
+  </body></html>`;
+  await page.route(CHILD_ORIGIN + '/presentation.html', route =>
+    route.fulfill({ status: 200, contentType: 'text/html', body: html }));
+  await page.goto(CHILD_ORIGIN + '/presentation.html');
+  await page.waitForFunction(() => document.querySelector('[data-im-country-analysis]').dataset.imcEnhanced);
+  return { context, page };
+}
+
+const presentationFrame = page => page.evaluate(() =>
+  new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+
+test('presentation: short final sections track correctly without changing scroll history', async () => {
+  const { context, page } = await createPresentationPage();
+  try {
+    const nav = key => page.locator('[data-imc-section="' + key + '"]');
+    assert.equal(await nav('imc-countries').getAttribute('aria-current'), 'location');
+    await nav('imc-connections').click();
+    await presentationFrame(page);
+    assert.equal(await nav('imc-connections').getAttribute('aria-current'), 'location',
+      'Connections is current when the document bottom prevents top alignment');
+    assert.equal(await page.locator('[data-imc-section][aria-current]').count(), 1);
+    assert.equal(await page.locator('#intl-analysis-tools').getAttribute('open'), null);
+    await nav('intl-analysis-tools').click();
+    await presentationFrame(page);
+    assert.notEqual(await page.locator('#intl-analysis-tools').getAttribute('open'), null);
+    assert.equal(await nav('intl-analysis-tools').getAttribute('aria-current'), 'location');
+    const before = await page.evaluate(() => {
+      window.__presentationFocus = document.activeElement;
+      return { href: location.href, entries: history.length };
+    });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await presentationFrame(page);
+    assert.equal(await nav('imc-countries').getAttribute('aria-current'), 'location');
+    assert.deepEqual(await page.evaluate(() => ({
+      href: location.href, entries: history.length
+    })), before, 'presentation tracking does not write history');
+    assert.equal(await page.evaluate(() => document.activeElement === window.__presentationFocus),
+      true, 'presentation tracking preserves the focused element identity');
+  } finally { await context.close(); }
+
+  const compact = await createPresentationPage({ compact: true });
+  try {
+    await presentationFrame(compact.page);
+    assert.equal(await compact.page.evaluate(() => scrollY), 0);
+    assert.equal(await compact.page.locator('[data-imc-section="imc-countries"]').getAttribute('aria-current'),
+      'location', 'an entirely visible document starts with Countries selected');
+  } finally { await compact.context.close(); }
+});
+
+test('presentation: selected country remains visible when the rail narrows or labels change', async () => {
+  const { context, page } = await createPresentationPage();
+  try {
+    await page.evaluate(() => window.scrollTo(0, 350));
+    await presentationFrame(page);
+    const before = await page.evaluate(() => ({ y: scrollY, href: location.href, entries: history.length }));
+    const verify = async () => {
+      await presentationFrame(page);
+      const geometry = await page.locator('.imc-country-rail').evaluate(rail => {
+        const active = rail.querySelector('[aria-current="location"]');
+        const a = active.getBoundingClientRect(), r = rail.getBoundingClientRect();
+        return { cc: active.dataset.imcCountry, left: a.left, right: a.right, railLeft: r.left, railRight: r.right };
+      });
+      assert.equal(geometry.cc, 'GB');
+      assert.ok(geometry.left >= geometry.railLeft - 1 && geometry.right <= geometry.railRight + 1,
+        JSON.stringify(geometry));
+      assert.deepEqual(await page.evaluate(() => ({ y: scrollY, href: location.href, entries: history.length })),
+        before, 'horizontal reveal preserves the document position and location');
+    };
+    await page.setViewportSize({ width: 320, height: 800 });
+    await verify();
+    await page.evaluate(() => {
+      document.querySelectorAll('.imc-country-rail a').forEach(a => { a.style.flexBasis = '170px'; });
+      document.dispatchEvent(new Event('langchange'));
+    });
+    await verify();
+    await page.evaluate(() => {
+      document.querySelector('.imc-country-rail').scrollLeft = 0;
+      window.scrollBy(0, 50);
+    });
+    await presentationFrame(page);
+    assert.equal(await page.locator('.imc-country-rail').evaluate(rail => rail.scrollLeft), 0,
+      'ordinary vertical scrolling does not recenter a rail the reader has moved');
+  } finally { await context.close(); }
+});

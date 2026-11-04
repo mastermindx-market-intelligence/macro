@@ -1,205 +1,205 @@
 {
   "schema": "options_entry_coverage.v1",
-  "generated_at": "2026-11-01T13:37:12.176701+00:00",
-  "as_of": "2026-11-01",
+  "generated_at": "2026-11-04T06:29:01.186110+00:00",
+  "as_of": "2026-11-04",
   "absent_stores": [],
   "feature_coverage": {
-    "n_rows": 431,
+    "n_rows": 3348,
     "n_features": 31,
     "features": [
       {
         "feature": "iv30",
         "n_nonnull": 408,
-        "n_total": 431,
-        "share_nonnull": 0.9466
+        "n_total": 3348,
+        "share_nonnull": 0.1219
       },
       {
         "feature": "iv_rank_252",
         "n_nonnull": 0,
-        "n_total": 431,
+        "n_total": 3348,
         "share_nonnull": 0.0
       },
       {
         "feature": "iv_rank_5d_chg",
         "n_nonnull": 0,
-        "n_total": 431,
+        "n_total": 3348,
         "share_nonnull": 0.0
       },
       {
         "feature": "ivspread_rel",
         "n_nonnull": 391,
-        "n_total": 431,
-        "share_nonnull": 0.9072
+        "n_total": 3348,
+        "share_nonnull": 0.1168
       },
       {
         "feature": "ivspread_5d_chg",
         "n_nonnull": 329,
-        "n_total": 431,
-        "share_nonnull": 0.7633
+        "n_total": 3348,
+        "share_nonnull": 0.0983
       },
       {
         "feature": "skew",
-        "n_nonnull": 429,
-        "n_total": 431,
-        "share_nonnull": 0.9954
+        "n_nonnull": 3348,
+        "n_total": 3348,
+        "share_nonnull": 1.0
       },
       {
         "feature": "skew_5d_chg",
-        "n_nonnull": 384,
-        "n_total": 431,
-        "share_nonnull": 0.891
+        "n_nonnull": 378,
+        "n_total": 3348,
+        "share_nonnull": 0.1129
       },
       {
         "feature": "net_doi",
         "n_nonnull": 386,
-        "n_total": 431,
-        "share_nonnull": 0.8956
+        "n_total": 3348,
+        "share_nonnull": 0.1153
       },
       {
         "feature": "doi_pc",
         "n_nonnull": 355,
-        "n_total": 431,
-        "share_nonnull": 0.8237
+        "n_total": 3348,
+        "share_nonnull": 0.106
       },
       {
         "feature": "fresh_contracts",
         "n_nonnull": 386,
-        "n_total": 431,
-        "share_nonnull": 0.8956
+        "n_total": 3348,
+        "share_nonnull": 0.1153
       },
       {
         "feature": "fresh_premium_mn",
         "n_nonnull": 329,
-        "n_total": 431,
-        "share_nonnull": 0.7633
+        "n_total": 3348,
+        "share_nonnull": 0.0983
       },
       {
         "feature": "zerodte_share",
         "n_nonnull": 387,
-        "n_total": 431,
-        "share_nonnull": 0.8979
+        "n_total": 3348,
+        "share_nonnull": 0.1156
       },
       {
         "feature": "gamma_regime",
         "n_nonnull": 405,
-        "n_total": 431,
-        "share_nonnull": 0.9397
+        "n_total": 3348,
+        "share_nonnull": 0.121
       },
       {
         "feature": "gamma_regime_structurally_constant",
-        "n_nonnull": 431,
-        "n_total": 431,
+        "n_nonnull": 3348,
+        "n_total": 3348,
         "share_nonnull": 1.0
       },
       {
         "feature": "dist_to_flip_pct",
         "n_nonnull": 313,
-        "n_total": 431,
-        "share_nonnull": 0.7262
+        "n_total": 3348,
+        "share_nonnull": 0.0935
       },
       {
         "feature": "wall_up_dist_pct",
         "n_nonnull": 407,
-        "n_total": 431,
-        "share_nonnull": 0.9443
+        "n_total": 3348,
+        "share_nonnull": 0.1216
       },
       {
         "feature": "wall_down_dist_pct",
         "n_nonnull": 408,
-        "n_total": 431,
-        "share_nonnull": 0.9466
+        "n_total": 3348,
+        "share_nonnull": 0.1219
       },
       {
         "feature": "max_pain_dist_pct",
         "n_nonnull": 408,
-        "n_total": 431,
-        "share_nonnull": 0.9466
+        "n_total": 3348,
+        "share_nonnull": 0.1219
       },
       {
         "feature": "opex_days",
-        "n_nonnull": 431,
-        "n_total": 431,
+        "n_nonnull": 3348,
+        "n_total": 3348,
         "share_nonnull": 1.0
       },
       {
         "feature": "pin_risk",
         "n_nonnull": 0,
-        "n_total": 431,
+        "n_total": 3348,
         "share_nonnull": 0.0
       },
       {
         "feature": "gex_confirm_verdict",
         "n_nonnull": 408,
-        "n_total": 431,
-        "share_nonnull": 0.9466
+        "n_total": 3348,
+        "share_nonnull": 0.1219
       },
       {
         "feature": "evidence_quality",
-        "n_nonnull": 431,
-        "n_total": 431,
+        "n_nonnull": 3348,
+        "n_total": 3348,
         "share_nonnull": 1.0
       },
       {
         "feature": "src_gex_asof",
         "n_nonnull": 408,
-        "n_total": 431,
-        "share_nonnull": 0.9466
+        "n_total": 3348,
+        "share_nonnull": 0.1219
       },
       {
         "feature": "src_skew_asof",
-        "n_nonnull": 429,
-        "n_total": 431,
-        "share_nonnull": 0.9954
+        "n_nonnull": 3348,
+        "n_total": 3348,
+        "share_nonnull": 1.0
       },
       {
         "feature": "src_ivspread_asof",
         "n_nonnull": 391,
-        "n_total": 431,
-        "share_nonnull": 0.9072
+        "n_total": 3348,
+        "share_nonnull": 0.1168
       },
       {
         "feature": "src_flow_asof",
         "n_nonnull": 387,
-        "n_total": 431,
-        "share_nonnull": 0.8979
+        "n_total": 3348,
+        "share_nonnull": 0.1156
       },
       {
         "feature": "front7_charm_share",
         "n_nonnull": 372,
-        "n_total": 431,
-        "share_nonnull": 0.8631
+        "n_total": 3348,
+        "share_nonnull": 0.1111
       },
       {
         "feature": "front7_gex_share",
         "n_nonnull": 372,
-        "n_total": 431,
-        "share_nonnull": 0.8631
+        "n_total": 3348,
+        "share_nonnull": 0.1111
       },
       {
         "feature": "signed_vanna_pressure",
         "n_nonnull": 372,
-        "n_total": 431,
-        "share_nonnull": 0.8631
+        "n_total": 3348,
+        "share_nonnull": 0.1111
       },
       {
         "feature": "vanna_hedge_5d",
         "n_nonnull": 370,
-        "n_total": 431,
-        "share_nonnull": 0.8585
+        "n_total": 3348,
+        "share_nonnull": 0.1105
       },
       {
         "feature": "root_class",
-        "n_nonnull": 431,
-        "n_total": 431,
+        "n_nonnull": 3348,
+        "n_total": 3348,
         "share_nonnull": 1.0
       }
     ],
     "ticker_coverage": {
-      "n_tickers": 431,
-      "n_rows": 431,
+      "n_tickers": 3348,
+      "n_rows": 3348,
       "n_tickers_ge75pct_features": 375,
-      "n_tickers_50to74pct_features": 16,
-      "n_tickers_lt50pct_features": 40
+      "n_tickers_50to74pct_features": 14,
+      "n_tickers_lt50pct_features": 2959
     }
   },
   "family_stamp_coverage": [
@@ -434,7 +434,7 @@
       "cond_hit_share": 0.7938,
       "readiness_forecast": {
         "forecast": "date",
-        "forecast_date": "2026-11-02",
+        "forecast_date": "2026-11-05",
         "basis": "n_cond=0/30 needed; post-W-C cadence=35.459/day \u00d7 cond_hit_share=0.800 \u2192 1 days",
         "post_wc_fires": 2624,
         "post_wc_span_days": 74
@@ -517,7 +517,7 @@
       "null_share": 1.0,
       "root_cause": "by-design opex_days<=5 gate \u2014 opt_pin_risk requires opex_days<=5 AND gamma='long' AND min_wall_dist<=2%. Gate only fires in the final week before monthly OPEX.",
       "pin_risk_gate_condition": "opex_days<=5 AND gamma_regime='long' AND min(|wall_dist_up_pct|, |wall_dist_down_pct|)<=2.0",
-      "current_opex_days": 15,
+      "current_opex_days": 12,
       "next_opex_date": "2026-11-20",
       "note": "pin_risk will be non-null only in the 5 trading days before each monthly OPEX. Current build date has opex_days>5 \u2014 no fires expected."
     },
@@ -544,41 +544,39 @@
       "sources": [
         {
           "source": "options_entry/state.parquet",
-          "latest_as_of": "2026-10-16",
-          "age_days_from_today": 16,
+          "latest_as_of": "2026-10-30",
+          "age_days_from_today": 5,
           "status": "STALE"
         },
         {
           "source": "options_entry/gate.json",
           "latest_as_of": "2026-10-17 18:50 UTC",
-          "age_days_from_today": 15,
+          "age_days_from_today": 18,
           "status": "STALE"
         },
         {
           "source": "us_board_ledger/retro_grades.parquet",
           "latest_as_of": "2026-09-17",
-          "age_days_from_today": 45,
+          "age_days_from_today": 48,
           "status": "STALE"
         }
       ]
     },
     {
       "check": "audit_options_accrual_last_run",
-      "generated_at": "2026-11-01T13:37:12.085849+00:00",
+      "generated_at": "2026-11-04T06:29:01.013303+00:00",
       "ok": false,
       "fail_reasons": [
-        "CHAINS STALE: latest chain file is 2026-08-13 (55 NYSE session(s) behind last_session=2026-10-30); threshold=1 \u2014 OI snapshot may have been missed",
-        "CHAINS SESSION FAILED: session 2026-10-30 has a health-receipt attempt but NO chain parquet was ever written for it \u2014 the accrual captured nothing for the most recently attempted session (see data/polygon_gex_health/2026-10-30.json)"
+        "CHAINS STALE: latest chain file is 2026-08-13 (57 NYSE session(s) behind last_session=2026-11-03); threshold=1 \u2014 OI snapshot may have been missed",
+        "CHAINS SESSION FAILED: session 2026-11-03 has a health-receipt attempt but NO chain parquet was ever written for it \u2014 the accrual captured nothing for the most recently attempted session (see data/polygon_gex_health/2026-11-03.json)"
       ],
-      "warnings": [
-        "OPTIONS FLOW CREDS ABSENT: MASSIVE_S3_ACCESS_KEY_ID / MASSIVE_S3_SECRET_ACCESS_KEY / MASSIVE_S3_ENDPOINT not set \u2014 build_options_flow will no-op silently (F1 from masterplan \u00a71)"
-      ]
+      "warnings": []
     }
   ],
   "_stamp": {
     "audit": "options_entry_coverage.v1",
-    "generated_at_utc": "2026-11-01T13:37:12.176693+00:00",
-    "as_of": "2026-11-01",
+    "generated_at_utc": "2026-11-04T06:29:01.186089+00:00",
+    "as_of": "2026-11-04",
     "absent_stores": []
   }
 }

@@ -27,6 +27,7 @@ from lib import config, site_assets  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from engine.intl_workspace_overview import build_workspace_overviews as _workspace_overviews  # noqa: E402
 from lib.intl_library_mount import render_international_pages  # noqa: E402
+from lib.intl_workspace_fragments import publish_workspace_fragments  # noqa: E402
 from lib.intl_macro_mount import attach_macros  # noqa: E402
 from lib.intl_risk_mount import attach_risks  # noqa: E402
 from lib.intl_history_mount import attach_history  # noqa: E402
@@ -1164,6 +1165,8 @@ def main() -> int:
             tmpl, vm, catalogue=catalogue,
             chart_sources=chart_source_sink.get("sources"),
         )
+        # All render/binding passes complete before the normal owner partitions presentation.
+        macro_html = publish_workspace_fragments(macro_html, site)
         write_page(site / "intl.html", macro_html)
         write_page(site / "intl_stocks.html", stocks_html)
         log.info("wrote intl.html + intl_stocks.html (%d economies, %d standouts)",

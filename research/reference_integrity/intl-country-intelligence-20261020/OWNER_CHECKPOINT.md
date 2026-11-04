@@ -1,3 +1,44 @@
+# Active design reset — 3 November 2026
+
+## Current recovery — Paper design reset, 3 November 2026
+
+The user rejected the preceding polish as 4/10. The subsequent reset is implemented and locally verified; use `design_reset_20261103/DESIGN_RESET.md` and `REPORT.json`, plus the 26-observation canonical receipts under `mockups/evidence/intl-design-reset-20261103/`. Tested runtime source tree: `44e97000aa1c2625f0081fb612666fda4b098b41`. Ordinary HTML SHA-256: `ae736327bb00ddfd2725b09d3f12a33c614a0ba57ab30051429fb6f28ba06ea8`. Source hashes match the original worktree; actual emitted theme/workspace CSS copies are synchronized.
+
+IM-D1 reviewed; IM-D2 complete in source; IM-D3 locally verified; IM-D4 blocked. Fresh proof: 158 focused tests, 20 country states/7 countries, 5 native journey groups, 8 exact workbench selections, and 128 pinned shared-theme fixture cases. Prior failures are preserved, including the corrected observer and current-receipt binding. Captured visual quality has principal advisory review; the user has not accepted it.
+
+Preserve operation `intl-country-cockpit-20261018`, branch `sol/web-intl-country-cockpit-20261018`, HEAD `851c6abebf01c5c8096e7822436455fd1040152a` and MERGE_HEAD `c6ac417f4a1d561f8c80a0a6b1977d5ffec6d090`. Fresh read-only publisher status remains REFUSED/NOT_APPLIED/TYPED_GIT_PRECHECK_REFUSED. No source-publication write was attempted. Restore supported Macro pending-merge publication and continue the existing carrier through current-main reconciliation, current-source independent review, hosted full-data CI, shared-header/performance and applicable actual-parent repairs, normal renderer/updater and served acceptance. Held Fabric state remains held; do not retry on NOT_FOUND alone.
+
+The cold-load issue remains measured: the shared header repositions the initial search/layout, with observed local shift sums about0.738 desktop/0.281 mobile; the page contains428,715 DOM nodes. The record does not claim production-ready performance or completed deployment. This checkpoint is locally saved, NOT_CANONICALLY_PERSISTED to GitHub.
+
+
+The Chairman rejects the previous design as 4/10. Resume the IM-D1 through IM-D4 task tree in research/paper_international_wave1_wave2/README.md. The previous POLISH evidence is historical behavior proof, not visual acceptance. Fresh Paper R12 and R14 screenshots were inspected. Substantially recompose the country page, then judge actual browser images before release claims. Original operation/branch/HEAD/MERGE_HEAD and publisher/worker fences remain intact. No new source publication or deployment has occurred.
+
+---
+
+# Current refinement frontier — 3 November 2026
+
+Read [completion_20261103/POLISH.md](completion_20261103/POLISH.md) and [completion_20261103/POLISH.json](completion_20261103/POLISH.json) first. The resumed refinement is built and browser-verified at source tree c9dcd331bb3a59d029604a09273751eaca1bbeee. Original branch, HEAD and conflict-free pending merge remain intact; no commit, push, protected-main adoption or deployment occurred.
+
+Paper hierarchy, native chart values, active navigation/rail, compact unequal-window returns and readable exact dates are implemented. Final ordinary render uses 511 exact inputs at 19a896b97ae20f2c12475a0207678f92dc4f335b, including the genuine collector receipt. The delayed 2026-10-30 snapshot shows five qualified 1M returns before expansion in both bases, retaining individual windows without ranking.
+
+Evidence: 445 country/source/build tests, 73 overview tests, 20 navigation cases, retained 16-state/112-country matrix with identical country runtime, eight fresh overview selections and 22 canonical observations. The 280-member archive is hash-verified; the preceding 79-member archive is unchanged. Original failures, unexplained renderer crash and shared-header cold-load movement remain explicit.
+
+Release is blocked by the Mastermind-only publisher without Macro pending-merge support. Preserve this workspace; expose an already authorized supported publisher, reconcile newer main, obtain independent review/hosted CI and complete normal served acceptance. Do not reset the merge, bypass publication controls or replay held worker effects. Actual-parent and performance findings remain open.
+
+---
+
+# Current owner frontier — 3 November 2026
+
+The current Chairman request continues original operation intl-country-cockpit-20261018, branch sol/web-intl-country-cockpit-20261018 and draft PR9596. Read [completion_20261103/CHECKPOINT.md](completion_20261103/CHECKPOINT.md) and [completion_20261103/EVIDENCE.json](completion_20261103/EVIDENCE.json) before any historical next action below.
+
+The Paper country implementation is recovered, integrated with protected-main source in a **pending, conflict-free two-parent merge**, and built/verified. The source HEAD remains 851c6abebf01c5c8096e7822436455fd1040152a; MERGE_HEAD is c6ac417f4a1d561f8c80a0a6b1977d5ffec6d090. Mixed-window returns are visible before expansion with exact individual dates. The 258 observed CI import/read-scope omissions are repaired, and actual pinned-browser P0B evidence is refreshed.
+
+Verification: 70 overview and 443 country/source/build tests; 12 visual states and 84 country opens; 12 tool/Back/no-JavaScript journeys; one actual-template controller regression; 128 shared-component cases/16 screenshots; 14 integration tests pass with 11 explicitly skipped full-data GMI cases. Source and browser receipts, failed initial attempts, screenshots, exact build identities and source inventories are preserved in the verified evidence archive.
+
+**No commit, push, protected-main adoption or deployment occurred. The public page is unchanged.** This session's Studio Direct ChatGPT4 publisher is configured for Mastermind only and lacks the explicit merge contract. Macro status was refused before effect. Make an already authorized Macro-aware, merge-capable publisher available to this attended session; do not modify grants, repurpose C2 migrations or route around the boundary. Preserve this original pending merge. Required current-head independent review, hosted CI and actual production acceptance remain open. Historical held workers and PR8754 egress restrictions remain untouched.
+
+---
+
 # Current owner frontier — International Tools repair, 22 October 2026 UTC
 
 Continue original operation `intl-country-cockpit-20261018`, branch `sol/web-intl-country-cockpit-20261018` and Draft PR9596. The Chairman authorized resumption; this session remains sole integration writer. Current evidence, source hashes, process state and next actions are in [main_tools_repair_20261022/CHECKPOINT.md](main_tools_repair_20261022/CHECKPOINT.md). Read that frontier and current typed/GitHub publication status before acting on historical next actions below.

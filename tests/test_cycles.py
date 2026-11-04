@@ -939,6 +939,96 @@ def test_below_ma10_no_3d_key_does_not_gate_on_curl() -> None:
         f"no-3D-key clean bottom must still show a BUY tag; got {entry['tag']!r}")
 
 
+# ── early note, zh half (2026-11-02) ──────────────────────────────────────────
+# site/sectors/XLP.html printed "⚡ 反转正在提前酝酿（heads-up）：StochRSI popped out of
+# oversold。" in its Chinese half: ladder_state() joined early_signals()' English
+# signal names and tier into early_note_zh. The English half keeps them; the Chinese
+# half now uses EARLY_SIGNAL_ZH / EARLY_TIER_ZH. Indicator names stay as they are.
+
+_EARLY_BULL = ("RSI bullish divergence (price made a lower low, momentum didn't)",
+               "MACD histogram turned up off a trough (pre-cross)",
+               "StochRSI popped out of oversold")
+_EARLY_BEAR = ("RSI bearish divergence (price made a higher high, momentum didn't)",
+               "MACD histogram rolled over off a peak (pre-cross)",
+               "StochRSI dropped out of overbought")
+_INDICATOR_NAMES = {"RSI", "MACD", "StochRSI"}
+
+
+def _latin_words(text: str) -> set[str]:
+    import re
+    return set(re.findall(r"[A-Za-z][A-Za-z-]+", text))
+
+
+def _early_notes(cyc: dict, mtf: dict, direction: str, tier: str,
+                 signals: tuple[str, ...]) -> dict:
+    return ladder_state(cyc, mtf, early={"dir": direction, "tier": tier,
+                                         "signals": list(signals), "n": len(signals)})
+
+
+def test_early_note_zh_names_bull_signals_and_tier_in_chinese() -> None:
+    cyc, mtf = _below_ma10_turn_signaled_snapshot(curl_dn=False)
+    for tier, tier_zh in (("heads-up", "预警"), ("anticipated", "预判")):
+        for signals in [(name,) for name in _EARLY_BULL] + [_EARLY_BULL]:
+            lad = _early_notes(cyc, mtf, "up", tier, signals)
+            assert lad["state"] == "TURN SIGNALED", lad["state"]
+            en, zh = lad["early_note"], lad["early_note_zh"]
+            assert en.startswith(f"⚡ Early reversal building ({tier}): " + "; ".join(signals))
+            assert zh.startswith(f"⚡ 反转正在提前酝酿（{tier_zh}）："), zh
+            assert _latin_words(zh) <= _INDICATOR_NAMES, (sorted(_latin_words(zh)), zh)
+    lad = _early_notes(cyc, mtf, "up", "heads-up", ("StochRSI popped out of oversold",))
+    assert lad["early_note_zh"].startswith("⚡ 反转正在提前酝酿（预警）：StochRSI 脱离超卖区。")
+
+
+def test_early_note_zh_names_bear_signals_and_tier_in_chinese() -> None:
+    cyc, mtf = _extended_snapshot(71, 82, 81)
+    for tier, tier_zh in (("heads-up", "预警"), ("anticipated", "预判")):
+        for signals in [(name,) for name in _EARLY_BEAR] + [_EARLY_BEAR]:
+            lad = _early_notes(cyc, mtf, "down", tier, signals)
+            assert lad["state"] == "TOP WATCH", lad["state"]
+            en, zh = lad["early_note"], lad["early_note_zh"]
+            assert en.startswith(f"⚡ Early topping signs ({tier}): " + "; ".join(signals))
+            assert zh.startswith(f"⚡ 提前出现的做顶迹象（{tier_zh}）："), zh
+            assert _latin_words(zh) <= _INDICATOR_NAMES, (sorted(_latin_words(zh)), zh)
+    lad = _early_notes(cyc, mtf, "down", "anticipated", _EARLY_BEAR)
+    assert lad["early_note_zh"].startswith(
+        "⚡ 提前出现的做顶迹象（预判）：RSI 看跌背离（价格创新高，动量未创新高）；"
+        "MACD 柱状图自峰值回落（尚未交叉）；StochRSI 跌出超买区。")
+
+
+def test_every_early_signal_name_and_tier_has_a_chinese_twin() -> None:
+    """Read early_signals() itself, so a new signal name or tier without a twin fails here."""
+    import ast
+    import inspect
+
+    import engine.cycles as cycles_module
+
+    def results(expr: ast.expr) -> set:
+        """The values a name or tier expression can take: both arms of a conditional, a literal,
+        or a marker that fails the assertions below when it is computed some other way."""
+        if isinstance(expr, ast.IfExp):
+            return results(expr.body) | results(expr.orelse)
+        if isinstance(expr, ast.Constant) and isinstance(expr.value, str):
+            return {expr.value}
+        return {"<not a literal: " + ast.unparse(expr) + ">"}
+
+    tree = ast.parse(inspect.getsource(cycles_module.early_signals))
+    names, tiers = set(), set()
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "append" and isinstance(node.func.value, ast.Name)
+                and node.func.value.id in ("bull", "bear")):
+            for arg in node.args:
+                names |= results(arg)
+        if (isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "tier"
+                                                 for t in node.targets)):
+            tiers |= results(node.value)
+    assert names == set(_EARLY_BULL) | set(_EARLY_BEAR), sorted(names)
+    assert names == set(cycles_module.EARLY_SIGNAL_ZH), sorted(names ^ set(cycles_module.EARLY_SIGNAL_ZH))
+    assert tiers == {"anticipated", "heads-up"} == set(cycles_module.EARLY_TIER_ZH), sorted(tiers)
+    for name, twin in cycles_module.EARLY_SIGNAL_ZH.items():
+        assert _latin_words(twin) <= _INDICATOR_NAMES, (name, twin)
+
+
 if __name__ == "__main__":
     for fn in [test_trough_spacing, test_translation_right, test_translation_left,
                test_failed_cycle_flag, test_ladder_states_sane, test_decline_on_breakdown,

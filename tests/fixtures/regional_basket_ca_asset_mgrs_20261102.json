@@ -1,0 +1,522 @@
+{
+  "as_of": "2026-11-02",
+  "benchmark_label": "S&P/TSX",
+  "benchmark_label_zh": "标普/多伦多",
+  "construction": "Equal-weight baskets, rebalanced monthly, measured against the S&P/TSX Composite.",
+  "history_note": "Available history comes from the canada_search cache. Pre-launch series use the basket's starting membership.",
+  "note": "Curated S&P/TSX theme baskets for monitoring rotation. Descriptive only, not a buy list.",
+  "baskets": [
+    {
+      "id": "ca_asset_mgrs",
+      "name": "Asset Managers & Alternatives",
+      "name_zh": "资产管理与另类投资",
+      "category": "Financials",
+      "category_zh": "金融",
+      "thesis": "Brookfield, Power, Onex, fund managers and the exchange. Tracks fee capital, deals and private markets.",
+      "thesis_zh": "Brookfield、Power、Onex、基金管理人和交易所。跟踪收费资本、交易和私募市场。",
+      "weighting": "equal",
+      "created": "2021-06-14",
+      "n_members": 8,
+      "members": [
+        {
+          "symbol": "BBUC.TO",
+          "name": "Brookfield Business Corp Class A",
+          "added": "2021-06-14",
+          "rationale": "Brookfield Business — listed PE / business services",
+          "rationale_zh": "Brookfield Business — listed PE / business services",
+          "last": 42.0,
+          "ret_1d": 0.0521,
+          "ret_5d": 0.085,
+          "ret_10d": 0.1441,
+          "ret_20d": 0.1516,
+          "ret_ytd": -0.1403
+        },
+        {
+          "symbol": "X.TO",
+          "name": "Tmx Group Ltd",
+          "added": "2021-06-14",
+          "rationale": "TMX Group — the exchange operator",
+          "rationale_zh": "TMX Group — the exchange operator",
+          "last": 59.78,
+          "ret_1d": -0.0048,
+          "ret_5d": 0.0334,
+          "ret_10d": 0.0973,
+          "ret_20d": 0.1284,
+          "ret_ytd": 0.1556
+        },
+        {
+          "symbol": "BAM.TO",
+          "name": "Brookfield Asset Management Voting",
+          "added": "2021-06-14",
+          "rationale": "Brookfield Asset Management — pure-play fees",
+          "rationale_zh": "Brookfield Asset Management — pure-play fees",
+          "last": 71.96,
+          "ret_1d": 0.0665,
+          "ret_5d": 0.0911,
+          "ret_10d": 0.1286,
+          "ret_20d": 0.127,
+          "ret_ytd": 0.0217
+        },
+        {
+          "symbol": "BN.TO",
+          "name": "Brookfield Corp Class A",
+          "added": "2021-06-14",
+          "rationale": "Brookfield Corp — alternatives flagship",
+          "rationale_zh": "Brookfield Corp — alternatives flagship",
+          "last": 57.95,
+          "ret_1d": 0.0561,
+          "ret_5d": 0.0879,
+          "ret_10d": 0.1261,
+          "ret_20d": 0.1002,
+          "ret_ytd": -0.0788
+        },
+        {
+          "symbol": "POW.TO",
+          "name": "Power Corporation Of Canada",
+          "added": "2021-06-14",
+          "rationale": "Power Corp of Canada",
+          "rationale_zh": "Power Corp of Canada",
+          "last": 95.65,
+          "ret_1d": -0.0098,
+          "ret_5d": 0.0158,
+          "ret_10d": 0.0423,
+          "ret_20d": 0.0634,
+          "ret_ytd": 0.3245
+        },
+        {
+          "symbol": "ONEX.TO",
+          "name": "Onex Corp",
+          "added": "2021-06-14",
+          "rationale": "Onex — private equity",
+          "rationale_zh": "Onex — private equity",
+          "last": 109.03,
+          "ret_1d": 0.039,
+          "ret_5d": 0.0406,
+          "ret_10d": 0.0904,
+          "ret_20d": 0.0386,
+          "ret_ytd": -0.0322
+        },
+        {
+          "symbol": "IGM.TO",
+          "name": "Igm Financial Inc",
+          "added": "2021-06-14",
+          "rationale": "IGM Financial — wealth/asset mgmt",
+          "rationale_zh": "IGM Financial — wealth/asset mgmt",
+          "last": 83.49,
+          "ret_1d": 0.0163,
+          "ret_5d": 0.0325,
+          "ret_10d": 0.0292,
+          "ret_20d": -0.0071,
+          "ret_ytd": 0.364
+        },
+        {
+          "symbol": "SII.TO",
+          "name": "Sprott Inc",
+          "added": "2021-06-14",
+          "rationale": "Sprott — precious-metals asset manager",
+          "rationale_zh": "Sprott — precious-metals asset manager",
+          "last": 143.02,
+          "ret_1d": 0.0095,
+          "ret_5d": -0.039,
+          "ret_10d": -0.0566,
+          "ret_20d": -0.1341,
+          "ret_ytd": 0.0698
+        }
+      ],
+      "changelog": [
+        {
+          "date": "2021-06-14",
+          "action": "create",
+          "note": "Seeded Asset Managers & Alternatives — equal-weight TSX members."
+        },
+        {
+          "date": "2026-06-18",
+          "action": "expand",
+          "note": "Expanded to 8 members."
+        }
+      ],
+      "reference": null,
+      "missing": [],
+      "partial": [
+        {
+          "symbol": "BAM.TO",
+          "from": "2022-12-01"
+        },
+        {
+          "symbol": "BBUC.TO",
+          "from": "2022-03-07"
+        }
+      ],
+      "perf": {
+        "1d": {
+          "ret": 0.02811730061400275,
+          "rel": 0.022140852095183572
+        },
+        "5d": {
+          "ret": 0.0434467503551903,
+          "rel": 0.04675567812892434
+        },
+        "10d": {
+          "ret": 0.07449528095303459,
+          "rel": 0.07606541621240392
+        },
+        "20d": {
+          "ret": 0.056286107702832044,
+          "rel": 0.045869438229919846
+        },
+        "60d": {
+          "ret": -0.00926076645661722,
+          "rel": -0.0053833748163579775
+        },
+        "mtd": {
+          "ret": 0.02811730061400275,
+          "rel": 0.022140852095183572
+        },
+        "ytd": {
+          "ret": 0.10032382085463265,
+          "rel": -0.04949100551318408
+        },
+        "full": {
+          "ret": 1.3125930989181045,
+          "rel": 0.28352615046552954
+        }
+      }
+    }
+  ],
+  "theme_intel": {
+    "as_of": "2026-11-02",
+    "bench_label": "S&P/TSX",
+    "bench_label_zh": "标普/TSX",
+    "weights": {
+      "trend": 0.26,
+      "breadth": 0.18,
+      "impulse": 0.07,
+      "macro": 0.18,
+      "mtf": 0.16,
+      "volhole": 0.05,
+      "crowding": 0.1
+    },
+    "themes": [
+      {
+        "id": "ca_asset_mgrs",
+        "score": 62,
+        "label": "dominant",
+        "label_en": "DOMINANT",
+        "label_zh": "主导",
+        "reco": "accumulate",
+        "reco_en": "ACCUMULATE",
+        "reco_zh": "加仓",
+        "perf": {
+          "1d": {
+            "rel": 0.0221,
+            "ret": 0.0281
+          },
+          "5d": {
+            "rel": 0.0468,
+            "ret": 0.0434
+          },
+          "10d": {
+            "rel": 0.0761,
+            "ret": 0.0745
+          },
+          "20d": {
+            "rel": 0.0459,
+            "ret": 0.0563
+          },
+          "60d": {
+            "rel": -0.0054,
+            "ret": -0.0093
+          },
+          "ytd": {
+            "rel": -0.0495,
+            "ret": 0.1003
+          }
+        }
+      }
+    ]
+  },
+  "_fixture_source": {
+    "revision": "8996951acf5a45b01dadd4d7814982fec4b063fb",
+    "path": "site/canadabasketdata/baskets.json",
+    "sha256": "b0dd22e2d4997caa669ad2fa5ddcd585df0e16ca5ebd0ef3cd1c48e1f78d38d3",
+    "scope": "Single retained public Canada basket; no new provider request, no data recomputation.",
+    "subset": "Exact retained roster/performance/source metadata and recorded detail history/timeline. Cycle/narrative/scoring arrays omitted; no synthesized prices or scores."
+  },
+  "_detail_history": [
+    {
+      "date": "2026-06-30",
+      "value": 44
+    },
+    {
+      "date": "2026-07-03",
+      "value": 54
+    },
+    {
+      "date": "2026-07-06",
+      "value": 56
+    },
+    {
+      "date": "2026-07-09",
+      "value": 43
+    },
+    {
+      "date": "2026-07-10",
+      "value": 48
+    },
+    {
+      "date": "2026-07-13",
+      "value": 38
+    },
+    {
+      "date": "2026-07-15",
+      "value": 48
+    },
+    {
+      "date": "2026-07-17",
+      "value": 39
+    },
+    {
+      "date": "2026-07-20",
+      "value": 45
+    },
+    {
+      "date": "2026-07-24",
+      "value": 52
+    },
+    {
+      "date": "2026-07-27",
+      "value": 56
+    },
+    {
+      "date": "2026-07-28",
+      "value": 59
+    },
+    {
+      "date": "2026-07-29",
+      "value": 55
+    },
+    {
+      "date": "2026-07-30",
+      "value": 52
+    },
+    {
+      "date": "2026-07-31",
+      "value": 56
+    },
+    {
+      "date": "2026-08-05",
+      "value": 68
+    },
+    {
+      "date": "2026-08-07",
+      "value": 66
+    },
+    {
+      "date": "2026-08-12",
+      "value": 68
+    },
+    {
+      "date": "2026-08-13",
+      "value": 68
+    },
+    {
+      "date": "2026-08-17",
+      "value": 67
+    },
+    {
+      "date": "2026-08-18",
+      "value": 62
+    },
+    {
+      "date": "2026-08-19",
+      "value": 62
+    },
+    {
+      "date": "2026-08-20",
+      "value": 53
+    },
+    {
+      "date": "2026-08-21",
+      "value": 64
+    },
+    {
+      "date": "2026-08-24",
+      "value": 65
+    },
+    {
+      "date": "2026-08-25",
+      "value": 63
+    },
+    {
+      "date": "2026-08-26",
+      "value": 62
+    },
+    {
+      "date": "2026-08-27",
+      "value": 63
+    },
+    {
+      "date": "2026-08-28",
+      "value": 60
+    },
+    {
+      "date": "2026-08-31",
+      "value": 59
+    },
+    {
+      "date": "2026-09-03",
+      "value": 58
+    },
+    {
+      "date": "2026-09-04",
+      "value": 55
+    },
+    {
+      "date": "2026-09-08",
+      "value": 33
+    },
+    {
+      "date": "2026-09-09",
+      "value": 31
+    },
+    {
+      "date": "2026-09-10",
+      "value": 34
+    },
+    {
+      "date": "2026-09-11",
+      "value": 48
+    },
+    {
+      "date": "2026-09-15",
+      "value": 34
+    },
+    {
+      "date": "2026-09-16",
+      "value": 37
+    },
+    {
+      "date": "2026-09-17",
+      "value": 35
+    },
+    {
+      "date": "2026-09-21",
+      "value": 38
+    },
+    {
+      "date": "2026-09-23",
+      "value": 39
+    },
+    {
+      "date": "2026-09-25",
+      "value": 34
+    },
+    {
+      "date": "2026-09-30",
+      "value": 32
+    },
+    {
+      "date": "2026-10-01",
+      "value": 34
+    },
+    {
+      "date": "2026-10-02",
+      "value": 31
+    },
+    {
+      "date": "2026-10-05",
+      "value": 31
+    },
+    {
+      "date": "2026-10-06",
+      "value": 32
+    },
+    {
+      "date": "2026-10-08",
+      "value": 31
+    },
+    {
+      "date": "2026-10-14",
+      "value": 28
+    }
+  ],
+  "_detail_timeline": [
+    {
+      "ts": "2026-09-21T00:00:00",
+      "type": "theme_deteriorating",
+      "severity": "high",
+      "headline": "🔻 Asset Managers & Alternatives is deteriorating",
+      "headline_zh": "🔻 资产管理与另类投资 走弱"
+    },
+    {
+      "ts": "2026-09-18T00:00:00",
+      "type": "reco_change",
+      "severity": "medium",
+      "headline": "↑ Asset Managers & Alternatives: Avoid → Hold",
+      "headline_zh": "↑ 资产管理与另类投资：规避 → 持有"
+    },
+    {
+      "ts": "2026-09-17T00:00:00",
+      "type": "theme_deteriorating",
+      "severity": "high",
+      "headline": "🔻 Asset Managers & Alternatives is deteriorating",
+      "headline_zh": "🔻 资产管理与另类投资 走弱"
+    },
+    {
+      "ts": "2026-09-16T00:00:00",
+      "type": "reco_change",
+      "severity": "medium",
+      "headline": "↑ Asset Managers & Alternatives: Avoid → Hold",
+      "headline_zh": "↑ 资产管理与另类投资：规避 → 持有"
+    },
+    {
+      "ts": "2026-08-31T00:00:00",
+      "type": "theme_deteriorating",
+      "severity": "high",
+      "headline": "🔻 Asset Managers & Alternatives is deteriorating",
+      "headline_zh": "🔻 资产管理与另类投资 走弱"
+    },
+    {
+      "ts": "2026-08-26T00:00:00",
+      "type": "reco_change",
+      "severity": "medium",
+      "headline": "↓ Asset Managers & Alternatives: ACCUMULATE → HOLD",
+      "headline_zh": "↓ 资产管理与另类投资：ACCUMULATE → HOLD"
+    },
+    {
+      "ts": "2026-08-24T00:00:00",
+      "type": "reco_change",
+      "severity": "medium",
+      "headline": "↑ Asset Managers & Alternatives: AVOID → ACCUMULATE",
+      "headline_zh": "↑ 资产管理与另类投资：AVOID → ACCUMULATE"
+    },
+    {
+      "ts": "2026-08-20T00:00:00",
+      "type": "theme_deteriorating",
+      "severity": "high",
+      "headline": "🔻 Asset Managers & Alternatives is deteriorating",
+      "headline_zh": "🔻 资产管理与另类投资 走弱"
+    },
+    {
+      "ts": "2026-08-18T00:00:00",
+      "type": "theme_deteriorating",
+      "severity": "high",
+      "headline": "🔻 Asset Managers & Alternatives is deteriorating",
+      "headline_zh": "🔻 资产管理与另类投资 走弱"
+    },
+    {
+      "ts": "2026-08-17T00:00:00",
+      "type": "reco_change",
+      "severity": "medium",
+      "headline": "↓ Asset Managers & Alternatives: ACCUMULATE → HOLD",
+      "headline_zh": "↓ 资产管理与另类投资：ACCUMULATE → HOLD"
+    },
+    {
+      "ts": "2026-08-05T00:00:00",
+      "type": "reco_change",
+      "severity": "medium",
+      "headline": "↓ Asset Managers & Alternatives: ENTER → ACCUMULATE",
+      "headline_zh": "↓ 资产管理与另类投资：ENTER → ACCUMULATE"
+    }
+  ]
+}

@@ -1342,8 +1342,8 @@ def _contract_only_company(
         "latest_filed": "",
         "action": {
             "key": "limited",
-            "en": "Checks not run: not yet in the broad statements panel",
-            "zh": "未运行检查：尚未进入广覆盖报表面板",
+            "en": "Checks not run: not yet evaluable from the broad statements panel",
+            "zh": "未运行检查：尚无法从广覆盖报表面板评估",
         },
         "coverage": {
             "periods": 0,
@@ -1486,9 +1486,19 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
     # generation-backed statements. They add no findings and no as-of date.
     contract = _read_coverage_contract(root)
     contract_only = 0
+    # One SEC registrant can reach the contract under a different ticker than
+    # the panel's (a share-class variant), so a member is a second listing of
+    # an already-listed issuer when its canonical CIK matches — a panel
+    # company's CIK or an earlier contract row's — not only when its ticker
+    # does. The first contract row for a CIK wins.
+    listed_cik10s = {
+        cik10
+        for cik10 in (_cik10(company["cik"]) for company in companies.values())
+        if cik10 is not None
+    }
     for member in _contract_members(contract) if contract else []:
         ticker = member["ticker"]
-        if ticker in companies:
+        if ticker in companies or member["cik10"] in listed_cik10s:
             continue
         company = _contract_only_company(member, names, sectors, issuer_master)
         disclosure = disclosure_projections.get(ticker)
@@ -1498,6 +1508,7 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
             disclosure_tracks_ready += int(disclosure["coverage"].get("tracks_ready") or 0)
             disclosure_tracks_not_evaluable += int(disclosure["coverage"].get("tracks_not_evaluable") or 0)
         companies[ticker] = company
+        listed_cik10s.add(member["cik10"])
         contract_only += 1
 
     ranked.sort(key=lambda row: (

@@ -10,6 +10,30 @@
     var toolbar = root.querySelector(".imc-toolbar");
     var toolbarAnchor = root.querySelector(".imc-toolbar-anchor");
     var assistantSlot = root.querySelector(".imc-assistant-slot");
+    var sectionLinks = Array.from(root.querySelectorAll(".imc-nav [data-imc-section]"));
+    function syncSectionNav() {
+      if (!sectionLinks.length) return;
+      var current = sectionLinks[0];
+      var boundary = (toolbar ? toolbar.getBoundingClientRect().height : 0) + 24;
+      var atEnd = window.pageYOffset > 2 &&
+        document.documentElement.scrollHeight > window.innerHeight + 2 &&
+        window.pageYOffset + window.innerHeight >= document.documentElement.scrollHeight - 2;
+      sectionLinks.forEach(function (link) {
+        var section = document.getElementById(link.dataset.imcSection);
+        if (!section) return;
+        var box = section.getBoundingClientRect();
+        // Short final sections cannot always reach the toolbar. At the end of the
+        // document, follow the last visible reading section; a closed Tools summary
+        // is a destination control, not an open research section.
+        var reading = section.tagName !== "DETAILS" || section.open;
+        if (reading && (box.top <= boundary ||
+            (atEnd && box.top < window.innerHeight && box.bottom > boundary))) current = link;
+      });
+      sectionLinks.forEach(function (link) {
+        if (link === current) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    }
     if (toolbar && toolbarAnchor && assistantSlot) {
       var dockFrame = 0;
       function updateAssistantDock() {
@@ -20,6 +44,7 @@
         chrome.style.setProperty("--imc-toolbar-width", anchorBox.width + "px");
         toolbar.classList.toggle("is-stuck", anchorBox.top <= 0);
         chrome.style.setProperty("--imc-toolbar-height", toolbar.getBoundingClientRect().height + "px");
+        syncSectionNav();
         var slotBox = assistantSlot.getBoundingClientRect();
         chrome.style.setProperty("--imc-assistant-left", slotBox.left + "px");
         chrome.style.setProperty("--imc-assistant-top", slotBox.top + "px");
@@ -48,13 +73,34 @@
     var tools = document.getElementById("intl-analysis-tools");
     var initialCountry = root.querySelector(".imc-country[open]");
     var initialCountryHash = initialCountry ? "#" + initialCountry.id : "";
-    function syncRail() {
+    var railCountry = null;
+    function syncRail(forceVisibility) {
       var active = root.querySelector(".imc-country[open]");
+      var selected = null;
       root.querySelectorAll(".imc-country-rail a").forEach(function (link) {
-        if (active && link.hash === "#" + active.id) link.setAttribute("aria-current", "location");
-        else link.removeAttribute("aria-current");
+        if (active && link.hash === "#" + active.id) {
+          link.setAttribute("aria-current", "location");
+          selected = link;
+        } else link.removeAttribute("aria-current");
       });
+      // Reveal a changed selection horizontally only. Native document scrolling and
+      // the existing country/history focus owner remain untouched.
+      var nextCountry = active ? active.id : null;
+      if (selected && (nextCountry !== railCountry || forceVisibility === true)) {
+        var rail = selected.closest(".imc-country-rail");
+        if (rail) {
+          var box = rail.getBoundingClientRect();
+          var item = selected.getBoundingClientRect();
+          if (item.left < box.left) rail.scrollLeft += item.left - box.left;
+          else if (item.right > box.right) rail.scrollLeft += item.right - box.right;
+        }
+      }
+      railCountry = nextCountry;
     }
+    // Resizing or changing language can move the selected link outside the rail,
+    // without changing the selected country or the reader's document position.
+    window.addEventListener("resize", function () { syncRail(true); });
+    document.addEventListener("langchange", function () { syncRail(true); });
     function countryFor(hash) {
       if (!/^#imc-country-(JP|KR|TW|IN|AU|GB|EZ)$/.test(hash)) return null;
       var target = document.getElementById(hash.slice(1));
@@ -272,6 +318,7 @@
     if (tools && new URLSearchParams(window.location.search).has("view")) tools.open = true;
     followHash();
     syncRail();
+    syncSectionNav();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount, {once: true});
   else mount();

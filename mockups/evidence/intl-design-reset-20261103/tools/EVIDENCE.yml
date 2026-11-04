@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_workspace.css
+- site/intl_workspace.css
+- templates/intl_workspace/shell.html.j2
+- templates/intl.html.j2
+manifest: mockups/evidence/intl-design-reset-20261103/tools/manifest.json

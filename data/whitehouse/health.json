@@ -1,45 +1,39 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-02T06:01:39.762036+00:00",
-  "posts_seen": 7,
-  "seen_total": 308,
-  "evaluated": 6,
+  "as_of": "2026-11-04T01:20:19.136927+00:00",
+  "posts_seen": 12,
+  "seen_total": 319,
+  "evaluated": 5,
   "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-01-presidential-message-on-all-saints-day-3b81",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-31-presidential-message-on-reformation-day",
+      "id": "wh-2026-11-03-anti-communism-week-2026",
       "importance": 5,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     },
     {
-      "id": "wh-2026-10-30-what-they-are-saying-president-trump-puts-americas-fishermen-first-and-secures-a",
-      "importance": 45,
+      "id": "wh-2026-11-03-the-american-declaration-of-freedom-in-space",
+      "importance": 78,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-03-congressional-bills-h-r-1744-and-h-r-8205-signed-into-law",
+      "importance": 15,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     },
     {
-      "id": "wh-2026-10-29-president-trump-unleashes-the-american-economy-gdp-surges-as-investment-hits-mul",
+      "id": "wh-2026-11-03-icymi-drug-prices-are-falling-at-the-fastest-rate-in-over-60-years-under-preside",
       "importance": 25,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     },
     {
-      "id": "wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri",
-      "importance": 72,
-      "activated": true,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-29-president-trump-put-money-back-in-your-pockets-radical-democrats-want-it-back-an",
-      "importance": 8,
+      "id": "wh-2026-11-03-icymi-relentless-travel-schedule-puts-trump-administrations-results-front-and-ce",
+      "importance": 10,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }

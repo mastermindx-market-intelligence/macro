@@ -1,0 +1,427 @@
+{
+  "case_key": "cowos_variants",
+  "expected_regression": "S/R/L construction stays scoped; no single interchangeable capacity total",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T07"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "capacity",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_35fd76567bd82e867eef5d1389a9cccc"
+      ],
+      [
+        "assertion",
+        "gmirca_8f4dc6f346321758c3556d9eff459ab8"
+      ],
+      [
+        "assertion",
+        "gmirca_c6079f2214be886a99ca3710a3bc3805"
+      ],
+      [
+        "identity",
+        "identity-vintage-002"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c6079f2214be886a99ca3710a3bc3805",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": "CoWoS-S",
+              "kind": "configuration",
+              "manufacturer": "Synthetic Advanced Packaging Lambda",
+              "model": "CP-S",
+              "selector": "cfg:cowos-s",
+              "source_label": "CoWoS-S construction"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Advanced Packaging Lambda",
+              "model": "CP-package",
+              "selector": "prd:lambda-package",
+              "source_label": "Lambda integrated package"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "monthly capacity construction CoWoS-S",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "reported_output",
+          "stage_source_language": "CoWoS-S construction described as a scoped line: silicon interposer with through vias"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "a summed capacity across constructions",
+            "any cross-construction conversion"
+          ],
+          "establishes": [
+            "the CoWoS-S construction ran at the described scope"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": "CoWoS-S",
+          "source_product_label": "Lambda CoWoS-S construction"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_month",
+          "value": 8,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "2.5d interposer"
+        },
+        "source": {
+          "locator": "table-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-03-21T08:00:00Z",
+          "published_at": "2026-03-20",
+          "published_at_grain": "date",
+          "publisher": "Example Packaging Wire",
+          "retained_at": "2026-03-21T08:05:00Z",
+          "retention_ref": "retention:cowos/lambda-cowos-s",
+          "source_uri": "https://example.invalid/cowos/lambda-cowos-s"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": "CoWoS-S",
+          "source_business_label": "Synthetic Advanced Packaging Lambda",
+          "source_platform_label": null,
+          "source_product_label": "Lambda CoWoS-S construction"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_35fd76567bd82e867eef5d1389a9cccc",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": "CoWoS-R",
+              "kind": "configuration",
+              "manufacturer": "Synthetic Advanced Packaging Lambda",
+              "model": "CP-R",
+              "selector": "cfg:cowos-r",
+              "source_label": "CoWoS-R construction"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Advanced Packaging Lambda",
+              "model": "CP-package",
+              "selector": "prd:lambda-package",
+              "source_label": "Lambda integrated package"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "monthly capacity construction CoWoS-R",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "reported_output",
+          "stage_source_language": "CoWoS-R construction described as a scoped line: redistributed restructured interconnect layer"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "a summed capacity across constructions",
+            "any cross-construction conversion"
+          ],
+          "establishes": [
+            "the CoWoS-R construction ran at the described scope"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": "CoWoS-R",
+          "source_product_label": "Lambda CoWoS-R construction"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_month",
+          "value": 11,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "2.5d interposer"
+        },
+        "source": {
+          "locator": "table-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-03-21T08:00:00Z",
+          "published_at": "2026-03-20",
+          "published_at_grain": "date",
+          "publisher": "Example Packaging Wire",
+          "retained_at": "2026-03-21T08:05:00Z",
+          "retention_ref": "retention:cowos/lambda-cowos-r",
+          "source_uri": "https://example.invalid/cowos/lambda-cowos-r"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": "CoWoS-R",
+          "source_business_label": "Synthetic Advanced Packaging Lambda",
+          "source_platform_label": null,
+          "source_product_label": "Lambda CoWoS-R construction"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_8f4dc6f346321758c3556d9eff459ab8",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": "CoWoS-L",
+              "kind": "configuration",
+              "manufacturer": "Synthetic Advanced Packaging Lambda",
+              "model": "CP-L",
+              "selector": "cfg:cowos-l",
+              "source_label": "CoWoS-L construction"
+            },
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Advanced Packaging Lambda",
+              "model": "CP-package",
+              "selector": "prd:lambda-package",
+              "source_label": "Lambda integrated package"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "monthly capacity construction CoWoS-L",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "reported_output",
+          "stage_source_language": "CoWoS-L construction described as a scoped line: local silicon bridge on organic carrier"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "a summed capacity across constructions",
+            "any cross-construction conversion"
+          ],
+          "establishes": [
+            "the CoWoS-L construction ran at the described scope"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": "CoWoS-L",
+          "source_product_label": "Lambda CoWoS-L construction"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_month",
+          "value": 5,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "2.5d interposer"
+        },
+        "source": {
+          "locator": "table-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-03-21T08:00:00Z",
+          "published_at": "2026-03-20",
+          "published_at_grain": "date",
+          "publisher": "Example Packaging Wire",
+          "retained_at": "2026-03-21T08:05:00Z",
+          "retention_ref": "retention:cowos/lambda-cowos-l",
+          "source_uri": "https://example.invalid/cowos/lambda-cowos-l"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": "CoWoS-L",
+          "source_business_label": "Synthetic Advanced Packaging Lambda",
+          "source_platform_label": null,
+          "source_product_label": "Lambda CoWoS-L construction"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_lambda",
+        "source_business_label": "Synthetic Advanced Packaging Lambda",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-05T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "capacity_total": {
+      "value": null,
+      "reason": "mixed_construction_scope"
+    },
+    "configurations": [
+      "CoWoS-L",
+      "CoWoS-R",
+      "CoWoS-S"
+    ]
+  }
+}

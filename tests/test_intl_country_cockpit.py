@@ -697,3 +697,42 @@ def test_valid_older_official_gdp_still_has_precedence_over_stored_fallback(tmp_
                                   stored_observations=mapping)["metrics"] if m["key"] == "gdp")
     assert metric["value"] == 7.3 and metric["quality"] == "dated"
     assert metric["evidence"] is None and metric["period"] == "2024-Q2"
+
+
+def test_chart_values_preserve_published_points_and_period_labels():
+    import re
+    from html import escape, unescape
+
+    model = current_policy_model()
+    html = render_policy_model(model)
+    checked = set()
+    for country in model["display_countries"]:
+        chart = country["outlook"]["chart"]
+        if not chart:
+            continue
+        block = html.split(f'id="imc-country-{country["cc"]}"', 1)[1].split(
+            '<details class="panel imc-country"', 1)[0]
+        table = re.search(r'<details class="imc-chart-values">(.*?)</details>', block, re.S)
+        assert table is not None
+        rows = re.findall(r"<tr>(.*?)</tr>", table.group(1), re.S)[1:]
+        assert len(rows) == len(chart["points"])
+        for row, point in zip(rows, chart["points"]):
+            assert escape(str(point["display_label"])) in row
+            text = unescape(re.sub(r"<[^>]+>", " ", row))
+            assert f'{point["value"]:.1f}%' in text
+            expected = ("Projection", "预测") if point["projected"] else (
+                "Published history", "机构历史数据")
+            assert all(label in text for label in expected)
+        assert escape(country["forecast"]["provider"]) in table.group(1)
+        checked.add(country["cc"])
+    assert checked == {"JP", "KR", "TW", "IN", "AU", "GB", "EZ"}
+
+
+def test_unavailable_chart_does_not_offer_empty_or_invented_values():
+    model = current_policy_model()
+    for country in model["display_countries"]:
+        country["outlook"]["chart"] = None
+    html = render_policy_model(model)
+    assert 'class="imc-chart-values"' not in html
+    assert "View chart values" not in html
+    assert 'class="imc-outlook-panel"' in html

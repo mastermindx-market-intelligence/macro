@@ -1,0 +1,21 @@
+{
+  "state": "INTEGRATED_LOCALLY_NOT_COMMITTED",
+  "time": "2026-11-04T07:08:34.870910+00:00",
+  "head": "851c6abebf01c5c8096e7822436455fd1040152a",
+  "original_merge_head": "c6ac417f4a1d561f8c80a0a6b1977d5ffec6d090",
+  "old_base": "005232fa54edbc6d271a796db6b15d5cd7443641",
+  "target_base": "bb3b7273f1e9ccb869b6500c97871093eb22005a",
+  "prepared_ours_tree": "b692d75199e67c6276c7a9722f2d010719640b7c",
+  "protected_delta_count": 9123,
+  "runtime_delta": [],
+  "overlap": [],
+  "prior_index_sha256": "d77a77b33d95454b6a10fb4bd499c4ad9e4eff8c710448ae825c43ed3810ca30",
+  "method": "Original-worktree three-tree integration; sparse excluded data remain in the index, no alternate carrier or synthetic commit.",
+  "read_tree_exit": 0,
+  "stderr": "",
+  "unmerged": "",
+  "integrated_tree": "2979c1e683e6c212268a7f2d2cd18a5bacf1cbf4",
+  "raw_delta_sha256": "ab791f7b2ddc259212666ca46fe9816d78c9661e72719f7f2fac3d4dd17ff834",
+  "candidate_path_count": 2972,
+  "proof_reuse": "Runtime/source/access/UI paths are identical between005232 andbb3b. Existing exact-source proofs remain valid. Build receipts retain their511-input snapshot; no claim of fresh production data. The release visual guard used symbolic origin/main; both protected bases have identical templates/site content."
+}

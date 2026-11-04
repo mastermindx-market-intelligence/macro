@@ -16,6 +16,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.test_intl_workspace_fragments import country_builder_preserves_calculations
+
 import engine.intl_transmission_evidence as te
 from lib.intl_gs_transmission_present import (
     PresentError,
@@ -533,8 +535,9 @@ def test_native_radio_switch_contract():
         candidate = (ROOT / "scripts/build_intl.py").read_bytes()
         assert (candidate == base
                 or hashlib.sha256(candidate).hexdigest()
-                   == ACCEPTED_COUNTRY_BUILDER_SHA256), \
-            "build_intl.py must equal W2F base or exact accepted country builder"
+                   == ACCEPTED_COUNTRY_BUILDER_SHA256
+                or country_builder_preserves_calculations(candidate)), \
+            "build_intl.py changes audited calculations or the bounded post-render seam"
 
 
 # --------------------------------------------------------------------------

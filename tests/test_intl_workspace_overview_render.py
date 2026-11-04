@@ -275,3 +275,68 @@ def test_multiple_panels_and_no_fixture_mutation():
 def test_invalid_prefix_rejected_outside_partial():
     with pytest.raises(AssertionError):
         rendered(SOURCE["positive"], "1-invalid")
+
+
+@pytest.mark.parametrize("basis", ["usd_unhedged", "local"])
+def test_unequal_windows_keep_qualified_returns_visible_without_expanding(basis):
+    rows = [
+        metric_row(0, "JP", -6.4, index_id="^N225", index_label="Nikkei 225", window={"start": "2026-10-01", "end": "2026-10-29"}),
+        metric_row(1, "GB", 1.82, index_id="^FTSE", index_label="FTSE 100", window={"start": "2026-09-30", "end": "2026-10-29"}),
+    ]
+    fixture = projection(rows, focus_ids=[], available=False, eligible=2, basis=basis)
+    fixture["ranking_reason"] = fixture["summary"]["reason"] = "unequal_windows"
+    _, root = rendered(fixture, "mixed-windows")
+    unranked = one(root, "data-im-unranked-list")
+    assert unranked.tag == "ul"
+    items = nodes(unranked, "data-im-unranked-item")
+    assert [node.attrs["data-market-id"] for node in items] == ["JP", "GB"]
+    assert [visible_text(one(node, "data-im-return")) for node in items] == ["-6.40%", "+1.82%"]
+    windows = [one(node, "data-im-return-window") for node in items]
+    assert [[child.attrs["datetime"] for child in window.children] for window in windows] == [
+        ["2026-10-01", "2026-10-29"], ["2026-09-30", "2026-10-29"]
+    ]
+    assert all(window.text == "–" for window in windows)
+    assert not nodes(root, "data-im-focus-item")
+    assert "Highest and lowest" not in visible_text(root)
+    assert "A cross-market ranking is unavailable" in visible_text(one(root, "data-im-summary"))
+    current = unranked
+    while current is not None:
+        assert "hidden" not in current.attrs
+        assert "data-im-expanded-region" not in current.attrs
+        current = current.parent
+
+
+def test_unequal_windows_first_read_does_not_promote_withheld_or_unqualified_metrics():
+    qualified = metric_row(0, "JP", 0.0)
+    missing = metric_row(1, "MISSING", None, quality="missing")
+    stale = metric_row(2, "STALE", 9.9, quality="stale")
+    denied = metric_row(3, "SECRET", 99.9)
+    denied["quality"] = "denied"
+    fixture = projection([qualified, missing, stale, denied], focus_ids=[], available=False, eligible=1)
+    fixture["ranking_reason"] = "unequal_windows"
+    html, root = rendered(fixture)
+    items = nodes(one(root, "data-im-unranked-list"), "data-im-unranked-item")
+    assert [node.attrs["data-market-id"] for node in items] == ["JP"]
+    assert visible_text(one(items[0], "data-im-return")) == "0.00%"
+    assert "SECRET" not in html and "99.90" not in html
+    fixture["eligible_count"] = 0
+    _, empty = rendered(fixture)
+    assert not nodes(empty, "data-im-unranked-list")
+
+@pytest.mark.parametrize(
+    "start,end,visible",
+    [
+        ("2026-10-01T00:00:00", "2026-10-30T00:00:00", ["2026-10-01", "2026-10-30"]),
+        ("2026-10-01T16:30:00", "2026-10-30T16:30:00", ["2026-10-01T16:30:00", "2026-10-30T16:30:00"]),
+        ("2026-10-01", "2026-10-30", ["2026-10-01", "2026-10-30"]),
+    ],
+)
+def test_window_display_preserves_exact_endpoints(start, end, visible):
+    fixture = projection([metric_row(0, "JP", 0.0, window={"start": start, "end": end})], available=False)
+    fixture["ranking_reason"] = fixture["summary"]["reason"] = "unequal_windows"
+    _, root = rendered(fixture, "daily-window")
+    for container in [one(root, "data-im-return-window"), one(root, "data-im-window")]:
+        times = [node for node in walk(container) if node.tag == "time"]
+        assert [node.attrs["datetime"] for node in times] == [start, end]
+        assert [node.text.strip() for node in times] == visible
+    assert visible_text(one(root, "data-im-return")).strip() == "0.00%"

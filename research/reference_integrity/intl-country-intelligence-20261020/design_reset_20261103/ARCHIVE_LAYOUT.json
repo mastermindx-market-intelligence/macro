@@ -1,0 +1,44 @@
+{
+  "scope": "Remove duplicated untouched historical P0B screenshots; retain all changed prior/current receipt bytes and the current fixture recipe. The existing repository retains historical screenshot objects. No observation or verdict changed.",
+  "original_full_archive_sha256": "957689ca1afe784cb2d73d2a84e41c93d87f7c8c9ff11f96e4e2a5cc2cbe171a",
+  "original_full_archive_bytes": 90618702,
+  "omitted_duplicate_member": "final/proof/p0b_prior_receipts.tar.gz",
+  "prior_backup_sha256": "dbf67b5665db7b967c7f9296c012b4208fefaa2976d69677094e1c6b861a2419",
+  "added_receipts": [
+    {
+      "path": "shared-theme/prior/manifest.json",
+      "sha256": "4b4ed63cd82c55787b4a22cf6798b55a4063b9004402d94b1949b0adbf84a0d5"
+    },
+    {
+      "path": "shared-theme/prior/mobile-layout.json",
+      "sha256": "15bf7b291a3ab5ef6b675bd2975139dc1754a7f0596675f78f32d85c27e45819"
+    },
+    {
+      "path": "shared-theme/prior/mobile-layout-canada.json",
+      "sha256": "30970a885fcd129f2140e508da67b408527a087b4aacede4a194279be2cad2ee"
+    },
+    {
+      "path": "shared-theme/prior/rendered-fixture.json",
+      "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
+    },
+    {
+      "path": "shared-theme/current/manifest.json",
+      "sha256": "cd00321085021c1e96844a3c5757aaaf4576322fb711fa824a48f75b622d5baa"
+    },
+    {
+      "path": "shared-theme/current/mobile-layout.json",
+      "sha256": "4eaf80b8860c93127b2704e1955f2638a9ad703c9ab4964c5bd8c36a4f7ecef1"
+    },
+    {
+      "path": "shared-theme/current/mobile-layout-canada.json",
+      "sha256": "d9b26396999d576afb8f9d9861728cf2c33fdb5eebea050e6ae2ce2056ab3dbd"
+    },
+    {
+      "path": "shared-theme/current/rendered-fixture.json",
+      "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
+    }
+  ],
+  "archive_sha256": "b8dc9669822f2ecadff08e348d4fa17a11630e6983a998286ebf5848b5f9f19e",
+  "archive_bytes": 23954572,
+  "member_count": 241
+}

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UEC-BULL-20260731",
-  "asof": "2026-11-01",
+  "asof": "2026-11-03",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.2,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.426,
+    "dist_to_stop_r": -0.416,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 191.1,
-    "p1": -0.9505,
-    "p2": -0.4752,
+    "horizon_pct_used": 195.6,
+    "p1": -0.9438,
+    "p2": -0.4719,
     "p3": null,
-    "move_r": -1.426,
+    "move_r": -1.416,
     "mfe_r": 0.948,
     "mae_r": -1.595
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-19",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111,
+  "days_elapsed": 88,
+  "tau": 1.9556,
   "closed": true,
   "outcome": "EXPIRED"
 }

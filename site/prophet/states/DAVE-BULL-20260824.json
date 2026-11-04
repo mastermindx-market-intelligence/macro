@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DAVE-BULL-20260824",
-  "asof": "2026-11-01",
+  "asof": "2026-11-03",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.2,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.336,
+    "dist_to_stop_r": -0.426,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 153.3,
-    "p1": -0.8905,
-    "p2": -0.4453,
+    "horizon_pct_used": 157.8,
+    "p1": -0.951,
+    "p2": -0.4755,
     "p3": null,
-    "move_r": -1.336,
+    "move_r": -1.426,
     "mfe_r": 1.045,
-    "mae_r": -1.336
+    "mae_r": -1.426
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 29.729998779296864,
-  "_mae": -38.009991455078136,
+  "_mae": -40.590008544921886,
   "_max_p1": 0.696539997265779,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 69,
-  "tau": 1.5333,
+  "days_elapsed": 71,
+  "tau": 1.5778,
   "closed": true,
   "outcome": "INVALIDATED"
 }
