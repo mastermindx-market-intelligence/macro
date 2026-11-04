@@ -2,7 +2,7 @@
 workstream: WS:TIINGO-DATA-OS
 session: chatgpt-sol-tiingo-live-activation-20261103
 model: sol
-ended_because: external_first_scheduled_run_proof_pending
+ended_because: blocked
 mission: >-
   Finish the already-merged Tiingo BOATS producer -> R2/Quote Hub -> Terminal
   24H trading integration with authenticated, fresh, production-path proof.
