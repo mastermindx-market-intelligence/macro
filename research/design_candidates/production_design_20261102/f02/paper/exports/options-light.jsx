@@ -160,7 +160,7 @@
               </div>
             </div>
             <div id="6HM-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '89px' }}>
-              <div id="6HN-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+              <div id="6HN-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
                 Time · ET
               </div>
             </div>
@@ -175,7 +175,7 @@
               </div>
             </div>
             <div id="6HG-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '104px' }}>
-              <div id="6HH-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+              <div id="6HH-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
                 Strike · USD
               </div>
             </div>
@@ -185,7 +185,7 @@
               </div>
             </div>
             <div id="6HC-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '129px' }}>
-              <div id="6HD-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', width: 'max-content' }}>
+              <div id="6HD-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '12px', fontWeight: 600, lineHeight: '18px', width: 'max-content' }}>
                 Premium · USD
               </div>
             </div>

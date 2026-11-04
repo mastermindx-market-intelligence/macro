@@ -2,19 +2,19 @@
 
 ## Current native evidence — 4 November
 
-The original Mastermind Paper direct carrier records **32 actual F02 boards, 31 complete native JPEG/JSX pairs, 639 applied responses and one original unresolved operation**. All independently safe planned boards, repairs/appends and the Read me/builder directory are complete. Only the original Chinese comparison remains held, with two incomplete groups, 33 pending numeric frames and five dependent role/width bindings.
+The original Mastermind Paper direct carrier records **32 actual F02 boards, 31 complete native JPEG/JSX pairs, 649 applied responses and one original unresolved operation**. All independently safe planned boards, repairs/appends and the Read me/builder directory are complete. Only the original Chinese comparison remains held, with two incomplete groups, 33 pending numeric frames and five dependent role/width bindings.
 
-[Current return](RETURN_F02.md) · [Actual index](paper/NATIVE_BOARD_INDEX.md) · [Native verification](paper/native-current-verification.json) · [Exact remaining work](paper/NATIVE_PENDING_WORK.md) · [Scoped 31-board freeze](paper/freezes/scoped-native-20261104-r1/MANIFEST.json). The immutable input commit is `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`, 88 members, aggregate `f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445`. This is not the strict final 32-board freeze or full v1 acceptance.
+[Current return](RETURN_F02.md) · [Actual index](paper/NATIVE_BOARD_INDEX.md) · [Native verification](paper/native-current-verification.json) · [Exact remaining work](paper/NATIVE_PENDING_WORK.md) · [Scoped 31-board freeze](paper/freezes/scoped-native-20261104-r2/MANIFEST.json). The immutable input commit is `caf707a7f3e57c1e3fa7b8b4e087641ab893334c`, 89 members, aggregate `9182ad14a8b0feadebdb9a39900a3f949c81577c20913582a3c7a35ac3ab4e9f`. This is not the strict final 32-board freeze or full v1 acceptance.
 
-Fresh readback confirms all 67 original identities/names/locations and 20 shared tokens unchanged; the sequential target audit has zero original targets/scope violations. [Current retention receipt](paper/repairs/retention-observed-20261104.json). Native design, source concurrence, independent advisory review, actual browser/domain proof and formal RIG remain distinct.
+The 640-operation retention checkpoint confirms all 67 original identities/names/locations and 20 shared tokens unchanged. Ten later text/style-only operations on 18 existing F02 nodes are recorded separately in [the owned delta](paper/repairs/post-review-owned-delta-20261104.json); they preserve token hash `356191c3` and target no original reference. No later full 67-original reread is claimed. [Current retention receipt](paper/repairs/retention-observed-20261104.json). Native design, source concurrence, independent advisory review, actual browser/domain proof and formal RIG remain distinct.
 
 The historical verification/construction material below retains its stated source/capture dates. Preparation inputs are not execution receipts; the current journal, bindings and captures establish what is applied.
 
 ## Current native checkpoint — observed evidence
 
-The [current verification receipt](paper/native-current-verification.json) binds actual current board/capture/export IDs and the full operation census. It records32 existing boards,31 complete full pairs,639 applied responses and one original unresolved request. The [strict complete-set preflight](paper/repairs/full-freeze-preflight-20261104.json) now recognizes31 current complete captures and still refuses the original Chinese comparison, its dependent bindings, unresolved-effect retention and absent full final verification. The 31-board scoped freeze is a separate review input; it does not bypass that gate.
+The [current verification receipt](paper/native-current-verification.json) binds actual current board/capture/export IDs and the full operation census. It records32 existing boards,31 complete full pairs,649 applied responses and one original unresolved request. The [strict complete-set preflight](paper/repairs/full-freeze-preflight-20261104.json) now recognizes31 current complete captures and still refuses the original Chinese comparison, its dependent bindings, unresolved-effect retention and absent full final verification. The 31-board scoped freeze is a separate review input; it does not bypass that gate.
 
-The live67-original/20-token readback and sequential target audit are complete within their stated scope. The current 21-role projection has 50 unresolved bindings, and four domain-specific roles remain unqualified. Root visually inspected the English390 and partial Chinese390 captures; the latter shows readable CJK text, all ten rows and the explicit chart gap, with the footer/build note absent. Both phone numeric-frame refinements remain prepared. No actual keyboard, focus trap/return, touch/scroll, screen-reader, forced-color or400% browser behavior is inferred from these images.
+The live67-original/20-token readback and sequential target audit are complete within their stated scope. The current 21-role projection has five unresolved bindings, all on the held Chinese comparison, and four domain-specific roles remain unqualified. Root visually inspected the English390 and partial Chinese390 captures; the latter shows readable CJK text, all ten rows and the explicit chart gap, with the footer/build note absent. The English390 numeric-frame refinement is applied; the 33 Chinese numeric frames remain prepared and held. No actual keyboard, focus trap/return, touch/scroll, screen-reader, forced-color or400% browser behavior is inferred from these images.
 
 All first native critic and rationale report hashes were rechecked unchanged. Prepared arithmetic, annual-growth, identity/clock and numeric-frame validations are separate from native application. The [pending-work record](paper/NATIVE_PENDING_WORK.md) lists the original Chinese target's exact unapplied scope and the minimum same-carrier terminal evidence required before editing that target.
 
@@ -34,12 +34,12 @@ All first native critic and rationale report hashes were rechecked unchanged. Pr
 | Width | Content before inspector | Evidence mode | Primary width when docked | Evidence status |
 | ---: | ---: | --- | ---: | --- |
 |320|288|Overlay|—|Actual Company unknown/zero and Options complete-row native pairs; browser behavior open|
-|390|358|Overlay|—|Actual English full pair and Chinese partial pair; numeric-frame repairs and browser behavior open|
-|768|728|Overlay|—|Prepared complete width-study source; native board absent|
-|1024|788|Overlay|—|Prepared width-study source; dock would leave444; native board absent|
-|1280|1008|Dock320 + gap24|664|Prepared dock-study source; native board absent|
-|1440|1168|Dock320 + gap24|824|Actual desktop native compositions and source calculation; review repairs remain|
-|1600|1328|Dock320 + gap24|984|Prepared width-study source; native board absent|
+|390|358|Overlay|—|English full native pair with numeric corrections applied; original Chinese comparison partial with 33 frames held; Chinese evidence/return companion separate; browser behavior open|
+|768|728|Overlay|—|Actual native overlay98N-0 and supplementary closed comparison capture; browser behavior open|
+|1024|788|Overlay|—|Actual native overlay9EB-0 and supplementary closed comparison capture; dock would leave444; browser behavior open|
+|1280|1008|Dock320 + gap24|664|Actual native dock8G2-0; measured usable host and runtime behavior open|
+|1440|1168|Dock320 + gap24|824|Actual desktop native compositions, corrected numeric/annual scan and source calculation; full qualification remains open|
+|1600|1328|Dock320 + gap24|984|Actual native dock9K6-0; measured usable host and runtime behavior open|
 
 The desktop compositions deliberately use substantial data, real unit semantics and exact fixture values. The body/component layouts, input event ordering, native dialogs and scroll containers have not been executed in the connected browser. A direct-drawn320px frame is not400% zoom proof.
 
@@ -47,7 +47,7 @@ The desktop compositions deliberately use substantial data, real unit semantics 
 
 ### Paper writing — current direct route and historical legacy gate
 
-The initial direct-app checkpoint qualified `TOOL_SCOPED_CONTRACT_V1` on Paper Desktop 0.5.18 and recorded 434 observed applied responses. The current continuation records639 applied responses; only the original Chinese390 target remains held by its unresolved footer request; [writer-continuation-progress.json](paper/writer-continuation-progress.json) records32 boards and the exact640 dispatch history. Current-node absence is not terminal reconciliation. Final native completion, mapping, captures and review remain pending; successful prior effects do not establish a foundation release.
+The initial direct-app checkpoint qualified `TOOL_SCOPED_CONTRACT_V1` on Paper Desktop 0.5.18 and recorded 434 observed applied responses. The current continuation records649 applied responses; only the original Chinese390 target remains held by its unresolved footer request; [writer-continuation-progress.json](paper/writer-continuation-progress.json) records32 boards and the exact650 dispatch history. Current-node absence is not terminal reconciliation. Final native completion, mapping, captures and review remain pending; successful prior effects do not establish a foundation release.
 
 **Historical initial/source-static observation:** the legacy adapter returned `accepted_for_write:false`, observed catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`. No mutation was attempted in that phase. The unchanged `evidence/paper-write-gate.json` preserves this observation, with approximate initial time. It is not the current direct-app receipt and does not reinstate a global F02 write blocker.
 
@@ -65,7 +65,7 @@ At the initial/source-static freeze, EN light/dark sheets were inspected. Chines
 
 ### Review and release
 
-Independent native critique is advisory and cannot substitute for the required admitted independent Opus reviewer-class RIG receipts and design-authority verdict. Review readiness remains draft with no approval receipt. Historical review findings/remediation remain in reviews/REVIEW_REPORT.md; the native continuation needs its own exact-artifact review. F01's frozen joint shell contract is not yet available in this artifact set; source dimensions are baselines only.
+Independent native critique is advisory and cannot substitute for the required admitted independent Opus reviewer-class RIG receipts and design-authority verdict. Review readiness remains draft with no approval receipt. Historical review findings/remediation remain in reviews/REVIEW_REPORT.md; the native continuation needs its own exact-artifact review. F01 candidate.2 geometry and candidate.4 source-policy concurrence are recorded in F01_HANDSHAKE_CANDIDATE.md. Full native/runtime joint qualification remains unavailable; source concurrence does not establish it.
 
 ## Production observations routed to existing owners
 

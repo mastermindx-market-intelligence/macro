@@ -2,7 +2,7 @@
 
 ## Current continuation
 
-The current [return](RETURN_F02.md) and [native evidence](paper/NATIVE_CONTINUATION_20261104.md) bind 6b72172aec810aa7795e5a50d4be9ca2dde5cf5b, 32 boards, 31 complete pairs and 639 applied responses plus the original held operation. The immutable 31-board review is scoped; full qualification is not inferred.
+The current [return](RETURN_F02.md) and [native evidence](paper/NATIVE_CONTINUATION_20261104.md) bind caf707a7f3e57c1e3fa7b8b4e087641ab893334c, 32 boards, 31 complete pairs and 649 applied responses plus the original held operation. The immutable 31-board review is scoped; full qualification is not inferred.
 
 ## Assignment and baseline obligations
 
@@ -10,7 +10,7 @@ The current [return](RETURN_F02.md) and [native evidence](paper/NATIVE_CONTINUAT
 | --- | --- | --- | --- |
 | F02-G01 | Initial legacy writer mismatch; current direct-route qualification | RESOLVED_BY_CHANGE | Scoped to the accepted direct app only: qualified native F02 effects/readbacks are recorded in paper/native-progress.json. Initial zero-mutation/catalog-mismatch evidence remains historical. This does not claim legacy selector repair, v21 deployment or design approval. |
 | F02-G02 | Assignment/F01: joint shell/system freeze | CARRIED_BLOCK | Candidate.2 geometry is bilaterally accepted; F02 explicitly concurs with candidate.4 source policy. Current F01 source99df25ee preserves operative clauses. Full F01/F02 native references, Brain/D06/host integration, final slots/preferences/navigation and actual joint independent qualification remain open. |
-| F02-G03 | Assignment: complete editable references and in-Paper handoff | CARRIED_BLOCK |32 actual boards;31 full pairs;639 applied responses and one original unresolved request. All disjoint planned boards/repairs/appends and Read me/directory are complete. Original Chinese board, five dependent bindings and full-set review remain; see current pending-work record. |
+| F02-G03 | Assignment: complete editable references and in-Paper handoff | CARRIED_BLOCK |32 actual boards;31 full pairs;649 applied responses and one original unresolved request. All disjoint planned boards/repairs/appends and Read me/directory are complete. Original Chinese board, five dependent bindings and full-set review remain; see current pending-work record. |
 | F02-G04 | Assignment: real keyboard/touch/400% responsive qualification | CARRIED_BLOCK | Actual implemented task-path proof remains owed. Earlier managed-preview DNS failure is retained as historical evidence, not a universal browser-tool outage. Native references do not execute focus, touch, scrolling or zoom. |
 | F02-G05 | Assignment: admitted independent RIG critics and authority verdict | CARRIED_BLOCK | Native advisory review is separate. Required independent reviewer-class admission/receipts and design-authority verdict must bind the final editable artifact set. No approval receipt created. |
 | F02-G06 | Assignment: EN/ZH visual qualification | CARRIED_BLOCK | English390 corrections and all new width/evidence/density companions are applied and captured. Original Chinese390 retains21/23 groups; two groups and33 numeric frames remain held. Chinese evidence/return companion8N8 is separate. Browser/400% and full locale qualification remain owed. |

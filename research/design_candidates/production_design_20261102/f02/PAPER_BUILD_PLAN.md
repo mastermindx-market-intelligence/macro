@@ -2,9 +2,9 @@
 
 ## Current native evidence — 4 November
 
-The original Mastermind Paper direct carrier records **32 actual F02 boards, 31 complete native JPEG/JSX pairs, 639 applied responses and one original unresolved operation**. All independently safe planned boards, repairs/appends and the Read me/builder directory are complete. Only the original Chinese comparison remains held, with two incomplete groups, 33 pending numeric frames and five dependent role/width bindings.
+The original Mastermind Paper direct carrier records **32 actual F02 boards, 31 complete native JPEG/JSX pairs, 649 applied responses and one original unresolved operation**. All independently safe planned boards, repairs/appends and the Read me/builder directory are complete. Only the original Chinese comparison remains held, with two incomplete groups, 33 pending numeric frames and five dependent role/width bindings.
 
-[Current return](RETURN_F02.md) · [Actual index](paper/NATIVE_BOARD_INDEX.md) · [Native verification](paper/native-current-verification.json) · [Exact remaining work](paper/NATIVE_PENDING_WORK.md) · [Scoped 31-board freeze](paper/freezes/scoped-native-20261104-r1/MANIFEST.json). The immutable input commit is `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`, 88 members, aggregate `f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445`. This is not the strict final 32-board freeze or full v1 acceptance.
+[Current return](RETURN_F02.md) · [Actual index](paper/NATIVE_BOARD_INDEX.md) · [Native verification](paper/native-current-verification.json) · [Exact remaining work](paper/NATIVE_PENDING_WORK.md) · [Scoped 31-board freeze](paper/freezes/scoped-native-20261104-r2/MANIFEST.json). The immutable input commit is `caf707a7f3e57c1e3fa7b8b4e087641ab893334c`, 89 members, aggregate `9182ad14a8b0feadebdb9a39900a3f949c81577c20913582a3c7a35ac3ab4e9f`. This is not the strict final 32-board freeze or full v1 acceptance.
 
 Fresh readback confirms all 67 original identities/names/locations and 20 shared tokens unchanged; the sequential target audit has zero original targets/scope violations. [Current retention receipt](paper/repairs/retention-observed-20261104.json). Native design, source concurrence, independent advisory review, actual browser/domain proof and formal RIG remain distinct.
 

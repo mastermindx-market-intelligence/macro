@@ -4,9 +4,9 @@
 
 ## Concrete delivery
 
-The immutable repaired native input is **`6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`**, [sealed manifest](https://github.com/mastermindx-market-intelligence/macro/blob/6b72172aec810aa7795e5a50d4be9ca2dde5cf5b/research/design_candidates/production_design_20261102/f02/paper/freezes/scoped-native-20261104-r1/MANIFEST.json): **31 full board pairs, eight supplementary native captures, seven baseline images, 88 manifest members**, aggregate **`f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445`**. The original Chinese comparison is explicitly excluded. The strict complete-set gate remains separate and refuses the unresolved operation, its incomplete groups/capture/bindings and absent complete final verification.
+The immutable repaired native input is **`caf707a7f3e57c1e3fa7b8b4e087641ab893334c`**, [sealed manifest](https://github.com/mastermindx-market-intelligence/macro/blob/caf707a7f3e57c1e3fa7b8b4e087641ab893334c/research/design_candidates/production_design_20261102/f02/paper/freezes/scoped-native-20261104-r2/MANIFEST.json): **31 full board pairs, eight supplementary native captures, seven baseline images, 89 manifest members**, aggregate **`9182ad14a8b0feadebdb9a39900a3f949c81577c20913582a3c7a35ac3ab4e9f`**. The original Chinese comparison is explicitly excluded. The strict complete-set gate remains separate and refuses the unresolved operation, its incomplete groups/capture/bindings and absent complete final verification.
 
-The actual Paper file is **`01M312VSDSZFVT45674GDVJVZN`**, “Mastermind Product Design System — Canonical.” [Read me / build directory](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0): board `47Q-0`. [Actual board index](paper/NATIVE_BOARD_INDEX.md) binds every page, board, step, JPEG and JSX. [Current native verification](paper/native-current-verification.json) records **32 boards, 640 dispatches, 639 applied responses, one unresolved operation**. These counts describe observed effects; they do not grant acceptance.
+The actual Paper file is **`01M312VSDSZFVT45674GDVJVZN`**, “Mastermind Product Design System — Canonical.” [Read me / build directory](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0): board `47Q-0`. [Actual board index](paper/NATIVE_BOARD_INDEX.md) binds every page, board, step, JPEG and JSX. [Current native verification](paper/native-current-verification.json) records **32 boards, 650 dispatches, 649 applied responses, one unresolved operation**. These counts describe observed effects; they do not grant acceptance.
 
 ## Repairs completed without redoing accepted work
 
@@ -24,7 +24,7 @@ The successful 57-operation recovery beyond the earlier published checkpoint was
 
 ## Preservation
 
-Fresh same-carrier readback after the latest writes confirms **67/67 original reference identities, names and page locations** and **20/20 shared tokens**, content hash **`356191c3`**. The sequential custody audit finds zero original targets and zero scope violations across all recorded operations, including the original uncertain dispatch's targets. [Current retention and audit](paper/repairs/retention-observed-20261104.json). This does not reapprove the original domain references or claim a full descendant visual audit.
+Same-carrier readback at the 640-operation checkpoint confirms **67/67 original reference identities, names and page locations** and **20/20 shared tokens**, content hash **`356191c3`**. The sequential custody audit through that checkpoint finds zero original targets and zero scope violations, including the original uncertain dispatch's targets. [Ten later scoped text/style operations](paper/repairs/post-review-owned-delta-20261104.json) target 18 existing F02 nodes and retain the shared token hash; no full later 67-original reread is claimed. [Current retention and audit](paper/repairs/retention-observed-20261104.json). This does not reapprove the original domain references or claim a full descendant visual audit.
 
 The 21 shared roles and 36 capability dispositions remain intact. The four domain roles `VirtualizedDataInspector`, `CountLadder`, `LifecycleRail` and `DecisionRow / VerdictHero` retain their existing owners and remain unqualified. Sector, Prophet and Refraction conditions stay in [the existing gates record](CONTINUITY_AND_GATES.md).
 
@@ -38,7 +38,7 @@ Brain Close hides presentation and is distinct from request Stop. Conditional `M
 
 ## Review status
 
-Two independent C3 native Product/Taste first passes are in progress against the sealed subset. No verdict is inferred from commissioning.
+Two independent C3 native Product/Taste first passes on `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b` returned PASS_WITH_CONDITIONS and were preserved unchanged before rationale was revealed. They covered all 46 images and verified all 88 input members. Three distinct minor findings were repaired in four actual board pairs; the affected set is `caf707a7f3e57c1e3fa7b8b4e087641ab893334c` with 89 members. Twenty-seven full board pairs, eight supplements, seven baselines and the capability ledger remain byte-identical. Affected second-pass verdicts are pending and will be recorded separately; no verdict is inferred from commissioning.
 
 The earlier native freeze `245d70bbd3ac773f3074277c771095264b31269d`, initial Product/Taste BLOCK reports and separate rationale passes are retained. A scoped later disposition can close observed defects only for its exact replacement bytes; it cannot supply missing Chinese, runtime, domain or formal authority proof.
 

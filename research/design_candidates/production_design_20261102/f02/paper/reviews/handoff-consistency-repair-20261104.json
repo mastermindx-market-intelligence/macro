@@ -1,0 +1,26 @@
+{
+  "schema": "f02.handoff-consistency-repair.v1",
+  "observed_at": "2026-11-04T02:07:00.332323+00:00",
+  "source_audit": "paper/reviews/handoff-consistency-20261104.md",
+  "audit_sha256": "fd2305fef4c0f7add0c7acb9c322bb1587cc54f69ba2f4fda8617047cf1235ca",
+  "finding": "P2 stale current verification binding and phone statuses",
+  "repair": "Current projection is five unresolved bindings, all on held original Chinese comparison; English phone frames applied,33Chinese frames prepared/held. Also refreshed current width evidence from actual board/capture receipts and made640-operation retention versus later four-operation delta explicit.",
+  "preserved": "Four domain roles remain unqualified; runtime/browser proof NOT_RUN; original Paper unknown, original historical reports, sealed R1/R2 inputs and accepted geometry preserved.",
+  "changed_documents": [
+    "README.md",
+    "RETURN_F02.md",
+    "CONTINUITY_AND_GATES.md",
+    "VERIFICATION.md",
+    "PAPER_BUILD_PLAN.md",
+    "paper/README.md",
+    "paper/CURRENT_DESIGN_AUTHORITY.md",
+    "paper/NATIVE_PENDING_WORK.md",
+    "paper/NATIVE_CONTINUATION_20261104.md",
+    "paper/FORMAL_REVIEW_INPUT_HANDOFF.md",
+    "paper/reviews/NATIVE_REVIEW_REPORT.md"
+  ],
+  "independent_recheck": "Original prose P2 verified fixed; recheck found stale English writer_status metadata. Current English metadata now reconciled to actual APPLIED operation and existing capture; no native replay.",
+  "approval": false,
+  "recheck": "paper/reviews/handoff-consistency-recheck-20261104.md",
+  "metadata_repair": "paper/repairs/english-phone-status-reconciliation-20261104.json"
+}

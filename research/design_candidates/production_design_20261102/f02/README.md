@@ -2,11 +2,11 @@
 
 **Delivery: PARTIAL; original Paper effect held.** **System:** `F02-SYSTEM/1.0.0-candidate.2`. **Formal RIG:** `draft`.
 
-The current native reference has **32 actual boards, 31 full JPEG/JSX pairs and 639 applied responses**, plus the original uncertain Chinese-board operation. All disjoint planned repairs are applied. The current 31-board review input is sealed at `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`; it is explicitly scoped and does not complete the held comparison or release joint v1.
+The current native reference has **32 actual boards, 31 full JPEG/JSX pairs and 649 applied responses**, plus the original uncertain Chinese-board operation. All disjoint planned repairs are applied. The current 31-board review input is sealed at `caf707a7f3e57c1e3fa7b8b4e087641ab893334c`; it is explicitly scoped and does not complete the held comparison or release joint v1.
 
-[Current return and exact gates](RETURN_F02.md) · [Open Paper Read me](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) · [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630) · [Actual native index](paper/NATIVE_BOARD_INDEX.md) · [Immutable scoped review manifest](paper/freezes/scoped-native-20261104-r1/MANIFEST.json).
+[Current return and exact gates](RETURN_F02.md) · [Open Paper Read me](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) · [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630) · [Actual native index](paper/NATIVE_BOARD_INDEX.md) · [Immutable scoped review manifest](paper/freezes/scoped-native-20261104-r2/MANIFEST.json).
 
-The immutable assignment remains `6e1862867193ec6486a22001a0e4fb515da20448`, under programme Draft #10617. All67 original reference identities/names/locations and20 shared tokens are retained. Existing source contracts, original packets and historical reviews remain preserved; current receipts distinguish applied work from preparation. F01 candidate.2 geometry and candidate.4 scoped source-policy concurrence do not imply runtime or formal acceptance.
+The immutable assignment remains `6e1862867193ec6486a22001a0e4fb515da20448`, under programme Draft #10617. All67 original reference identities/names/locations and 20 shared tokens are retained. Existing source contracts, original packets and historical reviews remain preserved; current receipts distinguish applied work from preparation. F01 candidate.2 geometry and candidate.4 scoped source-policy concurrence do not imply runtime or formal acceptance.
 
 ## Main deliverables
 

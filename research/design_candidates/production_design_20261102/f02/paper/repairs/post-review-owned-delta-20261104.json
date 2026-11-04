@@ -1,9 +1,9 @@
 {
   "schema": "f02.post-retention-owned-delta.v1",
-  "observed_at": "2026-11-04T02:01:41.491946+00:00",
+  "observed_at": "2026-11-04T02:12:16.520470+00:00",
   "base_original_retention": "paper/repairs/retention-observed-20261104.json",
   "base_operation_count": 640,
-  "current_operation_count": 644,
+  "current_operation_count": 650,
   "deltas": [
     {
       "id": "f02-r2-company-dark-history-navigation-20261104-01",
@@ -78,9 +78,101 @@
         "356191c3"
       ],
       "source_input": "Native Taste R2-T-003; label original Chinese comparison exclusion inline and distinguish its separately accepted partial evidence-return companion; no mutation of held target."
+    },
+    {
+      "id": "f02-r3-options-dark-unit-header-floor-20261104-01",
+      "board": "options-dark",
+      "tool": "update_styles",
+      "targets": [
+        "5XW-0",
+        "5Y0-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:08:47.798Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 retained in R2 affected Taste review: meaningful unit-bearing column headers must meet12px source/unit floor; preserve actual text, raw rows, numeric end edges, 40px row density and all source identities."
+    },
+    {
+      "id": "f02-r3-options-light-unit-header-floor-20261104-01",
+      "board": "options-light",
+      "tool": "update_styles",
+      "targets": [
+        "6HH-0",
+        "6HD-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:09:02.674Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 retained in R2 affected Taste review: meaningful unit-bearing column headers must meet12px source/unit floor; preserve actual text, raw rows, numeric end edges, 40px row density and all source identities."
+    },
+    {
+      "id": "f02-r3-macro-dark-unit-header-floor-20261104-01",
+      "board": "macro-dark",
+      "tool": "update_styles",
+      "targets": [
+        "4S6-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:09:29.664Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 same-scope unit audit: meaningful Change · pp header must meet12px source/unit floor; preserve raw percentages/change counts, stable sorting, 40px rows, chart and all evidence identities."
+    },
+    {
+      "id": "f02-r3-macro-light-unit-header-floor-20261104-01",
+      "board": "macro-light",
+      "tool": "update_styles",
+      "targets": [
+        "53Y-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:09:43.116Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 same-scope unit audit: meaningful Change · pp header must meet12px source/unit floor; preserve raw percentages/change counts, stable sorting, 40px rows, chart and all evidence identities."
+    },
+    {
+      "id": "f02-r3-options-dark-time-zone-header-floor-20261104-01",
+      "board": "options-dark",
+      "tool": "update_styles",
+      "targets": [
+        "5XQ-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:10:39.868Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 exact R2 affected report includes Time · ET: preserve essential time-zone meaning at12px/18px source/unit floor; only the existing header text node changes; row values, IDs, density and numeric edges remain unchanged."
+    },
+    {
+      "id": "f02-r3-options-light-time-zone-header-floor-20261104-01",
+      "board": "options-light",
+      "tool": "update_styles",
+      "targets": [
+        "6HN-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:10:54.956Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 exact R2 affected report includes Time · ET: preserve essential time-zone meaning at12px/18px source/unit floor; only the existing header text node changes; row values, IDs, density and numeric edges remain unchanged."
     }
   ],
-  "scope": "Four text/style-only operations on ten existing F02-created Company, Controls and Read me nodes. No original-reference, token, row-data or held-board target. The earlier 67-original read timestamps remain authoritative; they are not restamped as a later full reread.",
+  "scope": "Ten text/style-only operations on18 existing F02-created nodes in eight boards: Company captions/actions, Controls hierarchy, Read me exclusion and Macro/Options unit/time-zone headers. No original-reference, token, row-data or held-board target. Earlier67-original read timestamps are retained; no later full live reread is claimed.",
   "original_unknown_unchanged": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
   "full_acceptance": false
 }

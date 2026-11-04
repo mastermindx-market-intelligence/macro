@@ -25,4 +25,4 @@ The Chinese evidence/return companion `8N8-0` remains a separate reviewed specim
 
 ## No dependency on this hold for disjoint completed work
 
-All previously absent independent boards now exist: `8G2-0` (1280 dock), `8N8-0` (Chinese evidence/return), `8PF-0` (Company historical EPS), `8R5-0` (editorial calculation), `8TF-0` (mobile editorial), `8W7-0` (40/52 density), `905-0` (contextual faults), `98N-0` (768 overlay), `9EB-0` (1024 overlay), `9K6-0` (1600 dock). Their immutable scoped review input is `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`, aggregate `f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445`.
+All previously absent independent boards now exist: `8G2-0` (1280 dock), `8N8-0` (Chinese evidence/return), `8PF-0` (Company historical EPS), `8R5-0` (editorial calculation), `8TF-0` (mobile editorial), `8W7-0` (40/52 density), `905-0` (contextual faults), `98N-0` (768 overlay), `9EB-0` (1024 overlay), `9K6-0` (1600 dock). Their immutable scoped review input is `caf707a7f3e57c1e3fa7b8b4e087641ab893334c`, aggregate `9182ad14a8b0feadebdb9a39900a3f949c81577c20913582a3c7a35ac3ab4e9f`.

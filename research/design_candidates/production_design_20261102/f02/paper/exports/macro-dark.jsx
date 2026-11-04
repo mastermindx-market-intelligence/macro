@@ -162,7 +162,7 @@
                   </div>
                 </div>
                 <div id="4S5-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
-                  <div id="4S6-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', textAlign: 'right', width: 'max-content' }}>
+                  <div id="4S6-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '12px', fontWeight: 600, lineHeight: '18px', textAlign: 'right', width: 'max-content' }}>
                     Change · pp
                   </div>
                 </div>

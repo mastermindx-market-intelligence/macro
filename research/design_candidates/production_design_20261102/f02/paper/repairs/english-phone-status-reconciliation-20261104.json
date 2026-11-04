@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-11-04T02:12:16.520470+00:00",
+  "previous_writer_status": "CONSTRUCTION_COMPLETE_NUMERIC_ALIGNMENT_REPAIR_PENDING",
+  "previous_pending_native_repairs": [
+    {
+      "kind": "numeric_column_end_alignment",
+      "frames": 33,
+      "status": "SOURCE_ONLY_PREPARATION_NOT_APPLIED",
+      "owner": "/root/continuation_dependencies",
+      "evidence": "Actual exported numeric frames lack explicit flex/end layout; coverage lane also lacks end alignment."
+    }
+  ],
+  "basis_operation": "f02-c2-macro-dark-en-390-numeric-frames-20261103-r2-01",
+  "basis_capture": "paper/freezes/scoped-native-20261104-r1/paper/exports/macro-dark-en-390.jsx",
+  "scope": "Metadata correction only; no repeat native operation or additional approval.",
+  "current_writer_status": "CONSTRUCTION_COMPLETE_NUMERIC_ALIGNMENT_APPLIED_SCOPED_NATIVE_REFERENCE",
+  "pending_native_repairs": [],
+  "board_id": "7CM-0",
+  "approval": false
+}

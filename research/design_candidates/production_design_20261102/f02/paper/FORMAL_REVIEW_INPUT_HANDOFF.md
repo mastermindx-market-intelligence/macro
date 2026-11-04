@@ -4,7 +4,7 @@ This is a preparation worksheet for the existing review owner. It is **not** a c
 
 ## Current scoped input — 4 November
 
-The concrete repaired input is `6b72172aec810aa7795e5a50d4be9ca2dde5cf5b`, [88-member manifest](freezes/scoped-native-20261104-r1/MANIFEST.json), aggregate `f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445`, covering31 completed native boards. Original Chinese comparison7IS is excluded; this is not the final32-board reference. Use the actual scoped critic reports and their carried conditions, then refresh only affected evidence when the held original target is reconciled.
+The concrete repaired input is `caf707a7f3e57c1e3fa7b8b4e087641ab893334c`, [89-member manifest](freezes/scoped-native-20261104-r2/MANIFEST.json), aggregate `9182ad14a8b0feadebdb9a39900a3f949c81577c20913582a3c7a35ac3ab4e9f`, covering31 completed native boards. Original Chinese comparison7IS is excluded; this is not the final32-board reference. Use the actual scoped critic reports and their carried conditions, then refresh only affected evidence when the held original target is reconciled.
 
 [Source review request6620018694](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6620018694) is delivered to non-author mastermindxryan. The current [route observation](reviews/formal-route-observation-20261104.json) records Executive/session pre-effect backend failures, Fabric admission/START unprobed and no invented lineage. Session-driven formal RIG is still permitted; the existing review owner must bind real surface/reference identity and lawful qualified seats. The two native C3 critics are advisory, not Opus reviewer-class or authority receipts.
 
