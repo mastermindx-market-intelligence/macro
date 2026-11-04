@@ -469,7 +469,10 @@ html[data-lang="zh"] .est-title{letter-spacing:-.01em;}
   <ol>
     {% for c in page.breadcrumbs %}
     <li{% if loop.last %} aria-current="page"{% endif %}>
-      {% if c.href %}<a href="{{ rel }}{{ c.href.lstrip('/') }}">{{ c.label }}</a>{% else %}{{ c.label }}{% endif %}
+      {% if c.href %}<a href="{{ rel }}{{ c.href.lstrip('/') }}">{%- if page.family|default('') == 'lesson' and c.href == '/' and c.label == 'Home' -%}{{ t(c.label, '首页') }}
+        {%- elif page.family|default('') == 'lesson' and c.href == '/learn/index.html' and c.label == 'Learn' -%}{{ t(c.label, '学习') }}
+        {%- elif page.family|default('') == 'lesson' and TRACK_LABEL is defined and page.track in TRACK_LABEL and c.href == '/learn/index.html#track-' ~ page.track -%}{{ t(c.label, TRACK_LABEL[page.track][1]) }}
+        {%- else -%}{{ c.label }}{%- endif -%}</a>{% else %}{{ c.label }}{% endif %}
     </li>
     {% if not loop.last %}<li class="sep" aria-hidden="true">/</li>{% endif %}
     {% endfor %}

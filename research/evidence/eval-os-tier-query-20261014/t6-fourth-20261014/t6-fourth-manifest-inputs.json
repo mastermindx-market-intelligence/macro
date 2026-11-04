@@ -1,0 +1,59 @@
+{
+  "added_paths_by_job": {
+    "flow-surface": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "fif-kernel-guards": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "eval-os-a1": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+      "engine/neuralweb/eval/benchmark_risk_breadth_2026-07-08.json",
+      "engine/neuralweb/eval/benchmark_treasury_liquidity_2026-07-02.json",
+      "engine/neuralweb/eval/benchmark_semiconductor_divergence_2026-07-08.json",
+      "engine/neuralweb/eval/benchmark_mag7_organ_causality_2026-07-11.json",
+      "engine/neuralweb/eval/benchmark_mag7_flow_calibration_2026-07-11.json",
+      "engine/neuralweb/eval/benchmark_mag7_narrative_denominator_2026-07-11.json"
+    ],
+    "biocatalyst-serving": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "biocatalyst-history": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "crypto-assistant-context": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "defense-rail-laws": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "unrun-government-revenue-candidate-projection": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "unrun-government-revenue-grader": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "research-price-panel": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ],
+    "ticker-news-qbus": [
+      "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+    ]
+  },
+  "total_added": 28,
+  "job_count": 314,
+  "execution_definitions_preserved": true,
+  "paths_only": true,
+  "manifest_sha256": "668e716e16f0a307d1a1acf6714904e9dc4df3659a1795f21d5cae18983ba7ea"
+}

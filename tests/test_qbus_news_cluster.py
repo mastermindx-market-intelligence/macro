@@ -125,14 +125,34 @@ def test_new_cluster_id_is_stable_for_story_identity_not_headline_text():
     assert new_cluster_id(a) == new_cluster_id(b)
 
 
-def test_policy_version_is_v2_and_story_digest_is_unchanged():
+def test_policy_version_is_v3_and_story_digest_is_unchanged():
     """A title-mixing or random new_cluster_id fails the pinned digest."""
     from engine.qbus_news_cluster import CLUSTER_POLICY_VERSION
 
-    assert CLUSTER_POLICY_VERSION == "qbus_news_cluster.v2"
+    assert CLUSTER_POLICY_VERSION == "qbus_news_cluster.v3"
     pinned = item("123", "Hello")
     assert pinned.story_id == "benzinga:123"
     assert new_cluster_id(pinned) == "ev2_0816bfa7518889e2"
     decision = cluster_candidates(pinned, [], policy=ClusterPolicy())
     assert decision.cluster_id == "ev2_0816bfa7518889e2"
     assert decision.action == "new"
+
+
+def test_publication_guard_preserves_identity_and_both_time_windows():
+    from dataclasses import replace
+
+    title = "Nvidia opens a new research center"
+    anchor = replace(item("anchor", title), published_at=T0 - timedelta(hours=21))
+    candidate = replace(cand("ev2_original", anchor), anchor_published_at=anchor.published_at)
+    recent = replace(item("new", title), published_at=T0 - timedelta(hours=1))
+    assert cluster_candidates(recent, [candidate], policy=ClusterPolicy()).action == "new"
+    within_publication_window = replace(recent, published_at=anchor.published_at + timedelta(hours=6))
+    assert cluster_candidates(within_publication_window, [candidate], policy=ClusterPolicy()).action == "join"
+    just_outside = replace(within_publication_window, published_at=within_publication_window.published_at + timedelta(microseconds=1))
+    assert cluster_candidates(just_outside, [candidate], policy=ClusterPolicy()).action == "new"
+    late_receipt = replace(within_publication_window, observed_at=T0 + timedelta(hours=7))
+    assert cluster_candidates(late_receipt, [candidate], policy=ClusterPolicy()).action == "new"
+    correction = replace(recent, source_item_id="anchor", observed_at=T0 + timedelta(days=2))
+    assert cluster_candidates(correction, [candidate], policy=ClusterPolicy()).reason == "same_source_item"
+    unknown_legacy = replace(candidate, anchor_published_at=None)
+    assert cluster_candidates(recent, [unknown_legacy], policy=ClusterPolicy()).action == "join"

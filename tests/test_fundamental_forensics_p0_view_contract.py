@@ -266,11 +266,8 @@ def test_am7_amends_the_desktop_fold_clause():
 def test_first_viewport_measured_matches_the_committed_receipt():
     measured = _contract()["first_viewport"]["measured"]
     probes = set(measured["probes"])
-    cells = json.loads((ROOT / measured["receipt"]).read_text(encoding="utf-8"))
-    rest = [c for c in cells if c["force_state"] is None and c["mode"] == "populated"]
-    assert len(rest) == 8
-    for cell in rest:
-        want = measured["desktop_1440" if cell["viewport"] == "desktop" else "mobile_390"]
+    for cell in _rest_cells(measured):
+        want = measured[CONTRACTED_VIEWPORTS[cell["viewport"]]]
         found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
         inside = sorted(
             n
@@ -298,11 +295,25 @@ def test_first_viewport_measured_matches_the_committed_receipt():
             assert tabs["within_first_viewport"] is False, cell["cell_id"]
 
 
+# The first-viewport contract pins two viewports. Since A43 r2 the populated set is
+# captured at desktop, tablet and mobile, so the receipt also records four tablet
+# rest cells; they are evidence for the tablet desk-header fit, not contracted here.
+CONTRACTED_VIEWPORTS = {"desktop": "desktop_1440", "mobile": "mobile_390"}
+RECEIPT_REST_CELLS_PER_VIEWPORT = {"desktop": 4, "tablet": 4, "mobile": 4}
+
+
 def _rest_cells(measured: dict) -> list[dict]:
     cells = json.loads((ROOT / measured["receipt"]).read_text(encoding="utf-8"))
     rest = [c for c in cells if c["force_state"] is None and c["mode"] == "populated"]
-    assert len(rest) == 8
-    return rest
+    per_viewport = {
+        viewport: sum(1 for c in rest if c["viewport"] == viewport)
+        for viewport in RECEIPT_REST_CELLS_PER_VIEWPORT
+    }
+    assert per_viewport == RECEIPT_REST_CELLS_PER_VIEWPORT, per_viewport
+    assert len(rest) == sum(RECEIPT_REST_CELLS_PER_VIEWPORT.values())
+    contracted = [c for c in rest if c["viewport"] in CONTRACTED_VIEWPORTS]
+    assert len(contracted) == 8
+    return contracted
 
 
 @pytest.mark.needs_full_checkout("mockups")
@@ -311,7 +322,7 @@ def test_launcher_box_clears_every_first_viewport_module_and_the_coverage_stat()
     measured = _contract()["first_viewport"]["measured"]
     probes = set(measured["probes"])
     for cell in _rest_cells(measured):
-        want = measured["desktop_1440" if cell["viewport"] == "desktop" else "mobile_390"]
+        want = measured[CONTRACTED_VIEWPORTS[cell["viewport"]]]
         assert set(want["within_first_viewport"]).isdisjoint(probes)
         found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
         fab = found["fab"]

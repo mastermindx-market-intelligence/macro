@@ -416,7 +416,7 @@ def compose_program_dossier_bundle(
     generated_at = generated_at or datetime.now(timezone.utc).isoformat()
     if ontology_graph is None:
         return _empty_dossier_bundle(as_of=as_of, generated_at=generated_at, ontology_graph_id=None)
-    oversight_enabled = ontology_graph.get("schema_version") == po.PUBLIC_OVERSIGHT_VERSION
+    oversight_enabled = ontology_graph.get("schema_version") in (po.PUBLIC_OVERSIGHT_VERSION, po.PUBLIC_AGREEMENT_VERSION)
     capacity_enabled = oversight_enabled or ontology_graph.get("schema_version") == po.PUBLIC_CAPACITY_VERSION
 
     as_of_date = date.fromisoformat(as_of)

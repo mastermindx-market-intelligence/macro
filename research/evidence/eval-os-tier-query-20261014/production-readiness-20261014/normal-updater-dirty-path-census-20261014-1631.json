@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-14T16:31:31.995582+00:00",
+  "purpose": "Classify eight observed tracked changes by path only; no file contents or outcomes read",
+  "tracked_entries": [
+    " M site/live/basket_pulse.json",
+    " M site/live/basket_pulse_hk.json",
+    " M site/live/basket_pulse_lastgood.json",
+    " M site/live/market_drivers.json",
+    " M site/live/overlay.json",
+    " M site/live/quotes.json",
+    " M site/live/risk_state.json",
+    " M site/live/shock_state.json"
+  ],
+  "a1_17_path_intersections": [],
+  "mutation": false
+}

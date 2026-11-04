@@ -5,12 +5,14 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from scripts.build_fundamental_forensics import (
     PUBLIC_SUMMARY_MAX_AGE_DAYS,
     PUBLIC_SUMMARY_RELATIVE,
     PUBLIC_SUMMARY_SCHEMA as SCHEMA_PUBLIC,
     SCHEMA,
+    _calendar_day,
     _period_label,
     _write_public_summary,
     _write_state_atomic,
@@ -18,6 +20,7 @@ from scripts.build_fundamental_forensics import (
     detector_evaluability,
     detect_accruals,
     detect_quarterly,
+    public_summary_as_of,
     public_summary_projection,
     read_public_summary,
     render_shell,
@@ -172,6 +175,45 @@ def _render_into(tmp_path: Path, root: Path, *, summary=None) -> str:
     if summary is not None:
         _write_public_summary(tmp_path, summary)
     return render_shell(tmp_path, state_summary=summary).read_text(encoding="utf-8")
+
+
+def test_public_shell_build_copies_the_reported_holding_client_without_private_rows(tmp_path: Path):
+    root = Path(__file__).resolve().parents[1]
+    html = _render_into(tmp_path, root)
+    for name in ("institutional_holding_research.css", "institutional_holding_research.js"):
+        assert (tmp_path / "site" / name).read_bytes() == (root / "templates" / name).read_bytes()
+    assert 'id="ff-holding-result" hidden' in html
+    assert not (tmp_path / "data" / "fundamental_forensics" / "private").exists()
+    assert not (tmp_path / "site" / "data" / "fundamental_forensics" / "private").exists()
+
+
+def test_reported_holding_asset_urls_follow_bytes_for_returning_visitors(tmp_path: Path):
+    """An immutable cached URL must change when the copied client changes."""
+    import hashlib
+    import re
+    import shutil
+
+    root = Path(__file__).resolve().parents[1]
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    names = ("institutional_holding_research.js", "institutional_holding_research.css")
+    for source in (root / "templates").iterdir():
+        if source.name in names:
+            shutil.copyfile(source, templates / source.name)
+        else:
+            (templates / source.name).symlink_to(source, target_is_directory=source.is_dir())
+
+    before = render_shell(tmp_path).read_text(encoding="utf-8")
+    for name in names:
+        original = (templates / name).read_bytes()
+        first_url = re.search(re.escape(name) + r'\?v=([^"\s]+)', before).group(0)
+        assert first_url == name + "?v=" + hashlib.sha256(original).hexdigest()[:8]
+        (templates / name).write_bytes(original + b"\n/* new client generation */\n")
+        after = render_shell(tmp_path).read_text(encoding="utf-8")
+        second_url = re.search(re.escape(name) + r'\?v=([^"\s]+)', after).group(0)
+        assert second_url != first_url
+        assert second_url == name + "?v=" + hashlib.sha256((tmp_path / "site" / name).read_bytes()).hexdigest()[:8]
+        assert render_shell(tmp_path).read_text(encoding="utf-8") == after
 
 
 # ---------------------------------------------------------------------------
@@ -433,6 +475,78 @@ def test_anonymous_preview_prints_counts_supplied_by_the_build(tmp_path: Path):
     html = _render_into(tmp_path, Path(__file__).resolve().parents[1], summary={"companies": 1240, "findings": 3417})
     assert "1,240 companies read, 3,417 changes ranked for a look" in html
     assert "读取 1,240 家公司，排出 3,417 项值得一看的变化" in html
+
+
+def test_disk_summary_prints_the_count_day(tmp_path: Path):
+    """build_site renders with no in-memory summary, so the file stamp must show."""
+    root = Path(__file__).resolve().parents[1]
+    (tmp_path / "templates").symlink_to(root / "templates")
+    _write_public_summary(
+        tmp_path,
+        {"companies": 1240, "findings": 3417, "top_symbol": "SMCI"},
+        generated_at="2026-10-12T21:36:01+00:00",
+    )
+    html = render_shell(tmp_path).read_text(encoding="utf-8")
+    assert "Counted 2026-10-12" in html
+    assert "统计日 2026-10-12" in html
+
+
+def test_in_memory_summary_prints_its_own_day(tmp_path: Path):
+    """The dict stamp is the day on the sentence; a fixed day must not appear."""
+    html = _render_into(
+        tmp_path,
+        Path(__file__).resolve().parents[1],
+        summary={
+            "companies": 1240,
+            "findings": 3417,
+            "generated_at": "2026-01-15T00:00:00+00:00",
+        },
+    )
+    assert "Counted 2026-01-15" in html
+    assert "2026-10-12" not in html
+
+
+def test_unstamped_summary_does_not_say_counted(tmp_path: Path):
+    """A summary with no generated_at keeps the undated sentence."""
+    html = _render_into(
+        tmp_path,
+        Path(__file__).resolve().parents[1],
+        summary={"companies": 1240, "findings": 3417},
+    )
+    assert "Counted" not in html
+    assert "1,240 companies read, 3,417 changes ranked for a look" in html
+    assert "读取 1,240 家公司，排出 3,417 项值得一看的变化" in html
+
+
+@pytest.mark.parametrize(
+    "stamp",
+    [
+        None,
+        2026101200,
+        "2026-10-1",
+        "not a date at all",
+        "2026-10-12 and then words",
+        "2026-13-40",
+    ],
+)
+def test_calendar_day_refuses_what_is_not_a_full_stamp(stamp):
+    """A number, a short stamp, or words must not reach the page as a day."""
+    assert _calendar_day(stamp) == ""
+
+
+def test_calendar_day_takes_the_day_of_a_real_stamp():
+    assert _calendar_day("2026-10-12T21:36:01+00:00") == "2026-10-12"
+    assert _calendar_day("20261012T213601+00:00") == "2026-10-12"
+
+
+def test_stale_disk_summary_prints_no_count_day(tmp_path: Path):
+    """When the file is too old to print counts, it must not print a day either."""
+    _write_public_summary(
+        tmp_path,
+        {"companies": 1240, "findings": 3417, "top_symbol": "SMCI"},
+        generated_at="2020-01-01T00:00:00+00:00",
+    )
+    assert public_summary_as_of(tmp_path) == ""
 
 
 def test_anonymous_shell_leaks_no_occurrence_ids_or_company_names(tmp_path: Path):

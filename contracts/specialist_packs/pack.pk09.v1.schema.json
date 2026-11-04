@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk09.v1.schema.json",
   "title": "Specialist pack PK09 v1 catalogue",
-  "description": "Controls, auditor and going concern. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Controls, auditor and going concern. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K3/K4 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk09/v1",
   "pack_id": "PK09",
   "name": "Controls, auditor and going concern",
@@ -15,10 +15,187 @@
     "typed absences",
     "production source trace"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "icfr_management_conclusion",
+      "name": "Management conclusion on internal control over financial reporting (effective | ineffective | material_weakness | unknown)",
+      "type": "enum",
+      "unit": null,
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "disclosure_controls_effective",
+      "name": "Disclosure controls and procedures conclusion",
+      "type": "enum",
+      "unit": null,
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "material_weakness_present",
+      "name": "Material weakness in internal control disclosed",
+      "type": "boolean",
+      "unit": null,
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "icfr_change_in_period",
+      "name": "Change in internal control over financial reporting during the period",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "auditor_firm",
+      "name": "Independent registered public accounting firm",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "auditor_opinion_fs",
+      "name": "Auditor opinion on the financial statements (unqualified | qualified | adverse | disclaimer | unknown)",
+      "type": "enum",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "auditor_opinion_icfr",
+      "name": "Auditor opinion on internal control over financial reporting",
+      "type": "enum",
+      "unit": null,
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "critical_audit_matters",
+      "name": "Critical audit matters communicated in the auditor report",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "going_concern_substantial_doubt",
+      "name": "Substantial doubt about the ability to continue as a going concern (disclosed | not_disclosed)",
+      "type": "enum",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "going_concern_management_plan",
+      "name": "Management plan to alleviate going-concern doubt",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "remediation_span",
+      "name": "Material weakness remediation disclosure",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "management_vs_auditor_icfr",
+      "kind": "cross_statement",
+      "operands": [
+        "icfr_management_conclusion",
+        "auditor_opinion_icfr"
+      ]
+    },
+    {
+      "check_id": "going_concern_vs_opinion",
+      "kind": "qualitative_presence",
+      "operands": [
+        "going_concern_substantial_doubt",
+        "auditor_opinion_fs"
+      ]
+    },
+    {
+      "check_id": "cam_present_on_10k",
+      "kind": "qualitative_presence",
+      "operands": [
+        "critical_audit_matters"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "filer_category_unbound",
+      "parameter": null,
+      "meaning": "the packet entity binds no filer category, so the CAM regime cannot be established"
+    },
+    {
+      "code": "narrative_span_not_located",
+      "parameter": null,
+      "meaning": "the governing section the field reads is present in the admitted package and was read in full, and no span satisfying the field exists"
+    },
+    {
+      "code": "governing_section_not_supplied",
+      "parameter": null,
+      "meaning": "the admitted package does not contain the section the field reads (Item 9A, the auditor's report, or the going-concern disclosure), so absence cannot be established"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

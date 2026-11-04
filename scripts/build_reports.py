@@ -300,6 +300,7 @@ def main() -> int:
     idx = env.get_template("reports.html.j2").render(
         reports=reports, all_tags=all_tags, stats=stats,
         active_section="research", active_page="reports",
+        all_tools_enabled=True,
     )
     write_page(site / "reports.html", idx)
     log.info("wrote %s/reports.html (%d reports, %d KB)", site, len(reports), len(idx) // 1024)

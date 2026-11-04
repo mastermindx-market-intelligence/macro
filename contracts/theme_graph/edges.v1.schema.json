@@ -54,8 +54,9 @@
       "description": "llm_proposed_ratified edges must carry >=1 dated evidence ref — the semantic-leakage law (§4.4): membership recalled from a model's general knowledge is undatable and forbidden."
     },
     "date_provenance": {
-      "enum": ["curated_changelog", "seed_constant", "raw_snapshot", "crosswalk", "membership_pit"],
-      "description": "How valid_from was obtained. seed_constant is the honesty flag that matters: CN membership docs seed every first-run member at the fixed cache-start constant, so that date is a CONVENTION, not an observation. membership_pit is a dated row from the owner membership-history parquet (not the raw THS concept dump — that remains raw_snapshot)."
+      "enum": ["curated_changelog", "seed_constant", "raw_snapshot", "crosswalk", "membership_pit", "activity_history"],
+      "description": "How valid_from was obtained. seed_constant is the honesty flag that matters: CN membership docs seed every first-run member at the fixed cache-start constant, so that date is a CONVENTION, not an observation. membership_pit is a dated row from the owner membership-history parquet (not the raw THS concept dump — that remains raw_snapshot). activity_history is a curated, receipted activity-membership projection (apply_activity_membership_events + project_activity_memberships): the ONLY date_provenance a company→theme MEMBER_OF edge may carry (ORCH-PIPE evidence-grain ruling, 2026-10-21).",
+      "$comment": "2026-10-21 additive amendment: 'activity_history' appended for curated activity-membership projections (ORCH-PIPE lane B1). Additive only — no existing value removed or redefined."
     },
     "evidence_refs": {
       "type": "array",

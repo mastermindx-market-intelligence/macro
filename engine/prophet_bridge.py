@@ -414,6 +414,8 @@ _KNOWN_REFUSED_STATUSES = frozenset({
 REFUSAL_ORDER = (
     "plan_not_built",   # cleared every gate; only the plan build itself failed
     "already_open",     # cleared every gate; the name already has a live plan
+    "base_after_event",  # cleared every gate; the base re-formed after the signal fired
+    "validation_failed",  # cleared every gate; origination later failed its own data check
     "not_ready",        # the patience statuses that are ALMOST admitted
     "ran_too_far",      # the anti-chase refusal — must outrank the band it co-occurs with
     "stood_down",       # an explicit avoid/exit/blocked stance
@@ -456,6 +458,10 @@ REFUSAL_COPY = {
                        "各项检查都通过 — 但今晚没能形成完整计划"),
     "already_open":   ("Already has a plan running",
                        "已有在跑的计划"),
+    "base_after_event": ("Passed the board's checks — its base re-formed after the signal fired",
+                         "通过了榜单检查 — 但基底在信号触发后重新形成"),
+    "validation_failed": ("Passed the board's checks — tonight's plan data didn't verify",
+                          "通过了榜单检查 — 但今晚的计划数据未能核验"),
     "not_ready":      ("Setting up, but the entry hasn't come",
                        "形态在走，入场点还没到"),
     "ran_too_far":    ("Ran too far — waiting for a pullback",
@@ -952,6 +958,12 @@ def _resolve_origination_clocks(
         )
 
     return recorded_at, price_basis_date, errors
+
+
+#: The error string `_resolve_candidate_signal_dates` emits when a name's base formed after
+#: the tier event that admitted it; the receipt split reads it back — the two must stay in sync.
+FORMATION_POSTDATES_EVENT_RE = re.compile(
+    r"^formation_date '[^']*' postdates tier_event_date '[^']*'$")
 
 
 def _resolve_candidate_signal_dates(
@@ -1501,6 +1513,8 @@ def refusal_receipts(
     open_keys: Iterable[str] | None = (),
     originated_tickers: Iterable[str] | None = None,
     reconstructed_plans: Iterable[Mapping[str, Any]] | None = None,
+    *,
+    validation_failures: Iterable[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Per-name "why not" receipts for every buy-lane row the intake did NOT plan.
 
@@ -1531,7 +1545,14 @@ def refusal_receipts(
     originated tonight" (build_site's case: it knows the gate, not the origination run),
     and then a row that cleared every gate and holds no open plan produces NO receipt at
     all rather than an invented one.  When a set IS passed (build_prophet's case), a
-    cleared row missing from it is disclosed as ``plan_not_built``.
+    cleared row missing from it is disclosed as ``base_after_event`` when
+    ``validation_failures`` (the intake's own lossless record, ``{"ticker","id","stage",
+    "errors"}``) names it with only the clock-provenance error that says the base's own
+    formation postdates the fired tier event, as ``validation_failed`` when the record
+    names it any other way, and otherwise as ``plan_not_built`` — the plan build said no
+    for a reason the intake recorded, or said nothing at all; the cohorts are distinct
+    and all stay disclosed.  ``None``/absent ``validation_failures`` leaves the
+    split where it was: every non-originated cleared row reads ``plan_not_built``.
 
     ``reconstructed_plans`` — the OPEN plans a call site knows were rebuilt after the
     outage rather than originated live (build_site reads them out of the published index;
@@ -1557,6 +1578,25 @@ def refusal_receipts(
         None if originated_tickers is None
         else {str(t or "").strip().upper() for t in originated_tickers}
     )
+    # The intake's OWN record of origination attempts that failed their data checks
+    # (``intake_stats["validation_failures"]``).  Only build_prophet holds it, which is
+    # why it is keyword-only: build_site keeps the historical behaviour untouched.
+    failed_tickers: set[str] = set()
+    # The NAMED clock-provenance cohort inside that record: every error is the one
+    # string that says the base's own formation postdates the fired tier event, so the
+    # generic "plan data didn't verify" line would be true but not the reason (2026-10-21
+    # census §10, option 8.2c — disclosure vocabulary only, the gate keeps refusing).
+    newbase_tickers: set[str] = set()
+    for failure in validation_failures or ():
+        if isinstance(failure, Mapping):
+            failed_ticker = str(failure.get("ticker") or "").strip().upper()
+            if failed_ticker:
+                failed_tickers.add(failed_ticker)
+                errors = failure.get("errors")
+                if (failure.get("stage") == "clock_provenance" and errors
+                        and all(FORMATION_POSTDATES_EVENT_RE.match(str(error))
+                                for error in errors)):
+                    newbase_tickers.add(failed_ticker)
 
     rows: list[dict[str, Any]] = []
     for row in buys:
@@ -1565,12 +1605,19 @@ def refusal_receipts(
         ticker = str(row.get("ticker") or "").strip()
         codes = _refusal_codes(row)
         if not codes:
-            # Cleared every gate.  It is either already running, or it should have become
-            # a plan tonight and did not — and if this call site cannot tell the two
-            # apart it says nothing rather than guessing.
+            # Cleared every gate.  It is already running, or it should have become a plan
+            # tonight and the build left a recorded failure behind, or it simply did not
+            # come together — and if this call site cannot tell those apart it says
+            # nothing rather than guessing.
             key = ticker.upper()
             if key and key in open_tickers:
                 codes = ["already_open"]
+            elif (originated is not None and key and key not in originated
+                    and key in newbase_tickers):
+                codes = ["base_after_event"]
+            elif (originated is not None and key and key not in originated
+                    and key in failed_tickers):
+                codes = ["validation_failed"]
             elif originated is not None and key and key not in originated:
                 codes = ["plan_not_built"]
             else:
@@ -2442,19 +2489,14 @@ def evaluate_entry_zone(
     price_history: "pd.DataFrame | None",
     asof: str,
 ) -> dict[str, Any]:
-    """Nightly re-evaluation of a plan's zone: filled, still live, expired, converted.
+    """Re-evaluate an observed entry-band visit as of a PIT session close.
 
-    THE CONVERSION (§6.9 R3, operator chart review 2026-08-08): a washout-class zone
-    that was never filled by its expiry does NOT die — it converts to a STARTER stance.
-    V-shaped washout recoveries frequently never revisit the band, and a plan that
-    correctly anticipated the turn should not miss the entire move on a technicality.
-    A pullback-class zone in an intact uptrend expires instead: there, "the reset never
-    came" falsifies the premise rather than confirming it.
-
-    PURE FUNCTION over the plan + its PIT tape.  It writes nothing: plan JSONs are
-    immutable publication records and corrections are an append-only overlay, so the
-    converted stance is DERIVED every night and rendered, never back-written into the
-    originating artifact.
+    The zone is created AT the price-basis close; that day's earlier lows
+    cannot be evidence of a subsequent opportunity. A qualified band visit
+    requires either intersecting observed OHLC [low, high] or an actual close
+    INSIDE the band when OHLC is incomplete. The expiry session is inclusive.
+    This is descriptive OHLC evidence, NOT an order fill, a position, a scalar
+    trigger, or authority to grade the separately owned forward ledger.
     """
     zone = plan.get("entry_zone")
     out: dict[str, Any] = {
@@ -2466,39 +2508,72 @@ def evaluate_entry_zone(
         out["reason"] = "plan carries no entry zone (pre-R3 plan)"
         return out
 
-    high = float(zone["high"])
+    # A one-sided or inverted range does not prove an executable band. Reject
+    # it rather than treating every print below an upper bound as a touch.
+    try:
+        low = float(zone["low"])
+        high = float(zone["high"])
+        if not (math.isfinite(low) and math.isfinite(high) and low <= high):
+            raise ValueError("invalid ordered bounds")
+    except (TypeError, ValueError, KeyError):
+        out["reason"] = "entry zone has incomplete or invalid low/high bounds"
+        return out
+
     start = str(zone.get("price_basis_date") or plan.get("price_basis_date") or "")[:10]
     expiry = str(zone.get("expiry_date") or "")[:10]
     out["stance"] = zone.get("stance")
-
-    # FILLED := the tape traded INTO the band (intraday low at or below the band top)
-    # at any point from the plan's price basis onward.  `low` is the honest column;
-    # a close-only store would systematically under-report fills, so it falls back with
-    # the substitution named rather than pretending precision it does not have.
     filled_date = None
-    basis_col = "low"
-    if price_history is not None and not getattr(price_history, "empty", True):
+    fill_basis = "unavailable"
+
+    # Missing basis date must not activate on arbitrarily old data. All
+    # observations after the relevant issuance close are eligible, up to AND
+    # INCLUDING the zone expiry session. Never read a bar after asof.
+    if not start:
+        out["reason"] = "zone issuance date missing: no post-close visit inferred"
+    elif price_history is not None and not getattr(price_history, "empty", True):
         try:
-            frame = price_history[price_history.index >= pd.Timestamp(start)] if start \
-                else price_history
+            basis_date = pd.Timestamp(start)
+            frame = price_history[price_history.index > basis_date]
             frame = frame[frame.index <= pd.Timestamp(asof)]
-            if "low" not in frame.columns:
-                basis_col = "close"
-            series = frame[basis_col].dropna() if basis_col in frame.columns else None
-            if series is not None and not series.empty:
-                hits = series[series <= high]
-                if not hits.empty:
-                    filled_date = str(pd.Timestamp(hits.index[0]).date())
+            if expiry:
+                frame = frame[frame.index <= pd.Timestamp(expiry)]
+            frame = frame.sort_index()
+
+            has_range = "low" in frame.columns and "high" in frame.columns
+            if has_range:
+                # Intersect the WHOLE band, not only the band ceiling. A candle
+                # completely below the band must not count as having traded
+                # INTO it; malformed OHLC is never accepted as a fill.
+                lows = pd.to_numeric(frame["low"], errors="coerce")
+                highs = pd.to_numeric(frame["high"], errors="coerce")
+                hits = frame[(lows <= highs) & (lows <= high) & (highs >= low)]
+                fill_basis = "ohlc_range"
+            elif "close" in frame.columns:
+                # A recorded close IN the band is observable evidence of a
+                # visit. Anything else on partial OHLC is UNKNOWN, not filled.
+                closes = pd.to_numeric(frame["close"], errors="coerce")
+                hits = frame[(closes >= low) & (closes <= high)]
+                fill_basis = "close"
+            else:
+                hits = frame.iloc[:0]
+            if not hits.empty:
+                filled_date = str(pd.Timestamp(hits.index[0]).date())
         except Exception as exc:  # noqa: BLE001
-            out["reason"] = f"zone fill unreadable: {exc}"
-    out["fill_basis"] = basis_col
+            out["reason"] = f"zone visit unreadable: {exc}"
+    out["fill_basis"] = fill_basis
 
     if filled_date is not None:
-        out.update({"state": "filled", "filled": True, "filled_date": filled_date})
+        out.update({
+            "state": "filled", "filled": True, "filled_date": filled_date,
+            "fill_authority": "observation_only_not_execution",
+            "reason": (
+                "observed PIT price range/close intersected the band; "
+                "no order execution or separate trigger confirmation implied"
+            ),
+        })
         return out
 
-    remaining = _business_days_between(asof, expiry) if expiry else None
-    out["sessions_remaining"] = remaining
+    out["sessions_remaining"] = _business_days_between(asof, expiry) if expiry else None
     expired = bool(expiry) and expiry < str(asof)[:10]
     if not expired:
         out["state"] = "live"
@@ -2507,20 +2582,21 @@ def evaluate_entry_zone(
     out["expired"] = True
     if zone.get("converts_on_expiry"):
         out.update({
-            "state": "converted",
-            "converted": True,
+            "state": "converted", "converted": True,
             "stance": ZONE_STANCE_STARTER,
             "reason": (
-                "washout-class zone unfilled at expiry — a V-shaped recovery does not "
-                "revisit its band; the plan converts to a starter stance"),
+                "no verified in-window band visit before expiry; "
+                "washout-class zone converts to a starter OBSERVATION, "
+                "not an order or graded position"
+            ),
         })
     else:
         out.update({
-            "state": "expired",
-            "stance": ZONE_STANCE_WAIT,
+            "state": "expired", "stance": ZONE_STANCE_WAIT,
             "reason": (
-                "pullback-class zone unfilled at expiry — the reset the plan was "
-                "waiting for did not arrive"),
+                "no verified in-window band visit before expiry; "
+                "pullback window ended without eligible observed touch"
+            ),
         })
     return out
 
@@ -3112,10 +3188,17 @@ def _zone_lines_en(
     band = f"{low}–{high}" if entry_zone.get("low") is not None else high
     state = (zone_state or {}).get("state")
 
+    if state == "filled":
+        return [
+            f"A PIT price range or closing print touched the {band} zone. This is not proof"
+            f" of order execution or of the separate closing trigger confirming.",
+            f"Any position remains conditional on the plan's separate trigger and"
+            f" risk rules, including the {inval_str} invalidation boundary.",
+        ]
     if state == "converted":
         return [
-            f"The {band} zone never filled and the move ran without it. Treat this as a"
-            f" starter-size window, not a full entry.",
+            f"No eligible price-band visit was observed before expiry at {band}."
+            f" The washout setup now describes a starter-size window, not a full entry.",
             f"Keep the first piece small and let any pullback do the adding. Exit on a"
             f" close below {inval_str}.",
         ]
@@ -3174,9 +3257,14 @@ def _zone_lines_zh(
     band = f"{low}–{high}" if entry_zone.get("low") is not None else high
     state = (zone_state or {}).get("state")
 
+    if state == "filled":
+        return [
+            f"可验证的日内价格区间或收盘价曾触及 {band}，但不代表订单成交，也不代表独立的收盘触发条件已确认。",
+            f"是否执行仍须独立核实计划触发条件与风险界限，包括 {inval_str} 的失效位。",
+        ]
     if state == "converted":
         return [
-            f"{band} 区间未被回踩，行情已自行走出。此处按试探性小仓位窗口对待，不是完整建仓。",
+            f"到期前未观察到合资格的 {band} 区间触及。此处只描述试探性小仓位窗口，不代表已建仓。",
             f"首笔保持小仓位，后续回调再加。收盘跌破 {inval_str} 即离场。",
         ]
     if state == "expired":
@@ -4563,15 +4651,19 @@ def originate_plans(
             )
             continue
 
-        # Confidence from conviction score (0-100 → capped at 92 in engine)
-        try:
-            confidence = min(float(conv.get("score", 60)), 92.0)
-        except (TypeError, ValueError):
+        # A board conviction is an ORDINAL intake condition, not the
+        # independently defined Prophet management-confidence baseline. The
+        # scientific WP04 review found no calibration or estimand equivalence.
+        # Preserve this raw score on the existing _conviction_score provenance
+        # field; never inject it into plan.confidence or the management model.
+        source_conviction = conv.get("score", 60)
+        if (isinstance(source_conviction, bool)
+                or not isinstance(source_conviction, (int, float))
+                or not math.isfinite(float(source_conviction))
+                or not 0.0 <= float(source_conviction) <= 100.0):
             _record_failure(
-                ticker=ticker,
-                plan_id=plan_id,
-                stage="plan_inputs",
-                errors=[f"conviction.score {conv.get('score')!r} is not numeric"],
+                ticker=ticker, plan_id=plan_id, stage="plan_inputs",
+                errors=[f"conviction.score {source_conviction!r} is not a finite numeric 0..100"],
             )
             continue
 
@@ -4833,6 +4925,9 @@ def originate_plans(
             "horizon_days": plan_horizon_days,  # PSQ-TILT: 45 base × leash (45 or 56)
             "min_hold_days": MIN_HOLD_DAYS_DEFAULT,  # unchanged (10)
             "tranche": 1,
+            # WP04 scientific ruling: the board's ordinal _conviction_score
+            # remains independent from the established management 60 baseline.
+            # No uncalibrated plan.confidence is originated here.
             "option_contract": opt,
             # PSQ-TILT W1 provenance (provisional; display data field, not copy).
             "stage_tilt": stage_tilt,

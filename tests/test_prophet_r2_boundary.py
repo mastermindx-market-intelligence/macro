@@ -42,6 +42,8 @@ from pathlib import Path
 
 import pytest
 
+from scripts.workflow_run_source import resolved_workflow_text
+
 ROOT = Path(__file__).resolve().parents[1]
 DAILY = ROOT / ".github" / "workflows" / "daily.yml"
 
@@ -166,7 +168,10 @@ def test_ast_detector_flags_a_nested_key_path() -> None:
 #     Key="prophet/index.json" assignment.
 # ---------------------------------------------------------------------------
 def _daily_text() -> str:
-    return DAILY.read_text(encoding="utf-8")
+    # The publisher body lives in scripts/ci/ (512KB processing-cap diet,
+    # tests/test_workflow_file_size.py); splice extracted bodies back in place
+    # so the step-text slices below keep reading the real shell.
+    return resolved_workflow_text(DAILY, ROOT)
 
 
 def _step_text(daily_text: str, marker: str) -> str:

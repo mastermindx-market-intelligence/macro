@@ -2658,6 +2658,11 @@ stock_search:
     - ARES   # Ares Management
     - ARLP   # Alliance Resource Partners
     - ARQT   # Arcutis Biotherapeutics
+    - ATAI   # AtaiBeckley — DELISTED 2026-09-11 (acquired by Eli Lilly, US$6.75
+             # + CVR; last session 09-10, 25-NSE 0001354457-26-000870). Membership added WITH the exit row
+             # (config/delisted_symbols.yml), same rule as LEG: page and deep links
+             # stay alive (CSP-R1) once the exit-ledger scrape exclusion drops it
+             # from the index rosters. Do NOT delete this line.
     - AVB    # AvalonBay Communities — DELISTED 2026-08-17 (acquired by Vivmark
              # Residential via merger; last session 08-14). Membership kept for the
              # same reason as CTRA/TPH: page, search entry and deep links stay alive
@@ -2724,6 +2729,11 @@ stock_search:
     - CVS    # CVS Health
     - CVX    # Chevron
     - DASH   # DoorDash
+    - DBRG   # DigitalBridge — DELISTED 2026-09-30 (acquired by SoftBank, US$16.00
+             # cash; last session 09-29, 25-NSE 0000876661-26-000800). Membership added WITH the exit row
+             # (config/delisted_symbols.yml), same rule as LEG: page and deep links
+             # stay alive (CSP-R1) once the exit-ledger scrape exclusion drops it
+             # from the index rosters. Do NOT delete this line.
     - DCO    # Ducommun
     - DDOG   # Datadog
     - DIS    # Walt Disney
@@ -2841,6 +2851,11 @@ stock_search:
     - PTA    # Cohen & Steers Tax-Advantaged Pref
     - PTON   # Peloton Interactive
     - PWP    # Perella Weinberg Partners
+    - QRVO   # Qorvo — DELISTED 2026-10-05 (acquired by Skyworks, 0.960 SWKS +
+             # US$32.50; last session 10-02, 25-NSE 0001354457-26-000942). Membership added WITH the exit row
+             # (config/delisted_symbols.yml), same rule as LEG: page and deep links
+             # stay alive (CSP-R1) once the exit-ledger scrape exclusion drops it
+             # from the index rosters. Do NOT delete this line.
     - REGN   # Regeneron Pharmaceuticals
     - ROP    # Roper Technologies
     - RRC    # Range Resources
@@ -2910,6 +2925,18 @@ stock_search:
     - VZ     # Verizon Communications
     - W      # Wayfair
     - WAB    # Westinghouse Air Brake
+    - WBD    # Warner Bros. Discovery — DELISTED 2026-10-06 (acquired by Skydance,
+             # US$31.01666668 cash; last session 10-05, 25-NSE
+             # 0001354457-26-000951). Membership added WITH the exit row
+             # (config/delisted_symbols.yml), same rule as LEG: page and deep links
+             # stay alive (CSP-R1) once the exit-ledger scrape exclusion drops it
+             # from the index rosters. Do NOT delete this line.
+    - WBS    # Webster Financial — DELISTED 2026-08-20 (acquired by Santander,
+             # 2.0548 SAN ADS + US$48.75; last session 08-19, 25-NSE
+             # 0000876661-26-000696). Membership added WITH the exit row
+             # (config/delisted_symbols.yml), same rule as LEG: page and deep links
+             # stay alive (CSP-R1) once the exit-ledger scrape exclusion drops it
+             # from the index rosters. Do NOT delete this line.
     - WDAY   # Workday
     - WDS    # Woodside Energy (ADR)
     - WFC    # Wells Fargo
@@ -3152,6 +3179,13 @@ stock_search:
     # GICS files under Financials, not Real Estate.
     FBRX:  {name: "Forte Biosciences", sector: "Health Care"}
     TWO:   {name: "Two Harbors Investment", sector: "Financials"}
+    # ATAI/DBRG/QRVO/WBD/WBS: acquisition exits 2026-08..10 (config/delisted_symbols.yml),
+    # labels keep their pages naming the company.
+    ATAI:  {name: "AtaiBeckley", sector: "Health Care"}
+    DBRG:  {name: "DigitalBridge Group", sector: "Financials"}
+    QRVO:  {name: "Qorvo", sector: "Information Technology"}
+    WBD:   {name: "Warner Bros. Discovery", sector: "Communication Services"}
+    WBS:   {name: "Webster Financial", sector: "Financials"}
     # ADR sensor mini-set (W0-4 — INTL-49; collected in yahoo.adr_sensors)
     ASML:  {name: "ASML Holding (ADR)", sector: "Information Technology"}
     LVMUY: {name: "LVMH (ADR)", sector: "Consumer Discretionary"}
@@ -7614,6 +7648,7 @@ intraday_flow:
 leader_radar:
   enabled: true                    # kill-switch: false → noindex stub, skip JSON
   recovery_capture_enabled: true   # 2026-10-11 WP5: capture the first-seen recovery observation per (date, ticker) row of state_history.parquet (engine/leader_recovery_observations.py); literal true only — false stops new captures and deletes nothing
+  lineage_enabled: true   # 2026-10-17 lineage admission: attach display_chips.leader_lineage + lineage_roster to radar.json AND capture first-observed lineage seals in state_history.parquet (engine/leader_lineage.py, engine/leader_recovery_observations.py); literal true only — false stops new captures and deletes nothing
   basket_keys:                     # LR-R12 basket keys from data/baskets/membership.json
     - mag7
     - ai_infra

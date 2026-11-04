@@ -70,8 +70,24 @@ def test_micro_research_no_input_mutation(document):
 
 
 def test_micro_research_crosswalk_byte_fence(document, tmp_path):
+    # Date-scoped fence (2026-10-21 micro expansion): the pin describes the
+    # frozen pre-expansion table named by source_pin.commit, so the fence is
+    # exercised against a frozen projection of the live file — the same frozen
+    # rows, different bytes — plus a nonsemantic trailing comment. Any local
+    # table the pin does not describe byte-for-byte refuses. The expansion era
+    # itself is fenced by frozen-projection reconciliation
+    # (tests/test_theme_graph_micro_expansion_20261021.py).
+    import yaml
+    live = yaml.safe_load((ROOT / "config/theme_crosswalk.yml").read_text(encoding="utf-8"))
+    frozen = {
+        key: [row for row in live["hierarchy"][key]
+              if str(row.get("asserted_on", "")) < "2026-10-21"]
+        for key in ("categories", "sub_themes", "micro_themes", "parents")
+    }
     target = tmp_path / "crosswalk.yml"
-    target.write_bytes((ROOT / "config/theme_crosswalk.yml").read_bytes() + b"\n# nonsemantic but different bytes\n")
+    target.write_text(
+        yaml.safe_dump({"hierarchy": frozen}, allow_unicode=True, sort_keys=False)
+        + "# nonsemantic but different bytes\n", encoding="utf-8")
     with pytest.raises(ValueError, match="crosswalk bytes differ"):
         build_microtheme_research_evidence(document, crosswalk_path=target)
 
@@ -113,7 +129,11 @@ def test_micro_research_crosswalk_byte_fence(document, tmp_path):
     lambda d: d["sources"]["S001"].__setitem__("url", "https://localhost/private"),
     lambda d: d["sources"]["S001"].__setitem__("published_on", "2027-01-01"),
     lambda d: d["sources"]["S001"].__setitem__("publication_precision", "YEAR"),
-    lambda d: d["source_pin"].__setitem__("crosswalk_sha256", "0" * 64),
+    # Date-scoped (2026-10-21 micro expansion): a well-formed but wrong digest
+    # can only be exercised against a byte-exact pre-expansion table, so this
+    # param arms the digest-format fence, which holds in both regimes; the
+    # value-level fence is covered by test_micro_research_crosswalk_byte_fence.
+    lambda d: d["source_pin"].__setitem__("crosswalk_sha256", "not-a-digest"),
     lambda d: d.__setitem__("schema", "gmi.microtheme_membership_research/v2"),
 ])
 def test_micro_research_adversarial_refusals(document, mutation):

@@ -183,7 +183,10 @@ def test_iii_state_only_compose_is_byte_equal_to_full_compose(production_world, 
 
     # The producer's file is exactly the full-compose state of the same capture.
     assert _shadow_build(production_world) == 0
-    same_capture = adapter.capture_owner_bundle(production_world, effective_at=EMITTED[:10], known_at=EMITTED)
+    from engine.theme_graph.theme_state_owner_readers import StateQualificationReader
+    same_capture = adapter.capture_owner_bundle(
+        production_world, owner_readers=StateQualificationReader(production_world),
+        effective_at=EMITTED[:10], known_at=EMITTED)
     expected = adapter.compose_from_owner_bundle(same_capture, generated_at=EMITTED)["state"]
     assert (production_world / SHADOW).read_bytes() == _serialize(expected)
 
@@ -398,6 +401,9 @@ def test_t9_source_shape():
         "engine.neuralweb.thematic_state", "engine.neuralweb.envelope",
         "engine.neuralweb.theme_state_generation", "engine.neuralweb.theme_state_adapter",
         "engine.theme_graph.theme_state",
+        "engine.theme_graph.theme_state_owner_readers",
+        # M2 B2a (ORCH-PIPE 2026-10-22): ACTIVITY_MEMBERSHIP_STATE fold mode — amendment ratified by the seat's merge.
+        "engine.theme_graph.materialize", "engine.theme_graph.store", "hashlib",
     }
     seen = set()
     for node in ast.walk(tree):
@@ -609,7 +615,7 @@ def test_live_capture_refusal_preserves_previous_shadow(production_world, monkey
                 return None
         original = adapter.capture_owner_bundle
         monkeypatch.setattr(adapter, "capture_owner_bundle",
-                            lambda *args, **kwargs: original(*args, owner_readers=Reader(), **kwargs))
+                            lambda *args, **kwargs: original(*args, **{**kwargs, "owner_readers": Reader()}))
 
     assert builder.build(production_world, mode=MODE) == 0
     assert (production_world / SHADOW).read_bytes() == prior

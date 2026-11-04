@@ -27,6 +27,7 @@ import threading
 import time
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -36,7 +37,7 @@ from . import (actions, ai_cost, alerts as _alerts_mod, allies_store, analytics_
                codex_panel,
                config_store,
                content, context_lobe, edge_trust, email_center, entitlements, experiments,
-               flags, ga4, github_api, github_config, gitops, health, intelligence_os,
+               flags, ga4, github_api, github_config, gitops, health, intelligence_os, intelligence_execution,
                key_alerts, long_hold,
                live_runs,
                macro_thesis,
@@ -66,10 +67,10 @@ _CTYPES = {".html": "text/html; charset=utf-8",
 # The SPA bundle is public (the authenticated data is not), so give it
 # content-addressed URLs and let the browser/edge keep each immutable revision.
 # index.html itself remains no-store and always points at the current hashes.
-_STATIC_ASSET_NAMES = ("app.js", "styles.css")
+_STATIC_ASSET_NAMES = ("app.js", "styles.css", "preferences.js")
 _STATIC_ASSET_VERSIONS = {
     name: hashlib.sha256((STATIC / name).read_bytes()).hexdigest()[:12]
-    for name in _STATIC_ASSET_NAMES
+    for name in _STATIC_ASSET_NAMES if (STATIC / name).is_file()
 }
 
 # The console is one ~950 KB bundle plus a ~210 KB stylesheet, and _file() used to
@@ -80,7 +81,25 @@ _STATIC_ASSET_VERSIONS = {
 # (admin/deploy/admin.service), which is what re-reads the files and re-stamps the
 # hashes. Guarded by a lock so two first-hit threads don't both read the file.
 _STATIC_BODY_CACHE: dict[str, bytes] = {}
-_STATIC_BODY_LOCK = threading.Lock()
+_STATIC_BODY_LOCK = threading.RLock()
+
+
+_THEME_TOKEN_BODY: bytes | None = None
+_THEME_TOKEN_VERSION: str | None = None
+
+
+def _theme_token_asset() -> tuple[bytes, str]:
+    """One governed projection pinned to this process; never serve source CSS."""
+    global _THEME_TOKEN_BODY, _THEME_TOKEN_VERSION
+    with _STATIC_BODY_LOCK:
+        if _THEME_TOKEN_BODY is None:
+            from admin.theme_tokens import project_theme_tokens
+
+            source = Path(__file__).resolve().parents[1] / "templates" / "theme.css"
+            body = project_theme_tokens(source.read_text(encoding="utf-8")).encode("utf-8")
+            _THEME_TOKEN_BODY = body
+            _THEME_TOKEN_VERSION = hashlib.sha256(body).hexdigest()[:12]
+        return _THEME_TOKEN_BODY, _THEME_TOKEN_VERSION
 
 
 def _static_body(name: str, path) -> bytes:
@@ -89,6 +108,9 @@ def _static_body(name: str, path) -> bytes:
         return cached
     body = path.read_bytes()
     if name == "index.html":
+        if b"/assets/theme-tokens.css" in body:
+            _token_body, token_version = _theme_token_asset()
+            body = body.replace(b"/assets/theme-tokens.css", f"/assets/theme-tokens.css?v={token_version}".encode())
         for asset_name, version in _STATIC_ASSET_VERSIONS.items():
             body = body.replace(
                 asset_name.encode(),
@@ -123,6 +145,7 @@ _API_CACHE_TTL_OVERRIDES: tuple[tuple[str, float], ...] = (
     ("/api/analytics/fp/", 60.0),
 )
 _API_CACHE_MAX_ENTRIES = 256
+_EVIDENCE_CACHE_BYTES = 32 * 1024 * 1024
 _API_RESPONSE_CACHE: OrderedDict[str, tuple[float, bytes]] = OrderedDict()
 _API_RESPONSE_CACHE_LOCK = threading.Lock()
 _API_RESPONSE_CACHE_GENERATION = 0
@@ -176,6 +199,14 @@ def _store_api_body(key: str, body: bytes, generation: int,
             _API_RESPONSE_CACHE.pop(old_key, None)
         _API_RESPONSE_CACHE[key] = (now + ttl, body)
         _API_RESPONSE_CACHE.move_to_end(key)
+        # Limit cumulative retained Evaluation bodies, including distinct engine
+        # details/query variants. Other panels retain their existing policy.
+        evidence_keys = [k for k in _API_RESPONSE_CACHE if ":/api/intelligence_os" in k]
+        retained = sum(len(_API_RESPONSE_CACHE[k][1]) for k in evidence_keys)
+        for old_key in evidence_keys:
+            if retained <= _EVIDENCE_CACHE_BYTES:
+                break
+            retained -= len(_API_RESPONSE_CACHE.pop(old_key)[1])
         while len(_API_RESPONSE_CACHE) > _API_CACHE_MAX_ENTRIES:
             _API_RESPONSE_CACHE.popitem(last=False)
 
@@ -558,7 +589,10 @@ class Handler(BaseHTTPRequestHandler):
         if not str(p).startswith(str(STATIC.resolve())) or not p.is_file():
             self._json({"error": "not found"}, 404)
             return
-        body = _static_body(name, p)
+        try:
+            body = _static_body(name, p)
+        except Exception:  # noqa: BLE001 — governed shell dependency unavailable
+            return self._json({"error": "admin asset unavailable"}, 503)
         etag = f'"{_STATIC_ASSET_VERSIONS[name]}"' if name in _STATIC_ASSET_VERSIONS else None
         # The bundle is served under a content-addressed ?v= URL and marked
         # immutable, so a conforming browser will not revalidate at all. This
@@ -578,6 +612,33 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("ETag", etag)
         else:
             self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Content-Security-Policy", _CSP)
+        self.end_headers()
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
+
+    def _theme_tokens_file(self) -> None:
+        try:
+            body, version = _theme_token_asset()
+        except Exception:  # noqa: BLE001 — invalid projection is unavailable, no source leakage
+            return self._json({"error": "theme asset unavailable"}, 503)
+        etag = '"' + version + '"'
+        versioned = (parse_qs(urlparse(self.path).query).get("v") or [""])[0] == version
+        cache_control = "public, max-age=31536000, immutable" if versioned else "no-cache"
+        if self.headers.get("If-None-Match") == etag:
+            self.send_response(304)
+            self.send_header("ETag", etag)
+            self.send_header("Cache-Control", cache_control)
+            self.end_headers()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "text/css; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("ETag", etag)
+        # Only content-versioned URLs are immutable; an unversioned read can revalidate.
+        self.send_header("Cache-Control", cache_control)
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
@@ -780,7 +841,9 @@ class Handler(BaseHTTPRequestHandler):
             # public, no-auth surfaces
             if path in ("/", "/index.html"):
                 return self._file("index.html")
-            if path in ("/app.js", "/styles.css"):
+            if path == "/assets/theme-tokens.css":
+                return self._theme_tokens_file()
+            if path in ("/app.js", "/styles.css", "/preferences.js"):
                 return self._file(path.lstrip("/"))
             if path == "/research-diagnostic-tokens.css":
                 from .research_diagnostic_tokens import stylesheet
@@ -828,6 +891,8 @@ class Handler(BaseHTTPRequestHandler):
 
             if _cacheable_api_get(path, q):
                 cache_key = f"{_server_cache_namespace(self.server)}:{self.path}"
+                if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
+                    cache_key += ":owner_snapshot:" + repr(intelligence_os.recorded_snapshot_cache_identity())
                 cached_body = _cached_api_body(cache_key)
                 if cached_body is not None:
                     return self._json_body(cached_body, cache_status="HIT")
@@ -1218,17 +1283,20 @@ class Handler(BaseHTTPRequestHandler):
                         {"error": f"achievements unavailable: {_ae}", "cycles": []}, 503
                     )
 
-            # Eval OS — the derived T1 (engine census) + T4 (output health) estate.
-            # Read-only and derived on demand: the module writes nothing, ever, and holds
-            # its own 5-minute in-process cache keyed on the registry's mtimes. That
-            # cache, not the 15s HTTP one above, is what keeps a click off a full
-            # 642-artifact walk; `?force=1` bypasses BOTH, which is the only combination
-            # that actually re-derives.
-            if path == "/api/intelligence_os":
-                return self._json(intelligence_os.panel(
-                    force=(q.get("force") or ["0"])[0].lower() in {"1", "true", "yes", "on"}))
-            if path == "/api/intelligence_os/engine":
-                return self._json(intelligence_os.engine_detail((q.get("id") or [""])[0]))
+            # Authenticated misses derive a complete snapshot inside the finite
+            # owned process envelope; the HTTP cache retains only bounded results.
+            if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
+                try:
+                    if path == "/api/intelligence_os":
+                        force = (q.get("force") or ["0"])[0].lower() in {"1", "true", "yes", "on"}
+                        if force:
+                            # Re-derive supersedes serialized panel/detail snapshots too.
+                            _clear_response_cache()
+                        return self._json(intelligence_execution.response("panel", force=force))
+                    return self._json(intelligence_execution.response("detail", engine_id=(q.get("id") or [""])[0]))
+                except Exception:  # noqa: BLE001 — private owner failure, fixed transport error
+                    return self._json({"ok": False, "error": "Could not read the evidence estate",
+                                       "error_code": "evidence_read_failed"}, 500)
 
             return self._json({"error": f"unknown route {path}"}, 404)
         except Exception as e:  # noqa: BLE001

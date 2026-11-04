@@ -8,16 +8,15 @@
     no fixture data is shipped here — every value is fetched authenticated. -#}
 <section class="mm-retained" id="mm-retained" aria-label="Saved outputs, historical comparison and current context">
   <header class="mmr-head">
-    <p class="mmr-eyebrow"><span class="l-en">Saved house outputs · contextual comparison</span><span class="l-zh">已保存的内部解读 · 语境比较</span></p>
+    <p class="mmr-eyebrow"><span class="l-en">Research · saved evidence</span><span class="l-zh">研究 · 已保存依据</span></p>
     <h1><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></h1>
-    <p><span class="l-en">Open a saved reading, compare cases, then inspect the evidence.</span><span class="l-zh">打开已保存的解读，比较案例，再核对原始依据。</span></p>
-    <p class="mmr-note"><span class="l-en">Context only. No ranking · no gating · no sizing · no Prophet training authority</span><span class="l-zh">仅作语境。不排名 · 不设闸 · 不定仓 · 无 Prophet 训练权限</span></p>
+    <p><span class="l-en">Read the past. Compare the context. Inspect the evidence.</span><span class="l-zh">回看过去，比较语境，核对依据。</span></p>
   </header>
 
   <div class="mmr-tabs" id="mmr-tablist" role="tablist" aria-label="Memory mode">
-    <button type="button" class="segbtn" role="tab" id="mmr-tab-saved" aria-controls="mmr-workbench" aria-selected="true" tabindex="0"><span class="l-en">Saved output</span><span class="l-zh">原始输出</span></button>
-    <button type="button" class="segbtn" role="tab" id="mmr-tab-historical" aria-controls="mmr-workbench" aria-selected="false" tabindex="-1"><span class="l-en">Historical comparison</span><span class="l-zh">历史比较</span></button>
-    <button type="button" class="segbtn" role="tab" id="mmr-tab-current" aria-controls="mmr-workbench" aria-selected="false" tabindex="-1"><span class="l-en">Current context</span><span class="l-zh">当前参考</span></button>
+    <button type="button" class="segbtn" role="tab" id="mmr-tab-saved" aria-controls="mmr-workbench" aria-selected="true" tabindex="0"><span class="mmr-tab-label"><span class="l-en">Saved output</span><span class="l-zh">原始输出</span></span><span class="mmr-tab-helper"><span class="l-en">Read what was recorded</span><span class="l-zh">查看当时记录</span></span></button>
+    <button type="button" class="segbtn" role="tab" id="mmr-tab-historical" aria-controls="mmr-workbench" aria-selected="false" tabindex="-1"><span class="mmr-tab-label"><span class="l-en">Historical comparison</span><span class="l-zh">历史比较</span></span><span class="mmr-tab-helper"><span class="l-en">Compare earlier cases</span><span class="l-zh">比较过往案例</span></span></button>
+    <button type="button" class="segbtn" role="tab" id="mmr-tab-current" aria-controls="mmr-workbench" aria-selected="false" tabindex="-1"><span class="mmr-tab-label"><span class="l-en">Current context</span><span class="l-zh">当前参考</span></span><span class="mmr-tab-helper"><span class="l-en">Explore saved context</span><span class="l-zh">探索已保存语境</span></span></button>
   </div>
 
   <div id="mmr-workbench" role="tabpanel" aria-label="Retained evidence workbench" tabindex="-1">
@@ -25,7 +24,7 @@
       <div>
         <label for="mmr-capture"><span class="l-en">Saved SPY capture</span><span class="l-zh">已保存的 SPY 记录</span></label>
         <select id="mmr-capture" name="mmr-capture" disabled autocomplete="off">
-          <option value="">Sign in to list saved captures</option>
+          <option value="">Saved captures not loaded · 已保存记录尚未加载</option>
         </select>
       </div>
       <div>
@@ -35,10 +34,12 @@
         </select>
       </div>
       <button type="button" class="gbtn gbtn-cta mmr-primary" id="mmr-primary"><span class="l-en">Open saved output</span><span class="l-zh">打开原始输出</span></button>
+      <div class="mmr-selector-notes">
       <p class="mmr-scope" id="mmr-scope"><span class="l-en">Saved house macro readings associated with SPY.</span><span class="l-zh">与 SPY 关联的已保存内部宏观解读。</span></p>
       <p class="mmr-original-clock" id="mmr-original-clock" hidden></p>
       <p class="mmr-cutoff-note" id="mmr-cutoff-note" hidden></p>
       <p class="mmr-mode-note" id="mmr-mode-note"><span class="l-en">Reads the original captured packet and its exact source quotes. No analysis is substituted.</span><span class="l-zh">读取原始已保存记录及其确切引用；不代入任何分析。</span></p>
+      </div>
     </section>
 
     <div class="mmr-columns">
@@ -60,6 +61,11 @@
       </aside>
     </div>
   </div>
+
+  <details class="mmr-authority mmr-disc">
+    <summary><span class="l-en">Scope &amp; limits</span><span class="l-zh">范围与限制</span></summary>
+    <p class="mmr-note"><span class="l-en">Context only. No ranking · no gating · no sizing · no Prophet training authority</span><span class="l-zh">仅作语境。不排名 · 不设闸 · 不定仓 · 无 Prophet 训练权限</span></p>
+  </details>
 
   <details class="mmr-panel mmr-legacy" id="mmr-legacy">
     <summary><span class="l-en">Recomputed history — existing macro and symbol tools</span><span class="l-zh">重算历史 — 既有宏观与个股工具</span></summary>

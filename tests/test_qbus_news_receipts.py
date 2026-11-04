@@ -268,3 +268,39 @@ def test_health_base_carries_both_diagnostic_codes_as_none():
 
     assert base["last_catchup_error"] is None
     assert base["last_stream_error"] is None
+
+
+def test_additional_health_reports_observations_without_inventing_upstream_recency():
+    from engine.qbus_news_receipts import parse_health_receipt
+
+    extra = {
+        "provider": "massive", "state": "available",
+        "last_successful_poll": "2026-10-05T21:59:50+00:00",
+        "publishers": ["zacks.com", "fool.com"],
+        "accepted_reports": 37, "last_error": None,
+        "upstream_recency": "hourly",
+    }
+    health = parse_health_receipt(_health(additional_sources=[extra]), now=NOW)
+    projected = health["additional_sources"][0]
+    assert projected["state"] == "available"
+    assert projected["delivery"] == "polled"
+    assert projected["configured_publishers"] == ["fool.com", "zacks.com"]
+    assert projected["accepted_reports_since_start"] == 37
+    assert "upstream_recency" not in projected
+
+
+@pytest.mark.parametrize("publishers,count", [
+    (["https://zacks.com"], True), (["zacks.com"] * 65, -1), ("zacks.com", "37"),
+])
+def test_invalid_additional_health_diagnostics_do_not_become_coverage(publishers, count):
+    from engine.qbus_news_receipts import parse_health_receipt
+
+    extra = {
+        "provider": "massive", "state": "available",
+        "last_successful_poll": "2026-10-05T21:59:50+00:00",
+        "publishers": publishers, "accepted_reports": count,
+    }
+    projected = parse_health_receipt(_health(additional_sources=[extra]), now=NOW)["additional_sources"][0]
+    assert projected["state"] == "available"
+    assert "configured_publishers" not in projected
+    assert "accepted_reports_since_start" not in projected

@@ -147,3 +147,55 @@ the existing normal serializer. The peer report is accepted as an adjudicated
 review of82e131; root verified the repair postimage. This does not claim that the
 peer reviewed the later commit. Existing Linux filesystem evidence remains
 applicable because generation_evidence.py is unchanged.
+
+
+## Bounded original-parent continuation candidate
+
+The companion source now provides a read-only closed-journal analyzer and a
+private `_continue_after_original_exit` entry point. These functions do not
+establish caller authority or process settlement. The protected producer launcher
+must actually wait for its own original child, retain the closed journal's
+capture digest, and invoke one fresh isolated continuation child. A saved receipt,
+manual CLI call, newly assigned run identity or matching remote postimage cannot
+substitute for that original control flow. Mastermind PR1546 supplies that
+composition; its source-pair release requires adjudicated recovery-review
+findings and the normal protected release checks.
+
+The analyzer accepts only acknowledged, observed BUILDING publication with an
+exact live catalog version and bytes, valid corpus/receipt/PDF bindings, and no
+unsettled write intents. The continuation creates an exclusive tail journal and
+records its original capture and catalog predecessor before issuing only missing,
+previously unissued create-only receipts and the final COMPLETE transition. It
+retains the same source/run identity and epoch, leaves the original journal
+immutable, and never starts another BEGIN. Failed or ambiguous tails stay on the
+same reserved operation; there is no recursive or manual retry entry point.
+
+The continuation uses the analyzer's existing 1 GiB aggregate live-read ceiling.
+The ordinary 256 MiB budget could be exhausted by an admitted 256 MiB corpus
+before receipt, PDF and catalog-fence checks finished. A scaled regression runs
+the actual analyzer and same-epoch completion at that boundary; the former
+budget fails before continuation writes. Larger aggregate cuts still refuse
+before writes and require original-operation reconciliation. This is a bounded
+continuation, not a general recovery mechanism for every possible batch size.
+
+The CLI opens its read-only SQLite projection by a percent-encoded absolute
+file URI. A corpus path containing percent, question-mark or hash characters
+must identify the named database rather than a decoded or truncated decoy.
+
+Generation invocations use a separate write client with a resolved standard SDK
+policy of one total attempt and a per-invocation guard on actual outbound sends.
+The guard also refuses S3 regional redirects and their HeadBucket probes before
+any second request. A lost response remains an uncertain effect even when a
+matching object or COMPLETE postimage can be read later. Ordinary legacy writes
+and read retry behavior remain unchanged. This reduces generation availability:
+a transient write failure can leave BUILDING frozen until its original operation
+is lawfully reconciled. It does not authorize a successor to replay the write.
+
+The changed source is tested with the prepared boto3/botocore1.43.108 pair and
+loopback HTTP, including redirect request counts, concurrent writes, missing
+credentials, lost responses and legacy injected-client replacement. The source
+pair's isolated actual launcher/engine proofs distinguish an acknowledged
+publication followed by an unissued tail from original and tail lost-ack cases.
+These are synthetic service proofs, not real R2 consistency, all-writer admission,
+source installation or consumer acceptance. A COMPLETE generation still requires
+its own truthful coverage census; it does not imply the95percent target.

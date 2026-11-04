@@ -1,0 +1,221 @@
+{
+  "evidence_observation_date": "2026-10-20",
+  "carrier_head": "ac08d5bd630d480a97fcbd0d9814946724250011",
+  "runs": {
+    "workflow_runs": [
+      {
+        "id": 39118765782,
+        "name": "fences",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 29233,
+        "jobs_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/39118765782/jobs",
+        "logs_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/39118765782/logs",
+        "workflow_id": 311473437
+      },
+      {
+        "id": 39118765804,
+        "name": "ci",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_number": 27833,
+        "jobs_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/39118765804/jobs",
+        "logs_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/39118765804/logs",
+        "workflow_id": 297914825
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": 117649874656,
+      "name": "ci-plan",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117649874821,
+      "name": "contract-delta",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324470,
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324497,
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324508,
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324527,
+      "name": "ci-pack-8",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324539,
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "validate and run legacy CI pack",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 10
+        }
+      ]
+    },
+    {
+      "id": 117650324554,
+      "name": "ci-pack-3",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324559,
+      "name": "ci-pack-2",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324563,
+      "name": "ci-pack-10",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324571,
+      "name": "ci-pack-11",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324597,
+      "name": "ci-pack-0",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324614,
+      "name": "ci-pack-6",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324787,
+      "name": "ci-pack-4",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 117650324966,
+      "name": "trusted-ci",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 117653014687,
+      "name": "ci-gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "enforce semantic verdict",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8
+        }
+      ]
+    }
+  ],
+  "current_main": "247677efade31ea32d6b6ef5b701de61c47392cd",
+  "current_guard": {
+    "sha": "a9e65aec9531c970554bc83b82a6f5bd76927b60",
+    "l8_source": "    return out\n\n\n# ── L8 — migration-packet coupling ────────────────────────────────────────────\n\ndef rule_l8(repo_root: Path, status_by_id: dict[str, str]) -> list[Finding]:\n    packet_dir = repo_root / PACKET_ROOT\n    if not packet_dir.is_dir():\n        return []\n    out: list[Finding] = []\n    for packet in sorted(packet_dir.glob(\"*.md\")):\n        rel = packet.relative_to(repo_root).as_posix()\n        try:\n            body = packet.read_text(encoding=\"utf-8\")\n        except (OSError, UnicodeDecodeError) as exc:\n            out.append(Finding(\"packet-without-rig-receipt\", rel, f\"unreadable: {exc}\"))\n            continue\n        cited = [m.group(1) for m in _RIG_RECEIPT_RE.finditer(body)]\n        if not cited:\n            if packet.name in CLOSED_PRE_RIG_PACKETS:\n                # Pre-gate debt, named and closed (see the list's note): the\n                # packet predates L8 and its reference has not approved yet, so\n                # there is no receipt it could honestly cite.  Exempt ONLY the\n                # missing-receipt state — a listed packet that cites a receipt\n                # falls through to full validation below.\n                continue\n            out.append(Finding(\n                \"packet-without-rig-receipt\", rel,\n                \"a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an \"\n                \"APPROVED reference (RIG §8 L8)\",\n            ))\n            continue\n        for ref in cited:\n            if status_by_id.get(ref) != \"approved\":\n                out.append(Finding(\n                    \"packet-cites-unapproved-reference\", f\"{rel}:{ref}\",\n                    f\"RIG-RECEIPT names reference {ref!r} with status \"\n                    f\"{status_by_id.get(ref, '<missing>')!r} — only an approved reference is canonical (RIG §7/§8)\",\n                ))\n    return out\n\n\n# ── L9 — page-registry coupling ───────────────────────────────────────────────\n\ndef _surface_keys(manifest: dict[str, Any] | None) -> set[str]:",
+    "scan_roots": "# ── Repo-relative scan roots ──────────────────────────────────────────────────\nRIG_ROOT = \"research/reference_integrity\"\nPACKET_ROOT = \"research/migration_packets\"\nDESIGN_SYSTEM_ROOT = \"mockups/design_system\"\nREGISTRY_OVERRIDES = \"config/product_experience/page_registry_overrides.yml\"\nREGISTRY_JSON = \"data/product_experience/page_registry.json\"\n\n# Directories under RIG_ROOT that are not artifact sets.\nNON_ARTIFACT_DIRS = frozenset({\"templates\"})\n\n# RIG §8 L7: the closed pre-RIG reference list.  Wave-0 references commissioned before\n# this law; they stay provisional until their artifact sets are backfilled, which their\n# first consuming packet owns.  specimen.html is the design-system specimen, not a\n# reference.\nCLOSED_PRE_RIG_REFERENCES = frozenset({\n    \"macro_reference.html\",\n    \"today_reference.html\",\n    \"utility_reference.html\",\n})\nNAMESPACE_EXEMPT = CLOSED_PRE_RIG_REFERENCES | {\"specimen.html\"}\n\n# RIG §8 L8: the closed pre-RIG packet list.  L8 was armed on the stated premise\n# \"there are no packets on main today, so this rule starts with zero debt and no\n# grandfathering\" — that premise was false: MP-1 merged 2026-08-13 (#5505), one\n# day before this gate (#5520), so the rule armed over live debt it could not\n# see.  The debt is therefore NAMED and CLOSED — the same disposition L7 gives\n# the Wave-0 references — rather than silently red on main.  A listed packet is\n# PROVISIONAL: its spawn gates stay closed, and its first consuming build owns\n# adding the `RIG-RECEIPT:` line once its reference approves, at which point the\n# entry MUST leave this list.  The list never grows without the same\n# packet-predates-the-gate justification, and a listed packet that DOES cite a"
+  },
+  "current_build_map": {
+    "sha": "b5a2a4a3a1d5a8c6c405348f46e72a23f9eeca40",
+    "selected_lines": [
+      "| #9595 | docs(grey-deer): preserve release failures and research admission | `sol/web-risk-radar-release-qualification-20261018-0304` | 2026-10-18 | DRAFT / files-truncated |",
+      "| #9600 | #9579 | 1 | `templates/sector_central.html.j2` |",
+      "| #9592 | design(sector-central): preserve intelligence workflow and retire container accent rails | 2026-10-18 |"
+    ]
+  },
+  "current_draft_files": [
+    {
+      "content": "# Sector Central — 92-capability migration crosswalk\n\nParent: macro#7646 / sector-central-redesign-20260921-sol-001.\nAuthority: Chairman's 2026-10-18 fresh design and end-to-end migration commission.\nStatus: DESIGN CONTRACT; production parity is not accepted.\n\n## How to read this crosswalk\n\nThis is a new migration ruling over the preserved R3A capability ledger. It does not modify that archived ledger, its fixtures or its frozen review. The August wave's prohibition on relocation governed that reference wave. The current commission explicitly authorizes reorganizing Sector Central; the new homes below apply to this migration. Source semantics, access restrictions, scientific qualifications, live source custody and actual refusal records remain binding.\n\nEvery original row has a destination. A destination is not evidence that the feature has migrated. All production rows remain pending integration and real-path acceptance. Rows 66 and 92 remain producer-dependent unless an accepted current source supplies the missing contract. The current 2026-10-18 source read outranks historical field/route/access assumptions where they differ.\n\nThe new working reference demonstrates selected measured, event, original-coordinate rotation, participation and Confluence presentations. It is explicitly incomplete for cycle history, Time Machine chunks, live heatmap/ETF-flow sources, gated action hydration and verified company-to-Prophet continuation. It uses the immutable R3 archive and a separate measured test fixture with visible different clocks; no mixed-date synthesis is implied.\n\n| R3A ID | Preserved capability | New home | Migration constraint |\n|---|---|---|---|\n| 1 | Six action-lane keys (`buy_now,buy_soon,on_the_run,take_profits,hold,avoid`) folding into five rendered columns (hold+avoid share \"Stand aside\") | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 2 | Exact EN/ZH lane labels + subcopy (Buy now / Almost ready / In favour — don't chase / Take profits / Stand aside) | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 3 | Lane header counts computed off the FULL board, never gated (\"counts are free, names are paid\") | Brief → native calls / all calls | Counts use the full permitted producer population; preview rows never become the denominator. |\n| 4 | Row merge order: theme (basket) rows lead, sector rows follow, within each lane | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 5 | `buy_soon` sector sub-list sorted by `days` ascending | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 6 | Theme row `score` + `perf_20d_rel` numeric fields | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 7 | Sector row qualitative `stat_en`/`stat_zh` chip (no blended score/perf pair) | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 8 | Per-sector conviction score (`sectordata/sector_central.json`, distinct artifact from the action board) | Brief → native calls / all calls | Keep the existing conviction score distinct from measured leadership and stock-entry qualification. |\n| 9 | Sector row click destination (`US_SECTOR_PAGE` override table → `sectors/<TICKER>.html` fallback) | Dossier / native detail destination | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 10 | Theme row click destination (`basket/<id>.html`) | Dossier / native detail destination | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 11 | Bottoming-watch row click destination (href set by producer, consumed verbatim) | Dossier / native detail destination | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 12 | \"+N more\" links → `sector_central.html#actnow-section` (same-page anchor, all five lanes) | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 13 | Lane-foot \"Drill to stocks →\" → `#confluence` in-page view switch | Dossier / native detail destination | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 14 | Premium gate switch + preview/locked split (`config.yml sector_central_gate: gated:true, preview_rows:3`) | Shared access owner → same authorized data | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 15 | Split computed twice (Python payload + Jinja shell) from the identical source list — shell/payload cannot disagree by construction | Shared access owner → same authorized data | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 16 | `premiumdata/sector_central.json` payload, `tier_payload.v1` schema, written unconditionally every build | Shared access owner → same authorized data | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 17 | `sector_central.json` payload kept separate from `us_stocks.json` (no shared-file overwrite race) | Shared access owner → same authorized data | Keep the existing separate Sector and Prophet artifacts; no shared-file overwrite. |\n| 18 | `/premiumdata/` URL-level enforcement ahead of the site-wide paywall switch | Shared access owner → same authorized data | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 19 | Authenticated hydration flow (`whenAuthSettled` → fetch → `hydrate()` schema/page validation → DOM insert by `data-ab-lane` → `restoreFold` → disclosure-line removal) | Shared access owner → same authorized data | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 20 | `si-read-overview` summary strip (`readOverview()`, composed purely from `theme_intel.act_now.buy` length + hero attrs) | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 21 | Bottoming Watch: strict display-tier/watch-only contract (`signal`/`timing_state` payload fields deliberately never rendered) | Brief → What changed / Turns | Watch context cannot promote itself into an entry call. |\n| 22 | Bottoming Watch exact EN/ZH wording (lane title, subcopy, per-row chip, gate-conflict chip, dual-read chip, empty state, null disclosure) | Brief → What changed / Turns | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 23 | Bottoming Watch full-width strip layout under the five lanes, explicitly NOT a sixth action lane | Brief → What changed / Turns | Preserve the separate watch role; the new layout need not repeat the old full-width placement. |\n| 24 | Overview hero / \"This week's handoff\" / \"What changed\" leadership context, sourced from `si_handoff.json` `theme_context`/`factor_season`/`flow` | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 25 | Hero fallback to generic \"US Sector Intelligence\" when `si_handoff.json` absent/corrupt | Brief → native calls / all calls | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 26 | Structural separation: no code path connects hero leadership text to action-board lane placement | All views → data, density and failure behavior | Leadership context cannot move rows between action lanes. |\n| 27 | Overview absolute-clock stale guard (`_dtpState`, 12h threshold vs `Date.now()`) | All views → data, density and failure behavior | Keep absolute source-clock semantics; an invalid timestamp is unavailable, never fresh. |\n| 28 | Zero-vs-missing distinction (`is not none`/`is defined` idioms, never truthiness) | All views → data, density and failure behavior | Preserve zero and missing as distinct; null carries its reason. |\n| 29 | Per-lane empty-state copy via Jinja `{% for/else %}` (genuine zero-length construct, not a string check) | All views → data, density and failure behavior | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 30 | Independent fail-soft degrade per secondary source (`ctx`/`action_board`/`_bottoming`/`flows_html`, each with its own fallback) | All views → data, density and failure behavior | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 31 | Fetch-fail / malformed-JSON collapse to one fixed \"Data failed to load — please refresh.\" string | All views → data, density and failure behavior | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 32 | 401/403/offline collapse to no-op keeping the server-baked preview + sign-in disclosure line | Shared access owner → same authorized data | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 33 | `dispshort()` curated long-name abbreviation table + CSS ellipsis fallback for unlisted names | All views → data, density and failure behavior | Full names must remain available; use deliberate wrapping and disclosure. |\n| 34 | Fold/show-more at the 3-row threshold, CSS-suppressed control below threshold; DOM-side `restoreFold()` reimplements the same threshold for the hydrate path | All views → data, density and failure behavior | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 35 | Self-grader / Track Record (`#grader`, `engine.sector_central_grader`, nightly-sole-advancer, ledger NEVER read back into a live score) | Dossier Record / Time Machine / Methods | Preserve grader provenance and no feedback into current scores. |\n| 36 | Rotation map SVG quadrant scatter (`#rvx-rmap`), context-labeled, no gated call | Explore → Rotation / native linked board | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 37 | Rotation-map accessible text/table equivalent (`#rvx-board`, full ranked list) | Explore → Rotation / native linked board | Preserve native fields, identity, ordering, clock and access semantics; qualify the receiving view. |\n| 38 | Linked-board `reco` tag rendering (`enter/accumulate/hold/trim/avoid` → Buy/Add/Hold/Trim/Avoid) | Explore → Rotation / native linked board | Preserve producer meaning without amplifying action-shaped tags into new authority. |\n| 39 | Sector-cycle clock chart (`#sc-chart`, lazy-mounted `@cycles`) | Explore → Cycles | Keep the native cycle history and add an equivalent accessible reading. |",
+      "encoding": "utf-8",
+      "sha": "fa2b3f3941d3757f9a18545a616003e3aa8428b3",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/247677efade31ea32d6b6ef5b701de61c47392cd/research/design_candidates/sector_central_20261018/MP-20261018-sector-central-capability-crosswalk.md",
+      "display_title": "MP-20261018-sector-central-capability-crosswalk.md"
+    },
+    {
+      "content": "# Sector Central — Paper application and acceptance package\n\nParent: macro#7646 / sector-central-redesign-20260921-sol-001.\nStatus: PREPARED DESIGN PACKAGE. No new Paper nodes or production candidate are claimed.\nBinding contract: MP-20261018-sector-central.md and its 92-capability crosswalk.\n\n## 1. Exact Paper target and recovery condition\n\nFile: MASTERMIND PAGES / 01M2WGNCX9475G79JRKJTCM08P.\nCurrent page: p-Y-0, Sector Intelligence · R2 · Current Build · 2026-09-27.\nOld p-9-0 is an archive redirect; p-E-1 instrument studies and p-6-1 unified detail remain useful references.\n\nCurrent direct-app read evidence: paper-desktop 0.5.14; live catalog\n1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db;\ninstalled accepted catalog ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9;\naccepted_for_write=false. #1399 and #1409's other reviewed catalog is not this one.\n\nBefore application: the existing Paper owner must qualify the complete current descriptor catalog through its normal reviewed release path, preserve #1409's actual staging refusal, and demonstrate accepted_for_write through the same direct app. Do not loosen the guard or send equivalent edits through Studio/another connection.\n\nUse a fresh exact Paper snapshot only after this gate clears. It is intentionally absent from this package because a stale snapshot is not an edit grant.\n\n## 2. Canvas application sequence\n\nPreserve p-Y-0 R2 and the archived studies as review history. After write acceptance, use the direct app's supported current schema to create an R3 candidate page in the same file. Name it **Sector Intelligence · R3 · Connected workflow · 2026-10-18**. No page/node identity is invented here; record the returned identities.\n\nStart with the four principal compositions: Brief, Rotation, Dossier/Confluence and connected Research. Build the desktop/light/EN base from the current R2 grammar, then the paired dark art direction. Add native Chinese copy and mobile recomposition. Component definitions remain shared; do not create one style system for each screen.\n\nApply in bounded operations with exact expected_snapshot and unique operation identity. After each accepted operation, use an independent read/screenshot to verify the actual nodes. Preserve unknown effects and read back the same operation before any replay. Finish by recording actual page/board links and which R2 boards the accepted candidates supersede.\n\n## 3. Existing board → new composition decisions\n\n| Existing R2 board | Required continuation |\n|---|---|\n| 24OB-0 authority / 27SZ-0 backend-release contract | Update source and delivery truth with this packet; keep design, source acceptance and production proof distinct. |\n| 24RC-0 Brief desktop | One answer-first headline; measured leader scoped to available coverage; equally explicit What changed; native calls remain a separate authority layer. |\n| 2596-0 Explore Rotation desktop | Persistent Rotation/Turns/Leadership/Money/Confluence/Cycles lenses; native map plus accessible linked list and selected evidence. |\n| 261A-0 Dossier desktop | Source-bound measurement, observed change, dated Companies, Signals, Drivers and Record. Show disagreement rather than synthesize a new verdict. |\n| 273O-0 Connected Research | Retained subject, question, source, snapshot and return destination. Label a plain stock link honestly until Prophet receives context. |\n| 28SK-0 Compare/Themes; 1XAO-1 Subtheme; 1XLT-1 Compare | Integrate as Explore depth; preserve group kinds, membership/overlap meaning, compare limits and native ordering. |\n| 1W6W-1 Breadth desktop; 28OT-0 / 1WW5-1 Breadth mobile | Present within Money/Participation; preserve k/n, expected population and source clocks. Actual fund flow remains a separate measure. |\n| 1Y9Q-1 / 20P9-1 Source/version conflict | Keep records inspectable; explain which sources cannot be combined; never silently choose the newest date. |\n| 1YSZ-1 / 20R6-1 Sources/methods | Progressive disclosure of basis, coverage, identity, evidence mode, version and action authority. |\n| 28BJ-0 Brief mobile | Stack the answer, observed change and investigation action; retain date and missing coverage. |\n| 20L6-1 Memory mobile | Record distinguishes observed-then, reconstructed history and corrected records. |\n| 20MT-1 Compare mobile | Focus one comparison question; tabular alternative and contained overflow. |\n| 2SS6-0 TOC | Point only to verified actual candidate boards; distinguish current candidate from archived alternatives. |\n\n## 4. Composition constraints\n\nDesktop baseline 1440 CSS px; mobile baseline 390. Final acceptance also covers 320, 430 and relevant landscape under the original approved candidate path.\n\nUse the canonical SF/Inter-compatible stack, 28px page heading, approximately 14–15px body, 12.5px secondary text, native Chinese line breaking and tabular numerals. Typography and density obey the specimen. Full group names remain reachable; truncation is not the default information strategy.\n\nNo colored container edge, inset rail or pseudo-element stripe. Do not relocate it to another edge. Use neutral fill, even borders, whitespace, weight and labeled semantic ink. Chart series and complete focus outlines retain their real function.\n",
+      "encoding": "utf-8",
+      "sha": "19fa4a5f9758e22294357cd10dea7520b02aa1bc",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/247677efade31ea32d6b6ef5b701de61c47392cd/research/design_candidates/sector_central_20261018/MP-20261018-sector-central-paper-and-acceptance.md",
+      "display_title": "MP-20261018-sector-central-paper-and-acceptance.md"
+    },
+    {
+      "content": "# Sector Central — design and delivery contract\npacket-id: MP-20261018-sector-central\nDate: 2026-10-18\nParent: macro#7646 · sector-central-redesign-20260921-sol-001\nState: DESIGN/INTEGRATION CANDIDATE — NOT RELEASED; NOT APPLIED TO PAPER\n\n## 0. Acceptance gates\n\nThe Chairman commissioned the full product upgrade: design, frontend implementation, backend consumption, Prophet continuity, and actual delivery. This packet is a continuation of that assignment. A plan, mockup, successful URL change, merged backend PR, or HTTP 200 does not complete it.\n\nThe release is not accepted unless:\n\n1. Brief → Explore → selected group → Companies → existing stock/Prophet destination → return works with a real permitted account and production-shaped source data. The receiving view visibly identifies the correct entity and restores the original investigation.\n2. All six legacy hashes resolve to their meaningful destinations on direct entry, refresh, click and Back/Forward. Every retained deep anchor still resolves. A URL change with an unchanged screen fails.\n3. Every current capability has an explicit destination. Rotation trails, measured leadership, cycle context, constituent participation, themes and overlap, confluence, history, call grading, and existing action gates survive the migration.\n4. Group measurement, transition observation and research estimate remain distinct. Existing producer actions retain their original eligibility. No new aggregate bullish/confidence score, directional probability, cycle × rotation confirmation, or LLM detector is introduced.\n5. Dark/light × English/Chinese × 1440/390 evidence is reviewed as eight separate compositions; 768 is additionally checked for layout transition. Keyboard selection, focus, reduced motion and zoom work. No horizontal page scroll.\n6. Loading, not measured, partial, stale, mixed-vintage, malformed, error, signed-out and entitled states have useful copy and truthful behavior. A missing number never becomes zero. Source time is not replaced by render time.\n7. No container has a colored edge accent, including selected navigation, nested rows, warning/error banners and mounted legacy content. Semantic chart marks and labeled status ink remain meaningful.\n8. Independent source and visual review, required CI, native build/publication and served-identity checks pass through existing release owners. Existing holds are reconciled by their authorities; there is no admin/check/access bypass.\n9. Paper receives the actual reviewed design through the guarded direct app, with a current accepted catalog, exact-file snapshot, readback and screenshot. Until that happens, all new local references say NOT_APPLIED_TO_PAPER.\n10. Every completion claim distinguishes SOURCE, RENDER/PUBLICATION, SERVED DATA, VISUAL/JOURNEY and PREDICTIVE QUALIFICATION. The last remains NO unless a separate scientific owner changes it through its established procedure.\n\n## 1. Current state and what it means\n\n### Product and design\n\nThe existing Paper file is [MASTERMIND PAGES](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/). The current sector page is [Sector Intelligence · R2 · Current Build](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-Y-0), not the old September 21 archive redirect.\n\nIts useful core is already coherent: one guided Brief, a coordinated Explore workspace, one reusable Industry Dossier, and Connected Research. Read current authority board 24OB-0, build contract 27SZ-0 and TOC 2SS6-0 first. Main reference boards are 24RC-0 Brief, 2596-0 Explore Rotation, 261A-0 Dossier, 273O-0 Research, 28SK-0 Compare/Themes, 28BJ-0 mobile Brief and 28OT-0 mobile breadth. Preserve the restored breadth, subtheme, comparison, source-conflict and methods boards on this page, plus historical p-E-1 instrument studies.\n\nThe live Macro overview still shows a dense narrative hero, five cramped action lanes, truncated group names, a missing “as of” value, and colored container/navigation edges. A current ordinary browser click on The Map changed the hash to #map while leaving Overview mounted. Further ordinary baseline clicks on What's Moving, Money & Breadth, Explore and Confluence reproduced the same failure: the hash changed, Overview retained aria-current=page, and the Overview action board stayed visible. These observations do not identify the underlying cause or qualify any new candidate. This is an actual interaction defect, not a taste judgment. Macro [#7595](https://github.com/mastermindx-market-intelligence/macro/pull/7595) owns the shell/script-access repair and remains open. Its source and browser hold must not be silently routed around.\n\nThe current shared rules explicitly recommended a three-pixel state rail. This continuation replaces that advice in DESIGN_DOCTRINE and MASTER_PRODUCT_DESIGN_SYSTEM_V1 and the executable specimen, following the Chairman's October 18 direction. It is a durable rule for new and touched surfaces.\n\n### Backend and connected products\n\nSource baseline for this packet: Macro edc7c8976a50482cd52e13910b1b1ad188d113dd, an observed remote main revision. The owned isolated continuation workspace remains on sol/web-sector-central-redesign-20260921-sol-001. A later unrelated source merge is not permission to overwrite another owner's work.\n\n- engine/sector_central.py already combines native cycle context, absolute trend and macro gates, plus bounded momentum/heat/crowding context. Its own documentation explicitly limits the score: no directional sector forecast; the trend-gate claim concerns risk control. Preserve that distinction.\n- engine/leadership_rotation_context.py is the stateless additive owner of the measured-product contract. It explicitly distinguishes GroupMeasurement, TransitionObservation and ResearchEstimate. Relative wealth is (1+R_group)/(1+R_benchmark)-1; a plain return difference is a different metric. Breadth coverage bounds are not confidence intervals.\n- templates/sector_central.html.j2 already contains the measured map/list/detail/history consumer reading SECTOR_CENTRAL.measured_read. Reuse it and the producer's history/evidence modes; do not build a second measured-read engine.\n- scripts/build_sector_central.py publishes sector_central_data.js and sectordata/sector_central.json, reads the existing basket/action-board handoffs and premium payload, and appends/grades the existing call ledger. The real builder has side effects; preview work must not run it against the production data tree.\n- The visible Act Now board consumes the existing US action board. Bottoming Watch is a separate context lane. A new design must not promote a watch-only turn to Buy now or turn an unconfirmed entry into a generic “extended” claim.\n- Terminal [#754](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/754) is merged; later #1000/#1003 are also recorded as merged in WS:LEADERSHIP-ROTATION-INTELLIGENCE. Macro owns the upstream analytical records; Terminal is a consumer/presentation owner, not a replacement calculation authority.\n- The active rotation workstream records measured-product and scientific-disposition completion separately from predictive qualification (NO) and original-program completion (NOT COMPLETE). Preserve accepted work and its remaining natural-consumption/visual gaps.\n\n### The actual Prophet gap\n\nengine/us_board_rank.py::load_theme_context already links in-favour themes from data/baskets/latest.json and dated membership data to stock rows. It intentionally excludes us_sector_* groups and labels this material as display context with zero score authority. theme_confirmed handles the sector/stock clock mismatch as context, without changing admission.\n\nengine/us_prophet_fusion.py::STRUCTURAL_FAMILY_NOTES records F3_THEME_STRUCTURE as absent from its scoring frame; sector is identity and page-level donor constants do not provide independent stock-ranking evidence. This is why “Sector Central is not fully linked to Prophet” cannot be solved responsibly by adding the existing sector score to Prophet.\n\nThe first integration is a dated, identity-qualified sector evidence handoff into the existing company and Prophet experience. New predictive or admission use is a distinct future research decision, not a hidden part of the frontend migration.\n",
+      "encoding": "utf-8",
+      "sha": "f23be13d107e0d05be2dd580f2439271da6cae88",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/247677efade31ea32d6b6ef5b701de61c47392cd/research/design_candidates/sector_central_20261018/MP-20261018-sector-central.md",
+      "display_title": "MP-20261018-sector-central.md"
+    }
+  ],
+  "old_paths_current_main_responses": [
+    {
+      "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}",
+      "error_code": "NOT_FOUND",
+      "error_data": {
+        "message": "Not Found",
+        "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+        "status": "404"
+      }
+    },
+    {
+      "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}",
+      "error_code": "NOT_FOUND",
+      "error_data": {
+        "message": "Not Found",
+        "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+        "status": "404"
+      }
+    },
+    {
+      "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}",
+      "error_code": "NOT_FOUND",
+      "error_data": {
+        "message": "Not Found",
+        "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+        "status": "404"
+      }
+    }
+  ]
+}

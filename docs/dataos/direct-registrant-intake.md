@@ -143,3 +143,26 @@ exchange associations”,
 https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data.
 The actual captured bytes/metadata remain in private operation evidence; do not
 substitute this document's scalar examples for those bytes.
+
+## Selected historical Options contracts (pure consumer adapter)
+
+`engine/intelligence_workspace/options_contract_identity.py` adds a bounded
+selected-contract identity composition alongside the existing root/Matrix
+consumer. It is not another intake flag, registry or root-alias publisher.
+The original observed-day root admission and its replay prohibition are unchanged.
+
+For one SPY expiry/session, the admitted reader supplies exact captured native
+master/listing/completion-receipt bytes, a captured parsed Massive historical
+reference response with explicit `as_of`, and matching actual Theta contract
+acquisitions. The adapter validates the existing canonical target, standard
+series terms, exact selected keys and all known-by clocks. Its effective session
+may precede acquisition, while `known_at` follows every actual evidence read.
+A cutoff before that knowledge refuses; the result makes no historical first-
+availability or source-use claim.
+
+`DatedContractIdentity` exposes a selected-key receipt, with no `AliasRow` and no
+root lookup capability. The existing Options producer binds that receipt to its
+actual input digest and rechecks scope at consumption. A valid20contract book
+cannot authorize a21st contract, another expiry/root/session, an adjusted series
+or instantaneous model use. Broader identity publication must continue through
+the existing native producer and its own evidence/retention rules.

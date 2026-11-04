@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000070858-22-000131",
+    "expected_period_end": "2022-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "3072000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "bac-20220930.htm | us-gaap:NetIncomeLoss @ idcee0e25cdcd442a8f6e3fdb64f78558_D20220701-20220930 (ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember; StatementBusinessSegmentsAxis=bac:ConsumerBankingSegmentMember) | 'Net income $ 7,082 $ 7,691 $ 3,072 $ 3,045 $ 1,190 $ 1,226' | Segment net income for the largest segment by total revenue net of interest expense, Consumer Banking, for the three months ended September 30, 2022; Business Segment Information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000070858-22-000131|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0000070858-22-000131",
+    "expected_period_end": "2022-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "9904000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "bac-20220930.htm | bac:RevenuesNetOfInterestExpenseFullTaxEquivalentBasis @ idcee0e25cdcd442a8f6e3fdb64f78558_D20220701-20220930 (ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember; StatementBusinessSegmentsAxis=bac:ConsumerBankingSegmentMember) | 'Total revenue, net of interest expense 24,608 22,867 9,904 8,838 5,429 5,310' | Largest business segment by total revenue, net of interest expense, for the three months ended September 30, 2022: Consumer Banking (vs Global Banking 5,591; GWIM 5,429; Global Markets 4,483); Business Segment Information note, in millions, full tax-equivalent basis.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000070858-22-000131|extract|segment_revenue"
+  }
+]

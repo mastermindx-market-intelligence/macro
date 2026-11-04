@@ -79,18 +79,28 @@ def _block_list(message):
 
 def _tool_uses(messages):
     """Yield (tool_use_id, tool_input) for this tool's assistant calls."""
+    def field(block, name):
+        # The live gateway retains provider SDK blocks in resp.content. Tool
+        # results are gateway-owned dicts; serializing the entire conversation
+        # merely to recover four call fields would change that transport.
+        if isinstance(block, dict):
+            return block.get(name)
+        try:
+            return getattr(block, name, None)
+        except Exception:
+            return None
+
     for index, message in enumerate(messages):
         blocks = _block_list(message)
         if blocks is None or message.get("role") != "assistant":
             continue
-        use_ids = [b.get("id") for b in blocks if isinstance(b, dict)
-                   and b.get("type") == "tool_use"]
+        use_ids = [field(b, "id") for b in blocks if field(b, "type") == "tool_use"]
         for block in blocks:
-            if (not isinstance(block, dict) or block.get("type") != "tool_use"
-                    or block.get("name") != TOOL_NAME):
+            if (field(block, "type") != "tool_use"
+                    or field(block, "name") != TOOL_NAME):
                 continue
-            use_id = block.get("id")
-            tool_input = block.get("input")
+            use_id = field(block, "id")
+            tool_input = field(block, "input")
             if not isinstance(use_id, str) or not _TOOL_USE_ID_RE.fullmatch(use_id):
                 continue
             if not isinstance(tool_input, dict) or use_ids.count(use_id) != 1:

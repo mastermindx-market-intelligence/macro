@@ -11,6 +11,9 @@
 
   var STATE_CONTRACT = 'government_procurement_local_state.v1';
   var EXPORT_CONTRACT = 'government_procurement_export.v1';
+  var SAVED_CUT_CONTRACT = 'government_procurement_saved_cut.v1';
+  var MAX_SAVED_CUT_RECORDS = 100;
+  var MAX_SAVED_CUT_BYTES = 256 * 1024;
   var STORAGE_KEY = 'mastermind.government_revenue.briefcase.v1';
   var FILTER_KEYS = ['mode', 'truth', 'q', 'agency', 'ticker'];
   var VIEW_MODES = ['changes', 'awards', 'opportunities', 'recompetes', 'companies'];
@@ -252,13 +255,17 @@
     var id = text(value.id, 80);
     var name = text(value.name, MAX_NAME_LENGTH);
     if (!id || !name) return null;
-    return {
+    var view = {
       id: id,
       name: name,
       filters: cleanFilters(value.filters),
       created_at: text(value.created_at, 80) || null,
       updated_at: text(value.updated_at, 80) || null
     };
+    // Keep unsupported/corrupt cuts opaque. A rename must not erase original bytes
+    // or silently turn an unavailable historical cut into today's filters.
+    if (Object.prototype.hasOwnProperty.call(value, 'cut')) view.cut = copy(value.cut);
+    return view;
   }
 
   function normalAlert(value, views) {
@@ -273,6 +280,7 @@
       type: type,
       enabled: value.enabled !== false,
       primed: value.primed === true,
+      membership_contract: ['page_filter_membership.v1','legacy_event_membership.v1'].indexOf(value.membership_contract)>=0 ? value.membership_contract : null,
       seen_event_ids: stableUniqueIds(value.seen_event_ids),
       created_at: text(value.created_at, 80) || null,
       last_checked_at: text(value.last_checked_at, 80) || null
@@ -292,6 +300,10 @@
       view_id: text(value.view_id, 80),
       event_id: eventId,
       type: type,
+      notification_kind: ['new_observation', 'correction'].indexOf(value.notification_kind) >= 0 ? value.notification_kind : 'unclassified',
+      event_contract: /^government_procurement_event\.v[12]$/.test(value.event_contract || '') ? value.event_contract : null,
+      record_id: text(value.record_id, MAX_EVENT_ID_LENGTH) || null,
+      event_version: Number.isSafeInteger(value.event_version) && value.event_version >= 1 ? value.event_version : null,
       kind: text(value.kind, 40),
       title: text(value.title, 500),
       observed_at: text(value.observed_at, 80) || null,
@@ -398,7 +410,13 @@
     return event.kind === alertType;
   }
 
-  function alertCopy(type) {
+  function alertCopy(type, notificationKind) {
+    if (notificationKind === 'correction') {
+      return {
+        message: 'Correction to a previously observed matching record.',
+        warning: 'A prior observation was revised; this is not a new award, obligation or issuer revenue.'
+      };
+    }
     if (type === 'opportunity') {
       return { message: 'New matching procurement opportunity observed locally.', warning: null };
     }
@@ -479,6 +497,73 @@
     };
   }
 
+  function cutError(code) {
+    var error = new Error(code);
+    error.code = code;
+    return error;
+  }
+
+  function cutBytes(value) {
+    return new TextEncoder().encode(JSON.stringify(value)).length;
+  }
+
+  function sourceDay(value) {
+    return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+      && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
+  }
+
+  function sourceClock(value) {
+    return typeof value === 'string' && sourceDay(value.slice(0, 10))
+      && /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.test(value)
+      && Number.isFinite(Date.parse(value));
+  }
+
+  function contextAuthority(value) {
+    return object(value) && value.context_only === true && [
+      'can_rank', 'can_size', 'can_gate', 'can_originate_signal', 'can_add_candidates', 'can_escalate'
+    ].every(function (key) { return value[key] === false; });
+  }
+
+  function normalSavedCut(value, filters) {
+    if (!object(value) || value.contract !== SAVED_CUT_CONTRACT || cutBytes(value) > MAX_SAVED_CUT_BYTES) return null;
+    var payload = value.payload;
+    if (!object(payload) || payload.contract !== EXPORT_CONTRACT || !object(payload.workspace)
+        || !object(payload.query) || !object(payload.query.filters) || !Array.isArray(payload.records)
+        || payload.records.length > MAX_SAVED_CUT_RECORDS || !sourceClock(payload.exported_at)) return null;
+    var meta = payload.workspace;
+    if (!/^government_procurement_workspace\.v[12]$/.test(meta.schema_version || '')
+        || !/^government_procurement_event\.v[12]$/.test(meta.event_contract || '')
+        || typeof meta.bundle_id !== 'string' || !/^grw[12]-[a-f0-9]{24}$/.test(meta.bundle_id)
+        || !sourceDay(meta.as_of) || !sourceClock(meta.known_at)
+        || meta.generated_at != null && !sourceClock(meta.generated_at)) return null;
+    if (!contextAuthority(meta.authority)) return null;
+    var clean = cleanFilters(filters);
+    if (['changes','awards','opportunities','recompetes'].indexOf(clean.mode) < 0
+        || JSON.stringify(cleanFilters(payload.query.filters)) !== JSON.stringify(clean)) return null;
+    var seen = Object.create(null), valid = true;
+    payload.records.forEach(function (record) {
+      if (!object(record) || !contextAuthority(record.authority) || record.contract !== meta.event_contract || typeof record.event_id !== 'string'
+          || record.event_id !== text(record.event_id, MAX_EVENT_ID_LENGTH) || !record.event_id
+          || seen[record.event_id] || !Number.isSafeInteger(record.version) || record.version < 1
+          || typeof record.record_id !== 'string' || !record.record_id || !eventKindForMode(clean.mode, record)) valid = false;
+      if (object(record)) seen[record.event_id] = true;
+    });
+    var selected = value.selected_event_id == null || value.selected_event_id === '' ? null : value.selected_event_id;
+    if (!valid || selected !== null && (typeof selected !== 'string' || !seen[selected])) return null;
+    // Reuse the existing public export allowlist; never retain raw source bodies,
+    // private annotations or a copied caller-supplied authority extension.
+    return {
+      contract: SAVED_CUT_CONTRACT,
+      selected_event_id: selected,
+      payload: {
+        contract: EXPORT_CONTRACT, exported_at: payload.exported_at,
+        workspace: publicWorkspace(meta),
+        query: {filters: clean, result_scope: 'original visible governed workspace cut'},
+        records: payload.records.map(publicEvent)
+      }
+    };
+  }
+
   root.createGovernmentRevenueBriefcase = function (api) {
     api = object(api) ? api : {};
     var storage = api.storage || null;
@@ -490,6 +575,7 @@
     var storageKey = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(ownerId)
       ? STORAGE_KEY + '.user.' + ownerId : null;
     var now = typeof api.now === 'function' ? api.now : function () { return new Date().toISOString(); };
+    var membershipContract=api.membershipMode==='legacy'&&!Object.prototype.hasOwnProperty.call(api,'resolveEventIds')?'legacy_event_membership.v1':'page_filter_membership.v1';
     var counter = 0;
 
     function stamp() {
@@ -537,15 +623,59 @@
       return state.alerts.filter(function (alert) { return alert.id === id; })[0] || null;
     }
 
+    function captureSavedCut(input, filters) {
+      var readiness = object(input.readiness) ? input.readiness : {};
+      if (readiness.complete !== true || readiness.bundle_matched !== true) throw cutError('workspace_not_ready');
+      var workspace = input.workspace;
+      if (!usableWorkspace(workspace)) throw cutError('invalid_workspace');
+      var clean = cleanFilters(filters);
+      if (['changes','awards','opportunities','recompetes'].indexOf(clean.mode) < 0) throw cutError('unsupported_export_mode');
+      // Refuse an oversized original window. Never silently truncate it to fit.
+      var ids = input.visible_event_ids;
+      if (!Array.isArray(ids)) throw cutError('invalid_saved_cut');
+      if (ids.length > MAX_SAVED_CUT_RECORDS) throw cutError('saved_cut_too_large');
+      // The page owns its displayed filter semantics, including issuer tags and
+      // localized search. Preserve that exact ordered membership, not a second predicate.
+      var events = Object.create(null), seen = Object.create(null);
+      workspace.events.forEach(function (row) {
+        if (!object(row) || typeof row.event_id !== 'string' || events[row.event_id]) throw cutError('invalid_saved_cut');
+        events[row.event_id] = row;
+      });
+      var records = ids.map(function (id) {
+        if (typeof id !== 'string' || seen[id] || !events[id]) throw cutError('invalid_saved_cut');
+        seen[id] = true;
+        return publicEvent(events[id]);
+      });
+      var cut = {contract: SAVED_CUT_CONTRACT, selected_event_id: input.selected_event_id == null || input.selected_event_id === '' ? null : input.selected_event_id,
+        payload: {contract: EXPORT_CONTRACT, exported_at: stamp(), workspace: publicWorkspace(workspace),
+          query: {filters: clean, result_scope: 'original visible governed workspace cut'}, records: records}};
+      if (cutBytes(cut) > MAX_SAVED_CUT_BYTES) throw cutError('saved_cut_too_large');
+      cut = normalSavedCut(cut, clean);
+      if (!cut) throw cutError('invalid_saved_cut');
+      return cut;
+    }
+
+    function getSavedCut(id) {
+      var view = viewById(text(id, 80));
+      if (!view) return {ok: false, reason: 'saved_view_not_found'};
+      if (!Object.prototype.hasOwnProperty.call(view, 'cut')) return {ok: false, reason: 'cut_not_captured'};
+      var cut = normalSavedCut(view.cut, view.filters);
+      return cut ? {ok: true, cut: copy(cut)} : {ok: false, reason: 'invalid_saved_cut'};
+    }
+
     function createView(input) {
       input = object(input) ? input : {};
       if (state.saved_views.length >= MAX_VIEWS) throw new Error('saved view limit reached');
       var name = text(input.name, MAX_NAME_LENGTH);
       if (!name) throw new Error('saved view name is required');
+      if (object(input.filters) && input.filters.mode != null && VIEW_MODES.indexOf(input.filters.mode) < 0) throw cutError('unsupported_view_mode');
+      var filters = cleanFilters(input.filters);
+      var cut = Object.prototype.hasOwnProperty.call(input, 'workspace') ? captureSavedCut(input, filters) : null;
       var view = {
-        id: makeId('grv'), name: name, filters: cleanFilters(input.filters),
+        id: makeId('grv'), name: name, filters: filters,
         created_at: stamp(), updated_at: stamp()
       };
+      if (cut) view.cut = cut;
       state.saved_views.push(view);
       return { view: copy(view), persisted: commit() };
     }
@@ -554,12 +684,18 @@
       var view = viewById(text(id, 80));
       input = object(input) ? input : {};
       if (!view) throw new Error('saved view not found');
-      if (Object.prototype.hasOwnProperty.call(input, 'name')) {
-        var name = text(input.name, MAX_NAME_LENGTH);
-        if (!name) throw new Error('saved view name is required');
-        view.name = name;
+      var name = Object.prototype.hasOwnProperty.call(input, 'name') ? text(input.name, MAX_NAME_LENGTH) : view.name;
+      if (!name) throw new Error('saved view name is required');
+      if (object(input.filters) && input.filters.mode != null && VIEW_MODES.indexOf(input.filters.mode) < 0) throw cutError('unsupported_view_mode');
+      var filters = Object.prototype.hasOwnProperty.call(input, 'filters') ? cleanFilters(input.filters) : view.filters;
+      var hasCut = Object.prototype.hasOwnProperty.call(input, 'workspace');
+      if (!hasCut && Object.prototype.hasOwnProperty.call(view, 'cut') && JSON.stringify(filters) !== JSON.stringify(view.filters)) {
+        throw cutError('saved_cut_required');
       }
-      if (Object.prototype.hasOwnProperty.call(input, 'filters')) view.filters = cleanFilters(input.filters);
+      var cut = hasCut ? captureSavedCut(input, filters) : null;
+      // Validate every replacement before touching the existing record.
+      view.name = name; view.filters = filters;
+      if (hasCut) view.cut = cut;
       view.updated_at = stamp();
       return { view: copy(view), persisted: commit() };
     }
@@ -588,7 +724,7 @@
       if (state.alerts.length >= MAX_ALERTS) throw new Error('local alert limit reached');
       var alert = {
         id: makeId('gra'), view_id: viewId, type: type, enabled: input.enabled !== false,
-        primed: false, seen_event_ids: [], created_at: stamp(), last_checked_at: null
+        primed: false, membership_contract: null, seen_event_ids: [], created_at: stamp(), last_checked_at: null
       };
       state.alerts.push(alert);
       return { alert: copy(alert), persisted: commit() };
@@ -611,11 +747,26 @@
       return { deleted: true, persisted: commit() };
     }
 
-    function matchingEvents(workspace, alert) {
-      var view = viewById(alert.view_id);
-      if (!view) return [];
-      return array(workspace.events).filter(function (event) {
-        return object(event) && text(event.event_id, MAX_EVENT_ID_LENGTH) && matchesFilters(event, view.filters) && matchesAlert(event, alert.type);
+    function resolvedEvents(workspace,filters) {
+      var clean=cleanFilters(filters);
+      // Explicit compatibility for non-page callers only. The product always
+      // supplies the page resolver; a broken resolver never falls back.
+      if (api.membershipMode==='legacy' && !Object.prototype.hasOwnProperty.call(api,'resolveEventIds')) {
+        return array(workspace.events).filter(function(event){return object(event)&&matchesFilters(event,clean);});
+      }
+      if (typeof api.resolveEventIds!=='function') throw cutError('view_membership_unavailable');
+      var ids;
+      try { ids=api.resolveEventIds(workspace,copy(clean)); }
+      catch(error) { throw cutError('view_membership_unavailable'); }
+      if (!Array.isArray(ids)||ids.length>MAX_SEEN_IDS) throw cutError('view_membership_unavailable');
+      var byId=Object.create(null),seen=Object.create(null);
+      array(workspace.events).forEach(function(event){
+        if(!object(event)||typeof event.event_id!=='string'||!event.event_id||byId[event.event_id])throw cutError('view_membership_unavailable');
+        byId[event.event_id]=event;
+      });
+      return ids.map(function(id){
+        if(typeof id!=='string'||seen[id]||!byId[id]||!eventKindForMode(clean.mode,byId[id]))throw cutError('view_membership_unavailable');
+        seen[id]=true;return byId[id];
       });
     }
 
@@ -627,17 +778,33 @@
       }
       var emitted = [];
       var withheld = [];
+      var matches=Object.create(null),rebaselined=[];
+      // Resolve every active view before touching any baseline or inbox entry.
+      // One unavailable view must not leave an apparently successful partial check.
+      try {
+        state.alerts.forEach(function(alert){
+          if(!alert.enabled||(alert.type==='award_change'&&!isAwardRailReady(workspace)))return;
+          var view=viewById(alert.view_id);
+          if(!view)throw cutError('view_membership_unavailable');
+          matches[alert.id]=resolvedEvents(workspace,view.filters).filter(function(event){return matchesAlert(event,alert.type);});
+        });
+      } catch(error) {
+        return {reconciled:false,reason:'view_membership_unavailable',alerts:[],withheld_alert_ids:[]};
+      }
       state.alerts.forEach(function (alert) {
         if (!alert.enabled) return;
         if (alert.type === 'award_change' && !isAwardRailReady(workspace)) {
           withheld.push(alert.id);
           return;
         }
-        var rows = matchingEvents(workspace, alert);
+        var rows = matches[alert.id];
         var ids = stableUniqueIds(rows.map(function (event) { return event.event_id; }));
-        if (!alert.primed) {
+        if (!alert.primed || alert.membership_contract!==membershipContract) {
+          // An expanded predicate must not backfill old records as new alerts.
+          if(alert.primed)rebaselined.push(alert.id);
           alert.primed = true;
-          alert.seen_event_ids = ids;
+          alert.membership_contract=membershipContract;
+          alert.seen_event_ids = stableUniqueIds(ids.concat(alert.seen_event_ids));
           alert.last_checked_at = stamp();
           return;
         }
@@ -646,10 +813,14 @@
         rows.forEach(function (event) {
           var eventId = text(event.event_id, MAX_EVENT_ID_LENGTH);
           if (!eventId || seen[eventId]) return;
-          var copyText = alertCopy(alert.type);
+          var notificationKind = (event.change || {}).is_correction === true ? 'correction' : 'new_observation';
+          var copyText = alertCopy(alert.type, notificationKind);
           var item = {
             id: makeId('gri'), alert_id: alert.id, view_id: alert.view_id, event_id: eventId,
-            type: alert.type, kind: text(event.kind, 40),
+            type: alert.type, kind: text(event.kind, 40), notification_kind: notificationKind,
+            event_contract: /^government_procurement_event\.v[12]$/.test(event.contract || '') ? event.contract : null,
+            record_id: text(event.record_id, MAX_EVENT_ID_LENGTH) || null,
+            event_version: Number.isSafeInteger(event.version) && event.version >= 1 ? event.version : null,
             title: text(event.title_original || event.title_zh, 500),
             observed_at: text(((event.change || {}).known_at), 80) || null,
             workspace_bundle_id: text(workspace.bundle_id, 100) || null,
@@ -663,7 +834,7 @@
         alert.last_checked_at = stamp();
       });
       state.inbox = state.inbox.slice(0, MAX_INBOX);
-      return { reconciled: true, alerts: emitted, withheld_alert_ids: withheld, persisted: commit() };
+      return { reconciled: true, alerts: emitted, withheld_alert_ids: withheld, rebaselined_alert_ids: rebaselined, persisted: commit() };
     }
 
     function buildJsonExport(workspace, filters) {
@@ -676,9 +847,9 @@
         throw unsupported;
       }
       var clean = cleanFilters(filters);
-      var records = array(workspace.events).filter(function (event) {
-        return object(event) && matchesFilters(event, clean);
-      }).slice(0, MAX_SEEN_IDS).map(publicEvent);
+      var matched=resolvedEvents(workspace,clean);
+      if(matched.length>MAX_SEEN_IDS)throw cutError('view_membership_unavailable');
+      var records=matched.map(publicEvent);
       return {
         contract: EXPORT_CONTRACT,
         exported_at: stamp(),
@@ -741,6 +912,7 @@
       filter_keys: FILTER_KEYS.slice(),
       alert_types: ALERT_TYPES.slice(),
       listViews: function () { return copy(state.saved_views); },
+      getSavedCut: getSavedCut,
       getView: function (id) { var view = viewById(text(id, 80)); return view ? copy(view) : null; },
       createView: createView,
       updateView: updateView,

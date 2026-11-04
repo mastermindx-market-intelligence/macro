@@ -1,0 +1,249 @@
+{
+  "schema": "grey_deer.protected_release_source_binding.v1",
+  "programme": "MAS-258",
+  "observed_at": "2026-10-21 11:24:02 UTC",
+  "reader": {
+    "pr": 1660,
+    "landing": "3960aefcf4724a88812d79d97c1b370dc9f951c4"
+  },
+  "publisher": {
+    "pr": 1667,
+    "source_head": "65c071d9d4820135a54d6d2f7af861bb5e7cebc1",
+    "landing": "041b8ab5d530f31a6f96638c53d25b35dfc9a270",
+    "merged_at": "2026-10-21T11:21:56Z",
+    "merge_group_ci": 39586671816,
+    "aggregate": 119191966611,
+    "conclusion": "success"
+  },
+  "following": {
+    "pr": 715,
+    "source_head": "d0330d0443ae8494da3c57cb71fb4c19af98d940",
+    "landing": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "merged_at": "2026-10-21T11:21:57Z",
+    "merge_group_ci": 39586673741,
+    "aggregate": 119192103008,
+    "conclusion": "success"
+  },
+  "protected": {
+    "branch": "master",
+    "commit": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+    "readback": "Independent GitHub protected ref/commit and complete non-truncated recursive tree",
+    "tree_entry_count": 5219
+  },
+  "rehearsal_binding": {
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+    "exact_commit_equal": true,
+    "exact_full_tree_equal": true,
+    "archive_sha256": "ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf",
+    "archive_bytes": 104202240,
+    "archive_members": 5219,
+    "full_report_sha256": "ada695588a81395030266c393015d2f588082fb641b4177e91fe54487ed24be2",
+    "report": "COMPOSED_REHEARSAL_RESULT.json",
+    "summary": "COMPOSED_REHEARSAL_SUMMARY.json",
+    "relabelled": false,
+    "reexecuted": false
+  },
+  "owned_and_helper_readback": {
+    "count": 24,
+    "all_equal_rehearsed_source": true,
+    "blobs": [
+      {
+        "path": "app/response_cache.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3e54edac36644552d7da1200c021d0a66334cfc9",
+        "size": 7893
+      },
+      {
+        "path": "app/scheduler.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ec2546731d69289b5af4837a6d1eefe59caf9b37",
+        "size": 112877
+      },
+      {
+        "path": "app/static/market_view.html",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3b24b79941990b1b5d5f81688ee8f7d206d41f1e",
+        "size": 23766
+      },
+      {
+        "path": "app/web.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "31572920bb8aec95278e86222c0c8c38696471e7",
+        "size": 169367
+      },
+      {
+        "path": "bot/autonomous.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "967c14f8328d2a7aea001e233d4ae60706cd868f",
+        "size": 56557
+      },
+      {
+        "path": "bot/phase2.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "144f6048a88e26585831bbbc4cc9fb327287cb1d",
+        "size": 171960
+      },
+      {
+        "path": "brain/bot_mcp.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "62b78ad3239a944c7a1704050d9a5637f7366d6f",
+        "size": 44899
+      },
+      {
+        "path": "brain/decision_context.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "22a0d1152b63d50d68c1669e4be362f7704ebd40",
+        "size": 35596
+      },
+      {
+        "path": "brain/journal.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ab8440249fee00774527c48e3da9fc5efd23d183",
+        "size": 44633
+      },
+      {
+        "path": "brain/market_view.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d6924387443db5fbf29084fd6b7d62124dd0569f",
+        "size": 86560
+      },
+      {
+        "path": "brain/perception_publication.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b0c4fc446e631bcb3abda27c7a7c7d94deb85017",
+        "size": 17328
+      },
+      {
+        "path": "brain/perception_receipt.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0cdcb7f8fcadb10e47f781de95bfac2c112aef71",
+        "size": 8277
+      },
+      {
+        "path": "brain/pm_conviction.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b70e293c9d616a2dda187d1c72a0570a7b5723eb",
+        "size": 48364
+      },
+      {
+        "path": "brain/regime_frame.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "221b9b53299f3affacb0d6934ab23579d1b6d73c",
+        "size": 40048
+      },
+      {
+        "path": "brain/self_mirror.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "867e4818dc5f3a717b761defa8dbf5305f638a36",
+        "size": 17337
+      },
+      {
+        "path": "brain/strategist.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dacf4043da1d442b9a4497895815e9ae5727dfd3",
+        "size": 17204
+      },
+      {
+        "path": "data_layer/macro_refresh.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a507019c1b49a055817e3d6c25e2198a814710c7",
+        "size": 37479
+      },
+      {
+        "path": "docs/market_perception_publication.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2ce45f48f898811d2e9aca51c00cef3d29c06963",
+        "size": 8477
+      },
+      {
+        "path": "scripts/deploy_code_to_vps.sh",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "f871e88815e70338a646008dbe77dfcc1727e978",
+        "size": 20370
+      },
+      {
+        "path": "scripts/deploy_from_git.sh",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "f40e7895e88b0cd755fb7ef9b41a4783a1df4ed9",
+        "size": 1493
+      },
+      {
+        "path": "tests/test_journal.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "309dd9dff74ccd2424fcbf5a78ba505f1537e7c3",
+        "size": 17040
+      },
+      {
+        "path": "tests/test_market_view_serving.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "95d22fd8db004ad235293e8d29ba2827076d3843",
+        "size": 28986
+      },
+      {
+        "path": "tests/test_perception_custody.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7ab49f617564b914fc33da5d4dca811800d4e2bf",
+        "size": 13783
+      },
+      {
+        "path": "tests/test_perception_publication.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0789c8f8f110a07a64e0c0d3799066945c8b81ee",
+        "size": 25381
+      }
+    ],
+    "publisher_head_shared_deltas": [
+      {
+        "path": "app/scheduler.py",
+        "accepted": "84bdef4115b4c0c9852d733577e519d21280ada5",
+        "protected": "ec2546731d69289b5af4837a6d1eefe59caf9b37"
+      },
+      {
+        "path": "bot/autonomous.py",
+        "accepted": "ec7ace8963049c39cdce4804845da4208ac86e86",
+        "protected": "967c14f8328d2a7aea001e233d4ae60706cd868f"
+      }
+    ],
+    "shared_delta_disposition": "Two changed shared publisher files are the exact already-reviewed #715 composition; all remaining publisher paths match source65. See COMPOSITION_REVIEW.json."
+  },
+  "admission_boundary": "Normal native queue and exact source checks passed. Source admission and successful isolated rehearsal do not constitute installation, deployment authorization, natural publication, provider success or whole-programme completion.",
+  "production": {
+    "new_deployment": false,
+    "installed_observed": "fe7afd0111141bae27927715e709d074fea729e2",
+    "release_ready": false,
+    "health_contract": "FAILED / six-second observation and later ten-second timeout retained",
+    "reserved_decision": "NOT_READY",
+    "mission_complete": false
+  },
+  "c3_delta_review": {
+    "file": "DECISION_REVIEW.json",
+    "reviewer": "release_contract_review",
+    "ruling": "ACCEPTED protected-source binding only; production HOLD"
+  }
+}

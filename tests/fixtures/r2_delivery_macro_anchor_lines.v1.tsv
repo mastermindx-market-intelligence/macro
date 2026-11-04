@@ -158,4 +158,4 @@ scripts/seal_levels_ledger.py	44	R2_PREFIX = "levels_ledger/"
 templates/data_base.js	12	window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
 templates/data_base.js	16	// the per-ticker stores that live in R2 (mirror scripts/publish_r2.py DEFAULT_DIRS)
 templates/theme.js	667	{ key: 'us',   lib: 'stockdata/index.json',       target: 'stock.html',        flag: '🇺🇸', mkt: 'US',     mktZh: '美国',   examples: ['NVDA', 'AAPL', 'MSFT'] },
-scripts/build_ext_quotes.py	373	def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:
+scripts/build_ext_quotes.py	403	def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:

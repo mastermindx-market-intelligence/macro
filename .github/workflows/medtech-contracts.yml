@@ -1,0 +1,91 @@
+name: medtech-contracts
+
+on:
+  pull_request:
+    paths:
+      - "engine/medtech/**"
+      - "collectors/medtech/**"
+      - "app/__init__.py"
+      - "engine/__init__.py"
+      - "collectors/__init__.py"
+      - "tests/__init__.py"
+      - "engine/sector_intelligence/**"
+      - "app/medtech.py"
+      - "app/main.py"
+      - "scripts/medtech_worker.py"
+      - "tests/test_medtech.py"
+      - "tests/test_medtech_deployment.py"
+      - "app/deploy/medtech-*"
+      - "app/deploy/macro-medtech.*"
+      - "app/deploy/macro-api.service"
+      - "app/deploy/update.sh"
+      - "app/deploy/api-setup.sh"
+      - "tests/conftest.py"
+      - ".github/workflows/medtech-contracts.yml"
+  push:
+    branches: [main]
+    paths:
+      - "engine/medtech/**"
+      - "collectors/medtech/**"
+      - "app/__init__.py"
+      - "engine/__init__.py"
+      - "collectors/__init__.py"
+      - "tests/__init__.py"
+      - "engine/sector_intelligence/**"
+      - "app/medtech.py"
+      - "app/main.py"
+      - "scripts/medtech_worker.py"
+      - "tests/test_medtech.py"
+      - "tests/test_medtech_deployment.py"
+      - "app/deploy/medtech-*"
+      - "app/deploy/macro-medtech.*"
+      - "app/deploy/macro-api.service"
+      - "app/deploy/update.sh"
+      - "app/deploy/api-setup.sh"
+      - "tests/conftest.py"
+      - ".github/workflows/medtech-contracts.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: medtech-contracts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /app/__init__.py
+            /app/medtech.py
+            /engine/__init__.py
+            /engine/medtech/
+            /engine/sector_intelligence/
+            /collectors/__init__.py
+            /collectors/medtech/
+            /scripts/medtech_worker.py
+            /tests/__init__.py
+            /tests/test_medtech.py
+            /tests/test_medtech_deployment.py
+            /app/deploy/medtech-*
+            /app/deploy/macro-medtech.*
+            /app/deploy/macro-api.service
+            /app/deploy/update.sh
+            /app/deploy/api-setup.sh
+            /tests/conftest.py
+            /pytest.ini
+            /pyproject.toml
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install contract-test dependencies
+        run: python -m pip install pytest requests fastapi httpx jsonschema pyyaml
+      - name: Prove source integrity, history and authenticated reads
+        run: python -m pytest tests/test_medtech.py tests/test_medtech_deployment.py -q

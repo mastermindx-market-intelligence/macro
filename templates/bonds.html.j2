@@ -8,12 +8,15 @@
 <div class="kpi">{{ t(label, zh) }}<b>{% if val is none %}<span class="faint">—</span>{% else %}{{ val }}{{ unit }}{% endif %}</b>{% if sub %}<span class="ksub">{{ sub }}</span>{% endif %}</div>
 {%- endmacro %}
 {% macro gauge(score, color) -%}
-{%- set sc = ([0,[100,(score if score is not none else 0)]|min]|max)|float -%}
+{%- set ok = score is defined and score is not none and score is number and score is not boolean and (score >= 0) and (score <= 100) -%}
+{%- if ok -%}
+{%- set sc = score|float -%}
 {%- set arc = 175.93 -%}
 {%- set filled = (sc/100*arc)|round(2) -%}
 {%- set gap = (arc-filled)|round(2) -%}
 {%- set deg = (sc/100*180-90)|round(1) -%}
-<figure class="bhg" style="--sc:{{ color }};--arc:{{ arc }};--arc-gap:{{ gap }}" role="img" aria-label="Bond health score {{ sc|int }} of 100">
+{% for locale in ("en", "zh") %}
+<figure class="bhg l-{{ locale }}" style="--sc:{{ color }};--arc:{{ arc }};--arc-gap:{{ gap }};" role="img" aria-label="{% if locale == 'en' %}Bond health score {{ sc|int }} of 100{% else %}债券健康评分 {{ sc|int }}，满分100{% endif %}">
 <svg viewBox="0 -6 140 104" fill="none" aria-hidden="true">
 <path class="bhg-track" d="M14 75 A56 56 0 0 1 126 75"/>
 <path class="bhg-fill" d="M14 75 A56 56 0 0 1 126 75"/>
@@ -25,6 +28,15 @@
 </svg>
 <span class="bhg-ends"><span>0</span><span>100</span></span>
 </figure>
+{% endfor %}
+{%- else -%}
+<figure class="bhg" style="height:auto">
+<figcaption class="faint"><span aria-hidden="true">—</span><br>
+<span class="l-en">Score unavailable</span><span class="l-zh">评分不可用</span><br>
+<span class="l-en">Missing or invalid inputs.</span><span class="l-zh">输入缺失或无效。</span>
+</figcaption>
+</figure>
+{%- endif -%}
 {%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">

@@ -58,6 +58,8 @@ def _fmt_int(v):
 def _status_badge(status: str | None) -> dict:
     """Return {css, label_en, label_zh} for a status string."""
     s = (status or "accruing").lower()
+    if "scoreable" in s:
+        return {"css": "badge-active", "label_en": "SCOREABLE", "label_zh": "可评分"}
     if "accruing" in s:
         return {"css": "badge-accruing", "label_en": "ACCRUING", "label_zh": "累积中"}
     if "active" in s or "pass" in s:
@@ -88,6 +90,7 @@ def _enrich_horizon_ladder(row: dict) -> dict:
         capture = row.get(f"{key}_capture")
         ladder.append({
             "horizon": label,
+            "n_fmt": _fmt_int(row.get(f"{key}_n")),
             "wr_abs_fmt": _fmt_pct(wr_abs, signed=False),
             "wr_exc_fmt": _fmt_pct(wr_exc, signed=True),
             "med_exc_fmt": _fmt_pct(med_exc, signed=True),
@@ -248,6 +251,18 @@ def _enrich_scoreboard_row(row: dict) -> dict:
     r["is_random"] = r.get("engine_id") == "plab_random_ctrl"
     # is_inverse: plab_topping_avoid is scored as avoid-accuracy
     r["is_inverse"] = r.get("engine_id") == "plab_topping_avoid"
+    # SPEC 4 — avoid accuracy: the artifact h21 value only, never recomputed
+    av = r.get("h21_avoid_accuracy") if r.get("is_avoid") else None
+    r["avoid_accuracy_fmt"] = _fmt_pct(av, signed=False)
+    # An avoid book's buy-side excess is neither good nor bad news: no pos/neg
+    if r.get("is_avoid"):
+        r["wr_exc_css"] = ""
+    elif r.get("wr21_excess") is not None and r.get("wr21_excess") > 0:
+        r["wr_exc_css"] = "pos"
+    elif r.get("wr21_excess") is not None and r.get("wr21_excess") < 0:
+        r["wr_exc_css"] = "neg"
+    else:
+        r["wr_exc_css"] = ""
 
     # Task 1 — horizon ladder + capture + path detail
     r["horizon_detail"] = _enrich_horizon_ladder(r)
@@ -293,7 +308,7 @@ def _build_t0_vm(t0_dict: dict | None) -> dict:
     """
     if not t0_dict:
         return {"present": False, "as_of": None, "matches": [], "total": 0,
-                "disclosure_en": "", "disclosure_zh": ""}
+                "disclosure_en": "", "disclosure_zh": "", "universe_n": None}
     matches_all = t0_dict.get("matches") or []
     return {
         "present": True,
@@ -302,6 +317,7 @@ def _build_t0_vm(t0_dict: dict | None) -> dict:
         "total": len(matches_all),
         "disclosure_en": t0_dict.get("disclosure_en", ""),
         "disclosure_zh": t0_dict.get("disclosure_zh", ""),
+        "universe_n": t0_dict.get("universe_n"),
     }
 
 

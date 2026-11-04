@@ -1072,3 +1072,181 @@ def test_symlinked_store_under_the_min_files_floor_is_still_refused(tmp_path, mo
     assert pr2.publish(["thetadata_eod"]) == 0
     assert s3.uploaded == []
     assert s3.manifest_puts == []
+
+
+# Explicit single-record stock-library publication uses the incumbent path.
+from scripts import publish_r2 as p
+
+@pytest.mark.parametrize('dirs,manifest,force,ticker',[
+ (['stockdata'],True,False,'MU'),(['ohlc'],False,False,'MU'),
+ (['stockdata','ohlc'],False,False,'MU'),(['stockdata'],False,True,'MU'),
+ (['stockdata'],False,False,'../MU'),(['stockdata'],False,False,''),
+ (['stockdata'],False,False,'MU/OTHER'),(['stockdata'],False,False,True),
+])
+def test_invalid_scope_refused_before_client(monkeypatch,dirs,manifest,force,ticker):
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ with pytest.raises(ValueError): p.publish(dirs,manifest=manifest,force_manifest=force,stock_ticker=ticker)
+
+def test_selected_stock_only_uses_native_upload_and_never_manifest(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ root=tmp_path/'site'/'stockdata';root.mkdir(parents=True)
+ (root/'MU.json').write_text('{"ticker":"MU"}')
+ (root/'OTHER.json').write_text('{"ticker":"OTHER"}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append((a,kw))
+  def put_object(self,*a,**kw):pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU')==0
+ assert len(calls)==1 and calls[0][0][2]=='stockdata/MU.json'
+ assert (root/'OTHER.json').read_text()=='{"ticker":"OTHER"}'
+
+def test_missing_or_symlink_record_is_not_noop(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no client'))
+ with pytest.raises(ValueError): p.publish(['stockdata'],manifest=False,stock_ticker='MU')
+ root=tmp_path/'site'/'stockdata';root.mkdir(parents=True)
+ (tmp_path/'real.json').write_text('{}');(root/'MU.json').symlink_to(tmp_path/'real.json')
+ with pytest.raises(ValueError):p.publish(['stockdata'],manifest=False,stock_ticker='MU')
+
+
+def test_explicit_cli_selection_reaches_existing_publisher(monkeypatch):
+ import sys
+ seen={}
+ def publish(dirs,**kwargs): seen.update(dirs=dirs,**kwargs);return 0
+ monkeypatch.setattr(p,'publish',publish)
+ monkeypatch.setattr(sys,'argv',['publish_r2','--dirs','stockdata','--no-manifest','--stock-ticker','MU'])
+ assert p.main()==0
+ assert seen['stock_ticker']=='MU' and seen['manifest'] is False and seen['dirs']==['stockdata']
+
+
+# --- optional explicit input path: publish(..., stock_source_file=...) / --stock-source-file ---
+
+def test_explicit_source_uploads_exact_bytes_and_touches_nothing_else(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ site=tmp_path/'site'/'stockdata';site.mkdir(parents=True)
+ (site/'MU.json').write_text('{"ticker":"MU","configured":true}')
+ (site/'OTHER.json').write_text('{"ticker":"OTHER"}')
+ feed=tmp_path/'feed';feed.mkdir()
+ src=feed/'MU.json';src.write_text('{"ticker":"MU","canonical":"fresh"}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append((a,kw))
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)==0
+ assert len(calls)==1 and calls[0][0][2]=='stockdata/MU.json' and calls[0][0][0]==str(src)
+ assert src.read_text()=='{"ticker":"MU","canonical":"fresh"}'
+ assert (site/'MU.json').read_text()=='{"ticker":"MU","configured":true}'
+ assert (site/'OTHER.json').read_text()=='{"ticker":"OTHER"}'
+
+def test_explicit_source_needs_no_configured_site_tree(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ feed=tmp_path/'feed';feed.mkdir();src=feed/'MU.json';src.write_text('{}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append(a[2])
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)==0
+ assert calls==['stockdata/MU.json'] and not (tmp_path/'site').exists()
+
+def test_relative_source_path_keeps_path_text_out_of_object_key(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ feed=tmp_path/'feed';feed.mkdir();src=feed/'MU.json';src.write_text('{}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append((a[0],a[2]))
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ monkeypatch.chdir(tmp_path)
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file='feed/MU.json')==0
+ assert calls==[('feed/MU.json','stockdata/MU.json')]
+
+def test_explicit_source_still_requires_narrow_scope(tmp_path,monkeypatch):
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ feed=tmp_path/'feed';feed.mkdir();(feed/'MU.json').write_text('{}')
+ with pytest.raises(ValueError):
+  p.publish(['ohlc'],manifest=False,stock_ticker='MU',stock_source_file=feed/'MU.json')
+ with pytest.raises(ValueError):
+  p.publish(['stockdata'],manifest=True,stock_ticker='MU',stock_source_file=feed/'MU.json')
+ with pytest.raises(ValueError):
+  p.publish(['stockdata'],manifest=False,force_manifest=True,stock_ticker='MU',stock_source_file=feed/'MU.json')
+
+def test_explicit_source_without_selector_refused(tmp_path,monkeypatch):
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ with pytest.raises(ValueError):
+  p.publish(['stockdata'],manifest=False,stock_source_file=tmp_path/'MU.json')
+
+@pytest.mark.parametrize('mutation',['wrongname','missing','directory','selfsymlink','parentsymlink'])
+def test_bad_explicit_source_refused_before_client(tmp_path,monkeypatch,mutation):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ feed=tmp_path/'feed';feed.mkdir();src=feed/'MU.json'
+ if mutation=='wrongname': src=feed/'NOPE.json';src.write_text('{}')
+ elif mutation=='missing': pass
+ elif mutation=='directory': src.mkdir()
+ elif mutation=='selfsymlink':
+  (tmp_path/'real.json').write_text('{}');src.symlink_to(tmp_path/'real.json')
+ elif mutation=='parentsymlink':
+  src.write_text('{}');(tmp_path/'link').symlink_to(feed);src=tmp_path/'link'/'MU.json'
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ with pytest.raises(ValueError):
+  p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)
+
+def test_explicit_source_hash_delta_skip_and_failure_exit(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ feed=tmp_path/'feed';feed.mkdir();src=feed/'MU.json';src.write_text('{"ticker":"MU"}')
+ sleeps=[];monkeypatch.setattr(p.time,'sleep',lambda s: sleeps.append(s))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ class SkipClient:
+  def upload_file(self,*a,**kw): pytest.fail('unchanged record must not re-upload')
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:SkipClient())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{'stockdata/MU.json':(p._md5(src),src.stat().st_size)})
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)==0
+ class FailClient:
+  def upload_file(self,*a,**kw): raise OSError('synthetic transient')
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:FailClient())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)==1
+ assert sleeps==[5,15]
+
+def test_cli_omits_stock_source_file_when_not_given(monkeypatch):
+ import sys
+ seen={}
+ def publish(dirs,**kwargs): seen.update(dirs=dirs,**kwargs);return 0
+ monkeypatch.setattr(p,'publish',publish)
+ monkeypatch.setattr(sys,'argv',['publish_r2','--dirs','stockdata','--no-manifest','--stock-ticker','MU'])
+ assert p.main()==0
+ assert 'stock_source_file' not in seen
+
+def test_cli_passes_stock_source_file_only_when_given(monkeypatch):
+ import sys
+ seen={}
+ def publish(dirs,**kwargs): seen.update(dirs=dirs,**kwargs);return 0
+ monkeypatch.setattr(p,'publish',publish)
+ monkeypatch.setattr(sys,'argv',['publish_r2','--dirs','stockdata','--no-manifest',
+                                 '--stock-ticker','MU','--stock-source-file','/tmp/feed/MU.json'])
+ assert p.main()==0
+ assert seen['stock_ticker']=='MU' and seen['stock_source_file']=='/tmp/feed/MU.json'

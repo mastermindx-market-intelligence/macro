@@ -185,8 +185,18 @@ html[data-lang="zh"] .mm-meter{background:linear-gradient(90deg,var(--red),#e0a1
         <div><span class="m-k">CAGR</span><span class="m-v {{ 'win' if c.cagr >= c.hodl_cagr else 'lose' }}">{{ c.cagr }}%</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_cagr }}%</span></div>
         <div><span class="m-k">Sharpe</span><span class="m-v {{ 'win' if c.sharpe >= c.hodl_sharpe else 'lose' }}">{{ c.sharpe }}</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_sharpe }}</span></div>
         <div><span class="m-k">{{ t('Max DD','最大回撤') }}</span><span class="m-v {{ 'win' if c.maxdd >= c.hodl_maxdd else 'lose' }}">{{ c.maxdd }}%</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_maxdd }}%</span></div>
+        {%- if c.income is not number and c.bear_n is number %}
+        <div><span class="m-k">{{ t('Drawdowns ≥10%','回撤≥10%次数') }}</span>{#
+        #}<span class="m-v">{{ c.bear_n }}</span>{#
+        #}<span class="m-sub">{% if c.win_start %}{{ t('since','自') }} {#
+        #}{{ c.win_start }}{% endif %}</span></div>
+        {%- else %}
         <div><span class="m-k">{{ t('Income','票息') }}</span><span class="m-v">{{ c.income }}%</span><span class="m-sub">{{ c.years }}y</span></div>
+        {%- endif %}
       </div>
+      {%- if c.as_of %}
+      <span class="m-sub">{{ t('As of','截至') }} {{ c.as_of }}</span>
+      {%- endif %}
       <div class="scard-foot">
         <span class="stance">{{ t(c.stance_en, c.stance_zh) }}</span>
         <span class="go">{{ t('Open →','打开 →') }}</span>

@@ -45,8 +45,8 @@ The Chairman's permanent no-colored-container-edge rule is recorded in the doctr
 
 ## Governing files
 
-- ../../research/migration_packets/MP-20261018-sector-central.md
-- ../../research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md
-- ../../research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md
+- ../../research/redesign/SECTOR_CENTRAL_20261018_DESIGN_DRAFT.md
+- ../../research/redesign/SECTOR_CENTRAL_20261018_CAPABILITY_CROSSWALK_DRAFT.md
+- ../../research/redesign/SECTOR_CENTRAL_20261018_PAPER_ACCEPTANCE_DRAFT.md
 
 Production-source custody, Paper catalog qualification, the original held candidate-browser matrix, independent review and normal release remain separate acceptance gates.

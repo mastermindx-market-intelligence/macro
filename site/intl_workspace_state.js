@@ -8,7 +8,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  var VIEWS = ['overview', 'compare', 'macro', 'risk', 'history', 'library'];
+  var VIEWS = ['overview', 'compare', 'macro', 'risk', 'history', 'library',
+    'scanner', 'dislocations', 'transmission', 'dossier', 'scenario', 'replay', 'coverage'];
   var BASES = ['local', 'usd_unhedged'];
   var CONFIG_FIELDS = ['markets', 'horizons', 'bases', 'default_horizon', 'default_basis', 'source_reference', 'anchor_ids', 'library_group_ids'];
   var STATE_FIELDS = ['view', 'selected_market', 'compare_markets', 'horizon', 'currency_basis', 'return_basis', 'source_reference', 'expanded', 'library_group', 'baseline', 'return_stack'];
@@ -465,7 +466,14 @@
             if (Object.prototype.hasOwnProperty.call(values, field)) decoded[field] = values[field];
           }
           decoded.view = decoded.view === '' ? invalid('view') : oneOf(decoded.view, VIEWS, 'view', 'UNSUPPORTED_VALUE');
-          decoded.market = decoded.market === '' ? null : optionalId(decoded.market, privateConfig.markets, 'market', 'UNSUPPORTED_VALUE');
+          // W2F-X X6: the `market` param is accepted only when it is a two-
+          // uppercase-letter id the workspace config declares; anything else
+          // (zz, JPN, an unknown id) is ignored as a selection — null, never
+          // a failed query — so the rest of the URL still applies. The
+          // document-level [data-gs-market] existence check lives in the
+          // controller, which owns the DOM.
+          decoded.market = decoded.market === '' ? null
+            : (/^[A-Z]{2}$/.test(decoded.market) && privateConfig.markets.indexOf(decoded.market) !== -1 ? decoded.market : null);
           if (!checkNormalArray(decoded.pins, 'INVALID_QUERY', 'pins')) fail('INVALID_QUERY', 'pins');
           if (decoded.pins.length > MAX_PINS) fail('INVALID_QUERY', 'pins');
           for (var pinIndex = 0; pinIndex < decoded.pins.length; pinIndex += 1) {

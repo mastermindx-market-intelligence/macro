@@ -203,3 +203,33 @@ def test_cluster_pagination_uses_cluster_sequence_not_member_count(tmp_path):
     assert first.has_more is True
     assert len(second.rows) == 1
     assert first.rows[0].story_id != second.rows[0].story_id
+
+def test_market_burst_does_not_hide_relevant_duplicate_from_candidate_budget(tmp_path):
+    from engine.qbus_news_cluster import ClusterPolicy
+
+    with m.NewsStore(
+        tmp_path / "q.sqlite3", source_key="benzinga-rest",
+        cluster_policy=ClusterPolicy(max_candidates=4),
+    ) as store:
+        rows = [_routed(item_id=1, title="Nvidia launches new AI accelerator")]
+        rows.extend(
+            _routed(item_id=10+i, title=f"Other company announces contract {i}",
+                    minute=i+1, security_ids=(f"sec-OTHER-{i}",))
+            for i in range(8)
+        )
+        rows.append(_routed(item_id=2, title="Nvidia launches its new AI accelerator", minute=10))
+        store.commit(rows, expected_cursor=None, next_cursor="1")
+        snap = store.snapshot("sec-NVDA", limit=20, cursor=None, rights=_rights())
+
+    assert len(snap.rows) == 1
+    assert snap.rows[0].item_count == 2
+
+
+def test_relevant_candidate_outside_event_window_remains_separate(tmp_path):
+    with m.NewsStore(tmp_path / "q.sqlite3", source_key="benzinga-rest") as store:
+        store.commit([
+            _routed(item_id=1, title="Nvidia launches new AI accelerator"),
+            _routed(item_id=2, title="Nvidia launches its new AI accelerator", minute=361),
+        ], expected_cursor=None, next_cursor="1")
+        snap = store.snapshot("sec-NVDA", limit=20, cursor=None, rights=_rights())
+    assert len(snap.rows) == 2

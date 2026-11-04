@@ -139,6 +139,26 @@ def product_integration(fact_id: str, request: Request,
     return JSONResponse(value, headers=_HEADERS)
 
 
+@router.get("/supplier-research/{fact_id:path}")
+def supplier_research(fact_id: str, request: Request,
+                      _user: dict = Depends(require_private_user)) -> JSONResponse:
+    """Explicit current research continuation; all source choices are native."""
+    if not _FACT_ID.fullmatch(fact_id) or request.query_params:
+        return _error(400, "REQUEST_INVALID")
+    reader = getattr(request.app.state, "company_disclosure_reader", None)
+    if type(reader) is not PrivateDisclosureReader or reader.selection_owner is None:
+        return _error(503, "SOURCE_RUNTIME_UNAVAILABLE")
+    from app.company_supplier_research import read_supplier_research
+    try:
+        value = read_supplier_research(reader, getattr(request.app.state, "company_context_owner", None),
+            fact_id, purpose=PURPOSE, audience=AUDIENCE)
+    except Exception:
+        return _error(503, "PRIVATE_SOURCE_UNAVAILABLE")
+    if require_private_user(request, authorization=request.headers.get("authorization")) != _user:
+        return _error(401, "AUTHENTICATION_REQUIRED")
+    return JSONResponse(value, headers=_HEADERS)
+
+
 @router.get("/issuers/{issuer_id}/product-integrations")
 def issuer_selections(issuer_id: str, request: Request,
                       _user: dict = Depends(require_private_user)) -> JSONResponse:
@@ -172,4 +192,41 @@ def company_context(request: Request, _user: dict = Depends(require_private_user
         value = context.read_company_context(owner, items[0][1], purpose=PURPOSE, audience=AUDIENCE)
     except native.DisclosureError:
         return _error(503, "PRIVATE_SOURCE_UNAVAILABLE")
+    return JSONResponse(value, headers=_HEADERS)
+
+
+@router.get("/issuers/{issuer_id}/economic-context")
+def issuer_economic_context(issuer_id: str, request: Request,
+                            _user: dict = Depends(require_private_user)) -> JSONResponse:
+    """Current issuer context; same host authentication, purpose and source owner.
+
+    No client-supplied generation, purpose, audience, fact reference or query
+    mode is accepted. The existing native transaction withholds all rows after
+    any source/admission failure. Entitlement is rechecked before serialization
+    without introducing another identity verifier or entitlement cache.
+    """
+    if request.query_params:
+        return _error(400, "REQUEST_INVALID")
+    try:
+        selection.issuer_identity(issuer_id)
+    except native.DisclosureError:
+        return _error(400, "REQUEST_INVALID")
+    reader = getattr(request.app.state, "company_disclosure_reader", None)
+    if type(reader) is not PrivateDisclosureReader or reader.selection_owner is None:
+        return _error(503, "SOURCE_RUNTIME_UNAVAILABLE")
+    # This is an optional consumer on the existing server capability, not a new
+    # runtime registration. Keep it out of unrelated startup/import paths.
+    from engine.theme_graph import issuer_economic_context as economic
+    value = economic.read_issuer_economic_context(
+        reader.selection_owner, reader.authority, reader.store_factory, issuer_id,
+        purpose=PURPOSE, audience=AUDIENCE)
+    if (type(value) is not dict or value.get("schema") != economic.SCHEMA
+            or value.get("status") != "available" or value.get("authority") != "context_only"
+            or value.get("reason") is not None or type(value.get("context")) is not dict):
+        # Stable transport refusal; never expose native reason details, partial
+        # entities, source references or a previous available response.
+        return _error(503, "PRIVATE_SOURCE_UNAVAILABLE")
+    current_user = require_private_user(request, authorization=request.headers.get("authorization"))
+    if current_user != _user:
+        return _error(401, "AUTHENTICATION_REQUIRED")
     return JSONResponse(value, headers=_HEADERS)

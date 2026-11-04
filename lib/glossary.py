@@ -54,7 +54,7 @@ GLOSSARY_DOMAINS: tuple[GlossaryDomain, ...] = (
     GlossaryDomain("china", "China", "中国", "docs/site_semantics/china.md", "china.html"),
     GlossaryDomain("china-stocks", "China stocks", "中国个股", "docs/site_semantics/china_stocks.md", "china_stocks.html"),
     GlossaryDomain("etfs", "Fund flows", "基金流向", "docs/site_semantics/etfs.md", "etfs.html"),
-    GlossaryDomain("signals", "Signal quality", "信号质量", "docs/site_semantics/stretch_oracles.md", "measurement.html"),
+    GlossaryDomain("signals", "Signal quality", "信号质量", "docs/site_semantics/stretch_oracles.md", "calibration.html"),
 )
 _DOMAIN_IDS = frozenset(d.id for d in GLOSSARY_DOMAINS)
 
@@ -82,7 +82,6 @@ _US = ("us_stocks.html", "US stocks dashboard", "美股仪表盘")
 _CHINA = ("china.html", "China dashboard", "中国仪表盘")
 _CN_STOCKS = ("china_stocks.html", "China stock screener", "中国个股筛选")
 _ETFS = ("etfs.html", "Fund flows dashboard", "基金流向仪表盘")
-_SIGNALS = ("measurement.html", "Calibration Lab", "校准实验室")
 
 
 def _t(id_, domain, name_en, name_zh, answer_en, answer_zh, source_file, source_line,
@@ -431,7 +430,7 @@ GLOSSARY_TERMS: tuple[GlossaryTerm, ...] = (
     _t("overextended-reading", "signals", "Overextended Reading", "超延伸读数",
        "A flag that a move has run far from its normal range. Two versions of it exist and they often disagree.",
        "标记某走势已严重偏离正常区间的信号。该信号存在两个版本，两者常常意见不一。",
-       _ORA, 23, "O1 — what fires, in practice", _SIGNALS,
+       _ORA, 23, "O1 — what fires, in practice", _US,
        "When the two disagree, treat the stretch call as unsettled.",
        "两者不一致时，应视超延伸判断为尚未明朗。"),
 )

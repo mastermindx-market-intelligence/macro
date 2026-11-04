@@ -42,6 +42,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -631,13 +632,19 @@ def _existing_customer(user_id: str) -> str | None:
 
 
 def _user_for_customer(customer_id: str) -> str | None:
-    try:
-        rows = _pg("GET", f"user_entitlements?stripe_customer_id=eq.{urllib.parse.quote(customer_id)}&select=user_id")
-        if rows:
-            return rows[0].get("user_id")
-    except Exception as exc:  # noqa: BLE001
-        log.warning("billing: user lookup failed for %s (%s)", customer_id, exc)
-    return None
+    # Only a successful empty lookup means "unmapped". Transport/HTTP/JSON errors
+    # must reach the webhook's failure path so Stripe retries the original event;
+    # otherwise it records a skipped revocation as processed and strands paid access.
+    rows = _pg("GET", f"user_entitlements?stripe_customer_id=eq.{urllib.parse.quote(customer_id)}&select=user_id")
+    if not isinstance(rows, list):
+        raise ValueError("invalid customer mapping response")
+    if not rows:
+        return None
+    row = rows[0]
+    user_id = row.get("user_id") if isinstance(row, dict) else None
+    if not isinstance(user_id, str) or not user_id.strip():
+        raise ValueError("invalid customer mapping user id")
+    return user_id
 
 
 def read_entitlement(user_id: str) -> dict:
@@ -839,7 +846,9 @@ def _compute_entitlement(customer_id: str) -> dict:
     keys: list[str] = []
     try:
         ents = stripe.entitlements.ActiveEntitlement.list(customer=customer_id, limit=100).data
-        keys = [e.lookup_key for e in ents]
+        # Stripe lookup_key can be null. Persist only valid feature names; a
+        # NULL array member must never poison a paid membership read.
+        keys = [e.lookup_key for e in ents if isinstance(e.lookup_key, str) and e.lookup_key]
     except Exception as exc:  # noqa: BLE001 — entitlement propagation lag → config fallback in reducer
         log.debug("billing: active-entitlement list failed for %s (%s)", customer_id, exc)
     return _entitlement_from_state(subs, keys)
@@ -1520,6 +1529,137 @@ def _user_lock(user_id: str) -> threading.Lock:
         return lock
 
 
+def _conversion_epoch(value: Any) -> bool:
+    return type(value) is int and 0 < value < 4102444800
+
+
+def _conversion_price(sub: Any) -> tuple[str, str, str] | None:
+    """Qualify the single original catalog price; never infer cadence from a label."""
+    page = _field(sub, "items", {})
+    items = _sub_items(sub)
+    if _field(page, "has_more") is not False or len(items) != 1:
+        return None
+    price = _field(items[0], "price")
+    recurring = _field(price, "recurring", {}) or {}
+    cadence = _field(recurring, "interval")
+    lookup_key = _field(price, "lookup_key")
+    tier = _lookup_key_to_tier().get(lookup_key) if isinstance(lookup_key, str) else None
+    price_id = _field(price, "id")
+    if (not isinstance(price_id, str) or not price_id or tier not in _product_tiers()
+            or cadence not in ("month", "year") or type(_field(recurring, "interval_count")) is not int
+            or _field(recurring, "interval_count") != 1
+            or _field(price, "currency") != _catalog().get("currency")):
+        return None
+    return tier, cadence, price_id
+
+
+def _conversion_trial(sub: Any, created: int) -> tuple[bool, int | None] | None:
+    """Exact provider trial bounds at the event clock; no amount/catalog/status guess."""
+    missing = object()
+    start, end = _field(sub, "trial_start", missing), _field(sub, "trial_end", missing)
+    if start is None and end is None:
+        return False, None
+    if not (_conversion_epoch(start) and _conversion_epoch(end)):
+        return None
+    duration = end - start
+    # Provider trial_end is bounded to two calendar years. This is only a validity
+    # ceiling; reported days always come from the exact signed/provider duration.
+    if not 0 < duration <= 732 * 86400 or duration % 86400 or created < start:
+        return None
+    return start <= created < end, duration // 86400
+
+
+def _growth_conversion(event: dict, user_id: str, customer_id: str, ent: dict) -> bool | None:
+    """Compose one canonical server fact only after the entitlement write ACK.
+
+    Original Stripe time rides analytics.client_ts; the DB mints observation time.
+    Unknown facts suppress this positive measurement. Provider/analytics failures
+    raise for same-event retry; no atomicity or eventual delivery is promised.
+    """
+    etype, created, event_id = event.get("type"), event.get("created"), event.get("id")
+    if (etype not in {"checkout.session.completed", "customer.subscription.created"}
+            or not _conversion_epoch(created) or not isinstance(event_id, str) or not event_id
+            or type(event.get("livemode")) is not bool or event.get("account")
+            or ent.get("status") not in ("active", "trialing")
+            or ent.get("tier") not in _product_tiers()):
+        return
+    obj = event["data"]["object"]
+    meta = obj.get("metadata")
+    if (not isinstance(meta, dict) or meta.get("mm_user_id") != user_id
+            or obj.get("customer") != customer_id
+            or type(obj.get("livemode")) is not bool or obj["livemode"] != event["livemode"]):
+        return
+    stripe = _stripe()
+    if etype == "checkout.session.completed":
+        if (obj.get("mode") != "subscription" or obj.get("status") != "complete"
+                or obj.get("payment_status") not in ("paid", "no_payment_required")
+                or obj.get("client_reference_id") != user_id
+                or not isinstance(obj.get("id"), str) or not isinstance(obj.get("subscription"), str)
+                or type(obj.get("amount_total")) is not int or obj["amount_total"] < 0
+                or obj.get("currency") != _catalog().get("currency")):
+            return
+        session = stripe.checkout.Session.retrieve(
+            obj["id"], expand=["subscription", "line_items.data.price"])
+        sub = _field(session, "subscription")
+        session_meta = _field(session, "metadata", {}) or {}
+        if (any(_field(session, k) != obj.get(k) for k in
+                ("id", "customer", "mode", "status", "payment_status", "amount_total", "currency", "client_reference_id"))
+                or session_meta.get("mm_user_id") != user_id
+                or _field(sub, "id") != obj["subscription"]):
+            return
+        lines = _field(session, "line_items", {})
+        if _field(lines, "has_more") is not False:
+            return
+        original = _conversion_price({"items": lines})
+        wire = "checkout.completed"
+    else:
+        if (obj.get("status") != "trialing" or ent.get("status") != "trialing"
+                or not isinstance(obj.get("id"), str)):
+            return
+        sub = stripe.Subscription.retrieve(obj["id"])
+        original = _conversion_price(obj)
+        wire = "trial.started"
+        if any(_field(sub, k) != obj.get(k) for k in ("id", "trial_start", "trial_end")):
+            return
+    current = _conversion_price(sub)
+    sub_meta = _field(sub, "metadata", {}) or {}
+    if (not original or current != original or original[0] != ent["tier"]
+            or {"month": "monthly", "year": "annual"}[original[1]] != ent.get("plan_interval")
+            or _field(sub, "customer") != customer_id or sub_meta.get("mm_user_id") != user_id
+            or _field(sub, "status") != ent.get("status")
+            or (wire == "trial.started" and _field(sub, "status") != "trialing")
+            or type(_field(sub, "livemode")) is not bool or _field(sub, "livemode") != event["livemode"]
+            or not _conversion_epoch(_field(sub, "created")) or _field(sub, "created") > created
+            or (wire == "checkout.completed" and (type(_field(session, "livemode")) is not bool
+                or _field(session, "livemode") != event["livemode"]))):
+        return
+    trial = _conversion_trial(sub, created)
+    if trial is None:
+        return
+    if wire == "checkout.completed":
+        raw_offer = meta.get("mm_offer")
+        offer_spec = (_catalog().get("offers") or {}).get(raw_offer) if isinstance(raw_offer, str) else None
+        offer = None
+        if offer_spec:
+            if (offer_spec.get("tier") != original[0]
+                    or offer_spec.get("interval") != ent.get("plan_interval")
+                    or session_meta.get("mm_offer") != raw_offer or sub_meta.get("mm_offer") != raw_offer):
+                return
+            offer = raw_offer
+        props = {"tier": original[0], "interval": original[1], "offer_key": offer,
+                 "amount_cents": obj["amount_total"], "is_trial": trial[0]}
+    else:
+        if not trial[0] or trial[1] is None:
+            return
+        props = {"tier": original[0], "trial_days": trial[1]}
+    from app.main import _mm_server_growth_insert  # noqa: PLC0415
+    # Different canonical facts from the same Stripe event cannot collide. Replays
+    # keep the same UUID, so an ambiguous after-insert timeout cannot double count.
+    eid = str(uuid.uuid5(uuid.NAMESPACE_URL, f"mastermind:stripe:{event_id}:{wire}"))
+    _mm_server_growth_insert(wire, eid, user_id, created, props)
+    return True
+
+
 def _handle_event(event: dict) -> None:
     etype = event["type"]
     if etype not in _HANDLED:
@@ -1542,6 +1682,7 @@ def _handle_event(event: dict) -> None:
         _cancel_subscriptions(customer_id)   # chargeback → cancel so the free downgrade sticks (C1)
     emails = _billing_emails()
     outbox = None
+    conversion_error = None
     with _user_lock(user_id):
         # THE DECISION, serialised per user. An upgrade is a comparison against the
         # pre-upsert row and a failed payment has already lost its tier by the time the
@@ -1559,6 +1700,14 @@ def _handle_event(event: dict) -> None:
         ent = _compute_entitlement(customer_id)
         _upsert_entitlement(user_id, customer_id, ent)
         _invalidate(user_id)
+        try:
+            conversion_ack = _growth_conversion(event, user_id, customer_id, ent)
+            if etype in {"checkout.session.completed", "customer.subscription.created"} and not conversion_ack:
+                log.info("billing: canonical conversion omitted for %s (unqualified facts/state)", event.get("id"))
+        except Exception as exc:  # preserve existing mail decision/send even when telemetry must retry
+            log.warning("billing: canonical conversion ACK pending for %s (%s)",
+                        event.get("id"), type(exc).__name__)
+            conversion_error = exc
         log.info("billing: %s -> user %s tier=%s status=%s", etype, user_id, ent["tier"], ent["status"])
         # AFTER the entitlement write, never before: the DB row is the source of truth and
         # mail is a side effect. prepare() never raises; the guard here covers the import
@@ -1582,6 +1731,8 @@ def _handle_event(event: dict) -> None:
             emails.deliver(outbox)
         except Exception as exc:  # noqa: BLE001
             log.warning("billing: %s email deliver failed (%s)", etype, type(exc).__name__)
+    if conversion_error is not None:
+        raise conversion_error  # never settle the Stripe handled-event ledger without analytics ACK
 
 
 @router.post("/api/billing/webhook")

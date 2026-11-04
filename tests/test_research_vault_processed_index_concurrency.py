@@ -541,10 +541,12 @@ class TestPatchIntegrity(unittest.TestCase):
     def test_real_function_signature(self):
         import inspect
         sig = inspect.signature(new__processed_index)
-        self.assertEqual(list(sig.parameters), ["store", "concurrency"])
+        self.assertEqual(list(sig.parameters), ["store", "concurrency", "read_cache"])
         self.assertTrue(sig.parameters["concurrency"].kind is
                         inspect.Parameter.KEYWORD_ONLY)
         self.assertEqual(sig.parameters["concurrency"].default, 4)
+        self.assertIs(sig.parameters['read_cache'].kind, inspect.Parameter.KEYWORD_ONLY)
+        self.assertIsNone(sig.parameters['read_cache'].default)
 
     def test_real_r2store_qualifies_and_duck_store_does_not(self):
         order = simple_keys(4)

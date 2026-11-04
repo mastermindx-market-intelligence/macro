@@ -1,0 +1,79 @@
+{
+  "observed_at": "2026-10-20T08:02:45.287245+00:00",
+  "base": "a7553e0a18339c910eef9687c730b06605dd710e",
+  "head": "8bce27bb731f475885352add0be7f885e0862714",
+  "working_head": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+  "working_status": "",
+  "commits": "8bce27bb731f475885352add0be7f885e0862714 Canonicalize local orchestrator policy deployment (#1228)\n2b3429d9aca0d539e7ac2b097a199fb86de2d329 fix(claude): prevent ambiguous Parall Desktop account launches (#1647)",
+  "name_status": "A\tdocs/runbooks/PROVIDER_ORCHESTRATOR_POLICY.md\nM\tdocs/runbooks/claude-desktop-session-bridge.md\nM\tintegrations/chairman_surfaces/claude.py\nA\tops/claude_parall_isolation/claude_instructions.md\nA\tops/claude_parall_isolation/codex_instructions.md\nA\tops/claude_parall_isolation/guard_block.txt\nA\tops/executive_os/provider_orchestrator_guard.py\nA\tops/executive_os/provider_orchestrator_policy.py\nA\tscripts/install_claude_parall_isolation.py\nA\ttests/fixtures/claude_parall_isolation/installed_guard_before_review.txt\nA\ttests/fixtures/claude_parall_isolation/installed_guard_block_v1.txt\nA\ttests/fixtures/claude_parall_isolation/installed_guard_pre_isolation.py\nM\ttests/test_chairman_control_room_server.py\nM\ttests/test_chairman_surfaces.py\nM\ttests/test_claude_desktop_navigation_hardening.py\nA\ttests/test_claude_parall_isolation_installer.py\nA\ttests/test_provider_orchestrator_policy.py",
+  "stat": "docs/runbooks/PROVIDER_ORCHESTRATOR_POLICY.md      |   96 ++\n docs/runbooks/claude-desktop-session-bridge.md     |   53 +\n integrations/chairman_surfaces/claude.py           |   37 +\n ops/claude_parall_isolation/claude_instructions.md |    5 +\n ops/claude_parall_isolation/codex_instructions.md  |    5 +\n ops/claude_parall_isolation/guard_block.txt        |   99 ++\n ops/executive_os/provider_orchestrator_guard.py    |  446 ++++++++\n ops/executive_os/provider_orchestrator_policy.py   |  834 ++++++++++++++\n scripts/install_claude_parall_isolation.py         |  212 ++++\n .../installed_guard_before_review.txt              |   99 ++\n .../installed_guard_block_v1.txt                   |   30 +\n .../installed_guard_pre_isolation.py               |  438 ++++++++\n tests/test_chairman_control_room_server.py         |    3 +-\n tests/test_chairman_surfaces.py                    |   67 ++\n tests/test_claude_desktop_navigation_hardening.py  |    6 +\n tests/test_claude_parall_isolation_installer.py    |  166 +++\n tests/test_provider_orchestrator_policy.py         | 1134 ++++++++++++++++++++\n 17 files changed, 3729 insertions(+), 1 deletion(-)",
+  "critical_bindings": [
+    {
+      "path": "scripts/deploy_code_to_vps.sh",
+      "a755_blob_or_tree": "f871e88815e70338a646008dbe77dfcc1727e978",
+      "successor_blob_or_tree": "f871e88815e70338a646008dbe77dfcc1727e978",
+      "unchanged": true
+    },
+    {
+      "path": "app",
+      "a755_blob_or_tree": "b48009a31fff31a6365fc8aa083b07a9507c89af",
+      "successor_blob_or_tree": "b48009a31fff31a6365fc8aa083b07a9507c89af",
+      "unchanged": true
+    },
+    {
+      "path": "portfolio",
+      "a755_blob_or_tree": "9bad858acbec8550678955f26a7a7303d903afd1",
+      "successor_blob_or_tree": "9bad858acbec8550678955f26a7a7303d903afd1",
+      "unchanged": true
+    },
+    {
+      "path": "brain",
+      "a755_blob_or_tree": "6a201c3b2751d3345e62f87b786620d35ea98d60",
+      "successor_blob_or_tree": "6a201c3b2751d3345e62f87b786620d35ea98d60",
+      "unchanged": true
+    },
+    {
+      "path": "bot",
+      "a755_blob_or_tree": "835f93528a55c69aa022db2965298922a3917192",
+      "successor_blob_or_tree": "835f93528a55c69aa022db2965298922a3917192",
+      "unchanged": true
+    },
+    {
+      "path": "control_plane",
+      "a755_blob_or_tree": "a746d842c7aec3fc6992e3a1690fa9d4f5348716",
+      "successor_blob_or_tree": "a746d842c7aec3fc6992e3a1690fa9d4f5348716",
+      "unchanged": true
+    },
+    {
+      "path": "pyproject.toml",
+      "a755_blob_or_tree": "ec1c3c8e5477fac98138db636fc66eb5c02b3eef",
+      "successor_blob_or_tree": "ec1c3c8e5477fac98138db636fc66eb5c02b3eef",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/deploy_from_git.sh",
+      "a755_blob_or_tree": "f40e7895e88b0cd755fb7ef9b41a4783a1df4ed9",
+      "successor_blob_or_tree": "f40e7895e88b0cd755fb7ef9b41a4783a1df4ed9",
+      "unchanged": true
+    }
+  ],
+  "active_root_reference_scan": {
+    "pattern": "provider_orchestrator|install_claude_parall|chairman_surfaces",
+    "roots": [
+      "app",
+      "brain",
+      "bot",
+      "control_plane",
+      "portfolio"
+    ],
+    "exit_code": 0,
+    "matches": [
+      "8bce27bb731f475885352add0be7f885e0862714:control_plane/surface_bindings.py:111:#: profile \u2014 see :mod:`integrations.chairman_surfaces.chatgpt` for the full",
+      "8bce27bb731f475885352add0be7f885e0862714:control_plane/surface_bindings.py:121:#: (currently :mod:`integrations.chairman_surfaces.chatgpt`) needs to reuse"
+    ]
+  },
+  "archive_sha256": "28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92",
+  "root_scope_assessment": "Only existing runtime-adjacent module change is integrations/chairman_surfaces/claude.py: added macOS-only ambiguous Desktop handoff refusal. Added local policy/installer code is not invoked by the VPS release wrapper or registered app startup. Full archive and actual receiver comparison are newly bound; successful a755 actual Linux startup and isolated complete eligible baseline restore are reused with unchanged application/portfolio/control-plane/helper/dependency bindings, not relabeled as a fresh successor startup execution.",
+  "production_deployment_authorized": false,
+  "explicit_wrapper_target_rule": "Optional explicit SHA must equal freshly fetched current origin/master, otherwise exit 2 before deployment. Invoke wrapper with 8bce27bb731f475885352add0be7f885e0862714 only after reserved production authorization; master advancement requires material-delta qualification."
+}

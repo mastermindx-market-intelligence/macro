@@ -7,6 +7,10 @@ by Macro PR #8454 and Terminal PR #831. It does not grant source rights, buy a f
 or authorize a production release. Source rights, provider credentials, merge/release,
 and production acceptance remain separate gates.
 
+The additive shared-news implementation and its separate activation/proof gates are
+recorded in [Shared news intelligence](shared-news-intelligence.md). Its optional
+publisher receipts do not supersede the source-rights requirements below.
+
 ## Ownership
 
 | Concern | Existing owner |

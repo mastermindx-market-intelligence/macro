@@ -66,6 +66,9 @@ def owner_root(tmp_path, monkeypatch):
     ]
     pd.DataFrame(master).to_parquet(ref / "security_master.parquet", index=False)
     pd.DataFrame(aliases).to_parquet(ref / "vendor_aliases.parquet", index=False)
+    # IW's LEGACY reader acquires the complete five-member reference set.
+    for name in ("issuer_master.parquet", "issuer_migrations.parquet", "security_migrations.parquet"):
+        pd.DataFrame({"synthetic": []}).to_parquet(ref / name, index=False)
     _json(ref / "_receipt.json", dict(generated_at="2026-10-04T09:00:00Z",
           symbol_directory_snapshot="2026-10-04", code_version="controlled_owner_fixture"))
     graph = root / "data/theme_graph"

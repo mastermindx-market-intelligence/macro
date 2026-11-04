@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 REFERENCE_PACK_SCHEMA = "capital_structure.reference_pack.v1"
-REFERENCE_PACK_VERSION = "capital-structure-reference-qualification/1.0.0"
+REFERENCE_PACK_VERSION = "capital-structure-reference-qualification/1.1.0"
 REFERENCE_PACK_RELPATH = Path("config") / "capital_structure_reference_pack.v1.json"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 

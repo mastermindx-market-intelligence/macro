@@ -561,8 +561,8 @@ def test_receipt_unreadable_after_qualification_fail_closes(monkeypatch, tmp_pat
     _assert_closed_payload(closed.json(), row_key="rows")
 
 
-def test_derivative_permission_is_read_once_per_request(monkeypatch, tmp_path):
-    """Mutation: call derivative_permitted inside the row loop, or on every SSE cycle."""
+def test_derivative_permission_is_read_once_per_http_projection(monkeypatch, tmp_path):
+    """Bounded HTTP projections share one derivative decision across their rows."""
     now = datetime.now(UTC)
     receipt = _write(tmp_path / "rights.json", _rights(now))
     db = _make_db(
@@ -598,9 +598,9 @@ def test_derivative_permission_is_read_once_per_request(monkeypatch, tmp_path):
     assert client.get(f"/api/ticker-news/stories/{story_id}").status_code == 200
     assert len(calls) == 1
 
-    calls.clear()
-    _collect_sse(ticker_news, cycles=2)
-    assert len(calls) == 1
+    # A long-lived SSE connection must requalify its scope. Idle expiry and
+    # revocation during a shared read are behavioral regressions covered in
+    # test_shared_news_intelligence.py; a one-read stream would fail those.
 
 
 def test_derivative_gate_is_not_consulted_without_qualified_rights(monkeypatch, tmp_path):

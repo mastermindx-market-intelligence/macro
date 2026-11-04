@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from engine.qbus_news_contract import NewsContractError, normalize_news
+from engine.qbus_news_contract import NewsContractError, normalize_massive_news, normalize_news
 
 UTC = timezone.utc
 RECEIVED = datetime(2026, 10, 4, 23, 0, 0, tzinfo=UTC)
@@ -152,6 +152,86 @@ def test_clock_anomalies_are_preserved_and_flagged_not_clamped():
     assert set(r.clock_anomalies) == {"updated_before_published", "event_before_published"}
 
 
+def test_provider_stamps_after_receipt_are_flagged_and_left_unclamped():
+    received = datetime(2026, 10, 20, 12, 0, 0, tzinfo=UTC)
+    r = normalize_news(
+        ws_payload(
+            created="Sun, 15 Nov 2026 07:00:00 -0500",
+            updated="Sun, 15 Nov 2026 08:00:00 -0500",
+            event_ts="2026-11-15T12:30:00Z",
+        ),
+        transport="benzinga_ws",
+        received_at=received,
+    )
+    assert set(r.clock_anomalies) == {
+        "published_after_received",
+        "updated_after_received",
+        "event_after_received",
+    }
+    assert r.published_at == datetime(2026, 11, 15, 12, 0, 0, tzinfo=UTC)
+    assert r.updated_at == datetime(2026, 11, 15, 13, 0, 0, tzinfo=UTC)
+    assert r.source_event_at == datetime(2026, 11, 15, 12, 30, 0, tzinfo=UTC)
+    assert r.received_at == received
+
+
+@pytest.mark.parametrize("created, updated, event_ts, expected", [
+    ("Sun, 04 Oct 2026 19:00:00 -0400", "Sun, 04 Oct 2026 19:00:00 -0400", "2026-10-04T23:00:00Z", set()),
+    ("Sun, 04 Oct 2026 17:58:00 -0400", "Sun, 04 Oct 2026 19:00:01 -0400", "2026-10-04T21:58:02Z", {"updated_after_received"}),
+    ("Sun, 04 Oct 2026 17:58:00 -0400", "Sun, 04 Oct 2026 17:58:01 -0400", "2026-10-04T23:00:01Z", {"event_after_received"}),
+])
+def test_after_receipt_flags_are_strict_and_independent(created, updated, event_ts, expected):
+    r = normalize_news(
+        ws_payload(created=created, updated=updated, event_ts=event_ts),
+        transport="benzinga_ws",
+        received_at=RECEIVED,
+    )
+    assert set(r.clock_anomalies) == expected
+
+
+def test_rest_updated_after_receipt_flags_the_event_clock_it_supplies():
+    r = normalize_news(
+        rest_payload(updated="Sun, 04 Oct 2026 19:00:01 -0400"),
+        transport="benzinga_rest",
+        received_at=RECEIVED,
+    )
+    assert r.source_event_at == r.updated_at
+    assert set(r.clock_anomalies) == {"updated_after_received", "event_after_received"}
+
+
+def test_massive_benzinga_mirror_stamps_after_receipt_are_flagged():
+    r = normalize_news(
+        massive_payload(published="2026-10-04T23:00:01Z", updated="2026-10-04T23:00:02Z"),
+        transport="massive_benzinga_v2",
+        received_at=RECEIVED,
+    )
+    assert r.published_at == datetime(2026, 10, 4, 23, 0, 1, tzinfo=UTC)
+    assert r.source_event_at == r.updated_at
+    assert set(r.clock_anomalies) == {
+        "published_after_received",
+        "updated_after_received",
+        "event_after_received",
+    }
+
+
+def test_general_massive_publication_after_receipt_is_the_only_flag():
+    payload = {
+        "id": "t15-1",
+        "title": "title t15-1",
+        "article_url": "https://example.invalid/a/t15-1",
+        "published_utc": "2026-10-04T23:00:01Z",
+        "description": "teaser t15-1",
+        "publisher": {"name": "Example", "homepage_url": "https://example.invalid/"},
+        "tickers": ["NVDA"],
+    }
+    r = normalize_massive_news(payload, received_at=RECEIVED)
+    assert r.updated_at is None and r.source_event_at is None
+    assert r.clock_anomalies == ("published_after_received",)
+    on_time = normalize_massive_news(
+        dict(payload, published_utc="2026-10-04T23:00:00Z"), received_at=RECEIVED
+    )
+    assert on_time.clock_anomalies == ()
+
+
 @pytest.mark.parametrize("value", [True, False])
 def test_boolean_source_ids_are_rejected(value):
     with pytest.raises(NewsContractError) as exc:
@@ -199,3 +279,18 @@ def test_normalizer_does_not_mutate_payload():
     before = repr(p)
     normalize_news(p, transport="benzinga_ws", received_at=RECEIVED)
     assert repr(p) == before
+
+
+@pytest.mark.parametrize("created, expected", [
+    ("Tue, 20 Oct 2026 06:00:00 -0400", "2026-10-20T10:00:00+00:00"),
+    ("Thu, 22 Oct 2026 06:00:00 -0400", "2026-10-22T10:00:00+00:00"),
+])
+def test_rfc_weekday_t_is_not_mistaken_for_iso_separator(created, expected):
+    from engine.qbus_news_contract import normalize_news
+    from datetime import datetime
+    revision = normalize_news({
+        "id": "weekday-fixture", "title": "Issuer announces earnings",
+        "created": created, "updated": created, "stocks": ["NVDA"],
+        "url": "https://benzinga.com/weekday-fixture",
+    }, transport="benzinga_rest", received_at=datetime.fromisoformat(expected))
+    assert revision.published_at.isoformat() == expected

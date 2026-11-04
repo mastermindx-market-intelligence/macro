@@ -29,6 +29,7 @@ from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator, RefResolver
+from jsonschema.exceptions import SchemaError
 
 from engine.neuralweb import market_memory as mm
 from engine.neuralweb import market_memory_experience_accrual as accrual
@@ -75,12 +76,40 @@ FORBIDDEN_MEMBERSHIP_TOKENS = (
 SCHEMA_STORE: dict[str, dict] = {}
 
 
+def test_schema_store_validates_anonymous_schemas_without_registering_a_fake_id(tmp_path, monkeypatch):
+    schema_dir = tmp_path / "contracts" / "market_memory"
+    schema_dir.mkdir(parents=True)
+    named = {"$id": "https://example.test/fixture.schema.json", "type": "object"}
+    (schema_dir / "a-anonymous.schema.json").write_text(json.dumps({"type": "object"}))
+    (schema_dir / "b-named.schema.json").write_text(json.dumps(named))
+    monkeypatch.setitem(globals(), "ROOT", tmp_path)
+    monkeypatch.setitem(globals(), "SCHEMA_STORE", {})
+    assert _schema_store() == {named["$id"]: named}
+
+
+def test_schema_store_does_not_ignore_invalid_anonymous_schemas_or_leave_partial_cache(tmp_path, monkeypatch):
+    schema_dir = tmp_path / "contracts" / "market_memory"
+    schema_dir.mkdir(parents=True)
+    (schema_dir / "a-named.schema.json").write_text(json.dumps({"$id": "https://example.test/fixture.schema.json"}))
+    (schema_dir / "b-invalid.schema.json").write_text(json.dumps({"type": "not-a-json-schema-type"}))
+    monkeypatch.setitem(globals(), "ROOT", tmp_path)
+    monkeypatch.setitem(globals(), "SCHEMA_STORE", {})
+    with pytest.raises(SchemaError):
+        _schema_store()
+    assert SCHEMA_STORE == {}
+
+
 def _schema_store() -> dict[str, dict]:
     if not SCHEMA_STORE:
+        loaded = {}
         for path in sorted((ROOT / "contracts" / "market_memory").glob("*.schema.json")):
             schema = json.loads(path.read_text())
             Draft202012Validator.check_schema(schema)
-            SCHEMA_STORE[schema["$id"]] = schema
+            # Anonymous schemas are valid JSON Schema, but have no URI to
+            # register for reference resolution. Still validate every schema.
+            if "$id" in schema:
+                loaded[schema["$id"]] = schema
+        SCHEMA_STORE.update(loaded)
     return SCHEMA_STORE
 
 

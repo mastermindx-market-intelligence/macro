@@ -65,6 +65,20 @@ _CSV_XLSX_OMITTED_CELL_FIELDS = (
     "provenance.selected_raw_fact",
     "provenance.issuer_class",
     "provenance.issuer_class_basis",
+    # Not-presented evidence (step 5) is JSON-sidecar-only: the N/A basis
+    # word and the linkbase evidence record have no tabular column.  The
+    # qualified-sum operand list IS carried, by the reason-column marker.
+    "provenance.na_basis",
+    "provenance.not_presented",
+)
+_QUALIFIED_SUM_REASON_MARKER = (
+    "a qualified sum (a formula VALUE carrying "
+    "provenance.qualified_not_presented) has a null JSON reason; its reason "
+    "column carries the in-row marker "
+    "query.QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX ('qualified_not_presented: ') "
+    "followed by the omitted operand IDs joined by ', ' "
+    "(query._export_reason_text), so the row never reads as a plain sum; "
+    "every other reason column is the cell reason verbatim"
 )
 _CSV_XLSX_ENCODING = (
     "receipt-level scalars (query_hash, receipt_authority, proof_scope, "
@@ -73,6 +87,7 @@ _CSV_XLSX_ENCODING = (
     "the JSON node's status field duplicates state and provenance.reason "
     "duplicates reason (CellNode.to_dict); the state and reason columns "
     "carry both",
+    _QUALIFIED_SUM_REASON_MARKER,
     "the single unit column carries the cell unit; JSON additionally carries "
     "provenance.unit, which is not guaranteed equal on non-value cells, so "
     "it is declared omitted",
@@ -135,6 +150,7 @@ SERIALIZATION_DIFFERENCES: Mapping[str, Mapping[str, tuple[str, ...]]] = Mapping
                     "the JSON node's status field duplicates state and "
                     "provenance.reason duplicates reason (CellNode.to_dict); "
                     "the state and reason columns carry both",
+                    _QUALIFIED_SUM_REASON_MARKER,
                     "the single unit column carries the cell unit; JSON "
                     "additionally carries provenance.unit, which is not "
                     "guaranteed equal on non-value cells, so it is declared "

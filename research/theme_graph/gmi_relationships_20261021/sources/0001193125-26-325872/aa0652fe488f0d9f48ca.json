@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-30T18:41:42Z",
+ "accession": "0001193125-26-325872",
+ "cik": "0000108516",
+ "doc_byte_length": 8064657,
+ "doc_sha256": "4da193fcec877967869ebc8729fb82c7bec4e9a5ef021af900e10e2c4e4c40eb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-30",
+ "form": "10-K",
+ "period_of_report": "2026-05-31",
+ "primary_document": "wor-20260531.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 7289034,
+  "byte_start": 7288615,
+  "normalized": "In connection with the Separation, we entered into several agreements with Worthington Steel that govern our ongoing relationships, including a Trademark License Agreement, both a short-term and long-term Transition Services Agreement, and a Steel Supply and Services Agreement.",
+  "normalized_sha256": "128bfd17f1be479337c6e1a5784e8532b087acd7b336e643064217a57d5830db",
+  "raw": "In connection with the Separation, we entered into several agreements with Worthington Steel that govern our ongoing relationships, including a Trademark License Agreement, both a short-term and long-term Transition Services Agreement, and a Steel Supply and Services Agreement.</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "aa0652fe488f0d9f48ca4b178ac310389e2db3d85054422b509b7eb856ef5c0c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/108516/000119312526325872/wor-20260531.htm",
+ "xbrl_contexts": []
+}

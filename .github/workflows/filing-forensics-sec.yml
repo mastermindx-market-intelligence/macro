@@ -47,7 +47,9 @@ concurrency:
 jobs:
   acquire_project_sync:
     runs-on: [self-hosted, macstudio-light]
-    timeout-minutes: 45
+    # Measured publish-step duration: 2,390 s on 2026-10-18 and 2,388 s on 2026-10-19,
+    # and the 45-minute job timeout cancelled the 10-19 run after the publish succeeded.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:

@@ -529,29 +529,29 @@ def test_b5_history_removed_falls_back_flagged(data_root):
 def test_b5_history_garbage_observed_state(data_root):
     """ENTRYPOINT: E3 engine.basket_membership_pit.members_asof
 
-    OBSERVED-STATE: garbage parquet bytes are swallowed by the reader and the
-    answer arrives labelled as an observation of CURRENT membership.
+    FIXED (Q02-F1): the garbage bytes are now answered as
+    basis="membership_unreadable" with no members — corruption is never
+    answered as absence or as an observation of CURRENT membership.
     """
     _seed_suite(data_root, {"ths_a": [_member("SYNTHA.SZ")]})
     pit.history_path(THS).write_bytes(b"NOT A PARQUET FILE - q02 synthetic garbage")
     got = pit.members_asof("ths_a", "2026-07-01", suite=THS)
     assert got["pit"] is False
-    assert got["basis"] == "current_membership"
-    assert "no PIT history yet" in got["note"]
-    assert got["members"] == ["SYNTHA.SZ"]
+    assert got["basis"] == "membership_unreadable"
+    assert got["members"] == []
+    assert got["snapshot_date"] is None
+    assert "no PIT history yet" not in got["note"]
+    assert "unreadable" in got["note"]
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "FINDING Q02-F1: an unreadable history parquet is returned with "
-    "basis == 'current_membership' and note 'no PIT history yet', so a read "
-    "failure is labelled as an observation of current membership instead of a "
-    "qualified/refused state"))
 def test_b5_read_failure_is_not_current_membership(data_root):
     """ENTRYPOINT: E3 engine.basket_membership_pit.members_asof"""
     _seed_suite(data_root, {"ths_a": [_member("SYNTHA.SZ")]})
     pit.history_path(THS).write_bytes(b"NOT A PARQUET FILE - q02 synthetic garbage")
     got = pit.members_asof("ths_a", "2026-07-01", suite=THS)
     assert got["basis"] != "current_membership", got
+    assert got["basis"] == "membership_unreadable", got
+    assert got["members"] == [], got
 
 
 def _segment(member: str) -> SourceSegment:

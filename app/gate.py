@@ -385,8 +385,18 @@ def decide(ip: str, headers: dict) -> str:
 
 
 def coming_soon_page() -> str:
-    """Return the coming-soon HTML body."""
-    return _load_page()
+    """Return the actual gate response with its document classification."""
+    from lib.shared_shell import asset_version, inject_shared_shell_text
+
+    body = _load_page()
+    try:
+        # Root-relative asset URL: the gate can answer at any requested page depth.
+        # This marks the returned response; it never changes the access decision.
+        return inject_shared_shell_text(body, "/", version=asset_version(), response_kind="coming_soon")
+    except (OSError, ValueError):
+        # The access gate keeps its original body if deployment artifacts are absent.
+        # The parent then shows unavailable rather than certifying product readiness.
+        return body
 
 
 # ---------------------------------------------------------------------------

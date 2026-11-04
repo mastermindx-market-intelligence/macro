@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk07.v1.schema.json",
   "title": "Specialist pack PK07 v1 catalogue",
-  "description": "M&A, goodwill, intangibles and impairments. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "M&A, goodwill, intangibles and impairments. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K3/K4 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk07/v1",
   "pack_id": "PK07",
   "name": "M&A, goodwill, intangibles and impairments",
@@ -15,10 +15,217 @@
     "typed absences",
     "production source trace"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "goodwill",
+      "name": "Goodwill",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "intangible_assets_net",
+      "name": "Intangible assets, net (excluding goodwill)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "indefinite_lived_intangibles",
+      "name": "Indefinite-lived intangible assets (excluding goodwill)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "goodwill_acquired",
+      "name": "Goodwill acquired during the period",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "goodwill_disposals",
+      "name": "Goodwill written off related to disposals",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "goodwill_fx_other",
+      "name": "Goodwill foreign currency translation and other adjustments",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "goodwill_impairment_loss",
+      "name": "Goodwill impairment loss",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "intangible_impairment_loss",
+      "name": "Impairment of intangible assets (excluding goodwill)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "business_combination_consideration",
+      "name": "Business combination consideration transferred",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact",
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "acquisition_date",
+      "name": "Business acquisition date (ISO-8601 date)",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact",
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "purchase_accounting_note_span",
+      "name": "Business combinations (purchase accounting) note",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "impairment_testing_note_span",
+      "name": "Goodwill and intangible asset impairment testing note",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "goodwill_rollforward_closed",
+      "kind": "rollforward",
+      "operands": [
+        "goodwill",
+        "goodwill_acquired",
+        "goodwill_disposals",
+        "goodwill_impairment_loss",
+        "goodwill_fx_other"
+      ]
+    },
+    {
+      "check_id": "impairment_vs_carrying",
+      "kind": "cross_statement",
+      "operands": [
+        "goodwill_impairment_loss",
+        "goodwill",
+        "intangible_impairment_loss",
+        "intangible_assets_net"
+      ]
+    },
+    {
+      "check_id": "acquisition_scope_stated",
+      "kind": "qualitative_presence",
+      "operands": [
+        "acquisition_date",
+        "business_combination_consideration",
+        "purchase_accounting_note_span"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }
