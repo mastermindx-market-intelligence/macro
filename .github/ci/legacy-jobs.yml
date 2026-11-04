@@ -7461,6 +7461,9 @@ jobs:
       - "engine/intelligence_workspace/options_matrix_context.py"
       - "engine/intelligence_workspace/options_matrix_delivery.py"
       - "engine/intelligence_workspace/options_source_use.py"
+      - "engine/intelligence_workspace/options_matrix_question.py"
+      - "tests/test_options_matrix_question.py"
+      - "tests/test_options_source_use_question.py"
       - "engine/intelligence_workspace/projection.py"
       - "engine/intelligence_workspace/runtime.py"
       - "engine/k3e_expectation_surface.py"
@@ -7969,7 +7972,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema==4.26.0 fastapi httpx requests
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_source_use.py tests/test_options_matrix_context.py tests/test_options_matrix_delivery.py tests/test_options_matrix_http.py tests/test_options_matrix_runtime.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_source_use.py tests/test_options_source_use_question.py tests/test_options_matrix_question.py tests/test_options_matrix_context.py tests/test_options_matrix_delivery.py tests/test_options_matrix_http.py tests/test_options_matrix_runtime.py -q
 
   flow-surface:
     if: ${{ false }}
