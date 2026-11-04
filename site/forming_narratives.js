@@ -208,7 +208,10 @@
         }
         if (result.kind === 'absent') { emptyState(sec); return; }
         const d = result.data;
-        if (!d || !(d.narratives || []).length) { emptyState(sec); return; }
+        if (!d || typeof d !== 'object' || Array.isArray(d) || !Array.isArray(d.narratives)) {
+          throw new TypeError('Invalid narrative payload');
+        }
+        if (!d.narratives.length) { emptyState(sec); return; }
         sec.removeAttribute('aria-busy');
         sec.setAttribute('data-render-state', 'ready');
         sec.style.display = '';

@@ -114,7 +114,6 @@ var loaded={}, mounted={}, failed={}, pendingTrace=null;
    around auth, or changes the entitlement of the failed asset. */
 function showAssetFailure(view,src){
   if(!view) return;
-  failed[view]=failed[view]||{}; failed[view][src]=true;
   var sec=document.querySelector('.si-view[data-view="'+view+'"]');
   if(!sec) return;
   var box=sec.querySelector('.si-load-state');
@@ -142,7 +141,13 @@ function vUrl(name){
 function inject(src,onload,view){
   var s=document.createElement('script'); s.async=false; s.src=vUrl(src);
   if(onload) s.addEventListener('load',onload);
-  s.addEventListener('error',function(){ showAssetFailure(view,src); });
+  s.addEventListener('error',function(){
+    failed[src]=true;
+    showAssetFailure(view,src);
+    VIEWS.forEach(function(other){
+      if(other!==view && mounted[other] && (LAZY[other]||[]).indexOf(src)>=0) showAssetFailure(other,src);
+    });
+  });
   document.head.appendChild(s);
 }
 function loadCycles(view){
@@ -160,7 +165,10 @@ function loadAssets(view){
   for(var i=0;i<list.length;i++){
     var f=list[i];
     if(f==='@cycles'){ loadCycles(view); continue; }
-    if(loaded[f]) continue;
+    if(loaded[f]){
+      if(failed[f]) showAssetFailure(view,f);
+      continue;
+    }
     loaded[f]=true; inject(f,null,view);
   }
 }

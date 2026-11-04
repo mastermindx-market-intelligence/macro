@@ -654,6 +654,57 @@ def test_lazy_asset_error_executes_visible_degraded_state() -> None:
     assert out.returncode == 0, f"node lazy-error replay failed: {out.stderr}"
 
 
+def test_shared_lazy_asset_failure_reaches_all_dependent_views() -> None:
+    """One shared script failure must explain every dependent view without reinjection."""
+    import subprocess
+    import textwrap
+
+    node_script = textwrap.dedent(r"""
+        const fs = require('fs'), vm = require('vm');
+        const src = fs.readFileSync('templates/si_workspace.js', 'utf8');
+        function element() {
+          const el = {attrs:{}, style:{}, innerHTML:'', firstChild:null, offsetHeight:100, listeners:{}};
+          el.classList = {toggle(){}, add(){}, remove(){}};
+          el.setAttribute=(k,v)=>{el.attrs[k]=String(v)}; el.getAttribute=k=>el.attrs[k]||null;
+          el.removeAttribute=k=>{delete el.attrs[k]}; el.hasAttribute=k=>Object.hasOwn(el.attrs,k);
+          el.addEventListener=(k,fn)=>{el.listeners[k]=fn}; return el;
+        }
+        function make(hash='#moving') {
+          const scripts=[], views={}, buttons=[];
+          for (const name of ['moving','explore','map']) {
+            const sec=element(); sec.attrs['data-view']=name;
+            sec.querySelector=q=>q==='.si-load-state' ? sec.statusBox||null : null;
+            sec.querySelectorAll=()=>[]; sec.appendChild=sec.insertBefore=node=>{sec.statusBox=node}; views[name]=sec;
+            const btn=element(); btn.attrs['data-view']=name; buttons.push(btn);
+          }
+          const document={title:'Sector',documentElement:{getAttribute:()=>null},getElementById:()=>null,
+            addEventListener(){},querySelectorAll:q=>q==='.si-view'?Object.values(views):q==='.si-view-btn'?buttons:[],
+            querySelector:q=>{const m=q.match(/^\.si-view\[data-view="([a-z]+)"\]$/);return m?views[m[1]]:null},
+            createElement:tag=>Object.assign(element(),{tagName:tag}),head:{appendChild:s=>scripts.push(s)},dispatchEvent(){}};
+          const ctx={document,location:{hash},history:{replaceState(){}},console,setTimeout,clearTimeout,
+            addEventListener(){},dispatchEvent(){},CustomEvent:function(type,init){return {type,detail:init&&init.detail}},
+            Event:function(type){return {type}}};
+          ctx.window=ctx; vm.createContext(ctx); vm.runInContext(src,ctx);
+          return {views,scripts,go:v=>{ctx.location.hash='#'+v;ctx.__siRoute()},fail:()=>{
+            const s=scripts.find(x=>x.src==='subsector_rotation.js'); if(!s) throw Error('shared-script-missing'); s.listeners.error();
+          }};
+        }
+        function explained(sec) {
+          if(!sec.statusBox || sec.statusBox.attrs.role!=='status') throw Error('dependent-view-unexplained');
+          if(!sec.statusBox.innerHTML.includes('Some tools are unavailable')) throw Error('missing-en');
+          if(!sec.statusBox.innerHTML.includes('此视图的部分工具暂不可用')) throw Error('missing-zh');
+        }
+        let r=make(); r.fail(); explained(r.views.moving); r.go('explore'); explained(r.views.explore);
+        if(r.scripts.filter(s=>s.src==='subsector_rotation.js').length!==1) throw Error('shared-script-retried');
+        r.go('map'); if(r.views.map.statusBox) throw Error('unrelated-map-poisoned');
+
+        r=make(); r.go('explore'); r.fail(); explained(r.views.moving); explained(r.views.explore);
+        r=make('#explore'); r.fail(); r.go('moving'); explained(r.views.moving); explained(r.views.explore);
+    """)
+    out = subprocess.run(["node", "-e", node_script], cwd=str(ROOT), capture_output=True, text=True)
+    assert out.returncode == 0, f"node shared-lazy-error replay failed: {out.stderr}"
+
+
 def test_generated_router_stamp_matches_changed_asset() -> None:
     """Immutable CDN URL must move whenever the public router body moves."""
     import hashlib

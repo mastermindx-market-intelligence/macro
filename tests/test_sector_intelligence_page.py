@@ -269,6 +269,23 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   window.renderFormingNarratives({ base: 'fixture/' });
   await flush(); await flush();
   if (sec.attrs['data-render-state'] !== 'empty' || sec.style.display !== 'none') throw new Error('absent-not-empty');
+
+  const malformed = [null, {}, [], false, 0, 'oops', {as_of:'2026-09-18'},
+    {narratives:null}, {narratives:{}}, {narratives:{length:0}}];
+  for (const payload of malformed) {
+    global.fetch = () => Promise.resolve({ status: 200, ok: true, json: () => Promise.resolve(payload) });
+    window.renderFormingNarratives({ base: 'fixture/' });
+    await flush(); await flush();
+    if (sec.attrs['data-render-state'] !== 'unavailable' || sec.style.display === 'none') {
+      throw new Error('malformed-payload-hidden-as-empty');
+    }
+  }
+  global.fetch = () => Promise.resolve({
+    status: 200, ok: true, json: () => Promise.resolve({narratives: []})
+  });
+  window.renderFormingNarratives({ base: 'fixture/' });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'empty' || sec.style.display !== 'none') throw new Error('valid-empty-not-empty');
 })().catch(err => { console.error(err.stack || err); process.exit(1); });
 """
     subprocess.run(
