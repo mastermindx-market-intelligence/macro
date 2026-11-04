@@ -2,7 +2,7 @@
 
 ## Local review within this Claude session
 
-Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-chairman-amendment-2026-11-03) and the accepted protected Mastermind session-local review policy. This Claude session can conduct its own adversarial diff check and, when distinct independent technical scrutiny is owed, use **native Claude reviewer subagents in this same parent session** with separate context, read-only source, a real returned verdict and parent adjudication. No other Claude/Web session, Dot or reviewer account is automatically required. Fabric is an optional separately admitted child avenue, not a mandatory handoff. Author self-check != independent child != formal native GitHub non-author approval. Actual holds, CI, protected merge and effect fences continue.
+Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-chairman-amendment-2026-11-03). Mastermind #2026's session-local review page is a **proposed** source until protected merge, not yet accepted/installed; keep incumbent review requirements until its and #2018's applicable adoption gates prove true. This Claude session can conduct its own adversarial diff check and, when distinct independent technical scrutiny is owed, use **native Claude reviewer subagents in this same parent session** with separate context, read-only source, a real returned verdict and parent adjudication. No other Claude/Web session, Dot or reviewer account is automatically required. Fabric is an optional separately admitted child avenue, not a mandatory handoff. Author self-check != independent child != formal native GitHub non-author approval. Actual holds, CI, protected merge and effect fences continue.
 
 
 Signal-engine + static-site repo (engines in `engine/`, builders in `scripts/`, rendered site in `site/`, programs/masterplans in `research/`). Nightly pipeline runs on a self-hosted Mac Studio via GitHub Actions; render budget is law (~67 min, 4-core-bound) — heavy compute goes off the render path, artifacts to R2.
@@ -22,7 +22,7 @@ reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
 
 ## Complete the original ship chain
 
-This Claude session does not count a Draft, PR, review request, CI wait or handoff as completion. Follow the root [finish-to-release rule](AGENTS.md#finish-to-release-no-draft-graveyard): fix failed checks, advance a qualified Ready candidate, meet real review/hold gates and use the existing protected publisher when eligible, then verify exact merge and consumer proof. Preserve no-self-merge/no-self-approval and other effect boundaries. Do not create a successor PR or stop merely because a PR was published.
+This Claude session does not count a Draft, PR, review request, CI wait or handoff as **completed delivery**. Existing `merge-on-green` + verified `CI_HANDOFF` can delegate only a proven idle wait with real return/repair ownership, never `PROVEN_OUTCOME`; the unconditional stop decision is superseded by `DEC:SESSION-OWNED-REVIEW-20261103`. Follow the root [finish-to-release rule](AGENTS.md#finish-to-release-no-draft-graveyard): fix failed checks, advance a qualified Ready candidate, meet real review/hold gates and use the existing protected publisher when eligible, then verify exact merge and consumer proof. Preserve no-self-merge/no-self-approval and other effect boundaries. Do not create a successor PR or stop merely because a PR was published.
 
 ## Permanent visual rule
 
