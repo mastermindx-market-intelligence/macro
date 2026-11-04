@@ -48,6 +48,7 @@ import logging
 import os
 import re
 import urllib.parse
+import urllib.error
 import urllib.request
 import zoneinfo
 from typing import Any
@@ -390,3 +391,133 @@ def write_user_prefs(user_id: str, patch: dict, *, base: dict | None = None,
     except Exception as exc:  # noqa: BLE001
         log.warning("user_prefs: metadata write failed for %s (%s)", user_id, type(exc).__name__)
         return False
+
+
+# --------------------------------------------------------------------------- #
+# Rotation consent: dormant C0 adapter inside the incumbent preferences owner.
+# --------------------------------------------------------------------------- #
+def _rotation_consent_state(value: Any, user_id: str) -> dict | None:
+    """Validate a fresh database receipt, never a JWT or user-metadata claim."""
+    from datetime import datetime, timezone
+    from uuid import UUID
+
+    if not isinstance(value, dict) or set(value) != {
+            "schema", "user_id", "status", "active", "revision", "activated_at"}:
+        return None
+    if value["schema"] != "macro.rotation_consent.v1" or value["user_id"] != user_id:
+        return None
+    if value["status"] not in {"active", "inactive", "corrupt", "preferences_not_enabled"}:
+        return None
+    active = value["active"]
+    if type(active) is not bool or active != (value["status"] == "active"):
+        return None
+    revision = value["revision"]
+    if revision is not None:
+        try:
+            if not isinstance(revision, str) or str(UUID(revision)) != revision:
+                return None
+        except (ValueError, TypeError, AttributeError):
+            return None
+    if active:
+        if revision is None or not isinstance(value["activated_at"], str):
+            return None
+        try:
+            stamp = datetime.fromisoformat(value["activated_at"].replace("Z", "+00:00"))
+            if stamp.tzinfo is None or stamp.utcoffset() != timezone.utc.utcoffset(stamp):
+                return None
+        except (ValueError, OverflowError):
+            return None
+    elif value["activated_at"] is not None:
+        return None
+    return dict(value)
+
+
+def _rotation_consent_rpc(user_id: str, *, enabled: bool | None,
+                          expected_revision: str | None,
+                          supabase: tuple[str, str] | None) -> dict:
+    """One RPC attempt; a lost write receipt is UNKNOWN and is never retried.
+
+    Only the existing service-role credential is used. The account owner must bind
+    user_id to its authenticated subject. Enable uses the revision shown with the
+    user's explicit intent; never refresh/retry that revision behind the user.
+    This adapter has no callers until independently reviewed route integration.
+    """
+    from uuid import UUID
+
+    writing = enabled is not None
+    refused = {"effect": "NOT_APPLIED", "status": "invalid_argument", "state": None}
+    try:
+        if not isinstance(user_id, str) or str(UUID(user_id)) != user_id:
+            return refused
+        if writing and type(enabled) is not bool:
+            return refused
+        if expected_revision is not None and (
+                not isinstance(expected_revision, str)
+                or str(UUID(expected_revision)) != expected_revision):
+            return refused
+    except (ValueError, TypeError, AttributeError):
+        return refused
+    base_url, key = _supabase(supabase)
+    if not base_url or not key:
+        return {"effect": "NOT_APPLIED", "status": "unconfigured", "state": None}
+    action = "set" if writing else "read"
+    payload: dict[str, Any] = {"p_user_id": user_id}
+    if writing:
+        payload.update(p_enabled=enabled, p_expected_revision=expected_revision)
+    req = urllib.request.Request(
+        f"{base_url}/rest/v1/rpc/rotation_consent_{action}_v1",
+        data=json.dumps(payload).encode(), method="POST", headers=_admin_headers(key))
+    try:
+        with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
+            body = json.loads(resp.read().decode())
+    except urllib.error.HTTPError as exc:
+        denied = exc.code in (401, 403)
+        log.warning("user_prefs: rotation consent %s HTTP refusal (%s)", action, exc.code)
+        return {"effect": "NOT_APPLIED" if denied or not writing else "EFFECT_UNKNOWN",
+                "status": "authorization_denied" if denied else "receipt_unavailable",
+                "state": None}
+    except Exception as exc:  # Receipt loss may follow a committed mutation.
+        log.warning("user_prefs: rotation consent %s receipt unavailable (%s)",
+                    action, type(exc).__name__)
+        return {"effect": "EFFECT_UNKNOWN" if writing else "NOT_APPLIED",
+                "status": "receipt_unavailable", "state": None}
+    if not isinstance(body, dict) or set(body)-{"status", "state"}:
+        body = {}
+    status = body.get("status")
+    state = _rotation_consent_state(body.get("state"), user_id)
+    if (not writing and status == "ok" and state is not None):
+        return {"effect": "NOT_APPLIED", "status": "ok", "state": state}
+    if writing and status == "applied" and state is not None:
+        if (state["active"] is enabled and state["revision"] is not None
+                and state["status"] == ("active" if enabled else "inactive")):
+            return {"effect": "APPLIED", "status": "applied", "state": state}
+    no_write = {"invalid_argument", "user_not_found"}
+    if status in no_write and "state" not in body:
+        return {"effect": "NOT_APPLIED", "status": status, "state": None}
+    if writing and status in {
+            "stale_revision", "preferences_not_enabled", "metadata_unreadable"} and state is not None:
+        return {"effect": "NOT_APPLIED", "status": status, "state": state}
+    return {"effect": "EFFECT_UNKNOWN" if writing else "NOT_APPLIED",
+            "status": "invalid_receipt", "state": None}
+
+
+def read_rotation_consent(user_id: str, *,
+                          supabase: tuple[str, str] | None = None) -> dict:
+    """Read the current owner revision. Unknown/corrupt state grants no activation."""
+    return _rotation_consent_rpc(user_id, enabled=None, expected_revision=None,
+                                 supabase=supabase)
+
+
+def write_rotation_consent(user_id: str, enabled: bool, *,
+                           expected_revision: str | None,
+                           supabase: tuple[str, str] | None = None) -> dict:
+    """Explicit per-user transition; False revokes without a revision precondition.
+
+    A caller must not convert EFFECT_UNKNOWN into an automatic retry. Reconcile the
+    original user record, preserve uncertainty, and require new explicit intent for
+    any fresh opt-in. This source-only primitive does not authorize any email.
+    """
+    if type(enabled) is not bool:
+        return {"effect": "NOT_APPLIED", "status": "invalid_argument", "state": None}
+    return _rotation_consent_rpc(user_id, enabled=enabled,
+                                 expected_revision=expected_revision, supabase=supabase)

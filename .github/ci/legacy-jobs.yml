@@ -25686,6 +25686,11 @@ jobs:
       - "lib/exchange_holidays.py"
       - "lib/nyse_calendar.py"
       - "lib/rotation_observation_notification.py"
+      - "lib/user_prefs.py"
+      - "scripts/deploy/rotation_notification_consent_v1.sql"
+      - "scripts/deploy/rotation_notification_consent_v1_rollback.sql"
+      - "tests/test_rotation_consent.py"
+      - "tests/test_rotation_consent_postgres.py"
       - "lib/us_cash_calendar.py"
       - "site/account.js"
       - "templates/account.js"
@@ -25705,7 +25710,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: defensive observation contract and actual source-to-mail composition
-        run: python -m pytest tests/test_rotation_observation_notification.py tests/test_rotation_observation_integration.py -q
+        run: python -m pytest tests/test_rotation_observation_notification.py tests/test_rotation_observation_integration.py tests/test_rotation_consent.py tests/test_rotation_consent_postgres.py -q
 
   serving-observability:
     if: ${{ false }}
