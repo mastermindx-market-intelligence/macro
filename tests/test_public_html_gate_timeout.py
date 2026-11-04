@@ -12,12 +12,14 @@ CADDY = (Path(__file__).resolve().parents[1] / "app/deploy/Caddyfile").read_text
 
 
 def _handler(name: str) -> str:
-    # Top-level handle blocks close at one tab; nested Caddy blocks are deeper.
-    match = re.search(
-        rf"(?ms)^\thandle @{re.escape(name)} \{{\n(.*?)^\t\}}", CADDY
-    )
+    # Match handlers at their true indentation: top-level is one tab and
+    # nested handle_errors children are two tabs. Do not match an inner close.
+    match = re.search(rf"(?m)^(\\t+)handle @{re.escape(name)} \\{{\\n", CADDY)
     assert match, f"missing @{name} handler"
-    return match.group(1)
+    tail = CADDY[match.end():]
+    closing = re.search(r"(?m)^" + re.escape(match.group(1)) + r"\\}$", tail)
+    assert closing, f"unterminated @{name} handler"
+    return tail[:closing.start()]
 
 
 def _matcher_paths(name: str) -> set[str]:
