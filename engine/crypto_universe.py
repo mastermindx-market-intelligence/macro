@@ -28,6 +28,19 @@ def _number(value: Any) -> float | None:
     return out if np.isfinite(out) else None
 
 
+def _identity_text(value: Any, fallback: str) -> str:
+    """Normalize a latest-row identity; parquet nulls cannot become literal 'nan' IDs."""
+    if value is None:
+        return fallback
+    try:
+        if bool(pd.isna(value)):
+            return fallback
+    except (TypeError, ValueError):
+        return fallback
+    text = str(value).strip()
+    return text or fallback
+
+
 def _state(change_30d: float | None, change_7d: float | None) -> tuple[str, str]:
     """Return restrained display state and tone from price follow-through."""
     guide = change_30d if change_30d is not None else change_7d
@@ -399,9 +412,9 @@ def _load_parquet_snapshot(top_n: int = 50, root: Path | None = None) -> dict:
             frame = frame.loc[~frame.index.duplicated(keep="last")]
             current = frame.iloc[-1]
             receipt.update({
-                "id": str(current.get("coin_id") or path.stem.removeprefix("market_")),
-                "source": str(current.get("source") or "Unknown"),
-                "symbol": str(current.get("symbol") or "").upper(),
+                "id": _identity_text(current.get("coin_id"), path.stem.removeprefix("market_")),
+                "source": _identity_text(current.get("source"), "Unknown"),
+                "symbol": _identity_text(current.get("symbol"), "").upper(),
                 "as_of": str(frame.index[-1].date()),
             })
             if frame.index[-1] > today:

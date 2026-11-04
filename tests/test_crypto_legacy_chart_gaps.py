@@ -160,6 +160,17 @@ def test_unresolved_latest_identity_keeps_empty_history_without_crashing(
     assert (row["state"], row["tone"]) == ("Firm", "bull")
 
 
+@pytest.mark.parametrize("missing_symbol", [None, math.nan, "", "  "])
+def test_missing_latest_symbol_does_not_become_a_nan_or_blank_asset(tmp_path, missing_symbol):
+    frame = _history()
+    frame.iloc[-1, frame.columns.get_loc("symbol")] = missing_symbol
+    _write_market(tmp_path, frame)
+
+    snapshot = U.load_universe_snapshot(root=tmp_path)
+    assert snapshot["rows"] == []
+    assert [row["reason"] for row in snapshot["excluded"]] == ["MISSING_ASSET_IDENTITY"]
+
+
 @pytest.mark.parametrize("latest_price", [math.nan, math.inf, 0.0, -1.0])
 def test_invalid_latest_price_is_refused_without_backfilling_an_older_quote(
     tmp_path, latest_price
