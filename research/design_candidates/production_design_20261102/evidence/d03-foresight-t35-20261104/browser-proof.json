@@ -1,0 +1,2319 @@
+{
+  "fixture_only": true,
+  "browser": "Chromium 151.0.7922.34",
+  "case_count": 36,
+  "source_template_sha256": "8546c95ef36bc63b470541b71f1f60d73c8c1698978eb7d86ccb8adb8c133515",
+  "theme_css_sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+  "theme_js_sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+  "settings_theme_language_keyboard_and_escape_390_1440": "PASS",
+  "unrelated_requests_stubbed": [
+    "/case/live_config.js"
+  ],
+  "page_errors": [],
+  "results": [
+    {
+      "viewport": 320,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "unavailable-320-light-en.png",
+      "state": "unavailable",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 149.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Unavailable — no dislocation read",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Wait for a valid read; source reason and observation time are unavailable.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "closed-320-light-en.png",
+      "state": "closed",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 149.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Closed — no dislocation yet",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "The supplied read shows no dislocation. Keep researching themes; don’t chase.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 63,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "open-320-light-en.png",
+      "state": "open",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 170.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Open — a dislocation to buy into",
+          "fontSize": 15,
+          "contrast": 5.602860438953242,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Review the source and timing before considering an entry. Research context only.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 63,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "unavailable-320-light-zh.png",
+      "state": "unavailable",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 128.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "暂不可用——缺少错位判读",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "等待有效判读；数据源未提供原因或观测时间。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "closed-320-light-zh.png",
+      "state": "closed",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 128.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "关闭——暂无错位",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "所提供的判读未显示错位。继续研究主题，勿追高。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "open-320-light-zh.png",
+      "state": "open",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 128.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "开启——出现可买入的错位",
+          "fontSize": 15,
+          "contrast": 5.589858264997862,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "考虑入场前，先核对来源与时点。仅供研究参考。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "unavailable-320-dark-en.png",
+      "state": "unavailable",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 149.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Unavailable — no dislocation read",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Wait for a valid read; source reason and observation time are unavailable.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "closed-320-dark-en.png",
+      "state": "closed",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 149.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Closed — no dislocation yet",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "The supplied read shows no dislocation. Keep researching themes; don’t chase.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 63,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "open-320-dark-en.png",
+      "state": "open",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 170.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Open — a dislocation to buy into",
+          "fontSize": 15,
+          "contrast": 7.061707171416122,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 42,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Review the source and timing before considering an entry. Research context only.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 63,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "unavailable-320-dark-zh.png",
+      "state": "unavailable",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 128.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "暂不可用——缺少错位判读",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "等待有效判读；数据源未提供原因或观测时间。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "closed-320-dark-zh.png",
+      "state": "closed",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 128.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "关闭——暂无错位",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "所提供的判读未显示错位。继续研究主题，勿追高。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "open-320-dark-zh.png",
+      "state": "open",
+      "x": 18,
+      "right": 302,
+      "width": 284,
+      "height": 128.1875,
+      "clientWidth": 282,
+      "scrollWidth": 282,
+      "pageScrollWidth": 320,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "开启——出现可买入的错位",
+          "fontSize": 15,
+          "contrast": 5.219170386726632,
+          "x": 67,
+          "right": 285,
+          "width": 218,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "考虑入场前，先核对来源与时点。仅供研究参考。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 285,
+          "width": 250,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "unavailable-390-light-en.png",
+      "state": "unavailable",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 128.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Unavailable — no dislocation read",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Wait for a valid read; source reason and observation time are unavailable.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "closed-390-light-en.png",
+      "state": "closed",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 128.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Closed — no dislocation yet",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "The supplied read shows no dislocation. Keep researching themes; don’t chase.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "open-390-light-en.png",
+      "state": "open",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 128.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Open — a dislocation to buy into",
+          "fontSize": 15,
+          "contrast": 5.602860438953242,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Review the source and timing before considering an entry. Research context only.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "unavailable-390-light-zh.png",
+      "state": "unavailable",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 107.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "暂不可用——缺少错位判读",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "等待有效判读；数据源未提供原因或观测时间。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "closed-390-light-zh.png",
+      "state": "closed",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 128.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "关闭——暂无错位",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "所提供的判读未显示错位。继续研究主题，勿追高。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "open-390-light-zh.png",
+      "state": "open",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 107.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "开启——出现可买入的错位",
+          "fontSize": 15,
+          "contrast": 5.589858264997862,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "考虑入场前，先核对来源与时点。仅供研究参考。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "unavailable-390-dark-en.png",
+      "state": "unavailable",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 128.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Unavailable — no dislocation read",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Wait for a valid read; source reason and observation time are unavailable.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "closed-390-dark-en.png",
+      "state": "closed",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 128.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Closed — no dislocation yet",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "The supplied read shows no dislocation. Keep researching themes; don’t chase.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "open-390-dark-en.png",
+      "state": "open",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 128.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Open — a dislocation to buy into",
+          "fontSize": 15,
+          "contrast": 7.061707171416122,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Review the source and timing before considering an entry. Research context only.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "unavailable-390-dark-zh.png",
+      "state": "unavailable",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 107.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "暂不可用——缺少错位判读",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "等待有效判读；数据源未提供原因或观测时间。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "closed-390-dark-zh.png",
+      "state": "closed",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 128.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "关闭——暂无错位",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "所提供的判读未显示错位。继续研究主题，勿追高。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 42,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "open-390-dark-zh.png",
+      "state": "open",
+      "x": 18,
+      "right": 372,
+      "width": 354,
+      "height": 107.1875,
+      "clientWidth": 352,
+      "scrollWidth": 352,
+      "pageScrollWidth": 390,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "开启——出现可买入的错位",
+          "fontSize": 15,
+          "contrast": 5.219170386726632,
+          "x": 67,
+          "right": 355,
+          "width": 288,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "考虑入场前，先核对来源与时点。仅供研究参考。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 35,
+          "right": 355,
+          "width": 320,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "unavailable-1440-light-en.png",
+      "state": "unavailable",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Unavailable — no dislocation read",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Wait for a valid read; source reason and observation time are unavailable.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "closed-1440-light-en.png",
+      "state": "closed",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Closed — no dislocation yet",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "The supplied read shows no dislocation. Keep researching themes; don’t chase.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "en",
+      "screenshot": "open-1440-light-en.png",
+      "state": "open",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Open — a dislocation to buy into",
+          "fontSize": 15,
+          "contrast": 5.602860438953242,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Review the source and timing before considering an entry. Research context only.",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "unavailable-1440-light-zh.png",
+      "state": "unavailable",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "暂不可用——缺少错位判读",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "等待有效判读；数据源未提供原因或观测时间。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "closed-1440-light-zh.png",
+      "state": "closed",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "关闭——暂无错位",
+          "fontSize": 15,
+          "contrast": 11.55587898887883,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "所提供的判读未显示错位。继续研究主题，勿追高。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "screenshot": "open-1440-light-zh.png",
+      "state": "open",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(255, 255, 255)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)",
+        "rgb(192, 196, 205)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 7.032095431287493,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "开启——出现可买入的错位",
+          "fontSize": 15,
+          "contrast": 5.589858264997862,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "考虑入场前，先核对来源与时点。仅供研究参考。",
+          "fontSize": 14,
+          "contrast": 7.032095431287493,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "unavailable-1440-dark-en.png",
+      "state": "unavailable",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Unavailable — no dislocation read",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Wait for a valid read; source reason and observation time are unavailable.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "closed-1440-dark-en.png",
+      "state": "closed",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Closed — no dislocation yet",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "The supplied read shows no dislocation. Keep researching themes; don’t chase.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "screenshot": "open-1440-dark-en.png",
+      "state": "open",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "ENTRY WINDOW",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "Open — a dislocation to buy into",
+          "fontSize": 15,
+          "contrast": 7.061707171416122,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "Review the source and timing before considering an entry. Research context only.",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "unavailable-1440-dark-zh.png",
+      "state": "unavailable",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "暂不可用——缺少错位判读",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "等待有效判读；数据源未提供原因或观测时间。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "closed-1440-dark-zh.png",
+      "state": "closed",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "关闭——暂无错位",
+          "fontSize": 15,
+          "contrast": 11.41771587896029,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "所提供的判读未显示错位。继续研究主题，勿追高。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "screenshot": "open-1440-dark-zh.png",
+      "state": "open",
+      "x": 180,
+      "right": 1260,
+      "width": 1080,
+      "height": 74.1875,
+      "clientWidth": 1078,
+      "scrollWidth": 1078,
+      "pageScrollWidth": 1440,
+      "animation": "fxUp",
+      "background": "rgb(21, 24, 32)",
+      "borderWidths": [
+        "1px",
+        "1px",
+        "1px",
+        "1px"
+      ],
+      "borderColors": [
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)",
+        "rgb(58, 65, 80)"
+      ],
+      "iconsHidden": true,
+      "text": [
+        {
+          "selector": ".fx-gate-k",
+          "text": "入场窗口",
+          "fontSize": 12,
+          "contrast": 5.7342770734687685,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 19.1875,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-v",
+          "text": "开启——出现可买入的错位",
+          "fontSize": 15,
+          "contrast": 5.219170386726632,
+          "x": 229,
+          "right": 700,
+          "width": 471,
+          "height": 21,
+          "overflow": false
+        },
+        {
+          "selector": ".fx-gate-d",
+          "text": "考虑入场前，先核对来源与时点。仅供研究参考。",
+          "fontSize": 14,
+          "contrast": 5.7342770734687685,
+          "x": 712,
+          "right": 1243,
+          "width": 531,
+          "height": 21,
+          "overflow": false
+        }
+      ]
+    }
+  ]
+}
