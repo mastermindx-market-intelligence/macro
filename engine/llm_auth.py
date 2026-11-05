@@ -421,6 +421,15 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None) -> dic
         "_fabric_known_responses": 0,
     }
     provider["client"] = _FabricConsumerClient(bound["client"], provider)
+    # The TRUSTED caller's declared spend sink travels with the bound
+    # operation. Only the explicit "none" is honoured, and it means exactly
+    # what the incumbent translation lane means by it: this lane does not
+    # append to the repository's shared usage ledger. It is NOT a path, so no
+    # other value can redirect the write, and it never suppresses the health
+    # accounting or the real usage state.
+    if isinstance(workload_cfg, dict):
+        if str(workload_cfg.get("usage_sink") or "").lower() == "none":
+            provider["usage_sink"] = "none"
     if workload is not None:
         provider["workload_policy"] = workload.receipt()
     return provider
@@ -1010,6 +1019,17 @@ def _capture_usage(p: dict, usage_obj, context: str) -> None:
         # ledger write entirely — a zero-token row is noise and creates
         # metabolism duplicates when propose/adjudicate also record directly.
         if usage_obj is None:
+            return
+
+        # A TRUSTED caller that owns its spend outside the repository declared
+        # ``usage_sink: "none"`` (the incumbent translation lane's meaning:
+        # this lane must not append to the nightly-owned shared ledger). Only
+        # THIS repository ledger write is suppressed: the real completed usage
+        # stays in the provider state, the health accounting in make_call still
+        # runs, and nothing is recorded as zero, free or unknown. The
+        # comparison is the incumbent lane's own one, so no other value is
+        # honoured and no caller can redirect the write to a path.
+        if str(p.get("usage_sink") or "").lower() == "none":
             return
 
         in_tok = int(getattr(usage_obj, "input_tokens", 0) or 0)

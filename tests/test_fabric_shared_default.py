@@ -270,3 +270,64 @@ def test_auditor_refuses_unsolicited_tools_without_replay(selected):
     result = copy_auditor.audit_batch([{"text": "Measured observation.", "account": "macro", "kind": "context"}])
     assert not result["ok"]
     assert len(selected.calls) == 1 and len(selected.costs) == 1
+
+
+# --------------------------------------------------------------------------- #
+# The declared spend sink, carried through the SAME owner.
+#
+# A trusted caller that owns its spend outside the repository declares
+# ``usage_sink: "none"``. The bound operation carries that declaration, and
+# only the repository's own ledger row is suppressed: the real completed usage
+# and the health accounting both survive. No other value is honoured, so no
+# caller can redirect the write.
+# --------------------------------------------------------------------------- #
+def test_a_declared_sink_none_suppresses_only_the_repository_ledger_row(selected):
+    providers = recipe({"provider_order": ["oauth"], "usage_lane": "application",
+                        "workload_profile": "site_batch", "usage_sink": "none"})
+    operation = auth.begin_operation(providers)
+    assert auth.make_call(operation.providers, invoke)[0] == "Grounded context."
+    # The repository ledger row is suppressed...
+    assert selected.costs == []
+    # ...but the health accounting is NOT, and the real usage is NOT discarded.
+    assert len(selected.health) == 1
+    usage = auth.fabric_usage(operation.providers[0])
+    assert usage["input_tokens"] == 11 and usage["output_tokens"] == 7
+    assert usage["usage_state"] == "known"
+    operation.close()
+
+
+def test_the_default_sink_records_the_real_usage_once(selected):
+    operation = auth.begin_operation(recipe(), operation_id="shared-sink-default")
+    assert auth.make_call(operation.providers, invoke)[0] == "Grounded context."
+    assert len(selected.costs) == 1
+    row = selected.costs[0]
+    assert row["lane"] == "application"
+    assert row["provider"] == "fixture-provider"
+    assert row["model"] == MODEL
+    assert row["input_tokens"] == 11 and row["output_tokens"] == 7
+    assert row.get("est_cost_usd") is None    # unknown price is not $0.00
+    assert len(selected.health) == 1
+    operation.close()
+
+
+@pytest.mark.parametrize("value,honoured", [
+    ("none", True), ("None", True), ("NONE", True),
+    (" None", False), ("none ", False), ("none-ish", False),
+    ("/tmp/elsewhere.jsonl", False), ("", False), (None, False),
+])
+def test_only_the_incumbent_sink_value_suppresses_the_repository_ledger(
+        selected, value, honoured):
+    """The comparison is the incumbent translation lane's own one.
+
+    Exactly "none" (lower-cased) suppresses the repository ledger row. Every
+    other value — including a path — is ignored, so no caller can redirect the
+    write and no row is silently dropped.
+    """
+    providers = recipe({"provider_order": ["oauth"], "usage_lane": "application",
+                        "workload_profile": "site_batch", "usage_sink": value})
+    operation = auth.begin_operation(providers)
+    assert auth.make_call(operation.providers, invoke)[0] == "Grounded context."
+    assert len(selected.costs) == (0 if honoured else 1)
+    # The health accounting is never suppressed, whatever the sink says.
+    assert len(selected.health) == 1
+    operation.close()

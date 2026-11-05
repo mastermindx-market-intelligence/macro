@@ -81,7 +81,7 @@ import math
 import os
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -775,6 +775,7 @@ class ApplicationFabricFactory:
     _profile_present: bool
     _profile: Any
     _provider_order: tuple[str, ...]
+    _inspection_commitment: str | None = None
 
     def workload_configuration(self) -> dict:
         cfg = {"provider_order": list(self._provider_order)}
@@ -794,8 +795,20 @@ class ApplicationFabricFactory:
             _application_refuse("fabric_application_workload_denied")
         return decision
 
-    def _bind_with_workload(self, caller_cfg: Mapping[str, Any] | None = None):
-        """Internal composition returns the exact policy receipt with the client."""
+    def _eligibility(self, caller_cfg: Mapping[str, Any] | None = None):
+        """The ONE owner/workload/capability/qualification check set.
+
+        It resolves NO credential and constructs NO client, so the
+        credential-free inspection and the real binder reuse the same rules.
+        Configuration can change between calls; with_inspection() narrows a
+        later binding to the exact earlier identity. Every refusal
+        below happens BEFORE any secret is read, so an ineligible host never
+        touches a credential at all.
+
+        Returns (mode, transport, decision). The caller decides what to do
+        with a credential-free result: inspect() publishes the identity,
+        _bind_with_workload() spends it.
+        """
         mode = _application_fabric_mode(self.mode_id, self.root)
         decision = self.workload_decision()
         if caller_cfg is not None:
@@ -842,6 +855,66 @@ class ApplicationFabricFactory:
             _application_refuse("fabric_application_capability_denied")
         if grant.get("ref_name") != transport.secret_ref:
             _application_refuse("fabric_application_credential_ref_mismatch")
+        return mode, transport, decision
+
+    @staticmethod
+    def _inspection_identity(transport, decision) -> dict:
+        return {
+            "provider": transport.provider_id,
+            "model": transport.model,
+            "cap_id": transport.cap_id,
+            "capability_id": transport.capability_id,
+            "cost_basis": transport.cost_basis,
+            "workload_policy": decision.receipt(),
+        }
+
+    @staticmethod
+    def _commit_inspection(identity: Mapping[str, Any]) -> str:
+        # A snapshot only narrows an already eligible owner. It grants nothing.
+        fields = {"provider", "model", "cap_id", "capability_id", "cost_basis",
+                  "workload_policy"}
+        if type(identity) is not dict or set(identity) != fields:
+            _application_refuse("fabric_application_inspection_invalid")
+        try:
+            return json.dumps(identity, sort_keys=True, separators=(",", ":"),
+                              ensure_ascii=False, allow_nan=False)
+        except (TypeError, ValueError, OverflowError):
+            _application_refuse("fabric_application_inspection_invalid")
+
+    def with_inspection(self, identity: Mapping[str, Any]) -> "ApplicationFabricFactory":
+        """Return the same immutable owner type, narrowed to an observed identity.
+
+        The commitment contains only inspection metadata and is copied by value.
+        Binding still runs every current eligibility check before comparing it
+        and before resolving any credential or constructing a transport client.
+        """
+        commitment = self._commit_inspection(identity)
+        if self._inspection_commitment is not None and self._inspection_commitment != commitment:
+            _application_refuse("fabric_application_identity_changed")
+        return replace(self, _inspection_commitment=commitment)
+
+    def inspect(self, caller_cfg: Mapping[str, Any] | None = None) -> dict:
+        """Inspect current eligible identity without credentials, clients or admission.
+
+        A cache may use this current identity without opening a credential. A
+        later cold fill must bind with with_inspection(snapshot) so a valid
+        reconfiguration cannot store another model's output under this key.
+        Missing credentials may still prevent that later fill.
+        """
+        mode, transport, decision = self._eligibility(caller_cfg)
+        identity = self._inspection_identity(transport, decision)
+        if (self._inspection_commitment is not None
+                and self._inspection_commitment != self._commit_inspection(identity)):
+            _application_refuse("fabric_application_identity_changed")
+        return identity
+
+    def _bind_with_workload(self, caller_cfg: Mapping[str, Any] | None = None):
+        """Internal composition returns the exact policy receipt with the client."""
+        mode, transport, decision = self._eligibility(caller_cfg)
+        if (self._inspection_commitment is not None
+                and self._inspection_commitment != self._commit_inspection(
+                    self._inspection_identity(transport, decision))):
+            _application_refuse("fabric_application_identity_changed")
         credential = _resolve_credential(mode, None)
         if credential is None:
             _application_refuse("fabric_application_unconfigured")
