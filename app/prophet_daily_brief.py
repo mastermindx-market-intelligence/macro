@@ -51,6 +51,7 @@ import logging
 import os
 import re
 from pathlib import Path
+from threading import BoundedSemaphore
 from typing import Mapping
 
 from fastapi import APIRouter, Depends, Request
@@ -64,6 +65,11 @@ log = logging.getLogger("macro.prophet_daily_brief")
 # One module constant owns the repository path (same convention as
 # app/prophet_observations.py::_DATA_ROOT); requests carry bindings, never paths.
 _REPO_ROOT = Path(os.environ.get("MACRO_REPO") or Path(__file__).resolve().parents[1])
+
+# A native read materializes large candidate snapshots. Bound this route to one
+# read per API process; overlap fails privately instead of queueing thread-pool
+# work. This is not a cross-process budget or a limit on one read's memory use.
+_READ_ADMISSION = BoundedSemaphore(1)
 
 _QUERIES = frozenset(
     {"source_sha256", "pair_id", "selection_receipt", "candidate_generation_id"}
@@ -139,31 +145,38 @@ def daily_brief_v1(
     except DailyBriefQueryError:
         return JSONResponse({"error": "INVALID_QUERY"}, status_code=400,
                             headers=_PRIVATE_HEADERS)
+    if not _READ_ADMISSION.acquire(blocking=False):
+        return _unavailable()
     try:
-        from scripts.build_stock_library import (  # noqa: PLC0415 — request-scoped owner
-            read_today_candidate_projection,
+        try:
+            from scripts.build_stock_library import (  # noqa: PLC0415 — request-scoped owner
+                read_today_candidate_projection,
+            )
+        except Exception as exc:  # noqa: BLE001 — optional runtime missing, disclose nothing
+            log.warning("daily brief owner import failed (%s)", type(exc).__name__)
+            return _unavailable()
+        try:
+            projection = read_today_candidate_projection(_REPO_ROOT, **bindings)
+        except Exception as exc:  # noqa: BLE001 — private transport boundary, no path/row disclosure
+            log.warning("daily brief owner read failed (%s)", type(exc).__name__)
+            return _unavailable()
+        if not isinstance(projection, Mapping):
+            return _unavailable()
+        raw_reasons = projection.get("reason_codes")
+        reasons = (
+            {reason for reason in raw_reasons if isinstance(reason, str)}
+            if isinstance(raw_reasons, (list, tuple, set, frozenset)) else set()
         )
-    except Exception as exc:  # noqa: BLE001 — optional runtime missing, disclose nothing
-        log.warning("daily brief owner import failed (%s)", type(exc).__name__)
+        if reasons & _PIN_CONFLICT_REASONS:
+            # Stale caller pin: the producer's own envelope, nothing added.
+            return _projection_response(projection, status_code=409)
+        status = projection.get("status")
+        if status in ("AVAILABLE", "PARTIAL"):
+            return _projection_response(projection, status_code=200)
+        if status == "UNAVAILABLE":
+            return _projection_response(projection, status_code=503)
         return _unavailable()
-    try:
-        projection = read_today_candidate_projection(_REPO_ROOT, **bindings)
-    except Exception as exc:  # noqa: BLE001 — private transport boundary, no path/row disclosure
-        log.warning("daily brief owner read failed (%s)", type(exc).__name__)
-        return _unavailable()
-    if not isinstance(projection, Mapping):
-        return _unavailable()
-    raw_reasons = projection.get("reason_codes")
-    reasons = (
-        {reason for reason in raw_reasons if isinstance(reason, str)}
-        if isinstance(raw_reasons, (list, tuple, set, frozenset)) else set()
-    )
-    if reasons & _PIN_CONFLICT_REASONS:
-        # Stale caller pin: the producer's own envelope, nothing added.
-        return _projection_response(projection, status_code=409)
-    status = projection.get("status")
-    if status in ("AVAILABLE", "PARTIAL"):
-        return _projection_response(projection, status_code=200)
-    if status == "UNAVAILABLE":
-        return _projection_response(projection, status_code=503)
-    return _unavailable()
+    finally:
+        # Import, owner and response serialization all retain the permit until
+        # they settle, including exceptions.
+        _READ_ADMISSION.release()

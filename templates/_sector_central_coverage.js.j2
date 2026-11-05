@@ -1,0 +1,92 @@
+/* Paper Brief coverage receipt. Reads the existing measured-sector projection.
+   Independent of basket loading; no new requests, ranking or signal decisions. */
+(function () {
+  'use strict';
+  var root = document.getElementById('si-brief-coverage');
+  var title = document.getElementById('si-brief-coverage-title');
+  var note = document.getElementById('si-brief-coverage-note');
+  if (!root || !title || !note) return;
+
+  function day(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    var stamp = Date.parse(value + 'T00:00:00Z');
+    return Number.isFinite(stamp) && new Date(stamp).toISOString().slice(0, 10) === value;
+  }
+  function coverage(doc) {
+    var read = doc && doc.measured_read;
+    if (!read) return {status:'missing'};
+    if (read.status === 'unavailable') return {status:'unavailable'};
+    var gen = read.generation || {}, cohort = read.cohort || {}, auth = read.authority || {};
+    var ids = ['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY'];
+    if (read.schema !== 'leadership_rotation_context.measured_group_read/v1' ||
+        (read.status !== 'available' && read.status !== 'partial') ||
+        auth.tier !== 'display' || auth.may_rank !== false || auth.may_gate !== false ||
+        auth.may_size !== false || auth.may_trade !== false ||
+        gen.cohort_id !== 'us_sectors_11' || gen.benchmark !== 'SPY' ||
+        !['total_return','price_only'].includes(gen.price_basis) ||
+        cohort.horizon !== 'rs_63d' || cohort.window_sessions !== 63 ||
+        cohort.expected_n !== 11 || !Number.isInteger(cohort.measured_n) ||
+        cohort.measured_n < 0 || cohort.measured_n > 11 ||
+        !Array.isArray(read.groups) || read.groups.length !== 11 ||
+        !Array.isArray(cohort.missing)) return {status:'invalid'};
+    var seen = new Set(), measured = 0, missing = [];
+    for (var group of read.groups) {
+      if (!group || group.group_kind !== 'sector' || !ids.includes(group.group_id) ||
+          seen.has(group.group_id)) return {status:'invalid'};
+      seen.add(group.group_id);
+      var current = group.current || {};
+      if (current.status === 'measured') {
+        if (current.metric !== 'relative_wealth_pct' || current.units !== 'pct' ||
+            typeof current.rs_63d !== 'number' || !Number.isFinite(current.rs_63d))
+          return {status:'invalid'};
+        measured++;
+      } else if (current.status === 'unmeasured') {
+        missing.push(group.group_id);
+      } else return {status:'invalid'};
+    }
+    if (measured !== cohort.measured_n ||
+        (read.status === 'available') !== (measured === 11) ||
+        JSON.stringify(missing.sort()) !== JSON.stringify(cohort.missing.slice().sort()))
+      return {status:'invalid'};
+    if (!day(gen.session_end) || !day(doc.as_of)) return {status:'clock_unavailable'};
+    if (gen.session_end > doc.as_of) return {status:'clock_mismatch'};
+    return {status:read.status, measured:measured, expected:11,
+      as_of:gen.session_end, page_as_of:doc.as_of, basis:gen.price_basis};
+  }
+  function render() {
+    var read = coverage(window.SECTOR_CENTRAL);
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    root.setAttribute('data-status', read.status);
+    if (read.status !== 'available' && read.status !== 'partial') {
+      title.textContent = zh ? '板块测量覆盖暂不可用' : 'Sector measurement coverage unavailable';
+      var messages = {
+        missing:['The measured-sector read has not loaded. Open the full evidence for its status.',
+                 '板块实测数据尚未加载。请打开完整证据查看状态。'],
+        unavailable:['The source could not produce this read. Other evidence remains available.',
+                     '来源未能生成此项读数。其他证据仍可查看。'],
+        invalid:['The source coverage could not be checked. Open the full evidence for details.',
+                 '无法核验来源覆盖情况。请打开完整证据查看详情。'],
+        clock_unavailable:['The measurement date is unavailable. No current coverage is asserted.',
+                           '实测日期不可用，因此不声明当前覆盖情况。'],
+        clock_mismatch:['The measurement date is later than its source page. Review the source dates.',
+                        '实测日期晚于来源页面日期。请核对来源日期。']
+      };
+      note.textContent = messages[read.status][zh ? 1 : 0];
+      return;
+    }
+    title.textContent = zh
+      ? read.measured + ' / ' + read.expected + ' 个板块具备实测数据'
+      : read.measured + ' of ' + read.expected + ' sectors have qualified measurements';
+    var basis = read.basis === 'total_return'
+      ? (zh ? '含股息总回报' : 'total return') : (zh ? '仅价格' : 'price only');
+    note.textContent = zh
+      ? '板块 ETF · 63个交易日读数 · 相对标普500 · ' + basis + ' · 证据日期 ' + read.as_of
+      : 'Sector ETFs · 63-session read · S&P 500 · ' + basis + ' · Evidence date ' + read.as_of;
+    if (read.measured < read.expected) note.textContent += zh
+      ? '。未测板块保留在完整证据中。' : '. Unmeasured sectors remain in the full evidence.';
+    if (read.as_of < read.page_as_of) note.textContent += zh
+      ? '。早于来源页面日期 ' + read.page_as_of : '. Older than source page ' + read.page_as_of;
+  }
+  document.addEventListener('langchange', render);
+  render();
+})();
