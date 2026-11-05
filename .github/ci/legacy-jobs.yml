@@ -10934,6 +10934,8 @@ jobs:
     # macro #10257 (unmerged at the time of writing); whichever lands second is a no-op.
     # F10 (#10367) replaced that ~4-min unrestricted fetch with the blob-filtered
     # canonical-main helper; 15 is kept until the job's PR-side time is re-measured.
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_risk_publication.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -11314,6 +11316,7 @@ jobs:
       - "config/theme_sources.yml"
       # W2F-X closure widening: the observation seam widened these import closures
       - "lib/intl_gs_observations.py"
+      - "templates/intl_workspace/risk.html.j2"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -11766,6 +11769,8 @@ jobs:
     # (its redundant unrestricted base fetch after the fetch-depth 0 checkout)
     # is F10 (#10367): both international jobs use prepare_canonical_main.
     # This job's own measured budget (20) is unchanged by F10.
+      - "lib/intl_risk_publication.py"
+      - "tests/test_intl_risk_native_publication.py"
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -15173,6 +15178,8 @@ jobs:
       - "lib/intl_gs_observations.py"
       - engine/postmortem.py
       - research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_risk_publication.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20151,6 +20158,8 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_risk_publication.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23486,6 +23495,8 @@ jobs:
       - "tests/test_intl_gs_transmission_view.py"
       - "tests/test_intl_transmission_evidence.py"
 
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_risk_publication.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -23912,6 +23923,8 @@ jobs:
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
     # freshness fallback. Store-reading tests skip gracefully when absent.
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_risk_publication.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25147,6 +25160,8 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_risk_publication.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36300,6 +36315,8 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_risk_publication.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -51749,6 +51766,8 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "lib/intl_history_materialization.py"
+      - "lib/intl_risk_publication.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
