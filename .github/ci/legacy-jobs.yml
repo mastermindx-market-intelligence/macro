@@ -6156,9 +6156,11 @@ jobs:
         # regression is the first failure a reader sees rather than the id contract
         # failing for a borrowed reason; it rides this existing step because a step is
         # the masking unit (run_ci_pack.py returns on the first non-zero step) while
-        # pytest reports every file inside one step.  No dependency widened: probed at
-        # RUN time it loads only pandas/numpy/pyarrow/pyyaml — exactly this job's thin
-        # install line — and blocking plotly leaves it 12-passed.
+        # pytest reports every file inside one step. The historical thesis-ID-only
+        # probe used pandas/numpy/pyarrow/pyyaml and reported 12 passes with plotly
+        # blocked; it was not a dependency inventory for this whole job.
+        # The UK Policy Watch suite also renders the real view and requires jinja2,
+        # which is retained in the existing combined dependency install above.
         run: >
           python -m pytest
           tests/test_ai_desk.py tests/test_ai_desk_scorer.py
