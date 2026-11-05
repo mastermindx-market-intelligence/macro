@@ -273,11 +273,13 @@ html[data-form="error"] .err{ display:flex; }
 .err .ic svg{ display:block; width:16px; height:16px; }
 /* keep the fallback address whole — a mid-address break reads as a typo */
 .err a, .tk-done .after a{ white-space:nowrap; }
-/* Two failures, two honest sentences. The pin specifies the generic one; a 429
-   needs its own words because "check your connection and try again" is wrong
-   advice when the server is asking you to wait. Same bar, same treatment. */
-.err .e-rate{ display:none; }
-html[data-err="rate"] .err .e-generic{ display:none; }
+/* Three error presentations: existing generic errors, a rate-limit response,
+   and an unconfirmed transport outcome. A lost response cannot establish that
+   no ticket was stored. Same bar and visual treatment; no automatic retry. */
+.err .e-rate, .err .e-uncertain{ display:none; }
+html[data-err="rate"] .err .e-generic,
+html[data-err="uncertain"] .err .e-generic{ display:none; }
+html[data-err="uncertain"] .err .e-uncertain{ display:inline; }
 html[data-err="rate"] .err .e-rate{ display:inline; }
 
 /* ── success state ────────────────────────────────────────────────────────── */
@@ -453,6 +455,8 @@ html[data-lang="zh"] .mx-footer .f-col p{ font-family:"PingFang SC","Hiragino Sa
             <span>
               <span class="e-generic">{{ t('That didn\'t send. Check your connection and try again — or write to <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a>.',
                                            '没有发送成功。请检查网络后重试，或发邮件至 <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a>。') }}</span>
+              <span class="e-uncertain">{{ t('We could not confirm receipt. Your request may already be recorded. Before submitting it again, contact <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a> for help.',
+                                             '我们无法确认是否已收到请求。请求可能已经记录。再次提交前，请联系 <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a> 获取帮助。') }}</span>
               <span class="e-rate">{{ t('That is a lot of requests from here. Wait a few minutes and send it again — or write to <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a>.',
                                         '这里发出的请求太多了。请过几分钟再发一次，或发邮件至 <a href="mailto:support@mastermind-x.com">support@mastermind-x.com</a>。') }}</span>
             </span>
@@ -812,7 +816,7 @@ html[data-lang="zh"] .mx-footer .f-col p{ font-family:"PingFang SC","Hiragino Sa
   }
 
   function fail(kind) {
-    H.setAttribute('data-err', kind === 'rate' ? 'rate' : 'generic');
+    H.setAttribute('data-err', kind === 'rate' || kind === 'uncertain' ? kind : 'generic');
     H.setAttribute('data-form', 'error');
   }
 
@@ -896,20 +900,23 @@ html[data-lang="zh"] .mx-footer .f-col p{ font-family:"PingFang SC","Hiragino Sa
     var ctl = window.AbortController ? new window.AbortController() : null;
     var killer = ctl ? setTimeout(function () { try { ctl.abort(); } catch (e2) {} }, POST_MS) : 0;
 
+    var handledHttpResponse = {};
     withAuth({ 'Content-Type': 'application/json' }).then(function (h) {
       var opt = { method: 'POST', headers: h, body: JSON.stringify(payload) };
       if (ctl) opt.signal = ctl.signal;
       return fetch(API + '/api/support/ticket', opt);
     }).then(function (r) {
-      if (r.status === 429) { fail('rate'); return null; }
-      if (!r.ok) { fail('generic'); return null; }
+      if (r.status === 429) { fail('rate'); return handledHttpResponse; }
+      if (r.status >= 500 && r.status <= 599) { fail('uncertain'); return handledHttpResponse; }
+      if (!r.ok) { fail('generic'); return handledHttpResponse; }
       return r.json();
     }).then(function (j) {
-      if (!j) return;                                   /* already handled */
-      if (j.ok && j.ticket_id) succeed(j, payload);
-      else fail('generic');
+      if (j === handledHttpResponse) return;             /* handled HTTP status */
+      if (j && j.ok === true && typeof j.ticket_id === 'string' && j.ticket_id.trim()) {
+        succeed(j, payload);
+      } else fail('uncertain');                         /* no usable receipt */
     }).catch(function () {
-      fail('generic');                                  /* nothing typed is lost */
+      fail('uncertain');                                /* outcome unknown; keep typed text */
     }).then(function () {
       if (killer) clearTimeout(killer);
       setBusy(false);

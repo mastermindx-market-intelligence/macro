@@ -554,3 +554,89 @@ def test_support_enters_the_sitemap(tmp_path):
     (tmp_path / "support.html").write_text("<html></html>")
     names = [n for n, _u, _f in seo.discover_core_pages(tmp_path)]
     assert "support" in names
+
+
+def test_transport_failure_reports_unknown_receipt_without_retry(page, tmp_path):
+    """Lost POST responses cannot establish that the server stored no ticket."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node is required for the actual support controller")
+    html = tmp_path / "support.html"
+    html.write_text(page, encoding="utf-8")
+    program = r"""
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const html=fs.readFileSync(process.argv[2],'utf8');
+const script=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('var POST_MS = 15000'));
+assert(script,'actual complete registered controller required');
+function harness(){
+ const nodes=new Map(),timers=new Map(),calls=[],stored=[],docListeners={};let tid=0,pending;
+ function node(id){if(nodes.has(id))return nodes.get(id);const attrs={},listeners={},classes=new Set();const n={value:'',textContent:'',innerHTML:'',options:[],disabled:false,attrs,listeners,
+ setAttribute(k,v){attrs[k]=v},getAttribute(k){return attrs[k]??null},removeAttribute(k){delete attrs[k]},
+ classList:{add(k){classes.add(k)},remove(k){classes.delete(k)},toggle(k,on){on?classes.add(k):classes.delete(k)}},
+ addEventListener(k,fn){listeners[k]=fn},closest(){return n},querySelector(){return null},focus(){n.focused=true},reset(){}};nodes.set(id,n);return n;}
+ const H=node('html');H.setAttribute('data-lang','en');
+ const document={documentElement:H,querySelector:s=>node(s),querySelectorAll:()=>[],addEventListener:(k,fn)=>docListeners[k]=fn};
+ class AbortController{constructor(){this.signal={aborted:false}}abort(){this.signal.aborted=true;if(this.signal.reject)this.signal.reject(new Error('AbortError'));}}
+ const context={document,window:{AbortController},console,Date,Intl,Promise,
+ setTimeout(fn,ms){const id=++tid;timers.set(id,{fn,ms});return id},clearTimeout(id){timers.delete(id)},
+ fetch(url,opt){calls.push({url,opt});return new Promise((resolve,reject)=>{pending={resolve,reject};if(opt.signal)opt.signal.reject=reject;});}};
+ vm.runInNewContext(script,context,{timeout:1000});
+ node('#s-email').value='reader@example.com';node('#s-subject').value='Missing page';node('#s-message').value='My original request';node('#s-topic').value='bug';
+ const submit=()=>node('#tk-form').listeners.submit({preventDefault(){}});
+ const settle=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
+ return {H,node,timers,calls,stored,submit,settle,resolve(r){pending.resolve(r)},reject(){pending.reject(new Error('connection lost'))},commit(){stored.push(JSON.parse(calls[0].opt.body))}};
+}
+(async()=>{
+ const malformed = {
+  'malformed-null':null, 'malformed-false':false, 'malformed-zero':0,
+  'malformed-array':[], 'malformed-empty':{}, 'malformed-no-id':{ok:true},
+  'malformed-object-id':{ok:true,ticket_id:{}}, 'malformed-array-id':{ok:true,ticket_id:[]},
+  'malformed-false-id':{ok:true,ticket_id:false}, 'malformed-empty-id':{ok:true,ticket_id:''},
+  'malformed-space-id':{ok:true,ticket_id:'  '}, 'malformed-number-id':{ok:true,ticket_id:123},
+  'malformed-truthy-ok':{ok:'true',ticket_id:'12345678-abcd'},
+  'malformed-no-ok':{ticket_id:'12345678-abcd'},
+  'malformed-negative-ok':{ok:false,ticket_id:'12345678-abcd'}, 'malformed-string':'ok'
+ };
+ const results=[];
+ for(const kind of ['lost-after-store','abort-after-store','body-lost-after-store','network-before-store','success','rate','rejected','local-invalid','server-503-after-store','gateway-502-after-store',...Object.keys(malformed)]){
+  try{
+   const h=harness();if(kind==='local-invalid')h.node('#s-email').value='';
+   h.submit();h.submit();await h.settle();
+   if(kind==='local-invalid'){assert.equal(h.calls.length,0);assert.equal(h.node('#s-email').focused,true);assert.equal(h.node('#s-send').disabled,false);results.push({kind,pass:true});continue;}
+   assert.equal(h.calls.length,1,'busy latch preserves one POST');
+   assert.equal(h.calls[0].url,'/api/support/ticket');assert.equal(h.calls[0].opt.method,'POST');
+   const ambiguous=kind.startsWith('malformed-')||kind.startsWith('server-')||kind.startsWith('gateway-')||['lost-after-store','abort-after-store','body-lost-after-store','network-before-store'].includes(kind);
+   if(kind.includes('after-store')||kind==='success')h.commit();
+   if(kind==='lost-after-store'||kind==='network-before-store')h.reject();
+   else if(kind==='abort-after-store'){const timer=[...h.timers.values()].find(t=>t.ms===15000);assert(timer);timer.fn();}
+   else if(kind==='body-lost-after-store')h.resolve({ok:true,status:200,json:()=>Promise.reject(new Error('truncated response'))});
+   else if(kind==='server-503-after-store')h.resolve({ok:false,status:503,json:()=>{throw new Error('must not parse 503 body')}});
+   else if(kind==='gateway-502-after-store')h.resolve({ok:false,status:502,json:()=>{throw new Error('must not parse 502 body')}});
+   else if(kind.startsWith('malformed-'))h.resolve({ok:true,status:200,json:()=>Promise.resolve(malformed[kind])});
+   else if(kind==='rate')h.resolve({ok:false,status:429,json:()=>{throw new Error('must not parse 429 body')}});
+   else if(kind==='rejected')h.resolve({ok:false,status:400,json:()=>{throw new Error('must not parse 400 body')}});
+   else h.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,ticket_id:'12345678-abcd',sent:'2 Nov 2026, 06:00 UTC',mail:false})});
+   await h.settle();
+   assert.equal(h.H.getAttribute('data-form'),kind==='success'?'success':'error');
+   assert.equal(h.H.getAttribute('data-err'),ambiguous?'uncertain':kind==='rate'?'rate':kind==='rejected'?'generic':null);
+   assert.equal(h.node('#s-send').disabled,false);assert.equal(h.node('#s-send').getAttribute('aria-busy'),null);
+   assert.equal(h.node('#s-message').value,'My original request');assert.equal(h.calls.length,1,'no automatic retry');
+   assert.equal(h.stored.length,kind.includes('after-store')||kind==='success'?1:0);
+   if(kind==='success'){assert.equal(h.node('#slip-ref').textContent,'MX-12345678');assert.equal(h.H.getAttribute('data-mail'),'off');}
+   results.push({kind,pass:true});
+  }catch(e){results.push({kind,pass:false,error:e.message});}
+ }
+ console.log(JSON.stringify(results,null,2));process.exitCode=results.every(x=>x.pass)?0:1;
+})();
+"""
+    result = subprocess.run(
+        [node, "-", str(html)], input=program, text=True,
+        capture_output=True, timeout=15,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "We could not confirm receipt." in page
+    assert "我们无法确认是否已收到请求。" in page
+    assert 'html[data-err="uncertain"] .err .e-uncertain' in page
