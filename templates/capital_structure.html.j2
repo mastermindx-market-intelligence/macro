@@ -54,7 +54,12 @@
     <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
     <div>
       <strong>{{ t('What this desk does not calculate', '本工作台不计算的内容') }}</strong>
-      <span>{{ t('Selected filing terms are shown below. Full instrument coverage, share-count expansion detail, cash timing, and financing forecasts remain unavailable.', '下方展示选定披露条款；完整工具覆盖、股数扩张细节、现金时间及融资预测仍不可用。') }}</span>
+      {% set scope_en = "Selected filing terms are shown below. " %}
+      {% set scope_en = scope_en ~ "Full instrument coverage, share-count expansion, " %}
+      {% set scope_en = scope_en ~ "cash timing, and financing paths remain unavailable." %}
+      {% set scope_zh = "下方展示选定披露条款；完整工具覆盖、股数扩张、" %}
+      {% set scope_zh = scope_zh ~ "现金时间及融资路径仍不可用。" %}
+      <span>{{ t(scope_en, scope_zh) }}</span>
     </div>
   </section>
 
@@ -70,7 +75,8 @@
     </div>
     {% if premium and premium.status == 'computed' %}
     <p>{{ t('A buyer has offered', '买方出价') }} <strong>{{ premium.currency }} {{ '%.2f'|format(premium.offer_price) }}</strong>
-       {{ t('a share for', '每股，收购') }} <strong>{{ premium.ticker }}</strong>{{ t('.', '。') }}
+       {{ t('a share for', '每股，收购') }}
+       <a href="stock.html#{{ premium.ticker }}"><strong>{{ premium.ticker }}</strong></a>{{ t('.', '。') }}
        {{ t('That is', '相当于') }} <strong>{{ '%+.1f'|format(premium.premium_pct) }}%</strong>
        {{ t('above the share price on the last trading day before the deal reached the SEC record.', '高于该交易进入 SEC 记录前最后一个交易日的股价。') }}</p>
     <div class="cs-latest-grid">

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T10:30:34Z",
+ "accession": "0001193125-26-115081",
+ "cik": "0001966983",
+ "doc_byte_length": 3672914,
+ "doc_sha256": "866869c17fe04fb41aaf54dd2458be4225161c7e922d725e3ed666a8b948702c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "lac-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1467329,
+  "byte_start": 1466948,
+  "normalized": "Accounting for the agreements with GM requires management to make judgments in determining that no portion of the investment proceeds by GM were attributable to the Offtake Agreements, which management concluded contained a market pricing structure. The Company’s assessment was informed by a competitive process for the investment and offtake agreements on a combined basis.",
+  "normalized_sha256": "9fc38ee67bafddcb06b854abb67a1ef3ec7ed777b3fcfd0a9e7f2b223f819ccd",
+  "raw": "Accounting for the agreements with GM requires management to make judgments in determining that no portion of the investment proceeds by GM were attributable to the Offtake Agreements, which management concluded contained a market pricing structure. The Company&#8217;s assessment was informed by a competitive process for the investment and offtake agreements on a combined basis.",
+  "raw_sha256": "17089d98f4223b43c13c65f5441fa73fbf665dff7a00fb793093f619a2a922d2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1966983/000119312526115081/lac-20251231.htm",
+ "xbrl_contexts": []
+}

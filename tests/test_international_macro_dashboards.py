@@ -119,7 +119,7 @@ def test_decision_score_is_bounded_deterministic_and_not_the_calibrated_probabil
     view = build_country_view(record, _history(), today=date(2026, 7, 30))
     assert view["decision"]["score"] == first
     assert view["risk"]["h21"] == pytest.approx(0.21)
-    assert "not a forecast" in view["decision"]["method_en"]
+    assert "Descriptive only." in view["decision"]["method_en"]
     assert view["history"]["values"] and len(view["history"]["values"]) == 60
 
 

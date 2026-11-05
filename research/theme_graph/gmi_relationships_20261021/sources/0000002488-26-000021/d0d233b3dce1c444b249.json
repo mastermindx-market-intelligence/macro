@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-04T20:06:57Z",
+ "accession": "0000002488-26-000021",
+ "cik": "0000002488",
+ "doc_byte_length": 293837,
+ "doc_sha256": "40c560ba9bf0a9ad87101d396def14a3be4024ecb21e87f67effc2927ba4efa3",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-04",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-27",
+ "primary_document": "amd-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 40365,
+  "byte_start": 39949,
+  "normalized": "In October 2025, we entered into a product purchase agreement with OpenAI OpCo, LLC, (OpenAI) to deploy 6 gigawatts of AMD GPUs, with the deployment of the first gigawatt of capacity powered by our AMD Instinct MI450 series products. Concurrent with the agreement, we issued to OpenAI a warrant to purchase up to an aggregate of 160 million shares of AMD’s common stock at an exercise price of $0.01 per share.",
+  "normalized_sha256": "e51d51154f24445d41f92504001c26f6f78f5ddfac1d0ed5aef3dd8a69e75c4c",
+  "raw": "In October 2025, we entered into a product purchase agreement with OpenAI OpCo, LLC, (OpenAI) to deploy 6 gigawatts of AMD GPUs, with the deployment of the first gigawatt of capacity powered by our AMD Instinct MI450 series products. Concurrent with the agreement, we issued to OpenAI a warrant to purchase up to an aggregate of 160 million shares of AMD&#8217;s common stock at an exercise price of $0.01 per share.",
+  "raw_sha256": "d0d233b3dce1c444b249b14dba0998cda3f81848a78e964191e8a71865448ba7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000021/amd-20251227.htm",
+ "xbrl_contexts": []
+}

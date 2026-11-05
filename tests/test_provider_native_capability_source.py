@@ -189,3 +189,39 @@ def test_cli_refuses_digest_predecessor_or_identity_arguments():
         with pytest.raises(SystemExit) as exc:
             main([option, "untrusted"])
         assert exc.value.code == 2
+
+
+def test_v2_enablement_follows_fixed_committed_source_and_exact_predecessor(repo):
+    write_registry(repo, registry())
+    commit(repo)
+    value = registry()
+    value["schema"] = "mastermind.provider_native_capability_registry/v2"
+    value["capabilities"][0]["provider_enabled"] = False
+    write_registry(repo, value)
+    disabled_commit = commit(repo)
+    disabled = source._read_source(repo)
+    assert disabled.registrations[0]["provider_enabled"] is False
+    value["capabilities"][0]["provider_enabled"] = True
+    write_registry(repo, value)
+    with pytest.raises(source.NativeSourceError, match="^MATERIAL_SOURCE_UNGROUNDED$"):
+        source._read_source(repo)
+    enabled_commit = commit(repo)
+    enabled = source._read_source(repo)
+    assert enabled.repository_commit == enabled_commit
+    assert enabled.previous_repository_commit == disabled_commit
+    assert enabled.registrations[0]["provider_enabled"] is True
+    assert enabled.registrations[0]["capability_generation"] == 1
+    assert enabled.material_source_digest != disabled.material_source_digest
+    assert enabled.registrations[0]["registration_receipt_digest"] != disabled.registrations[0]["registration_receipt_digest"]
+
+
+def test_v1_to_v2_source_cannot_enable_during_format_adoption(repo):
+    write_registry(repo, registry())
+    commit(repo)
+    value = registry()
+    value["schema"] = "mastermind.provider_native_capability_registry/v2"
+    value["capabilities"][0]["provider_enabled"] = True
+    write_registry(repo, value)
+    commit(repo)
+    with pytest.raises(source.NativeSourceError, match="^transition_enablement_not_disarmed$"):
+        source._read_source(repo)

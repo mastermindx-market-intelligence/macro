@@ -5,6 +5,12 @@ payloads behind the owner gates: label-return parsing, source and issuer ties, s
 replay, two-family routing, owner span binding and the validate_event chokepoint.
 Every case lands in exactly one of emitted, deferred or rejected, with a code.
 
+A stated quantity must also be grounded: each value, or each range bound, must equal a
+numeral written in the verified source bytes its span cites, read at a scale the span
+itself writes (as written, a scale word, or hundredths when the span states a percent or
+basis points). Otherwise the case rejects with quantity_value_ungrounded. The labeler's
+excerpt is never the evidence for a number.
+
 Authority is context_only and every prophet flag is false. Novelty here is the
 labeler's value carried for validation only; the rule-assigned novelty, fact-log
 append/projection and Prophet adapter stage is the next producer stage. The output
@@ -17,6 +23,7 @@ import json
 import re
 from collections import Counter
 from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 from hashlib import sha256
 from pathlib import Path
@@ -26,9 +33,10 @@ from jsonschema import Draft202012Validator
 
 from engine.company_intelligence.documents import DocumentError, text_span, verify_span
 from engine.news_impact import agreement as ag
+from engine.news_impact.eval_grade import SCALE_WORDS
 from engine.news_impact.validate import load_contract, validate_event
 
-PRODUCER_VERSION = "ni-producer-1"
+PRODUCER_VERSION = "ni-producer-2"
 FAMILIES = ("fam_a", "fam_b")
 QUANTITY_FIELDS = frozenset({"incremental_amount", "remaining_authorization", "executed_amount", "stated_amount", "stated_quantity"})
 PERIOD_FIELDS = frozenset({"horizon_period", "fiscal_period"})
@@ -41,6 +49,14 @@ PERIOD_KINDS = frozenset({"quarter", "half_year", "nine_months", "fiscal_year", 
 CALENDAR_END = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 CURRENCY = re.compile(r"^([A-Z]{3}|NA)$")
 FALSE_FLAGS = {"may_rank": False, "may_size": False, "may_gate": False, "prophet_authority": False}
+# Numeric grounding (F2 control M04). A numeral never starts inside another number.
+_NUMERAL = re.compile(r"(?<![\d.,])(?:\d(?:[\d.,]*\d)?|\.\d+)")
+_US_GROUPED = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?")
+_SCALE = dict(SCALE_WORDS)
+_SCALE_SUFFIX = re.compile(r"\s*(" + "|".join(sorted(map(re.escape, _SCALE), key=len, reverse=True)) + r")\b",
+                           re.IGNORECASE)
+_SCALE_WORD = {word: re.compile(rf"\b{word}\b", re.IGNORECASE) for word in _SCALE if len(word) > 2}
+_PERCENT_MARK = re.compile(r"%|\bper\s?cent\b|\bbasis\s+points?\b|\bbps?\b", re.IGNORECASE)
 
 
 @lru_cache(maxsize=1)
@@ -98,6 +114,62 @@ def _fold(value: Any) -> Any:
     if isinstance(value, float) and value.is_integer():
         return int(value)
     return value
+
+
+def _numeral_readings(token: str) -> set[Decimal]:
+    """The exact reading of one written numeral; European grouping only where US grouping cannot apply.
+
+    Commas each followed by three digits, with no period before them, are US grouping (1,234);
+    any other comma is a European decimal mark (1,5 and 1.234,5). Two or more periods are
+    European grouping (1.234.567). A single period is a decimal point, so a European 1.500
+    meaning 1500 fails closed rather than letting a value 1000 times off ground. A numeral
+    longer than 64 characters is not a stated quantity and has no reading.
+    """
+    if len(token) > 64:
+        return set()
+    if token.startswith("."):
+        texts = (token,)
+    elif "," in token and ("." in token[:token.rfind(",")] or not _US_GROUPED.fullmatch(token)):
+        texts = (token.replace(".", "").replace(",", "."),)
+    elif token.count(".") > 1:
+        texts = (token.replace(".", ""),)
+    else:
+        texts = (token.replace(",", ""),)
+    readings = set()
+    for text in texts:
+        try:
+            number = Decimal(text)
+        except InvalidOperation:
+            continue
+        if number.is_finite():
+            readings.add(number)
+    return readings
+
+
+def _quantity_grounded(quantity: Mapping[str, Any], cited_text: str) -> bool:
+    """True when every stated value or range bound is a numeral the cited text writes.
+
+    Each numeral is read as written, times a scale word the text uses (thousand ... trillion,
+    or k/m/bn/t directly after it), or times 0.01 when the text states a percent or basis
+    points. Signs are not compared (negation is its own field). A quantity with no number to
+    compare is left to the contract. Spelled-out and derived numbers are not recognised.
+    """
+    targets = [abs(Decimal(str(quantity[k]))) for k in ("value", "low", "high")
+               if isinstance(quantity.get(k), (int, float)) and not isinstance(quantity.get(k), bool)]
+    if not targets:
+        return True
+    shared = {Decimal(1)} | {_SCALE[w] for w, pattern in _SCALE_WORD.items() if pattern.search(cited_text)}
+    if _PERCENT_MARK.search(cited_text):
+        shared.add(Decimal("0.01"))
+    stated: set[Decimal] = set()
+    for match in _NUMERAL.finditer(cited_text):
+        factors = set(shared)
+        suffix = _SCALE_SUFFIX.match(cited_text, match.end())
+        if suffix:
+            factors.add(_SCALE[suffix.group(1).lower()])
+        for number in _numeral_readings(match.group()):
+            stated.update(number * factor for factor in factors)
+    return all(target in stated for target in targets)
 
 
 def bind_span(source_span: Mapping[str, Any], segments: list, source_bytes: bytes) -> tuple[dict, dict]:
@@ -182,6 +254,11 @@ def _quantity(entry: Mapping[str, Any], subject: str, ctx: dict, counts: Counter
         counts["currency_folded_from_unit"] += 1
     out["period"] = _period(value.get("period"), subject + ".period", counts)
     out["evidence"], _ = bind_span(entry["source_span"], ctx["segments"], ctx["source"])
+    # F2 control M04: the number must be written in the verified bytes the span cites; the
+    # labeler's excerpt is never consulted (bind_span verifies bytes, not the excerpt).
+    span = entry["source_span"]
+    if not _quantity_grounded(out, ctx["source"][span["byte_start"]:span["byte_end"]].decode("utf-8")):
+        raise Reject("quantity_value_ungrounded")
     return out
 
 

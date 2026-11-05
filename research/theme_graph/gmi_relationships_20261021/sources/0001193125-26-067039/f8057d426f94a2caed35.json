@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-24T21:17:35Z",
+ "accession": "0001193125-26-067039",
+ "cik": "0000026058",
+ "doc_byte_length": 5248029,
+ "doc_sha256": "5037d30798b317ad55ccd1372d4a9748b41875cf99ccf976ef7c91368a1a597f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1831205,
+  "byte_start": 1830161,
+  "normalized": "Cummins, Inc. 8.4%",
+  "normalized_sha256": "a4893d1a04b15b975dc8e33be3fa1f52fd1247e7d43a4d4c05505d5482075681",
+  "raw": "Cummins, Inc.</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:11pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"white-space:pre-wrap;font-family:'Calibri',sans-serif;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_19ba1ebd-924e-4694-b645-1ffbd8893e90\" contextRef=\"C_641a93b1-b366-4cfd-b53d-0b4e1fd0e2d9\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"INF\" format=\"ixt:num-dot-decimal\">8.4</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%",
+  "raw_sha256": "f8057d426f94a2caed356f117ade2730d25af06004e32d94669f9c812381e4f9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/26058/000119312526067039/cts-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 173466,
+   "byte_start": 172772,
+   "context_ref": "C_641a93b1-b366-4cfd-b53d-0b4e1fd0e2d9",
+   "raw": "<xbrli:context id=\"C_641a93b1-b366-4cfd-b53d-0b4e1fd0e2d9\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000026058</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">cts:CumminsIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "8a7d7965596a3472abea09902718c2a34aac73c7558c2f23b05370adeec8e40a"
+  }
+ ]
+}

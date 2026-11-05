@@ -1,5 +1,10 @@
 # Macro Dashboard — agent instructions
 
+## Local review within this Claude session
+
+Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-chairman-amendment-2026-11-03). Mastermind #2026's session-local review page is a **proposed** source until protected merge, not yet accepted/installed; keep incumbent review requirements until its and #2018's applicable adoption gates prove true. This Claude session can conduct its own adversarial diff check and, when distinct independent technical scrutiny is owed, use **native Claude reviewer subagents in this same parent session** with separate context, read-only source, a real returned verdict and parent adjudication. No other Claude/Web session, Dot or reviewer account is automatically required. Fabric is an optional separately admitted child avenue, not a mandatory handoff. Author self-check != independent child != formal native GitHub non-author approval. Actual holds, CI, protected merge and effect fences continue.
+
+
 Signal-engine + static-site repo (engines in `engine/`, builders in `scripts/`, rendered site in `site/`, programs/masterplans in `research/`). Nightly pipeline runs on a self-hosted Mac Studio via GitHub Actions; render budget is law (~67 min, 4-core-bound) — heavy compute goes off the render path, artifacts to R2.
 
 
@@ -14,6 +19,10 @@ An architectural owner is not a live session. Data OS is a system boundary, not 
 AI approver to locate. The current assigned session resolves authorized technical
 contracts through existing interfaces. Preserve actual live writers, rights,
 reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
+
+## Complete the original ship chain
+
+This Claude session does not count a Draft, PR, review request, CI wait or handoff as **completed delivery**. Existing `merge-on-green` plus a **verified actual controller/return path** can delegate only a proven idle wait; current protected main has no `scripts/ci_handoff.py` CLI, never `PROVEN_OUTCOME`; the unconditional stop decision is superseded by `DEC:SESSION-OWNED-REVIEW-20261103`. Follow the root [finish-to-release rule](AGENTS.md#finish-to-release-no-draft-graveyard): fix failed checks, advance a qualified Ready candidate, meet real review/hold gates and use the existing protected publisher when eligible, then verify exact merge and consumer proof. Preserve no-self-merge/no-self-approval and other effect boundaries. Do not create a successor PR or stop merely because a PR was published.
 
 ## Permanent visual rule
 
@@ -78,6 +87,35 @@ The site has exactly two global header families. Authenticated/product pages use
 header. `nav_prefix` may vary by directory depth; typography, geometry, menu
 contents, search behavior, responsive breakpoints, and motion may vary only in
 the shared family source.
+
+## Assigned Meta-CEO: Fabric first for bounded execution (2026-10-12)
+
+This is **only** for an explicitly Chairman-assigned Codex or Claude principal;
+ordinary workers keep their bounded role. Read the shared, source-controlled
+[`docs/CODEX_META_CEO_FABRIC.md`](docs/CODEX_META_CEO_FABRIC.md)
+alongside the applicable current grant/Executive/Fabric admission procedure.
+An assigned principal owns mission direction, genuine C3 judgment, review,
+integration, acceptance and durable continuity. It should **decide on Fabric
+delegation before undertaking substantial C0/C1/C2 implementation, research,
+tests and repairs itself**. When there is real independent ready work, use
+qualified admitted paid Fabric workers and the existing sanctioned adapter.
+For enrolled Codex, this is the already-installed
+`mastermind-fabric-delegate` skill + `fabric_task.py` path with the verified
+current native-thread root, not Codex native `spawn_agent` as a labor shortcut.
+For Claude, the existing approved Executive/Fabric route applies; a native
+`Agent/Task` child is a distinct path, never silently counted as paid Fabric.
+
+Do not infer role, runtime identity, a root grant or provider access from the
+harness/model name. Never duplicate a submitted run or bypass a real denial.
+Decompose into bounded independent work, retain the parent as an active
+decision-maker, inspect compact returns with artifact hashes and tests, and keep
+long logs outside frontier context. Current resource, writer, user-consent,
+review, merge and release gates are unchanged. Do not fan out just to use
+114 physical lane ceilings; only genuine accepted work counts. A document or
+an installed adapter is not production adoption proof. Existing model-routing
+rules below still apply to separately justified native Claude children.
+
+**Assigned Codex Meta-CEO selective-read rule:** `AGENTS.md` is the Codex entrypoint. An assigned Codex principal reads only the relevant `CLAUDE.md` guide sections plus necessary current laws rather than duplicating the full Claude context. Ordinary Codex workers and Claude-native sessions retain their scoped source and tool rules; this never waives admission, permissions, custody or acceptance.
 
 ## Model routing (STANDING — token economy)
 

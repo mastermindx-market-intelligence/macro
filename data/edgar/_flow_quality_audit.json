@@ -1,5 +1,5 @@
 {
-"applied": "2026-10-20T04:40:00.444087+00:00",
+"applied": "2026-11-02T07:25:29.401804+00:00",
 "rows_flagged": 223,
 "tickers_flagged": 66,
 "by_flag": {
@@ -2530,6 +2530,13 @@
 "statements": 246286000.0
 },
 {
+"ticker": "COHU",
+"fy": 2024,
+"col": "ni",
+"panel": -9100000.0,
+"statements": -69818000.0
+},
+{
 "ticker": "COLB",
 "fy": 2021,
 "col": "ni",
@@ -3963,6 +3970,27 @@
 "col": "ni",
 "panel": 135423000.0,
 "statements": 421288000.0
+},
+{
+"ticker": "SATS",
+"fy": 2021,
+"col": "ni",
+"panel": 14871.0,
+"statements": 62721000.0
+},
+{
+"ticker": "SATS",
+"fy": 2023,
+"col": "ni",
+"panel": -4931197.0,
+"statements": -1634824000.0
+},
+{
+"ticker": "SATS",
+"fy": 2024,
+"col": "ni",
+"panel": -21580000.0,
+"statements": -124515000.0
 },
 {
 "ticker": "SBC",
@@ -6100,6 +6128,13 @@
 "statements": 12478566.0
 },
 {
+"ticker": "SATS",
+"fy": 2021,
+"col": "cfo",
+"panel": 23370.0,
+"statements": 632226000.0
+},
+{
 "ticker": "SCHL",
 "fy": 2021,
 "col": "cfo",
@@ -7449,6 +7484,34 @@
 "col": "revenue",
 "panel": 2013567.0,
 "statements": 187788.0
+},
+{
+"ticker": "SATS",
+"fy": 2021,
+"col": "revenue",
+"panel": 829618.0,
+"statements": 1985720000.0
+},
+{
+"ticker": "SATS",
+"fy": 2022,
+"col": "revenue",
+"panel": 343106.0,
+"statements": 1998093000.0
+},
+{
+"ticker": "SATS",
+"fy": 2023,
+"col": "revenue",
+"panel": 277038.0,
+"statements": 17015598000.0
+},
+{
+"ticker": "SATS",
+"fy": 2024,
+"col": "revenue",
+"panel": 633489.0,
+"statements": 15825516000.0
 },
 {
 "ticker": "SLNH",
@@ -9115,6 +9178,27 @@
 "col": "op_income",
 "panel": -10512413.0,
 "statements": -3060154.0
+},
+{
+"ticker": "SATS",
+"fy": 2021,
+"col": "op_income",
+"panel": 14871.0,
+"statements": 217010000.0
+},
+{
+"ticker": "SATS",
+"fy": 2023,
+"col": "op_income",
+"panel": -4931197.0,
+"statements": -277909000.0
+},
+{
+"ticker": "SATS",
+"fy": 2024,
+"col": "op_income",
+"panel": -22654000.0,
+"statements": -304070000.0
 },
 {
 "ticker": "SCHL",
