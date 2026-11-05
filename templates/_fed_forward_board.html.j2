@@ -1,0 +1,105 @@
+{# Scoped Fed detail. All market-to-policy values are prequalified, per-contract observations. #}
+{% autoescape true %}
+{% macro pair(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+{% set b = fed_forward|default({}) %}
+{% set months = b.months|default([]) %}
+{% set sides = b.sides|default([]) %}
+{% set names = {
+'H1_path_repricing':['Rate futures','利率期货'], 'H2_breakeven_momentum':['Inflation expectations','通胀预期'],
+'H3_oil_impulse':['Oil prices','油价'], 'H4_inflation_trajectory':['Inflation trend','通胀趋势'],
+'H5_curve_regime':['Yield curve','收益率曲线'], 'H6_anchoring_strain':['Expectations anchor','预期锚定'],
+'E1_equity_deleveraging':['Equity risk-off','股市避险'], 'E2_growth_cooling':['Growth cooling','增长放缓'],
+'E3_dollar_tightening':['Strong dollar','美元走强'], 'E4_credit_stress':['Credit stress','信用压力'],
+'E5_policy_easing_chain':['Policy transmission','政策传导']} %}
+{% macro leg_row(leg, active) %}
+{% set label = names.get(leg.key, ['Additional indicator','其他指标']) %}
+<details class="ff-leg"><summary>{{ pair(label[0],label[1]) }}
+ <small>{% if leg.null_reason %}{{ pair('Unavailable','暂无数据') }}{% elif active and leg.weight is number %}{{ leg.weight }} {{ pair('pt','分') }}{% else %}{{ pair('Watching','观察中') }}{% endif %}</small></summary>
+ <p>{{ pair(leg.detail_en|default('Observation unavailable.',true),leg.detail_zh|default('读数暂缺。',true)) }}</p>
+ {% if leg.null_reason %}<p>{{ leg.null_reason }}</p>{% endif %}</details>
+{% endmacro %}
+<header class="ff-hero">
+ <div class="ff-meta">{{ pair('Monetary policy','货币政策') }} <span> / </span>
+ {{ pair('Conditions dated','经济状况日期') }} <time data-ff-asof="{{ b.asof|default('',true) }}">{{ b.asof|default('—',true) }}</time><span class="ff-age" aria-live="off"></span></div>
+ <h2>{{ pair(b.label.en if b.label else 'Policy read unavailable', b.label.zh if b.label else '暂无政策读数') }}</h2>
+ {% if months %}{% set far=months[-1] %}
+ <p>{% if far.bp == 0 %}{{ pair('The ' ~ far.month ~ ' futures contract is in line with the policy midpoint.', far.month ~ ' 期货合约与政策区间中点一致。') }}
+ {% else %}{{ pair('For ' ~ far.month ~ ', futures imply a monthly rate ' ~ ('%.2f'|format(far.bp|abs)) ~ ' basis points ' ~ ('above' if far.bp>0 else 'below') ~ ' the policy midpoint.',
+ far.month ~ ' 期货隐含的月均利率' ~ ('高于' if far.bp>0 else '低于') ~ '政策区间中点 ' ~ ('%.2f'|format(far.bp|abs)) ~ ' 个基点。') }}{% endif %}</p>
+ {% else %}<p>{{ pair('A matched futures-to-policy comparison is unavailable for this snapshot.', '本次快照暂无同口径的期货与政策利率比较。') }}</p>{% endif %}
+</header>
+<div class="ff-grid">
+<section class="ff-pricing">
+ <div class="ff-kicker">01 <span>/</span> {{ pair('Market pricing','市场定价') }}</div>
+ <h3>{{ pair('Where futures price policy','期货如何定价政策利率') }}</h3>
+ {% if months %}
+ {% set chart = months[:24] %}
+ <div class="ff-chart-head"><span>{{ pair('Monthly average vs. policy midpoint','月均利率相对政策中点') }}</span><b>{{ pair('Basis points','基点') }}</b></div>
+ <figure class="ff-chart">
+ <svg viewBox="0 0 520 150" role="img" aria-labelledby="ff-chart-title"><title id="ff-chart-title">Monthly futures differences in basis points / 各月期货差额（基点）</title>
+ {% set high = [chart|map(attribute='bp')|max, 0]|max %}
+ {% set low = [chart|map(attribute='bp')|min, 0]|min %}
+ {% set span = [high-low, 1]|max %}{% set baseline = 24 + high/span * 90 %}
+ <line x1="32" x2="510" y1="{{ baseline }}" y2="{{ baseline }}" class="ff-zero"/><text x="22" y="{{ baseline+4 }}" text-anchor="end">0</text>
+ {% for m in chart %}{% set x = 40 + (loop.index0 + 0.5)*458/chart|length %}{% set height = 90*m.bp|abs/span %}
+ <rect class="ff-bar" x="{{ x - 105/chart|length }}" width="{{ 210/chart|length }}" y="{{ baseline-height if m.bp>=0 else baseline }}" height="{{ [height,1]|max }}" rx="2"><title>{{ m.month }} · {{ '%+.2f'|format(m.bp) }} bp</title></rect>
+ {% if loop.first or loop.last or loop.index0 in [chart|length // 3, 2 * (chart|length) // 3] %}
+ <text x="{{ x }}" y="{{ baseline-7-height if m.bp>=0 else baseline+14+height }}" text-anchor="middle">{{ '%+.2f'|format(m.bp) }}</text>
+ <text x="{{ x }}" y="148" text-anchor="middle">{{ m.month }}</text>{% endif %}
+ {% endfor %}</svg>
+ <figcaption>{% set observed = months|map(attribute='observed')|unique|list %}{% if observed|length == 1 and observed[0] %}{{ pair('Quotes observed','报价日期') }} {{ observed[0] }} · {% endif %}{{ pair('Evidence cutoff','证据截止日') }} {{ months[0].cutoff }} · {{ pair('ZQ fed-funds futures','ZQ 联邦基金期货') }}{% if months|length > 24 %} · {{ pair('First 24 contracts','前24份合约') }}{% endif %}</figcaption></figure>
+ <label class="ff-contract">{{ pair('Inspect a month','查看月份') }}
+ <select data-ff-contract>{% for m in months %}<option value="{{ '%+.2f'|format(m.bp) }}" data-contract="{{ m.contract }}">{{ m.month }}</option>{% endfor %}</select>
+ <output aria-live="polite"><b>{{ '%+.2f'|format(months[0].bp) }} bp</b> <small>{{ months[0].contract }}</small></output></label>
+ <details class="ff-table"><summary>{{ pair('Inspect contract values','查看合约数值') }} <small>{{ months|length }}</small></summary>
+ <table><thead><tr><th>{{ pair('Month','月份') }}</th><th>{{ pair('Contract','合约') }}</th><th>{{ pair('Quote date','报价日期') }}</th><th>{{ pair('Gap (bp)','差值（基点）') }}</th></tr></thead><tbody>
+ {% for m in months %}<tr><th scope="row">{{ m.month }}</th><td>{{ m.contract }}</td><td>{{ m.observed or '—' }}</td><td>{{ '%+.2f'|format(m.bp) }}</td></tr>{% endfor %}</tbody></table>
+ <p>{{ pair('One basis point is 0.01 percentage point. Positive values put the contract average above the target midpoint after the effective-rate adjustment. Each row uses its own contract month.', '1个基点等于0.01个百分点。正值表示经有效利率基差调整后，合约月均利率高于目标区间中点。每一行均对应其实际合约月份。') }}</p></details>
+ {% else %}<div class="ff-empty"><strong>{{ pair('Awaiting comparable contracts','等待可比合约') }}</strong>
+ <p>{{ pair('A monthly price needs a dated contract and a matched effective-rate basis before a gap can be shown.', '只有取得带日期的合约及匹配的有效利率基准后，才会显示差额。') }}</p></div>{% endif %}
+ {% if b.dots %}<details class="ff-table"><summary>{{ pair('Fed year-end projections','美联储年末预测') }}</summary>
+ <p>{{ pair('Median participant projection by calendar year. Release vintage is unavailable in this board.', '各年末的委员预测中位数。本看板未提供该批预测的发布日期。') }}</p>
+ <div class="ff-dots">{% for d in b.dots %}<div><small>{{ d.year }}</small><b>{{ '%.2f'|format(d.median) }}%</b></div>{% endfor %}</div></details>{% endif %}
+</section>
+<section class="ff-pressure">
+ <div class="ff-kicker">02 <span>/</span> {{ pair('Economic conditions','经济状况') }}</div><h3>{{ pair('Pressure balance','政策压力对比') }}</h3>
+ <p>{{ pair('Weighted points from active drivers','已触发因素的加权分数') }}</p>
+ <div class="ff-scoreboard">{% for side in sides %}<div>
+ <small>{{ pair('Toward easing','趋向宽松') if side.key=='E' else pair('Toward tightening','趋向收紧') }}</small>
+ <b>{{ side.score if side.score is not none else '—' }}</b>
+ <span>{% if side.score is not none or side.active or side.other %}{{ side.active|length }} {{ pair('active','已触发') }}{% else %}{{ pair('No reading','暂无读数') }}{% endif %}</span></div>{% endfor %}</div>
+ {% set change = b.changes|default({}) %}
+ {% if change.vs_asof %}{% for item in change.get('items',[]) if item.key in ['ease_score','hawk_score'] %}
+ <p class="ff-change">{{ pair('Easing points','宽松分数') if item.key=='ease_score' else pair('Tightening points','收紧分数') }} {{ item['from'] }} → {{ item['to'] }} · {{ change.vs_asof }}</p>{% endfor %}{% endif %}
+ {% if b.top_driver %}{% set top=b.top_driver %}{% set title=names.get(top.key,['Indicator','指标']) %}
+ <div class="ff-driver-note"><small>{{ pair('Highest active weight','最高已触发权重') }}</small>
+ <strong>{{ pair(title[0],title[1]) }} <span>· {{ top.weight }} {{ pair('pt','分') }}</span></strong>
+ <p>{{ pair(top.detail_en,top.detail_zh) }}</p></div>{% endif %}
+</section>
+</div>
+<section class="ff-section"><div class="ff-kicker">03 <span>/</span> {{ pair('Evidence','证据') }}</div>
+ <h3>{{ pair('What is driving the reading?','哪些因素在推动本次读数？') }}</h3>
+ <div class="ff-drivers">{% for side in sides %}<div><h4>{{ pair('Easing pressure','宽松压力') if side.key=='E' else pair('Tightening pressure','收紧压力') }}</h4>
+ {% for leg in side.active %}{{ leg_row(leg,true) }}{% else %}<p>{{ pair('No active drivers reported.','未报告已触发因素。') }}</p>{% endfor %}
+ {% if side.other %}<details class="ff-monitor"><summary>{{ pair('Other indicators','其他指标') }} <small>{{ side.other|length }}</small></summary>
+ {% for leg in side.other %}{{ leg_row(leg,false) }}{% endfor %}</details>{% endif %}</div>{% endfor %}</div>
+ {% if b.conditions %}<h4>{{ pair('What would change the reading?','什么会改变读数？') }}</h4>{% for cond in b.conditions %}
+ <p class="ff-watch"><b>{{ pair('Tightening','收紧') if cond.direction=='hawkish' else (pair('Easing','宽松') if cond.direction=='easing' else pair('Watch','观察')) }}</b> {{ pair(cond.watch_en|default(cond.en,true),cond.watch_zh|default(cond.zh,true)) }}</p>{% endfor %}{% endif %}
+</section>
+<section class="ff-section"><div class="ff-kicker">04 <span>/</span> {{ pair('Prediction markets','预测市场') }}</div><h3>{{ pair('What contracts are pricing','事件合约定价') }}</h3>
+ {% if b.events %}<p>{{ b.market_source if b.market_source else pair('Source unavailable','来源暂缺') }} · {{ b.market_date if b.market_date else pair('Date unavailable','日期暂缺') }} · {{ pair('Probability of the listed outcome','所列结果的市场隐含概率') }}</p>
+ {% set translations={'No change':'维持不变','Rate cut':'降息','Rate hike':'加息','0 (0 bps)':'0 次（0 基点）'} %}
+ {% for event in b.events %}<div class="ff-event"><div><strong>{{ pair(event.label_en|default(event.name,true),event.label_zh|default(event.name,true)) }}</strong><span>{{ pair(event.top_outcome,translations.get(event.top_outcome,event.top_outcome)) }}</span></div>
+ <div><b>{{ '%.1f'|format(event.top_prob) }}%</b>{% if event.chg_pp is not none %}<small>{{ '%+.1f'|format(event.chg_pp) }} {{ pair('pp change','个百分点变动') }}</small>{% endif %}</div></div>{% endfor %}
+ {% else %}<p>{{ pair('No priced outcomes are available for this snapshot.','本次快照暂无已定价的结果。') }}</p>{% endif %}
+</section>
+{% set pol=b.policy|default({}) %}
+{% if pol %}<details class="ff-context"><summary>{{ pair('Policy context & source dates','政策背景与来源日期') }}</summary>
+ <p>{{ pair('Policy monitoring','政策监测') }} · {{ pol.lever_asof|default('—',true) }} · {{ pol.state|default('—',true) }}
+ {% if pol.jawboning and pol.jawboning.n_7d is number %} · {{ pol.jawboning.n_7d }} {{ pair('comments in the preceding week','此前一周发言次数') }}{% endif %}</p>
+ {% if pol.intel_as_of %}<p><b>{{ pair('Historical briefing','历史简报') }} · {{ pol.intel_as_of }}</b>
+ {% if pol.intel_staleness_days is number %} · {{ pol.intel_staleness_days }} {{ pair('days old at snapshot','天（截至本快照）') }}{% endif %}
+ {% if pol.chair %}<br>{{ pair('Chair in this briefing','该简报中的主席') }} · {{ pol.chair }}{% endif %}</p>
+ {% if pol.iran_context is mapping and pol.iran_context.title_en %}<details class="ff-monitor"><summary>{{ pair('Geopolitics in the archived briefing','历史简报中的地缘政治') }}</summary><p>{{ pair(pol.iran_context.title_en,pol.iran_context.title_zh) }}</p></details>{% endif %}{% endif %}
+</details>{% endif %}
+{% endautoescape %}

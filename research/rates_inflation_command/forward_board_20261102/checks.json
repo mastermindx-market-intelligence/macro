@@ -1,0 +1,158 @@
+{
+  "source_base": "9af0a33eb38b08d902c3e593cb0e276d3f0d6a18",
+  "route": "macro.html",
+  "entitlement": "local registered/anonymous fixtures, no live account",
+  "data": "Committed Rates Command and its digest-matched bond source",
+  "quote_observed": "2026-10-20",
+  "comparison_cutoff": "2026-10-21",
+  "build_context": "scripts.build_site.main with optional edgar.enabled=false in the verification process",
+  "built_page_sha256": "bf97b2e0058f9ce02a0bce2a726a4e42321f14635833dbb14fba19771b58cbfb",
+  "registered_page": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "contract_rows": 14,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "contract_rows": 14,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "contract_rows": 14,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "contract_rows": 14,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "contract_rows": 14,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "contract_rows": 14,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "contract_rows": 14,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "contract_rows": 14,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    }
+  ],
+  "changed_bond_digest_fixture": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "contract_rows": 0,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "contract_rows": 0,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "contract_rows": 0,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "contract_rows": 0,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "contract_rows": 0,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "contract_rows": 0,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "contract_rows": 0,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "contract_rows": 0,
+      "anonymous_gate": true,
+      "keyboard_open_expand_close_restore": true,
+      "horizontal_overflow": false
+    }
+  ]
+}

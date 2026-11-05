@@ -1,0 +1,82 @@
+/* Fed Path shares the Macro dialog shell, launcher, focus, and theme contract. */
+#dlg-fed .mx5-dlg-panel {width:min(1040px, calc(100vw - 40px));max-width:none;color:var(--text);background:var(--panel)}
+#dlg-fed .mx5-dlg-header {padding:14px 28px;border-bottom:1px solid var(--line)}
+#dlg-fed .mx5-dlg-body {padding:0 28px 22px;font:var(--fs-body)/1.5 var(--font-ui);color:var(--text);overscroll-behavior:contain}
+#dlg-fed .mx5-dlg-title {font-size:var(--fs-md);letter-spacing:normal;color:var(--text);text-transform:none}
+#dlg-fed .mx5-dlg-close {width:44px;height:44px;min-height:44px}
+#dlg-fed .ff-hero {padding:24px 0 22px}
+#dlg-fed .ff-meta,#dlg-fed .ff-kicker {display:flex;align-items:center;flex-wrap:wrap;gap:6px;font:600 var(--fs-label)/1.4 var(--font-ui);color:var(--muted);letter-spacing:.075em;text-transform:uppercase}
+#dlg-fed .ff-meta time,#dlg-fed .ff-meta>span:not(.l-en,.l-zh),#dlg-fed .ff-kicker>span:not(.l-en,.l-zh) {letter-spacing:0}
+#dlg-fed h2,#dlg-fed h3,#dlg-fed h4,#dlg-fed p,#dlg-fed figure {margin:0}
+#dlg-fed h2 {font-size:clamp(26px,3.3vw,40px);line-height:1.12;letter-spacing:-.035em;font-weight:650;margin:8px 0}
+#dlg-fed h3 {font-size:var(--fs-h2);line-height:1.3;letter-spacing:-.015em;margin:7px 0}
+#dlg-fed h4 {font-size:var(--fs-h3);margin:14px 0 4px}
+#dlg-fed p,#dlg-fed figcaption {color:var(--muted);line-height:1.55}
+#dlg-fed .ff-grid {display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);border:1px solid var(--line);border-radius:var(--r-panel,14px);overflow:hidden;background:var(--bg)}
+#dlg-fed .ff-pricing,#dlg-fed .ff-pressure {padding:20px;min-width:0}
+#dlg-fed .ff-pressure {border-inline-start:1px solid var(--line);background:var(--panel2)}
+#dlg-fed .ff-meta time,#dlg-fed .ff-chart text,#dlg-fed .ff-scoreboard b,#dlg-fed .ff-dots b,#dlg-fed .ff-event b,#dlg-fed td {font-variant-numeric:tabular-nums}
+#dlg-fed .ff-chart-head {display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:var(--fs-sm)}
+#dlg-fed .ff-chart-head b {font-weight:500}
+#dlg-fed .ff-chart svg {display:block;width:100%;height:auto;margin:7px 0}
+#dlg-fed .ff-chart text {font:13px var(--font-ui);fill:var(--text)}
+#dlg-fed .ff-zero {stroke:var(--line)}
+#dlg-fed .ff-bar {fill:var(--isle-policy,var(--info))}
+#dlg-fed figcaption,#dlg-fed small,#dlg-fed .ff-event span,#dlg-fed .ff-scoreboard span {font-size:var(--fs-sm)}
+#dlg-fed .ff-empty {padding:16px 0}
+#dlg-fed .ff-scoreboard,#dlg-fed .ff-drivers {display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#dlg-fed .ff-scoreboard {margin:20px 0}
+#dlg-fed .ff-scoreboard>div,#dlg-fed .ff-dots>div,#dlg-fed .ff-event>div {display:flex;flex-direction:column;align-items:flex-start}
+#dlg-fed .ff-scoreboard b {font-size:var(--fs-num-xl);line-height:1.12}
+#dlg-fed .ff-scoreboard div:first-child b {color:var(--ink-up,var(--ok))}
+#dlg-fed .ff-scoreboard div:last-child b {color:var(--ink-warn,var(--warn))}
+#dlg-fed .ff-scoreboard small,#dlg-fed .ff-scoreboard span,#dlg-fed summary small,#dlg-fed .ff-event small {color:var(--muted)}
+#dlg-fed .ff-change {border-top:1px solid var(--line);padding-top:10px;font-size:var(--fs-sm)}
+#dlg-fed .ff-section {padding:20px 0;border-bottom:1px solid var(--line)}
+#dlg-fed .ff-drivers {column-gap:28px}
+#dlg-fed summary {cursor:pointer;min-height:44px;line-height:1.4;padding:12px 0;box-sizing:border-box;color:var(--text)}
+#dlg-fed summary::marker {color:var(--muted)}
+#dlg-fed summary:focus-visible,#dlg-fed button:focus-visible {outline:2px solid var(--link);outline-offset:2px}
+#dlg-fed summary small {margin-inline-start:8px}
+#dlg-fed .ff-leg,#dlg-fed .ff-table,#dlg-fed .ff-context {border-top:1px solid var(--line)}
+#dlg-fed .ff-table {margin-top:10px}
+#dlg-fed details p,#dlg-fed .ff-watch {padding-bottom:10px}
+#dlg-fed .ff-watch b {margin-inline-end:.5em}
+#dlg-fed .ff-leg p,#dlg-fed .ff-monitor,#dlg-fed .ff-table,#dlg-fed .ff-context p {font-size:var(--fs-sm)}
+#dlg-fed .ff-monitor .ff-leg {padding-inline-start:12px}
+#dlg-fed table {width:100%;border-collapse:collapse;text-align:start}
+#dlg-fed td,#dlg-fed th {padding:7px 4px;border-bottom:1px solid var(--line);text-align:start}
+#dlg-fed th:last-child,#dlg-fed td:last-child {text-align:end}
+#dlg-fed .ff-dots {display:flex;flex-wrap:wrap;gap:18px;padding-bottom:12px}
+#dlg-fed .ff-event {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid var(--line)}
+#dlg-fed .ff-event:last-child {border-bottom:0}
+#dlg-fed .ff-event>div:last-child {align-items:flex-end}
+#dlg-fed .ff-event b {font-size:var(--fs-md)}
+#dlg-fed .ff-context {padding-block:4px}
+#dlg-fed .ff-context .mx5-dlg-eyebrow {margin-top:14px}
+[data-theme="light"] #dlg-fed .mx5-dlg-panel {background:var(--panel)}
+[data-theme="light"] #dlg-fed .ff-grid {background:var(--panel);box-shadow:var(--card-shadow)}
+[data-theme="light"] #dlg-fed .ff-pressure {background:var(--bg)}
+body.page-macro:has(#dlg-fed.open) #mmb-launch {visibility:hidden;pointer-events:none}
+#dlg-fed .ff-driver-note {border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+#dlg-fed .ff-driver-note>small,#dlg-fed .ff-driver-note strong {display:block}
+#dlg-fed .ff-driver-note>small,#dlg-fed .ff-driver-note span {color:var(--muted)}
+#dlg-fed .ff-driver-note p {font-size:var(--fs-sm);margin-top:3px}
+#dlg-fed .ff-contract {display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:var(--fs-sm)}
+#dlg-fed .ff-contract select {font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);min-height:44px;padding:4px 8px}
+#dlg-fed .ff-contract output {display:flex;flex-wrap:wrap;gap:5px;align-items:baseline}
+#dlg-fed .ff-contract small {color:var(--muted)}
+#dlg-fed .ff-age:not(:empty) {padding:2px 7px;border:1px solid var(--line);border-radius:var(--r-pill,999px);color:var(--muted)}
+@media(max-width:720px) {
+  #dlg-fed .mx5-dlg-panel {width:min(100%,100vw);max-height:96dvh}
+  #dlg-fed .mx5-dlg-header {padding:8px 16px}
+  #dlg-fed .mx5-dlg-body {padding:0 16px 18px}
+  #dlg-fed .ff-hero {padding:18px 0}
+  #dlg-fed .ff-grid,#dlg-fed .ff-drivers {grid-template-columns:minmax(0,1fr)}
+  #dlg-fed .ff-pricing,#dlg-fed .ff-pressure {padding:14px}
+  #dlg-fed .ff-pressure {border-inline-start:0;border-top:1px solid var(--line)}
+  #dlg-fed .ff-scoreboard {margin:10px 0}
+  #dlg-fed .ff-chart svg {min-height:96px}
+  #dlg-fed .ff-chart text {font-size:16px}
+  #dlg-fed .ff-section {padding:16px 0}
+}
