@@ -38,10 +38,24 @@ class Nodes(HTMLParser):
     def __init__(self, text):
         super().__init__()
         self.nodes = []
+        self.snapshot_payloads = []
+        self._snapshot = None
         self.feed(text)
 
     def handle_starttag(self, tag, attrs):
         self.nodes.append((tag, dict(attrs)))
+        if tag == 'script' and 'data-im-snapshot-payload' in dict(attrs):
+            self._snapshot = ''
+
+    def handle_data(self, data):
+        if self._snapshot is not None:
+            self._snapshot += data
+
+    def handle_endtag(self, tag):
+        if tag == 'script' and self._snapshot is not None:
+            self.snapshot_payloads.append(json.loads(self._snapshot))
+            self._snapshot = None
+
 
 
 
@@ -134,10 +148,13 @@ def test_html_does_not_disclose_track_metrics_foreign_events_or_destinations():
     assert jp['as_known']['destination'] == '/research/as-known'
     for secret in (
         '0.25', 'hit_rate', '/research/as-known', '/research/track-record',
-        'global_top_ten', 'Other market', '其他市场', 'intl_regime.classifier_history',
+        'global_top_ten', 'Other market', '其他市场',
         'as_known', 'false_alarms', 'drawdowns',
     ):
         assert secret not in html, secret
+    # The actual permitted universe is a required source-inspection field,
+    # distinct from withheld track metrics and destinations.
+    assert 'data-im-history-universe>' + jp['identity']['universe'] + '</dd>' in html
     assert 'No success rate is inferred' in html
     assert 'Original-known history unavailable' in html
     assert 'No linked revision records' in html
@@ -168,6 +185,7 @@ def test_autoescape_false_still_escapes_every_source_string_surface():
 def test_denied_metadata_cannot_publish_artifact_or_scores():
     def change(workspace, args):
         args['sources']['JP']['history_read']['artifact_ref'] = 'PRIVATE-REF/file'
+        args['sources']['JP']['history_read']['identity']['universe'] = 'PRIVATE-UNIVERSE'
         args['sources']['JP']['capabilities']['history_source'] = {'metadata': 'denied', 'value': 'denied'}
 
     html, result = render_html(change)
@@ -176,6 +194,7 @@ def test_denied_metadata_cannot_publish_artifact_or_scores():
     assert section['source_reference'] is None
     assert section['points'] == []
     assert 'PRIVATE-REF' not in html
+    assert 'PRIVATE-UNIVERSE' not in html
     assert '0.4375' not in html
     assert 'History information withheld' in html
 
@@ -241,8 +260,17 @@ def test_history_panel_is_one_shared_catalogue_not_per_horizon_pair():
     assert len(result['histories']) == 1
     assert len(result['histories'][0]['sections']) == 2
     assert [attrs['data-im-history-market'] for _, attrs in nodes if 'data-im-history-slot' in attrs] == ['JP', 'KR']
-    # The authored selector's JSON transport is not a second visible observation.
-    assert html.count('<td>0.4375</td>') == 1
+    # One qualified transport per market; bounded rows are mounted only for
+    # the active market, not eagerly duplicated by horizon or both selects.
+    payloads = Nodes(html).snapshot_payloads
+    assert len(payloads) == len(result['histories'][0]['sections'])
+    for payload, section in zip(payloads, result['histories'][0]['sections']):
+        assert payload['points'] == [[point['observation_at'],
+            str(point['growth_score']) if point['growth_score'] is not None else None,
+            str(point['inflation_score']) if point['inflation_score'] is not None else None]
+            for point in section['points']]
+    assert html.count('<td>0.4375</td>') == 0
+    assert sum(row[1] == '0.4375' for payload in payloads for row in payload['points']) == 1
     assert html.count('data-im-generation="' + GENERATION + '"') == 1
 
 
@@ -287,3 +315,19 @@ def test_history_options_publish_both_locale_label_attributes():
     options = [attrs for tag, attrs in nodes if tag == 'option']
     assert options
     assert all(attrs.get('data-im-label-en') and attrs.get('data-im-label-zh') for attrs in options)
+
+
+def test_static_withheld_value_explanation_preserves_distinct_reasons_and_no_scores():
+    for permission, en, zh in (
+        ('denied', 'source values withheld.', '来源数值未披露。'),
+        ('unknown', 'value disclosure is not established.', '尚未确立数值披露权限。'),
+    ):
+        def change(workspace, args):
+            args['sources']['JP']['capabilities']['history_source'] = {
+                'metadata': 'allowed', 'value': permission}
+        html, result = render_html(change)
+        assert en in html and zh in html
+        payload = Nodes(html).snapshot_payloads[0]
+        assert payload['points'] and all(row[1:] == [None, None] for row in payload['points'])
+        assert payload['selection'] == {'eligible': False, 'reason': 'value_' + permission}
+        assert '0.4375' not in html and 'value="0"' not in html

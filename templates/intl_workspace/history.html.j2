@@ -52,6 +52,11 @@
           <p class="intl-history__muted">{{ words('All supplied observations stay available in their original order through these pages.','全部已提供观测均按原始顺序保留在这些分页中。') }}</p>
         </details>
         {% endif %}
+        {% if s.snapshot_compare.selection.reason == 'value_denied' %}
+        <p class="intl-history__muted">{{ words('Unavailable scores · source values withheld.','评分不可用 · 来源数值未披露。') }}</p>
+        {% elif s.snapshot_compare.selection.reason == 'value_unknown' %}
+        <p class="intl-history__muted">{{ words('Unavailable scores · value disclosure is not established.','评分不可用 · 尚未确立数值披露权限。') }}</p>
+        {% endif %}
         <form data-im-snapshot-form novalidate>
           <fieldset data-im-snapshot-fields disabled>
             <legend>{{ words('Compare two supplied dates','比较两个已提供的日期') }}</legend>
