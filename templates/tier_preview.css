@@ -42,8 +42,10 @@ html[data-theme="light"] .mx-tier-gate--prophet{--ink-tier:#5b3fc4}
   transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
 .mx-tier-primary:hover{transform:translateY(-1px);filter:brightness(1.06);
   box-shadow:0 13px 28px -13px color-mix(in srgb,var(--mx-tier-accent) 92%,transparent)}
-.mx-tier-signin{border:0;background:transparent;color:var(--muted);font-size:10.5px;font-weight:650;padding:2px 4px}
+.mx-tier-signin{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:40px;
+  border:0;border-radius:var(--r-ctl);background:transparent;color:var(--muted);font-size:10.5px;font-weight:650;padding:8px 10px}
 .mx-tier-signin:hover{color:var(--text)}
+.mx-tier-signin:focus-visible{outline:2px solid var(--link);outline-offset:2px;color:var(--text)}
 @media(max-width:620px){
   .mx-tier-gate{grid-template-columns:1fr;gap:16px;margin-top:14px;padding:18px}
   .mx-tier-gate::after{left:18px;right:18px}
