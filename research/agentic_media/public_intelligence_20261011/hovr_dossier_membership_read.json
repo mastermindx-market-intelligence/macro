@@ -1,0 +1,17 @@
+{
+  "source_revision": "632db13fc7a6336a149429d0e8084077c9a85ed1",
+  "path": "data/universe/membership.parquet",
+  "sha256": "33da41e7a9831260c6e0f988c2ca43dd421c274ccd5cf357c47bb53ddc49c91b",
+  "bytes": 78385,
+  "ticker": "HOVR",
+  "matching_rows": [],
+  "eligible_renderer_groups": [
+    "sp500",
+    "sp400",
+    "sp600",
+    "r2000"
+  ],
+  "effect": "read_only",
+  "canonical_page_missing": true,
+  "stockdata_blob_missing_on_installed_head": true
+}

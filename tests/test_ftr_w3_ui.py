@@ -22,7 +22,11 @@ All artifacts are display-tier / de-escalation only (FT-R1, FT-R2).
 """
 from __future__ import annotations
 
+import json
+import os
 import re
+import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -413,3 +417,308 @@ class TestFtrW3BasketsRender:
         assert "basket_pulse.json" in html
         assert "sector_pulse.json" not in html
         assert "turn_watch.json" not in html
+
+
+def test_basket_score_details_are_owned_by_every_page_render():
+    src = _src("basket_detail.html.j2")
+    tail = src[src.index("document.querySelectorAll('#hold th[data-s]')"):src.index("let _sort=")]
+    assert "if(window._ftrTryInject) window._ftrTryInject();" in tail
+    # The initial snapshot and subsequent sort renders must not wait for a
+    # successful member-only optional fetch to expose already-public inputs.
+    assert "window._ftrTryInject = tryInject;\n// Also cover scripts executed after the initial page render.\ntryInject();" in src
+
+
+def test_all_basket_artifacts_preserve_the_snapshot_initialization_hook():
+    root = TMPL_DIR.parent
+    pages = [p for d in ("basket", "basket_china", "basket_hk", "basket_canada", "basket_intl")
+             for p in (root / "site" / d).glob("*.html")]
+    assert len(pages) >= 121
+    for page in pages:
+        src = page.read_text(encoding="utf-8")
+        tail = src[src.index("document.querySelectorAll('#hold th[data-s]')"):src.index("let _sort=")]
+        assert "if(window._ftrTryInject) window._ftrTryInject();" in tail, page
+        assert "window._ftrTryInject = tryInject;\n// Also cover scripts executed after the initial page render.\ntryInject();" in src, page
+
+
+def test_optional_live_strip_never_invents_data_for_snapshot_only_view():
+    src = _src("basket_detail.html.j2")
+    fn = src[src.index("function liveStripHtml"):src.index("// ── Fetch + inject") ]
+    assert "if(!pb) return '';" in fn
+    assert "fetch('../live/basket_pulse.json'" in src
+    assert "fetch('../basketdata/turn_watch.json'" in src
+
+# UI-only continuation: producer values stay intact; missing is not a negative verdict.
+def _timing_cards(payload):
+    import json
+    import subprocess
+    src = _src('basket_detail.html.j2')
+    assert 'function timingCardsHtml(' in src
+    helper = src[src.index('function timingCardsHtml('):src.index('// Native details is the state owner.')]
+    setup = "const esc=s=>String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));const L=(en,zh)=>'<span class=\"l-en\">'+en+'</span><span class=\"l-zh\">'+zh+'</span>';const cssv=s=>s;"
+    return subprocess.check_output(['node', '-e', setup + helper + '\nconsole.log(timingCardsHtml(' + json.dumps(payload) + '));'], text=True)
+
+
+def test_basket_timing_cards_use_source_language_labels():
+    html = _timing_cards({'bull_age': {'in_bull': False, 'days': 0, 'approx_months': 0},
+                         'overbought': {'band': 'neutral', 'band_zh': '中性'},
+                         'clean_entry': {'flag': False, 'reasons': ['RSI room']},
+                         'rollover_risk': {'band': 'high', 'band_zh': '高', 'reasons': ['decelerating', 'below 50d']}})
+    assert 'No uptrend' in html and '非上升趋势' in html and '0mo' not in html
+    assert '<span class="l-en">neutral</span><span class="l-zh">中性</span>' in html
+    assert '<span class="l-en">high</span><span class="l-zh">高</span>' in html
+    assert 'RSI仍有空间' in html and '动量减速' in html and '低于50日均线' in html
+
+
+def test_basket_timing_missing_evidence_stays_unknown_and_neutral():
+    for empty in ({}, None, [], {'bull_age': [], 'clean_entry': {'flag': 'false'}}):
+        html = _timing_cards(empty)
+        assert html.count('<div class="v">—</div>') == 4
+        assert html.count('data-basket-tone="muted"') == 4
+        assert 'data-basket-tone="up"' not in html and 'data-basket-tone="down"' not in html
+        assert '<span class="l-en">No</span>' not in html
+
+
+def test_basket_timing_age_and_text_keep_precision_and_escape_markup():
+    html = _timing_cards({'bull_age': {'in_bull': True, 'approx_months': 0.4, 'days': 8},
+                         'overbought': {'band': '<img src=x>', 'band_zh': '<坏标签>'},
+                         'clean_entry': {'flag': True, 'reasons': ['<script>alert(1)</script>', {}]}})
+    assert 'Under 1 month' in html and '不足1个月' in html and '8 days' in html
+    assert '<img src=x>' not in html and '&lt;img src=x&gt;' in html
+    assert '<script>' not in html and '[object Object]' not in html
+
+
+def test_basket_score_native_state_survives_render_and_reinjection():
+    src = _src('basket_detail.html.j2')
+    assert src.count('const scoreUi=basketScoreState(app);') == 2
+    assert src.count('restoreBasketScoreState(app,scoreUi);') == 2
+    assert 'detail.open=state.open;' in src
+    assert 'summary.focus({preventScroll:true})' in src
+    roots = ('basket', 'basket_china', 'basket_hk', 'basket_canada', 'basket_intl')
+    pages = [p for d in roots for p in (TMPL_DIR.parent/'site'/d).glob('*.html')]
+    assert len(pages) >= 121
+    helper = src[src.index('// Timing cards'):src.index('\nfunction render(){')]
+    for p in pages:
+        html = p.read_text()
+        assert helper in html, p
+        assert html.count('restoreBasketScoreState(app,scoreUi);') == 2, p
+
+
+def test_basket_flow_metrics_wrap_together_instead_of_vertical_slivers():
+    src = _src('basket_detail.html.j2')
+    assert 'class="basket-flow-cards"' in src
+    assert 'class="basket-flow-metrics"' in src
+    assert '.basket-flow-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))' in src
+    assert '@media(max-width:720px){.basket-flow-cards{grid-template-columns:minmax(0,1fr)}' in src
+    block = src[src.index('<style data-basket-flow-layout>'):src.index('</style>',src.index('<style data-basket-flow-layout>'))+8]
+    for d in ('basket','basket_china','basket_hk','basket_canada','basket_intl'):
+        for page in (TMPL_DIR.parent/'site'/d).glob('*.html'):
+            assert block in page.read_text(), page
+
+
+def _hold_header(column, direction, chosen):
+    import json
+    import subprocess
+    src = _src("basket_detail.html.j2")
+    assert "function holdSortHeader(" in src
+    helper = src[src.index("function holdSortHeader("):src.index("function render(){")]
+    setup = "const esc=s=>String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));const L=(en,zh)=>'<span class=\"l-en\">'+en+'</span><span class=\"l-zh\">'+zh+'</span>';"
+    setup += "const _sort=" + json.dumps({"col": column, "dir": direction}) + ";"
+    return subprocess.check_output(["node", "-e", setup + helper + "console.log(holdSortHeader(" + json.dumps(chosen) + ", 'Potential', '潜力', 'hold-potential'));"], text=True)
+
+
+def test_basket_holdings_sort_controls_are_native_and_truthful():
+    # Potential is the pre-existing multi-key research order, not numeric-score order.
+    html = _hold_header("recommend", -1, "recommend")
+    assert 'scope="col"' in html and 'aria-sort="other"' in html
+    assert '<button type="button"' in html and 'data-hold-sort="recommend"' in html
+    assert 'aria-hidden="true"' in html and 'research order' in html and '研究顺序' in html
+    assert 'aria-sort="descending"' not in html
+    assert 'aria-sort=' not in _hold_header("r20", -1, "recommend")
+    assert 'aria-sort="descending"' in _hold_header("r20", -1, "r20")
+    assert 'aria-sort="ascending"' in _hold_header("r20", 1, "r20")
+
+
+def test_basket_holdings_sort_help_is_bilingual_and_not_a_native_title():
+    html = _hold_header("recommend", -1, "recommend")
+    assert 'data-tip-en=' in html and 'data-tip-zh=' in html
+    assert 'title=' not in html
+    assert 'not numeric score order' in html
+    assert '并非仅按数值大小排列' in html
+
+
+def test_basket_holdings_sort_keeps_one_native_activation_and_focus():
+    src = _src("basket_detail.html.j2")
+    assert 'th2=>th2.onclick=' not in src
+    assert 'button.onclick=()=>sortHold(button.dataset.holdSort);' in src
+    assert "document.activeElement.closest('#hold button[data-hold-sort]')" in src
+    assert 'restoreHoldSortFocus(app,sortFocusKey);' in src
+    assert 'button.focus({preventScroll:true})' in src
+    assert '<caption class="hold-sr-only">' in src
+
+
+def test_all_basket_sort_artifacts_keep_semantics_and_static_styles():
+    src = _src("basket_detail.html.j2")
+    style = src[src.index('<style data-basket-hold-sort>'):src.index('</style>', src.index('<style data-basket-hold-sort>'))+8]
+    assert '#hold .hold-sort:focus-visible' in style
+    assert 'min-height:32px' in style
+    pages = [p for d in ('basket','basket_china','basket_hk','basket_canada','basket_intl')
+             for p in (TMPL_DIR.parent/'site'/d).glob('*.html')]
+    assert len(pages) >= 121
+    for p in pages:
+        html = p.read_text()
+        assert style in html, p
+        assert 'function holdSortHeader(' in html, p
+        assert 'restoreHoldSortFocus(app,sortFocusKey);' in html, p
+        assert 'th2=>th2.onclick=' not in html, p
+
+
+def test_basket_holdings_use_canonical_scroll_wrapper_before_late_load():
+    """Shared load setup must not reparent an already-focused sorting table."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    wrapper = '<div class="panel"><div class="ts tbl-scroll"><table id="hold">'
+    old = '<div class="panel"><div class="ts"><table id="hold">'
+    source = (root / "templates" / "basket_detail.html.j2").read_text(encoding="utf-8")
+    assert source.count(wrapper) == 1
+    assert old not in source
+    pages = [p for name in ("basket", "basket_china", "basket_hk", "basket_canada", "basket_intl")
+             for p in (root / "site" / name).glob("*.html")]
+    assert len(pages) >= 100
+    for page in pages:
+        text = page.read_text(encoding="utf-8")
+        assert text.count(wrapper) == 1, page
+        assert old not in text, page
+
+
+# A pulse older than 12 hours must name the day it stopped. The clock below is
+# fixed, and the node process runs with TZ=UTC so the stamp does not drift.
+_TAPE_NOW = "2026-08-15T18:30:00.000Z"
+_TAPE_STALE = "2026-08-12T17:45:00.000Z"
+_TAPE_FRESH = "2026-08-15T17:30:00.000Z"
+
+
+def _require_node() -> None:
+    if shutil.which("node"):
+        return
+    pytest.skip("node is not on PATH locally")
+
+
+def _dtp_state_source() -> str:
+    src = _src("sector_central.html.j2")
+    match = re.search(r"function _dtpState\(pulse\)\{.*?\n  \}", src, re.S)
+    assert match, "_dtpState moved; repoint the tape as-of guard"
+    return match.group(0)
+
+
+def _run_dtp_state(pulse: dict) -> dict:
+    """Evaluate the template's _dtpState with Date.now fixed."""
+    _require_node()
+    script = _dtp_state_source()
+    script += "\nDate.now=function(){return Date.parse("
+    script += json.dumps(_TAPE_NOW)
+    script += ");};\nvar pulse="
+    script += json.dumps(pulse)
+    script += ";\nvar st=_dtpState(pulse);\n"
+    script += "var ts=pulse.as_of_quotes||pulse.as_of_utc||'';\n"
+    script += "var monthDay='',timeOnly='',monthShort='',monthLong='',day='';\n"
+    script += "if(ts&&String(ts).length>10){\n"
+    script += "  var d=new Date(ts);\n"
+    script += "  var opt={month:'short',day:'numeric',hour:'2-digit',"
+    script += "minute:'2-digit',timeZoneName:'short'};\n"
+    script += "  monthDay=d.toLocaleString([],opt);\n"
+    script += "  timeOnly=d.toLocaleTimeString([],{hour:'2-digit',"
+    script += "minute:'2-digit',timeZoneName:'short'});\n"
+    script += "  monthShort=d.toLocaleString([],{month:'short'});\n"
+    script += "  monthLong=d.toLocaleString([],{month:'long'});\n"
+    script += "  day=String(d.getUTCDate());\n"
+    script += "}\n"
+    script += "process.stdout.write(JSON.stringify({en:st.en,zh:st.zh,"
+    script += "cls:st.cls,asof:st.asofStr,live:st.live,monthDay:monthDay,"
+    script += "timeOnly:timeOnly,monthShort:monthShort,monthLong:monthLong,"
+    script += "day:day}));\n"
+    env = dict(os.environ)
+    env["TZ"] = "UTC"
+    proc = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=env,
+    )
+    assert proc.returncode == 0, proc.stderr + proc.stdout
+    return json.loads(proc.stdout)
+
+
+def _tape_pulse(mode: str, ts: str, **extra: object) -> dict:
+    pulse = {
+        "mode": mode,
+        "session": "rth",
+        "as_of_utc": ts,
+        "as_of_quotes": ts,
+    }
+    pulse.update(extra)
+    return pulse
+
+
+def _assert_month_and_day(got: dict) -> None:
+    assert got["asof"] == got["monthDay"], got
+    assert got["day"] in got["asof"], got
+    named = got["monthShort"] in got["asof"] or got["monthLong"] in got["asof"]
+    assert named, got
+    assert got["asof"] != got["timeOnly"], got
+
+
+def test_stale_tape_asof_is_calendar_date():
+    """Live file, three days old, no settled close: state plus month and day."""
+    got = _run_dtp_state(_tape_pulse("live", _TAPE_STALE))
+    assert got["en"] == "LAST SESSION · SETTLED", got
+    assert got["zh"] == "上一交易时段 · 已收盘", got
+    _assert_month_and_day(got)
+    assert got["day"] == "12", got
+
+
+def test_stale_delayed_tape_asof_holds_month_and_day():
+    got = _run_dtp_state(_tape_pulse("delayed", _TAPE_STALE))
+    assert got["en"] == "LAST SESSION · SETTLED", got
+    assert got["zh"] == "上一交易时段 · 已收盘", got
+    _assert_month_and_day(got)
+    assert got["day"] == "12", got
+
+
+def test_fresh_live_tape_asof_has_no_month():
+    got = _run_dtp_state(_tape_pulse("live", _TAPE_FRESH))
+    assert got["en"] == "LIVE · 15-MIN DELAYED", got
+    assert got["zh"] == "实盘 · 15分钟延迟", got
+    assert got["asof"] == got["timeOnly"], got
+    assert got["monthShort"] not in got["asof"], got
+    assert got["monthLong"] not in got["asof"], got
+
+
+def test_fresh_settled_close_asof_holds_today():
+    got = _run_dtp_state(
+        _tape_pulse("last_rth", _TAPE_FRESH, settled_close=True)
+    )
+    assert got["en"] == "POST-MARKET · SETTLED CLOSE", got
+    assert got["zh"] == "盘后 · 当日收盘", got
+    _assert_month_and_day(got)
+    assert got["day"] == "15", got
+
+
+def test_stale_date_only_stamp_is_unchanged():
+    day = "2026-08-12"
+    got = _run_dtp_state(_tape_pulse("live", day))
+    assert got["en"] == "LAST SESSION · SETTLED", got
+    assert got["zh"] == "上一交易时段 · 已收盘", got
+    assert got["asof"] == day, got
+
+
+def test_stale_gate_runs_before_the_stamp_is_formatted():
+    fn = _dtp_state_source()
+    stale_at = fn.find("var stale=")
+    stamp_at = fn.find("if(ts.length<=10)")
+    assert 0 <= stale_at < stamp_at
+    gate = "else if(stale||(mode==='last_rth'&&pulse.settled_close))"
+    assert gate in fn
+    tail = fn[fn.find("if(stale)"):]
+    assert "LAST SESSION · SETTLED" in tail
+    assert "asofStr:asofStr" in tail

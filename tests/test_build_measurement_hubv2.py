@@ -103,6 +103,7 @@ def _render_measurement_template(**overrides) -> str:
             "cards": [],
         },
         "imce_prospective": {"available": False},
+        "verdict_preservation": {"available": False},
         # Seasonality forward record (hero line) — absent-state default.
         "seasonality_record": {
             "available": False,

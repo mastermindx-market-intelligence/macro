@@ -1,4 +1,73 @@
 ---
+key: "MARKET-ONTOLOGY-CENTRAL-CONVERGENCE-2026-09-12"
+question: "What central organization choice was recorded for MarketOntology on September 12, and how should that dated record be read without creating competing current state?"
+answer: "Retain the September 12 choice of the existing MarketOntology Program Control Linear document as a human projection, existing F00C CSV as the sole capability-row ledger, Agent OS as organizational continuity and GitHub as source/proof. This is a dated organization decision, not a new present-day allocation, completion census or release instruction. Current continuation is the existing WS:MARKET-OS and current source-linked A/B carriers; A remains the F00C consolidation writer and B its independent verifier."
+rationale: "The original organizer and later September amendments have useful effect and decision provenance, but their pending-release and capability snapshots became stale. Preserve the complete original text as historical evidence while directing readers to current canonical owners. The November 5 qualification neither repeats the organizer effect nor changes product scope, capability rows, runtime authority, writer custody or the actual denied MAS-141 update."
+alternatives:
+  -
+    option: "Publish the September release instructions and counts as current."
+    why_not: "They still call for the already-merged #7351 and an Intelligence Hub link later removed; source visibility cannot refresh an old observation."
+  -
+    option: "Create a second organizer, row ledger or synchronization service."
+    why_not: "Existing Linear, F00C, Agent OS and source carriers already own those roles."
+  -
+    option: "Discard the original record after its release frontier moved."
+    why_not: "That would lose the dated document effect, non-duplication choice, refused effect boundary and source provenance."
+evidence:
+  - "Original two-record candidate: https://github.com/mastermindx-market-intelligence/macro/tree/4fab84d2bdad0a56b063f6da98a2c41585456ecd/agentos"
+  - "Original September 12 Linear receipt: document8685a6bf-9e64-4832-805b-812b752a65f6 created at2026-09-12T12:57:11.477Z and read back; preserved as historical source evidence, not a new connector observation."
+  - "https://github.com/mastermindx-market-intelligence/macro/pull/7351 — merged2026-09-23T03:06:26Z, merge12784c0fcfb461173d2010186560f2e2cf3e886d."
+  - "Current owner records: https://github.com/mastermindx-market-intelligence/macro/blob/80136935b4d28caeda6c6a50eb385797190fdc32/agentos/workstreams/WS-MARKET-OS.md (blob4699cd573792caa65202d199a32415c0a0e651af)."
+  - "Current ledger source: https://github.com/mastermindx-market-intelligence/macro/blob/80136935b4d28caeda6c6a50eb385797190fdc32/research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv (blobbfdf8e7eac47f96870259b4369337e9e46c47ad8), MO-PAID-023 and MO-PAID-039; recorded owner evidence, not independently repeated production proof."
+  - "https://github.com/mastermindx-market-intelligence/macro/pull/7084#issuecomment-6653930220 — November5 original-carrier records reconciliation."
+affects:
+  - "WS:MARKET-OS"
+  - "WS:ALPHA-INTELLIGENCE-INTEGRATION"
+  - "agentos/handoffs/MARKET-OS-2026-09-12-central-convergence.md"
+confidence: "high"
+reversibility: "easy"
+decided_by: "ceo-sol"
+decided_at: "2026-09-12"
+---
+
+# MarketOntology organization decision — dated history
+
+## November 5 source qualification
+
+This is an archival records publication. Current organizational and capability
+state stays with [WS:MARKET-OS](https://github.com/mastermindx-market-intelligence/macro/blob/80136935b4d28caeda6c6a50eb385797190fdc32/agentos/workstreams/WS-MARKET-OS.md)
+and the [existing F00C ledger](https://github.com/mastermindx-market-intelligence/macro/blob/80136935b4d28caeda6c6a50eb385797190fdc32/research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv).
+
+- #7351 merged on September23 at `12784c0fcfb461173d2010186560f2e2cf3e886d`.
+  The ledger's MO-PAID-023 row records later October2 D28 owner acceptance and its
+  sentinel/served receipts. Those receipts were read as owner evidence; no fresh
+  sentinel or browser verification was performed for this archive.
+- MO-PAID-039 records #7755's public-card/link removal. Its remaining recorded
+  proof concerns an authenticated admin non-empty implication card. The former
+  instruction to repair or restore a public Intelligence Hub link is superseded.
+- The September20 census **21 PROVEN_LIVE /23 BUILT_NOT_PROVEN /37 PARTIAL /
+  7 SPEC_ONLY /42 NOT_BUILT** is a historical snapshot. It is not today's census
+  or a completion percentage. The current workstream retains130=88paid+42delta,
+  current A51/B79, A's sole F00C consolidation and B's independent verification.
+  The original56/74 allocation remains dated charter history.
+- #7335's historical failed CI remains failed. Later repairs and release facts
+  do not rewrite prior outcomes. The old Executive429 is a dated failed read,
+  not evidence of current runtime absence.
+- The original MAS-141 safety-denied update is preserved without any retry,
+  split, delegation or cross-carrier action. The original document and #6819
+  publication notice are not recreated.
+
+The preserved quotation below includes old current-state and next-action wording.
+All of it belongs to its original September12–20 observation window. No line in
+the quotation grants a new source/host/runtime effect, replaces current A/B
+custody or converts archived evidence into new product acceptance.
+
+## Verbatim original record
+
+Original source: [#7084 at `4fab84d2bdad0a56b063f6da98a2c41585456ecd`](https://github.com/mastermindx-market-intelligence/macro/blob/4fab84d2bdad0a56b063f6da98a2c41585456ecd/agentos/decisions/DEC-MARKET-ONTOLOGY-CENTRAL-CONVERGENCE-2026-09-12.md), blob `7448d555bbfe805f712a1bc514e6fc51fcd59e10`.
+
+``````markdown
+---
 key: MARKET-ONTOLOGY-CENTRAL-CONVERGENCE-2026-09-12
 question: How should the concurrent MarketOntology program stay centrally understandable without duplicating its ledger or displacing its two delivery owners?
 answer: >
@@ -116,3 +185,4 @@ This section supersedes only the release-status statements in the dated 2026-09-
 - This reconciliation used protected Sol procedure from `mastermindx-market-intelligence/Mastermind@db4ef921c1e9a1abd790197d2719ba5316fbf99e` (Skillpack 1.0.1 / bootstrap major 1).
 
 The parent MarketOntology program remains **PARTIAL**. Signed-in proof debt, unresolved product consumers, current Executive linkage, and automatic Agent OS -> Linear refresh remain separate obligations. This records update does not create or imply those capabilities.
+``````
