@@ -1,0 +1,33 @@
+{"schema": "tiingo_attended_eod_batch.v1", "observed_at_utc": "2026-10-11T17:54:43.127345+00:00", "catalogue_sha256": "015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0", "reacquired_catalogue": false, "selection_scope": "next 500 exact-identifier USD stocks/ETFs on US exchanges in first 1000 audited candidates; acquisition only", "request_cap": 500, "completed_symbols_excluded": 55, "full_catalogue_candidate_count_before_exchange_filter": 47960, "account_hourly_allocation": 20000, "account_daily_allocation": 150000, "account_monthly_bandwidth_gb": 100, "preflight_free_gib": 291.4928092956543, "largest_observed_full_eod_response_bytes": 4087908, "conservative_batch_bandwidth_gb_at_largest_observed_response": 2.043954, "free_reserve_gib": 35, "canonical_identity_admitted": false, "pit_backtest_eligible": false, "attended_bounded_process": true, "persistent_queue_created": false}
+{"phase": "progress", "elapsed_seconds": 52.233, "attempted": 25, "ok": 25, "new": 25, "failed": 0, "row_hints": 52694, "bytes": 12293279, "errors": []}
+{"phase": "progress", "elapsed_seconds": 102.015, "attempted": 50, "ok": 50, "new": 50, "failed": 0, "row_hints": 107100, "bytes": 24657145, "errors": []}
+{"phase": "progress", "elapsed_seconds": 155.831, "attempted": 75, "ok": 75, "new": 75, "failed": 0, "row_hints": 147687, "bytes": 34018871, "errors": []}
+{"phase": "progress", "elapsed_seconds": 214.757, "attempted": 100, "ok": 100, "new": 100, "failed": 0, "row_hints": 190544, "bytes": 43367701, "errors": []}
+{"phase": "progress", "elapsed_seconds": 298.899, "attempted": 125, "ok": 125, "new": 125, "failed": 0, "row_hints": 270728, "bytes": 61835581, "errors": []}
+{"phase": "progress", "elapsed_seconds": 414.904, "attempted": 150, "ok": 150, "new": 150, "failed": 0, "row_hints": 343549, "bytes": 78163555, "errors": []}
+{"phase": "progress", "elapsed_seconds": 480.234, "attempted": 175, "ok": 175, "new": 175, "failed": 0, "row_hints": 404138, "bytes": 92142666, "errors": []}
+{"phase": "progress", "elapsed_seconds": 552.232, "attempted": 200, "ok": 200, "new": 200, "failed": 0, "row_hints": 469678, "bytes": 106787309, "errors": []}
+{"phase": "progress", "elapsed_seconds": 602.311, "attempted": 225, "ok": 225, "new": 225, "failed": 0, "row_hints": 515051, "bytes": 117196646, "errors": []}
+{"phase": "progress", "elapsed_seconds": 656.127, "attempted": 250, "ok": 250, "new": 250, "failed": 0, "row_hints": 572535, "bytes": 130191148, "errors": []}
+{"phase": "progress", "elapsed_seconds": 712.849, "attempted": 275, "ok": 275, "new": 275, "failed": 0, "row_hints": 612105, "bytes": 139115309, "errors": []}
+{"phase": "progress", "elapsed_seconds": 762.063, "attempted": 300, "ok": 300, "new": 300, "failed": 0, "row_hints": 651204, "bytes": 147651745, "errors": []}
+{"phase": "progress", "elapsed_seconds": 817.019, "attempted": 325, "ok": 325, "new": 325, "failed": 0, "row_hints": 701795, "bytes": 158988891, "errors": []}
+{"phase": "progress", "elapsed_seconds": 870.303, "attempted": 350, "ok": 350, "new": 350, "failed": 0, "row_hints": 746157, "bytes": 169236481, "errors": []}
+{"phase": "progress", "elapsed_seconds": 933.678, "attempted": 375, "ok": 375, "new": 375, "failed": 0, "row_hints": 812786, "bytes": 184694963, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1010.221, "attempted": 400, "ok": 400, "new": 400, "failed": 0, "row_hints": 882681, "bytes": 200618683, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1085.809, "attempted": 425, "ok": 425, "new": 425, "failed": 0, "row_hints": 938637, "bytes": 213361524, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1153.324, "attempted": 450, "ok": 450, "new": 450, "failed": 0, "row_hints": 1006098, "bytes": 228580670, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1199.549, "attempted": 475, "ok": 475, "new": 475, "failed": 0, "row_hints": 1044879, "bytes": 237420722, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1268.837, "attempted": 500, "ok": 500, "new": 500, "failed": 0, "row_hints": 1103194, "bytes": 250573134, "errors": []}
+{
+  "attempted": 500,
+  "bytes": 250573134,
+  "elapsed_seconds": 1268.838,
+  "errors": [],
+  "failed": 0,
+  "free_gib": 273.56873321533203,
+  "new": 500,
+  "ok": 500,
+  "phase": "settled",
+  "row_hints": 1103194
+}

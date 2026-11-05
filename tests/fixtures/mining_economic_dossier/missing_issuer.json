@@ -1,0 +1,56 @@
+{
+  "synthetic": true,
+  "assertion": {
+    "assertion_ref": ""
+  },
+  "event_workspace": {
+    "fictional_issuer_only": true
+  },
+  "omissions": [
+    "issuer"
+  ],
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  },
+  "domain": {
+    "anchor_theme_id": "theme:copper_steel_electrify",
+    "slice_key": "mining_copper_economics"
+  },
+  "account_generation": "synthetic-rare-earth-page-2",
+  "revision_tuple": [
+    [
+      "account_generation",
+      "synthetic-rare-earth-page-2"
+    ],
+    [
+      "source",
+      "synthetic-rare-earth-source-2"
+    ]
+  ],
+  "expected": {
+    "signed_native_blocks": [],
+    "reported_only_economics": [
+      {
+        "reason": "The issuer is missing."
+      }
+    ]
+  },
+  "source": {
+    "url": "https://example.invalid/unattributed-rare-earth.xhtml",
+    "rights_entitled": true,
+    "rights_revision": "synthetic-rights-rare-earth-2",
+    "basis": "A fictional issuer's reported dollars.",
+    "digest": "synthetic-rare-earth-source-2"
+  },
+  "economics": {
+    "measure": "reported operating income",
+    "value": 940,
+    "basis": "fictional reported dollars",
+    "stream_threshold": 180,
+    "positive_witness": true
+  }
+}

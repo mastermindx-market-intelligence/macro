@@ -1,0 +1,5 @@
+pytest-*/
+__pycache__/
+source-review.patch
+*.zip
+*.b64

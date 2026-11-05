@@ -35,7 +35,7 @@
   @media (max-width:640px){ .lh-flag{grid-template-columns:1fr;} .lh-flag .fg-btn{justify-self:start;} .lh-flag .fg-plot{display:none;} }
 
   /* tracks — each header wears the regime rail */
-  .lh-track{margin-top:38px;}
+  .lh-track{margin-top:38px; scroll-margin-top:84px;} /* #track-* breadcrumb anchors land clear of the sticky header */
   .lh-track-h{display:flex; align-items:center; gap:11px; margin:0 0 16px;
     padding:0 0 var(--sp-3); border-bottom:1px solid var(--hair-strong);}
   .lh-track-h::before{content:""; flex:none; align-self:center; width:3px; height:18px; border-radius:2px;
@@ -81,7 +81,9 @@
     </svg>
     <div>
       <span class="fg-k">{{ t('Flagship field manual · Options', '旗舰实战手册 · 期权') }}</span>
-      <div class="fg-t">{% if flagship.title %}{{ flagship.title }}{% else %}{{ t('Gamma Weather: reading the options tape', 'Gamma 天气：读懂期权盘面') }}{% endif %}</div>
+      <div class="fg-t">{% if flagship.title %}{{ t(flagship.title, 'Gamma 天气 — 做市商持仓实战手册') }}
+        {% else %}{{ t('Gamma Weather: reading the options tape', 'Gamma 天气：读懂期权盘面') }}
+        {% endif %}</div>
       <p class="fg-d">{% if flagship.description %}{{ flagship.description }}{% else %}{{ t('The desk’s full field guide to dealer gamma, charm and the daily options weather — the deepest lesson we publish.',
         '本台关于做市商 Gamma、Charm 与每日期权天气的完整实战指南——我们发布的最深入一课。') }}{% endif %}</p>
     </div>
@@ -90,13 +92,15 @@
   {% endif %}
 
   {% for tr in tracks %}
-  <div class="lh-track">
+  <div class="lh-track" id="track-{{ tr.key }}" tabindex="-1">
     <h2 class="lh-track-h"><span class="n">{{ '%02d' % loop.index }}</span> <span class="lbl">{{ tr.label }}</span></h2>
     <div class="lh-lessons">
       {% for ls in tr.lessons %}
       <a class="lh-lesson" href="{{ rel }}{{ ls.url_path.lstrip('/') }}">
         <h3 class="ll-t">{{ ls.title }}</h3>
         <p class="ll-d">{{ ls.description }}</p>
+        <span class="ll-d">{{ t('Published', '发布') }} {{ ls.published }}</span>
+        <br>
         <span class="ll-go">{{ t('Read lesson →', '阅读课程 →') }}</span>
       </a>
       {% endfor %}
