@@ -210,5 +210,41 @@
     "No speed/PIT/currentmarket/served/fullHistory/Compare acceptance",
     "Old base timed_out andPaper/Chromium/10696/T55/9533/SQL/private/defaultOFF holds preserved",
     "No oldCI/formal review transferred to successor; normal full required proof and controller release owed"
-  ]
+  ],
+  "current209_source_join": {
+    "runtime_component_head": "483bd66f93238ba7ee860f77d530d9b97abe20e5",
+    "runtime_component_tree": "b32ab93151b7a976512994e1e0e2a0161a574bbe",
+    "actual_composition_base": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+    "source_join": {
+      "path": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/S14_S8_S9_CURRENT209_SOURCE_JOIN.json",
+      "sha256": "0ad80586168679dac4459b6a27c9f09b99669fc75c5912a43b9c608cf63edc4c"
+    },
+    "canonical_qualification": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-iw2-10708-integration-20261105-carson/durable-source/company-483-integration-qualification.json",
+      "sha256": "ee1fe38d15a5128260696352565644349571adf228fb9db0e11a003ebea4cd92",
+      "original_handle": 59794,
+      "exit_code": 0,
+      "result": "2PASS324.67s; fullmanifest curated closure +three packing probes; no missingedges/breaches/budgetchanges"
+    },
+    "source_review": {
+      "path": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/native-formal-review/483-registry-critical-source-addendum.json",
+      "sha256": "27e202cf8248dcae9e8d7f3ef0dc9305cfc2ff6ec5a3f628c64c912ce1f0dab8"
+    },
+    "root_source_hold_disposition": {
+      "comment": "https://github.com/mastermindx-market-intelligence/macro/pull/10674#issuecomment-6663828912",
+      "updated_at": "2026-11-05T22:29:49Z",
+      "body_sha256": "913512fa9cfb1a7ffa245d0ae5293ef38b52fc11975f89fb12ef6751e47ff7d4",
+      "head": "483bd66f93238ba7ee860f77d530d9b97abe20e5",
+      "source_input_sha256": "0ad80586168679dac4459b6a27c9f09b99669fc75c5912a43b9c608cf63edc4c",
+      "exact_three_postimages_verified": true,
+      "all_six_artifacts_verified": true,
+      "scope": "three-path source inclusion only; current formal/CI/freshness/non-author release and all other holds remain"
+    },
+    "postimages": {
+      "scripts/build_consumer_cyclical_plnt_page.py": "100644 blob a2efaadea469f5c207e665e5111d3f65361a1b44",
+      "scripts/build_product_page_registry.py": "100644 blob 801006d5301d2d38279f4866c232d9d70beba659",
+      "tests/test_build_product_page_registry.py": "100644 blob 2348c5d5fb9d24ef51f8e31a8d41262e8b44a332"
+    },
+    "scope": "Metadata successor only beyond483; all previous source components retained. Original10696/washout/9533/GMIatomic/export/SS05/runtime holds remain. No finalhead formal/hostedCI/protected/native/served credit."
+  }
 }

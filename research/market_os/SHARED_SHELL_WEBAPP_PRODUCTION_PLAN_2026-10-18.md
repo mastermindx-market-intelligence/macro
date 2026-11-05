@@ -49,6 +49,25 @@ Action-time protected `02839f000f3e0623ad65c8bc2fb3b910b7cce6d2` adds21
 nonoverlapping record/documentation/marketing paths, all preserved exactly by
 local merge733c5a9c. Its technical-parity README clarifies charted versus event
 Bollinger definitions without changing any fixture, formula or comparator.
+The later action-time protected20959c5e includes merged10639's owner-scoped
+Terminal refresh and Beta declarations. Local483bd66f semantically composes its
+two overlapping registry files while preserving every prior withdrawal/scanner
+function and every protected refresh/refusal function;102 registry tests pass.
+The interaction negative rejects revival of an existing withheld Macro row.
+All314 Macro and7 Mastermind rows and source pins equal the previous protected
+registry; only Terminal grows27to32 in the already protected input. No canonical
+registry generation/export or held GMI overlay was invoked. The exact old
+three-postimage source release was not transferred by assumption. The current
+holder extended the same #10674/comment6663828912 at22:29:49Z (body913512fa),
+with readback, to exactPLNTa2efaade/scanner801006d5/test2348c5d5 source inclusion
+only. Actual final-head formal approval, CI/freshness and independent arming
+remain required; no other held operation or runtime/export gate is cleared.
+Actual current483 full-manifest closure and all three packing probes pass in
+the two canonical checks (2PASS/324.67s, original59794 EXIT0, qualification
+`ee1fe38d`). No missing read edges, packing breaches or budget/metadata changes;
+the earlier652 result was not transferred. Same distinct-context reviewer
+`27e202cf` independently preserves both registry contracts. These are scoped
+source checks; final natural exact-head proof and formal release remain owed.
 Reviewed Company/T55, Bonds/Forensics/Business/China/Radar/Calendar/HK/
 T52 scope, B2 outline projection, current API/MarketMemory/Options contracts and
 protected quote-board cap640 remain. Source clocks and B2 activation are
@@ -111,9 +130,9 @@ are original held Paper operations; they do not establish a generic source-DOM b
 or clear the distinct1188/29789 Chromium refusals. No new provider, host, SQL,
 browser, financial recomputation or production activation occurred in this source repair.
 
-The latest validated mmtask export is2026-11-05T21:54:54Z:159 verified entries,
+The latest validated mmtask export is2026-11-05T22:43:04Z:160 verified entries,
 0 errors/1 warning, **PREPARED ONLY**. Export SHA256:
-`0da11b4e31708d604737f19333ed8f2257bf3ffe581fae91d5dab35d5d0a2808`.
+`4b57ec888df6b6f504d70ae2797ca83c425e4d9a229f4200e580318a42a8ad95`.
 
 | Existing task | Buffered source state | Bounded outcome |
 | --- | --- | --- |
@@ -137,6 +156,7 @@ The latest validated mmtask export is2026-11-05T21:54:54Z:159 verified entries,
 | P12.T2.S14.S8.S8 | reviewed | Correct exact canonical-tab selector ambiguity with actual rendered-DOM negatives |
 | P12.T2.S14.S8.S9 | reviewed | Compose reviewed durable Risk, advisory diagnostics and actual required source contracts |
 | P12.T2.S14.S8.S9.S1 | reviewed | Adopt exact accepted invocation-local Coverage HTML reuse without changing assertions |
+| P12.T2.S14.S8.S9.S2 | reviewed | Preserve current protected Beta refresh and withdrawal/scanner contracts at the source overlap |
 
 Next: freeze the actual final source/closure/eligible plan, retain this same
 independent reviewer, then one normal same-branch nonforce
