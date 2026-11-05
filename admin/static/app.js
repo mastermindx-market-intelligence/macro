@@ -13594,19 +13594,30 @@ function seoOrdersBlock(orders) {
   return head + `<div class="mkt-seo-orders">${cards}</div>`;
 }
 
-/* Search Console slot — always an explicit unavailable state (unknown ≠ zero). */
+/* Retained collection evidence; never infer live authentication from a snapshot. */
 function seoSearchConsoleBlock(sc) {
   const head = `<div class="section">Search Console</div>`;
   const s = sc || {};
-  if (s.connected) {
-    return head + `<div class="card"><div class="sub">Connected.</div></div>`;
-  }
+  const label = s.available === true ? "Retained collection" :
+    s.available === false ? "Last collection unavailable" : "No collection record";
+  const details = [];
+  if (s.as_of) details.push(["Last collection", s.as_of +
+    (Number.isInteger(s.age_days) ? ` (${s.age_days} days ago)` : "")]);
+  if (s.property) details.push(["Property", s.property]);
+  if (s.window && s.window.start && s.window.end)
+    details.push(["Requested window", `${s.window.start} to ${s.window.end}`]);
+  if (Number.isInteger(s.rows_fetched)) details.push(["Rows fetched", String(s.rows_fetched)]);
+  if (s.reason) details.push(["Recorded reason", s.reason]);
+  const coverage = s.rows_may_be_incomplete === true
+    ? "Results may be incomplete. Missing URLs do not prove zero traffic."
+    : "Complete URL coverage has not been verified.";
   return head + `<div class="card mkt-seo-gsc">
     <div class="mkt-seo-gsc-row">
-      <span class="statpill s-mut mkt-seo-gsc-chip">Not connected</span>
-      <span class="mkt-seo-gsc-txt">${esc(s.note || "Search Console credentials not configured — data unavailable.")}</span>
+      <span class="statpill s-mut mkt-seo-gsc-chip">${esc(label)}</span>
+      <span class="mkt-seo-gsc-txt">${esc(s.note || "Current connection has not been checked.")}</span>
     </div>
-    ${s.hint ? `<div class="sub muted mkt-seo-gsc-hint">${esc(s.hint)}</div>` : ""}
+    ${details.map(([key, value]) => `<div class="sub muted mkt-seo-gsc-hint">${esc(key)}: ${esc(value)}</div>`).join("")}
+    <div class="sub muted mkt-seo-gsc-hint">${esc(coverage)}</div>
   </div>`;
 }
 
