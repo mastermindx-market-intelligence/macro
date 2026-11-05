@@ -1,0 +1,375 @@
+{
+  "archive_name": "PR8711_ORIGINAL_CANDIDATE_FAILED_PENDING_EVIDENCE.tar.gz",
+  "archive_prefix": "pr8711_ci_release_evidence_v1",
+  "attempt": 1,
+  "disposition": "CONTRACT_DELTA_FAILED__AVAILABLE_ARTIFACTS_VALID__RUN_AND_FULL_SEMANTIC_PROOF_INCOMPLETE",
+  "entries": [
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/ARCHIVE_REPRESENTATION_ASSESSMENT.md",
+      "bytes": 7595,
+      "sha256": "23df69c1c9c8849c318c6bf58d7a1e31cee38fc0cc843d8cc73aa37a92f3820b",
+      "source_relative_path": "ARCHIVE_REPRESENTATION_ASSESSMENT.md"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/ARTIFACT_INVENTORY.json",
+      "bytes": 23326,
+      "sha256": "c99e86e5c9a4ce9404683ef8dc8fc8d1613fc09284e981e25102bd6aabd2d835",
+      "source_relative_path": "ARTIFACT_INVENTORY.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/AVAILABLE_ARTIFACT_VERIFICATION.json",
+      "bytes": 749372,
+      "sha256": "17416d4c96e2567e86ec6647bb2d48074a30581b5d2a2c921f1fe48eabed8688",
+      "source_relative_path": "AVAILABLE_ARTIFACT_VERIFICATION.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/FOCUSED_OBSERVATION.json",
+      "bytes": 26790,
+      "sha256": "543f18704c384cd48606088575a62b33fc6ba0420d792c19c5c63a7c8c4206dc",
+      "source_relative_path": "FOCUSED_OBSERVATION.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/OBSERVATION_REPORT.md",
+      "bytes": 17138,
+      "sha256": "3d834dd3f58541ccadd172f47472f7ce519cf05c815033262be070595edc01ce",
+      "source_relative_path": "OBSERVATION_REPORT.md"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/PACKAGING_NOTES.md",
+      "bytes": 2776,
+      "sha256": "dae74929a353b5843451f3f8e339f251e13236351340e3716eb51998cdef5171",
+      "source_relative_path": "PACKAGING_NOTES.md"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/PRINCIPAL_REPAIR_CONTEXT.json",
+      "bytes": 1923,
+      "sha256": "9f4534ce5ed3bb171180b44647dccbc68de2185cc633280f2020d2176922371b",
+      "source_relative_path": "PRINCIPAL_REPAIR_CONTEXT.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/SOURCE_COMPOSITION_CONTEXT.json",
+      "bytes": 1135,
+      "sha256": "2afcd47bf01397c0f1d8587a8501398440d676873369970f9fde03c681108348",
+      "source_relative_path": "SOURCE_COMPOSITION_CONTEXT.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifact_read_001.json",
+      "bytes": 547916,
+      "sha256": "0b1ed553518d7706dc8c0d50260ca7b79b3e81e3285b57e5932168f86a4cc47d",
+      "source_relative_path": "artifact_read_001.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifact_read_002.json",
+      "bytes": 17182,
+      "sha256": "a92f76ff12aca1f7ed0c6cf97dc8290076f7cdcb0738988643b7685166f657dd",
+      "source_relative_path": "artifact_read_002.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613619492/original.zip",
+      "bytes": 4356,
+      "sha256": "f355bcd4752e882c88926229ebb4995d3849a2b66e160001bdb38908c1cf3d36",
+      "source_relative_path": "artifacts/11613619492/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613619492/pack-4.json",
+      "bytes": 11120,
+      "sha256": "377794ffe6ec95bc8c1dacc86cb944a930f93fd05ead441723a22fb644728bc5",
+      "source_relative_path": "artifacts/11613619492/pack-4.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613647919/ci-plan.json",
+      "bytes": 95459,
+      "sha256": "bc745a5070ed7b39eab60114cf1d40223cd06ffc57a2b603b80de8fe9782eeb1",
+      "source_relative_path": "artifacts/11613647919/ci-plan.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613647919/original.zip",
+      "bytes": 30406,
+      "sha256": "8e154d8852da6ca7cb47f26086edd08abc78412fc8a1b3cbbeb9e09f0af97f35",
+      "source_relative_path": "artifacts/11613647919/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613677872/changed-files.json",
+      "bytes": 14368,
+      "sha256": "f9a379db85de7f07d96b3e6286b0c5bd8cb20f6e0af1a3b2072ce1dd4b5bd3ec",
+      "source_relative_path": "artifacts/11613677872/changed-files.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613677872/original.zip",
+      "bytes": 1731,
+      "sha256": "a38c0f83e8b614407ca40f0fd171f312f8f3d808578e0aeff29fc987bc85c8df",
+      "source_relative_path": "artifacts/11613677872/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613699150/original.zip",
+      "bytes": 645,
+      "sha256": "f2588e056896bc6b97b15f715fc064dfe6d12d6225804ae2bbadf85819128f3d",
+      "source_relative_path": "artifacts/11613699150/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613699150/pack-1.json",
+      "bytes": 806,
+      "sha256": "3d7193d8f300238202704470f1960fb65f456cbcc0e8797b73b4610c7bc47e9e",
+      "source_relative_path": "artifacts/11613699150/pack-1.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613784491/original.zip",
+      "bytes": 3047,
+      "sha256": "b47697a6f0f1a5f76bdca80ae31335aa5b7da848a9bd127ea19e43280d4f87a8",
+      "source_relative_path": "artifacts/11613784491/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11613784491/pack-11.json",
+      "bytes": 7495,
+      "sha256": "c019297945ba1b56cf3cd5230dad0199b71faf5c317665e04b9b8d1e98324ad9",
+      "source_relative_path": "artifacts/11613784491/pack-11.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614204568/original.zip",
+      "bytes": 3872,
+      "sha256": "ba809c75ad6bc57f6f15d9284e276785a30cda0b612ada0fd4746fe6e6e9171e",
+      "source_relative_path": "artifacts/11614204568/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614204568/pack-10.json",
+      "bytes": 9821,
+      "sha256": "a031fc9f3f2f1fb360acf294f5ce79a6f53bb4e3a89737ae04b22e13b327b2ff",
+      "source_relative_path": "artifacts/11614204568/pack-10.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614227879/original.zip",
+      "bytes": 1375,
+      "sha256": "e82f8d07f5e502d17c184882cf4d5c089638f3eb52f250199197e3a6939d217b",
+      "source_relative_path": "artifacts/11614227879/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614227879/pack-2.json",
+      "bytes": 2733,
+      "sha256": "2036e1a48a7a5b138c1f05f78b8f9465f662e891885761bb8141075301454a28",
+      "source_relative_path": "artifacts/11614227879/pack-2.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614282712/original.zip",
+      "bytes": 3338,
+      "sha256": "48249cdff4a688c4815593dbb1ee59b1fc0cad48c63413b23bc3ef7ad0c8c739",
+      "source_relative_path": "artifacts/11614282712/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614282712/pack-8.json",
+      "bytes": 8561,
+      "sha256": "4892018e6f3d57396f9bb303dac3fd03dc4a2c115feb5d6d45f3ab4d335eddf4",
+      "source_relative_path": "artifacts/11614282712/pack-8.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614372974/original.zip",
+      "bytes": 2382,
+      "sha256": "4b40e8bb453d9d0ad5380a1289a76bbe65aaab3fc982adb14251a977edc2b0d5",
+      "source_relative_path": "artifacts/11614372974/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614372974/pack-9.json",
+      "bytes": 5639,
+      "sha256": "47ee27b5026df920c67f4c1ff6a41b8c93b35598e20f3394b5758343dd4597f1",
+      "source_relative_path": "artifacts/11614372974/pack-9.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614431790/original.zip",
+      "bytes": 3182,
+      "sha256": "6970c49b9185444a7feebb0f3915171d86fe34c7395132a6d0ccbf52dfde6f7b",
+      "source_relative_path": "artifacts/11614431790/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614431790/pack-7.json",
+      "bytes": 8027,
+      "sha256": "33a978a0a85afe09c45ff949ec8cfff4038fe8fcafb71de27d590c2319709a9c",
+      "source_relative_path": "artifacts/11614431790/pack-7.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614613432/original.zip",
+      "bytes": 3175,
+      "sha256": "b05315e4df00c8eb31e9fcb7f3b610f767393c5d21333e8ba0bd39b8f6181e03",
+      "source_relative_path": "artifacts/11614613432/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614613432/pack-6.json",
+      "bytes": 7819,
+      "sha256": "5989f90103035f3b4c23735d40aeaa0f93e8ff5d7d18fe5066feaf609c188339",
+      "source_relative_path": "artifacts/11614613432/pack-6.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614668406/original.zip",
+      "bytes": 4224,
+      "sha256": "a88fd92c69c5082deebc853d9b76574e758efc780d386de75f4f4cca8e635bdf",
+      "source_relative_path": "artifacts/11614668406/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614668406/pack-5.json",
+      "bytes": 10731,
+      "sha256": "abb35b0d9792f8e71fd2867e773fb9b1932907cb0474fbb07b66aa23efbc060b",
+      "source_relative_path": "artifacts/11614668406/pack-5.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614730096/original.zip",
+      "bytes": 4362,
+      "sha256": "7a33f3114400826c00b3ea3e6fa0594ca39bd4a41508b37a4e5cfe01002ef75a",
+      "source_relative_path": "artifacts/11614730096/original.zip"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/artifacts/11614730096/pack-3.json",
+      "bytes": 11334,
+      "sha256": "0504125ecd92b85a4f9b3a11352addcaf5ecadc5a52722f5e50ef1192c1c13cb",
+      "source_relative_path": "artifacts/11614730096/pack-3.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/build_durable_archive.py",
+      "bytes": 14488,
+      "sha256": "5650a71652838ed8ece53c44f7b0c0f513c1dc0b802ec5e069060cc871db89fa",
+      "source_relative_path": "build_durable_archive.py"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/context/SOURCE_COMPOSITION_REVIEW.md",
+      "bytes": 14636,
+      "sha256": "6ff43c22f641ba83e9c3ae06a84bc7aab182c9199e205907e0e9944bd00c1e86",
+      "source_relative_path": "context/SOURCE_COMPOSITION_REVIEW.md"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/context/SOURCE_COMPOSITION_REVIEW_RECEIPT.json",
+      "bytes": 4322,
+      "sha256": "e6b50303d155f29b7e504cbefa8718df8f35247a3e7054924b8920d0cb56f1f3",
+      "source_relative_path": "context/SOURCE_COMPOSITION_REVIEW_RECEIPT.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/discovery_law_and_snapshot_002.json",
+      "bytes": 282593,
+      "sha256": "49e94a4d3ffd6dfc8ea5325986d390b812665a80d3429c462c0da3a1b8e7a541",
+      "source_relative_path": "discovery_law_and_snapshot_002.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/discovery_materialization_002.json",
+      "bytes": 497,
+      "sha256": "c5d2d14a2fb0ae62fe1809597a30333584b7d253201870a3ffeda57bf496fced",
+      "source_relative_path": "discovery_materialization_002.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/materialization_001.json",
+      "bytes": 8649,
+      "sha256": "575b9e6464cb0afbf81dc87765169f34980974ea4c0697afc7a8add0d8fffdf2",
+      "source_relative_path": "materialization_001.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/materialization_002.json",
+      "bytes": 2704,
+      "sha256": "e5cab17614906289e9cea0add3a099449a4f850725adbea00d375d5c6da9ad94",
+      "source_relative_path": "materialization_002.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/materialize_captured_artifacts.py",
+      "bytes": 5193,
+      "sha256": "a249d99b87a621074dfa9f32ee613317b66853985d7eca015616ad65c73868b9",
+      "source_relative_path": "materialize_captured_artifacts.py"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/native_read_scripts.json",
+      "bytes": 21459,
+      "sha256": "ffa8970c8dbc4ad7a9ae8b414c119c24c2c96c47e5d2caa77f3d4bb8b2c9a826",
+      "source_relative_path": "native_read_scripts.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/native_snapshot_001.json",
+      "bytes": 284350,
+      "sha256": "d4a7d01ab381224bdd728b9fb805f2caa72b205be8c877bb9309a034c3a6b4ac",
+      "source_relative_path": "native_snapshot_001.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/native_snapshot_003.json",
+      "bytes": 285849,
+      "sha256": "271e7f4ce08495525ea5d812e9660af49c438f17cd348f4fb23c4c7591faade3",
+      "source_relative_path": "native_snapshot_003.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/source_and_owner_log_read_001.json",
+      "bytes": 288010,
+      "sha256": "79083bb5dcfd86c2e4a1e66b57266eebe95c5fb37663d15a5e066a1ef767662a",
+      "source_relative_path": "source_and_owner_log_read_001.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/source_materialization_001.json",
+      "bytes": 1025,
+      "sha256": "85f71889fb7986f97091f2a573bf1641f21eb5bf7e24c9bbb65fa31f7924b384",
+      "source_relative_path": "source_materialization_001.json"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/sources/.github/workflows/ci.yml",
+      "bytes": 318532,
+      "sha256": "3f0e4df56a89b7b67cc0166e465c86aa90151b20d42e7e686c2772e9265c4f25",
+      "source_relative_path": "sources/.github/workflows/ci.yml"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/sources/merged_legacy_jobs.transfer.gz",
+      "bytes": 332833,
+      "sha256": "b1608d9cae7dfe13acbd99651fb58e228cb57d67cd6e98c23f9c014b5459c94f",
+      "source_relative_path": "sources/merged_legacy_jobs.transfer.gz"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/sources/merged_legacy_jobs.yml",
+      "bytes": 1248681,
+      "sha256": "e4bbeca16e38e8dd73efc2051ef0757b368afe65697f09e77b08a3a2b2746c7c",
+      "source_relative_path": "sources/merged_legacy_jobs.yml"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/sources/scripts/audit_unrun_tests.py",
+      "bytes": 50447,
+      "sha256": "e50ba44cb678761d55f1c5bb9828390bd7c21c1672760d6f52781ca194dd7d47",
+      "source_relative_path": "sources/scripts/audit_unrun_tests.py"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/sources/scripts/check_contract_delta.py",
+      "bytes": 62554,
+      "sha256": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+      "source_relative_path": "sources/scripts/check_contract_delta.py"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/sources/scripts/ci_semantic_proof.py",
+      "bytes": 73298,
+      "sha256": "9df4b9a9a8d68f7e9aa34a8eebe99e8d17e27f2ef0560eadcc050f3130359158",
+      "source_relative_path": "sources/scripts/ci_semantic_proof.py"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/sources/scripts/run_ci_pack.py",
+      "bytes": 223426,
+      "sha256": "65564916a55eb806d3d9fb0cd4e12726f05fec953f6e47ccd9240f5a141049df",
+      "source_relative_path": "sources/scripts/run_ci_pack.py"
+    },
+    {
+      "archive_name": "pr8711_ci_release_evidence_v1/verify_available_artifacts.py",
+      "bytes": 38025,
+      "sha256": "b7599f776b7b9a4830cf9f9d05540a2409fd4aef2615a115973455e1828e4d2c",
+      "source_relative_path": "verify_available_artifacts.py"
+    }
+  ],
+  "explicit_exclusions": [
+    "durable_archive output directory created after input enumeration",
+    "raw job-log bodies were never retained",
+    "credentials and signed download URLs were never retained",
+    "unrelated sibling lanes and caches"
+  ],
+  "frozen_head": "9df735bbeaa8d0f4d4967296270bfb2246a5212f",
+  "frozen_observation_completed_at_utc": "2026-10-09T12:14:53.330798+00:00",
+  "manifest_is_external": true,
+  "normalized_metadata": {
+    "archive_format": "POSIX pax tar in gzip",
+    "entry_order": "archive-name lexical",
+    "gid": 0,
+    "gname": "",
+    "gzip_filename": "",
+    "gzip_mtime": 0,
+    "mode_octal": "0644",
+    "tar_member_mtime": 0,
+    "uid": 0,
+    "uname": ""
+  },
+  "regular_file_count": 57,
+  "run_id": "37925499382",
+  "schema": "gmi.pr8711.deterministic_evidence_archive_manifest/v1",
+  "uncompressed_file_bytes": 5216732
+}

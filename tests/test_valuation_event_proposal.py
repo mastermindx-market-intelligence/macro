@@ -12,8 +12,8 @@ import pytest
 from engine import valuation_event_proposal as vep
 from engine.valuation_scenario import SCENARIOS
 
-# Real AAPL FY2025 base (SEC companyfacts), so the fixture cannot drift into a
-# shape the product never produces.
+# Numeric fixture uses AAPL FY2025 fields. Positive guidance records below are
+# synthetic contract inputs, not quotes attributed to an actual filing.
 BASE_PERIOD_END = "2025-09-27"
 
 
@@ -37,11 +37,14 @@ def controls(period_end=BASE_PERIOD_END, ticker="AAPL"):
     }
 
 
-def guidance_hit(direction="raise", file_date="2026-07-30", phrase="raising our full-year guidance"):
+def guidance_hit(
+    direction="raise", file_date="2026-07-30",
+    phrase="raising our full-year revenue guidance",
+):
     return {
-        "id": "0001755672-26-000022:a2q_2026xearningsxnewsxr.htm",
-        "ticker": "CTVA",
-        "cik": "0001755672",
+        "id": "0000000000-00-000000:synthetic-sales-guidance.htm",
+        "ticker": "AAPL",
+        "cik": "0000000000",
         "form": "8-K",
         "file_date": file_date,
         "phrase": phrase,
@@ -78,9 +81,10 @@ def test_proposed_value_is_always_a_published_preset_value():
     assert p["proposed_value"] in PRESET_VALUES[p["assumption_name"]]
 
 
-def test_magnitude_never_comes_from_the_event_even_when_the_phrase_has_a_number():
+def test_magnitude_never_comes_from_numbers_in_event_facts():
     """A filing that states a figure still does not get to set the input."""
-    hit = guidance_hit(phrase="raising our full-year guidance to $8.40 per share, up 22%")
+    hit = guidance_hit()
+    hit["facts"] = ["Revenue outlook: $8.40 billion, up 22%"]
     p = vep.propose_from_guidance_hit(hit, controls())
     assert p["magnitude_source"] == vep.MAGNITUDE_SOURCE_MODEL_PRESET
     assert p["proposed_value"] in PRESET_VALUES["sales_growth_pct"]
@@ -90,7 +94,7 @@ def test_magnitude_never_comes_from_the_event_even_when_the_phrase_has_a_number(
 
 @pytest.mark.parametrize("direction,expected_preset", [("raise", "upbeat"), ("cut", "cautious")])
 def test_direction_selects_the_models_own_adjacent_scenario(direction, expected_preset):
-    p = vep.propose_from_guidance_hit(guidance_hit(direction=direction), controls())
+    p = vep.propose_from_guidance_hit(guidance_hit(direction=direction, phrase=("raising" if direction == "raise" else "lowering") + " our full-year revenue guidance"), controls())
     want = vep._preset_value(expected_preset, "sales_growth_pct")
     assert p["proposed_value"] == want
 
@@ -405,10 +409,28 @@ def test_panel_shows_the_before_and_after_and_the_untouched_inputs():
     assert "The other two are untouched." in html
 
 
+def test_guidance_cut_is_not_described_as_a_more_optimistic_scenario():
+    cb = controls()
+    proposal = vep.propose_from_guidance_hit(
+        guidance_hit(direction="cut", phrase="lowering our full-year revenue guidance"), cb
+    )
+    scenario = vep.evaluate_proposal(cb, proposal)
+    assert proposal["status"] == vep.STATUS_PROPOSED
+    assert scenario["proposed"]["per_share"] < scenario["baseline"]["per_share"]
+    cb["event_assumption_proposal"] = proposal
+    cb["event_assumption_scenario"] = scenario
+    html = _render(cb)
+    assert 'id="va-event-proposal"' in html
+    assert "more optimistic" not in html
+    assert "较乐观" not in html
+    assert "not a number the company gave" in html
+    assert "并非公司给出的数字" in html
+
+
 def test_panel_links_the_filing_it_quotes():
     html = _render(_proposed_blob())
-    assert "https://www.sec.gov/Archives/edgar/data/1755672/" in html
-    assert "raising our full-year guidance" in html
+    assert "https://www.sec.gov/Archives/edgar/data/0/000000000000000000/synthetic-sales-guidance.htm" in html
+    assert "raising our full-year revenue guidance" in html
 
 
 def test_panel_copy_carries_no_machine_slugs_or_status_codes():
@@ -444,3 +466,121 @@ def test_abstaining_panel_renders_no_number_block_at_all():
     html = _render(cb)
     assert 'id="va-event-proposal"' not in html
     assert "A reported quarterly result is a fact" in html
+
+
+@pytest.mark.parametrize("phrase", [
+    "raising our full-year guidance",
+    "raising our full-year EPS guidance to $3.60 to $3.80 per share",
+    "raising our operating EBITDA guidance to $4.1 to $4.3 billion",
+])
+def test_unqualified_guidance_does_not_change_sales_growth(phrase):
+    # Illustrative negative phrases; the exact native generic hit is tested separately.
+    cb = controls(period_end="2025-12-31")
+    proposal = vep.propose_from_guidance_hit(guidance_hit(phrase=phrase), cb,
+                                             as_of="2026-10-20")
+    assert proposal["status"] == vep.STATUS_INSUFFICIENT
+    assert proposal["proposed_value"] is None
+    assert proposal["assumption_name"] is None
+    shadow = vep.evaluate_proposal(cb, proposal)
+    assert shadow["refused"] is True
+    assert shadow["proposed"] is None
+    assert "sales" in proposal["rationale_en"].lower()
+    assert "销售" in proposal["rationale_zh"]
+
+
+def test_guidance_for_a_different_issuer_cannot_move_the_selected_issuer():
+    proposal = vep.propose_from_guidance_hit(
+        guidance_hit(phrase="raising our full-year revenue guidance"),
+        controls(ticker="CTVA"), as_of="2026-10-20")
+    assert proposal["status"] == vep.STATUS_INSUFFICIENT
+    assert proposal["proposed_value"] is None
+
+
+@pytest.mark.parametrize("phrase,direction", [
+    ("not raising our revenue guidance", "raise"),
+    ("raising our EPS guidance while revenue guidance is unchanged", "raise"),
+    ("lowering our revenue guidance", "raise"),
+])
+def test_negated_ambiguous_or_direction_conflicting_sales_phrase_abstains(phrase, direction):
+    p = vep.propose_from_guidance_hit(guidance_hit(phrase=phrase, direction=direction), controls())
+    assert p["status"] == vep.STATUS_INSUFFICIENT
+    assert p["proposed_value"] is None
+
+
+def test_native_ctva_generic_hit_keeps_real_source_and_abstains():
+    hit = guidance_hit(phrase="raising our full-year guidance")
+    hit.update(ticker="CTVA", cik="0001755672",
+               id="0001755672-26-000022:a2q_2026xearningsxnewsxr.htm")
+    p = vep.propose_from_guidance_hit(hit, controls(ticker="CTVA"))
+    assert p["abstain_reason"] == vep.R_GUIDANCE_METRIC_UNQUALIFIED
+    assert p["proposed_value"] is None
+    assert "/1755672/000175567226000022/" in p["event"]["source_refs"][0]["url"]
+
+
+@pytest.mark.parametrize("case", ["issuer", "rights", "source", "timing", "metric"])
+def test_guidance_abstention_copy_never_claims_a_moving_input_or_shown_figure(case):
+    cb, hit = controls(), guidance_hit()
+    if case == "issuer":
+        hit["ticker"] = "CTVA"
+    elif case == "rights":
+        hit["facts"] = ["analyst consensus raised to 2.10"]
+    elif case == "source":
+        hit["id"] = None
+    elif case == "timing":
+        hit["file_date"] = "2025-01-01"
+    else:
+        hit["phrase"] = "raising our full-year guidance"
+    p = vep.propose_from_guidance_hit(hit, cb)
+    assert p["status"] == vep.STATUS_INSUFFICIENT
+    assert "no input moves" in p["rationale_en"]
+    assert "不调整任何输入" in p["rationale_zh"]
+    assert "No scenario figure is proposed" in p["uncertainty"]
+    assert "no negation handling" not in p["uncertainty"]
+    if case == "issuer":
+        assert "selected company" in p["rationale_en"]
+    cb["event_assumption_proposal"] = p
+    cb["event_assumption_scenario"] = vep.evaluate_proposal(cb, p)
+    html = _render(cb)
+    assert 'id="va-event-proposal"' not in html
+    assert p["rationale_en"] in html
+
+
+@pytest.mark.parametrize("event_tickers", [["MSFT"], [], None, "AAPL"])
+def test_chronicle_cannot_propose_for_a_different_or_unidentified_issuer(event_tickers):
+    event = {"id": "synthetic-acquisition", "kind": "Acquisitions",
+             "tickers": event_tickers, "ts": "2026-07-30", "facts": [],
+             "links": {"source": "https://example.invalid/synthetic-acquisition"}}
+    p = vep.propose_from_chronicle_event(event, controls())
+    assert p["abstain_reason"] == vep.R_ISSUER_MISMATCH
+    assert p["proposed_value"] is None
+    event["tickers"] = [" aapl "]
+    matching = vep.propose_from_chronicle_event(event, controls())
+    assert matching["status"] == vep.STATUS_PROPOSED
+
+
+@pytest.mark.parametrize("selected,event_ticker", [(None, None), ("", ""), ("AAPL", None)])
+def test_missing_guidance_issuer_cannot_match(selected, event_ticker):
+    hit = guidance_hit()
+    hit["ticker"] = event_ticker
+    p = vep.propose_from_guidance_hit(hit, controls(ticker=selected))
+    assert p["abstain_reason"] == vep.R_ISSUER_MISMATCH
+    assert p["proposed_value"] is None
+
+
+def test_stored_proposal_cannot_be_evaluated_against_another_issuer():
+    p = vep.propose_from_guidance_hit(guidance_hit(), controls())
+    out = vep.evaluate_proposal(controls(ticker="MSFT"), p)
+    assert out["refused"] is True
+    assert out["abstain_reason"] == vep.R_ISSUER_MISMATCH
+    assert out["proposed"] is None
+    assert out["per_share_delta"] is None
+    assert p["status"] == vep.STATUS_PROPOSED
+
+
+def test_numeric_phrase_tail_requires_context_qualification():
+    p = vep.propose_from_guidance_hit(
+        guidance_hit(phrase="raising our full-year revenue guidance to $8.40 billion"),
+        controls(),
+    )
+    assert p["abstain_reason"] == vep.R_GUIDANCE_METRIC_UNQUALIFIED
+    assert p["proposed_value"] is None

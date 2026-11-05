@@ -1,0 +1,706 @@
+{
+  "version": "1",
+  "pip_version": "26.2.1",
+  "install": [
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/15/31/9a205fc0b7ae1b66d5964774bb534ab378047c9bf87578f443bd1fb2205e/claude_agent_sdk-0.2.168-py3-none-macosx_11_0_arm64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "2ef1e7fc442c5abdc1e698027bf1b5faa8ea2130134a14364e2ae3c53bf31fdd"
+          },
+          "hash": "sha256=2ef1e7fc442c5abdc1e698027bf1b5faa8ea2130134a14364e2ae3c53bf31fdd"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.5",
+        "name": "claude-agent-sdk",
+        "version": "0.2.168",
+        "summary": "Python SDK for Claude Code",
+        "description": "# Claude Agent SDK for Python\n\nPython SDK for Claude Agent. See the [Claude Agent SDK documentation](https://platform.claude.com/docs/en/agent-sdk/python) for more information.\n\n## Installation\n\n```bash\npip install claude-agent-sdk\n```\n\n**Prerequisites:**\n\n- Python 3.10+\n\n**Note:** The Claude Code CLI is automatically bundled with the package - no separate installation required! The SDK will use the bundled CLI by default. If you prefer to use a system-wide installation or a specific version, you can:\n\n- Install Claude Code separately: `curl -fsSL https://claude.ai/install.sh | bash`\n- Specify a custom path: `ClaudeAgentOptions(cli_path=\"/path/to/claude\")`\n\n## Quick Start\n\n```python\nimport anyio\nfrom claude_agent_sdk import query\n\nasync def main():\n    async for message in query(prompt=\"What is 2 + 2?\"):\n        print(message)\n\nanyio.run(main)\n```\n\n## Basic Usage: query()\n\n`query()` is an async function for querying Claude Code. It returns an `AsyncIterator` of response messages. See [src/claude_agent_sdk/query.py](src/claude_agent_sdk/query.py).\n\n```python\nfrom claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage, TextBlock\n\n# Simple query\nasync for message in query(prompt=\"Hello Claude\"):\n    if isinstance(message, AssistantMessage):\n        for block in message.content:\n            if isinstance(block, TextBlock):\n                print(block.text)\n\n# With options\noptions = ClaudeAgentOptions(\n    system_prompt=\"You are a helpful assistant\",\n    max_turns=1\n)\n\nasync for message in query(prompt=\"Tell me a joke\", options=options):\n    print(message)\n```\n\n### Using Tools\n\nBy default, Claude has access to the full [Claude Code toolset](https://code.claude.com/docs/en/settings#tools-available-to-claude) (Read, Write, Edit, Bash, and others). `allowed_tools` is a permission allowlist: listed tools are auto-approved, and unlisted tools fall through to `permission_mode` and `can_use_tool` for a decision. It does not remove tools from Claude's toolset. To block specific tools, use `disallowed_tools`. See the [permissions guide](https://platform.claude.com/docs/en/agent-sdk/permissions) for the full evaluation order.\n\n```python\noptions = ClaudeAgentOptions(\n    allowed_tools=[\"Read\", \"Write\", \"Bash\"],  # auto-approve these tools\n    permission_mode='acceptEdits'  # auto-accept file edits\n)\n\nasync for message in query(\n    prompt=\"Create a hello.py file\",\n    options=options\n):\n    # Process tool use and results\n    pass\n```\n\n### Working Directory\n\n```python\nfrom pathlib import Path\n\noptions = ClaudeAgentOptions(\n    cwd=\"/path/to/project\"  # or Path(\"/path/to/project\")\n)\n```\n\n### System Prompt\n\nBy default, Claude Code builds the system prompt on a session's first request, records it, and reuses it on every later request, including after you resume the session. A changed custom prompt, or changed `append` text on the `claude_code` preset, then has no effect until the session is compacted or you start a new session. To rebuild the prompt on every request instead, for example while you iterate on its wording, set `snapshot` to `False` in the `{\"type\": \"preset\", ...}` or `{\"type\": \"custom\", ...}` dict:\n\n```python\noptions = ClaudeAgentOptions(\n    system_prompt={\"type\": \"custom\", \"prompt\": \"You are a release bot.\", \"snapshot\": False}\n)\n```\n\nRequires Claude Code CLI 2.1.257 or later. Before 2.1.265, a session with an `append` or custom prompt recorded it only when `snapshot` was True. See [Modifying system prompts](https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts#change-the-prompt-of-an-existing-session) for details.\n\n## ClaudeSDKClient\n\n`ClaudeSDKClient` supports bidirectional, interactive conversations with Claude\nCode. See [src/claude_agent_sdk/client.py](src/claude_agent_sdk/client.py).\n\nUnlike `query()`, `ClaudeSDKClient` additionally enables **custom tools** and **hooks**, both of which can be defined as Python functions.\n\n### Custom Tools (as In-Process SDK MCP Servers)\n\nA **custom tool** is a Python function that you can offer to Claude, for Claude to invoke as needed.\n\nCustom tools are implemented in-process MCP servers that run directly within your Python application, eliminating the need for separate processes that regular MCP servers require.\n\nFor an end-to-end example, see [MCP Calculator](examples/mcp_calculator.py).\n\n#### Creating a Simple Tool\n\n```python\nfrom claude_agent_sdk import tool, create_sdk_mcp_server, ClaudeAgentOptions, ClaudeSDKClient\n\n# Define a tool using the @tool decorator\n@tool(\"greet\", \"Greet a user\", {\"name\": str})\nasync def greet_user(args):\n    return {\n        \"content\": [\n            {\"type\": \"text\", \"text\": f\"Hello, {args['name']}!\"}\n        ]\n    }\n\n# Create an SDK MCP server\nserver = create_sdk_mcp_server(\n    name=\"my-tools\",\n    version=\"1.0.0\",\n    tools=[greet_user]\n)\n\n# Use it with Claude. allowed_tools pre-approves the tool so it runs\n# without a permission prompt; it does not control tool availability.\noptions = ClaudeAgentOptions(\n    mcp_servers={\"tools\": server},\n    allowed_tools=[\"mcp__tools__greet\"]\n)\n\nasync with ClaudeSDKClient(options=options) as client:\n    await client.query(\"Greet Alice\")\n\n    # Extract and print response\n    async for msg in client.receive_response():\n        print(msg)\n```\n\n#### Benefits Over External MCP Servers\n\n- **No subprocess management** - Runs in the same process as your application\n- **Better performance** - No IPC overhead for tool calls\n- **Simpler deployment** - Single Python process instead of multiple\n- **Easier debugging** - All code runs in the same process\n- **Type safety** - Direct Python function calls with type hints\n\n#### Migration from External Servers\n\n```python\n# BEFORE: External MCP server (separate process)\noptions = ClaudeAgentOptions(\n    mcp_servers={\n        \"calculator\": {\n            \"type\": \"stdio\",\n            \"command\": \"python\",\n            \"args\": [\"-m\", \"calculator_server\"]\n        }\n    }\n)\n\n# AFTER: SDK MCP server (in-process)\nfrom my_tools import add, subtract  # Your tool functions\n\ncalculator = create_sdk_mcp_server(\n    name=\"calculator\",\n    tools=[add, subtract]\n)\n\noptions = ClaudeAgentOptions(\n    mcp_servers={\"calculator\": calculator}\n)\n```\n\n#### Mixed Server Support\n\nYou can use both SDK and external MCP servers together:\n\n```python\noptions = ClaudeAgentOptions(\n    mcp_servers={\n        \"internal\": sdk_server,      # In-process SDK server\n        \"external\": {                # External subprocess server\n            \"type\": \"stdio\",\n            \"command\": \"external-server\"\n        }\n    }\n)\n```\n\n### Hooks\n\nA **hook** is a Python function that the Claude Code _application_ (_not_ Claude) invokes at specific points of the Claude agent loop. Hooks can provide deterministic processing and automated feedback for Claude. Read more in [Intercept and control agent behavior with hooks](https://platform.claude.com/docs/en/agent-sdk/hooks).\n\nFor more examples, see examples/hooks.py.\n\n#### Example\n\n```python\nfrom claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient, HookMatcher\n\nasync def check_bash_command(input_data, tool_use_id, context):\n    tool_name = input_data[\"tool_name\"]\n    tool_input = input_data[\"tool_input\"]\n    if tool_name != \"Bash\":\n        return {}\n    command = tool_input.get(\"command\", \"\")\n    block_patterns = [\"foo.sh\"]\n    for pattern in block_patterns:\n        if pattern in command:\n            return {\n                \"hookSpecificOutput\": {\n                    \"hookEventName\": \"PreToolUse\",\n                    \"permissionDecision\": \"deny\",\n                    \"permissionDecisionReason\": f\"Command contains invalid pattern: {pattern}\",\n                }\n            }\n    return {}\n\noptions = ClaudeAgentOptions(\n    allowed_tools=[\"Bash\"],\n    hooks={\n        \"PreToolUse\": [\n            HookMatcher(matcher=\"Bash\", hooks=[check_bash_command]),\n        ],\n    }\n)\n\nasync with ClaudeSDKClient(options=options) as client:\n    # Test 1: Command with forbidden pattern (will be blocked)\n    await client.query(\"Run the bash command: ./foo.sh --help\")\n    async for msg in client.receive_response():\n        print(msg)\n\n    print(\"\\n\" + \"=\" * 50 + \"\\n\")\n\n    # Test 2: Safe command that should work\n    await client.query(\"Run the bash command: echo 'Hello from hooks example!'\")\n    async for msg in client.receive_response():\n        print(msg)\n```\n\n## Types\n\nSee [src/claude_agent_sdk/types.py](src/claude_agent_sdk/types.py) for complete type definitions:\n\n- `ClaudeAgentOptions` - Configuration options\n- `AssistantMessage`, `UserMessage`, `SystemMessage`, `ResultMessage` - Message types\n- `TextBlock`, `ToolUseBlock`, `ToolResultBlock` - Content blocks\n\n## Error Handling\n\n```python\nfrom claude_agent_sdk import (\n    ClaudeSDKError,      # Base error\n    CLINotFoundError,    # Claude Code not installed\n    CLIConnectionError,  # Connection issues\n    ProcessError,        # Process failed\n    ResultError,         # Run ended with an error result (subclass of ProcessError)\n    CLIJSONDecodeError,  # JSON parsing issues\n)\n\ntry:\n    async for message in query(prompt=\"Hello\"):\n        pass\nexcept CLINotFoundError:\n    print(\"Please install Claude Code\")\nexcept ResultError as e:\n    # The CLI reported a terminal error result (also yielded as the final\n    # ResultMessage) and exited. Structured fields are on the exception.\n    print(f\"Run failed: {e.subtype=} {e.terminal_reason=} {e.api_error_status=}\")\n    print(e.result or e.errors)\nexcept ProcessError as e:\n    print(f\"Process failed with exit code: {e.exit_code}\")\nexcept CLIJSONDecodeError as e:\n    print(f\"Failed to parse response: {e}\")\n```\n\nSee [src/claude_agent_sdk/\\_errors.py](src/claude_agent_sdk/_errors.py) for all error types.\n\n## Available Tools\n\nSee the [Claude Code documentation](https://code.claude.com/docs/en/settings#tools-available-to-claude) for a complete list of available tools.\n\n## Examples\n\nSee [examples/quick_start.py](examples/quick_start.py) for a complete working example.\n\nSee [examples/streaming_mode.py](examples/streaming_mode.py) for comprehensive examples involving `ClaudeSDKClient`. You can even run interactive examples in IPython from [examples/streaming_mode_ipython.py](examples/streaming_mode_ipython.py).\n\n## Migrating from Claude Code SDK\n\nIf you're upgrading from the Claude Code SDK (versions < 0.1.0), please see the [CHANGELOG.md](CHANGELOG.md#010) for details on breaking changes and new features, including:\n\n- `ClaudeCodeOptions` → `ClaudeAgentOptions` rename\n- Merged system prompt configuration\n- Settings isolation and explicit control\n- New programmatic subagents and session forking features\n\n## Development\n\nIf you're contributing to this project, run the initial setup script to install git hooks:\n\n```bash\n./scripts/initial-setup.sh\n```\n\nThis installs a pre-push hook that runs lint checks before pushing, matching the CI workflow. To skip the hook temporarily, use `git push --no-verify`.\n\n### Building Wheels Locally\n\nTo build wheels with the bundled Claude Code CLI:\n\n```bash\n# Install build dependencies\npip install build twine\n\n# Build wheel with bundled CLI\npython scripts/build_wheel.py\n\n# Build with specific version\npython scripts/build_wheel.py --version 0.1.4\n\n# Build with specific CLI version\npython scripts/build_wheel.py --cli-version 2.0.0\n\n# Clean bundled CLI after building\npython scripts/build_wheel.py --clean\n\n# Skip CLI download (use existing)\npython scripts/build_wheel.py --skip-download\n```\n\nThe build script:\n\n1. Downloads Claude Code CLI for your platform\n2. Bundles it in the wheel\n3. Builds both wheel and source distribution\n4. Checks the package with twine\n\nSee `python scripts/build_wheel.py --help` for all options.\n\n### Release Workflow\n\nThe package is published to PyPI via the GitHub Actions workflow in `.github/workflows/publish.yml`. To create a new release:\n\n1. **Trigger the workflow** manually from the Actions tab with two inputs:\n   - `version`: The package version to publish (e.g., `0.1.5`)\n   - `claude_code_version`: The Claude Code CLI version to bundle (e.g., `2.0.0` or `latest`)\n\n2. **The workflow will**:\n   - Build platform-specific wheels for macOS, Linux, and Windows\n   - Bundle the specified Claude Code CLI version in each wheel\n   - Build a source distribution\n   - Publish all artifacts to PyPI\n   - Create a release branch with version updates\n   - Open a PR to main with:\n     - Updated `pyproject.toml` version\n     - Updated `src/claude_agent_sdk/_version.py`\n     - Updated `src/claude_agent_sdk/_cli_version.py` with bundled CLI version\n     - Auto-generated `CHANGELOG.md` entry\n\n3. **Review and merge** the release PR to update main with the new version information\n\nThe workflow tracks both the package version and the bundled CLI version separately, allowing you to release a new package version with an updated CLI without code changes.\n\n## License and terms\n\nUse of this SDK is governed by Anthropic's [Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms), including when you use it to power products and services that you make available to your own customers and end users, except to the extent a specific component or dependency is covered by a different license as indicated in that component's LICENSE file.\n",
+        "description_content_type": "text/markdown",
+        "keywords": [
+          "ai",
+          "anthropic",
+          "claude",
+          "sdk"
+        ],
+        "author_email": "Anthropic <support@anthropic.com>",
+        "license": "MIT",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 3 - Alpha",
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: MIT License",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Typing :: Typed"
+        ],
+        "requires_dist": [
+          "anyio>=4.0.0",
+          "jsonschema>=4.20.0",
+          "mcp<3.0.0,>=1.23.0",
+          "sniffio>=1.0.0",
+          "typing-extensions>=4.0.0; python_version < '3.11'",
+          "anyio[trio]>=4.0.0; extra == 'dev'",
+          "mypy>=1.0.0; extra == 'dev'",
+          "pytest-cov>=4.0.0; extra == 'dev'",
+          "pytest>=7.0.0; extra == 'dev'",
+          "ruff>=0.1.0; extra == 'dev'",
+          "asyncpg>=0.27.0; extra == 'examples'",
+          "boto3>=1.28.0; extra == 'examples'",
+          "fakeredis>=2.20.0; extra == 'examples'",
+          "moto[s3]>=5.0.0; extra == 'examples'",
+          "redis>=4.2.0; extra == 'examples'",
+          "opentelemetry-api>=1.20.0; extra == 'otel'"
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Homepage, https://github.com/anthropics/claude-agent-sdk-python",
+          "Documentation, https://docs.anthropic.com/en/docs/claude-code/sdk",
+          "Issues, https://github.com/anthropics/claude-agent-sdk-python/issues"
+        ],
+        "provides_extra": [
+          "dev",
+          "examples",
+          "otel"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/e2/5e/d118fce19f87a2e7d8101c35c8ae0ec289098a4df0ff244cec23e415aca0/mcp-1.28.1-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "2726bca5e7193f61c5dde8b12500a6de2d9acf6d1a1c0be9e8c2e706437991df"
+          },
+          "hash": "sha256=2726bca5e7193f61c5dde8b12500a6de2d9acf6d1a1c0be9e8c2e706437991df"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "mcp",
+        "version": "1.28.1",
+        "summary": "Model Context Protocol SDK",
+        "description": "# MCP Python SDK\n\n<div align=\"center\">\n\n<strong>Python implementation of the Model Context Protocol (MCP)</strong>\n\n[![PyPI][pypi-badge]][pypi-url]\n[![MIT licensed][mit-badge]][mit-url]\n[![Python Version][python-badge]][python-url]\n[![Documentation][docs-badge]][docs-url]\n[![Protocol][protocol-badge]][protocol-url]\n[![Specification][spec-badge]][spec-url]\n\n</div>\n\n> **This documents v1.x, the stable release line of the MCP Python SDK. v2 is in alpha.**\n>\n> v2 pre-releases are published to PyPI as `2.0.0aN`. Installers never select a pre-release unless you opt in (for example `pip install mcp==2.0.0a1`), so v1.x users are unaffected. **If your package depends on `mcp`, add a `<2` upper bound to your version constraint (for example `mcp>=1.27,<2`) before the stable v2 release lands.** See the [v2 documentation](https://github.com/modelcontextprotocol/python-sdk/blob/main/README.v2.md) and the [migration guide](https://github.com/modelcontextprotocol/python-sdk/blob/main/docs/migration.md) for what's changing.\n>\n> v1.x remains recommended for production use. It is in maintenance mode and continues to receive critical bug fixes and security patches.\n\n<!-- omit in toc -->\n## Table of Contents\n\n- [MCP Python SDK](#mcp-python-sdk)\n  - [Overview](#overview)\n  - [Installation](#installation)\n  - [Quickstart](#quickstart)\n  - [What is MCP?](#what-is-mcp)\n  - [Documentation](#documentation)\n  - [Contributing](#contributing)\n  - [License](#license)\n\n[pypi-badge]: https://img.shields.io/pypi/v/mcp.svg\n[pypi-url]: https://pypi.org/project/mcp/\n[mit-badge]: https://img.shields.io/pypi/l/mcp.svg\n[mit-url]: https://github.com/modelcontextprotocol/python-sdk/blob/main/LICENSE\n[python-badge]: https://img.shields.io/pypi/pyversions/mcp.svg\n[python-url]: https://www.python.org/downloads/\n[docs-badge]: https://img.shields.io/badge/docs-python--sdk-blue.svg\n[docs-url]: https://modelcontextprotocol.github.io/python-sdk/\n[protocol-badge]: https://img.shields.io/badge/protocol-modelcontextprotocol.io-blue.svg\n[protocol-url]: https://modelcontextprotocol.io\n[spec-badge]: https://img.shields.io/badge/spec-spec.modelcontextprotocol.io-blue.svg\n[spec-url]: https://modelcontextprotocol.io/specification/latest\n\n## Overview\n\nThe Model Context Protocol allows applications to provide context for LLMs in a standardized way, separating the concerns of providing context from the actual LLM interaction. This Python SDK implements the full MCP specification, making it easy to:\n\n- Build MCP clients that can connect to any MCP server\n- Create MCP servers that expose resources, prompts and tools\n- Use standard transports like stdio, SSE, and Streamable HTTP\n- Handle all MCP protocol messages and lifecycle events\n\n## Installation\n\n### Adding MCP to your python project\n\nWe recommend using [uv](https://docs.astral.sh/uv/) to manage your Python projects.\n\nIf you haven't created a uv-managed project yet, create one:\n\n   ```bash\n   uv init mcp-server-demo\n   cd mcp-server-demo\n   ```\n\n   Then add MCP to your project dependencies:\n\n   ```bash\n   uv add \"mcp[cli]\"\n   ```\n\nAlternatively, for projects using pip for dependencies:\n\n```bash\npip install \"mcp[cli]\"\n```\n\n### Running the standalone MCP development tools\n\nTo run the mcp command with uv:\n\n```bash\nuv run mcp\n```\n\n## Quickstart\n\nLet's create a simple MCP server that exposes a calculator tool and some data:\n\n<!-- snippet-source examples/snippets/servers/fastmcp_quickstart.py -->\n```python\n\"\"\"\nFastMCP quickstart example.\n\nRun from the repository root:\n    uv run examples/snippets/servers/fastmcp_quickstart.py\n\"\"\"\n\nfrom mcp.server.fastmcp import FastMCP\n\n# Create an MCP server\nmcp = FastMCP(\"Demo\", json_response=True)\n\n\n# Add an addition tool\n@mcp.tool()\ndef add(a: int, b: int) -> int:\n    \"\"\"Add two numbers\"\"\"\n    return a + b\n\n\n# Add a dynamic greeting resource\n@mcp.resource(\"greeting://{name}\")\ndef get_greeting(name: str) -> str:\n    \"\"\"Get a personalized greeting\"\"\"\n    return f\"Hello, {name}!\"\n\n\n# Add a prompt\n@mcp.prompt()\ndef greet_user(name: str, style: str = \"friendly\") -> str:\n    \"\"\"Generate a greeting prompt\"\"\"\n    styles = {\n        \"friendly\": \"Please write a warm, friendly greeting\",\n        \"formal\": \"Please write a formal, professional greeting\",\n        \"casual\": \"Please write a casual, relaxed greeting\",\n    }\n\n    return f\"{styles.get(style, styles['friendly'])} for someone named {name}.\"\n\n\n# Run with streamable HTTP transport\nif __name__ == \"__main__\":\n    mcp.run(transport=\"streamable-http\")\n```\n\n_Full example: [examples/snippets/servers/fastmcp_quickstart.py](https://github.com/modelcontextprotocol/python-sdk/blob/v1.x/examples/snippets/servers/fastmcp_quickstart.py)_\n<!-- /snippet-source -->\n\nYou can install this server in [Claude Code](https://docs.claude.com/en/docs/claude-code/mcp) and interact with it right away. First, run the server:\n\n```bash\nuv run --with mcp examples/snippets/servers/fastmcp_quickstart.py\n```\n\nThen add it to Claude Code:\n\n```bash\nclaude mcp add --transport http my-server http://localhost:8000/mcp\n```\n\nAlternatively, you can test it with the MCP Inspector. Start the server as above, then in a separate terminal:\n\n```bash\nnpx -y @modelcontextprotocol/inspector\n```\n\nIn the inspector UI, connect to `http://localhost:8000/mcp`.\n\n## What is MCP?\n\nThe [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you build servers that expose data and functionality to LLM applications in a secure, standardized way. Think of it like a web API, but specifically designed for LLM interactions. MCP servers can:\n\n- Expose data through **Resources** (think of these sort of like GET endpoints; they are used to load information into the LLM's context)\n- Provide functionality through **Tools** (sort of like POST endpoints; they are used to execute code or otherwise produce a side effect)\n- Define interaction patterns through **Prompts** (reusable templates for LLM interactions)\n- And more!\n\n## Documentation\n\n- [Building Servers](docs/server.md) -- tools, resources, prompts, logging, completions, sampling, elicitation, transports, ASGI mounting\n- [Writing Clients](docs/client.md) -- connecting to servers, using tools/resources/prompts, display utilities\n- [Authorization](docs/authorization.md) -- OAuth 2.1, token verification, client authentication\n- [Low-Level Server](docs/low-level-server.md) -- direct handler registration for advanced use cases\n- [Protocol Features](docs/protocol.md) -- MCP primitives, server capabilities\n- [Testing](docs/testing.md) -- in-memory transport testing with pytest\n- [API Reference](https://modelcontextprotocol.github.io/python-sdk/api/)\n- [Experimental Features (Tasks)](https://modelcontextprotocol.github.io/python-sdk/experimental/tasks/)\n- [Model Context Protocol documentation](https://modelcontextprotocol.io)\n- [Model Context Protocol specification](https://modelcontextprotocol.io/specification/latest)\n- [Officially supported servers](https://github.com/modelcontextprotocol/servers)\n\n## Contributing\n\nWe are passionate about supporting contributors of all levels of experience and would love to see you get involved in the project. See the [contributing guide](CONTRIBUTING.md) to get started.\n\n## License\n\nThis project is licensed under the MIT License - see the LICENSE file for details.\n",
+        "description_content_type": "text/markdown",
+        "keywords": [
+          "automation",
+          "git",
+          "llm",
+          "mcp"
+        ],
+        "author": "Anthropic, PBC.",
+        "maintainer_email": "David Soria Parra <davidsp@anthropic.com>, Justin Spahr-Summers <justin@anthropic.com>",
+        "license": "MIT",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: MIT License",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14"
+        ],
+        "requires_dist": [
+          "anyio>=4.5",
+          "httpx-sse>=0.4",
+          "httpx<1.0.0,>=0.27.1",
+          "jsonschema>=4.20.0",
+          "pydantic-settings>=2.5.2",
+          "pydantic<3.0.0,>=2.11.0; python_version < '3.14'",
+          "pydantic<3.0.0,>=2.12.0; python_version >= '3.14'",
+          "pyjwt[crypto]>=2.10.1",
+          "python-multipart>=0.0.9",
+          "pywin32>=310; sys_platform == 'win32' and python_version < '3.14'",
+          "pywin32>=311; sys_platform == 'win32' and python_version >= '3.14'",
+          "sse-starlette>=1.6.1",
+          "starlette>=0.27; python_version < '3.14'",
+          "starlette>=0.48.0; python_version >= '3.14'",
+          "typing-extensions>=4.9.0",
+          "typing-inspection>=0.4.1",
+          "uvicorn>=0.31.1; sys_platform != 'emscripten'",
+          "python-dotenv>=1.0.0; extra == 'cli'",
+          "typer>=0.16.0; extra == 'cli'",
+          "rich>=13.9.4; extra == 'rich'",
+          "websockets>=15.0.1; extra == 'ws'"
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Homepage, https://modelcontextprotocol.io",
+          "Documentation, https://py.sdk.modelcontextprotocol.io/",
+          "Repository, https://github.com/modelcontextprotocol/python-sdk",
+          "Issues, https://github.com/modelcontextprotocol/python-sdk/issues"
+        ],
+        "provides_extra": [
+          "cli",
+          "rich",
+          "ws"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/d2/fd/6668e5aec43ab844de6fc74927e155a3b37bf40d7c3790e49fc0406b6578/httpx_sse-0.4.3-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "0ac1c9fe3c0afad2e0ebb25a934a59f4c7823b60792691f779fad2c5568830fc"
+          },
+          "hash": "sha256=0ac1c9fe3c0afad2e0ebb25a934a59f4c7823b60792691f779fad2c5568830fc"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "httpx-sse",
+        "version": "0.4.3",
+        "dynamic": [
+          "license-file"
+        ],
+        "summary": "Consume Server-Sent Event (SSE) messages with HTTPX.",
+        "description": "# httpx-sse\n\n[![Build Status](https://dev.azure.com/florimondmanca/public/_apis/build/status/florimondmanca.httpx-sse?branchName=master)](https://dev.azure.com/florimondmanca/public/_build?definitionId=19)\n[![Coverage](https://codecov.io/gh/florimondmanca/httpx-sse/branch/master/graph/badge.svg)](https://codecov.io/gh/florimondmanca/httpx-sse)\n[![Package version](https://badge.fury.io/py/httpx-sse.svg)](https://pypi.org/project/httpx-sse)\n\nConsume [Server-Sent Event (SSE)](https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events) messages with [HTTPX](https://www.python-httpx.org).\n\n**Table of contents**\n\n- [Installation](#installation)\n- [Quickstart](#quickstart)\n- [How-To](#how-to)\n- [API Reference](#api-reference)\n\n## Installation\n\n**NOTE**: This is beta software. Please be sure to pin your dependencies.\n\n```bash\npip install httpx-sse==\"0.4.*\"\n```\n\n## Quickstart\n\n`httpx-sse` provides the [`connect_sse`](#connect_sse) and [`aconnect_sse`](#aconnect_sse) helpers for connecting to an SSE endpoint. The resulting [`EventSource`](#eventsource) object exposes the [`.iter_sse()`](#iter_sse) and [`.aiter_sse()`](#aiter_sse) methods to iterate over the server-sent events.\n\nExample usage:\n\n```python\nimport httpx\nfrom httpx_sse import connect_sse\n\nwith httpx.Client() as client:\n    with connect_sse(client, \"GET\", \"http://localhost:8000/sse\") as event_source:\n        for sse in event_source.iter_sse():\n            print(sse.event, sse.data, sse.id, sse.retry)\n```\n\nYou can try this against this example Starlette server ([credit](https://sysid.github.io/sse/)):\n\n```python\n# Requirements: pip install uvicorn starlette sse-starlette\nimport asyncio\nimport uvicorn\nfrom starlette.applications import Starlette\nfrom starlette.routing import Route\nfrom sse_starlette.sse import EventSourceResponse\n\nasync def numbers(minimum, maximum):\n    for i in range(minimum, maximum + 1):\n        await asyncio.sleep(0.9)\n        yield {\"data\": i}\n\nasync def sse(request):\n    generator = numbers(1, 5)\n    return EventSourceResponse(generator)\n\nroutes = [\n    Route(\"/sse\", endpoint=sse)\n]\n\napp = Starlette(routes=routes)\n\nif __name__ == \"__main__\":\n    uvicorn.run(app)\n```\n\n## How-To\n\n### Calling into Python web apps\n\nYou can [call into Python web apps](https://www.python-httpx.org/async/#calling-into-python-web-apps) with HTTPX and `httpx-sse` to test SSE endpoints directly.\n\nHere's an example of calling into a Starlette ASGI app...\n\n```python\nimport asyncio\n\nimport httpx\nfrom httpx_sse import aconnect_sse\nfrom sse_starlette.sse import EventSourceResponse\nfrom starlette.applications import Starlette\nfrom starlette.routing import Route\n\nasync def auth_events(request):\n    async def events():\n        yield {\n            \"event\": \"login\",\n            \"data\": '{\"user_id\": \"4135\"}',\n        }\n\n    return EventSourceResponse(events())\n\napp = Starlette(routes=[Route(\"/sse/auth/\", endpoint=auth_events)])\n\nasync def main():\n    async with httpx.AsyncClient(transport=httpx.ASGITransport(app)) as client:\n        async with aconnect_sse(\n            client, \"GET\", \"http://localhost:8000/sse/auth/\"\n        ) as event_source:\n            events = [sse async for sse in event_source.aiter_sse()]\n            (sse,) = events\n            assert sse.event == \"login\"\n            assert sse.json() == {\"user_id\": \"4135\"}\n\nasyncio.run(main())\n```\n\n### Handling reconnections\n\n_(Advanced)_\n\n`SSETransport` and `AsyncSSETransport` don't have reconnection built-in. This is because how to perform retries is generally dependent on your use case. As a result, if the connection breaks while attempting to read from the server, you will get an `httpx.ReadError` from `iter_sse()` (or `aiter_sse()`).\n\nHowever, `httpx-sse` does allow implementing reconnection by using the `Last-Event-ID` and reconnection time (in milliseconds), exposed as `sse.id` and `sse.retry` respectively.\n\nHere's how you might achieve this using [`stamina`](https://github.com/hynek/stamina)...\n\n```python\nimport time\nfrom typing import Iterator\n\nimport httpx\nfrom httpx_sse import connect_sse, ServerSentEvent\nfrom stamina import retry\n\ndef iter_sse_retrying(client, method, url):\n    last_event_id = \"\"\n    reconnection_delay = 0.0\n\n    # `stamina` will apply jitter and exponential backoff on top of\n    # the `retry` reconnection delay sent by the server.\n    @retry(on=httpx.ReadError)\n    def _iter_sse():\n        nonlocal last_event_id, reconnection_delay\n\n        time.sleep(reconnection_delay)\n\n        headers = {\"Accept\": \"text/event-stream\"}\n\n        if last_event_id:\n            headers[\"Last-Event-ID\"] = last_event_id\n\n        with connect_sse(client, method, url, headers=headers) as event_source:\n            for sse in event_source.iter_sse():\n                last_event_id = sse.id\n\n                if sse.retry is not None:\n                    reconnection_delay = sse.retry / 1000\n\n                yield sse\n\n    return _iter_sse()\n```\n\nUsage:\n\n```python\nwith httpx.Client() as client:\n    for sse in iter_sse_retrying(client, \"GET\", \"http://localhost:8000/sse\"):\n        print(sse.event, sse.data)\n```\n\n## API Reference\n\n### `connect_sse`\n\n```python\ndef connect_sse(\n    client: httpx.Client,\n    method: str,\n    url: Union[str, httpx.URL],\n    **kwargs,\n) -> ContextManager[EventSource]\n```\n\nConnect to an SSE endpoint and return an [`EventSource`](#eventsource) context manager.\n\nThis sets `Cache-Control: no-store` on the request, as per the SSE spec, as well as `Accept: text/event-stream`.\n\nIf the response `Content-Type` is not `text/event-stream`, this will raise an [`SSEError`](#sseerror).\n\n### `aconnect_sse`\n\n```python\nasync def aconnect_sse(\n    client: httpx.AsyncClient,\n    method: str,\n    url: Union[str, httpx.URL],\n    **kwargs,\n) -> AsyncContextManager[EventSource]\n```\n\nAn async equivalent to [`connect_sse`](#connect_sse).\n\n### `EventSource`\n\n```python\ndef __init__(response: httpx.Response)\n```\n\nHelper for working with an SSE response.\n\n#### `response`\n\nThe underlying [`httpx.Response`](https://www.python-httpx.org/api/#response).\n\nYou may use this to perform more operations and checks on the response, such as checking for HTTP status errors:\n\n```python\nwith connect_sse(...) as event_source:\n    event_source.response.raise_for_status()\n\n    for sse in event_source.iter_sse():\n        ...\n```\n\n#### `iter_sse`\n\n```python\ndef iter_sse() -> Iterator[ServerSentEvent]\n```\n\nDecode the response content and yield corresponding [`ServerSentEvent`](#serversentevent).\n\nExample usage:\n\n```python\nfor sse in event_source.iter_sse():\n    ...\n```\n\n#### `aiter_sse`\n\n```python\nasync def iter_sse() -> AsyncIterator[ServerSentEvent]\n```\n\nAn async equivalent to `iter_sse`.\n\n### `ServerSentEvent`\n\nRepresents a server-sent event.\n\n* `event: str` - Defaults to `\"message\"`.\n* `data: str` - Defaults to `\"\"`.\n* `id: str` - Defaults to `\"\"`.\n* `retry: str | None` - Defaults to `None`.\n\nMethods:\n\n* `json() -> Any` - Returns `sse.data` decoded as JSON.\n\n### `SSEError`\n\nAn error that occurred while making a request to an SSE endpoint.\n\nParents:\n\n* `httpx.TransportError`\n\n## License\n\nMIT\n\n# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).\n\n## 0.4.3 - 2025-10-10\n\n### Fixed\n\n* Fix performance issue introduced by the improved line parsing from release 0.4.2. (Pull #40)\n\n## 0.4.2 - 2025-10-07\n\n### Fixed\n\n* Fix incorrect newline parsing that was not compliant with SSE spec. (Pull #37)\n\n## 0.4.1 - 2025-06-24\n\n### Fixed\n\n* Always close the response async generator in `aiter_sse()`. (Pull #30)\n\n## 0.4.0 - 2023-12-22\n\n### Removed\n\n* Dropped Python 3.7 support, as it has reached EOL. (Pull #21)\n\n### Added\n\n* Add official support for Python 3.12. (Pull #21)\n\n### Fixed\n\n* Allow `Content-Type` that contain but are not strictly `text/event-stream`. (Pull #22 by @dbuades)\n* Improve error message when `Content-Type` is missing. (Pull #20 by @jamesbraza)\n\n## 0.3.1 - 2023-06-01\n\n### Added\n\n* Add `__repr__()` for `ServerSentEvent` model, which may help with debugging and other tasks. (Pull #16)\n\n## 0.3.0 - 2023-04-27\n\n### Changed\n\n* Raising an `SSEError` if the response content type is not `text/event-stream` is now performed as part of `iter_sse()` / `aiter_sse()`, instead of `connect_sse()` / `aconnect_sse()`. This allows inspecting the response before iterating on server-sent events, such as checking for error responses. (Pull #12)\n\n## 0.2.0 - 2023-03-27\n\n### Changed\n\n* `connect_sse()` and `aconnect_sse()` now require a `method` argument: `connect_sse(client, \"GET\", \"https://example.org\")`. This provides support for SSE requests with HTTP verbs other than `GET`. (Pull #7)\n\n## 0.1.0 - 2023-02-05\n\n_Initial release_\n\n### Added\n\n* Add `connect_sse`, `aconnect_sse()`, `ServerSentEvent` and `SSEError`.\n",
+        "description_content_type": "text/markdown",
+        "author_email": "Florimond Manca <florimond.manca@protonmail.com>",
+        "license": "MIT",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 4 - Beta",
+          "Intended Audience :: Developers",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13"
+        ],
+        "requires_python": ">=3.9",
+        "project_url": [
+          "Homepage, https://github.com/florimondmanca/httpx-sse"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/53/f4/b987bf8c51e5b19a95fa66d1ee596074141e085d9c2ddf97920803c7029b/pydantic_settings-2.16.0-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "7e73acf7f61936a15e5a3b6eedaea29f133357faf7272f2607ba479b049dd7f2"
+          },
+          "hash": "sha256=7e73acf7f61936a15e5a3b6eedaea29f133357faf7272f2607ba479b049dd7f2"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.5",
+        "name": "pydantic-settings",
+        "version": "2.16.0",
+        "summary": "Settings management using Pydantic",
+        "description": "# pydantic-settings\n\n[![CI](https://github.com/pydantic/pydantic-settings/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/pydantic/pydantic-settings/actions/workflows/ci.yml?query=branch%3Amain)\n[![Coverage](https://codecov.io/gh/pydantic/pydantic-settings/branch/main/graph/badge.svg)](https://codecov.io/gh/pydantic/pydantic-settings)\n[![pypi](https://img.shields.io/pypi/v/pydantic-settings.svg)](https://pypi.python.org/pypi/pydantic-settings)\n[![license](https://img.shields.io/github/license/pydantic/pydantic-settings.svg)](https://github.com/pydantic/pydantic-settings/blob/main/LICENSE)\n[![downloads](https://static.pepy.tech/badge/pydantic-settings/month)](https://pepy.tech/project/pydantic-settings)\n[![versions](https://img.shields.io/pypi/pyversions/pydantic-settings.svg)](https://github.com/pydantic/pydantic-settings)\n\nSettings management using Pydantic.\n\nSee [documentation](https://pydantic.dev/docs/validation/latest/concepts/pydantic_settings/) for more details.\n\n## Part of the Pydantic Stack\n\nThe Pydantic Stack is everything you need to ship production-grade AI agents:\n\n- [Pydantic AI](https://pydantic.dev/pydantic-ai?utm_source=github&utm_medium=readme&utm_campaign=pydantic-settings) - Type-safe agent framework\n- [Pydantic Logfire](https://pydantic.dev/logfire?utm_source=github&utm_medium=readme&utm_campaign=pydantic-settings) - AI-first, full-stack observability\n- [Logfire AI Gateway](https://pydantic.dev/ai-gateway?utm_source=github&utm_medium=readme&utm_campaign=pydantic-settings) - Unified LLM proxy\n",
+        "description_content_type": "text/markdown",
+        "author_email": "Samuel Colvin <s@muelcolvin.com>, Eric Jolibois <em.jolibois@gmail.com>, Hasan Ramezani <hasan.r67@gmail.com>",
+        "license_expression": "MIT",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Environment :: Console",
+          "Environment :: MacOS X",
+          "Framework :: Pydantic",
+          "Framework :: Pydantic :: 2",
+          "Intended Audience :: Developers",
+          "Intended Audience :: Information Technology",
+          "Intended Audience :: System Administrators",
+          "License :: OSI Approved :: MIT License",
+          "Operating System :: POSIX :: Linux",
+          "Operating System :: Unix",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: 3.15",
+          "Topic :: Internet",
+          "Topic :: Software Development :: Libraries :: Python Modules"
+        ],
+        "requires_dist": [
+          "pydantic>=2.7.0",
+          "python-dotenv>=1.2.2",
+          "typing-extensions>=4.0.0",
+          "typing-inspection>=0.4.0",
+          "boto3>=1.35.0; extra == 'aws-secrets-manager'",
+          "boto3>=1.35.0; extra == 'aws-systems-manager'",
+          "azure-identity>=1.16.0; extra == 'azure-key-vault'",
+          "azure-keyvault-secrets>=4.8.0; extra == 'azure-key-vault'",
+          "google-cloud-secret-manager>=2.23.1; extra == 'gcp-secret-manager'",
+          "pyyaml>=6.0.1; extra == 'yaml'"
+        ],
+        "requires_python": ">=3.11",
+        "project_url": [
+          "Homepage, https://github.com/pydantic/pydantic-settings",
+          "Funding, https://github.com/sponsors/samuelcolvin",
+          "Source, https://github.com/pydantic/pydantic-settings",
+          "Changelog, https://github.com/pydantic/pydantic-settings/releases",
+          "Documentation, https://docs.pydantic.dev/dev-v2/concepts/pydantic_settings/"
+        ],
+        "provides_extra": [
+          "aws-secrets-manager",
+          "aws-systems-manager",
+          "azure-key-vault",
+          "gcp-secret-manager",
+          "toml",
+          "yaml"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/50/ca/44de4e75f8aadc457f0634be3b542815078ded46dca30efb960edeecad6e/pyjwt-2.15.1-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193"
+          },
+          "hash": "sha256=42d59d631f7768a1028a64c7ff581a9bf7519804daf91fc5b6c56e30eec5e193"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "PyJWT",
+        "version": "2.15.1",
+        "dynamic": [
+          "license-file"
+        ],
+        "summary": "JSON Web Token implementation in Python",
+        "description": "PyJWT\n=====\n\n.. image:: https://github.com/jpadilla/pyjwt/workflows/CI/badge.svg\n   :target: https://github.com/jpadilla/pyjwt/actions?query=workflow%3ACI\n\n.. image:: https://img.shields.io/pypi/v/pyjwt.svg\n   :target: https://pypi.python.org/pypi/pyjwt\n\n.. image:: https://codecov.io/gh/jpadilla/pyjwt/branch/master/graph/badge.svg\n   :target: https://codecov.io/gh/jpadilla/pyjwt\n\n.. image:: https://readthedocs.org/projects/pyjwt/badge/?version=stable\n   :target: https://pyjwt.readthedocs.io/en/stable/\n\nA Python implementation of `RFC 7519 <https://tools.ietf.org/html/rfc7519>`_. Original implementation was written by `@progrium <https://github.com/progrium>`_.\n\nSponsor\n-------\n\n.. |auth0-logo| image:: https://github.com/user-attachments/assets/ee98379e-ee76-4bcb-943a-e25c4ea6d174\n   :width: 160px\n\n+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n| |auth0-logo| | If you want to quickly add secure token-based authentication to Python projects, feel free to check Auth0's Python SDK and free plan at `auth0.com/signup <https://auth0.com/signup?utm_source=external_sites&utm_medium=pyjwt&utm_campaign=devn_signup>`_. |\n+--------------+-----------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n\nInstalling\n----------\n\nInstall with **pip**:\n\n.. code-block:: console\n\n    $ pip install PyJWT\n\n\nUsage\n-----\n\n.. code-block:: pycon\n\n    >>> import jwt\n    >>> encoded = jwt.encode({\"some\": \"payload\"}, \"secret\", algorithm=\"HS256\")\n    >>> print(encoded)\n    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzb21lIjoicGF5bG9hZCJ9.4twFt5NiznN84AWoo1d7KO1T_yoc0Z6XOpOVswacPZg\n    >>> jwt.decode(encoded, \"secret\", algorithms=[\"HS256\"])\n    {'some': 'payload'}\n\nDocumentation\n-------------\n\nView the full docs online at https://pyjwt.readthedocs.io/en/stable/\n\n\nTests\n-----\n\nYou can run tests from the project root after cloning with:\n\n.. code-block:: console\n\n    $ tox\n",
+        "description_content_type": "text/x-rst",
+        "keywords": [
+          "json",
+          "jwt",
+          "security",
+          "signing",
+          "token",
+          "web"
+        ],
+        "author_email": "Jose Padilla <hello@jpadilla.com>",
+        "license_expression": "MIT",
+        "license_file": [
+          "LICENSE",
+          "AUTHORS.rst"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "Natural Language :: English",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: 3.15",
+          "Topic :: Utilities"
+        ],
+        "requires_dist": [
+          "typing_extensions>=4.0; python_version < \"3.11\"",
+          "cryptography>=3.4.0; extra == \"crypto\""
+        ],
+        "requires_python": ">=3.9",
+        "project_url": [
+          "Homepage, https://github.com/jpadilla/pyjwt"
+        ],
+        "provides_extra": [
+          "crypto"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/60/d1/38f3a3405989a89ac18390803e70c6ad7c7760da4f9b83cbeca0c44a0c72/python_dotenv-1.2.4-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "42269a8a5b3fd54ffa6f3d84b18abed50064717576b4ecf03dc4a55d8aa04fdc"
+          },
+          "hash": "sha256=42269a8a5b3fd54ffa6f3d84b18abed50064717576b4ecf03dc4a55d8aa04fdc"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "python-dotenv",
+        "version": "1.2.4",
+        "dynamic": [
+          "license-file"
+        ],
+        "summary": "Read key-value pairs from a .env file and set them as environment variables",
+        "description": "# python-dotenv\n\n[![Build Status][build_status_badge]][build_status_link]\n[![PyPI version][pypi_badge]][pypi_link]\n\npython-dotenv reads key-value pairs from a `.env` file and can set them as\nenvironment variables. It helps in the development of applications following the\n[12-factor](https://12factor.net/) principles.\n\n- [Getting Started](#getting-started)\n- [Other Use Cases](#other-use-cases)\n  - [Load configuration without altering the environment](#load-configuration-without-altering-the-environment)\n  - [Parse configuration as a stream](#parse-configuration-as-a-stream)\n  - [Load .env files in IPython](#load-env-files-in-ipython)\n- [Command-line Interface](#command-line-interface)\n- [File format](#file-format)\n  - [Multiline values](#multiline-values)\n  - [Variable expansion](#variable-expansion)\n- [Related Projects](#related-projects)\n- [Acknowledgements](#acknowledgements)\n\n## Getting Started\n\n```shell\npip install python-dotenv\n```\n\nIf your application takes its configuration from environment variables, like a\n12-factor application, launching it in development is not very practical because\nyou have to set those environment variables yourself.\n\nTo help you with that, you can add python-dotenv to your application to make it\nload the configuration from a `.env` file when it is present (e.g. in\ndevelopment) while remaining configurable via the environment:\n\n```python\nfrom dotenv import load_dotenv\n\nload_dotenv()  # reads variables from a .env file and sets them in os.environ\n\n# Code of your application, which uses environment variables (e.g. from `os.environ` or\n# `os.getenv`) as if they came from the actual environment.\n```\n\nBy default, `load_dotenv()` will:\n\n- Look for a `.env` file in the same directory as the Python script (or higher up the directory tree).\n- Read each key-value pair and add it to `os.environ`.\n- **Not override** existing environment variables (`override=False`). Pass `override=True` to override existing variables.\n\nTo configure the development environment, add a `.env` in the root directory of\nyour project:\n\n```\n.\n├── .env\n└── foo.py\n```\n\nThe syntax of `.env` files supported by python-dotenv is similar to that of\nBash:\n\n```bash\n# Development settings\nDOMAIN=example.org\nADMIN_EMAIL=admin@${DOMAIN}\nROOT_URL=${DOMAIN}/app\n```\n\nIf you use variables in values, ensure they are surrounded with `{` and `}`,\nlike `${DOMAIN}`, as bare variables such as `$DOMAIN` are not expanded.\n\nYou will probably want to add `.env` to your `.gitignore`, especially if it\ncontains secrets like a password.\n\nSee the section \"[File format](#file-format)\" below for more information about what you can write in a `.env` file.\n\n## Other Use Cases\n\n### Load configuration without altering the environment\n\nThe function `dotenv_values` works more or less the same way as `load_dotenv`,\nexcept it doesn't touch the environment, it just returns a `dict` with the\nvalues parsed from the `.env` file.\n\n```python\nfrom dotenv import dotenv_values\n\nconfig = dotenv_values(\".env\")  # config = {\"USER\": \"foo\", \"EMAIL\": \"foo@example.org\"}\n```\n\nThis notably enables advanced configuration management:\n\n```python\nimport os\nfrom dotenv import dotenv_values\n\nconfig = {\n    **dotenv_values(\".env.shared\"),  # load shared development variables\n    **dotenv_values(\".env.secret\"),  # load sensitive variables\n    **os.environ,  # override loaded values with environment variables\n}\n```\n\n### Parse configuration as a stream\n\n`load_dotenv` and `dotenv_values` accept [streams][python_streams] via their\n`stream` argument. It is thus possible to load the variables from sources other\nthan the filesystem (e.g. the network).\n\n```python\nfrom io import StringIO\n\nfrom dotenv import load_dotenv\n\nconfig = StringIO(\"USER=foo\\nEMAIL=foo@example.org\")\nload_dotenv(stream=config)\n```\n\n### Load .env files in IPython\n\nYou can use dotenv in IPython. By default, it will use `find_dotenv` to search for a\n`.env` file:\n\n```python\n%load_ext dotenv\n%dotenv\n```\n\nYou can also specify a path:\n\n```python\n%dotenv relative/or/absolute/path/to/.env\n```\n\nOptional flags:\n\n- `-o` to override existing variables.\n- `-v` for increased verbosity.\n\n### Disable load_dotenv\n\nSet `PYTHON_DOTENV_DISABLED=1` to disable `load_dotenv()` from loading .env\nfiles or streams. Useful when you can't modify third-party package calls or in\nproduction.\n\n## Command-line Interface\n\nA CLI interface `dotenv` is also included, which helps you manipulate the `.env`\nfile without manually opening it.\n\n```shell\n$ pip install \"python-dotenv[cli]\"\n$ dotenv set USER foo\n$ dotenv set EMAIL foo@example.org\n$ dotenv list\nUSER=foo\nEMAIL=foo@example.org\n$ dotenv list --format=json\n{\n  \"USER\": \"foo\",\n  \"EMAIL\": \"foo@example.org\"\n}\n$ dotenv run -- python foo.py\n```\n\nRun `dotenv --help` for more information about the options and subcommands.\n\n## File format\n\nThe format is not formally specified and still improves over time. That being\nsaid, `.env` files should mostly look like Bash files. Reading from FIFOs (named\npipes) on Unix systems is also supported.\n\nKeys can be unquoted or single-quoted. Values can be unquoted, single- or\ndouble-quoted. Spaces before and after keys, equal signs, and values are\nignored. Values can be followed by a comment. Lines can start with the `export`\ndirective, which does not affect their interpretation.\n\nAllowed escape sequences:\n\n- in single-quoted values: `\\\\`, `\\'`\n- in double-quoted values: `\\\\`, `\\'`, `\\\"`, `\\a`, `\\b`, `\\f`, `\\n`, `\\r`, `\\t`, `\\v`\n\n### Multiline values\n\nIt is possible for single- or double-quoted values to span multiple lines. The\nfollowing examples are equivalent:\n\n```bash\nFOO=\"first line\nsecond line\"\n```\n\n```bash\nFOO=\"first line\\nsecond line\"\n```\n\n### Variable without a value\n\nA variable can have no value:\n\n```bash\nFOO\n```\n\nIt results in `dotenv_values` associating that variable name with the value\n`None` (e.g. `{\"FOO\": None}`. `load_dotenv`, on the other hand, simply ignores\nsuch variables.\n\nThis shouldn't be confused with `FOO=`, in which case the variable is associated\nwith the empty string.\n\n### Variable expansion\n\npython-dotenv can interpolate variables using POSIX variable expansion.\n\nWith `load_dotenv(override=True)` or `dotenv_values()`, the value of a variable\nis the first of the values defined in the following list:\n\n- Value of that variable in the `.env` file.\n- Value of that variable in the environment.\n- Default value, if provided.\n- Empty string.\n\nWith `load_dotenv(override=False)`, the value of a variable is the first of the\nvalues defined in the following list:\n\n- Value of that variable in the environment.\n- Value of that variable in the `.env` file.\n- Default value, if provided.\n- Empty string.\n\n## Related Projects\n\n- [environs](https://github.com/sloria/environs)\n- [Honcho](https://github.com/nickstenning/honcho)\n- [dump-env](https://github.com/sobolevn/dump-env)\n- [dynaconf](https://github.com/dynaconf/dynaconf)\n- [parse_it](https://github.com/naorlivne/parse_it)\n- [django-dotenv](https://github.com/jpadilla/django-dotenv)\n- [django-environ](https://github.com/joke2k/django-environ)\n- [python-decouple](https://github.com/HBNetwork/python-decouple)\n- [django-configuration](https://github.com/jezdez/django-configurations)\n\n## Acknowledgements\n\nThis project is currently maintained by [Saurabh Kumar][saurabh-homepage] and\n[Bertrand Bonnefoy-Claudet][gh-bbc2] and would not have been possible without\nthe support of these [awesome people][contributors].\n\n[gh-bbc2]: https://github.com/bbc2\n[saurabh-homepage]: https://saurabh-kumar.com\n[pypi_link]: https://badge.fury.io/py/python-dotenv\n[pypi_badge]: https://badge.fury.io/py/python-dotenv.svg\n[python_streams]: https://docs.python.org/3/library/io.html\n[contributors]: https://github.com/theskumar/python-dotenv/graphs/contributors\n[build_status_link]: https://github.com/theskumar/python-dotenv/actions/workflows/test.yml\n[build_status_badge]: https://github.com/theskumar/python-dotenv/actions/workflows/test.yml/badge.svg\n\n# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this\nproject adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\n## [Unreleased]\n\n## [1.2.4] - 2026-10-01\n\n### Fixed\n\n- `dotenv get` no longer exits with code 1 for empty string values (`KEY=`) by [@ShamikOfficial] in [#700]\n- An unquoted empty value followed by an inline comment (e.g. `KEY= # comment`) is now parsed as an empty string instead of the comment text by [@Noethix55555] in [#663]\n- `dotenv run --no-override` now expands variable references with the same precedence as `load_dotenv(override=False)`, so a value like `${BASE}/suffix` uses the existing `BASE` from the environment instead of the one from the `.env` file by [@ROTl24] in [#698]\n\n## [1.2.3] - 2026-08-16\n\n### Fixed\n\n- Strip a leading UTF-8 BOM from `.env` file contents so the first variable is no longer silently lost when the file is saved with BOM (e.g. by some JetBrains IDEs on Windows) by [@h1whelan] in [#640]\n- `set_key` now escapes backslashes, so values containing them (Windows paths, regular expressions) survive a write/read round-trip. Quoted values ending in an escaped backslash are no longer mis-parsed as an escaped quote, which used to swallow the following lines by [@dchaudhari7177] in [#680]\n- `dotenv run` now prints a friendly error instead of a traceback when no command is given by [@bbc2] in [#606]\n- Cache the parsed result for empty `.env` files so repeated `dotenv_values`/`load_dotenv` calls no longer re-read the file by [@ReinerBRO] in [#638]\n\n## [1.2.2] - 2026-03-01\n\n### Added\n\n- Support for Python 3.14, including the free-threaded (3.14t) build. (#588)\n\n### Changed\n\n- The `dotenv run` command now forwards flags directly to the specified command by [@bbc2] in [#607]\n- Improved documentation clarity regarding override behavior and the reference page.\n- Updated PyPy support to version 3.11.\n- Documentation for FIFO file support.\n- Dropped Support for Python 3.9.\n\n### Fixed\n\n- Improved `set_key` and `unset_key` behavior when interacting with symlinks by [@bbc2] in [790c5c0]\n- Corrected the license specifier and added missing Python 3.14 classifiers in package metadata by [@JYOuyang] in [#590]\n\n### Breaking Changes\n\n- `dotenv.set_key` and `dotenv.unset_key` used to follow symlinks in some\n  situations. This is no longer the case. For that behavior to be restored in\n  all cases, `follow_symlinks=True` should be used.\n\n- In the CLI, `set` and `unset` used to follow symlinks in some situations. This\n  is no longer the case.\n\n- `dotenv.set_key`, `dotenv.unset_key` and the CLI commands `set` and `unset`\n  used to reset the file mode of the modified .env file to `0o600` in some\n  situations. This is no longer the case: The original mode of the file is now\n  preserved. Is the file needed to be created or wasn't a regular file, mode\n  `0o600` is used.\n\n## [1.2.1] - 2025-10-26\n\n- Move more config to `pyproject.toml`, removed `setup.cfg`\n- Add support for reading `.env` from FIFOs (Unix) by [@sidharth-sudhir] in [#586]\n\n## [1.2.0] - 2025-10-26\n\n- Upgrade build system to use PEP 517 & PEP 518 to use `build` and `pyproject.toml` by [@EpicWink] in [#583]\n- Add support for Python 3.14 by [@23f3001135] in [#579]\n- Add support for disabling of `load_dotenv()` using `PYTHON_DOTENV_DISABLED` env var. by [@matthewfranglen] in [#569]\n\n## [1.1.1] - 2025-06-24\n\n### Fixed\n\n- CLI: Ensure `find_dotenv` work reliably on python 3.13 by [@theskumar] in [#563]\n- CLI: revert the use of execvpe on Windows by [@wrongontheinternet] in [#566]\n\n## [1.1.0] - 2025-03-25\n\n### Added\n\n- Add support for python 3.13\n- Enhance `dotenv run`, switch to `execvpe` for better resource management and signal handling ([#523]) by [@eekstunt]\n\n### Fixed\n\n- `find_dotenv` and `load_dotenv` now correctly looks up at the current directory when running in debugger or pdb ([#553] by [@randomseed42])\n\n### Misc\n\n- Drop support for Python 3.8\n\n## [1.0.1] - 2024-01-23\n\n### Fixed\n\n- Gracefully handle code which has been imported from a zipfile ([#456] by [@samwyma])\n- Allow modules using `load_dotenv` to be reloaded when launched in a separate thread ([#497] by [@freddyaboulton])\n- Fix file not closed after deletion, handle error in the rewrite function ([#469] by [@Qwerty-133])\n\n### Misc\n\n- Use pathlib.Path in tests ([#466] by [@eumiro])\n- Fix year in release date in changelog.md ([#454] by [@jankislinger])\n- Use https in README links ([#474] by [@Nicals])\n\n## [1.0.0] - 2023-02-24\n\n### Fixed\n\n- Drop support for python 3.7, add python 3.12-dev (#449 by [@theskumar])\n- Handle situations where the cwd does not exist. (#446 by [@jctanner])\n\n## [0.21.1] - 2023-01-21\n\n### Added\n\n- Use Python 3.11 non-beta in CI (#438 by [@bbc2])\n- Modernize variables code (#434 by [@Nougat-Waffle])\n- Modernize main.py and parser.py code (#435 by [@Nougat-Waffle])\n- Improve conciseness of cli.py and **init**.py (#439 by [@Nougat-Waffle])\n- Improve error message for `get` and `list` commands when env file can't be opened (#441 by [@bbc2])\n- Updated License to align with BSD OSI template (#433 by [@lsmith77])\n\n### Fixed\n\n- Fix Out-of-scope error when \"dest\" variable is undefined (#413 by [@theGOTOguy])\n- Fix IPython test warning about deprecated `magic` (#440 by [@bbc2])\n- Fix type hint for dotenv_path var, add StrPath alias (#432 by [@eaf])\n\n## [0.21.0] - 2022-09-03\n\n### Added\n\n- CLI: add support for invocations via 'python -m'. (#395 by [@theskumar])\n- `load_dotenv` function now returns `False`. (#388 by [@larsks])\n- CLI: add --format= option to list command. (#407 by [@sammck])\n\n### Fixed\n\n- Drop Python 3.5 and 3.6 and upgrade GA (#393 by [@eggplants])\n- Use `open` instead of `io.open`. (#389 by [@rabinadk1])\n- Improve documentation for variables without a value (#390 by [@bbc2])\n- Add `parse_it` to Related Projects (#410 by [@naorlivne])\n- Update README.md (#415 by [@harveer07])\n- Improve documentation with direct use of MkDocs (#398 by [@bbc2])\n\n## [0.20.0] - 2022-03-24\n\n### Added\n\n- Add `encoding` (`Optional[str]`) parameter to `get_key`, `set_key` and `unset_key`.\n  (#379 by [@bbc2])\n\n### Fixed\n\n- Use dict to specify the `entry_points` parameter of `setuptools.setup` (#376 by\n  [@mgorny]).\n- Don't build universal wheels (#387 by [@bbc2]).\n\n## [0.19.2] - 2021-11-11\n\n### Fixed\n\n- In `set_key`, add missing newline character before new entry if necessary. (#361 by\n  [@bbc2])\n\n## [0.19.1] - 2021-08-09\n\n### Added\n\n- Add support for Python 3.10. (#359 by [@theskumar])\n\n## [0.19.0] - 2021-07-24\n\n### Changed\n\n- Require Python 3.5 or a later version. Python 2 and 3.4 are no longer supported. (#341\n  by [@bbc2]).\n\n### Added\n\n- The `dotenv_path` argument of `set_key` and `unset_key` now has a type of `Union[str,\nos.PathLike]` instead of just `os.PathLike` (#347 by [@bbc2]).\n- The `stream` argument of `load_dotenv` and `dotenv_values` can now be a text stream\n  (`IO[str]`), which includes values like `io.StringIO(\"foo\")` and `open(\"file.env\",\n\"r\")` (#348 by [@bbc2]).\n\n## [0.18.0] - 2021-06-20\n\n### Changed\n\n- Raise `ValueError` if `quote_mode` isn't one of `always`, `auto` or `never` in\n  `set_key` (#330 by [@bbc2]).\n- When writing a value to a .env file with `set_key` or `dotenv set <key> <value>` (#330\n  by [@bbc2]):\n  - Use single quotes instead of double quotes.\n  - Don't strip surrounding quotes.\n  - In `auto` mode, don't add quotes if the value is only made of alphanumeric characters\n    (as determined by `string.isalnum`).\n\n## [0.17.1] - 2021-04-29\n\n### Fixed\n\n- Fixed tests for build environments relying on `PYTHONPATH` (#318 by [@befeleme]).\n\n## [0.17.0] - 2021-04-02\n\n### Changed\n\n- Make `dotenv get <key>` only show the value, not `key=value` (#313 by [@bbc2]).\n\n### Added\n\n- Add `--override`/`--no-override` option to `dotenv run` (#312 by [@zueve] and [@bbc2]).\n\n## [0.16.0] - 2021-03-27\n\n### Changed\n\n- The default value of the `encoding` parameter for `load_dotenv` and `dotenv_values` is\n  now `\"utf-8\"` instead of `None` (#306 by [@bbc2]).\n- Fix resolution order in variable expansion with `override=False` (#287 by [@bbc2]).\n\n## [0.15.0] - 2020-10-28\n\n### Added\n\n- Add `--export` option to `set` to make it prepend the binding with `export` (#270 by\n  [@jadutter]).\n\n### Changed\n\n- Make `set` command create the `.env` file in the current directory if no `.env` file was\n  found (#270 by [@jadutter]).\n\n### Fixed\n\n- Fix potentially empty expanded value for duplicate key (#260 by [@bbc2]).\n- Fix import error on Python 3.5.0 and 3.5.1 (#267 by [@gongqingkui]).\n- Fix parsing of unquoted values containing several adjacent space or tab characters\n  (#277 by [@bbc2], review by [@x-yuri]).\n\n## [0.14.0] - 2020-07-03\n\n### Changed\n\n- Privilege definition in file over the environment in variable expansion (#256 by\n  [@elbehery95]).\n\n### Fixed\n\n- Improve error message for when file isn't found (#245 by [@snobu]).\n- Use HTTPS URL in package meta data (#251 by [@ekohl]).\n\n## [0.13.0] - 2020-04-16\n\n### Added\n\n- Add support for a Bash-like default value in variable expansion (#248 by [@bbc2]).\n\n## [0.12.0] - 2020-02-28\n\n### Changed\n\n- Use current working directory to find `.env` when bundled by PyInstaller (#213 by\n  [@gergelyk]).\n\n### Fixed\n\n- Fix escaping of quoted values written by `set_key` (#236 by [@bbc2]).\n- Fix `dotenv run` crashing on environment variables without values (#237 by [@yannham]).\n- Remove warning when last line is empty (#238 by [@bbc2]).\n\n## [0.11.0] - 2020-02-07\n\n### Added\n\n- Add `interpolate` argument to `load_dotenv` and `dotenv_values` to disable interpolation\n  (#232 by [@ulyssessouza]).\n\n### Changed\n\n- Use logging instead of warnings (#231 by [@bbc2]).\n\n### Fixed\n\n- Fix installation in non-UTF-8 environments (#225 by [@altendky]).\n- Fix PyPI classifiers (#228 by [@bbc2]).\n\n## [0.10.5] - 2020-01-19\n\n### Fixed\n\n- Fix handling of malformed lines and lines without a value (#222 by [@bbc2]):\n  - Don't print warning when key has no value.\n  - Reject more malformed lines (e.g. \"A: B\", \"a='b',c\").\n- Fix handling of lines with just a comment (#224 by [@bbc2]).\n\n## [0.10.4] - 2020-01-17\n\n### Added\n\n- Make typing optional (#179 by [@techalchemy]).\n- Print a warning on malformed line (#211 by [@bbc2]).\n- Support keys without a value (#220 by [@ulyssessouza]).\n\n## 0.10.3\n\n- Improve interactive mode detection ([@andrewsmith])([#183]).\n- Refactor parser to fix parsing inconsistencies ([@bbc2])([#170]).\n  - Interpret escapes as control characters only in double-quoted strings.\n  - Interpret `#` as start of comment only if preceded by whitespace.\n\n## 0.10.2\n\n- Add type hints and expose them to users ([@qnighy])([#172])\n- `load_dotenv` and `dotenv_values` now accept an `encoding` parameter, defaults to `None`\n  ([@theskumar])([@earlbread])([#161])\n- Fix `str`/`unicode` inconsistency in Python 2: values are always `str` now. ([@bbc2])([#121])\n- Fix Unicode error in Python 2, introduced in 0.10.0. ([@bbc2])([#176])\n\n## 0.10.1\n\n- Fix parsing of variable without a value ([@asyncee])([@bbc2])([#158])\n\n## 0.10.0\n\n- Add support for UTF-8 in unquoted values ([@bbc2])([#148])\n- Add support for trailing comments ([@bbc2])([#148])\n- Add backslashes support in values ([@bbc2])([#148])\n- Add support for newlines in values ([@bbc2])([#148])\n- Force environment variables to str with Python2 on Windows ([@greyli])\n- Drop Python 3.3 support ([@greyli])\n- Fix stderr/-out/-in redirection ([@venthur])\n\n## 0.9.0\n\n- Add `--version` parameter to cli ([@venthur])\n- Enable loading from current directory ([@cjauvin])\n- Add 'dotenv run' command for calling arbitrary shell script with .env ([@venthur])\n\n## 0.8.1\n\n- Add tests for docs ([@Flimm])\n- Make 'cli' support optional. Use `pip install python-dotenv[cli]`. ([@theskumar])\n\n## 0.8.0\n\n- `set_key` and `unset_key` only modified the affected file instead of\n  parsing and re-writing file, this causes comments and other file\n  entact as it is.\n- Add support for `export` prefix in the line.\n- Internal refractoring ([@theskumar])\n- Allow `load_dotenv` and `dotenv_values` to work with `StringIO())` ([@alanjds])([@theskumar])([#78])\n\n## 0.7.1\n\n- Remove hard dependency on iPython ([@theskumar])\n\n## 0.7.0\n\n- Add support to override system environment variable via .env.\n  ([@milonimrod](https://github.com/milonimrod))\n  ([\\#63](https://github.com/theskumar/python-dotenv/issues/63))\n- Disable \".env not found\" warning by default\n  ([@maxkoryukov](https://github.com/maxkoryukov))\n  ([\\#57](https://github.com/theskumar/python-dotenv/issues/57))\n\n## 0.6.5\n\n- Add support for special characters `\\`.\n  ([@pjona](https://github.com/pjona))\n  ([\\#60](https://github.com/theskumar/python-dotenv/issues/60))\n\n## 0.6.4\n\n- Fix issue with single quotes ([@Flimm])\n  ([\\#52](https://github.com/theskumar/python-dotenv/issues/52))\n\n## 0.6.3\n\n- Handle unicode exception in setup.py\n  ([\\#46](https://github.com/theskumar/python-dotenv/issues/46))\n\n## 0.6.2\n\n- Fix dotenv list command ([@ticosax](https://github.com/ticosax))\n- Add iPython Support\n  ([@tillahoffmann](https://github.com/tillahoffmann))\n\n## 0.6.0\n\n- Drop support for Python 2.6\n- Handle escaped characters and newlines in quoted values. (Thanks\n  [@iameugenejo](https://github.com/iameugenejo))\n- Remove any spaces around unquoted key/value. (Thanks\n  [@paulochf](https://github.com/paulochf))\n- Added POSIX variable expansion. (Thanks\n  [@hugochinchilla](https://github.com/hugochinchilla))\n\n## 0.5.1\n\n- Fix `find_dotenv` - it now start search from the file where this\n  function is called from.\n\n## 0.5.0\n\n- Add `find_dotenv` method that will try to find a `.env` file.\n  (Thanks [@isms](https://github.com/isms))\n\n## 0.4.0\n\n- cli: Added `-q/--quote` option to control the behaviour of quotes\n  around values in `.env`. (Thanks\n  [@hugochinchilla](https://github.com/hugochinchilla)).\n- Improved test coverage.\n\n<!-- PR LINKS -->\n\n[#78]: https://github.com/theskumar/python-dotenv/issues/78\n[#121]: https://github.com/theskumar/python-dotenv/issues/121\n[#148]: https://github.com/theskumar/python-dotenv/issues/148\n[#158]: https://github.com/theskumar/python-dotenv/issues/158\n[#170]: https://github.com/theskumar/python-dotenv/issues/170\n[#172]: https://github.com/theskumar/python-dotenv/issues/172\n[#176]: https://github.com/theskumar/python-dotenv/issues/176\n[#183]: https://github.com/theskumar/python-dotenv/issues/183\n[#359]: https://github.com/theskumar/python-dotenv/issues/359\n[#469]: https://github.com/theskumar/python-dotenv/issues/469\n[#456]: https://github.com/theskumar/python-dotenv/issues/456\n[#466]: https://github.com/theskumar/python-dotenv/issues/466\n[#454]: https://github.com/theskumar/python-dotenv/issues/454\n[#474]: https://github.com/theskumar/python-dotenv/issues/474\n[#523]: https://github.com/theskumar/python-dotenv/issues/523\n[#553]: https://github.com/theskumar/python-dotenv/issues/553\n[#569]: https://github.com/theskumar/python-dotenv/issues/569\n[#583]: https://github.com/theskumar/python-dotenv/issues/583\n[#586]: https://github.com/theskumar/python-dotenv/issues/586\n[#590]: https://github.com/theskumar/python-dotenv/issues/590\n[#607]: https://github.com/theskumar/python-dotenv/issues/607\n[#588]: https://github.com/theskumar/python-dotenv/issues/588\n[#579]: https://github.com/theskumar/python-dotenv/pull/579\n[#566]: https://github.com/theskumar/python-dotenv/pull/566\n[#563]: https://github.com/theskumar/python-dotenv/pull/563\n[#497]: https://github.com/theskumar/python-dotenv/pull/497\n[#161]: https://github.com/theskumar/python-dotenv/issues/161\n[#606]: https://github.com/theskumar/python-dotenv/pull/606\n[#638]: https://github.com/theskumar/python-dotenv/pull/638\n[#640]: https://github.com/theskumar/python-dotenv/pull/640\n[#663]: https://github.com/theskumar/python-dotenv/pull/663\n[#680]: https://github.com/theskumar/python-dotenv/pull/680\n[#698]: https://github.com/theskumar/python-dotenv/pull/698\n[#700]: https://github.com/theskumar/python-dotenv/pull/700\n[790c5c0]: https://github.com/theskumar/python-dotenv/commit/790c5c02991100aa1bf41ee5330aca75edc51311\n\n<!-- contributors -->\n\n[@23f3001135]: https://github.com/23f3001135\n[@EpicWink]: https://github.com/EpicWink\n[@Flimm]: https://github.com/Flimm\n[@Nicals]: https://github.com/Nicals\n[@Nougat-Waffle]: https://github.com/Nougat-Waffle\n[@Qwerty-133]: https://github.com/Qwerty-133\n[@ReinerBRO]: https://github.com/ReinerBRO\n[@ROTl24]: https://github.com/ROTl24\n[@alanjds]: https://github.com/alanjds\n[@altendky]: https://github.com/altendky\n[@andrewsmith]: https://github.com/andrewsmith\n[@asyncee]: https://github.com/asyncee\n[@bbc2]: https://github.com/bbc2\n[@befeleme]: https://github.com/befeleme\n[@cjauvin]: https://github.com/cjauvin\n[@dchaudhari7177]: https://github.com/dchaudhari7177\n[@eaf]: https://github.com/eaf\n[@earlbread]: https://github.com/earlbread\n[@eekstunt]: https://github.com/eekstunt\n[@eggplants]: https://github.com/eggplants\n[@ekohl]: https://github.com/ekohl\n[@elbehery95]: https://github.com/elbehery95\n[@eumiro]: https://github.com/eumiro\n[@freddyaboulton]: https://github.com/freddyaboulton\n[@gergelyk]: https://github.com/gergelyk\n[@gongqingkui]: https://github.com/gongqingkui\n[@greyli]: https://github.com/greyli\n[@h1whelan]: https://github.com/h1whelan\n[@harveer07]: https://github.com/harveer07\n[@jadutter]: https://github.com/jadutter\n[@jankislinger]: https://github.com/jankislinger\n[@jctanner]: https://github.com/jctanner\n[@larsks]: https://github.com/larsks\n[@lsmith77]: https://github.com/lsmith77\n[@matthewfranglen]: https://github.com/matthewfranglen\n[@mgorny]: https://github.com/mgorny\n[@naorlivne]: https://github.com/naorlivne\n[@Noethix55555]: https://github.com/Noethix55555\n[@qnighy]: https://github.com/qnighy\n[@rabinadk1]: https://github.com/rabinadk1\n[@randomseed42]: https://github.com/randomseed42\n[@sammck]: https://github.com/sammck\n[@samwyma]: https://github.com/samwyma\n[@ShamikOfficial]: https://github.com/ShamikOfficial\n[@sidharth-sudhir]: https://github.com/sidharth-sudhir\n[@snobu]: https://github.com/snobu\n[@techalchemy]: https://github.com/techalchemy\n[@theGOTOguy]: https://github.com/theGOTOguy\n[@theskumar]: https://github.com/theskumar\n[@ulyssessouza]: https://github.com/ulyssessouza\n[@venthur]: https://github.com/venthur\n[@wrongontheinternet]: https://github.com/wrongontheinternet\n[@x-yuri]: https://github.com/x-yuri\n[@yannham]: https://github.com/yannham\n[@zueve]: https://github.com/zueve\n[@JYOuyang]: https://github.com/JYOuyang\n[@burnout-projects]: https://github.com/burnout-projects\n[@cpackham-atlnz]: https://github.com/cpackham-atlnz\n[Unreleased]: https://github.com/theskumar/python-dotenv/compare/v1.2.4...HEAD\n[1.2.4]: https://github.com/theskumar/python-dotenv/compare/v1.2.3...v1.2.4\n[1.2.3]: https://github.com/theskumar/python-dotenv/compare/v1.2.2...v1.2.3\n[1.2.2]: https://github.com/theskumar/python-dotenv/compare/v1.2.1...v1.2.2\n[1.2.1]: https://github.com/theskumar/python-dotenv/compare/v1.2.0...v1.2.1\n[1.2.0]: https://github.com/theskumar/python-dotenv/compare/v1.1.1...v1.2.0\n[1.1.1]: https://github.com/theskumar/python-dotenv/compare/v1.1.0...v1.1.1\n[1.1.0]: https://github.com/theskumar/python-dotenv/compare/v1.0.1...v1.1.0\n[1.0.1]: https://github.com/theskumar/python-dotenv/compare/v1.0.0...v1.0.1\n[1.0.0]: https://github.com/theskumar/python-dotenv/compare/v0.21.0...v1.0.0\n[0.21.1]: https://github.com/theskumar/python-dotenv/compare/v0.21.0...v0.21.1\n[0.21.0]: https://github.com/theskumar/python-dotenv/compare/v0.20.0...v0.21.0\n[0.20.0]: https://github.com/theskumar/python-dotenv/compare/v0.19.2...v0.20.0\n[0.19.2]: https://github.com/theskumar/python-dotenv/compare/v0.19.1...v0.19.2\n[0.19.1]: https://github.com/theskumar/python-dotenv/compare/v0.19.0...v0.19.1\n[0.19.0]: https://github.com/theskumar/python-dotenv/compare/v0.18.0...v0.19.0\n[0.18.0]: https://github.com/theskumar/python-dotenv/compare/v0.17.1...v0.18.0\n[0.17.1]: https://github.com/theskumar/python-dotenv/compare/v0.17.0...v0.17.1\n[0.17.0]: https://github.com/theskumar/python-dotenv/compare/v0.16.0...v0.17.0\n[0.16.0]: https://github.com/theskumar/python-dotenv/compare/v0.15.0...v0.16.0\n[0.15.0]: https://github.com/theskumar/python-dotenv/compare/v0.14.0...v0.15.0\n[0.14.0]: https://github.com/theskumar/python-dotenv/compare/v0.13.0...v0.14.0\n[0.13.0]: https://github.com/theskumar/python-dotenv/compare/v0.12.0...v0.13.0\n[0.12.0]: https://github.com/theskumar/python-dotenv/compare/v0.11.0...v0.12.0\n[0.11.0]: https://github.com/theskumar/python-dotenv/compare/v0.10.5...v0.11.0\n[0.10.5]: https://github.com/theskumar/python-dotenv/compare/v0.10.4...v0.10.5\n[0.10.4]: https://github.com/theskumar/python-dotenv/compare/v0.10.3...v0.10.4\n",
+        "description_content_type": "text/markdown",
+        "keywords": [
+          "environment variables",
+          "deployments",
+          "settings",
+          "env",
+          "dotenv",
+          "configurations",
+          "python"
+        ],
+        "author_email": "Saurabh Kumar <me+github@saurabh-kumar.com>",
+        "license": "BSD-3-Clause",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: Implementation :: PyPy",
+          "Intended Audience :: Developers",
+          "Intended Audience :: System Administrators",
+          "Operating System :: OS Independent",
+          "Topic :: System :: Systems Administration",
+          "Topic :: Utilities",
+          "Environment :: Web Environment"
+        ],
+        "requires_dist": [
+          "click>=5.0; extra == \"cli\""
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Source, https://github.com/theskumar/python-dotenv"
+        ],
+        "provides_extra": [
+          "cli"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/e1/04/e8135ebd1ad02c56ec633277529b2602ff99ff634be76cdba5744cf554fd/python_multipart-0.0.32-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "ff6d3f776f16878c894e52e107296ffc890e913c611b1a4ec6c44e2821fe2e23"
+          },
+          "hash": "sha256=ff6d3f776f16878c894e52e107296ffc890e913c611b1a4ec6c44e2821fe2e23"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "python-multipart",
+        "version": "0.0.32",
+        "summary": "A streaming multipart parser for Python",
+        "description": "# [Python-Multipart](https://kludex.github.io/python-multipart/)\n\n[![Build Status](https://github.com/Kludex/python-multipart/workflows/CI/badge.svg)](https://github.com/Kludex/python-multipart/actions)\n[![Package version](https://badge.fury.io/py/python-multipart.svg)](https://pypi.python.org/pypi/python-multipart)\n[![Supported Python Version](https://img.shields.io/pypi/pyversions/python-multipart.svg?color=%2334D058)](https://pypi.org/project/python-multipart)\n[![Discord](https://img.shields.io/discord/1051468649518616576?logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/RxKUF5JuHs)\n\n---\n\n`python-multipart` is an Apache2-licensed streaming multipart parser for Python.\nTest coverage is currently 100%.\n\n## Why?\n\nBecause streaming uploads are awesome for large files.\n",
+        "description_content_type": "text/markdown",
+        "author_email": "Andrew Dunham <andrew@du.nham.ca>",
+        "maintainer_email": "Marcelo Trylesinski <marcelotryle@gmail.com>",
+        "license_expression": "Apache-2.0",
+        "license_file": [
+          "LICENSE.txt"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Environment :: Web Environment",
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: Apache Software License",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Topic :: Software Development :: Libraries :: Python Modules"
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Homepage, https://github.com/Kludex/python-multipart",
+          "Documentation, https://kludex.github.io/python-multipart/",
+          "Changelog, https://github.com/Kludex/python-multipart/blob/master/CHANGELOG.md",
+          "Source, https://github.com/Kludex/python-multipart"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"
+          },
+          "hash": "sha256=2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.1",
+        "name": "sniffio",
+        "version": "1.3.1",
+        "summary": "Sniff out which async library your code is running under",
+        "description": ".. image:: https://img.shields.io/badge/chat-join%20now-blue.svg\n   :target: https://gitter.im/python-trio/general\n   :alt: Join chatroom\n\n.. image:: https://img.shields.io/badge/docs-read%20now-blue.svg\n   :target: https://sniffio.readthedocs.io/en/latest/?badge=latest\n   :alt: Documentation Status\n\n.. image:: https://img.shields.io/pypi/v/sniffio.svg\n   :target: https://pypi.org/project/sniffio\n   :alt: Latest PyPi version\n   \n.. image:: https://img.shields.io/conda/vn/conda-forge/sniffio.svg\n   :target: https://anaconda.org/conda-forge/sniffio \n   :alt: Latest conda-forge version   \n\n.. image:: https://travis-ci.org/python-trio/sniffio.svg?branch=master\n   :target: https://travis-ci.org/python-trio/sniffio\n   :alt: Automated test status\n\n.. image:: https://codecov.io/gh/python-trio/sniffio/branch/master/graph/badge.svg\n   :target: https://codecov.io/gh/python-trio/sniffio\n   :alt: Test coverage\n\n=================================================================\nsniffio: Sniff out which async library your code is running under\n=================================================================\n\nYou're writing a library. You've decided to be ambitious, and support\nmultiple async I/O packages, like `Trio\n<https://trio.readthedocs.io>`__, and `asyncio\n<https://docs.python.org/3/library/asyncio.html>`__, and ... You've\nwritten a bunch of clever code to handle all the differences. But...\nhow do you know *which* piece of clever code to run?\n\nThis is a tiny package whose only purpose is to let you detect which\nasync library your code is running under.\n\n* Documentation: https://sniffio.readthedocs.io\n\n* Bug tracker and source code: https://github.com/python-trio/sniffio\n\n* License: MIT or Apache License 2.0, your choice\n\n* Contributor guide: https://trio.readthedocs.io/en/latest/contributing.html\n\n* Code of conduct: Contributors are requested to follow our `code of\n  conduct\n  <https://trio.readthedocs.io/en/latest/code-of-conduct.html>`_\n  in all project spaces.\n\nThis library is maintained by the Trio project, as a service to the\nasync Python community as a whole.\n\n\nQuickstart\n----------\n\n.. code-block:: python3\n\n   from sniffio import current_async_library\n   import trio\n   import asyncio\n\n   async def print_library():\n       library = current_async_library()\n       print(\"This is:\", library)\n\n   # Prints \"This is trio\"\n   trio.run(print_library)\n\n   # Prints \"This is asyncio\"\n   asyncio.run(print_library())\n\nFor more details, including how to add support to new async libraries,\n`please peruse our fine manual <https://sniffio.readthedocs.io>`__.\n",
+        "description_content_type": "text/x-rst",
+        "keywords": [
+          "async",
+          "trio",
+          "asyncio"
+        ],
+        "author_email": "\"Nathaniel J. Smith\" <njs@pobox.com>",
+        "license": "MIT OR Apache-2.0",
+        "license_file": [
+          "LICENSE",
+          "LICENSE.APACHE2",
+          "LICENSE.MIT"
+        ],
+        "classifier": [
+          "License :: OSI Approved :: MIT License",
+          "License :: OSI Approved :: Apache Software License",
+          "Framework :: Trio",
+          "Framework :: AsyncIO",
+          "Operating System :: POSIX :: Linux",
+          "Operating System :: MacOS :: MacOS X",
+          "Operating System :: Microsoft :: Windows",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Programming Language :: Python :: Implementation :: PyPy",
+          "Intended Audience :: Developers",
+          "Development Status :: 5 - Production/Stable"
+        ],
+        "requires_python": ">=3.7",
+        "project_url": [
+          "Homepage, https://github.com/python-trio/sniffio",
+          "Documentation, https://sniffio.readthedocs.io/",
+          "Changelog, https://sniffio.readthedocs.io/en/latest/history.html"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/be/e4/cdda14023c316d71493bc54fdffc3dd006631b88866145c9d3cc33e0f1df/sse_starlette-3.5.0-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "3e6e1070df3f0f5d9cea81496de92dbb72f6721871d99748ece67441dd8b7997"
+          },
+          "hash": "sha256=3e6e1070df3f0f5d9cea81496de92dbb72f6721871d99748ece67441dd8b7997"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "sse-starlette",
+        "version": "3.5.0",
+        "dynamic": [
+          "license-file"
+        ],
+        "summary": "SSE plugin for Starlette",
+        "description": "# Server-Sent Events for [Starlette](https://github.com/encode/starlette) and [FastAPI](https://fastapi.tiangolo.com/)\n\n[![Downloads](https://static.pepy.tech/badge/sse-starlette/week)](https://pepy.tech/project/sse-starlette)\n[![PyPI Version][pypi-image]][pypi-url]\n[![Build Status][build-image]][build-url]\n\n> Background: https://sysid.github.io/server-sent-events/\n\nProduction ready Server-Sent Events implementation for Starlette and FastAPI following the [W3C SSE specification](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).\n\n## Installation\n\n```bash\npip install sse-starlette\nuv add sse-starlette\n\n# To run the examples (fastapi, uvicorn, pydantic)\nuv add sse-starlette[examples]\n\n# Example 03 also needs the DB extras (sqlalchemy, aiosqlite)\nuv add sse-starlette[examples,examples-db]\n\n# Recommended ASGI server\nuv add sse-starlette[uvicorn,granian,daphne]\n```\n\n## Quick Start\n\n```python\nimport asyncio\nfrom starlette.applications import Starlette\nfrom starlette.routing import Route\nfrom sse_starlette import EventSourceResponse\n\nasync def generate_events():\n    for i in range(10):\n        yield {\"data\": f\"Event {i}\"}\n        await asyncio.sleep(1)\n\nasync def sse_endpoint(request):\n    return EventSourceResponse(generate_events())\n\napp = Starlette(routes=[Route(\"/events\", sse_endpoint)])\n```\n\n## Core Features\n\n- **Standards Compliant**: Full SSE specification implementation\n- **Framework Integration**: Native Starlette and FastAPI support\n- **Async/Await**: Built on modern Python async patterns\n- **Connection Management**: Automatic client disconnect detection\n- **Graceful Shutdown**: Proper cleanup on server termination with cooperative shutdown support\n- **Thread Safety**: Context-local event management for multi-threaded applications\n- **Multi-Loop Support**: Works correctly with multiple asyncio event loops\n\nFor a detailed look at the internal task coordination, shutdown detection, and cancellation\nflows, see [ARCHITECTURE.md](ARCHITECTURE.md).\n\n## Key Components\n\n### EventSourceResponse\n\nThe main response class that handles SSE streaming:\n\n```python\nfrom sse_starlette import EventSourceResponse\n\n# Basic usage\nasync def stream_data():\n    for item in data:\n        yield {\"data\": item, \"event\": \"update\", \"id\": str(item.id)}\n\nreturn EventSourceResponse(stream_data())\n```\n\n### ServerSentEvent\n\nFor structured event creation:\n\n```python\nfrom sse_starlette import ServerSentEvent\n\nevent = ServerSentEvent(\n    data=\"Custom message\",\n    event=\"notification\", \n    id=\"msg-123\",\n    retry=5000\n)\n```\n\n### JSONServerSentEvent\n\nFor an easy way to send json data as SSE events:\n\n```python\nfrom sse_starlette import JSONServerSentEvent\n\nevent = JSONServerSentEvent(\n    data={\"field\":\"value\"}, # Anything serializable with json.dumps\n)\n```\n\n## Advanced Usage\n\n### Custom Ping Configuration\n\n```python\nfrom sse_starlette import ServerSentEvent\n\ndef custom_ping():\n    return ServerSentEvent(comment=\"Custom ping message\")\n\nreturn EventSourceResponse(\n    generate_events(),\n    ping=10,  # Ping every 10 seconds\n    ping_message_factory=custom_ping\n)\n```\n\n### Multi-Threaded Usage\n\nsse-starlette now supports usage in multi-threaded applications and with multiple asyncio event loops:\n\n```python\nimport threading\nimport asyncio\nfrom sse_starlette import EventSourceResponse\n\ndef run_sse_in_thread():\n    \"\"\"SSE streaming works correctly in separate threads\"\"\"\n    loop = asyncio.new_event_loop()\n    asyncio.set_event_loop(loop)\n    \n    async def thread_events():\n        for i in range(5):\n            yield {\"data\": f\"Thread event {i}\"}\n            await asyncio.sleep(1)\n    \n    # This works without \"Event bound to different loop\" errors\n    response = EventSourceResponse(thread_events())\n    loop.close()\n\n# Start SSE in multiple threads\nfor i in range(3):\n    thread = threading.Thread(target=run_sse_in_thread)\n    thread.start()\n```\n\n### Database Streaming (Thread-Safe)\n\n```python\nasync def stream_database_results(request):\n    # CORRECT: Create session within generator context\n    async with AsyncSession() as session:\n        results = await session.execute(select(User))\n        for row in results:\n            if await request.is_disconnected():\n                break\n            yield {\"data\": row.name, \"id\": str(row.id)}\n\nreturn EventSourceResponse(stream_database_results(request))\n```\n\n### Error Handling and Timeouts\n\n```python\nasync def robust_stream(request):\n    try:\n        for i in range(100):\n            if await request.is_disconnected():\n                break\n            yield {\"data\": f\"Item {i}\"}\n            await asyncio.sleep(0.5)\n    except asyncio.CancelledError:\n        # Client disconnected - perform cleanup\n        raise\n\nreturn EventSourceResponse(\n    robust_stream(request),\n    send_timeout=30,  # Timeout hanging sends\n    headers={\"Cache-Control\": \"no-cache\"}\n)\n```\n\n### Memory Channels Alternative\n\nFor complex data flows, use memory channels instead of generators:\n\n```python\nimport anyio\nfrom functools import partial\n\nasync def data_producer(send_channel):\n    async with send_channel:\n        for i in range(10):\n            await send_channel.send({\"data\": f\"Item {i}\"})\n            await anyio.sleep(1)\n\nasync def channel_endpoint(request):\n    send_channel, receive_channel = anyio.create_memory_object_stream(10)\n    \n    return EventSourceResponse(\n        receive_channel,\n        data_sender_callable=partial(data_producer, send_channel)\n    )\n```\n\n### Cooperative Shutdown\n\nBy default, generators receive `CancelledError` immediately when the server shuts down. With\ncooperative shutdown, generators can detect the shutdown signal, send farewell events to clients,\nand exit gracefully within a configurable grace period.\n\n```python\nimport anyio\nfrom sse_starlette import EventSourceResponse\n\nasync def graceful_stream(request):\n    shutdown_event = anyio.Event()\n\n    async def generate():\n        try:\n            while not shutdown_event.is_set():\n                yield {\"data\": \"tick\"}\n                # Check for shutdown between iterations\n                with anyio.move_on_after(1.0):\n                    await shutdown_event.wait()\n            # Shutdown detected — send farewell event\n            yield {\"event\": \"shutdown\", \"data\": \"Server is shutting down\"}\n        except anyio.get_cancelled_exc_class():\n            # Grace period expired — generator force-cancelled\n            raise\n\n    return EventSourceResponse(\n        generate(),\n        shutdown_event=shutdown_event,       # Library sets this on shutdown\n        shutdown_grace_period=5.0,           # Seconds to wait before force-cancel\n    )\n```\n\n**How it works:**\n\n1. On server shutdown, the library sets your `shutdown_event`\n2. Your generator sees the event and can yield final events\n3. If the generator exits within `shutdown_grace_period`, shutdown is clean (no `CancelledError`)\n4. If the generator doesn't exit in time, it is force-cancelled as before\n\n**Important:** `shutdown_grace_period` should be less than your ASGI server's graceful shutdown\ntimeout (e.g. uvicorn's `--timeout-graceful-shutdown`), otherwise the process is killed before the\ngrace period expires.\n\nWithout `shutdown_event` (the default), behavior is identical to previous versions: immediate\ncancellation on server shutdown.\n\n## Configuration Options\n\n### EventSourceResponse Parameters\n\n| Parameter | Type | Default | Description |\n|-----------|------|---------|-------------|\n| `content` | `ContentStream` | Required | Async generator or iterable |\n| `ping` | `int` | 15 | Ping interval in seconds (`0` disables keep-alive pings) |\n| `sep` | `str` | `\"\\r\\n\"` | Line separator (`\\r\\n`, `\\r`, `\\n`) |\n| `send_timeout` | `float` | `None` | Send operation timeout in seconds |\n| `headers` | `dict` | `None` | Additional HTTP headers |\n| `ping_message_factory` | `Callable` | `None` | Custom ping message creator |\n| `shutdown_event` | `anyio.Event` | `None` | Event set by library on server shutdown |\n| `shutdown_grace_period` | `float` | `0` | Seconds to wait after setting `shutdown_event` before force-cancel |\n\n### Client Disconnection\n\n```python\nasync def monitored_stream(request):\n    events_sent = 0\n    try:\n        while events_sent < 100:\n            if await request.is_disconnected():\n                print(f\"Client disconnected after {events_sent} events\")\n                break\n            \n            yield {\"data\": f\"Event {events_sent}\"}\n            events_sent += 1\n            await asyncio.sleep(1)\n            \n    except asyncio.CancelledError:\n        print(\"Stream cancelled\")\n        raise\n```\n\n## Testing\n\nShutdown state is kept per thread and per server, so tests need no manual reset in the common case. That includes suites that start a real uvicorn server per test and stop it programmatically (`server.should_exit = True`): a stopped server does not affect streams served by a later one in the same process.\n\nOne exception: a real `SIGTERM`/`SIGINT` delivered to the process sets the process-wide `AppStatus.should_exit`, and nothing clears it (the process is expected to exit). If your tests send real signals to an in-process server and keep running, reset the flag between tests:\n\n```python\nimport pytest\nfrom sse_starlette.sse import AppStatus\n\n@pytest.fixture(autouse=True)\ndef reset_sse_app_status():\n    yield\n    AppStatus.should_exit = False\n```\n\n## Production Considerations\n\n### Performance Limits\n\n- **Memory**: Each connection maintains a buffer. Monitor memory usage.\n- **Connections**: Limited by system file descriptors and application design.\n- **Network**: High-frequency events can saturate bandwidth.\n\n### Error Recovery\n\nImplement client-side reconnection logic:\n\n```javascript\nfunction createEventSource(url) {\n    const eventSource = new EventSource(url);\n    \n    eventSource.onerror = function() {\n        setTimeout(() => {\n            createEventSource(url);  // Reconnect after delay\n        }, 5000);\n    };\n    \n    return eventSource;\n}\n```\n\n## Learning Resources\n\n### Examples Directory\n\nThe `examples/` directory contains production-ready patterns:\n\n- **`01_basic_sse.py`**: Fundamental SSE concepts\n- **`02_message_broadcasting.py`**: Multi-client message distribution  \n- **`03_database_streaming.py`**: Thread-safe database integration\n- **`04_advanced_features.py`**: Custom protocols and error handling\n\n### Demonstrations Directory  \n\nThe `examples/demonstrations/` directory provides educational scenarios:\n\n**Basic Patterns** (`basic_patterns/`):\n- Client disconnect detection and cleanup\n- Graceful server shutdown behavior\n\n**Production Scenarios** (`production_scenarios/`):\n- Load testing with concurrent clients\n- Network interruption handling\n\n**Advanced Patterns** (`advanced_patterns/`):\n- Memory channels vs generators\n- Error recovery and circuit breakers\n- Custom protocol development\n\nRun any demonstration:\n```bash\npython examples/demonstrations/basic_patterns/client_disconnect.py\npython examples/demonstrations/production_scenarios/load_simulations.py\npython examples/demonstrations/advanced_patterns/error_recovery.py\n```\n\n## Troubleshooting\n\n### Common Issues\n\n**Database session errors with async generators**\n- Create database sessions inside generators, not as dependencies\n\n**Hanging connections after client disconnect**  \n- Always check `await request.is_disconnected()` in loops\n- Use `send_timeout` parameter to detect dead connections\n\nIf you are using Postman, please see: https://github.com/sysid/sse-starlette/issues/47#issuecomment-1445953826\n\n### Performance Optimization\n\n```python\n# Connection limits\nclass ConnectionLimiter:\n    def __init__(self, max_connections=100):\n        self.semaphore = asyncio.Semaphore(max_connections)\n    \n    async def limited_endpoint(self, request):\n        async with self.semaphore:\n            return EventSourceResponse(generate_events())\n```\n\n## Network-Level Gotchas\n\nNetwork infrastructure components can buffer SSE streams, breaking real-time delivery. Here are the most common issues and solutions:\n\n### Reverse Proxy Buffering (Nginx/Apache)\n\n**Problem**: Nginx buffers responses by default, delaying SSE events until ~16KB accumulates.\n\n**Solution**: Add the `X-Accel-Buffering: no` header.\n\n**Nginx Configuration** (if you can't modify app headers):\n```nginx\nlocation /events {\n    proxy_pass http://localhost:8000;\n    proxy_http_version 1.1;\n    proxy_set_header Connection '';\n    proxy_buffering off;           # Disable for this location\n    chunked_transfer_encoding off;\n}\n```\n\n### CDN Issues\n\n**Cloudflare**: Buffers ~100KB before flushing to clients, breaking real-time delivery.\n**Akamai**: Edge servers buffer by default.\n\n### Load Balancer Problems\n\n**HAProxy**: Timeout settings must exceed heartbeat frequency.\n```haproxy\n# Ensure timeouts > ping interval\ntimeout client 60s    # If ping every 45s\ntimeout server 60s\n```\n\n**F5 Load Balancers**: Buffer responses by default.\n\n## Contributing\n\nSee examples and demonstrations for implementation patterns. Run tests with:\n\n```bash\nmake test-unit              # Unit tests only (default dev install)\nmake test                   # Unit + docker integration tests\nmake test-experimentation   # Optional experimentation tests (multi-consumer load tests)\n                            # Requires the `experimentation` dependency group:\n                            #   uv sync --group experimentation\n```\n\nThe `experimentation` group is opt-in (kept out of the default `dev` install) to keep the\ncontributor footprint small. See `tests/experimentation/` for the tests it enables.\n\n<!-- Badges -->\n[pypi-image]: https://badge.fury.io/py/sse-starlette.svg\n[pypi-url]: https://pypi.org/project/sse-starlette/\n[build-image]: https://github.com/sysid/sse-starlette/actions/workflows/build.yml/badge.svg\n[build-url]: https://github.com/sysid/sse-starlette/actions/workflows/build.yml\n[coverage-image]: https://codecov.io/gh/sysid/sse-starlette/branch/master/graph/badge.svg\n<!--[coverage-url]: https://codecov.io/gh/sysid/sse-starlette-->\n\n",
+        "description_content_type": "text/markdown",
+        "author_email": "sysid <sysid@gmx.de>",
+        "license_expression": "BSD-3-Clause",
+        "license_file": [
+          "LICENSE",
+          "AUTHORS"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Environment :: Web Environment",
+          "Intended Audience :: Developers",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Topic :: Internet :: WWW/HTTP"
+        ],
+        "requires_dist": [
+          "starlette>=0.49.1",
+          "anyio>=4.7.0",
+          "uvicorn>=0.34.0; extra == \"examples\"",
+          "fastapi>=0.115.12; extra == \"examples\"",
+          "pydantic>=2; extra == \"examples\"",
+          "sqlalchemy[asyncio]>=2.0.41; extra == \"examples-db\"",
+          "aiosqlite>=0.21.0; extra == \"examples-db\"",
+          "uvicorn>=0.34.0; extra == \"uvicorn\"",
+          "granian>=2.3.1; extra == \"granian\"",
+          "daphne>=4.2.0; extra == \"daphne\""
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Homepage, https://github.com/sysid/sse-starlette",
+          "Repository, https://github.com/sysid/sse-starlette",
+          "Issues, https://github.com/sysid/sse-starlette/issues",
+          "Source, https://github.com/sysid/sse-starlette"
+        ],
+        "provides_extra": [
+          "examples",
+          "examples-db",
+          "uvicorn",
+          "granian",
+          "daphne"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/38/0c/b54a4fdd7f90a3af8b02ebc9ce6712c2c208b7926a2f7bad95c33ebbe943/uvicorn-0.54.0-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "505bdb0f318731d45f1f712071fc781a8981f6847a31c902c9f5e652d4f67faf"
+          },
+          "hash": "sha256=505bdb0f318731d45f1f712071fc781a8981f6847a31c902c9f5e652d4f67faf"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.5",
+        "name": "uvicorn",
+        "version": "0.54.0",
+        "summary": "The lightning-fast ASGI server.",
+        "description": "<p align=\"center\">\n  <img width=\"320\" height=\"320\" src=\"https://raw.githubusercontent.com/tomchristie/uvicorn/main/docs/uvicorn.png\" alt='uvicorn'>\n</p>\n\n<p align=\"center\">\n<em>An ASGI web server, for Python.</em>\n</p>\n\n---\n\n[![Build Status](https://github.com/Kludex/uvicorn/workflows/Test%20Suite/badge.svg)](https://github.com/Kludex/uvicorn/actions)\n[![Package version](https://badge.fury.io/py/uvicorn.svg)](https://pypi.python.org/pypi/uvicorn)\n[![Supported Python Version](https://img.shields.io/pypi/pyversions/uvicorn.svg?color=%2334D058)](https://pypi.org/project/uvicorn)\n[![Discord](https://img.shields.io/discord/1051468649518616576?logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/RxKUF5JuHs)\n\n---\n\n**Documentation**: [https://uvicorn.dev](https://uvicorn.dev)\n\n**Source Code**: [https://www.github.com/Kludex/uvicorn](https://www.github.com/Kludex/uvicorn)\n\n---\n\nUvicorn is an ASGI web server implementation for Python.\n\nUntil recently Python has lacked a minimal low-level server/application interface for\nasync frameworks. The [ASGI specification][asgi] fills this gap, and means we're now able to\nstart building a common set of tooling usable across all async frameworks.\n\nUvicorn currently supports HTTP/1.1, HTTP/2 and WebSockets.\n\n## Quickstart\n\nInstall using `pip`:\n\n```shell\n$ pip install uvicorn\n```\n\nThis will install uvicorn with minimal (pure Python) dependencies.\n\n```shell\n$ pip install 'uvicorn[standard]'\n```\n\nThis will install uvicorn with \"Cython-based\" dependencies (where possible) and other \"optional extras\".\n\nIn this context, \"Cython-based\" means the following:\n\n- the event loop `uvloop` will be installed and used if possible.\n- the http protocol will be handled by `httptools` if possible.\n\nMoreover, \"optional extras\" means that:\n\n- the websocket protocol will be handled by `websockets` (should you want to use `wsproto` you'd need to install it manually) if possible.\n- the `--reload` flag in development mode will use `watchfiles`.\n- `python-dotenv` will be installed should you want to use the `--env-file` option.\n- `PyYAML` will be installed to allow you to provide a `.yaml` file to `--log-config`, if desired.\n\nCreate an application, in `example.py`:\n\n```python\nasync def app(scope, receive, send):\n    assert scope['type'] == 'http'\n\n    await send({\n        'type': 'http.response.start',\n        'status': 200,\n        'headers': [\n            (b'content-type', b'text/plain'),\n        ],\n    })\n    await send({\n        'type': 'http.response.body',\n        'body': b'Hello, world!',\n    })\n```\n\nRun the server:\n\n```shell\n$ uvicorn example:app\n```\n\n---\n\n## Why ASGI?\n\nMost well established Python Web frameworks started out as WSGI-based frameworks.\n\nWSGI applications are a single, synchronous callable that takes a request and returns a response.\nThis doesn’t allow for long-lived connections, like you get with long-poll HTTP or WebSocket connections,\nwhich WSGI doesn't support well.\n\nHaving an async concurrency model also allows for options such as lightweight background tasks,\nand can be less of a limiting factor for endpoints that have long periods being blocked on network\nI/O such as dealing with slow HTTP requests.\n\n---\n\n## Alternative ASGI servers\n\nA strength of the ASGI protocol is that it decouples the server implementation\nfrom the application framework. This allows for an ecosystem of interoperating\nwebservers and application frameworks.\n\n### Daphne\n\nThe first ASGI server implementation, originally developed to power Django Channels, is [the Daphne webserver][daphne].\n\nIt is run widely in production, and supports HTTP/1.1, HTTP/2, and WebSockets.\n\nAny of the example applications given here can equally well be run using `daphne` instead.\n\n```\n$ pip install daphne\n$ daphne app:App\n```\n\n### Hypercorn\n\n[Hypercorn][hypercorn] was initially part of the Quart web framework, before\nbeing separated out into a standalone ASGI server.\n\nHypercorn supports HTTP/1.1, HTTP/2, and WebSockets.\n\nIt also supports [the excellent `trio` async framework][trio], as an alternative to `asyncio`.\n\n```\n$ pip install hypercorn\n$ hypercorn app:App\n```\n\n### Mangum\n\n[Mangum][mangum] is an adapter for using ASGI applications with AWS Lambda & API Gateway.\n\n### Granian\n\n[Granian][granian] is an ASGI compatible Rust HTTP server which supports HTTP/2, TLS and WebSockets.\n\n---\n\n<p align=\"center\"><i>Uvicorn is <a href=\"https://github.com/Kludex/uvicorn/blob/main/LICENSE.md\">BSD licensed</a> code.<br/>Designed & crafted with care.</i><br/>&mdash; 🦄  &mdash;</p>\n\n[asgi]: https://asgi.readthedocs.io/en/latest/\n[daphne]: https://github.com/django/daphne\n[hypercorn]: https://github.com/pgjones/hypercorn\n[trio]: https://trio.readthedocs.io\n[mangum]: https://github.com/jordaneremieff/mangum\n[granian]: https://github.com/emmett-framework/granian\n",
+        "description_content_type": "text/markdown",
+        "author_email": "Tom Christie <tom@tomchristie.com>",
+        "maintainer_email": "Marcelo Trylesinski <marcelotryle@gmail.com>",
+        "license_expression": "BSD-3-Clause",
+        "license_file": [
+          "LICENSE.md"
+        ],
+        "classifier": [
+          "Development Status :: 4 - Beta",
+          "Environment :: Web Environment",
+          "Intended Audience :: Developers",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Programming Language :: Python :: Implementation :: PyPy",
+          "Topic :: Internet :: WWW/HTTP"
+        ],
+        "requires_dist": [
+          "click>=7.0",
+          "h11>=0.8",
+          "typing-extensions>=4.0; python_version < '3.11'",
+          "httptools>=0.8.0; extra == 'standard'",
+          "python-dotenv>=0.13; extra == 'standard'",
+          "pyyaml>=5.1; extra == 'standard'",
+          "uvloop>=0.15.1; (sys_platform != 'win32' and (sys_platform != 'cygwin' and platform_python_implementation != 'PyPy')) and extra == 'standard'",
+          "watchfiles>=0.20; extra == 'standard'",
+          "websockets>=13.0; extra == 'standard'"
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Changelog, https://uvicorn.dev/release-notes",
+          "Funding, https://github.com/sponsors/Kludex",
+          "Homepage, https://uvicorn.dev/",
+          "Source, https://github.com/Kludex/uvicorn"
+        ],
+        "provides_extra": [
+          "standard"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/58/50/6c0d534c5f134586a8e1ba4e330569e32f057e33372ae556463212fb4cd3/click-8.5.0-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360"
+          },
+          "hash": "sha256=255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "click",
+        "version": "8.5.0",
+        "summary": "Composable command line interface toolkit",
+        "description": "<div align=\"center\"><img src=\"https://raw.githubusercontent.com/pallets/click/refs/heads/stable/docs/_static/click-name.svg\" alt=\"\" height=\"150\"></div>\n\n# Click\n\nClick is a Python package for creating beautiful command line interfaces\nin a composable way with as little code as necessary. It's the \"Command\nLine Interface Creation Kit\". It's highly configurable but comes with\nsensible defaults out of the box.\n\nIt aims to make the process of writing command line tools quick and fun\nwhile also preventing any frustration caused by the inability to\nimplement an intended CLI API.\n\nClick in three points:\n\n-   Arbitrary nesting of commands\n-   Automatic help page generation\n-   Supports lazy loading of subcommands at runtime\n\n\n## A Simple Example\n\n```python\nimport click\n\n@click.command()\n@click.option(\"--count\", default=1, help=\"Number of greetings.\")\n@click.option(\"--name\", prompt=\"Your name\", help=\"The person to greet.\")\ndef hello(count, name):\n    \"\"\"Simple program that greets NAME for a total of COUNT times.\"\"\"\n    for _ in range(count):\n        click.echo(f\"Hello, {name}!\")\n\nif __name__ == '__main__':\n    hello()\n```\n\n```\n$ python hello.py --count=3\nYour name: Click\nHello, Click!\nHello, Click!\nHello, Click!\n```\n\n\n## Donate\n\nThe Pallets organization develops and supports Click and other popular\npackages. In order to grow the community of contributors and users, and\nallow the maintainers to devote more time to the projects, [please\ndonate today][].\n\n[please donate today]: https://palletsprojects.com/donate\n\n## Contributing\n\nSee our [detailed contributing documentation][contrib] for many ways to\ncontribute, including reporting issues, requesting features, asking or answering\nquestions, and making PRs.\n\n[contrib]: https://palletsprojects.com/contributing/\n\n",
+        "description_content_type": "text/markdown",
+        "maintainer_email": "Pallets <contact@palletsprojects.com>",
+        "license_expression": "BSD-3-Clause",
+        "license_file": [
+          "LICENSE.txt"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python",
+          "Typing :: Typed"
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Changes, https://click.palletsprojects.com/page/changes/",
+          "Chat, https://discord.gg/pallets",
+          "Documentation, https://click.palletsprojects.com/",
+          "Donate, https://palletsprojects.com/donate",
+          "Source, https://github.com/pallets/click/"
+        ]
+      }
+    }
+  ],
+  "environment": {
+    "implementation_name": "cpython",
+    "implementation_version": "3.14.7",
+    "os_name": "posix",
+    "platform_machine": "arm64",
+    "platform_release": "25.5.0",
+    "platform_system": "Darwin",
+    "platform_version": "Darwin Kernel Version 25.5.0: Mon Apr 27 20:39:09 PDT 2026; root:xnu-12377.121.6~2/RELEASE_ARM64_T6020",
+    "python_full_version": "3.14.7",
+    "platform_python_implementation": "CPython",
+    "python_version": "3.14",
+    "sys_platform": "darwin"
+  }
+}

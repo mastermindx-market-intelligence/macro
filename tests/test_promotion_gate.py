@@ -23,9 +23,9 @@ def _strong_returns(seed=0, n=2000, edge=0.0012):
     return np.random.default_rng(seed).normal(edge, 0.01, n)
 
 
-def test_strong_candidate_is_eligible():
+def test_strong_candidate_is_eligible(tmp_path):
     r = _strong_returns()
-    led = TrialLedger(Path(tempfile.mkdtemp()) / "t.jsonl", family="cand")
+    led = TrialLedger(tmp_path / "t.jsonl", family="cand")
     led.log_grid([{"i": i} for i in range(8)])
     out = promotion_gate(r, trial_ledger=led, family="cand",
                          ic_stream=np.random.default_rng(1).normal(0.05, 0.02, 200).tolist(),
@@ -34,10 +34,10 @@ def test_strong_candidate_is_eligible():
     assert out["gates"]["deflated_sharpe"]["pass"] and out["blocking"] == []
 
 
-def test_lowballed_n_does_not_save_a_weak_edge():
+def test_lowballed_n_does_not_save_a_weak_edge(tmp_path):
     # honest-N (a big ledger) sinks the DSR of a borderline edge → blocked
     r = _strong_returns(edge=0.0004)
-    led = TrialLedger(Path(tempfile.mkdtemp()) / "t.jsonl", family="cand")
+    led = TrialLedger(tmp_path / "t.jsonl", family="cand")
     led.log_grid([{"i": i} for i in range(400)])         # honestly counted: many trials
     out = promotion_gate(r, trial_ledger=led, family="cand")
     assert out["eligible"] is False and "deflated_sharpe" in out["blocking"]

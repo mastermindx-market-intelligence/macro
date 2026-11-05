@@ -1,0 +1,29 @@
+{
+  "schema": "paper.im04.ecb-admission.evidence.v1",
+  "status": "SCOPED_SOURCE_ACCEPTED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "engine/intl_inputs.py": "bbb2a634bbe0ae06c8e8b21f5bf9882a8697bf4eb5a57252e7593759a1ba11ae",
+    "tests/test_intl_ecb_deposit_admission.py": "cb73b5e89e5395ed6d0ce79d716c06616a58b0d711ff500aa9197e5adef26b21"
+  },
+  "review": {
+    "run": "paper-01a1101f-im04-ecb-admission-review-r2",
+    "artifact_sha256": "eac1e728e49f99e98a02e4e52f9ef78898dc616d68805e559056f26126cfa59f",
+    "verdict": "PASS_SCOPED",
+    "author_pass": 57,
+    "independent_new_pass": 19,
+    "independent_retained_pass": 48
+  },
+  "parent": {
+    "author_final": 57,
+    "existing_snapshot_qualification_r1": 108,
+    "genuine_cyclic_before_after": "2 RED -> 2 GREEN",
+    "legacy_functions_unchanged": 25
+  },
+  "behavior": "Bound official ECB deposit-facility level to supplied provenance, byte identities, evaluation time and explicit trusted-caller decision; withhold malformed, stale, unknown and denied fields without substitute values.",
+  "limits": [
+    "Pure adapter does not authenticate issuer or acquire/read materialized bytes.",
+    "Production caller, prepayment and each-access notice proof, actual generation and served path remain separate.",
+    "No production decision issued by this review."
+  ]
+}

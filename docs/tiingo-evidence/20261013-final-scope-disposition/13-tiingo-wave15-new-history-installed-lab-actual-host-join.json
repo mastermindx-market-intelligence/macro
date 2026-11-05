@@ -1,0 +1,30 @@
+{
+  "schema": "tiingo.actual_new_history_installed_lab_host_artifact_join/v1",
+  "recorded_at_utc": "2026-10-13T01:43:04.875311+00:00",
+  "original_tool_session": 81369,
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "original_canary_method_sha256": "1945f6ed074a0eff08ce5097ec2d0a6a7cef25c8c2d226a5cb18002c13d09b8e",
+  "original_response_sha256": "f70fcc0f3cc0552861945c9548c2fc4af93e07a07238cea7281e7a9efbb13d87",
+  "run_id": "run-20261013T013743Z-647c616e45de",
+  "host_artifacts_sha256": {
+    "request.json": "643e5582dfe6764603015a37cc763f3a71fd68b6e0e9cdaf5ca0c9c2062117a7",
+    "result.json": "510187588d8300235468a16b150d8ee59e157319f21b765443711b59a8b92f15",
+    "_declbudget_418ab3b270d6.jsonl": "58653702077a53d33617c5b2b82b6ff6dd2cd773a9fcd42443937a5bf7a6de66",
+    "worker.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "worker.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status.json": "49f4897720b2686701037695682dba125e554b08275f3c84f5017319f0afc981"
+  },
+  "host_result_equals_actual_response_result": true,
+  "host_status_and_request_binding_verified": true,
+  "declared_budget_artifact_count": 1,
+  "production_ledger_written": false,
+  "actual_new_vendor_symbol": "SAPIF",
+  "actual_loaded_bars": 4787,
+  "metrics_or_market_rows_copied": false,
+  "selector_or_runtime_changed": false,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "archive_writes": 0,
+  "provider_requests": 0
+}

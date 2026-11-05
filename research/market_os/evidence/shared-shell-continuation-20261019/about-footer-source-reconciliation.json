@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-20T15:27:04.510099+00:00",
+  "base_head": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f",
+  "reason": "Constrain these hand-authored product source files to the changed landing asset using incumbent optimize_assets_text. This source edit is not a generated-page emission; broader head normalization remains with render. Initial broader canonical result is retained as history.",
+  "preceding_narrow_attempt": "First narrow attempt refused before writes on lexical/resolved target mismatch. Second reached first product write_page, whose automatic head injection failed the exact-only-stamp assertion. Both effects are reconciled by the final source-only writes below; the refused script is retained.",
+  "prior_guard_environment": "System python template guard exited1 because rjsmin unavailable; rerun with established .venv-shared-shell/bin/python, not a source-theme defect.",
+  "products": [
+    {
+      "path": "site/products/market-terminal.html",
+      "initial_canonical_candidate_sha256": "6dfc03407ac31be49493e07295050c102de559af6f60f4dd1deca1a727c731f4",
+      "final_sha256": "2932c399af121e875b22288f46e194ca6ea689ec3ce8f301f25fb8d214e2afea",
+      "only_change": "landing.css query through incumbent lib.pages.optimize_assets_text"
+    },
+    {
+      "path": "site/products/market-dashboards.html",
+      "initial_canonical_candidate_sha256": "c08e01c4de053b90027b0dfbefaddf91d7d733631d5b976779edf91525beabf0",
+      "final_sha256": "3a45d44143828ad0863c6263e9e69a2b37d00d4e6eef8970f7c79b08e5c54c63",
+      "only_change": "landing.css query through incumbent lib.pages.optimize_assets_text"
+    },
+    {
+      "path": "site/products/mastermind-ai.html",
+      "initial_canonical_candidate_sha256": "e44b7149def31d7087ee688ce46168af46eb1c457ba00d5d03a3bf1f3efb872d",
+      "final_sha256": "a2da0da5c2e2d43064b0d95b9153775f9292d3cf6089dd15998df85f101627a6",
+      "only_change": "landing.css query through incumbent lib.pages.optimize_assets_text"
+    }
+  ],
+  "final_patch_sha256": "b3707d47f574542aab72c1e7abc00b2bd89211b5882816754f37448d65686142",
+  "diff_stat": " site/about.html                      | 2 +-\n site/index.html                      | 2 +-\n site/landing.css                     | 1 +\n site/products/market-dashboards.html | 2 +-\n site/products/market-terminal.html   | 2 +-\n site/products/mastermind-ai.html     | 2 +-\n templates/about.html                 | 2 +-\n templates/index.html                 | 2 +-\n templates/landing.css                | 1 +\n 9 files changed, 9 insertions(+), 7 deletions(-)\n"
+}

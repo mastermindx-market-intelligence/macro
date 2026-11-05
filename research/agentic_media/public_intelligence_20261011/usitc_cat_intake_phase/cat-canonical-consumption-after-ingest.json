@@ -1,0 +1,48 @@
+{
+  "observed_at": "2026-10-14T17:44:33.940732+00:00",
+  "source_id": "usitc-2026-10-13-337-ta-1473",
+  "source_sha256": "5fbe36883a69a418ff3cfd4bfe7cb0efbf63fb322d379e46344185daf6e0571e",
+  "reads": [
+    {
+      "key": "research_vault/catalog.json",
+      "present": true,
+      "sha256": "196f23ea138961efc380de8406d49a261a7c37d3f2a1ad5c9b966be2e0543c6e"
+    },
+    {
+      "key": "research_inbox/_processed/usitc-2026-10-13-337-ta-1473.json",
+      "present": true,
+      "sha256": "ec99f322f613b3cf5766ae84e03bb6894bb104ce058e914c53b3e709689a0c8b"
+    },
+    {
+      "key": "research_inbox/usitc-2026-10-13-337-ta-1473.json",
+      "present": true,
+      "sha256": "fe21f6027db1ba98f674ed0f938c1d3bf0a7656a3b7736392f54f5c162ce7da5"
+    },
+    {
+      "key": "research_vault/usitc-2026-10-13-337-ta-1473.pdf",
+      "present": true,
+      "sha256": "5fbe36883a69a418ff3cfd4bfe7cb0efbf63fb322d379e46344185daf6e0571e"
+    },
+    {
+      "key": "research_vault/fulltext/v1/usitc-2026-10-13-337-ta-1473/5fbe36883a69a418ff3cfd4bfe7cb0efbf63fb322d379e46344185daf6e0571e/v1-05b88d4d1e4a6efa.json",
+      "present": true,
+      "sha256": "681990abbe0052cec3cb565ac690fbcbeb44b8074c9f49f0801806c42e49a8dd"
+    }
+  ],
+  "catalog_rows": 1,
+  "state": "CANONICAL_SOURCE_AND_FULLTEXT_VERIFIED",
+  "writes": 0,
+  "provider_calls": 0,
+  "publication": false,
+  "stock_ticker": "CAT",
+  "press_draft_accepted": false,
+  "published_at": "2026-10-13",
+  "pages": 2,
+  "summary_points": 7,
+  "fulltext_chars": 5031,
+  "fulltext_sha256": "464d14a78317aa7a6b4db05372b680111762d28b4c76da2b1f97e676fbccd764",
+  "installed_head_before": "e4878ea05025c6040ea1c50e34fd117b90c4a3c6",
+  "installed_head_after": "e4878ea05025c6040ea1c50e34fd117b90c4a3c6",
+  "stable_installed_head": true,
+  "local_fixture": false
+}

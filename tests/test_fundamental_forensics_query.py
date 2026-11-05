@@ -57,6 +57,10 @@ from engine.fundamental_forensics.raw_ledger import (
 ROOT = Path(__file__).resolve().parents[1]
 ENTITY_A = "0000000001"
 ENTITY_B = "0000000002"
+# Synthetic entities are industrial-classified (an industrial SIC per the
+# shipped coverage contract's classification basis) unless a test is about
+# banks or the SIC-less path.
+_INDUSTRIAL_SIC = "3571"
 PERIOD = PeriodRequest.duration("2025-01-01", "2025-12-31", label="FY2025")
 
 
@@ -130,7 +134,16 @@ def test_period_request_preserves_same_day_xbrl_duration_semantics() -> None:
 
 
 def _engine(*facts, bounds: QueryBounds | None = None, registry=None, **kwargs):
-    entities = kwargs.pop("entities", {"AAA": ENTITY_A, "BBB": ENTITY_B})
+    # R1-SIC/R2: synthetic tickers carry an industrial SIC so tests whose
+    # intent is a VALUE on a class-restricted metric see the applicable
+    # branch; the SIC-less fail-closed path has its own dedicated tests.
+    entities = kwargs.pop(
+        "entities",
+        (
+            QueryEntity("AAA", ENTITY_A, issuer_sic=_INDUSTRIAL_SIC),
+            QueryEntity("BBB", ENTITY_B, issuer_sic=_INDUSTRIAL_SIC),
+        ),
+    )
     if "filing_metadata" not in kwargs:
         kwargs["filing_metadata"] = {
             fact.occurrence_id: {
@@ -1087,7 +1100,8 @@ def test_receipts_and_cells_reject_forged_identity_future_clocks_and_matrix_mism
         )
     with pytest.raises(QueryValidationError, match="membership"):
         other_good = _engine(
-            _fact(entity_id=ENTITY_B), entities={"AAA": ENTITY_B}
+            _fact(entity_id=ENTITY_B),
+            entities=(QueryEntity("AAA", ENTITY_B, issuer_sic=_INDUSTRIAL_SIC),),
         ).query_cell("AAA", "revenue", PERIOD, policy)
         MetricMatrix(
             governance_bundle=good.governance_bundle,
@@ -1261,7 +1275,8 @@ def test_matrix_receipt_projects_future_registry_content_and_csv_escapes_text_on
     policy = _policy()
     escaped_fact = _fact(entity_id="=2+2", accession="@evil", value="-42")
     escaped_matrix = _engine(
-        escaped_fact, entities={"AAA": "=2+2"}
+        escaped_fact,
+        entities=(QueryEntity("AAA", "=2+2", issuer_sic=_INDUSTRIAL_SIC),),
     ).query_matrix(
         tickers=("AAA",),
         metrics=("revenue",),
@@ -1346,6 +1361,8 @@ def test_cutoff_projection_is_stable_under_unrelated_future_pack_extensions() ->
             rule_id="formula.future_ratio/v1",
             available_at=datetime(2026, 8, 7, tzinfo=timezone.utc),
         ),
+        # The copy must not re-claim gross_margin's immutable policy rule id.
+        not_presented_policy=None,
     )
     future_formula_contract = replace(
         gross_margin,
@@ -1621,6 +1638,66 @@ def test_visible_metadata_is_frozen_bound_and_clocked_at_engine_construction() -
     )
 
 
+@pytest.mark.parametrize(
+    ("accepted_at", "latest_filed"),
+    (
+        # Real after-17:30-EDT 10-Q acceptances whose SEC filing date is the
+        # next calendar day (the UTC acceptance date is still the prior day).
+        ("2024-07-23T23:12:07Z", "2024-07-26"),
+        ("2024-10-29T23:33:10Z", "2024-11-01"),
+        ("2025-07-23T23:44:01Z", "2025-07-28"),
+        # Within filing hours the filing date may not follow the ET date.
+        ("2026-07-31T20:00:00Z", "2026-07-31"),
+        # Under EST the cutoff is 22:30Z (21:30Z under EDT): 17:15 EST is in
+        # hours, while exactly 17:30:00 and 17:45 EST are past the cutoff.
+        ("2025-01-15T22:15:00Z", "2025-01-15"),
+        ("2025-01-15T22:30:00Z", "2025-01-20"),
+        ("2025-01-15T22:45:00Z", "2025-01-20"),
+        # Tuesday 20:30 EDT: the UTC date is already Wednesday, and the bound
+        # rolls from the Eastern date, not the UTC date.
+        ("2025-07-16T00:30:00Z", "2025-07-18"),
+        # Friday 18:00 EDT, Saturday and Sunday acceptances roll over the weekend.
+        ("2026-07-31T22:00:00Z", "2026-08-05"),
+        ("2026-08-01T15:00:00Z", "2026-08-05"),
+        ("2026-08-02T15:00:00Z", "2026-08-05"),
+    ),
+)
+def test_latest_edgar_filed_date_follows_regulation_st_cutoff(
+    accepted_at: str, latest_filed: str
+) -> None:
+    accepted = datetime.fromisoformat(accepted_at.replace("Z", "+00:00"))
+    assert query_module._latest_edgar_filed_date(accepted).isoformat() == latest_filed
+
+
+def test_metadata_admits_edgar_next_business_day_filed_at() -> None:
+    def metadata(fact, filed_at: str):
+        return {
+            fact.occurrence_id: {
+                "accession": fact.source.accession,
+                "document_id": fact.source.document_id,
+                "source_body_sha256": fact.source.body_sha256,
+                "available_at": fact.recorded_at,
+                "form": "10-Q",
+                "filed_at": filed_at,
+            }
+        }
+
+    # Friday 18:00 EDT: SEC deems it filed Monday, a UTC date it never had.
+    after_hours = _fact(accepted_at="2026-07-31T22:00:00Z")
+    cell = _engine(
+        after_hours, filing_metadata=metadata(after_hours, "2026-08-03")
+    ).query_cell("AAA", "revenue", PERIOD, _policy())
+    assert cell.state is CellState.VALUE
+    assert cell.provenance.filed_at.isoformat() == "2026-08-03"
+    with pytest.raises(QueryValidationError, match="follows the EDGAR filing date"):
+        _engine(after_hours, filing_metadata=metadata(after_hours, "2026-08-06"))
+
+    in_hours = _fact(accepted_at="2026-07-31T20:00:00Z")
+    _engine(in_hours, filing_metadata=metadata(in_hours, "2026-07-31"))
+    with pytest.raises(QueryValidationError, match="follows the EDGAR filing date"):
+        _engine(in_hours, filing_metadata=metadata(in_hours, "2026-08-03"))
+
+
 def test_metadata_rejects_wrong_binding_digest_clock_and_late_resolver() -> None:
     fact = _fact()
     base = {
@@ -1844,7 +1921,7 @@ def test_formula_flat_receipts_reject_forged_ids_entities_cutoffs_and_dependency
     # would only prove the direct raw-fact binding, not formula join safety.
     wrong_entity = _engine(
         _fact(entity_id=ENTITY_B, concept="GrossProfit", value="40"),
-        entities={"AAA": ENTITY_B},
+        entities=(QueryEntity("AAA", ENTITY_B, issuer_sic=_INDUSTRIAL_SIC),),
     ).query_cell("AAA", "gross_profit", PERIOD, _policy()).root_node
     wrong_entity_provenance = replace(
         formula.provenance,
@@ -2581,3 +2658,226 @@ def test_duplicate_and_revision_arbitration_have_linear_operation_counts(monkeyp
     assert latest.value == Decimal(revision_count)
     assert readiness_calls == revision_count
     assert lineage_id_calls == 1
+
+
+# --- G0: shared-kernel integrator guards (G0-c dimensional profile, A31
+# no-sum fence; G0-d A33 issuer-literal fence). Frozen spec §2 G0-c/G0-d. ---
+
+
+def test_g0_c_dimensional_profile_axis_list_is_closed() -> None:
+    """G0-c: the shipped catalog's axis list is CLOSED and exactly as ruled.
+
+    StatementBusinessSegmentsAxis + srt:ConsolidationItemsAxis for revenue and
+    operating income (loss) ONLY; StatementClassOfStockAxis for common shares
+    outstanding, weighted shares and EPS ONLY (errata E3: NO axis for
+    operating_expenses). Every other metric stays dimensionless, every mode
+    stays consolidated_only, and no profile may select members into the
+    consolidated cell (allow_member_selection false everywhere).
+    """
+    registry = load_core_metric_registry(ROOT)
+    expected_axes = {
+        "revenue": ("StatementBusinessSegmentsAxis", "srt:ConsolidationItemsAxis"),
+        "operating_income_loss": ("StatementBusinessSegmentsAxis", "srt:ConsolidationItemsAxis"),
+        "common_shares_outstanding": ("StatementClassOfStockAxis",),
+        "basic_weighted_average_shares": ("StatementClassOfStockAxis",),
+        "diluted_weighted_average_shares": ("StatementClassOfStockAxis",),
+        "basic_earnings_per_share": ("StatementClassOfStockAxis",),
+        "diluted_earnings_per_share": ("StatementClassOfStockAxis",),
+    }
+    for contract in registry.contracts:
+        profile = contract.dimensional_profile
+        assert profile.mode == "consolidated_only", contract.metric_id
+        assert profile.require_dimensions is False, contract.metric_id
+        assert profile.allow_member_selection is False, contract.metric_id
+        assert profile.allowed_axes == expected_axes.get(contract.metric_id, ()), (
+            contract.metric_id
+        )
+
+
+_G0_C_SEGMENT_AXIS = "us-gaap:StatementBusinessSegmentsAxis"
+_G0_C_ELIMINATION_AXIS = "srt:ConsolidationItemsAxis"
+
+
+def _g0_c_scope_row(
+    value: str,
+    *,
+    axis: str,
+    member: str,
+    context_id: str,
+    start: str = "2025-01-01",
+    end: str = "2025-12-31",
+) -> object:
+    """One labelled scope row: a segment/elimination fact as filed."""
+    return _fact(
+        value=value,
+        context=FactContext(
+            context_id=context_id,
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=ENTITY_A,
+            start=start,
+            end=end,
+            explicit_dimensions=((axis, member),),
+        ),
+    )
+
+
+def _g0_c_scope_rows(
+    *, start: str = "2025-01-01", end: str = "2025-12-31", suffix: str = ""
+) -> tuple[object, ...]:
+    """Synthetic scope rows: segments 450/350/300 plus eliminations -100."""
+    return (
+        _g0_c_scope_row("450", axis=_G0_C_SEGMENT_AXIS, member="seg:SegmentAMember", context_id=f"ctx-seg-a{suffix}", start=start, end=end),
+        _g0_c_scope_row("350", axis=_G0_C_SEGMENT_AXIS, member="seg:SegmentBMember", context_id=f"ctx-seg-b{suffix}", start=start, end=end),
+        _g0_c_scope_row("300", axis=_G0_C_SEGMENT_AXIS, member="seg:SegmentCMember", context_id=f"ctx-seg-c{suffix}", start=start, end=end),
+        _g0_c_scope_row("-100", axis=_G0_C_ELIMINATION_AXIS, member="srt:ConsolidationItemsMember", context_id=f"ctx-elim{suffix}", start=start, end=end),
+    )
+
+
+def _g0_c_scope_row_total(rows: tuple[object, ...]) -> Decimal:
+    return sum((Decimal(fact.parsed_value) for fact in rows), Decimal(0))
+
+
+def _g0_c_consolidated_revenue_value(facts: tuple[object, ...]) -> Decimal | None:
+    """The consolidated revenue cell, through the kernel (the no-sum seam)."""
+    cell = _engine(*facts).query_cell("AAA", "revenue", PERIOD, _policy())
+    return cell.value if cell.state is CellState.VALUE else None
+
+
+def test_g0_c_a31_no_sum_fence_consolidated_cell_is_the_filed_undimensioned_fact() -> None:
+    """G0-c / A31: the consolidated cell is ALWAYS the filing's own undimensioned
+    consolidated fact; segment members are labelled scope rows, never summed.
+
+    Hermetic synthetic fact set (no SEC bytes). FY2024 reconciles (scope rows
+    plus eliminations equal the filed consolidated fact); FY2025 deliberately
+    does not (scope total 1000 vs filed 999), so a kernel that ever wrote the
+    segment sum into the consolidated cell is caught here. With NO undimensioned
+    fact the cell is a typed refusal (disallowed_dimension), never a sum.
+    """
+    filed_consolidated = _fact(value="999")  # FY2025 undimensioned consolidated fact
+
+    # Reconciliation where the filing provides both (synthetic FY2024 rows).
+    fy2024_consolidated = _fact(
+        value="1000",
+        context=FactContext(
+            context_id="ctx-consolidated-fy2024",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=ENTITY_A,
+            start="2024-01-01",
+            end="2024-12-31",
+        ),
+    )
+    fy2024_scope = _g0_c_scope_rows(start="2024-01-01", end="2024-12-31", suffix="-24")
+    fy2024_period = PeriodRequest.duration("2024-01-01", "2024-12-31", label="FY2024")
+    fy2024_cell = _engine(filed_consolidated, fy2024_consolidated, *fy2024_scope).query_cell(
+        "AAA", "revenue", fy2024_period, _policy()
+    )
+    assert fy2024_cell.state is CellState.VALUE
+    assert fy2024_cell.value == Decimal("1000")
+    assert _g0_c_scope_row_total(fy2024_scope) == Decimal("1000")  # reconciles as filed
+
+    # The no-sum fence: FY2025 scope rows total 1000, the filed consolidated
+    # fact is 999 — the kernel serves the filed fact, never the sum.
+    scope_rows = _g0_c_scope_rows()
+    scope_total = _g0_c_scope_row_total(scope_rows)
+    assert scope_total == Decimal("1000")
+    served = _g0_c_consolidated_revenue_value((filed_consolidated, *scope_rows))
+    assert served == Decimal("999")
+    assert served != scope_total
+    cell = _engine(filed_consolidated, *scope_rows).query_cell("AAA", "revenue", PERIOD, _policy())
+    assert cell.provenance.kind is ProvenanceKind.DIRECT  # filed fact, not composed
+
+    # No consolidated fact at all: a typed refusal, never a segment sum.
+    segment_only = _engine(*scope_rows).query_cell("AAA", "revenue", PERIOD, _policy())
+    assert segment_only.state is CellState.NOT_EVALUABLE
+    assert segment_only.value is None
+    assert segment_only.reason == (
+        "disallowed_dimension: governed metric requires consolidated dimensionless fact"
+    )
+
+
+_G0_D_SCAN_ROOTS = ("engine/fundamental_forensics",)
+_G0_D_SCAN_FILES = ("scripts/build_fundamental_forensics.py",)
+
+
+def _g0_d_patterns() -> dict[str, "re.Pattern[str]"]:
+    import re
+
+    return {
+        "ticker:SNOW": re.compile(r"\bSNOW\b"),
+        "ticker:CAT": re.compile(r"\bCAT\b"),
+        "ticker:BAC": re.compile(r"\bBAC\b"),
+        "ticker:GOOG": re.compile(r"\bGOOG\b"),
+        "ticker:GOOGL": re.compile(r"\bGOOGL\b"),
+        "cik:1640147": re.compile(r"\b1640147\b"),
+        "cik:18230": re.compile(r"\b18230\b"),
+        "cik:70858": re.compile(r"\b70858\b"),
+        "cik:1652044": re.compile(r"\b1652044\b"),
+        "cik:0001640147": re.compile(r"\b0001640147\b"),
+        "cik:0000018230": re.compile(r"\b0000018230\b"),
+        "cik:0000070858": re.compile(r"\b0000070858\b"),
+        "cik:0001652044": re.compile(r"\b0001652044\b"),
+        "prefix:snow:": re.compile(r"(?i)\bsnow:"),
+        "prefix:cat:": re.compile(r"(?i)\bcat:"),
+        "prefix:bac:": re.compile(r"(?i)\bbac:"),
+        "prefix:goog:": re.compile(r"(?i)\bgoog:"),
+    }
+
+
+# The AAPL golden keyring is the sole allowlist: GOLDEN_AAPL_FIXTURES in
+# statement_graph.py, the StaticGoldenProvider/GoldenAaplStatementProvider AAPL
+# gate in statement_service.py, and GOLDEN_AAPL_QUERY_ACCESSIONS in
+# ixbrl_raw_ledger.py. These are existing goldens, not G issuers.
+_G0_D_ALLOWLIST_MARKERS = (
+    "GOLDEN_AAPL",
+    "GoldenAapl",
+    "aapl_10k_2025",
+    "aapl_10q_2026q3",
+)
+
+
+def _g0_d_scan_files() -> list[Path]:
+    files: list[Path] = []
+    for root in _G0_D_SCAN_ROOTS:
+        files.extend(sorted(p for p in (ROOT / root).rglob("*.py")))
+    files.extend(
+        sorted(ROOT.glob("collectors/fundamental_forensics_*.py"))
+    )
+    for rel in _G0_D_SCAN_FILES:
+        files.append(ROOT / rel)
+    return files
+
+
+def test_g0_d_a33_no_issuer_literals_in_fif_kernel_or_build_path() -> None:
+    """G0-d / A33: no G ticker, CIK, or custom-prefix literal rides the kernel.
+
+    Scans engine/fundamental_forensics/**, collectors/fundamental_forensics_*.py
+    and scripts/build_fundamental_forensics.py for SNOW/CAT/BAC/GOOG/GOOGL,
+    CIKs 1640147/18230/70858/1652044 (padded and bare) and the snow:/cat:/
+    bac:/goog: prefixes. Only the AAPL golden keyring is allowlisted. Word
+    boundaries keep ordinary words (category, catalog, concat) from tripping.
+    """
+    patterns = _g0_d_patterns()
+    offenders: list[str] = []
+    for path in _g0_d_scan_files():
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for lineno, line in enumerate(text.splitlines(), 1):
+            if any(marker in line for marker in _G0_D_ALLOWLIST_MARKERS):
+                continue
+            for name, rx in patterns.items():
+                if rx.search(line):
+                    offenders.append(f"{path.relative_to(ROOT)}:{lineno}: [{name}] {line.strip()[:90]}")
+    assert offenders == []
+
+    # Negative case: word-boundary matching never trips on ordinary words,
+    # while a planted G ticker IS caught (the matcher is not vacuous).
+    benign = (
+        "category = catalog.next()",
+        "words = 'category catalog concat snowcat catabolism'",
+        "import concatenation",
+    )
+    for line in benign:
+        for name, rx in patterns.items():
+            assert rx.search(line) is None, (name, line)
+    planted = "# TODO check the SNOW shape and cat: prefix"
+    assert patterns["ticker:SNOW"].search(planted) is not None
+    assert patterns["prefix:cat:"].search(planted) is not None

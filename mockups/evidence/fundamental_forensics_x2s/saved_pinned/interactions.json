@@ -1,0 +1,234 @@
+[
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|saved_pinned",
+    "facts": {
+      "badge_visible": true,
+      "notice_has_strong": false,
+      "notice_newer_generation": false,
+      "notice_state": "hidden",
+      "notice_text": "",
+      "notice_visible": false,
+      "options": [
+        "Choose a saved view",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · unavailable"
+      ],
+      "select_inner_px": 425,
+      "selected_text_fits": true,
+      "selected_text_px": 252,
+      "value": "CDEFGHIJKLMNOPQRSTUVWX"
+    },
+    "force_state": "saved_pinned",
+    "input": "select: real #ff-saved-select change to the pinned seed row (CDEFGHIJKLMNOPQRSTUVWX)",
+    "interaction": "saved_restore_pinned",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|saved_pinned",
+    "facts": {
+      "badge_visible": true,
+      "notice_has_strong": false,
+      "notice_newer_generation": false,
+      "notice_state": "hidden",
+      "notice_text": "",
+      "notice_visible": false,
+      "options": [
+        "Choose a saved view",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · unavailable"
+      ],
+      "select_inner_px": 425,
+      "selected_text_fits": true,
+      "selected_text_px": 252,
+      "value": "CDEFGHIJKLMNOPQRSTUVWX"
+    },
+    "force_state": "saved_pinned",
+    "input": "select: real #ff-saved-select change to the pinned seed row (CDEFGHIJKLMNOPQRSTUVWX)",
+    "interaction": "saved_restore_pinned",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|saved_pinned",
+    "facts": {
+      "badge_visible": true,
+      "notice_has_strong": false,
+      "notice_newer_generation": false,
+      "notice_state": "hidden",
+      "notice_text": "",
+      "notice_visible": false,
+      "options": [
+        "选择已存视图",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · 不可用"
+      ],
+      "select_inner_px": 504,
+      "selected_text_fits": true,
+      "selected_text_px": 245.8011932373047,
+      "value": "CDEFGHIJKLMNOPQRSTUVWX"
+    },
+    "force_state": "saved_pinned",
+    "input": "select: real #ff-saved-select change to the pinned seed row (CDEFGHIJKLMNOPQRSTUVWX)",
+    "interaction": "saved_restore_pinned",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|saved_pinned",
+    "facts": {
+      "badge_visible": true,
+      "notice_has_strong": false,
+      "notice_newer_generation": false,
+      "notice_state": "hidden",
+      "notice_text": "",
+      "notice_visible": false,
+      "options": [
+        "选择已存视图",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · 不可用"
+      ],
+      "select_inner_px": 504,
+      "selected_text_fits": true,
+      "selected_text_px": 245.8011932373047,
+      "value": "CDEFGHIJKLMNOPQRSTUVWX"
+    },
+    "force_state": "saved_pinned",
+    "input": "select: real #ff-saved-select change to the pinned seed row (CDEFGHIJKLMNOPQRSTUVWX)",
+    "interaction": "saved_restore_pinned",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|saved_pinned",
+    "facts": {
+      "badge_visible": true,
+      "notice_has_strong": false,
+      "notice_newer_generation": false,
+      "notice_state": "hidden",
+      "notice_text": "",
+      "notice_visible": false,
+      "options": [
+        "Choose a saved view",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · unavailable"
+      ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 252,
+      "value": "CDEFGHIJKLMNOPQRSTUVWX"
+    },
+    "force_state": "saved_pinned",
+    "input": "select: real #ff-saved-select change to the pinned seed row (CDEFGHIJKLMNOPQRSTUVWX)",
+    "interaction": "saved_restore_pinned",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|saved_pinned",
+    "facts": {
+      "badge_visible": true,
+      "notice_has_strong": false,
+      "notice_newer_generation": false,
+      "notice_state": "hidden",
+      "notice_text": "",
+      "notice_visible": false,
+      "options": [
+        "Choose a saved view",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · unavailable"
+      ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 252,
+      "value": "CDEFGHIJKLMNOPQRSTUVWX"
+    },
+    "force_state": "saved_pinned",
+    "input": "select: real #ff-saved-select change to the pinned seed row (CDEFGHIJKLMNOPQRSTUVWX)",
+    "interaction": "saved_restore_pinned",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|saved_pinned",
+    "facts": {
+      "badge_visible": true,
+      "notice_has_strong": false,
+      "notice_newer_generation": false,
+      "notice_state": "hidden",
+      "notice_text": "",
+      "notice_visible": false,
+      "options": [
+        "选择已存视图",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · 不可用"
+      ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 245.8011932373047,
+      "value": "CDEFGHIJKLMNOPQRSTUVWX"
+    },
+    "force_state": "saved_pinned",
+    "input": "select: real #ff-saved-select change to the pinned seed row (CDEFGHIJKLMNOPQRSTUVWX)",
+    "interaction": "saved_restore_pinned",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|saved_pinned",
+    "facts": {
+      "badge_visible": true,
+      "notice_has_strong": false,
+      "notice_newer_generation": false,
+      "notice_state": "hidden",
+      "notice_text": "",
+      "notice_visible": false,
+      "options": [
+        "选择已存视图",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · 不可用"
+      ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 245.8011932373047,
+      "value": "CDEFGHIJKLMNOPQRSTUVWX"
+    },
+    "force_state": "saved_pinned",
+    "input": "select: real #ff-saved-select change to the pinned seed row (CDEFGHIJKLMNOPQRSTUVWX)",
+    "interaction": "saved_restore_pinned",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  }
+]

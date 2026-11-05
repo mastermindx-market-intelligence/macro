@@ -1,0 +1,39 @@
+{
+  "main": "7f1e4ede020b53b1d86b39642e9c88f334f0d61a",
+  "input_head": "cd256ef0f0dd6aac8d7526a7a4b65ec9873b43f2",
+  "review": 4264299901,
+  "structured_k3_next_action_repaired": true,
+  "other_milestones_unchanged": true,
+  "main_test_file_preserved_except_additive_k3d_entry_and_test": true,
+  "k3d_selector_test_ast_unchanged": true,
+  "inherited_ci_jobs": 300,
+  "total_ci_jobs": 301,
+  "only_inherited_ci_delta": [
+    "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+    "lib/economic_propagation.py",
+    "lib/economic_propagation_v2.py",
+    "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+  ],
+  "accepted_main_washout_scope_repair_present": true,
+  "tests": {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "all_38_semantic_files_unchanged": true,
+  "hosted_k3d_prior_result": {
+    "run": 38469381550,
+    "head": "cd256ef0f0dd6aac8d7526a7a4b65ec9873b43f2",
+    "job": "k3d-economic-propagation-contracts",
+    "passed": 541,
+    "seconds": 12.94
+  },
+  "prior_global_failure": {
+    "logical_job": "ci-control-plane-contracts",
+    "missing_scope": "washout-turn-organ -> lib/intl_eod_publication.py",
+    "classification": "unknown; exact-base replay budget exhausted",
+    "status": "NOT_RECLASSIFIED"
+  },
+  "production_acceptance": false
+}

@@ -1,0 +1,1 @@
+REMOTE_SUB_ADMISSION_REFUSED {"active_count":4,"allowed":false,"cpu_count":32,"json_locked_count":4,"legacy_count":0,"load1":0.101,"load_ratio_limit":0.5,"max_active":4,"reasons":["active_lane_limit_reached"],"stale_reaped":[]}

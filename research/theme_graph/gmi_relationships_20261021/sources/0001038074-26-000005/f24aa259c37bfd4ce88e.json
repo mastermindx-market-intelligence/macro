@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-10T21:08:36Z",
+ "accession": "0001038074-26-000005",
+ "cik": "0001038074",
+ "doc_byte_length": 1674294,
+ "doc_sha256": "9e341102c42a9d25e6b7507e3d306292400c077473fc161e3272f9cb4f397ac4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-10",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "slab-20260103.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 467427,
+  "byte_start": 467043,
+  "normalized": "Although we actually sell the products to, and are paid by, the distributors and contract manufacturers, we refer to the end customer as our customer. Two of our distributors who sell to our customers, Arrow Electronics and Edom Technology, represented 28% and 21% of our revenues during fiscal 2025, 27% and 16% during fiscal 2024, and 34% and 15% during fiscal 2023, respectively.",
+  "normalized_sha256": "e31402aa37e02a4ebea19942b41d37f84950024ff6214b055513de9b3857e191",
+  "raw": " Although we actually sell the products to, and are paid by, the distributors and contract manufacturers, we refer to the end customer as our customer. Two of our distributors who sell to our customers, Arrow Electronics and Edom Technology, represented 28% and 21% of our revenues during fiscal 2025, 27% and 16% during fiscal 2024, and 34% and 15% during fiscal 2023, respectively. ",
+  "raw_sha256": "f24aa259c37bfd4ce88ef6425cddee06001df04f43a1b95edbe10721d1e04357"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1038074/000103807426000005/slab-20260103.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,105 @@
+{
+  "all_members_reopened_and_verified": true,
+  "archive": {
+    "byte_length": 119561,
+    "path": "SOURCE_ARCHIVE.tar.gz",
+    "sha256": "79da871d003273ff018206151a130ab3873a20d4301ffbd3fbf81c49f9c43df7"
+  },
+  "archived_test_filename_does_not_create_runnable_source_path": true,
+  "deterministic_metadata": {
+    "gid": 0,
+    "gzip_mtime": 0,
+    "mode": "0644",
+    "tar_mtime": 0,
+    "uid": 0
+  },
+  "files": [
+    {
+      "byte_length": 3117,
+      "path": "EXAMPLE_EXECUTION_RECEIPT.json",
+      "sha256": "9902067458d7b6a9d7c5a57881dd60bb2ca5a35fc38d70c5515dce93035468f7"
+    },
+    {
+      "byte_length": 10368,
+      "path": "IMPLEMENTATION_RECEIPT.json",
+      "sha256": "0ec9bcaf3f8670ff43b60311dfc73140ecf1c943d38c08a1946383615fa447d9"
+    },
+    {
+      "byte_length": 23200,
+      "path": "IMPLEMENTATION_RETURN.md",
+      "sha256": "b91b6b0b4496bcd94c110e07272ef531cd92358105bf04837cacee2224b1b0c3"
+    },
+    {
+      "byte_length": 19018,
+      "path": "INPUT_CONTRACT.md",
+      "sha256": "cea9493577f98f8b57a313f20dd7f79f93095dc1ec38d32e9b0452e97f6ee63a"
+    },
+    {
+      "byte_length": 97,
+      "path": "LOCAL_PYTEST_RUN_001.log",
+      "sha256": "51f5550d86043279227c92b72199d4ee1f66d30623405f70c98442058ffe76c7"
+    },
+    {
+      "byte_length": 233,
+      "path": "LOCAL_UNITTEST_RUN_001.log",
+      "sha256": "1bb2ae2bd3896ca871063c42f55afe044b7d0c4fff78ab0f843ea02f3946fef4"
+    },
+    {
+      "byte_length": 15391,
+      "path": "LOCAL_UNITTEST_RUN_002.log",
+      "sha256": "550af2a564ae3a03d18bc40d7018a04dddee3d60bb4b696089a9f81bfb538ecc"
+    },
+    {
+      "byte_length": 16043,
+      "path": "LOCAL_UNITTEST_RUN_003.log",
+      "sha256": "998c38ea416c94fbc1ec8b5d4d7261558290b708e16aff0cf3a3f1a58f1b44f7"
+    },
+    {
+      "byte_length": 2893,
+      "path": "MANIFEST.json",
+      "sha256": "1dbf7da765127a4f32e5c80674399361b6daf0732fe6b1159c3fb1419a9fb075"
+    },
+    {
+      "byte_length": 8662,
+      "path": "real_mode_output.json",
+      "sha256": "22ec54c7985e278954afddc666156924774167adb6dc8596b982150d1ac1494a"
+    },
+    {
+      "byte_length": 385869,
+      "path": "real_mode_synthetic_input.json",
+      "sha256": "667a421441ce21698536f0c1a28d8b6c9258227743484304961e9fda8491adb7"
+    },
+    {
+      "byte_length": 77308,
+      "path": "source_diagnostic.py",
+      "sha256": "80b12ec299e861d24c0c23f88805a475f44099af894fbea7d787296c72681d8f"
+    },
+    {
+      "byte_length": 7312,
+      "path": "synthetic_example.py",
+      "sha256": "37db957fff940f2e9557e36586c07ee4a1a3ea534d9b3e36a5c96630b1a5aa78"
+    },
+    {
+      "byte_length": 385563,
+      "path": "synthetic_input.json",
+      "sha256": "b9272931831e1cce8834911b0ec1e321cd2de7dc8c622b01038bc8242fc605cf"
+    },
+    {
+      "byte_length": 652327,
+      "path": "synthetic_output.json",
+      "sha256": "e379fb2440b1c15bc7c6d9601b71c85ffaa0941d4ac72cc96b57e559d166b373"
+    },
+    {
+      "byte_length": 46432,
+      "path": "test_gmi_source_diagnostic_kernel.py",
+      "sha256": "2c9d575614de6e41c1463ff252010e92711b21e8389034df698842c73e59bc05"
+    }
+  ],
+  "member_count": 16,
+  "no_archived_code_executed": true,
+  "original_directory": "lanes/source_diagnostic_kernel_v1",
+  "original_manifest_sha256": "1dbf7da765127a4f32e5c80674399361b6daf0732fe6b1159c3fb1419a9fb075",
+  "readable_report_exact_original": "IMPLEMENTATION_RETURN.md",
+  "schema": "economic_network.frozen_packet_archive/v1",
+  "uncompressed_file_bytes": 1653833
+}

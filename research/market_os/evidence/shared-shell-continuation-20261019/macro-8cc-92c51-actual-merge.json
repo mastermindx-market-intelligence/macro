@@ -1,0 +1,50 @@
+{
+  "started_at": "2026-10-20T05:10:21.167720+00:00",
+  "head": "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+  "incoming": "92c51f1ff800b36fc63e7869243945996ac7315c",
+  "base": "0f058428717ac7c96c11e5a3ebc960db6a61edab",
+  "command": [
+    "git",
+    "merge",
+    "--no-ff",
+    "--no-commit",
+    "92c51f1ff800b36fc63e7869243945996ac7315c"
+  ],
+  "source": "original shared-shell-r27",
+  "candidate_receipt_sha256": "bb68045eab58efbd20bc1ad5991dc6ee0a4ffdda729b8c94eaa19997b863f5c7",
+  "finished_at": "2026-10-20T05:10:40.135518+00:00",
+  "merge_exit": 1,
+  "merge_log_sha256": "e07f5cf225a51dc31ec159843742eab8462846397058e76f41a750165b96d604",
+  "unmerged_before_resolution": {
+    ".github/ci/legacy-jobs.yml": {
+      "1": "3051fc7a41a412e1e767066bcb029a4a38b1aa18",
+      "2": "0efcd1f4f97960dfad23c012f06bceb0a98263bc",
+      "3": "dae75dc48404431d3434e04624741dcd65970299"
+    },
+    "tests/test_ci_pack.py": {
+      "1": "8db015e1e4becae09553db24477a09d4d460fec6",
+      "2": "6993399b0d31c5c68f01e439752e8ced296c9107",
+      "3": "ac293e803d1254e0efdf0358a7e6ef5970bba4e0"
+    }
+  },
+  "unmerged_after_resolution": [],
+  "index": "6670398b2e04ee6b571522cf7d2151385386fcf3",
+  "only_two_conflicts_differ_from_preview": true,
+  "candidate_hashes_match": true,
+  "complete_owned_whitespace": {
+    "argv": [
+      "git",
+      "-C",
+      "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+      "diff",
+      "--cached",
+      "--check",
+      "92c51f1ff800b36fc63e7869243945996ac7315c"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "commit_created": false,
+  "push_started": false
+}

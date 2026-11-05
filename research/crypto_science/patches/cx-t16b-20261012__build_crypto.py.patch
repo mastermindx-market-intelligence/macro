@@ -1,0 +1,86 @@
+--- a/scripts/build_crypto.py
++++ b/scripts/build_crypto.py
+@@ -22,7 +22,7 @@
+ from engine import alt_cycle, btc_mtf  # noqa: E402
+ from engine.btc_options import build_contract as build_btc_options, write_contract as write_btc_options  # noqa: E402
+ from engine.crypto_market_state import build_market_state  # noqa: E402
+-from engine.crypto_universe import breadth_read, load_universe_snapshot  # noqa: E402
++from engine.crypto_universe import breadth_read, display_price_path, load_universe_snapshot  # noqa: E402
+ from engine.eth_state import build_states as build_asset_states  # noqa: E402
+ from engine.event_calendar import us_macro_events  # noqa: E402
+ from lib import config, store  # noqa: E402
+@@ -328,6 +328,55 @@
+     return out
+ 
+ 
++
++def _coinbase_daily_close(symbol: str) -> pd.Series:
++    """Coinbase daily close for the display price path.
++
++    No Yahoo splice and no forward-fill. A missing file or a non-numeric
++    close stays missing.
++    """
++    series_name = {"ETH": "eth_daily", "SOL": "sol_daily"}.get(symbol)
++    if series_name is None:
++        return pd.Series(dtype=float)
++    frame = store.read("coinbase", series_name)
++    if frame is None or frame.empty or "close" not in frame.columns:
++        return pd.Series(dtype=float)
++    close = pd.to_numeric(frame["close"], errors="coerce")
++    idx = pd.to_datetime(close.index, utc=True)
++    if getattr(idx, "tz", None) is not None:
++        idx = idx.tz_convert("UTC").tz_localize(None)
++    close = pd.Series(close.to_numpy(dtype=float), index=pd.DatetimeIndex(idx).normalize())
++    close = close.loc[close.index.notna()].sort_index()
++    return close.loc[~close.index.duplicated(keep="last")]
++
++
++def _price_path_lane_fields(symbol: str) -> dict:
++    """Latest ETH/SOL momentum and risk state. Display tier, no size."""
++    fields = {
++        "path_momentum": "unavailable",
++        "path_risk": "unavailable",
++        "path_tier": "display",
++        "path_authority": "none",
++    }
++    try:
++        close = _coinbase_daily_close(symbol)
++        if close.empty:
++            return fields
++        frame = display_price_path(close, symbol)
++    except Exception:
++        log.warning("price path unavailable for %s", symbol)
++        return fields
++    if frame.empty:
++        return fields
++    last = frame.iloc[-1]
++    mom, risk = last["momentum_state"], last["risk_regime"]
++    if isinstance(mom, str) and mom:
++        fields["path_momentum"] = mom
++    if isinstance(risk, str) and risk:
++        fields["path_risk"] = risk
++    return fields
++
++
+ def _asset_lanes(e0: dict, asset_states: dict) -> list[dict]:
+     hero = e0.get("hero") or {}
+     lanes = [
+@@ -357,6 +406,7 @@
+         trend = state.get("trend") or {}
+         coverage = state.get("coverage") or {}
+         name_en, name_zh = names[symbol]
++        path = _price_path_lane_fields(symbol)
+         lanes.append(
+             {
+                 "symbol": symbol,
+@@ -375,6 +425,10 @@
+                 "href": "crypto.html#market-board",
+                 "cta": "See the class board",
+                 "cta_zh": "查看全市场看板",
++                "path_momentum": path["path_momentum"],
++                "path_risk": path["path_risk"],
++                "path_tier": path["path_tier"],
++                "path_authority": path["path_authority"],
+             }
+         )
+     return lanes

@@ -607,8 +607,14 @@ def fetch_fr_raw_text(url: str, *, session: Any = None) -> FetchedResource:
     )
 
 
-_FR_DOCUMENT_NUMBER_RE = re.compile(r"^\d{4}-\d{5}$")
-_FR_DOCUMENT_SOURCE_RE = re.compile(r"/(?P<document>\d{4}-\d{5})(?:\.(?:txt|htm|html|pdf))?$")
+# Federal Register correction notices preserve the corrected document's official
+# identifier behind a correction ordinal, e.g. C1-2025-22754.  Keep that
+# prefix in the identity and bind it through the official raw/GovInfo paths;
+# never normalize a correction into the original document number.
+_FR_DOCUMENT_NUMBER_RE = re.compile(r"^(?:C[1-9][0-9]*-)?[0-9]{4}-[0-9]{5}$")
+_FR_DOCUMENT_SOURCE_RE = re.compile(
+    r"/(?P<document>(?:C[1-9][0-9]*-)?[0-9]{4}-[0-9]{5})(?:\.(?:txt|htm|html|pdf))?$"
+)
 
 
 def _fr_document_number(value: object) -> str:

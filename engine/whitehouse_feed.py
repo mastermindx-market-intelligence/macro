@@ -18,6 +18,10 @@ from __future__ import annotations
 
 import concurrent.futures as cf
 import html as _html
+import hashlib
+import os
+import stat
+import tempfile
 import json
 import logging
 import re
@@ -32,6 +36,10 @@ _UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
        "macro-dashboard/1.0 (+research; whitehouse-monitor)")
 _TIMEOUT = 15
 _MAX_WORKERS = 4
+
+# Host-local acquisition evidence. Never place unqualified bodies in the public
+# repository, site tree, Actions artifacts or the sentinel Git commit scope.
+SOURCE_DOCUMENT_ROOT = Path.home() / ".local/share/mastermind/whitehouse/source_documents"
 
 # The White House publishes a free, keyless RSS feed per section (WordPress
 # `/feed/`). `/news/feed/` is the AGGREGATE — it already carries presidential
@@ -88,7 +96,7 @@ def _clean(text: str | None) -> str:
     return _WS_RE.sub(" ", _html.unescape(_TAG_RE.sub(" ", text))).strip()
 
 
-def _body_text(html: str | None, limit: int = 12000) -> str:
+def _body_text(html: str | None, limit: int | None = 12000) -> str:
     """Reduce a content:encoded HTML body to clean paragraph text the LLM can read.
     Block tags become newlines so structure survives; remaining tags are stripped and
     HTML entities decoded. Bounded so one huge proclamation can't blow the prompt."""
@@ -98,7 +106,8 @@ def _body_text(html: str | None, limit: int = 12000) -> str:
     t = re.sub(r"(?i)<br\s*/?>", "\n", t)
     t = _html.unescape(_TAG_RE.sub(" ", t))   # stdlib decodes named + numeric entities
     lines = [_WS_RE.sub(" ", ln).strip() for ln in t.split("\n")]
-    return "\n".join(ln for ln in lines if ln)[:limit]
+    normalized = "\n".join(ln for ln in lines if ln)
+    return normalized if limit is None else normalized[:limit]
 
 
 def _child(item, *names):
@@ -141,7 +150,9 @@ def _parse(raw: bytes, section: str) -> list[dict]:
         excerpt = _clean(desc_el.text if desc_el is not None else "")
         # full body — content:encoded (namespaced) is the real article text
         ce = it.find(_CONTENT_NS)
-        body = _body_text(ce.text if ce is not None else None) or excerpt
+        encoded_body = _body_text(ce.text if ce is not None else None, limit=None)
+        source_body = encoded_body or excerpt
+        body = source_body[:12000]
         cats = [_clean(c.text) for c in it.findall("category") if _clean(c.text)]
         if not title or not url:
             continue
@@ -153,10 +164,90 @@ def _parse(raw: bytes, section: str) -> list[dict]:
             "published": published,
             "excerpt": excerpt[:400],
             "body": body,
+            "body_origin": "content_encoded" if encoded_body else "description",
+            "body_truncated": len(source_body) > len(body),
             "section": section,
             "categories": cats[:8],
         })
     return out
+
+
+
+def retain_source_document(root: Path, item: dict, *, capture_dir: Path | None = None) -> dict:
+    """Keep the exact normalized feed text independently of generated analysis.
+
+    The existing sentinel writes a mode-0700 host-local capture directory outside
+    all Git checkouts; files are mode 0600. No public artifact upload is added. Content-addressed revisions are published atomically and never
+    replaced. This is neither raw HTTP capture nor upstream authentication,
+    completeness of the publisher's page, rights qualification or Press admission.
+    Excerpt fallbacks and truncated bodies are explicitly retained as such.
+    No network, model, processed-state, alert-ledger or site write occurs here.
+    """
+    fields = ("id", "guid", "title", "url", "published", "section", "body")
+    if not isinstance(item, dict) or any(
+        not isinstance(item.get(key), str) or not item[key].strip() for key in fields
+    ):
+        raise ValueError("source document lacks required feed fields")
+    url = urlparse(item["url"])
+    if (url.scheme != "https" or url.netloc != "www.whitehouse.gov"
+            or not url.path.startswith("/") or url.query or url.fragment):
+        raise ValueError("source document is not on the official White House origin")
+    published = datetime.fromisoformat(item["published"].replace("Z", "+00:00"))
+    if published.tzinfo is None:
+        raise ValueError("source document publication time must be timezone-aware")
+    if item["id"] != _slug_id(item["url"], item["published"]):
+        raise ValueError("source document id does not match its publication identity")
+    if item["section"] not in {section for _, section in FEEDS}:
+        raise ValueError("source document section is not an existing feed")
+    if (item.get("body_origin") not in {"content_encoded", "description"}
+            or type(item.get("body_truncated")) is not bool
+            or len(item["body"]) > 12000):
+        raise ValueError("source document has unknown body provenance or bound")
+    record = {key: item[key] for key in fields}
+    record.update(
+        schema="whitehouse.source_document.v1",
+        normalization="whitehouse-feed-text/v1",
+        body_origin=item["body_origin"], body_truncated=item["body_truncated"],
+        body_sha256=hashlib.sha256(item["body"].encode("utf-8")).hexdigest(),
+        rights_status="unqualified", allow_stage=False, allow_emit=False,
+    )
+    raw = (json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n").encode("utf-8")
+    digest = hashlib.sha256(raw).hexdigest()
+    directory = Path(capture_dir if capture_dir is not None else SOURCE_DOCUMENT_ROOT).expanduser().resolve()
+    if directory.is_relative_to(Path(root).resolve()) or any(
+        (ancestor / ".git").exists() or (ancestor / ".git").is_symlink()
+        for ancestor in (directory, *directory.parents)
+    ):
+        raise ValueError("source capture directory must be outside all Git checkouts")
+    directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    if stat.S_IMODE(directory.stat().st_mode) != 0o700:
+        raise ValueError("source capture directory must have mode 0700")
+    target = directory / f"{digest}.json"
+    fd, temporary = tempfile.mkstemp(prefix=".source-", suffix=".tmp", dir=target.parent)
+    temporary = Path(temporary)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            # A same-directory hard link publishes a complete file exclusively.
+            # os.replace would silently heal/overwrite corrupted prior evidence.
+            os.link(temporary, target)
+        except FileExistsError:
+            if (target.is_symlink() or not target.is_file()
+                    or stat.S_IMODE(target.stat().st_mode) != 0o600
+                    or target.read_bytes() != raw):
+                raise ValueError("existing source document differs from its content address")
+        directory_fd = os.open(target.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+    finally:
+        temporary.unlink(missing_ok=True)
+    return {"path": str(target), "sha256": digest,
+            "body_sha256": record["body_sha256"]}
 
 
 # --------------------------------------------------------------------------- #

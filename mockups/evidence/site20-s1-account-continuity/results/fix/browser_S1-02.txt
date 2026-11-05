@@ -1,0 +1,22 @@
+# account.js sha256 6c14fe90aab48eb5f2a54284922e55e027411488646c52c36865ad97016d56ca
+# S1-02 notification-preference acknowledgements browser acceptance — variant=fix page=site/alerts.html (local-only, fictional fixtures)
+# result: 19 pass / 0 fail
+PASS T1 first ack records ITS submitted value as acked (data-prev) :: America/New_York
+PASS T1 newer selection kept while second write in flight :: Asia/Hong_Kong
+PASS T1 request values = NY then HK :: [{'tz': 'America/New_York'}, {'tz': 'Asia/Hong_Kong'}]
+PASS T1 final acked/visible/server = HK :: ('Asia/Hong_Kong', 'Asia/Hong_Kong', 'Asia/Hong_Kong')
+PASS T1 visible copy 'Saved' :: Saved
+PASS T1 reload shows acked HK :: Asia/Hong_Kong
+PASS T2 old 502 does not revert the newer selection :: Asia/Hong_Kong
+PASS T2 newer edit acked after old failure :: ('Asia/Hong_Kong', 'Asia/Hong_Kong', 'Asia/Hong_Kong')
+PASS T3 400 shows server copy (en) :: Unknown time zone
+PASS T3 control back to acked Europe/London (en) :: Europe/London
+PASS T3 400 shows server copy (zh) :: 未知时区
+PASS T3 control back to acked Europe/London (zh) :: Europe/London
+PASS T4 opt-in off saved :: ([{'alert_email_optin': False}], 'false')
+PASS T4 failed opt-in on reverts to acked off :: false
+PASS T5 category write carries both categories :: ['holdings_material_change', 'thesis_window']
+PASS T5 quiet hours saved + data-quiet=true :: ({'start': '22:00', 'end': '07:00'}, 'true')
+PASS T5 quiet hours cleared :: (None, 'false')
+PASS T6 reopen shows the acked value after the late ack :: ('America/New_York', 'America/New_York')
+PASS T7 B's tz control untouched by A's late ack :: ('Bo Fictional', 'Asia/Tokyo', 'Asia/Tokyo', '')

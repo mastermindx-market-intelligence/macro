@@ -1,0 +1,44 @@
+{
+  "schema": "mastermind.attended.beta_namespace_invocation.v2",
+  "started_at": "2026-10-20T03:09:58.402213+00:00",
+  "source_sha256": "7f7e3179b6f46844e13f293d78be6c4019c8564d2cc3109f45cd3e5e5089c5a5",
+  "source_bytes": 48421,
+  "binding_sha256": "7e9b812fa264611279183202c4eb576984bb8d2e8b5fd70dedbd6b34152efd2b",
+  "remote_probe_path": "/root/mastermind-beta-owner-93e303cc-ucmhwhpm/beta-namespace-fs-probe-7f7e3179.py",
+  "prior_refusal_stdout_sha256": "440316f3ed272cc744bb8340a7c2747433b00f998c4d4801e62374a0a1d5b606",
+  "prior_absence_postread_sha256": "ab2b31772fc249674e1152ebd390f54eb5d8a07013bf9e20b6fa72ed2011adfa",
+  "installed_argv_control_sha256": "c7ec86a5cc8beee0609bfb6ea77dbfc926fcbc7e43102d070e0e18b497457826",
+  "source_review": "Root plus beta_recovery_counsel NONBLOCKING at exact7f7e3179; onlyunambiguouswdns=/ serialization and rawstderr retention differ; helperfunctions unchanged.",
+  "effect_scope": "Same diagnostic continuation after confirmed pre-inner exec refusal, cache absence and child reaping. Same unused nonce. One exclusive beta cache file with exact cleanup. No bootstrap/restart/service change/public-data write/production mutation.",
+  "stage_exit": 0,
+  "probe_exit": 0,
+  "all_checks_pass": true,
+  "disposition": "ACCEPTED_BETA_MOUNT_ROOT_CREDENTIAL_FILESYSTEM_PASS",
+  "finished_at": "2026-10-20T03:10:01.179582+00:00",
+  "files": {
+    "binding.json": {
+      "bytes": 52875,
+      "sha256": "7e9b812fa264611279183202c4eb576984bb8d2e8b5fd70dedbd6b34152efd2b"
+    },
+    "invocation.json": {
+      "bytes": 1252,
+      "sha256": "8281efe06ddf56b2e65289f07c337af0cba491a4f09d85398d761f48e34ca19c"
+    },
+    "stage.stdout.json": {
+      "bytes": 298,
+      "sha256": "40c84d672822bc9f3727bdaab394206fd3148cd26627157475f0443ef4b5e252"
+    },
+    "stage.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.json": {
+      "bytes": 30072,
+      "sha256": "6a402fc92a8a65e3e18569342214a0034866d9b427afdeaf23aa8db3c98b7d5e"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

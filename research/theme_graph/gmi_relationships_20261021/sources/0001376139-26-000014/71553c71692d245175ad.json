@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:35:16Z",
+ "accession": "0001376139-26-000014",
+ "cik": "0001376139",
+ "doc_byte_length": 2736240,
+ "doc_sha256": "fb353306ec4b381f080fe4e04ee0d0d2fb9eb0afcef7b8d290165b7ad446b4a9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cvi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2677603,
+  "byte_start": 2677463,
+  "normalized": "Amended & Restated Crude Oil Supply Agreement, dated December 21, 2023, by and between Gunvor USA LLC and CVR Supply & Trading, LLC.",
+  "normalized_sha256": "af57fd4542fb98068d576b8949a997f91ac59fba738e62e78f15642188f7e989",
+  "raw": "Amended &amp; Restated Crude Oil Supply Agreement, dated December 21, 2023, by and between Gunvor USA LLC and CVR Supply &amp; Trading, LLC.",
+  "raw_sha256": "71553c71692d245175add7c87a88471a1efac8ab9e7a94d2ff847adc61db03f1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1376139/000137613926000014/cvi-20251231.htm",
+ "xbrl_contexts": []
+}

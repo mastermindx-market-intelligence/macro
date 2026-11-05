@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:39:08Z",
+ "accession": "0002058873-26-000010",
+ "cik": "0002058873",
+ "doc_byte_length": 2657938,
+ "doc_sha256": "93b15f7f6a7cf497a0f6275893ac3d4774138d7cae2203edb727f28378332db5",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "q-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 614654,
+  "byte_start": 613514,
+  "normalized": "Historical costs for such services may not necessarily reflect the actual expenses we would have incurred, or will incur, as an independent company. In connection with the Separation, we and/or certain of our subsidiaries entered into the Separation and Distribution Agreement, by and between DuPont de Nemours, Inc. and Qnity Electronics, Inc., dated as of the Separation and Distribution Date (the “Separation and Distribution Agreement”) and certain other agreements with DuPont and/or certain of its subsidiaries as of the Separation and Distribution Date, including, but not limited to, the Tax Matters Agreement, the Employee Matters Agreement, the Transition Services Agreement (as defined below), the Ex-Station Lease (\"ESL\") Cost Sharing Agreement (as defined below) and other agreements governing aspects of the Company's relationship with DuPont following the Separation, including the Intellectual Property Cross-License Agreement and Legal Liabilities Assignment Agreement, among others. DuPont will not provide us with ongoing assistance other than the transition and other services described in these agreements.",
+  "normalized_sha256": "a00705aa46a2325eb8b295922e47fa7a6be74167f3fa4bce9bbf95b123efa6bd",
+  "raw": " Historical costs for such services may not necessarily reflect the actual expenses we would have incurred, or will incur, as an independent company. In connection with the Separation, we and/or certain of our subsidiaries entered into the Separation and Distribution Agreement, by and between DuPont de Nemours, Inc. and Qnity Electronics, Inc., dated as of the Separation and Distribution Date (the &#8220;Separation and Distribution Agreement&#8221;) and certain other agreements with DuPont and/or certain of its subsidiaries as of the Separation and Distribution Date, including, but not limited to, the Tax Matters Agreement, the Employee Matters Agreement, the Transition Services Agreement (as defined below), the Ex-Station Lease (\"ESL\") Cost Sharing Agreement (as defined below) and other agreements governing aspects of the Company's relationship with DuPont following the Separation, including the Intellectual Property Cross-License Agreement and Legal Liabilities Assignment Agreement, among others. DuPont will not provide us with ongoing assistance other than the transition and other services described in these agreements.",
+  "raw_sha256": "2fd760ce7a4905d9d255bf49ee7ea3f38207194e479b37723206e850e47519e6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2058873/000205887326000010/q-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -9,6 +9,7 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass, replace
 from datetime import datetime
+from decimal import Decimal
 import hashlib
 import hmac
 from pathlib import Path
@@ -51,10 +52,31 @@ ALLOWED_UNITS = frozenset({"USD", "shares", "USD/shares", "ratio"})
 ALLOWED_PERIOD_KINDS = frozenset({"duration", "instant"})
 ALLOWED_FORMS = frozenset({"10-K", "10-K/A", "10-Q", "10-Q/A"})
 ALLOWED_TAXONOMIES = frozenset({"us-gaap", "dei"})
+# G0-c governed dimensional profile (A31/A32): the CLOSED axis universe a
+# catalog metric may declare alongside ``consolidated_only``. Axes declare
+# which dimensional scopes a pack may serve as labelled scope rows; the
+# consolidated cell itself stays the filing's undimensioned consolidated fact
+# (no-sum fence), so ``require_dimensions`` and ``allow_member_selection``
+# remain false everywhere.
+ALLOWED_DIMENSIONAL_AXES = frozenset(
+    {
+        "StatementBusinessSegmentsAxis",
+        "srt:ConsolidationItemsAxis",
+        "StatementClassOfStockAxis",
+    }
+)
 ALLOWED_STATEMENTS = frozenset(
     {"income_statement", "cash_flow_statement", "balance_sheet", "derived"}
 )
 ALLOWED_ALIGNMENTS = frozenset({"same_period", "ending_instant_to_duration"})
+ISSUER_CLASSES = frozenset(
+    {"industrial", "software", "bank", "insurance", "reit", "utility", "unknown"}
+)
+ALLOWED_ISSUER_CLASS_BASES = frozenset({"sic"})
+ALLOWED_PERIOD_CALENDARS = frozenset({"fiscal"})
+DEFAULT_ISSUER_CLASS_BASIS = "sic"
+DEFAULT_PERIOD_CALENDAR = "fiscal"
+ALLOWED_QUALIFICATION_STATES = frozenset({"applicable", "not_applicable", "not_evaluable"})
 _IDENTIFIER = re.compile(r"^[a-z][a-z0-9_]*$")
 _CONCEPT = re.compile(r"^[A-Za-z][A-Za-z0-9]*$")
 _SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
@@ -182,6 +204,7 @@ KNOWN_CONCEPT_ALLOWLIST.update(
             "LongTermDebtCurrent",
             "LongTermDebtNoncurrent",
             "Liabilities",
+            "LiabilitiesAndStockholdersEquity",
             "StockholdersEquity",
             "RetainedEarningsAccumulatedDeficit",
         ),
@@ -197,6 +220,15 @@ KNOWN_CONCEPT_ALLOWLIST.update(
             "WeightedAverageNumberOfDilutedSharesOutstanding",
         ),
         period_kind="duration",
+        contract_units=("shares",),
+    )
+)
+# Seat ruling 2026-10-19 R-ALIAS / D1: balance-sheet identity total and strict period-end shares.
+KNOWN_CONCEPT_ALLOWLIST.update(
+    _known_concepts(
+        "us-gaap",
+        ("CommonStockSharesOutstanding",),
+        period_kind="instant",
         contract_units=("shares",),
     )
 )
@@ -271,6 +303,67 @@ class MappingRule:
 
 
 @dataclass(frozen=True)
+class ApplicabilityPolicy:
+    """Optional issuer-class restriction. Empty tuples impose no restriction."""
+
+    issuer_class_basis: str = DEFAULT_ISSUER_CLASS_BASIS
+    applicable_classes: tuple[str, ...] = ()
+    excluded_classes: tuple[str, ...] = ()
+    basis_note: str = ""
+
+
+@dataclass(frozen=True)
+class PeriodBasis:
+    """Issuer-native period calendar declared on the metric contract."""
+
+    calendar: str = DEFAULT_PERIOD_CALENDAR
+
+
+@dataclass(frozen=True)
+class Qualification:
+    """Tri-state metric applicability result from ``qualify_metric``."""
+
+    state: str
+    reason: str
+
+    def __post_init__(self) -> None:
+        if self.state not in ALLOWED_QUALIFICATION_STATES:
+            raise ValueError(f"qualification state is unsupported: {self.state}")
+        if not isinstance(self.reason, str):
+            raise TypeError("qualification reason must be a string")
+
+
+FORMULA_NOT_PRESENTED_MODES = frozenset({"withhold", "qualified_sum", "not_applicable"})
+FORMULA_ALL_NOT_PRESENTED_MODES = frozenset({"withhold", "not_applicable"})
+FORMULA_QUALIFIED_OPERAND_MODES = frozenset({"inherit", "withhold"})
+MAX_FORMULA_POLICY_REASON_CHARS = 512
+
+
+@dataclass(frozen=True)
+class FormulaNotPresentedPolicy:
+    """Versioned formula policy for a not-presented operand (R-FORMULA F3).
+
+    ``mode`` says what a governed ``not_presented`` N/A operand does to the
+    formula: ``withhold`` keeps the formula absent, ``not_applicable`` makes
+    it N/A, and ``qualified_sum`` adds up the presented operands of a pure
+    signed-sum expression and prints the omitted ones as a qualifier.  Only
+    ``eligible_operands`` may be omitted; when every operand is not presented
+    ``all_not_presented`` decides (never a materialized zero).
+    ``qualified_operand`` says whether a qualified VALUE operand may feed this
+    formula (``inherit``) or keeps it absent (``withhold``).  ``reason`` is the
+    printed rationale (A08).  The policy carries its own immutable rule clock,
+    so it is invisible, and the formula digest unchanged, before that clock.
+    """
+
+    rule: ImmutableRule
+    mode: str
+    qualified_operand: str
+    reason: str
+    eligible_operands: tuple[str, ...] = ()
+    all_not_presented: str | None = None
+
+
+@dataclass(frozen=True)
 class FormulaRule:
     metric_id: str
     rule: ImmutableRule
@@ -278,6 +371,16 @@ class FormulaRule:
     dependencies: tuple[str, ...]
     output_unit: str
     dependency_period_alignment: str
+    denominator_constraints: tuple[str, ...] = ()
+    not_presented_policy: FormulaNotPresentedPolicy | None = None
+
+
+@dataclass(frozen=True)
+class MetricDefinition:
+    """Rule-versioned statement of the scope a metric identifier measures."""
+
+    scope: str
+    rule: ImmutableRule
 
 
 @dataclass(frozen=True)
@@ -297,6 +400,9 @@ class MetricContract:
     declared_formula_dependencies: tuple[str, ...]
     mappings: tuple[MappingRule, ...]
     formula: FormulaRule | None
+    applicability: ApplicabilityPolicy = ApplicabilityPolicy()
+    period_basis: PeriodBasis = PeriodBasis()
+    definition: MetricDefinition | None = None
 
     @property
     def rule_id(self) -> str:
@@ -321,6 +427,35 @@ class MetricContract:
     @property
     def formula_dependencies(self) -> tuple[str, ...]:
         return self.formula.dependencies if self.formula else self.declared_formula_dependencies
+
+
+def _default_applicability(policy: ApplicabilityPolicy) -> bool:
+    return not policy.applicable_classes and not policy.excluded_classes
+
+
+def qualify_metric(
+    contract: MetricContract,
+    formula: FormulaRule | None,
+    issuer_class: str | None,
+    denominators: Mapping[str, Decimal | None],
+) -> Qualification:
+    """Pure applicability gate. Default-inert: empty class lists admit every issuer."""
+    policy = contract.applicability
+    if not _default_applicability(policy):
+        if issuer_class is None:
+            return Qualification("not_evaluable", "issuer_class_unknown")
+        if issuer_class in policy.excluded_classes or (
+            policy.applicable_classes and issuer_class not in policy.applicable_classes
+        ):
+            return Qualification("not_applicable", "not_applicable_for_issuer_class")
+    constraints = formula.denominator_constraints if formula is not None else ()
+    for input_id in constraints:
+        value = denominators[input_id] if input_id in denominators else None
+        if value is None:
+            return Qualification("not_evaluable", f"denominator_missing:{input_id}")
+        if value <= 0:
+            return Qualification("not_applicable", f"denominator_not_positive:{input_id}")
+    return Qualification("applicable", "")
 
 
 @dataclass(frozen=True)
@@ -390,7 +525,18 @@ class MetricRegistry:
                 and formula.rule.available_at <= cutoff
             ):
                 formula = None
-            contracts.append(replace(contract, mappings=mappings, formula=formula))
+            if (
+                formula is not None
+                and formula.not_presented_policy is not None
+                and formula.not_presented_policy.rule.available_at > cutoff
+            ):
+                formula = replace(formula, not_presented_policy=None)
+            definition = contract.definition
+            if definition is not None and definition.rule.available_at > cutoff:
+                definition = None
+            contracts.append(
+                replace(contract, mappings=mappings, formula=formula, definition=definition)
+            )
 
         return GovernanceBundle(
             schema=GOVERNANCE_BUNDLE_SCHEMA,
@@ -668,7 +814,24 @@ def _dimensional_profile(
         allow_attested_occurrence_profile
         and mode == ATTESTED_OCCURRENCE_DIMENSIONAL_MODE
     )
-    if not supported_mode or axes or required is not False or member_selection is not False:
+    # G0-c: only ``consolidated_only`` may declare governed axes, every axis
+    # must sit inside the closed ALLOWED_DIMENSIONAL_AXES universe, and no
+    # axis may repeat. The attested-occurrence bridge and every other mode
+    # stay dimensionless, and the no-sum fence keys below stay mandatory.
+    governed_axes = (
+        not axes
+        or (
+            mode == "consolidated_only"
+            and len(set(axes)) == len(axes)
+            and set(axes).issubset(ALLOWED_DIMENSIONAL_AXES)
+        )
+    )
+    if (
+        not supported_mode
+        or not governed_axes
+        or required is not False
+        or member_selection is not False
+    ):
         raise ValueError(
             f"{field} has an unsupported dimensional profile"
         )
@@ -724,6 +887,175 @@ def _dependencies(value: Any, *, field: str) -> tuple[str, ...]:
     if len(set(dependencies)) != len(dependencies):
         raise ValueError(f"{field} cannot contain duplicate dependencies")
     return dependencies
+
+
+def _issuer_class_tuple(value: Any, *, field: str) -> tuple[str, ...]:
+    items = tuple(_identifier(item, field=field) for item in _require_list(value, field=field))
+    if len(set(items)) != len(items):
+        raise ValueError(f"{field} cannot contain duplicate issuer classes")
+    unknown = sorted(set(items) - ISSUER_CLASSES)
+    if unknown:
+        raise ValueError(f"{field} contains unknown issuer class name(s): {', '.join(unknown)}")
+    return items
+
+
+def _applicability_policy(value: Any, *, field: str) -> ApplicabilityPolicy:
+    raw = _require_mapping(value, field=field)
+    _exact_keys(
+        raw,
+        field=field,
+        required=frozenset(
+            {"issuer_class_basis", "applicable_classes", "excluded_classes", "basis_note"}
+        ),
+    )
+    basis = _text(raw.get("issuer_class_basis"), field=f"{field}.issuer_class_basis")
+    if basis not in ALLOWED_ISSUER_CLASS_BASES:
+        raise ValueError(f"{field}.issuer_class_basis is unsupported")
+    applicable = _issuer_class_tuple(
+        raw.get("applicable_classes"), field=f"{field}.applicable_classes"
+    )
+    excluded = _issuer_class_tuple(
+        raw.get("excluded_classes"), field=f"{field}.excluded_classes"
+    )
+    overlap = sorted(set(applicable) & set(excluded))
+    if overlap:
+        raise ValueError(
+            f"{field} cannot list a class as both applicable and excluded: {', '.join(overlap)}"
+        )
+    note = raw.get("basis_note")
+    if not isinstance(note, str):
+        raise ValueError(f"{field}.basis_note must be a string")
+    return ApplicabilityPolicy(basis, applicable, excluded, note.strip())
+
+
+def _period_basis(value: Any, *, field: str) -> PeriodBasis:
+    raw = _require_mapping(value, field=field)
+    _exact_keys(raw, field=field, required=frozenset({"calendar"}))
+    calendar = _text(raw.get("calendar"), field=f"{field}.calendar")
+    if calendar not in ALLOWED_PERIOD_CALENDARS:
+        raise ValueError(f"{field}.calendar is unsupported")
+    return PeriodBasis(calendar)
+
+
+def _denominator_constraints(
+    value: Any, *, field: str, dependencies: tuple[str, ...]
+) -> tuple[str, ...]:
+    raw = _require_mapping(value, field=field)
+    _exact_keys(raw, field=field, required=frozenset({"require_positive"}))
+    names = tuple(
+        _identifier(item, field=f"{field}.require_positive")
+        for item in _require_list(raw.get("require_positive"), field=f"{field}.require_positive")
+    )
+    if len(set(names)) != len(names):
+        raise ValueError(f"{field}.require_positive cannot contain duplicate inputs")
+    unknown = sorted(set(names) - set(dependencies))
+    if unknown:
+        raise ValueError(
+            f"{field}.require_positive names unknown input(s): {', '.join(unknown)}"
+        )
+    return names
+
+
+def formula_signed_terms(
+    expression: str, dependencies: Sequence[str]
+) -> tuple[tuple[str, int], ...]:
+    """Return ``(dependency, sign)`` in expression order for a pure signed sum.
+
+    Refuses any expression that is not ``+``/``-`` over names, or that does
+    not use each declared dependency exactly once.
+    """
+    try:
+        tree = ast.parse(expression, mode="eval")
+    except SyntaxError as exc:
+        raise ValueError("qualified_sum expression is not valid arithmetic") from exc
+    terms: list[tuple[str, int]] = []
+
+    def visit(node: ast.AST, sign: int) -> None:
+        if isinstance(node, ast.Name):
+            terms.append((node.id, sign))
+            return
+        if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Sub)):
+            visit(node.left, sign)
+            visit(node.right, -sign if isinstance(node.op, ast.Sub) else sign)
+            return
+        raise ValueError("qualified_sum requires a signed sum of its dependencies")
+
+    visit(tree.body, 1)
+    names = [name for name, _sign in terms]
+    if len(names) != len(set(names)) or set(names) != set(dependencies):
+        raise ValueError("qualified_sum must use each declared dependency exactly once")
+    return tuple(terms)
+
+
+def _formula_not_presented_policy(
+    value: Any,
+    *,
+    field: str,
+    expression: str,
+    dependencies: tuple[str, ...],
+    formula_rule: ImmutableRule,
+) -> FormulaNotPresentedPolicy:
+    raw = _require_mapping(value, field=field)
+    mode = _text(raw.get("mode"), field=f"{field}.mode")
+    if mode not in FORMULA_NOT_PRESENTED_MODES:
+        raise ValueError(f"{field}.mode is unsupported")
+    summed = mode == "qualified_sum"
+    _exact_keys(
+        raw,
+        field=field,
+        required=frozenset({"rule", "mode", "qualified_operand", "reason"})
+        | (frozenset({"eligible_operands", "all_not_presented"}) if summed else frozenset()),
+    )
+    rule = _rule(raw.get("rule"), field=f"{field}.rule")
+    if rule.available_at < formula_rule.available_at:
+        raise ValueError(f"{field}.rule cannot predate its formula rule")
+    if rule.confidence != formula_rule.confidence:
+        raise ValueError(f"{field}.rule confidence must match its formula rule")
+    qualified_operand = _text(raw.get("qualified_operand"), field=f"{field}.qualified_operand")
+    if qualified_operand not in FORMULA_QUALIFIED_OPERAND_MODES:
+        raise ValueError(f"{field}.qualified_operand is unsupported")
+    reason = _text(raw.get("reason"), field=f"{field}.reason")
+    if len(reason) > MAX_FORMULA_POLICY_REASON_CHARS:
+        raise ValueError(f"{field}.reason exceeds {MAX_FORMULA_POLICY_REASON_CHARS} characters")
+    eligible: tuple[str, ...] = ()
+    all_not_presented: str | None = None
+    if summed:
+        try:
+            formula_signed_terms(expression, dependencies)
+        except ValueError as exc:
+            raise ValueError(f"{field}: {exc}") from exc
+        eligible = tuple(
+            _identifier(item, field=f"{field}.eligible_operands")
+            for item in _require_list(raw.get("eligible_operands"), field=f"{field}.eligible_operands")
+        )
+        if not eligible:
+            raise ValueError(f"{field}.eligible_operands must name at least one operand")
+        if len(set(eligible)) != len(eligible):
+            raise ValueError(f"{field}.eligible_operands cannot contain duplicates")
+        unknown = sorted(set(eligible) - set(dependencies))
+        if unknown:
+            raise ValueError(f"{field}.eligible_operands names unknown input(s): {', '.join(unknown)}")
+        if eligible != tuple(item for item in dependencies if item in set(eligible)):
+            raise ValueError(f"{field}.eligible_operands must follow dependency order")
+        all_not_presented = _text(raw.get("all_not_presented"), field=f"{field}.all_not_presented")
+        if all_not_presented not in FORMULA_ALL_NOT_PRESENTED_MODES:
+            raise ValueError(f"{field}.all_not_presented is unsupported")
+    return FormulaNotPresentedPolicy(
+        rule, mode, qualified_operand, reason, eligible, all_not_presented
+    )
+
+
+def _formula_policy_payload(policy: FormulaNotPresentedPolicy) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "rule": _rule_payload(policy.rule),
+        "mode": policy.mode,
+        "qualified_operand": policy.qualified_operand,
+        "reason": policy.reason,
+    }
+    if policy.mode == "qualified_sum":
+        payload["eligible_operands"] = list(policy.eligible_operands)
+        payload["all_not_presented"] = policy.all_not_presented
+    return payload
 
 
 def _exact_keys(
@@ -822,7 +1154,7 @@ def _contract_payload(contract: MetricContract) -> dict[str, Any]:
     period = contract.period_constraints
     dimensions = contract.dimensional_profile
     presentation = contract.presentation_constraints
-    return {
+    payload: dict[str, Any] = {
         "metric_id": contract.metric_id,
         "label": contract.label,
         "category": contract.category,
@@ -856,6 +1188,27 @@ def _contract_payload(contract: MetricContract) -> dict[str, Any]:
         },
         "declared_formula_dependencies": list(contract.declared_formula_dependencies),
     }
+    policy = contract.applicability
+    if (
+        policy.issuer_class_basis != DEFAULT_ISSUER_CLASS_BASIS
+        or policy.applicable_classes
+        or policy.excluded_classes
+        or policy.basis_note
+    ):
+        payload["applicability"] = {
+            "issuer_class_basis": policy.issuer_class_basis,
+            "applicable_classes": list(policy.applicable_classes),
+            "excluded_classes": list(policy.excluded_classes),
+            "basis_note": policy.basis_note,
+        }
+    if contract.period_basis.calendar != DEFAULT_PERIOD_CALENDAR:
+        payload["period_basis"] = {"calendar": contract.period_basis.calendar}
+    if contract.definition is not None:
+        payload["definition"] = {
+            "scope": contract.definition.scope,
+            "rule": _rule_payload(contract.definition.rule),
+        }
+    return payload
 
 
 def _mapping_payload(mapping: MappingRule) -> dict[str, Any]:
@@ -886,7 +1239,7 @@ def _mapping_payload(mapping: MappingRule) -> dict[str, Any]:
 
 
 def _formula_payload(formula: FormulaRule) -> dict[str, Any]:
-    return {
+    payload: dict[str, Any] = {
         "metric_id": formula.metric_id,
         "rule": _rule_payload(formula.rule),
         "expression": formula.expression,
@@ -894,6 +1247,22 @@ def _formula_payload(formula: FormulaRule) -> dict[str, Any]:
         "output_unit": formula.output_unit,
         "dependency_period_alignment": formula.dependency_period_alignment,
     }
+    if formula.denominator_constraints:
+        payload["denominator_constraints"] = {
+            "require_positive": list(formula.denominator_constraints)
+        }
+    if formula.not_presented_policy is not None:
+        payload["not_presented_policy"] = _formula_policy_payload(formula.not_presented_policy)
+    return payload
+
+
+def _metric_definition_from_payload(value: Any, *, field: str) -> MetricDefinition:
+    raw = _require_mapping(value, field=field)
+    _exact_keys(raw, field=field, required=frozenset({"scope", "rule"}))
+    return MetricDefinition(
+        scope=_text(raw.get("scope"), field=f"{field}.scope"),
+        rule=_rule(raw.get("rule"), field=f"{field}.rule"),
+    )
 
 
 def _metric_contract_from_payload(value: Mapping[str, Any], *, field: str) -> MetricContract:
@@ -908,6 +1277,7 @@ def _metric_contract_from_payload(value: Mapping[str, Any], *, field: str) -> Me
                 "declared_formula_dependencies",
             }
         ),
+        optional=frozenset({"applicability", "period_basis", "definition"}),
     )
     _bounded_wire_list(raw["units"], field=f"{field}.units", maximum=len(ALLOWED_UNITS))
     _bounded_wire_list(
@@ -947,6 +1317,21 @@ def _metric_contract_from_payload(value: Mapping[str, Any], *, field: str) -> Me
         ),
         mappings=(),
         formula=None,
+        applicability=(
+            _applicability_policy(raw["applicability"], field=f"{field}.applicability")
+            if "applicability" in raw
+            else ApplicabilityPolicy()
+        ),
+        period_basis=(
+            _period_basis(raw["period_basis"], field=f"{field}.period_basis")
+            if "period_basis" in raw
+            else PeriodBasis()
+        ),
+        definition=(
+            _metric_definition_from_payload(raw["definition"], field=f"{field}.definition")
+            if "definition" in raw
+            else None
+        ),
     )
 
 
@@ -1011,6 +1396,7 @@ def _formula_from_payload(value: Mapping[str, Any], *, field: str) -> FormulaRul
         required=frozenset(
             {"metric_id", "rule", "expression", "dependencies", "output_unit", "dependency_period_alignment"}
         ),
+        optional=frozenset({"denominator_constraints", "not_presented_policy"}),
     )
     _bounded_wire_list(raw["dependencies"], field=f"{field}.dependencies", maximum=MAX_GOVERNANCE_BUNDLE_DEPENDENCIES)
     metric_id = _identifier(raw["metric_id"], field=f"{field}.metric_id")
@@ -1025,7 +1411,37 @@ def _formula_from_payload(value: Mapping[str, Any], *, field: str) -> FormulaRul
     alignment = _text(raw["dependency_period_alignment"], field=f"{field}.dependency_period_alignment")
     if alignment not in ALLOWED_ALIGNMENTS:
         raise ValueError(f"formula {metric_id} has unsupported period alignment")
-    return FormulaRule(metric_id, _rule(raw["rule"], field=f"{field}.rule"), expression, dependencies, output_unit, alignment)
+    denominator_constraints = (
+        _denominator_constraints(
+            raw["denominator_constraints"],
+            field=f"{field}.denominator_constraints",
+            dependencies=dependencies,
+        )
+        if "denominator_constraints" in raw
+        else ()
+    )
+    rule = _rule(raw["rule"], field=f"{field}.rule")
+    not_presented_policy = (
+        _formula_not_presented_policy(
+            raw["not_presented_policy"],
+            field=f"{field}.not_presented_policy",
+            expression=expression,
+            dependencies=dependencies,
+            formula_rule=rule,
+        )
+        if "not_presented_policy" in raw
+        else None
+    )
+    return FormulaRule(
+        metric_id,
+        rule,
+        expression,
+        dependencies,
+        output_unit,
+        alignment,
+        denominator_constraints,
+        not_presented_policy=not_presented_policy,
+    )
 
 
 def _governance_bundle_content_id(payload: Mapping[str, Any]) -> str:
@@ -1190,6 +1606,13 @@ def _validate_governance_bundle_contracts(bundle: GovernanceBundle) -> None:
         metric_ids.add(contract.metric_id)
         contracts_by_metric[contract.metric_id] = contract
         claim_rule(contract.rule, field=f"metric {contract.metric_id}")
+        definition = contract.definition
+        if definition is not None:
+            if definition.rule.available_at > bundle.recorded_at:
+                raise ValueError(
+                    f"definition for {contract.metric_id} is hidden at recorded_at"
+                )
+            claim_rule(definition.rule, field=f"definition {contract.metric_id}")
 
     for contract in bundle.contracts:
         if not isinstance(contract.mappings, tuple):
@@ -1262,6 +1685,11 @@ def _validate_governance_bundle_contracts(bundle: GovernanceBundle) -> None:
             raise ValueError(f"formula rule for {contract.metric_id} predates its lane or metric contract")
         if formula.rule.confidence != contract.rule.confidence:
             raise ValueError(f"formula rule confidence must match metric contract confidence for {contract.metric_id}")
+        policy = formula.not_presented_policy
+        if policy is not None:
+            if policy.rule.available_at > bundle.recorded_at:
+                raise ValueError(f"formula policy for {contract.metric_id} is hidden at recorded_at")
+            claim_rule(policy.rule, field=f"formula policy {contract.metric_id}")
         if formula.dependencies != contract.declared_formula_dependencies:
             raise ValueError(f"formula dependencies for {contract.metric_id} do not match metric declaration")
         if formula.output_unit not in contract.units:
@@ -1560,6 +1988,8 @@ def metric_registry_from_dicts(
     catalog_raw: Mapping[str, Any],
     mappings_raw: Mapping[str, Any],
     formulas_raw: Mapping[str, Any],
+    *,
+    enforce_core_v1_inventory: bool = True,
 ) -> MetricRegistry:
     """Create and validate a registry from parsed YAML objects."""
     if catalog_raw.get("schema") != CATALOG_SCHEMA:
@@ -1570,7 +2000,7 @@ def metric_registry_from_dicts(
         raise ValueError(f"formulas.schema must equal {FORMULAS_SCHEMA}")
 
     catalog_id = _identifier(catalog_raw.get("catalog_id"), field="catalog.catalog_id")
-    if catalog_id != CORE_V1_CATALOG_ID:
+    if enforce_core_v1_inventory and catalog_id != CORE_V1_CATALOG_ID:
         raise ValueError(f"catalog.catalog_id must equal {CORE_V1_CATALOG_ID}")
     catalog_version = _version(catalog_raw.get("catalog_version"), field="catalog.catalog_version")
     if catalog_version.split(".", 1)[0] != "1":
@@ -1595,8 +2025,11 @@ def metric_registry_from_dicts(
     metric_entries = _require_list(catalog_raw.get("metrics"), field="catalog.metrics")
     if "expected_metric_count" in catalog_raw:
         raise ValueError("catalog.expected_metric_count is forbidden; v1 count is schema-governed")
-    if len(metric_entries) != CORE_V1_METRIC_COUNT:
-        raise ValueError(f"metric catalog v1 requires exactly {CORE_V1_METRIC_COUNT} contracts")
+    if enforce_core_v1_inventory:
+        if len(metric_entries) != CORE_V1_METRIC_COUNT:
+            raise ValueError(f"metric catalog v1 requires exactly {CORE_V1_METRIC_COUNT} contracts")
+    elif not metric_entries:
+        raise ValueError("metric catalog must provide at least one contract")
 
     base_contracts: dict[str, dict[str, Any]] = {}
     rule_keys: set[tuple[str, str]] = set()
@@ -1623,6 +2056,7 @@ def metric_registry_from_dicts(
                     "formula_dependencies",
                 }
             ),
+            optional=frozenset({"applicability", "period_basis", "definition"}),
         )
         metric_id = _identifier(raw.get("metric_id"), field=f"catalog.metrics[{index}].metric_id")
         if metric_id in base_contracts:
@@ -1631,6 +2065,26 @@ def metric_registry_from_dicts(
         claim_rule(rule)
         if rule.available_at < catalog_available:
             raise ValueError(f"metric {metric_id} cannot predate catalog availability")
+        definition = (
+            _metric_definition_from_payload(
+                raw.get("definition"), field=f"catalog.metrics[{index}].definition"
+            )
+            if "definition" in raw
+            else None
+        )
+        if definition is not None:
+            claim_rule(definition.rule)
+            if (
+                definition.rule.available_at < catalog_available
+                or definition.rule.available_at < rule.available_at
+            ):
+                raise ValueError(
+                    f"definition rule for {metric_id} cannot predate its catalog or metric rule"
+                )
+            if definition.rule.confidence != rule.confidence:
+                raise ValueError(
+                    f"definition rule confidence must match metric contract confidence for {metric_id}"
+                )
         base_contracts[metric_id] = {
             "label": _text(raw.get("label"), field=f"catalog.metrics[{index}].label"),
             "category": _identifier(raw.get("category"), field=f"catalog.metrics[{index}].category"),
@@ -1652,6 +2106,23 @@ def metric_registry_from_dicts(
                 raw.get("formula_dependencies"),
                 field=f"catalog.metrics[{index}].formula_dependencies",
             ),
+            "applicability": (
+                _applicability_policy(
+                    raw.get("applicability"),
+                    field=f"catalog.metrics[{index}].applicability",
+                )
+                if "applicability" in raw
+                else ApplicabilityPolicy()
+            ),
+            "period_basis": (
+                _period_basis(
+                    raw.get("period_basis"),
+                    field=f"catalog.metrics[{index}].period_basis",
+                )
+                if "period_basis" in raw
+                else PeriodBasis()
+            ),
+            "definition": definition,
         }
 
     mapping_by_metric: dict[str, list[MappingRule]] = {metric_id: [] for metric_id in base_contracts}
@@ -1762,6 +2233,7 @@ def metric_registry_from_dicts(
             required=frozenset(
                 {"metric_id", "rule", "expression", "dependencies", "output_unit", "dependency_period_alignment"}
             ),
+            optional=frozenset({"denominator_constraints", "not_presented_policy"}),
         )
         metric_id = _identifier(raw.get("metric_id"), field=f"formulas.formulas[{index}].metric_id")
         if metric_id not in base_contracts:
@@ -1815,8 +2287,37 @@ def metric_registry_from_dicts(
         )
         if alignment not in ALLOWED_ALIGNMENTS:
             raise ValueError(f"formula {metric_id} has unsupported period alignment")
+        denominator_constraints = (
+            _denominator_constraints(
+                raw.get("denominator_constraints"),
+                field=f"formulas.formulas[{index}].denominator_constraints",
+                dependencies=dependencies,
+            )
+            if "denominator_constraints" in raw
+            else ()
+        )
+        not_presented_policy = (
+            _formula_not_presented_policy(
+                raw.get("not_presented_policy"),
+                field=f"formulas.formulas[{index}].not_presented_policy",
+                expression=expression,
+                dependencies=dependencies,
+                formula_rule=rule,
+            )
+            if "not_presented_policy" in raw
+            else None
+        )
+        if not_presented_policy is not None:
+            claim_rule(not_presented_policy.rule)
         formula_by_metric[metric_id] = FormulaRule(
-            metric_id, rule, expression, dependencies, output_unit, alignment
+            metric_id,
+            rule,
+            expression,
+            dependencies,
+            output_unit,
+            alignment,
+            denominator_constraints,
+            not_presented_policy=not_presented_policy,
         )
 
     contracts: list[MetricContract] = []
@@ -1869,12 +2370,15 @@ def metric_registry_from_dicts(
                 declared_formula_dependencies=declared,
                 mappings=tuple(sorted(mapping_by_metric[metric_id], key=lambda item: item.rule.rule_id)),
                 formula=formula,
+                applicability=base["applicability"],
+                period_basis=base["period_basis"],
+                definition=base["definition"],
             )
         )
 
     direct_count = sum(contract.formula is None for contract in contracts)
     formula_count = sum(contract.formula is not None for contract in contracts)
-    if (
+    if enforce_core_v1_inventory and (
         direct_count != CORE_V1_DIRECT_METRIC_COUNT
         or formula_count != CORE_V1_FORMULA_METRIC_COUNT
     ):
@@ -2001,6 +2505,15 @@ def validate_metric_registry(registry: MetricRegistry) -> None:
         if contract.rule.available_at < registry.available_at:
             raise ValueError(f"metric {contract.metric_id} predates catalog lane inception")
         claim_rule(contract.rule)
+        definition = contract.definition
+        if definition is not None:
+            if not isinstance(definition, MetricDefinition):
+                raise TypeError(f"metric {contract.metric_id} definition must be a MetricDefinition")
+            if definition.rule.available_at < max(registry.available_at, contract.rule.available_at):
+                raise ValueError(
+                    f"definition rule for {contract.metric_id} predates its lane or metric contract"
+                )
+            claim_rule(definition.rule)
         if not isinstance(contract.mappings, tuple):
             raise TypeError(f"metric {contract.metric_id} mappings must be a tuple")
         if contract.mappings and contract.formula is not None:
@@ -2020,6 +2533,13 @@ def validate_metric_registry(registry: MetricRegistry) -> None:
             if formula.dependencies != contract.declared_formula_dependencies:
                 raise ValueError(f"formula dependencies for {contract.metric_id} must match metric contract declaration")
             claim_rule(formula.rule)
+            policy = formula.not_presented_policy
+            if policy is not None:
+                if not isinstance(policy, FormulaNotPresentedPolicy):
+                    raise TypeError(f"formula policy for {contract.metric_id} must be a FormulaNotPresentedPolicy")
+                if policy.rule.available_at < formula.rule.available_at:
+                    raise ValueError(f"formula policy for {contract.metric_id} predates its formula rule")
+                claim_rule(policy.rule)
 
     formula_by_metric = {contract.metric_id: contract.formula for contract in registry.contracts if contract.formula}
 
@@ -2093,11 +2613,14 @@ def load_metric_registry(
     catalog_path: str | Path,
     mappings_path: str | Path,
     formulas_path: str | Path,
+    *,
+    enforce_core_v1_inventory: bool = True,
 ) -> MetricRegistry:
     return metric_registry_from_dicts(
         _load_yaml(catalog_path, label="catalog"),
         _load_yaml(mappings_path, label="mappings"),
         _load_yaml(formulas_path, label="formulas"),
+        enforce_core_v1_inventory=enforce_core_v1_inventory,
     )
 
 

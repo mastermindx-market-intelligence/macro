@@ -1,0 +1,61 @@
+{
+  "observed_at": "2026-10-15T10:36:25.331534+00:00",
+  "candidate_binding": "66df70f0b163a83ef321cb8d938be59ab1f98732",
+  "scope": "Existing public page functional acceptance before protected Press source installation",
+  "http": {
+    "blog/index.html": {
+      "http_status": 200,
+      "sha256": "2832c61b9c1e66c15f2e1fdf2967c7f31006690c49a0f9ff7e33665c81aceb7b",
+      "matches_reviewed": true
+    },
+    "learn/index.html": {
+      "http_status": 200,
+      "sha256": "f90d3ecaa13b0c6c282df5a3c0766f88ec5d2310285f84e7f5dac78fb2cc9a73",
+      "matches_reviewed": true
+    },
+    "tools/calculators/position-size.html": {
+      "http_status": 200,
+      "sha256": "ed8626dde0f1df97f21a48de7cdd379e5988d88f288b225efb7d114353965d45",
+      "matches_reviewed": true
+    }
+  },
+  "browser": "Chrome selected browser 3, real public URLs",
+  "checks": {
+    "blog_research_menu_to_populated_research_vault": true,
+    "blog_footer_to_learn": true,
+    "learn_resources_to_tools_to_nested_calculator": true,
+    "mobile_nested_research_menu_to_stock_library": true,
+    "calculator": {
+      "inputs": {
+        "account": 10000,
+        "risk_percent": 1,
+        "entry": 50,
+        "stop": 48
+      },
+      "shares": 50,
+      "dollar_risk": 100,
+      "position_value": 2500
+    },
+    "horizontal_overflow": {
+      "blog": {
+        "1440": false,
+        "390": false
+      },
+      "learn": {
+        "1440": false,
+        "390": false
+      },
+      "calculator": {
+        "1440": false,
+        "390": false
+      }
+    },
+    "temporary_viewport_reset": true
+  },
+  "limits": [
+    "Not #9209 merge or installed-source acceptance",
+    "Not new dark/light design approval or language-persistence proof",
+    "Not fresh market coverage, new signup or follow write",
+    "Recheck hashes after installed release; reuse only unchanged bytes"
+  ]
+}

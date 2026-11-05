@@ -26,6 +26,11 @@ Frozen laws this module implements:
 * The FIF-3A4R research census JSON is calibration evidence.  It is never
   imported, loaded, or consulted here.  Every receipt in this module is
   derived from source filings and re-proved against the live ledger.
+* FIF S2 adds a SECOND, versioned rule (v2) for one logical key reprinted
+  across THREE OR MORE filings: adjacent-pair receipts only, never a
+  transitive shortcut.  v1 above stays byte-identical and keeps refusing
+  every chain; a v2 bundle is admitted only as one strictly ordered adjacent
+  path over every filing the ledger holds for the key.
 """
 from __future__ import annotations
 
@@ -47,18 +52,34 @@ from .raw_ledger import (
 )
 
 __all__ = [
+    "ADMITTED_CONFIRMATION_RULE_VERSIONS",
     "APPROVED_TAXONOMY_PREFIXES",
+    "CHAIN_STATES",
+    "CHAIN_STATE_AMBIGUOUS",
+    "CHAIN_STATE_CONTRADICTORY",
+    "CHAIN_STATE_REPEATED",
+    "CHAIN_STATE_REVISED",
+    "CHAIN_STATE_ROUNDED_CONSISTENT",
+    "CHAIN_STATE_UNPROVEN",
     "COMPARISON_BASIS_EXACT",
+    "CONFIRMATION_CHAIN_RULE_AVAILABLE_AT",
+    "CONFIRMATION_CHAIN_RULE_VERSION",
     "CONFIRMATION_RULE_AVAILABLE_AT",
     "CONFIRMATION_RULE_ID",
     "CONFIRMATION_RULE_VERSION",
     "LINEAGE_EVIDENCE_SCHEMA",
+    "FilingChainClassification",
     "LineageEvidenceError",
     "LineageEvidenceReceipt",
+    "REFUSAL_RECEIPT_RULE_MISMATCH",
+    "REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED",
     "XBRL_CONFIRMATION_RELATION",
+    "classify_filing_chain",
     "confirmation_refusal",
+    "derive_chain_confirmation_receipts",
     "derive_confirmation_receipts",
     "evaluate_confirmation",
+    "receipt_envelope_refusal",
 ]
 
 
@@ -85,6 +106,19 @@ APPROVED_TAXONOMY_PREFIXES = frozenset({"us-gaap", "dei"})
 # 2026-08-24 research freeze and the census timestamp do not authorize runtime
 # lineage.
 CONFIRMATION_RULE_AVAILABLE_AT = datetime(2026, 8, 25, tzinfo=timezone.utc)
+
+# FIF S2: the versioned multi-filing (3+ accession) chain rule.  v1 above is
+# untouched and keeps refusing every chain; v2 is a SEPARATE admitted rule
+# version for one logical key reprinted across three or more filings.
+CONFIRMATION_CHAIN_RULE_VERSION = 2
+
+# The v2 chain rule did not exist before this lane.  A53: a query whose
+# recorded_at precedes this clock must not see v2 evidence — no newest-rule
+# hindsight — and a v2 receipt minted below it is backdated, not merely
+# mismatched.
+CONFIRMATION_CHAIN_RULE_AVAILABLE_AT = datetime(2026, 10, 12, tzinfo=timezone.utc)
+
+ADMITTED_CONFIRMATION_RULE_VERSIONS = (1, 2)
 
 # Bounded materialization: a lineage bundle is small by construction.  A bundle
 # that exceeds this is a malformed provider, not a large legitimate answer.
@@ -121,6 +155,35 @@ REFUSAL_TAXONOMY_NAMESPACE_VERSION_MISMATCH = "source_taxonomy_namespace_version
 REFUSAL_UNIT_CONTEXT_CONCEPT_MISMATCH = "unit_context_concept_mismatch"
 REFUSAL_MISSING_OCCURRENCE = "missing_occurrence"
 REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE = "evidence_does_not_match_source"
+# FIF T1b receipt-envelope refusals: a receipt whose envelope is not the one
+# this rule mints — a different rule id/version, a system availability below
+# the lawful floor, or a source-known clock the groups do not derive — is not
+# evidence the current rule produced, whatever its internally valid digest.
+REFUSAL_RECEIPT_RULE_MISMATCH = "receipt_rule_mismatch"
+REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED = "receipt_system_availability_backdated"
+
+# ---------------------------------------------------------------------------
+# FIF S2 chain-state vocabulary — the typed classification of one logical key
+# seen across three or more filings.  These are diagnostic classifications of
+# the WHOLE chain, never receipt relations: only ``repeated`` mints evidence,
+# and every other state is an honest typed abstention.
+# ---------------------------------------------------------------------------
+
+CHAIN_STATE_REPEATED = "repeated"
+CHAIN_STATE_REVISED = "revised"
+CHAIN_STATE_ROUNDED_CONSISTENT = "rounded_consistent"
+CHAIN_STATE_CONTRADICTORY = "contradictory"
+CHAIN_STATE_AMBIGUOUS = "ambiguous"
+CHAIN_STATE_UNPROVEN = "unproven"
+
+CHAIN_STATES = (
+    CHAIN_STATE_REPEATED,
+    CHAIN_STATE_REVISED,
+    CHAIN_STATE_ROUNDED_CONSISTENT,
+    CHAIN_STATE_CONTRADICTORY,
+    CHAIN_STATE_AMBIGUOUS,
+    CHAIN_STATE_UNPROVEN,
+)
 
 
 def _taxonomy_prefix(concept_qname: str) -> str:
@@ -530,6 +593,84 @@ def _system_available_floor(
     return max(clocks)
 
 
+def _rule_available_at(version: int) -> datetime | None:
+    """The lawful rule clock of an admitted confirmation rule version.
+
+    A version that is not an admitted rule version has no rule clock; the
+    envelope dispatch refuses it as a rule mismatch before consulting clocks.
+    """
+    if version == CONFIRMATION_RULE_VERSION:
+        return CONFIRMATION_RULE_AVAILABLE_AT
+    if version == CONFIRMATION_CHAIN_RULE_VERSION:
+        return CONFIRMATION_CHAIN_RULE_AVAILABLE_AT
+    return None
+
+
+def _chain_system_available_floor(
+    parent_group: Sequence[RawFactOccurrence],
+    child_group: Sequence[RawFactOccurrence],
+) -> datetime:
+    """Protocol §8 for the v2 chain rule: recorded clocks and the chain clock."""
+    clocks = [CONFIRMATION_CHAIN_RULE_AVAILABLE_AT]
+    for item in (*parent_group, *child_group):
+        clocks.append(item.clocks.recorded_at)
+    return max(clocks)
+
+
+def receipt_envelope_refusal(
+    receipt: LineageEvidenceReceipt,
+    parent_group: Sequence[RawFactOccurrence],
+    child_group: Sequence[RawFactOccurrence],
+) -> str | None:
+    """FIF T1b: whether the receipt's ENVELOPE is the one this rule mints.
+
+    The payload bind (T1) proves the eighteen evidence fields still describe
+    the current eligible ledger, but the envelope around them — rule identity,
+    system availability, source-known clock — is a mint-time attestation the
+    payload never covers.  A hand-built receipt whose digest was correctly
+    recomputed over genuine evidence could therefore backdate
+    ``system_available_at`` below the floor the mint path enforces, or claim a
+    rule/version that is not the one which produced it, and flip a
+    ``not_evaluable`` lineage answer into a value under a policy where the
+    honest receipt is not yet visible.
+
+    FIF S2 makes the envelope version-aware.  Version 1 keeps exactly today's
+    checks; version 2 (the multi-filing chain rule) carries its own rule
+    clock — the chain rule did not exist before 2026-10-12, so a v2 envelope
+    dated below it is BACKDATED even when every v1 floor would have accepted
+    it, and a v2 receipt is only lawful above the chain floor of its own edge
+    groups.  Any other version (3, 0, bool) is a rule mismatch.
+
+    Both engine gates (admission and per-query revalidation) call this with
+    the SAME full per-accession groups the mint path groups by, so the floor
+    and the source-known derivation below are the mint's own, never a fork.
+    ``type(...) is int`` is deliberate: a boolean ``True`` is not a version.
+
+    Returns ``None`` while the envelope is lawful, else the refusal reason.
+    """
+    if receipt.evidence_rule_id != CONFIRMATION_RULE_ID:
+        return REFUSAL_RECEIPT_RULE_MISMATCH
+    if type(receipt.evidence_rule_version) is not int:
+        return REFUSAL_RECEIPT_RULE_MISMATCH
+    rule_available_at = _rule_available_at(receipt.evidence_rule_version)
+    if rule_available_at is None:
+        return REFUSAL_RECEIPT_RULE_MISMATCH
+    if receipt.system_available_at < rule_available_at:
+        return REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED
+    if receipt.evidence_rule_version == CONFIRMATION_CHAIN_RULE_VERSION:
+        edge_floor = _chain_system_available_floor(parent_group, child_group)
+    else:
+        edge_floor = _system_available_floor(parent_group, child_group)
+    if receipt.system_available_at < edge_floor:
+        return REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED
+    if receipt.source_known_at != max(
+        _canonical_duplicate_representative(parent_group).accepted_at,
+        _canonical_duplicate_representative(child_group).accepted_at,
+    ):
+        return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+    return None
+
+
 def derive_confirmation_receipts(
     events: Iterable[RawFactOccurrence],
     *,
@@ -636,3 +777,236 @@ def _order_parent_child(
     if b < a:
         return group_b, group_a
     return None
+
+
+# ---------------------------------------------------------------------------
+# FIF S2 — the versioned multi-filing (3+ accession) chain rule (v2)
+#
+# v1 above stays byte-identical: it still mints only two-accession keys and
+# still skips every key seen in three or more filings.  Everything below
+# classifies those 3+ chains and mints ADJACENT-PAIR v2 receipts for exactly
+# one of the six typed states — ``repeated`` — with no transitive shortcut:
+# ``A~B`` and ``B~C`` never imply ``A~C``, and a rounded or changed link
+# breaks the whole chain (A03/A05).
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FilingChainClassification:
+    """The typed state of one logical key seen across three or more filings.
+
+    ``accessions`` is ordered by representative accepted_at ascending, or
+    lexicographically when no strict order exists (the ``ambiguous`` shape).
+    ``edge_refusals`` carries one entry per adjacent pair in that order —
+    ``None`` is an exact edge — and is empty when the ordering failed.
+    Diagnostic only: it never enters a receipt or a response body.
+    """
+
+    logical_key: str
+    state: str
+    accessions: tuple[str, ...]
+    edge_refusals: tuple[str | None, ...]
+
+
+def _chain_accepted_by_accession(
+    by_accession: Mapping[str, Sequence[RawFactOccurrence]],
+) -> tuple[dict[str, datetime], list[str] | None]:
+    """Per-accession representative accepted_at and the strict chain order.
+
+    Returns ``(times, ordered)`` where ``times`` maps every accession to its
+    group's single accepted_at, and ``ordered`` is the accessions sorted by
+    that clock — or ``None`` when any group carries more than one accepted_at,
+    a ``None`` accepted_at, or two groups tie (no strict order exists).
+    """
+    accepted_sets = {
+        accession: {item.accepted_at for item in group}
+        for accession, group in by_accession.items()
+    }
+    if any(len(times) != 1 for times in accepted_sets.values()):
+        return {}, None
+    times = {
+        accession: next(iter(items)) for accession, items in accepted_sets.items()
+    }
+    if any(value is None for value in times.values()):
+        return {}, None
+    if len(set(times.values())) != len(times):
+        return times, None
+    ordered = [
+        accession
+        for accession, _ in sorted(times.items(), key=lambda item: (item[1], item[0]))
+    ]
+    return times, ordered
+
+
+def classify_filing_chain(
+    events: Iterable[RawFactOccurrence],
+    *,
+    original_taxonomy_uris: Mapping[tuple[str, str], str],
+) -> FilingChainClassification:
+    """Classify every occurrence of ONE logical key across its filings.
+
+    Pure: no clock is read and no event is mutated.  Only ADJACENT pairs of
+    the strictly accepted_at-ordered filings are evaluated — never A-vs-C —
+    because a rounded or changed link breaks the chain and two confirmations
+    never compose into a transitive equality.  The precedence is first-match
+    ``revised`` > ``ambiguous`` > ``contradictory`` > ``rounded_consistent`` >
+    ``unproven`` > ``repeated``, and only ``repeated`` may mint evidence.
+    """
+    chain = tuple(events)
+    logical_keys = {event.logical_key for event in chain}
+    if not logical_keys or len(logical_keys) != 1:
+        raise LineageEvidenceError(
+            "classify_filing_chain requires exactly one logical key"
+        )
+    by_accession: dict[str, list[RawFactOccurrence]] = {}
+    for event in chain:
+        by_accession.setdefault(event.source.accession, []).append(event)
+    if len(by_accession) < 2:
+        raise LineageEvidenceError(
+            "classify_filing_chain requires at least two distinct accessions"
+        )
+
+    _times, ordered = _chain_accepted_by_accession(by_accession)
+    if ordered is None:
+        accessions: tuple[str, ...] = tuple(sorted(by_accession))
+        edge_refusals: tuple[str | None, ...] = ()
+    else:
+        accessions = tuple(ordered)
+        refusals: list[str | None] = []
+        for index in range(len(ordered) - 1):
+            parent_group = tuple(by_accession[ordered[index]])
+            child_group = tuple(by_accession[ordered[index + 1]])
+            parent_rep = _canonical_duplicate_representative(parent_group)
+            child_rep = _canonical_duplicate_representative(child_group)
+            refusals.append(
+                evaluate_confirmation(
+                    parent_group,
+                    child_group,
+                    parent_taxonomy_uri=original_taxonomy_uris.get(
+                        (parent_rep.source.accession, parent_rep.source_occurrence_key or "")
+                    ),
+                    child_taxonomy_uri=original_taxonomy_uris.get(
+                        (child_rep.source.accession, child_rep.source_occurrence_key or "")
+                    ),
+                    require_taxonomy_uri=True,
+                )
+            )
+        edge_refusals = tuple(refusals)
+
+    logical_key = next(iter(logical_keys))
+    if any(
+        item.event_type is not FactEventType.FILED or item.revision_of is not None
+        for item in chain
+    ):
+        state = CHAIN_STATE_REVISED
+    elif ordered is None or any(
+        refusal in (REFUSAL_AMBIGUOUS_DUPLICATE_GROUP, REFUSAL_MULTIPLE_POSSIBLE_PARENT)
+        for refusal in edge_refusals
+    ):
+        state = CHAIN_STATE_AMBIGUOUS
+    elif any(
+        refusal in (REFUSAL_CHANGED_VALUE, REFUSAL_NIL_STATE_DIFFERENCE)
+        for refusal in edge_refusals
+    ):
+        state = CHAIN_STATE_CONTRADICTORY
+    elif any(
+        refusal == REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED
+        for refusal in edge_refusals
+    ):
+        state = CHAIN_STATE_ROUNDED_CONSISTENT
+    elif any(refusal is not None for refusal in edge_refusals):
+        state = CHAIN_STATE_UNPROVEN
+    else:
+        state = CHAIN_STATE_REPEATED
+    return FilingChainClassification(
+        logical_key=logical_key,
+        state=state,
+        accessions=accessions,
+        edge_refusals=edge_refusals,
+    )
+
+
+def derive_chain_confirmation_receipts(
+    events: Iterable[RawFactOccurrence],
+    *,
+    system_available_at: datetime,
+    original_taxonomy_uris: Mapping[tuple[str, str], str],
+) -> tuple[LineageEvidenceReceipt, ...]:
+    """Mint the lawful v2 ``xbrl_confirmation`` receipts for 3+ filing chains.
+
+    Keys seen in exactly two accessions stay v1's job and are never
+    double-minted here.  A key seen in three or more accessions is classified
+    first; ONLY a ``repeated`` chain mints, and then exactly n-1 receipts —
+    one per ADJACENT pair of the strictly accepted_at-ordered filings, each
+    built exactly like a v1 receipt but stamped with the chain rule version.
+    Every non-repeated key mints nothing: runtime evidence carries positive
+    relations only.
+    """
+    if not isinstance(system_available_at, datetime) or system_available_at.tzinfo is None:
+        raise LineageEvidenceError("system_available_at must be a timezone-aware datetime")
+    system_available_at = system_available_at.astimezone(timezone.utc)
+
+    by_key: dict[str, dict[str, list[RawFactOccurrence]]] = {}
+    for event in events:
+        by_key.setdefault(event.logical_key, {}).setdefault(
+            event.source.accession, []
+        ).append(event)
+
+    receipts: list[LineageEvidenceReceipt] = []
+    for logical_key, by_accession in sorted(by_key.items()):
+        if len(by_accession) < 3:
+            # Two-accession keys are v1's exclusive scope: minting them here
+            # too would double-mint every ordinary confirmation.
+            continue
+        classification = classify_filing_chain(
+            (item for group in by_accession.values() for item in group),
+            original_taxonomy_uris=original_taxonomy_uris,
+        )
+        if classification.state != CHAIN_STATE_REPEATED:
+            continue
+        chain_floor = max(
+            [CONFIRMATION_CHAIN_RULE_AVAILABLE_AT]
+            + [
+                item.clocks.recorded_at
+                for group in by_accession.values()
+                for item in group
+            ]
+        )
+        if system_available_at < chain_floor:
+            raise LineageEvidenceError(
+                "system_available_at precedes the accepted lineage clock floor"
+            )
+        for index in range(len(classification.accessions) - 1):
+            parent_group = tuple(
+                by_accession[classification.accessions[index]]
+            )
+            child_group = tuple(
+                by_accession[classification.accessions[index + 1]]
+            )
+            parent_rep = _canonical_duplicate_representative(parent_group)
+            child_rep = _canonical_duplicate_representative(child_group)
+            parent_uri = original_taxonomy_uris.get(
+                (parent_rep.source.accession, parent_rep.source_occurrence_key or "")
+            )
+            child_uri = original_taxonomy_uris.get(
+                (child_rep.source.accession, child_rep.source_occurrence_key or "")
+            )
+            receipts.append(
+                LineageEvidenceReceipt(
+                    parent_occurrence_id=parent_rep.occurrence_id,
+                    child_occurrence_id=child_rep.occurrence_id,
+                    logical_key=logical_key,
+                    source_known_at=max(parent_rep.accepted_at, child_rep.accepted_at),
+                    system_available_at=system_available_at,
+                    positive_evidence=_positive_evidence_payload(
+                        parent_group,
+                        child_group,
+                        parent_taxonomy_uri=parent_uri,
+                        child_taxonomy_uri=child_uri,
+                    ),
+                    evidence_rule_version=CONFIRMATION_CHAIN_RULE_VERSION,
+                )
+            )
+    return tuple(
+        sorted(receipts, key=lambda item: (item.logical_key, item.receipt_id))
+    )

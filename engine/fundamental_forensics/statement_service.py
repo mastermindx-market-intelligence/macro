@@ -10,16 +10,19 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from .financial_intelligence_packet import load_core_registry
+from .models import parse_utc
 from .query_service import (
     MAX_REQUEST_BYTES,
     MAX_RESPONSE_BYTES,
     FinancialQueryAdmissionError,
     FinancialQueryUnavailableError,
     admit_request_bytes,
+    canonical_financial_delivery,
 )
 from .raw_ledger import canonical_json
 from .statement_graph import (
@@ -33,6 +36,7 @@ from .statement_graph import (
 _REQUEST_SCHEMA = "fundamental_forensics.financial_statement_request/v1"
 _RESPONSE_SCHEMA = "fundamental_forensics.financial_statement_response/v1"
 _REQUIRED_ROOT_FIELDS = frozenset({"schema", "entity_id", "accession"})
+_OPTIONAL_ROOT_FIELDS = frozenset({"recorded_at"})
 _GOLDEN_ENTITY_ID = "ISS:US-XNAS-AAPL"
 _RELATED_EVENT_REF_KEYS = frozenset(
     {"plane", "event_id", "relation", "source_filing_distinction"}
@@ -43,6 +47,7 @@ _RELATED_EVENT_REF_KEYS = frozenset(
 class AdmittedStatementRequest:
     entity_id: str
     accession: str
+    recorded_at: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -82,7 +87,7 @@ class GoldenAaplStatementProvider:
 
 def admit_statement_request(body: bytes) -> AdmittedStatementRequest:
     parsed = admit_request_bytes(body)
-    extra = set(parsed) - _REQUIRED_ROOT_FIELDS
+    extra = set(parsed) - _REQUIRED_ROOT_FIELDS - _OPTIONAL_ROOT_FIELDS
     missing = _REQUIRED_ROOT_FIELDS - set(parsed)
     if extra or missing:
         raise FinancialQueryAdmissionError(400, "request contract violation")
@@ -96,7 +101,23 @@ def admit_statement_request(body: bytes) -> AdmittedStatementRequest:
         raise FinancialQueryAdmissionError(400, "request contract violation")
     if not isinstance(accession, str) or not accession:
         raise FinancialQueryAdmissionError(400, "request contract violation")
-    return AdmittedStatementRequest(entity_id=entity_id, accession=accession)
+    # R-9761 follow-up: the optional rule-clock cutoff, admitted under the
+    # same law as the financial query body's timestamp — an aware RFC 3339
+    # instant, never a naive machine-local guess.
+    recorded_at_raw = parsed.get("recorded_at")
+    recorded_at = None
+    if recorded_at_raw is not None:
+        if isinstance(recorded_at_raw, float) or not isinstance(recorded_at_raw, str):
+            raise FinancialQueryAdmissionError(400, "request contract violation")
+        try:
+            recorded_at = parse_utc(recorded_at_raw, field="recorded_at")
+        except ValueError:
+            raise FinancialQueryAdmissionError(400, "request contract violation") from None
+        if recorded_at is None:
+            raise FinancialQueryAdmissionError(400, "request contract violation")
+    return AdmittedStatementRequest(
+        entity_id=entity_id, accession=accession, recorded_at=recorded_at
+    )
 
 
 def _load_security_records(repo_root: Path) -> list[dict[str, Any]]:
@@ -186,6 +207,55 @@ def _bind_data_os_issuer(
     )
 
 
+def bind_production_issuer_identity(
+    entity_id: str,
+    *,
+    issuer_master: Any,
+    issuer_metadata: dict[str, str],
+    security_id: str | None,
+    listing_key: str | None,
+    expected_cik: str | None = None,
+) -> dict[str, str]:
+    """Issuer-level production binding (FIF D3 / A14): CIK once, no class pick.
+
+    Differs from :func:`bind_canonical_identity` in exactly one way: identity
+    is the Data OS *issuer* axis, so a two-class issuer (one ``ISS:`` id, one
+    registrant CIK, two securities) binds ONCE through
+    ``IssuerMaster.cik_of_issuer`` instead of being refused by the
+    single-security membership rule — which stays untouched for the golden
+    path. This function never calls ``securities_of_issuer``: the single
+    kernel label was chosen at dataset admission and is recorded in the
+    generation manifest; the request path must not pick among securities.
+    Conflicting CIK observations are an ambiguous identity fact and are
+    refused as unavailable, never guessed.
+    """
+    from lib.dataos.identity import IdentityError, IssuerMaster
+
+    if not isinstance(issuer_master, IssuerMaster):
+        raise FinancialQueryUnavailableError()
+    try:
+        cik = issuer_master.cik_of_issuer(entity_id)
+    except IdentityError as exc:
+        raise FinancialQueryUnavailableError() from exc
+    if cik is None:
+        raise FinancialQueryAdmissionError(400, "unknown entity")
+    if expected_cik is not None and cik != expected_cik:
+        # The generation's binding and the identity owner disagree: drift,
+        # never a silent substitution of either side.
+        raise FinancialQueryUnavailableError()
+    if not isinstance(security_id, str) or not security_id:
+        raise FinancialQueryUnavailableError()
+    if not isinstance(listing_key, str) or not listing_key:
+        raise FinancialQueryUnavailableError()
+    return {
+        "entity_id": entity_id,
+        "cik": cik,
+        "security_id": security_id,
+        "listing_key": listing_key,
+        "legal_name": str(issuer_metadata.get("legal_name") or ""),
+    }
+
+
 def _related_event_ref(manifest: dict[str, Any]) -> dict[str, Any] | None:
     raw = manifest.get("related_event_ref")
     if raw is None:
@@ -210,6 +280,52 @@ def _related_event_ref(manifest: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+def _precomputed_registry_horizon(registry: Any) -> datetime:
+    """The newest rule clock the registry carries.
+
+    Precomputed trees are published under the full, unclocked registry, so
+    they cannot honestly answer a clock older than any rule they already
+    bake in — that view must be refused, never re-labelled as clocked.
+    """
+    clocks = [
+        registry.available_at,
+        registry.mapping_pack_available_at,
+        registry.formula_pack_available_at,
+    ]
+    for contract in getattr(registry, "contracts", None) or ():
+        clocks.append(contract.rule.available_at)
+        for mapping in getattr(contract, "mappings", None) or ():
+            clocks.append(mapping.rule.available_at)
+        formula = getattr(contract, "formula", None)
+        if formula is not None:
+            clocks.append(formula.rule.available_at)
+            policy = getattr(formula, "not_presented_policy", None)
+            if policy is not None:
+                clocks.append(policy.rule.available_at)
+        definition = getattr(contract, "definition", None)
+        if definition is not None:
+            clocks.append(definition.rule.available_at)
+    return max(clocks)
+
+
+def _refuse_early_clock_on_precomputed_trees(
+    repo_root: Path, recorded_at: datetime | None
+) -> None:
+    """A cutoff older than the registry horizon cannot reuse published trees."""
+    if recorded_at is None:
+        return
+    try:
+        horizon = _precomputed_registry_horizon(load_core_registry(repo_root))
+    except FinancialQueryAdmissionError:
+        raise
+    except Exception:
+        raise FinancialQueryUnavailableError() from None
+    if recorded_at < horizon:
+        raise FinancialQueryAdmissionError(
+            400, "recorded_at precedes the precomputed trees' registry rules"
+        )
+
+
 def execute_financial_statements(
     *,
     body: bytes,
@@ -220,16 +336,28 @@ def execute_financial_statements(
     issuer_metadata: dict[str, str] | None = None,
 ) -> FinancialStatementResult:
     admitted = admit_statement_request(body)
-    binding = _bind_data_os_issuer(
-        repo_root,
-        admitted.entity_id,
-        issuer_master=issuer_master,
-        issuer_metadata=issuer_metadata,
-    )
+    # Provider construction precedes binding so a production provider — whose
+    # issuer-level binding needs the admitted generation — can supply it.
+    # Construction opens no dataset; resolve still happens only after
+    # admission, exactly as before.
     if provider is None:
         if provider_factory is None:
             raise FinancialQueryUnavailableError()
         provider = provider_factory()
+    if getattr(provider, "issuer_level_binding", False):
+        binding = provider.bind_issuer(
+            repo_root,
+            admitted.entity_id,
+            issuer_master=issuer_master,
+            issuer_metadata=issuer_metadata,
+        )
+    else:
+        binding = _bind_data_os_issuer(
+            repo_root,
+            admitted.entity_id,
+            issuer_master=issuer_master,
+            issuer_metadata=issuer_metadata,
+        )
     package = provider.resolve(admitted.entity_id, admitted.accession)
     if package.manifest.get("entity_id") != binding["entity_id"]:
         raise FinancialQueryUnavailableError()
@@ -237,15 +365,49 @@ def execute_financial_statements(
         raise FinancialQueryUnavailableError()
     if package.manifest.get("accession") != admitted.accession:
         raise FinancialQueryUnavailableError()
-    try:
-        registry = load_core_registry(repo_root)
-        reconstructed = reconstruct_primary_statements(package=package, registry=registry)
-    except FinancialQueryAdmissionError:
-        raise
-    except StatementGraphError:
-        raise FinancialQueryUnavailableError() from None
-    except Exception:
-        raise FinancialQueryUnavailableError() from None
+    # FIF P1 (F1): a production package serves the statement trees that were
+    # precomputed at dataset publication; only the golden demonstration
+    # path (no delivery object) reconstructs — i.e. parses — at request
+    # time, byte-for-byte as before. A production package whose trees are
+    # missing NEVER falls back to parsing the members.
+    package_delivery = getattr(package, "delivery", None)
+    precomputed_trees = getattr(package, "statement_trees", None)
+    if precomputed_trees is not None:
+        # R-9761 follow-up: trees published under the unclocked registry answer
+        # only clocks at or after its newest rule; an earlier cutoff must be
+        # refused, never served 1.1.0 bytes as if clocked.
+        _refuse_early_clock_on_precomputed_trees(repo_root, admitted.recorded_at)
+        reconstructed = precomputed_trees
+    elif package_delivery is None:
+        try:
+            registry = load_core_registry(repo_root)
+            if admitted.recorded_at is not None:
+                # R-9761 follow-up: reconstruct through the registry view the
+                # caller's clock makes visible, mirroring the query API cutoff.
+                registry = registry.governance_bundle_at(admitted.recorded_at)
+            reconstructed = reconstruct_primary_statements(package=package, registry=registry)
+        except FinancialQueryAdmissionError:
+            raise
+        except StatementGraphError:
+            raise FinancialQueryUnavailableError() from None
+        except Exception:
+            raise FinancialQueryUnavailableError() from None
+    else:
+        raise FinancialQueryUnavailableError()
+
+    # FIF P1-b (I3): boundary pin, not a conversion. Every served cell value
+    # must already be the parser's canonical decimal TEXT or an explicit null;
+    # any other type (int, float, Decimal, ...) is a producer contract break
+    # answered with this file's typed unavailability — no re-formatting, no
+    # rounding, no scale math here. Scale and decimals already ride beside the
+    # value as display hints, and both paths above (precomputed trees and the
+    # golden reconstruction) sit behind this same rule.
+    for statement in reconstructed["statements"]:
+        for statement_row in statement["rows"]:
+            for cell in statement_row["cells"]:
+                value = cell["value"]
+                if value is not None and not isinstance(value, str):
+                    raise FinancialQueryUnavailableError()
 
     envelope = {
         "schema": _RESPONSE_SCHEMA,
@@ -292,12 +454,20 @@ def execute_financial_statements(
             "fact_count": reconstructed["fact_count"],
             "context_count": reconstructed["context_count"],
         },
-        "delivery": {
+    }
+    # FIF D3: delivery is provider-supplied. A package that does not carry one
+    # (every golden fixture package and every directly-constructed test
+    # package) keeps today's exact golden object, so those responses stay
+    # byte-identical; a production package supplies the exact production
+    # object, fail-closed by the shared delivery law.
+    if package_delivery is None:
+        envelope["delivery"] = {
             "kind": "committed_golden_fixture",
             "attested": False,
             "production_issuer_service": False,
-        },
-    }
+        }
+    else:
+        envelope["delivery"] = canonical_financial_delivery(package_delivery)
     related = _related_event_ref(package.manifest)
     if related is not None:
         envelope["related_event_ref"] = related
@@ -316,6 +486,7 @@ __all__ = [
     "UnavailableFinancialStatementProvider",
     "admit_statement_request",
     "bind_canonical_identity",
+    "bind_production_issuer_identity",
     "execute_financial_statements",
     "MAX_REQUEST_BYTES",
 ]

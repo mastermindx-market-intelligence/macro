@@ -339,6 +339,11 @@ def _compose_verdict(ms: dict) -> dict:
         "label_en": ms.get("label_en"),
         "label_zh": ms.get("label_zh"),
         "asof": ms.get("asof"),
+        "score_source": _clean_state_entry(ms.get("score_source")),
+        "score_caps": _clean_state_entry(ms.get("score_caps")),
+        "overrides": _clean_state_entry(ms.get("overrides")),
+        "freshness": _clean_state_entry(ms.get("freshness")),
+        "evidence_note": "Source-native market reading; derived summaries are not additional votes.",
     }
 
 
@@ -355,6 +360,9 @@ def _compose_radar(ms: dict) -> dict | None:
         "severe_gated": r.get("severe_gated"),
         "recovery": r.get("recovery"),
         "is_loud": r.get("is_loud"),
+        "can_force": _clean(r.get("can_force")),
+        "binding": _clean(r.get("binding")),
+        "authority": _clean_state_entry(r.get("authority")),
     }
 
 
@@ -1045,10 +1053,13 @@ _ROTATION_EVENTS_NULL: dict = {
         "Context/display only; may never rank, gate, size, or escalate."
     ),
     "display_only": True,
+    "early_context": None,
 }
 
 
-def _compose_rotation_events(root: "Path | str | None" = None) -> dict:
+def _compose_rotation_events(root: "Path | str | None" = None,
+                             expected_session: str | None = None,
+                             now: datetime | None = None) -> dict:
     """Compose the rotation_events sub-block for world_state (RC deep-integration).
 
     Follows the _compose_cycle_pattern discipline exactly:
@@ -1078,6 +1089,30 @@ def _compose_rotation_events(root: "Path | str | None" = None) -> dict:
             return out
 
         out["as_of"] = _clean(payload.get("as_of"))
+
+        # Early relative strength is a separate descriptive read, never an active
+        # event or another severity vote. Preserve its own source date, not the
+        # world-state build stamp. Old artifact copies cannot imply a current shift.
+        early = None
+        if now is not None and expected_session is not None:
+            # Reuse the source owner's exact parent/child clock qualifier. An
+            # alternate blackboard projection must not reopen excluded evidence.
+            from scripts.build_risk_envelope import _rotation_read
+            source = _rotation_read(payload, expected_session, now=now)
+            if source.usable:
+                early = source.detail.get("early_context")
+        if isinstance(early, dict):
+            out["early_context"] = {
+                key: _clean_state_entry(copy.deepcopy(early.get(key)))
+                for key in ("schema", "definition_id", "as_of", "state", "reason_codes",
+                            "coverage", "availability", "prior_loser_constituent_claim")
+            }
+            out["early_context"]["receipts_source"] = "site/marketdata/rotation_events.json"
+            out["early_context"]["display_only"] = True
+            out["early_context"]["evidence_note"] = (
+                "Same rotation-source observations carried in Risk Envelope; "
+                "not independent confirmation, distribution, or ownership-transfer evidence."
+            )
 
         active = payload.get("active") or []
         if not isinstance(active, list):
@@ -3234,7 +3269,12 @@ def _compose_thematic_state(root: "Path | str | None" = None) -> dict:
     state_path = repo / "data" / "neuralweb" / "theme_state.json"
     thesis_path = repo / "site" / "neuralwebdata" / "theme_thesis.json"
 
-    _null: dict = {"available": False, "display_only": True}
+    _null: dict = {"available": False, "display_only": True, "is_context_only": True}
+
+    from .theme_state_generation_reader import legacy_consumer_barrier
+    barrier = legacy_consumer_barrier(repo)
+    if barrier is not None:
+        return barrier
 
     if not state_path.exists():
         log.info("thematic_state: artifact absent (%s) — null block", state_path)
@@ -3309,7 +3349,7 @@ def _compose_thematic_state(root: "Path | str | None" = None) -> dict:
                     "stage": _clean(stage_key),
                 })
 
-        return {
+        return legacy_consumer_barrier(repo) or {
             "available": True,
             "as_of": _clean(raw_state.get("as_of")),
             "n_themes": _clean(raw_state.get("n_themes") or len(themes)),
@@ -4403,7 +4443,8 @@ def build_world_state(
     # Reads site/marketdata/rotation_events.json (nightly, RC-R1/R2).
     # Display/context only: active rotation events, no ranking/gating/sizing.
     try:
-        rotation_events_block: dict = _compose_rotation_events(root=repo)
+        rotation_events_block: dict = _compose_rotation_events(
+            root=repo, expected_session=(ms or {}).get("asof"), now=now)
     except Exception as exc:  # noqa: BLE001
         log.warning("world_state: rotation_events lobe failed — %s", exc)
         gaps.append(f"rotation_events: {exc}")
@@ -4500,7 +4541,10 @@ def build_world_state(
         thematic_state_block.get("as_of")
         if thematic_state_block.get("available") else None
     )
-    if not _theme_state_path.exists():
+    if thematic_state_block.get("generation_status"):
+        gaps.append("thematic_state: " + ", ".join(
+            thematic_state_block.get("reason_codes", ["CURRENT_USE_AUTHORITY_UNAVAILABLE"])))
+    elif not _theme_state_path.exists():
         gaps.append(
             "data/neuralweb/theme_state.json: absent "
             "(run scripts/build_thematic_state.py to populate)"
@@ -4850,6 +4894,18 @@ def build_world_state(
     # render path — it is not a nightly artifact. Matches the mag7_washout
     # optional-artifact pattern.
 
+    # Risk Envelope is the canonical joint view. Carry, never recompute or feed
+    # it back into Market State / Rotation Command. Public chat projections apply
+    # their existing member boundary before exposing this new context.
+    try:
+        from engine.neuralweb.rotation_risk_context import read_context as _risk_context_read
+        risk_envelope_block = _risk_context_read(
+            repo, now=now, expected_session=(ms or {}).get("asof"))
+    except Exception as exc:  # noqa: BLE001 — optional context cannot abort the blackboard
+        log.warning("world_state: risk/rotation context unavailable (%s)", type(exc).__name__)
+        risk_envelope_block = {"usable": False, "reason": "context_reader_failed", "display_only": True}
+    sources["data/risk_envelope/latest.json"] = risk_envelope_block.get("source_session")
+
     # ── Assemble payload ──────────────────────────────────────────────────────
     payload: dict[str, Any] = {
         "verdict": verdict_block,
@@ -4876,6 +4932,7 @@ def build_world_state(
         "cycle_pattern": cycle_pattern_block,  # CPI P6 wave-1 wiring line (display-only)
         "inflation_intelligence": inflation_intelligence_block,  # Release Radar current/next CPI context
         "rotation_events": rotation_events_block,  # RC deep-integration wiring line (display-only)
+        "risk_envelope": risk_envelope_block,
         "stock_personality_summary": stock_personality_summary_block,  # R-SP20 wiring line
         "context_risk": context_risk_block,  # R-CI7 nw-context-intelligence W3 wiring line
         "liquidity_plumbing": liquidity_plumbing_block,  # neuralweb.liquidity_plumbing.v1 wiring line

@@ -1,0 +1,9 @@
+{
+  "run_id": 39109519443,
+  "head": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+  "started_at_utc": "2026-10-18T08:03:49.484054+00:00",
+  "completed_at_utc": "2026-10-18T08:22:04.981746+00:00",
+  "exit_code": 1,
+  "log": "/tmp/rr-helper-ci-39109519443-watch.log",
+  "watcher_count": 1
+}

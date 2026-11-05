@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "research_factory.market_memory_e0_installed_binding.v1",
+  "title": "Market Memory E0 installed binding",
+  "description": "Metadata grammar only. Complete domain manifests, genuine owner installation/publication/independent closure/current access and durable reservations are separately required; passing this schema grants no access.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "research_factory.market_memory_e0_installed_binding.v1",
+      "type": "string"
+    },
+    "authority": {
+      "const": "display_only",
+      "type": "string"
+    },
+    "installation_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "installation_epoch": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "namespace_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "study_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "access_state_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      }
+    },
+    "registration_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "closure_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "publication_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "owner_principal_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "admin_receipt_ref": {
+      "$ref": "#/$defs/ref"
+    },
+    "installed_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$",
+      "format": "date-time",
+      "minLength": 27,
+      "maxLength": 27
+    },
+    "expires_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$",
+      "format": "date-time",
+      "minLength": 27,
+      "maxLength": 27
+    },
+    "permitted_actions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "read_e0_registration",
+          "disclose_e0_registration",
+          "read_registered_outcome_labels",
+          "read_registered_annotations",
+          "read_registered_condition_outputs"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema",
+    "authority",
+    "installation_id",
+    "installation_epoch",
+    "namespace_id",
+    "study_id",
+    "access_state_id",
+    "registration_ref",
+    "closure_ref",
+    "publication_ref",
+    "owner_principal_ref",
+    "admin_receipt_ref",
+    "installed_at",
+    "expires_at",
+    "permitted_actions"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "ref": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "minLength": 1,
+          "maxLength": 128,
+          "not": {
+            "pattern": "[^A-Za-z0-9_.:-]"
+          }
+        },
+        "object_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "minLength": 1,
+          "maxLength": 128,
+          "not": {
+            "pattern": "[^A-Za-z0-9_.:-]"
+          }
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      },
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

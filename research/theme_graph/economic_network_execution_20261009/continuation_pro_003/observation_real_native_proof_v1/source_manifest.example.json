@@ -1,0 +1,30 @@
+{
+  "schema": "economic_network.observation_native_source_manifest/v1",
+  "repository": "mastermindx-market-intelligence/macro",
+  "operation_id": "gmi-economic-observations-20261009-pro-003",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-observations-20261009-pro-003",
+  "reviewed_head": "PRINCIPAL_MUST_FILL_THE_ACTUAL_REVIEWED_40_HEX_COMMIT",
+  "phase": "PREMERGE_FROZEN_CANDIDATE",
+  "files": [
+    {
+      "path": "engine/company_intelligence/relationship_observations.py",
+      "byte_length": 42756,
+      "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+    },
+    {
+      "path": "engine/company_intelligence/relationship_candidates.py",
+      "byte_length": 45473,
+      "sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55"
+    },
+    {
+      "path": "engine/research_vault/r2_store.py",
+      "byte_length": 47498,
+      "sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd"
+    },
+    {
+      "path": "lib/dataos/registry.py",
+      "byte_length": 16599,
+      "sha256": "b57ec16a61086b8d35beb2f81af30efc4af55f1ac07ec95cfcfd87beefeef0a5"
+    }
+  ]
+}

@@ -19,17 +19,19 @@ import json
 import logging
 import os
 import re
+import threading
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping
 
 import pandas as pd
 import requests
 import yaml
 
 from lib import config
+from collectors.sec_request_pacer import SecRequestPacer  # re-export
 
 log = logging.getLogger("edgar_forensics")
 SEC_DATA = "https://data.sec.gov"
@@ -234,6 +236,7 @@ class SecForensicsCollector:
         timeout_seconds: float = 30.0,
         max_response_bytes: int | None = None,
         session: requests.Session | None = None,
+        pacer: SecRequestPacer | None = None,
     ) -> None:
         if "@" not in user_agent:
             raise ValueError("SEC user agent must identify an application and contact email")
@@ -243,12 +246,17 @@ class SecForensicsCollector:
         self.timeout_seconds = timeout_seconds
         self.max_response_bytes = _byte_limit(max_response_bytes, field="max_response_bytes")
         self.session = session or requests.Session()
+        self._pacer = (
+            pacer
+            if pacer is not None
+            else SecRequestPacer(min_interval_seconds=self.min_interval_seconds)
+        )
+        # Retained as a truthful post-response mirror of the last request; the
+        # shared pacer above is what pacing actually consults now.
         self._last_request_at = 0.0
 
     def _pace(self) -> None:
-        wait = self.min_interval_seconds - (time.monotonic() - self._last_request_at)
-        if wait > 0:
-            time.sleep(wait)
+        self._pacer.acquire()
 
     def _download_json_bytes(
         self,

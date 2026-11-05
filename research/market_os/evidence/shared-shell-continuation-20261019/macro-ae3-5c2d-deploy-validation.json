@@ -1,0 +1,47 @@
+{
+  "started_at": "2026-10-20T11:17:39.773973+00:00",
+  "head": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "incoming": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "index": "1a008b73af0ef56634ce89bb07c62b7a5e0a5988",
+  "source_before": {
+    "app/deploy/Caddyfile": "cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a",
+    "app/deploy/update.sh": "337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394",
+    "config/site_access.yml": "9631799b269700885ed63d3e7267a1f43dfda07480c85733c64026414f9a9bd9",
+    "tests/test_regwall_json_gate.py": "f517e8b910f87f280fac3f5f54789db2472cbbaee18b0e3cdcd9557dc56de8eb",
+    "tests/test_site_access_boundary.py": "75313a6b544bce04b19a8d0ad563c9847c8665bcf83ce55e990416f2065d491a",
+    "tests/test_deploy_update_self_heal.py": "a679b64f2c3a5161b42d312a98e207287fc59c0034074c4d865c166dda39ebb4"
+  },
+  "args": [
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--basetemp",
+    "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-deploy-validation-tmp",
+    "tests/test_regwall_json_gate.py",
+    "tests/test_site_access_boundary.py",
+    "tests/test_deploy_update_self_heal.py"
+  ],
+  "prior_result": "334 assertions passed but session exit1 because concurrent root site/theme writes; this is unchanged rerun after full freeze",
+  "existing_bash_and_10_header_cases_reused_for_identical_bytes": true,
+  "exit": 0,
+  "finished_at": "2026-10-20T11:19:45.865935+00:00",
+  "log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-deploy-validation.log",
+    "bytes": 432,
+    "sha256": "74dc9ae85d5bcf485c9bd891c0fa8f2bdc58e27e08525d0c4ee86fbb98587fa2"
+  },
+  "source_after": {
+    "app/deploy/Caddyfile": "cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a",
+    "app/deploy/update.sh": "337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394",
+    "config/site_access.yml": "9631799b269700885ed63d3e7267a1f43dfda07480c85733c64026414f9a9bd9",
+    "tests/test_regwall_json_gate.py": "f517e8b910f87f280fac3f5f54789db2472cbbaee18b0e3cdcd9557dc56de8eb",
+    "tests/test_site_access_boundary.py": "75313a6b544bce04b19a8d0ad563c9847c8665bcf83ce55e990416f2065d491a",
+    "tests/test_deploy_update_self_heal.py": "a679b64f2c3a5161b42d312a98e207287fc59c0034074c4d865c166dda39ebb4"
+  },
+  "index_after": "1a008b73af0ef56634ce89bb07c62b7a5e0a5988",
+  "unstaged_after": [],
+  "pass": true
+}

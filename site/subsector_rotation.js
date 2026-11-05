@@ -624,7 +624,7 @@
     sv.addEventListener('mousemove',function(e){var t=e.target.closest('.sr-dot');if(!t){hideTip();return;}showTip(t.getAttribute('data-k'),e.clientX,e.clientY);});
     sv.addEventListener('mouseleave',hideTip);
     sv.addEventListener('click',function(e){
-      var t=e.target.closest('.sr-dot'); if(t){var k=t.getAttribute('data-k'); if(hasDetail())location.href=detailHref(k); else if(!fs)flashRow(k); return;}
+      var t=e.target.closest('.sr-dot'); if(t){var k=t.getAttribute('data-k'); if(hasDetail()){var _d=detailHref(k);var _ss=window.MMXSharedShell;if(_ss){_ss.navigate(_d,'push')}else{location.href=_d}} else if(!fs)flashRow(k); return;}
       if(!_zoom){var z=e.target.closest('.sr-qz'); if(z&&card){_zoom=z.getAttribute('data-q');drawMapCard(card);}}
       else if(card){_zoom=null;drawMapCard(card);}   // zoomed: click the empty background (anything but a dot) to zoom out
     });
@@ -680,7 +680,7 @@
     Array.prototype.forEach.call(el.querySelectorAll('.sr-vs-row'),function(c){
       c.addEventListener('mousemove',function(e){showTip(c.getAttribute('data-k'),e.clientX,e.clientY);});
       c.addEventListener('mouseleave',hideTip);
-      c.addEventListener('click',function(e){if(e.target.closest('a'))return;var k=c.getAttribute('data-k');if(hasDetail())location.href=detailHref(k);else flashRow(k);});
+      c.addEventListener('click',function(e){if(e.target.closest('a'))return;var k=c.getAttribute('data-k');if(hasDetail()){var _d=detailHref(k);var _ss=window.MMXSharedShell;if(_ss){_ss.navigate(_d,'push')}else{location.href=_d}}else flashRow(k);});
     });
     var mb=el.querySelector('.sr-vs-more');
     if(mb)mb.addEventListener('click',function(){_vsMore=!_vsMore;drawVersus(el);});
@@ -876,7 +876,7 @@
       c.addEventListener('mousemove',function(e){showTip(c.getAttribute('data-k'),e.clientX,e.clientY);});
       c.addEventListener('mouseleave',hideTip);
       c.addEventListener('click',function(e){if(e.target.closest('a'))return;
-        var k=c.getAttribute('data-k'); if(hasDetail())location.href=detailHref(k); else flashRow(k);});
+        var k=c.getAttribute('data-k'); if(hasDetail()){var _d=detailHref(k);var _ss=window.MMXSharedShell;if(_ss){_ss.navigate(_d,'push')}else{location.href=_d}} else flashRow(k);});
     });
     Array.prototype.forEach.call(el.querySelectorAll('.sr-tw-chip'),function(c){
       c.addEventListener('mousemove',function(e){showTip(c.getAttribute('data-k'),e.clientX,e.clientY);});

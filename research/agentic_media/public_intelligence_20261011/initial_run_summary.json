@@ -1,0 +1,30 @@
+{
+  "run_at": "2026-10-11T08:56:54Z",
+  "as_of": "2026-10-11",
+  "planned": 1,
+  "passed": 1,
+  "quarantined": 0,
+  "items": [
+    {
+      "id": "press-brief-2026-10-11-6cf53bdfd11a",
+      "desk": "brief",
+      "status": "passed",
+      "reason": ""
+    }
+  ],
+  "revision_reconciliation": {
+    "current_sources": 4562,
+    "superseded": 0,
+    "resolved": 0,
+    "correction_required": 0,
+    "published_mismatches": 0
+  },
+  "writer_state": {
+    "calls": 1,
+    "failures": 0,
+    "consecutive_failures": 0,
+    "circuit_open": false,
+    "tokens_used": 2665,
+    "token_budget": 240000
+  }
+}

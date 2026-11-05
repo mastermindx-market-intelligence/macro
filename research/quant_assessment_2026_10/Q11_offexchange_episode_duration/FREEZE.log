@@ -1,0 +1,2 @@
+2026-10-09T09:54:00Z PREREG.md sha256=10846dad35ab5a29c267f297a70755415e9fe7e071b068d537164b2d67eccd50 (frozen before any evaluation outcome; evaluate.py not yet written or run)
+2026-10-09T10:20:47Z PREREG_AMENDMENT.md sha256=9a339f1cf58f871b3ee74c9b8b793475bce7054ec1997e8e102cde367a128418 (amendment A1: code-integrity guard + audit fixes; written before the guarded re-run; PREREG.md unchanged)

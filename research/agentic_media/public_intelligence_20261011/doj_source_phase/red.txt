@@ -1,0 +1,419 @@
+FFFFFFFFFFFFFF                                                           [100%]
+=================================== FAILURES ===================================
+_____ test_doj_release_retains_allegation_limit_and_never_admits_a_writer ______
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_release_retains_alleg0/release.html'), ...}
+
+    def test_doj_release_retains_allegation_limit_and_never_admits_a_writer(doj_inputs):
+        before = {str(p): p.read_bytes() for p in doj_inputs['root'].rglob('*') if p.is_file()}
+>       r = invoke(doj_inputs)
+            ^^^^^^^^^^^^^^^^^^
+
+tests/test_press_official_feed_candidate.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_release_retains_alleg0/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+_______ test_doj_requires_retained_full_release_and_policy[release_path] _______
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_requires_retained_ful0/policy.html'), ...}
+key = 'release_path'
+
+    @pytest.mark.parametrize('key', ['release_path', 'policy_path'])
+    def test_doj_requires_retained_full_release_and_policy(doj_inputs, key):
+        doj_inputs.pop(key)
+        with pytest.raises(ValueError, match='DOJ'):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_requires_retained_ful0/policy.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'policy_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+_______ test_doj_requires_retained_full_release_and_policy[policy_path] ________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_requires_retained_ful1/release.html'), ...}
+key = 'policy_path'
+
+    @pytest.mark.parametrize('key', ['release_path', 'policy_path'])
+    def test_doj_requires_retained_full_release_and_policy(doj_inputs, key):
+        doj_inputs.pop(key)
+        with pytest.raises(ValueError, match='DOJ'):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_requires_retained_ful1/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+_____________ test_doj_changed_document_bytes_refuse[release_path] _____________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_document_byte0/release.html'), ...}
+key = 'release_path'
+
+    @pytest.mark.parametrize('key', ['release_path', 'policy_path'])
+    def test_doj_changed_document_bytes_refuse(doj_inputs, key):
+        doj_inputs[key].write_bytes(doj_inputs[key].read_bytes() + b' ')
+        with pytest.raises(ValueError, match='hash'):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_document_byte0/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+_____________ test_doj_changed_document_bytes_refuse[policy_path] ______________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_document_byte1/release.html'), ...}
+key = 'policy_path'
+
+    @pytest.mark.parametrize('key', ['release_path', 'policy_path'])
+    def test_doj_changed_document_bytes_refuse(doj_inputs, key):
+        doj_inputs[key].write_bytes(doj_inputs[key].read_bytes() + b' ')
+        with pytest.raises(ValueError, match='hash'):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_document_byte1/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+________________ test_doj_changed_qualification_refuses[patch0] ________________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification0/release.html'), ...}
+patch = {'source_qualifiers': []}
+
+    @pytest.mark.parametrize('patch', [
+        {'source_qualifiers': []},
+        {'source_qualifiers': ['CVS admitted liability.']},
+        {'rights_basis': {'qualification': 'government_authored_factual_reporting',
+                          'scope': 'anything', 'policy_url': 'https://evil.test/policy'}},
+        {'source_key': 'occ_news'},
+        {'event_date': '2026-10-08'},
+    ])
+    def test_doj_changed_qualification_refuses(doj_inputs, patch):
+        change(doj_inputs, lambda q: q.update(patch))
+        with pytest.raises(ValueError):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification0/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+________________ test_doj_changed_qualification_refuses[patch1] ________________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification1/release.html'), ...}
+patch = {'source_qualifiers': ['CVS admitted liability.']}
+
+    @pytest.mark.parametrize('patch', [
+        {'source_qualifiers': []},
+        {'source_qualifiers': ['CVS admitted liability.']},
+        {'rights_basis': {'qualification': 'government_authored_factual_reporting',
+                          'scope': 'anything', 'policy_url': 'https://evil.test/policy'}},
+        {'source_key': 'occ_news'},
+        {'event_date': '2026-10-08'},
+    ])
+    def test_doj_changed_qualification_refuses(doj_inputs, patch):
+        change(doj_inputs, lambda q: q.update(patch))
+        with pytest.raises(ValueError):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification1/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+________________ test_doj_changed_qualification_refuses[patch2] ________________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification2/release.html'), ...}
+patch = {'rights_basis': {'qualification': 'government_authored_factual_reporting', 'scope': 'anything', 'policy_url': 'https://evil.test/policy'}}
+
+    @pytest.mark.parametrize('patch', [
+        {'source_qualifiers': []},
+        {'source_qualifiers': ['CVS admitted liability.']},
+        {'rights_basis': {'qualification': 'government_authored_factual_reporting',
+                          'scope': 'anything', 'policy_url': 'https://evil.test/policy'}},
+        {'source_key': 'occ_news'},
+        {'event_date': '2026-10-08'},
+    ])
+    def test_doj_changed_qualification_refuses(doj_inputs, patch):
+        change(doj_inputs, lambda q: q.update(patch))
+        with pytest.raises(ValueError):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification2/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+________________ test_doj_changed_qualification_refuses[patch3] ________________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification3/release.html'), ...}
+patch = {'source_key': 'occ_news'}
+
+    @pytest.mark.parametrize('patch', [
+        {'source_qualifiers': []},
+        {'source_qualifiers': ['CVS admitted liability.']},
+        {'rights_basis': {'qualification': 'government_authored_factual_reporting',
+                          'scope': 'anything', 'policy_url': 'https://evil.test/policy'}},
+        {'source_key': 'occ_news'},
+        {'event_date': '2026-10-08'},
+    ])
+    def test_doj_changed_qualification_refuses(doj_inputs, patch):
+        change(doj_inputs, lambda q: q.update(patch))
+        with pytest.raises(ValueError):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification3/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+________________ test_doj_changed_qualification_refuses[patch4] ________________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification4/release.html'), ...}
+patch = {'event_date': '2026-10-08'}
+
+    @pytest.mark.parametrize('patch', [
+        {'source_qualifiers': []},
+        {'source_qualifiers': ['CVS admitted liability.']},
+        {'rights_basis': {'qualification': 'government_authored_factual_reporting',
+                          'scope': 'anything', 'policy_url': 'https://evil.test/policy'}},
+        {'source_key': 'occ_news'},
+        {'event_date': '2026-10-08'},
+    ])
+    def test_doj_changed_qualification_refuses(doj_inputs, patch):
+        change(doj_inputs, lambda q: q.update(patch))
+        with pytest.raises(ValueError):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_changed_qualification4/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+___________ test_doj_rebound_wrong_release_cannot_qualify[canonical] ___________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_rebound_wrong_release0/release.html'), ...}
+mutation = 'canonical'
+
+    @pytest.mark.parametrize('mutation', ['canonical', 'clock', 'summary', 'duplicate_body'])
+    def test_doj_rebound_wrong_release_cannot_qualify(doj_inputs, mutation):
+        p = doj_inputs['release_path']
+        text = p.read_text()
+        if mutation == 'canonical':
+            text = text.replace('rel="canonical"', 'rel="alternate"')
+        elif mutation == 'clock':
+            text = text.replace('2026-10-13T12:00:00Z', '2026-10-12T12:00:00Z')
+        elif mutation == 'summary':
+            text = text.replace('$315 million', '$316 million')
+        else:
+            text += '<div class="node-body"><div class="field_body">ambiguous</div></div>'
+        p.write_text(text)
+        change(doj_inputs, lambda q: q.update(release_sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
+        with pytest.raises(ValueError, match='DOJ'):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_rebound_wrong_release0/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+_____________ test_doj_rebound_wrong_release_cannot_qualify[clock] _____________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_rebound_wrong_release1/release.html'), ...}
+mutation = 'clock'
+
+    @pytest.mark.parametrize('mutation', ['canonical', 'clock', 'summary', 'duplicate_body'])
+    def test_doj_rebound_wrong_release_cannot_qualify(doj_inputs, mutation):
+        p = doj_inputs['release_path']
+        text = p.read_text()
+        if mutation == 'canonical':
+            text = text.replace('rel="canonical"', 'rel="alternate"')
+        elif mutation == 'clock':
+            text = text.replace('2026-10-13T12:00:00Z', '2026-10-12T12:00:00Z')
+        elif mutation == 'summary':
+            text = text.replace('$315 million', '$316 million')
+        else:
+            text += '<div class="node-body"><div class="field_body">ambiguous</div></div>'
+        p.write_text(text)
+        change(doj_inputs, lambda q: q.update(release_sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
+        with pytest.raises(ValueError, match='DOJ'):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_rebound_wrong_release1/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+____________ test_doj_rebound_wrong_release_cannot_qualify[summary] ____________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_rebound_wrong_release2/release.html'), ...}
+mutation = 'summary'
+
+    @pytest.mark.parametrize('mutation', ['canonical', 'clock', 'summary', 'duplicate_body'])
+    def test_doj_rebound_wrong_release_cannot_qualify(doj_inputs, mutation):
+        p = doj_inputs['release_path']
+        text = p.read_text()
+        if mutation == 'canonical':
+            text = text.replace('rel="canonical"', 'rel="alternate"')
+        elif mutation == 'clock':
+            text = text.replace('2026-10-13T12:00:00Z', '2026-10-12T12:00:00Z')
+        elif mutation == 'summary':
+            text = text.replace('$315 million', '$316 million')
+        else:
+            text += '<div class="node-body"><div class="field_body">ambiguous</div></div>'
+        p.write_text(text)
+        change(doj_inputs, lambda q: q.update(release_sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
+        with pytest.raises(ValueError, match='DOJ'):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_rebound_wrong_release2/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+________ test_doj_rebound_wrong_release_cannot_qualify[duplicate_body] _________
+
+doj_inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_rebound_wrong_release3/release.html'), ...}
+mutation = 'duplicate_body'
+
+    @pytest.mark.parametrize('mutation', ['canonical', 'clock', 'summary', 'duplicate_body'])
+    def test_doj_rebound_wrong_release_cannot_qualify(doj_inputs, mutation):
+        p = doj_inputs['release_path']
+        text = p.read_text()
+        if mutation == 'canonical':
+            text = text.replace('rel="canonical"', 'rel="alternate"')
+        elif mutation == 'clock':
+            text = text.replace('2026-10-13T12:00:00Z', '2026-10-12T12:00:00Z')
+        elif mutation == 'summary':
+            text = text.replace('$315 million', '$316 million')
+        else:
+            text += '<div class="node-body"><div class="field_body">ambiguous</div></div>'
+        p.write_text(text)
+        change(doj_inputs, lambda q: q.update(release_sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
+        with pytest.raises(ValueError, match='DOJ'):
+>           invoke(doj_inputs)
+
+tests/test_press_official_feed_candidate.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_...b/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2050/test_doj_rebound_wrong_release3/release.html'), ...}
+
+    def invoke(inputs):
+        from engine.press.official_feed_candidate import plan_official_feed_candidate
+>       return plan_official_feed_candidate(**inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: plan_official_feed_candidate() got an unexpected keyword argument 'release_path'
+
+tests/test_press_official_feed_candidate.py:39: TypeError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_official_feed_candidate.py::test_doj_release_retains_allegation_limit_and_never_admits_a_writer
+FAILED tests/test_press_official_feed_candidate.py::test_doj_requires_retained_full_release_and_policy[release_path]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_requires_retained_full_release_and_policy[policy_path]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_changed_document_bytes_refuse[release_path]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_changed_document_bytes_refuse[policy_path]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_changed_qualification_refuses[patch0]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_changed_qualification_refuses[patch1]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_changed_qualification_refuses[patch2]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_changed_qualification_refuses[patch3]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_changed_qualification_refuses[patch4]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_rebound_wrong_release_cannot_qualify[canonical]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_rebound_wrong_release_cannot_qualify[clock]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_rebound_wrong_release_cannot_qualify[summary]
+FAILED tests/test_press_official_feed_candidate.py::test_doj_rebound_wrong_release_cannot_qualify[duplicate_body]
+14 failed, 28 deselected in 5.22s

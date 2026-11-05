@@ -1,0 +1,145 @@
+{
+  "schema": "grey_deer.session_recovery_readback.v1",
+  "programme": "WS:GREY-DEER-RISK-INTELLIGENCE / MAS-258",
+  "recovered_operation": "risk-radar-release-qualification-20261018-0304",
+  "source_candidate": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+  "landed_master": "a7553e0a18339c910eef9687c730b06605dd710e",
+  "source_landing_receipt": "../native_oct20/SOURCE_LANDING_READBACK_2026-10-20.json",
+  "source_queue_completed_receipt": "../native_oct20/SOURCE_QUEUE_COMPLETED_2026-10-20.json",
+  "source_dependency_bindings": "../native_oct20/LANDED_DEPENDENCY_BINDINGS_2026-10-20.json",
+  "source_observer": {
+    "pid": 80374,
+    "terminal_receipt_observed": true,
+    "scoped_process_read_found_no_active_operation_process": true
+  },
+  "runtime_initial_observation": {
+    "observed_at": "2026-10-20T07:19:05.293739Z",
+    "installed_marker": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+    "health_curl_exit": 28,
+    "health_timeout_seconds": 6,
+    "response_bytes": 0,
+    "service_state": "active/running",
+    "pid": 1627652
+  },
+  "runtime_diagnostic": {
+    "observed_at": "2026-10-20T07:24:49.488198+00:00",
+    "service": {
+      "rc": 0,
+      "out": "MainPID=1627652\nNRestarts=0\nMemoryCurrent=216391680\nCPUUsageNSec=597512556000\nTasksCurrent=19\nActiveState=active\nSubState=running",
+      "err": ""
+    },
+    "process": {
+      "rc": 0,
+      "out": "PID    PPID STAT %CPU %MEM     ELAPSED WCHAN                            COMMAND\n1627652       1 Ssl   0.6  4.3    22:54:04 ep_poll                          uvicorn",
+      "err": ""
+    },
+    "listener": {
+      "rc": 0,
+      "out": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\nLISTEN 0      2048       127.0.0.1:8001      0.0.0.0:*    users:((\"uvicorn\",pid=1627652,fd=13))",
+      "err": ""
+    },
+    "disk": {
+      "rc": 0,
+      "out": "Filesystem     1024-blocks     Used Available Capacity Mounted on\n/dev/vda1         80162804 44424516  35721904      56% /",
+      "err": ""
+    },
+    "proc_status": [
+      "Name:\tuvicorn",
+      "State:\tS (sleeping)",
+      "VmRSS:\t  173508 kB",
+      "RssAnon:\t  140768 kB",
+      "VmSwap:\t  176656 kB",
+      "Threads:\t19"
+    ],
+    "thread_waits": {
+      "ep_poll": 1,
+      "io_sq_thread": 1,
+      "futex_wait_queue": 16,
+      "hrtimer_nanosleep": 1
+    },
+    "memory": [
+      "MemTotal:        4009860 kB",
+      "MemAvailable:    2137588 kB",
+      "SwapTotal:       8388600 kB",
+      "SwapFree:        6979276 kB"
+    ],
+    "journal": {
+      "read_rc": 0,
+      "records_returned": 0,
+      "bounded_at_1500": false,
+      "first_usec": null,
+      "last_usec": null,
+      "priority_counts": {},
+      "signature_counts": {
+        "timeout": 0,
+        "traceback": 0,
+        "sqlite_locked": 0,
+        "health_request": 0,
+        "scheduler": 0,
+        "error": 0,
+        "memory": 0,
+        "task_blocked": 0
+      },
+      "exception_types": {}
+    }
+  },
+  "runtime_direct_health": {
+    "observed_at": "2026-10-20T07:26:31.939645+00:00",
+    "client_proxy_presence": {
+      "HTTP_PROXY": false,
+      "HTTPS_PROXY": false,
+      "ALL_PROXY": false,
+      "http_proxy": false,
+      "https_proxy": false,
+      "all_proxy": false
+    },
+    "no_proxy_includes_loopback": false,
+    "service_logging": "StandardOutput=journal\nStandardError=inherit",
+    "installed_health_source": [
+      "\n    @app.get(\"/health\")\n    def health() -> dict:\n        \"\"\"LIVENESS + provenance. Always HTTP 200 while the process can answer \u2014\n        supervisors and scripts/deploy_code_to_vps.sh both curl this (the deploy probe\n        uses `curl -fsS`, so a non-2xx here would break the release transaction) and\n        then grep the body for reasoning_policy_ok / scheduled_runtime_ok / commit.\n        Readiness lives in the `status` field and, as a hard signal, in /ready.\n\n        Keep only non-sensitive fields; filesystem and CLI paths are omitted \u2014 they\n        would leak on an open route.\n        \"\"\"\n        return _runtime_health()"
+    ],
+    "direct_health": {
+      "status": 200,
+      "body": "{\"status\":\"ok\",\"paper_only\":true,\"reasoning_policy_scope\":\"scheduled_portfolio_reasoning\",\"reasoning_backend\":\"waterfall\",\"reasoning_policy\":\"codex_first_claude_oauth_fallback\",\"reasoning_policy_ok\":true,\"shared_reasoning_available\":true,\"codex_available\":false,\"reasoning_primary\":\"claude_oauth_fallback\",\"scheduled_portfolio_reasoning_backend\":\"waterfall\",\"scheduled_portfolio_reasoning_policy\":\"codex_first_claude_oauth_fallback\",\"scheduled_portfolio_reasoning_available\":true,\"scheduled_portfolio_reasoning_policy_ok\":true,\"scheduled_runtime_expected\":true,\"scheduler_running\":true,\"scheduled_runtime_ok\":true,\"advisor_chat_backend\":\"claude_agent_sdk\",\"advisor_chat_uses_scheduled_reasoning_waterfall\":false,\"commit\":\"732cf7be88e7159b4995a8885fbd381cd1484e3e\",\"version\":\"732cf7be88e7159b4995a8885fbd381cd1484e3e\"}"
+    },
+    "live_environment_whitelist": {
+      "MASTERMIND_SERVE_ONLY": "0",
+      "MASTERMIND_VPS_AUTHORITATIVE": "1",
+      "MASTERMIND_JOBSTORE": "memory",
+      "MASTERMIND_AUTONOMOUS_FIRST_RUN": null,
+      "MASTERMIND_CHINA_FIRST_RUN": null,
+      "MASTERMIND_HK_FIRST_RUN": null,
+      "MASTERMIND_DATA_ROOT": null,
+      "MASTERMIND_DATA_DIR": null,
+      "MASTERMIND_ACTIVE_COHORT": null
+    }
+  },
+  "finding": "Source landing already complete; old queue-next-action text is stale. Later direct HTTP 200 establishes subsequent liveness at old release; earlier timeout cause remains unresolved. No service operation or deployment performed.",
+  "qualification_open": [
+    "Exact merged archive/receiver comparison",
+    "Current book/cohort/settlement evidence",
+    "Matching isolated startup/replacement/restoration proof",
+    "Reserved production decision",
+    "Installed risk-date behavior and original authenticated consumer"
+  ],
+  "policy_limits": {
+    "production_acceptance": false,
+    "service_mutation_performed": false,
+    "model_fits_executed": 0,
+    "forecast_promotion": false
+  },
+  "prior_receipt_identities": [
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/SOURCE_LANDING_READBACK_2026-10-20.json",
+      "sha256": "dbe8de21998eb0794168748a2f56d3ba0d64edb2210b98f9a36ca341a08d3049"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/SOURCE_QUEUE_COMPLETED_2026-10-20.json",
+      "sha256": "8c4119c2e79b9304751c138c3eb4b65ff3544283f92acf0dfac4d2128fafc485"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/LANDED_DEPENDENCY_BINDINGS_2026-10-20.json",
+      "sha256": "9d33d1ed8ed3d616737e5f16cfd3567e417226987458acae641fd9783dfadcce"
+    }
+  ]
+}

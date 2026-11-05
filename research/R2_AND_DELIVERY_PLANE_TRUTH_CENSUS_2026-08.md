@@ -339,3 +339,24 @@ The enforcement includes immutable inventory/evidence receipts under `tests/fixt
 - Historical public-object and public-repository remediation scope after future cutover.
 
 Unknowns are not approvals. Every unresolved family remains private by default.
+
+
+## 2026-10-11 BOATS source qualification
+
+The August census identity and dated observations above are preserved. The two
+existing extended-quote families now qualify their entire BOATS-only facts object
+and route as PUBLIC_FACT / ANONYMOUS under Chairman-attested Tiingo redistribution
+and hash-bound producer/consumer review. Mixed legacy sources are excluded by the
+source gate; the separately held generic quote family is unchanged. This is source
+qualification, not evidence of installed publication, cleared scheduling controls
+or genuine live BOATS consumer acceptance. Exact old/current source pins, source
+allowlists, acceptance and remaining release gates are retained in
+`docs/tiingo-evidence/20261011-boats-source/`. Current qualified-source counts:
+
+| Classification | Families |
+|---|---:|
+| `PREMIUM_PRODUCT` | 43 |
+| `PRIVATE_OPERATIONAL` | 27 |
+| `PUBLIC_FACT` | 7 |
+| `UNRESOLVED` | 19 |
+| `VENDOR_RAW` | 12 |

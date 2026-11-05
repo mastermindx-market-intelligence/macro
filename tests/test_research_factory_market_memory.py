@@ -1229,7 +1229,7 @@ def test_builder_is_detached_and_performs_no_io(
     )
 
 
-def test_adapter_has_no_writer_store_registry_loader_or_production_callsite() -> None:
+def test_adapter_is_pure_with_only_explicit_evidence_consumer() -> None:
     source = ADAPTER.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=str(ADAPTER))
     imports: set[str] = set()
@@ -1272,7 +1272,8 @@ def test_adapter_has_no_writer_store_registry_loader_or_production_callsite() ->
                 or "adapter_market_memory" in candidate_source
             ):
                 callers.add(path.relative_to(ROOT))
-    assert callers == set()
+    assert callers == {Path("engine/research_factory/adapter_market_memory_evidence.py"),
+                       Path("scripts/research_factory_run.py")}
 
 
 def test_ci_explicitly_owns_adapter_schema_hostile_suite_and_authority_read() -> None:
