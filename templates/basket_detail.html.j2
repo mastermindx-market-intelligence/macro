@@ -405,6 +405,8 @@ const briefText = (s,max=260) => {
 const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const fmtPct = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'%';
 const fmtPP = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'pp';
+const fmtCount = x => Number.isFinite(x) ? x : '—';
+const countInk = (x, ink) => Number.isFinite(x) ? ink : 'muted';
 const cls = x => x==null?'muted':(x>=0?'pos':'neg');
 const TIER_LABELS={
   T1:['confirmed setup','已确认机会'],
@@ -598,8 +600,15 @@ function convCell(c){
 function contestedList(th,b){
   const tx=th.textures||{}, rr=tx.rollover_risk||{}, cyc=(b||{}).cycle||null;
   const list=[];
-  if(cyc && (((cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak')) || ((cyc.proj||{}).nextTurn==='trough')))
-    list.push(['cycle clock at a provisional peak / projecting a trough next','周期时钟处于临时顶部 / 推演下一拐点为底部']);
+  const provisionalPeak=cyc && (cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak');
+  const futureTrough=cyc && (cyc.proj||{}).nextTurn==='trough' &&
+    projectionWindowState(cyc.proj,new Date().toISOString().slice(0,7))==='future';
+  const cycleReasons=[];
+  if(provisionalPeak) cycleReasons.push(['at a provisional peak','处于临时顶部']);
+  if(futureTrough) cycleReasons.push(['projecting a trough next','推演下一拐点为底部']);
+  // These are two descriptions of one cycle texture, not two independent votes.
+  if(cycleReasons.length)
+    list.push(['cycle clock '+cycleReasons.map(x=>x[0]).join(' / '),'周期时钟'+cycleReasons.map(x=>x[1]).join(' / ')]);
   if(th.rs_pctile!=null && th.rs_pctile>=0.95)
     list.push(['very extended (RS ≥95%ile)','相对强度极端延展（≥95分位）']);
   const early = rr.band==='low' && (rr.reasons||[]).length>0 && th.rs_pctile!=null && th.rs_pctile>=0.9;
@@ -1392,8 +1401,8 @@ function render(){
     <div class="kpis" style="margin-top:12px">
       ${['1d','5d','10d','20d','60d','ytd'].map(hz=>{const p=(th.perf||{})[hz]||{};return `<div><div class="k">${L(hz.toUpperCase()+' vs '+BENCH, hz.toUpperCase()+' vs '+BENCHZ)}</div><div class="v ${cls(p.rel)}">${fmtPct(p.rel)}</div></div>`;}).join('')}
       <div><div class="k">${L('above 50d','站上50日')}</div><div class="v">${bd.pct50==null?'—':Math.round(bd.pct50*100)+'%'}</div></div>
-      <div><div class="k">${L('new hi / lo','新高/低')}</div><div class="v"><span class="pos">${bd.nh||0}</span>/<span class="neg">${bd.nl||0}</span></div></div>
-      <div><div class="k">${L('adv / dec today','今日涨/跌')}</div><div class="v"><span class="pos">${th.adv||0}</span>/<span class="neg">${th.dec||0}</span></div></div>
+      <div><div class="k">${L('new hi / lo','新高/低')}</div><div class="v"><span class="${countInk(bd.nh, 'pos')}">${fmtCount(bd.nh)}</span>/<span class="${countInk(bd.nl, 'neg')}">${fmtCount(bd.nl)}</span></div></div>
+      <div><div class="k">${L('adv / dec today','今日涨/跌')}</div><div class="v"><span class="${countInk(th.adv, 'pos')}">${fmtCount(th.adv)}</span>/<span class="${countInk(th.dec, 'neg')}">${fmtCount(th.dec)}</span></div></div>
     </div>
     ${ref?`<div class="muted sm" style="margin-top:10px">${L('Cross-checked vs','交叉验证')} <b>${refLabelHtml(ref.label)}</b>: ${L('daily corr','日相关')} <b>${ref.corr}</b>, ${L('market-adjusted','剔除市场')} <b>${ref.rel_corr}</b> (${ref.n} ${L('sessions','日')})</div>`:''}
   </div>`;

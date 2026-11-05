@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CIEN-BULL-20260810",
-  "asof": "2026-11-02",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 18.5,
-  "raw_confidence": 20.0,
-  "delta_vs_base": -41.5,
+  "asof": "2026-11-04",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 9.6,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -50.4,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.002,
+    "dist_to_stop_r": -0.163,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 171.1,
-    "p1": -0.6653,
-    "p2": -0.3326,
+    "horizon_pct_used": 175.6,
+    "p1": -0.7756,
+    "p2": -0.3878,
     "p3": null,
-    "move_r": -0.998,
+    "move_r": -1.163,
     "mfe_r": 0.01,
-    "mae_r": -1.011
+    "mae_r": -1.163
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.2500122070312614,
-  "_mae": -126.06999511718749,
+  "_mae": -145.12001342773436,
   "_max_p1": 0.006680627475983441,
   "_first_trigger_ts": "2026-10-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 77,
-  "tau": 1.7111,
+  "days_elapsed": 79,
+  "tau": 1.7556,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

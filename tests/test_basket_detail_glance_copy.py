@@ -199,3 +199,58 @@ check(projectionWindowState({nextTurn:"peak",central:"2027-01",low:"2026-12",hig
 check(projectionWindowState({nextTurn:"peak",central:"2027-01",low:"2027-03",high:"2026-12"},"2026-11")==="unavailable","reversed dates state");
 """
     _run_js(renderer + "\n" + cases)
+
+
+def test_theme_detail_contested_cycle_uses_current_projection_window() -> None:
+    text = TEMPLATE.read_text(encoding="utf-8")
+    start = text.index("const CYC_PHASE_ZH=")
+    renderer = text[start:text.index("const VH_COLOR=", start)]
+    start = text.index("function contestedList(")
+    consumer = text[start:text.index("// Distance-to-label-change", start)]
+    cases = r"""
+const NativeDate = Date;
+global.Date = class extends NativeDate {
+  constructor(...args) { super(...(args.length ? args : ["2026-11-03T00:00:00.000Z"])); }
+};
+function check(ok, reason) { if (!ok) throw Error(reason); }
+const future = {nextTurn:"trough",low:"2026-12",central:"2027-01",high:"2027-03"};
+const cases = [
+  ["expired", {nextTurn:"trough",low:"2025-11",central:"2026-01",high:"2026-04"}, false],
+  ["future", future, true],
+  ["in-progress", {nextTurn:"trough",low:"2026-09",central:"2026-11",high:"2026-12"}, false],
+  ["malformed", {nextTurn:"trough",low:"2026-12",central:"2027-13",high:"2027-03"}, false],
+  ["reversed", {nextTurn:"trough",low:"2027-03",central:"2027-01",high:"2026-12"}, false],
+  ["missing-window", {nextTurn:"trough"}, false],
+  ["missing-projection", null, false],
+  ["future-peak", {...future,nextTurn:"peak"}, false],
+];
+const peak = {k:"peak",provisional:true};
+for (const [name,proj,isFutureTrough] of cases) {
+  const rows = contestedList({}, {cycle:{proj,turns:[]}});
+  check(rows.length === (isFutureTrough ? 1 : 0), name+": stale/invalid projection counted as a cycle texture");
+  if (isFutureTrough) {
+    check(rows[0][0].includes("projecting a trough next"), name+": future trough English reason lost");
+    check(rows[0][1].includes("推演下一拐点为底部"), name+": future trough Chinese reason lost");
+    check(!rows[0][0].includes("provisional peak") && !rows[0][1].includes("临时顶部"), name+": invented provisional peak");
+  }
+  const withPeak = contestedList({}, {cycle:{proj,turns:[peak]}});
+  check(withPeak.length === 1, name+": independent provisional peak lost or one cycle texture double-counted");
+  check(withPeak[0][0].includes("at a provisional peak"), name+": provisional peak English reason lost");
+  check(withPeak[0][1].includes("处于临时顶部"), name+": provisional peak Chinese reason lost");
+  check(withPeak[0][0].includes("projecting a trough next") === isFutureTrough, name+": false next-trough English copy");
+  check(withPeak[0][1].includes("推演下一拐点为底部") === isFutureTrough, name+": false next-trough Chinese copy");
+}
+check(contestedList({}, null).length === 0, "missing cycle invented a reason");
+check(contestedList({}, {cycle:{proj:null,turns:[{k:"peak",provisional:false}]}}).length === 0,
+      "an observed peak was promoted to a provisional peak");
+const reasons = contestedList(
+  {rs_pctile:0.96,textures:{rollover_risk:{band:"high",band_zh:"高",reasons:["breadth"]}}},
+  {cycle:{proj:future,turns:[peak]}}
+);
+check(reasons.length === 3, "cycle, extension and roll-over must remain three independent textures");
+check(reasons[1][0].includes("very extended") && reasons[1][1].includes("相对强度极端延展"),
+      "independent extension reason changed");
+check(reasons[2][0].includes("roll-over risk high") && reasons[2][1].includes("回落风险高"),
+      "independent roll-over reason changed");
+"""
+    _run_js(renderer + "\n" + consumer + "\n" + cases)
