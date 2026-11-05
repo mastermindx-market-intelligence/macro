@@ -103,7 +103,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-08-01",
+        "source_asof": "2026-09-01",
         "status": "PRESENT"
       },
       {
@@ -115,7 +115,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-08-01",
+        "source_asof": "2026-09-01",
         "status": "PRESENT"
       },
       {
@@ -127,7 +127,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-08-01",
+        "source_asof": "2026-09-01",
         "status": "PRESENT"
       },
       {
@@ -165,29 +165,29 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": -105572.0,
-        "delta": 0.0,
+        "current_value": -105047.0,
+        "delta": 525.0,
         "metric_id": "trade_balance_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": -105572.0
       },
       {
-        "current_value": 315182.0,
-        "delta": 0.0,
+        "current_value": 321511.0,
+        "delta": 6329.0,
         "metric_id": "exports_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 315182.0
       },
       {
-        "current_value": 420754.0,
-        "delta": 0.0,
+        "current_value": 426558.0,
+        "delta": 5804.0,
         "metric_id": "imports_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 420754.0
       },
       {
-        "current_value": 0.7491,
-        "delta": 0.0,
+        "current_value": 0.7537,
+        "delta": 0.0046,
         "metric_id": "export_import_coverage_ratio",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 0.7491
@@ -200,17 +200,27 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "trade_flows-US-9022e1fd5f515d29"
+    "changed_fingerprints": [
+      "export_import_coverage_ratio:export_import_coverage_ratio:3f1a31ac7838ffa2",
+      "exports_level:exports_level:6dc37e9777f7ea66",
+      "exports_yoy:exports_yoy:1a76e9472aee9fbd",
+      "imports_level:imports_level:2cb68acb336193dd",
+      "imports_yoy:imports_yoy:8348af05e5e8934f",
+      "trade_balance_avg_3m:trade_balance_avg_3m:929dbc02e4f8eab0",
+      "trade_balance_level:trade_balance_level:8719a48068ec081e",
+      "trade_balance_share_of_flows_pct:trade_balance_share_of_flows_pct:db2d5cd9cc7eaaf7",
+      "trade_balance_yoy_change:trade_balance_yoy_change:b088e3f133eaa796"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "trade_flows-US-faffca0bea5e2f60"
   },
   "drivers": {
     "balance_sheet": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "trade_balance_level",
-        "impact_magnitude": 105572.0,
+        "impact_magnitude": 105047.0,
         "impact_sign": -1,
         "label": {
           "en": "Trade balance",
@@ -219,12 +229,12 @@
         "note": "bucket reuse: published under drivers.balance_sheet because these legs concern a trade 'balance', a loose thematic fit, not a literal balance sheet -- see the driver_bucket_naming_note implication",
         "owner_field": "fred.BOPGSTB.trade_balance_goods_services",
         "unit": "usd_millions_sa",
-        "value": -105572.0
+        "value": -105047.0
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "exports_level",
-        "impact_magnitude": 315182.0,
+        "impact_magnitude": 321511.0,
         "impact_sign": 1,
         "label": {
           "en": "Exports",
@@ -233,12 +243,12 @@
         "note": "bucket reuse: see trade_balance_level's note",
         "owner_field": "fred.BOPTEXP.exports_goods_services",
         "unit": "usd_millions_sa",
-        "value": 315182.0
+        "value": 321511.0
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "imports_level",
-        "impact_magnitude": 420754.0,
+        "impact_magnitude": 426558.0,
         "impact_sign": 1,
         "label": {
           "en": "Imports",
@@ -247,12 +257,12 @@
         "note": "bucket reuse: see trade_balance_level's note",
         "owner_field": "fred.BOPTIMP.imports_goods_services",
         "unit": "usd_millions_sa",
-        "value": 420754.0
+        "value": 426558.0
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "export_import_coverage_ratio",
-        "impact_magnitude": 0.7491,
+        "impact_magnitude": 0.7537,
         "impact_sign": 1,
         "label": {
           "en": "Export/import coverage ratio",
@@ -261,12 +271,12 @@
         "note": "bucket reuse: see trade_balance_level's note",
         "owner_field": "fred.BOPTEXP / fred.BOPTIMP",
         "unit": "ratio",
-        "value": 0.7491
+        "value": 0.7537
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "trade_balance_share_of_flows_pct",
-        "impact_magnitude": 14.3453,
+        "impact_magnitude": 14.0424,
         "impact_sign": -1,
         "label": {
           "en": "Balance as share of flows",
@@ -275,7 +285,7 @@
         "note": "bucket reuse: see trade_balance_level's note",
         "owner_field": "fred.BOPGSTB / (fred.BOPTEXP + fred.BOPTIMP)",
         "unit": "percent",
-        "value": -14.3453
+        "value": -14.0424
       },
       {
         "coverage_state": "PRESENT",
@@ -338,11 +348,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-04T12:04:19Z",
+    "built_at": "2026-11-05T10:00:13Z",
     "calculation_as_of": "2026-09-01",
-    "code_version": "f3339f8144cf6b46f43e9393b7ecda9679ced746",
-    "content_sha256": "faffca0bea5e2f6010d72d9801ac6c61570c22bcbaaff00c9cae63dd4685f652",
-    "generation_id": "trade_flows-US-faffca0bea5e2f60",
+    "code_version": "e26dddef9b88ebefbcb9600423a069a829c6899d",
+    "content_sha256": "c6f53c46ea4491aa3e31e882b88429e077b576c777896430bf5b1f30dc3aa403",
+    "generation_id": "trade_flows-US-c6f53c46ea4491aa",
     "producer": "engine.market_os.macro_workspaces.trade_flows",
     "rendered_at": null
   },
@@ -434,8 +444,8 @@
         "horizon": "current",
         "implication_id": "trade_balance_read",
         "text": {
-          "en": "The goods-and-services trade balance reads -105,572 USD million, trailing 3-month average -89,860, -45,930 versus 12 months prior.",
-          "zh": "货物与服务贸易差额读数为-105,572百万美元，近3个月均值为-89,860，较12个月前变化-45,930。"
+          "en": "The goods-and-services trade balance reads -105,047 USD million, trailing 3-month average -101,203, -45,655 versus 12 months prior.",
+          "zh": "货物与服务贸易差额读数为-105,047百万美元，近3个月均值为-101,203，较12个月前变化-45,655。"
         },
         "trace_ref": null
       },
@@ -456,8 +466,8 @@
         "horizon": "current",
         "implication_id": "flows_read",
         "text": {
-          "en": "Exports 315,182 (+10.7% YoY); imports 420,754 (+22.2% YoY), export/import coverage 0.749 (USD millions, SA).",
-          "zh": "出口315,182（同比+10.7%）；进口420,754（同比+22.2%），出口对进口覆盖率为0.749（单位：百万美元，季节调整）。"
+          "en": "Exports 321,511 (+10.0% YoY); imports 426,558 (+21.3% YoY), export/import coverage 0.754 (USD millions, SA).",
+          "zh": "出口321,511（同比+10.0%）；进口426,558（同比+21.3%），出口对进口覆盖率为0.754（单位：百万美元，季节调整）。"
         },
         "trace_ref": null
       },
@@ -501,8 +511,8 @@
         "horizon": "current",
         "implication_id": "balance_share_of_flows_read",
         "text": {
-          "en": "The trade balance is -14.35% of total goods-and-services flows (exports plus imports) -- a scale-normalized read of the deficit or surplus relative to overall trade volume.",
-          "zh": "贸易差额占货物与服务贸易总流量（出口加进口）的-14.35%——这是相对于整体贸易规模,对逆差或顺差进行的规模标准化读数。"
+          "en": "The trade balance is -14.04% of total goods-and-services flows (exports plus imports) -- a scale-normalized read of the deficit or surplus relative to overall trade volume.",
+          "zh": "贸易差额占货物与服务贸易总流量（出口加进口）的-14.04%——这是相对于整体贸易规模,对逆差或顺差进行的规模标准化读数。"
         },
         "trace_ref": null
       },
@@ -724,7 +734,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
@@ -735,10 +745,10 @@
         "metric_id": "trade_balance_level",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/BOPGSTB.parquet",
         "reference_id": "mastermind.market_reference/v1#trade_balance_level",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -753,14 +763,14 @@
           "value": null
         },
         "unit": "usd_millions_sa",
-        "value": -105572.0,
+        "value": -105047.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_3m_average",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
@@ -771,10 +781,10 @@
         "metric_id": "trade_balance_avg_3m",
         "model_version": "trade_flows.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/BOPGSTB.parquet",
         "reference_id": "mastermind.market_reference/v1#trade_balance_avg_3m",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -789,14 +799,14 @@
           "value": null
         },
         "unit": "usd_millions_sa",
-        "value": -89860.0,
+        "value": -101203.3333,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_level_change",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
@@ -807,10 +817,10 @@
         "metric_id": "trade_balance_yoy_change",
         "model_version": "trade_flows.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/BOPGSTB.parquet",
         "reference_id": "mastermind.market_reference/v1#trade_balance_yoy_change",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -825,14 +835,14 @@
           "value": null
         },
         "unit": "usd_millions_sa",
-        "value": -45930.0,
+        "value": -45655.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPTEXP.exports_goods_services",
@@ -843,10 +853,10 @@
         "metric_id": "exports_level",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/BOPTEXP.parquet",
         "reference_id": "mastermind.market_reference/v1#exports_level",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -861,14 +871,14 @@
           "value": null
         },
         "unit": "usd_millions_sa",
-        "value": 315182.0,
+        "value": 321511.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPTEXP.exports_goods_services",
@@ -879,10 +889,10 @@
         "metric_id": "exports_yoy",
         "model_version": "trade_flows.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/BOPTEXP.parquet",
         "reference_id": "mastermind.market_reference/v1#exports_yoy",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -897,14 +907,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 10.6908,
+        "value": 9.9739,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPTIMP.imports_goods_services",
@@ -915,10 +925,10 @@
         "metric_id": "imports_level",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/BOPTIMP.parquet",
         "reference_id": "mastermind.market_reference/v1#imports_level",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -933,14 +943,14 @@
           "value": null
         },
         "unit": "usd_millions_sa",
-        "value": 420754.0,
+        "value": 426558.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPTIMP.imports_goods_services",
@@ -951,10 +961,10 @@
         "metric_id": "imports_yoy",
         "model_version": "trade_flows.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/BOPTIMP.parquet",
         "reference_id": "mastermind.market_reference/v1#imports_yoy",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -969,14 +979,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 22.1762,
+        "value": 21.2698,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_ratio",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPTEXP / fred.BOPTIMP",
@@ -987,10 +997,10 @@
         "metric_id": "export_import_coverage_ratio",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "fred.BOPTEXP / fred.BOPTIMP",
         "reference_id": "mastermind.market_reference/v1#export_import_coverage_ratio",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1006,7 +1016,7 @@
           "value": null
         },
         "unit": null,
-        "value": 0.7491,
+        "value": 0.7537,
         "value_type": "ratio"
       },
       {
@@ -1194,7 +1204,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_share",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPGSTB / (fred.BOPTEXP + fred.BOPTIMP)",
@@ -1205,10 +1215,10 @@
         "metric_id": "trade_balance_share_of_flows_pct",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "fred.BOPGSTB / (fred.BOPTEXP + fred.BOPTIMP)",
         "reference_id": "mastermind.market_reference/v1#trade_balance_share_of_flows_pct",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1225,14 +1235,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": -14.3453,
+        "value": -14.0424,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_identity_residual",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.BOPGSTB - (fred.BOPTEXP - fred.BOPTIMP)",
@@ -1243,10 +1253,10 @@
         "metric_id": "trade_balance_identity_residual",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "fred.BOPGSTB - (fred.BOPTEXP - fred.BOPTIMP)",
         "reference_id": "mastermind.market_reference/v1#trade_balance_identity_residual",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2256,7 +2266,7 @@
         },
         "owner_ref": "collectors.fred[BOPGSTB]",
         "provider": "US Census Bureau / BEA / FRED",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2277,7 +2287,7 @@
         },
         "owner_ref": "collectors.fred[BOPTEXP]",
         "provider": "US Census Bureau / BEA / FRED",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2298,7 +2308,7 @@
         },
         "owner_ref": "collectors.fred[BOPTIMP]",
         "provider": "US Census Bureau / BEA / FRED",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
