@@ -1,3 +1,53 @@
+# BuyingMyFreedom decision-support teardown: historical record and numerical qualification
+
+## Qualification recorded 2026-11-05
+
+This file preserves the complete research memo authored on 2026-09-24. Its corpus measurements, product observations, browser evidence, capability classifications and next-step recommendations describe the author's investigation at that time. This integration checks the memo's identity and internal arithmetic; it does not reproduce the archive analysis or establish the present state of those products.
+
+The original memo remains unchanged in the historical block below. Only this outside qualification is newly authored. Statements inside that block such as “current,” “production,” “PROVEN_OUTCOME,” “PROVEN_LIVE,” “NOT_BUILT” and “release-held” are dated author-reported statements. They are not new proof, a current owner assignment, a release decision or a fresh operating instruction.
+
+### Source identity and provenance limits
+
+- Original PR: [Macro #7946](https://github.com/mastermindx-market-intelligence/macro/pull/7946), branch `sol/bmf-decision-support-research-20260924`.
+- Original commit: `765b105a229bbeaba6044d372a4bfce9166ceba7`.
+- Original [immutable memo](https://github.com/mastermindx-market-intelligence/macro/blob/765b105a229bbeaba6044d372a4bfce9166ceba7/research/competitive_intelligence/BUYINGMYFREEDOM_DECISION_SUPPORT_TEARDOWN_2026-09-24.md): Git blob `d49bf0370723d2ff6f77d4d11ddbd1e460e52684`, **11,511 UTF-8 bytes**, **223 LF characters**, including its terminal LF.
+- Original SHA256: `2e0c86ccb27c5e7df1b0763a24cbc188d5de97b4baf8ebd9016edf17b2e10e67`.
+- The PR opener is Chris. The sole original commit records the raw author and committer alias `Sol Integration Proof <sol-integration-proof@users.noreply.github.com>`, without a linked GitHub author/committer or coauthor trailer. The underlying person is not established; this record does not map that alias to a reviewer or another individual.
+- The memo attributes its archive crawl to Chairman authorization. This qualification does not independently reproduce that authorization, determine third-party rights, inspect the private corpus or certify completeness. Preserve the stated original-implementation and lawful-data boundaries.
+
+### Historical findings and their limits
+
+The memo reports 13,521 authored X posts, an April 2019–2026-09-19 span, 3,001 represented media items and 1,687 posts selected for bounded deep review. Those are attributed measurements from a **partial archive**, not newly counted inputs. The lexical percentages and language-frequency comparison are descriptive claims about that selected material. They do not establish returns, accuracy, a calibrated signal, selection weights or a forecasting advantage.
+
+The persistent-thesis, scenario, action-zone, WAIT, attention-management and separation-of-entry-from-position-management ideas remain useful product-design hypotheses for evaluation with lawful Mastermind data. The memo's proposed implementation sequence is a dated recommendation. It does not originate a present assignment, change an accepted contract, establish a ranker or authorize any trade, position size or new-entry decision.
+
+The AAPL/MSFT Security State, content-hash, all-false-authority, browser-case, deployed-code and production-observation assertions are preserved as September 24 reports. Source identity alone cannot establish their behavioral or production claims. No browser session, service, data refresh, provider call or deployment was rerun for this integration.
+
+References to #668, #689, #691, #692, #741, #485 and B4 retain their historical context. Any future action must use the current canonical workstream and original-carrier evidence, preserve applicable custody and effect constraints, and establish the actual present dependency state. This archive neither resolves those dependencies nor transfers their ownership. The distinction between private user objectives and public artifacts, and the prohibition on duplicating existing state or control planes, remain boundaries to preserve rather than implementation work performed here.
+
+### Internal plan-count discrepancy
+
+The section “Concrete product defects found in current Prophet composition” describes one 2026-09-24 payload as 426 rows, partitioned into 190 RESOLVED, 148 ENTERED, 61 READY and 27 INVALIDATED. Its arithmetic and terminology require qualification:
+
+| Memo statement or calculation | What follows from the stated numbers |
+| --- | --- |
+| Phase partition | `190 + 148 + 61 + 27 = 426`; these four counts add up. |
+| ENTERED plus READY | `148 + 61 = 209`. |
+| “236 unresolved/open” | `426 - 190 = 236`, but this includes the stated 27 INVALIDATED rows. An accepted definition of “open” is needed before using that label. |
+| `phase != invalidated` applied to the stated 426-row partition | `426 - 27 = 399`, rather than the memo's reported 349 “ACTIVE PLANS.” |
+| Reported 349 active rows including 140 RESOLVED | `148 + 61 + 140 = 349`; this leaves 50 of the stated 190 RESOLVED rows outside that count. The memo does not document the additional population restriction or filter needed to reconcile them. |
+
+These calculations identify an unresolved inconsistency in the written evidence. A different population, additional filter or transcription error could explain it; the memo does not establish which. **399 is not a verified live count or a replacement product metric.** The raw payload, exact producer and consumer revisions, and complete filtering steps would be needed to determine the actual result. This integration does not claim to have corrected the product defect, validated its reported effect or reproduced the ordering of the first 18 BEST rows.
+
+### Preservation and scope of this integration
+
+The historical payload occurs exactly once inside a four-tilde Markdown fence, with all original UTF-8 bytes and the terminal LF intact. The outside qualification introduces no private archive content or copied external implementation assets. Its checks cover source identity, byte preservation, fence safety and the arithmetic above. Original tests, experiments, browser observations, private-data classifications and capability verdicts remain unrerun and attributed.
+
+Merging this record can establish source integration of the qualified memo. CI, review and merge do not confer production acceptance, investment authority or acceptance of every historical assertion. The record is part of [queue-triage mission #2028](https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028); its bounded pickup is [6650445825](https://github.com/mastermindx-market-intelligence/macro/pull/7946#issuecomment-6650445825).
+
+## Original 2026-09-24 memo — byte-preserved historical evidence
+
+~~~~markdown
 # BuyingMyFreedom Decision-Support Teardown — 2026-09-24
 
 ## Scope and source
@@ -221,3 +271,4 @@ No second watcher, queue, alert store, or outbox may be created.
 - private user-objective overlay over Decision Spine: NOT_BUILT.
 
 This artifact is a product-intelligence record. It does not supersede source-owner contracts or accepted workstream authority.
+~~~~
