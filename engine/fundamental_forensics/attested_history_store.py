@@ -316,10 +316,12 @@ class DedicatedAttestedHistoryStore:
                 ) from exc
             if client is None:
                 # R2Store treats a None client as "build one from the ambient
-                # environment" (r2_store.py:257 -> _r2_client()), which reads
-                # R2_RESEARCH_* / generic R2_* and would silently reopen the
-                # exact fallback this module exists to make impossible.  A
-                # factory that returns None must fail closed, not inherit.
+                # Research Vault environment" (r2_store.py -> _r2_client()).
+                # That client no longer inherits generic R2_* credentials, but it
+                # may still bind the R2_RESEARCH_* namespace — which this dedicated
+                # attested-history bucket must never borrow. A factory returning
+                # None must therefore fail closed rather than inherit any ambient
+                # Research Vault authority.
                 raise AttestedHistoryStoreError(
                     "dedicated attested-history client factory returned no client"
                 )
