@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ontology.css
+  - templates/ontology.html.j2
+manifest: mockups/evidence/marketontology-r23-r24/manifest.json

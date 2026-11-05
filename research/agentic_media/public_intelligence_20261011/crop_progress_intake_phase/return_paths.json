@@ -1,0 +1,30 @@
+{
+  "observed_at": "2026-10-14T17:10:46.713248+00:00",
+  "ingest_run": {
+    "id": 38602255888,
+    "state": "SUCCESS",
+    "terminal_at": "2026-10-14T16:59:19Z"
+  },
+  "old_engine_render": {
+    "id": 38558417917,
+    "state": "SUCCESS",
+    "terminal_at": "2026-10-14T15:35:26Z",
+    "before_crop_intake": true
+  },
+  "current_render_owner": {
+    "id": 38553964455,
+    "state": "IN_PROGRESS",
+    "updated_at": "2026-10-14T15:35:27Z"
+  },
+  "pending_engine_render": {
+    "id": 38602321014,
+    "state": "PENDING",
+    "created_at": "2026-10-14T16:56:13Z"
+  },
+  "new_dispatches": 0,
+  "ci_log_read_refusal": {
+    "action": "gh run view38602255888 --log after terminal status read",
+    "result": "PreToolUse CI wait guard REDUNDANT POLL; request never dispatched. No timer retry, alternate carrier or cause/push inference from missing log."
+  },
+  "return_owner": "Existing complete-press-delivery heartbeat owns attention; incumbent workflows/controller own execution."
+}
