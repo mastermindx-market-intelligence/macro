@@ -52,7 +52,7 @@ substrate at any grain.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, datetime, timedelta
 from typing import Any, Protocol, Sequence
 
@@ -543,7 +543,13 @@ def run_c3(*, ticker: str, daily: DailyHistory,
     # One indicator pass per name for each leg (see the two helpers above): the
     # per-session legs and per-bucket turns below are the reference functions'
     # own values, read from a table instead of re-derived 61 and ~120 times.
-    legs = _C3DailyLegTable(daily)
+    # The latest session is the widest lawful daily prefix for this run.  Cut
+    # before deriving the shared table: even converting a current/future close
+    # could raise on an unpublished value the reference path never reads.
+    # An empty run must likewise inspect no daily values.
+    daily_prefix = (daily.confirmed_through(ordered[-1][0]) if ordered
+                    else daily.frame.iloc[:0])
+    legs = _C3DailyLegTable(replace(daily, frame=daily_prefix))
     turn_table = _four_hour_turn_table(
         [bucket for _session, session_buckets in ordered for bucket in session_buckets
          if bucket.confirmed and bucket.close is not None])

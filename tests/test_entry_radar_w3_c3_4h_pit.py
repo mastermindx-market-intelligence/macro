@@ -730,3 +730,42 @@ def test_CO5_run_c3_derives_each_indicator_ONCE_per_name(c3_setup, monkeypatch):
         monkeypatch.setattr(ic, name, counting)
     fh.run_c3(ticker=TICKER, daily=daily, buckets_by_session=buckets)
     assert counts == {"stoch_rsi_kd": 1, "rsi_macd_hist": 1}, counts
+
+
+@pytest.mark.parametrize("tail", ["same_session", "future", "empty_run"])
+def test_CO6_run_c3_does_not_convert_unconfirmed_daily_closes(c3_setup, tail,
+                                                          monkeypatch):
+    """An unreadable future/current close cannot change a confirmed-prefix run."""
+    daily, _sessions, buckets = c3_setup
+    selected = buckets if tail == "same_session" else buckets[:-1]
+    if tail == "empty_run":
+        selected = []
+    frame = daily.frame.copy()
+    frame["close"] = frame["close"].astype(object)
+    frame.loc[frame.index[-1], "close"] = "not-yet-published"
+    unreadable = dataclasses.replace(daily, frame=frame)
+    # The oracle deliberately ignores the optimized constructor's clipped
+    # input.  Otherwise an over-truncation could affect both sides equally.
+    class ReferenceDailyLegs:
+        def __init__(self, _clipped):
+            pass
+
+        def leg(self, session):
+            return fh.c3_daily_leg(daily, session)
+
+    with monkeypatch.context() as reference:
+        reference.setattr(fh, "_C3DailyLegTable", ReferenceDailyLegs)
+        expected = fh.run_c3(ticker=TICKER, daily=daily,
+                             buckets_by_session=selected)
+    assert fh.run_c3(ticker=TICKER, daily=unreadable,
+                     buckets_by_session=selected) == expected
+
+
+def test_CO7_run_c3_still_rejects_an_unreadable_confirmed_close(c3_setup):
+    daily, _sessions, buckets = c3_setup
+    frame = daily.frame.copy()
+    frame["close"] = frame["close"].astype(object)
+    frame.loc[frame.index[-2], "close"] = "invalid-confirmed-close"
+    unreadable = dataclasses.replace(daily, frame=frame)
+    with pytest.raises(ValueError, match="invalid-confirmed-close"):
+        fh.run_c3(ticker=TICKER, daily=unreadable, buckets_by_session=buckets)
