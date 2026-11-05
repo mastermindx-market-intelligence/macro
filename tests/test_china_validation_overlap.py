@@ -202,3 +202,295 @@ def test_n_obs_stays_nominal_for_the_demotion_path():
     fam = cv._finalize("fundflow", _head(n_weeks=60, n_indep=3), 272, cv._MIN_PROVEN_N)
     assert fam["n_obs"] == 272                       # NOT shrunk to the honest count
     assert fam["n_weeks"] == 60 and fam["n_indep"] == 3
+
+# --------------------------------------------------------------------------- #
+# 4. CIE-18 pre-outcome preregistration admission
+# --------------------------------------------------------------------------- #
+
+def _cie18_prereg(track="D"):
+    base = {
+        "schema": cv.CIE18_PREREG_SCHEMA,
+        "experiment_id": f"cie18-{track.lower()}-001",
+        "version": 1,
+        "track": track,
+        "mechanism": "frozen owner-native evidence treatment",
+        "role": "discovery" if track == "D" else "ordering" if track == "O" else "monitoring",
+        "sign_prior": "none_declared",
+        "horizon": 21,
+        "horizon_unit": "trading_sessions",
+        "falsifier": "no incremental decision value under the frozen comparison",
+        "source_owner_refs": ["WS:CHINA-ALPHA-INTELLIGENCE", "DataOS:china"],
+        "source_use_permissions": {"class": "approved_internal_research"},
+        "population_manifest": {"asof_rule": "historical eligible universe at cutoff"},
+        "availability_contract": {
+            "cutoff": "evidence_available_at<=decision_cutoff",
+            "later_corrections": "new_revision_only",
+        },
+        "outcome_contract": {
+            "benchmark": "510300.SS",
+            "fill_basis": "canonical_owner",
+            "correction_policy": "frozen_by_version",
+        },
+        "development_interval": {"start": "2025-01-01", "end": "2025-06-30"},
+        "holdout_interval": {"start": "2025-07-01", "end": "2025-12-31"},
+        "prospective_contract": {
+            "start": "2026-01-01",
+            "end_rule": "until preregistered independent-N or calendar stop, whichever comes first",
+        },
+        "primary_metric": {
+            "name": "decision_value",
+            "definition": "frozen track-specific primary economic or decision metric",
+            "direction": "higher_is_better",
+        },
+        "minimum_useful_effect": 0.01,
+        "downside_bound": 0.02,
+        "multiplicity": {
+            "confirmation_method": "holm_fwer",
+            "confirmation_alpha": 0.05,
+            "confirmation_family": ["primary", "registered_secondary"],
+            "exploratory_method": "bh_fdr",
+        },
+        "clustering": {"unit": "issuer_event_date", "effective_n_reported": True},
+        "power": {"basis": "development_only", "minimum_independent_n": 40},
+        "stopping_rule": {
+            "mode": "fixed_no_interim_inference",
+            "final_read_rule": "one final confirmation read after accrual gate",
+        },
+        "trial_family": f"cie18_{track.lower()}_family",
+        "declared_trial_budget": 12,
+        "attempted_variants": [{"name": "primary", "horizon": 21}],
+        "negative_controls": [{"name": "time_shift"}, {"name": "scrambled_identity"}],
+        "cost_capacity_contract": {"slippage": "conservative", "capacity": "reported"},
+        "source_reliability_contract": {"unavailable": "exclude_with_reason"},
+        "code_sha": "a" * 40,
+        "input_hashes": {"manifest": "b" * 64, "feature_contract": "c" * 64},
+        "outcome_access_state": "SEALED_UNSEEN",
+    }
+    if track == "D":
+        base.update({
+            "lawful_asof_universe": {"manifest": "universe-v1"},
+            "equal_budget_control": {"policy": "current_discovery", "budget": 100},
+            "lead_time_clock": "EVIDENCE_AVAILABLE_AT",
+            "future_admission_is_endpoint_only": True,
+            "resource_budget": {"names_reviewed": 100},
+        })
+    elif track == "O":
+        base.update({
+            "candidate_snapshot_manifest": {"digest": "d" * 64},
+            "actual_serving_policy": {"version": "serving-v1"},
+            "fallback_state": {"mode": "explicit", "coverage_complete": True},
+            "deterministic_tiebreak": {"version": "tie-v1"},
+            "original_fill_owner": {"owner": "china_standout_track"},
+            "population_identity_rule": "EXACT_SAME_CANDIDATES_AND_TIME",
+        })
+    elif track == "M":
+        base.update({
+            "thesis_falsifier_version": "thesis-v1",
+            "alert_policy": {"version": "alert-v1", "dedup": "position+thesis+revision"},
+            "observability_rule": {"missing_coverage": "UNKNOWN"},
+            "action_rule": {"automatic_trade": False, "response": "request_review"},
+            "adjudication_policy": {"mode": "blinded_factual_deterioration"},
+            "alert_budget": {"max_reviews_per_week": 20},
+        })
+    return base
+
+
+def test_cie18_all_three_tracks_bind_structurally_but_keep_outcomes_sealed():
+    for track in ("D", "O", "M"):
+        record = _cie18_prereg(track)
+        receipt = cv.validate_cie18_prereg(record)
+        assert receipt["structurally_admissible_for_runner_binding"] is True, (
+            track, receipt
+        )
+        assert receipt["outcome_read_eligible"] is False
+        assert receipt["validation_errors"] == []
+        assert receipt["prereg_digest"] == cv.cie18_prereg_digest(record)
+        assert len(receipt["prereg_digest"]) == 64
+        assert receipt["scientific_state"] ==             "STRUCTURALLY_PREREGISTERED_OUTCOME_SEALED"
+        assert "cie03_outcome_baseline_acceptance_required" in             receipt["outcome_read_blockers"]
+        assert "accepted_family_consumer_receipt_required" in             receipt["outcome_read_blockers"]
+        assert "canonical_outcome_access_gate_not_bound" in             receipt["outcome_read_blockers"]
+        if track == "O":
+            assert "cie02_serving_fill_acceptance_required" in                 receipt["outcome_read_blockers"]
+        else:
+            assert "cie02_serving_fill_acceptance_required" not in                 receipt["outcome_read_blockers"]
+
+
+def test_cie18_missing_practical_thresholds_is_accrual_gated():
+    record = _cie18_prereg("O")
+    record["minimum_useful_effect"] = None
+    record["downside_bound"] = float("nan")
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert receipt["disposition_if_incomplete"] == "ACCRUAL_GATED"
+    assert "minimum_useful_effect_must_be_positive_finite" in receipt["validation_errors"]
+    assert "downside_bound_must_be_nonnegative_finite" in receipt["validation_errors"]
+    assert receipt["prereg_digest"] is None
+
+
+def test_cie18_refuses_viewed_results_and_result_fields():
+    record = _cie18_prereg("D")
+    record["outcome_access_state"] = "HOLDOUT_VIEWED"
+    record["point_estimates"] = {"primary": 0.12}
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "outcome_access_state_must_be_SEALED_UNSEEN" in receipt["validation_errors"]
+    assert "outcome_field_forbidden:point_estimates" in receipt["validation_errors"]
+
+
+def test_cie18_refuses_development_holdout_overlap():
+    record = _cie18_prereg("D")
+    record["development_interval"]["end"] = "2025-07-15"
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "development_holdout_overlap" in receipt["validation_errors"]
+
+
+def test_cie18_refuses_holdout_prospective_overlap():
+    record = _cie18_prereg("D")
+    record["prospective_contract"]["start"] = "2025-12-15"
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "holdout_prospective_overlap" in receipt["validation_errors"]
+
+
+def test_cie18_refuses_nonpositive_horizon_and_nondevelopment_power():
+    record = _cie18_prereg("D")
+    record["horizon"] = 0
+    record["power"] = {"basis": "final_holdout", "minimum_independent_n": 40}
+    receipt = cv.validate_cie18_prereg(record)
+    assert "horizon_must_be_positive_int" in receipt["validation_errors"]
+    assert "power_contract_must_be_development_only" in receipt["validation_errors"]
+
+
+def test_cie18_trial_budget_cannot_understate_registered_variants():
+    record = _cie18_prereg("D")
+    record["attempted_variants"] = [
+        {"name": "v1"}, {"name": "v2"}, {"name": "v3"},
+    ]
+    record["declared_trial_budget"] = 2
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "declared_trial_budget_below_registered_variants" in receipt["validation_errors"]
+
+
+def test_cie18_requires_effective_independent_sample_reporting():
+    record = _cie18_prereg("D")
+    record["clustering"]["effective_n_reported"] = False
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "clustering_contract_invalid" in receipt["validation_errors"]
+
+
+def test_cie18_track_o_requires_identical_candidate_population_and_explicit_fallback():
+    record = _cie18_prereg("O")
+    record["population_identity_rule"] = "roughly_same_candidates"
+    record["fallback_state"] = "v4"
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "track_O_population_identity_rule_invalid" in receipt["validation_errors"]
+    assert "track_O_fallback_state_must_be_explicit" in receipt["validation_errors"]
+
+
+def test_cie18_track_o_nonempty_owner_prose_cannot_grant_outcome_access():
+    record = _cie18_prereg("O")
+    # These are deliberately nonempty and satisfy the structural freeze, but
+    # they are prereg prose rather than canonical upstream acceptance receipts.
+    record["original_fill_owner"] = {"owner": "china_standout_track"}
+    record["actual_serving_policy"] = {"version": "serving-v1"}
+    record["fallback_state"] = {"mode": "explicit", "coverage_complete": True}
+
+    receipt = cv.validate_cie18_prereg(record)
+
+    assert receipt["structurally_admissible_for_runner_binding"] is True
+    assert receipt["outcome_read_eligible"] is False
+    assert receipt["validation_errors"] == []
+    assert "cie02_serving_fill_acceptance_required" in \
+        receipt["outcome_read_blockers"]
+    assert "canonical_outcome_access_gate_not_bound" in \
+        receipt["outcome_read_blockers"]
+    assert receipt["prereg_digest"] == cv.cie18_prereg_digest(record)
+
+
+def test_cie18_track_d_lead_time_is_evidence_availability_not_event_date():
+    record = _cie18_prereg("D")
+    record["lead_time_clock"] = "EVENT_START_DATE"
+    record["future_admission_is_endpoint_only"] = False
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "track_D_lead_time_clock_must_be_evidence_available" in receipt["validation_errors"]
+    assert "track_D_future_admission_must_be_endpoint_only" in receipt["validation_errors"]
+
+
+def test_cie18_track_m_cannot_smuggle_automatic_trade_authority():
+    record = _cie18_prereg("M")
+    record["action_rule"]["automatic_trade"] = True
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "track_M_automatic_trade_must_be_false_without_separate_authority" in receipt["validation_errors"]
+
+
+def test_cie18_confirmation_fdr_is_not_accepted_as_confirmation_family_control():
+    record = _cie18_prereg("D")
+    record["multiplicity"]["confirmation_method"] = "bh_fdr"
+    receipt = cv.validate_cie18_prereg(record)
+    assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+    assert "multiplicity_contract_invalid" in receipt["validation_errors"]
+
+
+def test_cie18_requires_positive_integer_declared_trial_budget():
+    for bad in (0, -1, True, 2.5, "12"):
+        record = _cie18_prereg("D")
+        record["declared_trial_budget"] = bad
+        receipt = cv.validate_cie18_prereg(record)
+        assert receipt["structurally_admissible_for_runner_binding"] is False
+    assert receipt["outcome_read_eligible"] is False
+        assert "declared_trial_budget_must_be_positive_int" in receipt["validation_errors"]
+
+
+def test_cie18_registers_budget_through_existing_trial_ledger_only(tmp_path):
+    from engine.trial_ledger import TrialLedger
+
+    record = _cie18_prereg("D")
+    ledger = TrialLedger(tmp_path / "trials.jsonl")
+    receipt = cv.register_cie18_trial_budget(record, ledger)
+    assert receipt["structurally_admissible_for_runner_binding"] is True
+    assert receipt["outcome_read_eligible"] is False
+    assert receipt["trial_budget_registered"] is True
+    assert receipt["trial_budget_observed"] == record["declared_trial_budget"]
+    assert ledger.declared_budget(record["trial_family"]) == record["declared_trial_budget"]
+
+    # A lower second declaration cannot reduce the already-accounted research budget.
+    record2 = dict(record)
+    record2["version"] = 2
+    record2["declared_trial_budget"] = 3
+    receipt2 = cv.register_cie18_trial_budget(record2, ledger)
+    assert receipt2["trial_budget_observed"] == 12
+
+
+def test_cie18_rejects_missing_canonical_trial_ledger():
+    record = _cie18_prereg("D")
+    try:
+        cv.register_cie18_trial_budget(record, None)
+    except ValueError as exc:
+        assert "TrialLedger" in str(exc)
+    else:
+        raise AssertionError("expected missing canonical TrialLedger to fail")
+
+
+def test_cie18_digest_changes_on_semantic_prereg_change():
+    a = _cie18_prereg("D")
+    b = _cie18_prereg("D")
+    b["minimum_useful_effect"] = 0.02
+    assert cv.cie18_prereg_digest(a) != cv.cie18_prereg_digest(b)
+
