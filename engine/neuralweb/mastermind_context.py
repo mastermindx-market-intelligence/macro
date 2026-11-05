@@ -3119,6 +3119,21 @@ def _plane_liquidity_block(repo: Path, gaps: list[str]) -> dict:
     return nulls
 
 
+def _plane_native_verdict_date(value: Any) -> str | None:
+    """Preserve a source observation session; never substitute a build clock.
+
+    A malformed or timestamp-valued source date stays unknown, not 'today'.
+    This helper does not decide whether the session is expected/fresh.
+    """
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+        return None
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        return None
+    return value
+
+
 def build_market_plane(
     root: Path | str | None = None,
     now: datetime | None = None,
@@ -3145,12 +3160,23 @@ def build_market_plane(
         ws = {}
         gaps.append("world_state: data/neuralweb/world_state.json absent or unreadable")
 
-    verdict_raw = ws.get("verdict") or {}
+    verdict_raw = ws.get("verdict") if isinstance(ws.get("verdict"), dict) else {}
+    native_freshness = (verdict_raw.get("freshness")
+                        if isinstance(verdict_raw.get("freshness"), dict) else {})
+    # These are source-native observations, NOT fresh-on-production assertions.
+    # Do not silently infer a missing date from world_state.produced_at.
     verdict = {
         "verdict": verdict_raw.get("verdict"),
         "score": verdict_raw.get("score"),
         "label_en": verdict_raw.get("label_en"),
         "label_zh": verdict_raw.get("label_zh"),
+        "source_session": _plane_native_verdict_date(verdict_raw.get("asof")),
+        "source_freshness": {
+            "any_input_stale": (native_freshness.get("any_input_stale")
+                                if type(native_freshness.get("any_input_stale")) is bool else None),
+            "data_asof": _plane_native_verdict_date(native_freshness.get("data_asof")),
+            "expected_asof": _plane_native_verdict_date(native_freshness.get("expected_asof")),
+        },
     }
 
     regime_raw = ws.get("regime") or {}
