@@ -8,7 +8,7 @@
 **Input head:** `5d6fd20e5716258f4d6aa93811561a3a6463360c`
 **Worker preparation base:** `3d258daf9818ba366eac96a0d38ce938539ca936`
 **Parent composition base:** `e34bd7a6ba8e09cb801a51600d465a6f7db380d7` (Macro `main` observed 2026-11-05)
-**Editorial authority:** current Chairman oldest-first completion assignment; parent `macro-backlog-oldest-first-20261105-c3`; compatible protected procedure `531bd22b03ffac002221b6a75fe70be70e13f417`. This grants no research, runtime or money authority.
+**Editorial authority:** current Chairman oldest-first completion assignment; parent `macro-backlog-oldest-first-20261105-c3`; preparation procedure `531bd22b03ffac002221b6a75fe70be70e13f417`. Current release policy is verified at `5fbcbffe77a06e41bc590fa09d12a7e2baefb4f7`, including protected Mastermind #2064. This grants no research, runtime or money authority.
 **Reads first:** `research/prophet_v4/CONTRACT_AND_OWNER_MAP.md`, `agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md`, `agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-11-object-change.md`
 
 ---
@@ -352,5 +352,15 @@ separate denied Cell A / Cell B artifact is added.
 - No release of the old MOG intent or of the broader research programme.
 
 Publication preserves dated research and its boundaries on the identified source base. Final
-published-head CI, the eligible non-author GitHub approval required by Macro release procedure,
-individual release admission and merge remain separately evidenced delivery outcomes.
+published-head CI, disposition of the existing C4 review, any formal approval required by an
+actual enforced rule or specific binding hold, individual release admission and merge remain
+separately evidenced delivery outcomes. Current protected DELIVERY_WORKFLOW permits the
+assigned session to opt its own qualified PR into the installed Macro merge-on-green controller
+once required checks, applicable reviews and specific holds are satisfied. Internal session
+policy adds no blanket formal approval or separate release/arming actor. Never self-approve,
+bypass protection, duplicate the existing review or infer release of a recorded hold.
+
+The existing C4 review 5785154068 requested this narrow active delivery-instruction correction.
+It remains on its original PR/review carrier; this source qualification is not a new approval
+or a claim that the finding has already received reviewer disposition. The preparation pin
+above remains dated provenance; current policy supplies the material later qualification.

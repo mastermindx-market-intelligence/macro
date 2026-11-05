@@ -7,7 +7,7 @@ mission: >
   Publish the existing August 22 Prophet flagship package as dated research, preserving all
   original bytes and recording accepted successor precedence. This parent qualification
   composes the original carrier with the identified current-main source and hands the
-  records-only candidate to applicable CI and eligible non-author GitHub release review.
+  records-only candidate through applicable CI, the existing assigned review and protected release.
   It creates no cell, runtime operation, research result, promotion or money authority.
 state_before: >
   Original head 5d6fd20e5716258f4d6aa93811561a3a6463360c contains 31 additive Markdown
@@ -63,8 +63,9 @@ verified:
       below; they do not prove whole-package incorporation or absence of other successors.
 unverified:
   - >
-    Final published-head hosted CI, eligible non-author GitHub approval, individual release
-    admission and actual merge are separate outstanding delivery outcomes. The publication
+    Final published-head hosted CI, disposition of the existing C4 review, any formal approval
+    required by an actual enforced rule or specific binding hold, individual release admission
+    and actual merge are separate outstanding delivery outcomes. The publication
     receipt on PR6264 records the exact parent commit, tree, ordered parents and readbacks.
   - >
     No research hypothesis, forecast, runtime capability, installation or product acceptance
@@ -74,7 +75,8 @@ unverified:
     Linear-hosted Cell A/B artifacts are not supplied or reconstructed.
 unresolved:
   - >
-    Complete records-only review and release on this original carrier. Any later material
+    Complete the existing C4 records-only review and protected release on this original carrier.
+    Do not create another review operation. Any later material
     change to source, owners or actual effects requires its own bounded reconciliation;
     an unrelated main advance is not a reason to relaunch the historical program.
   - >
@@ -84,9 +86,12 @@ next_actions:
   - >
     The currently assigned or next lawfully assigned receiver consumes the exact PR6264
     publication receipt, current source/check/review state and any actual live-writer or
-    unresolved-effect evidence. Complete applicable CI and the eligible non-author GitHub
-    approval required by Macro release procedure, then obtain one independent release
-    disposition and individual merge-on-green admission. Do not self-approve or self-arm.
+    unresolved-effect evidence. Resolve the existing C4 review on its original carrier and
+    satisfy applicable CI, actual enforced reviews and specific binding holds. Follow the
+    current protected DELIVERY_WORKFLOW and installed Macro controller: the assigned session
+    may individually opt in its own qualified PR with merge-on-green once those predicates
+    are satisfied. No separate release/arming actor is required by internal session policy.
+    Never self-approve, bypass protection or duplicate an active or uncertain review effect.
   - >
     Route any substantive Prophet work through current Chairman intent and protected law,
     WS:PROPHET-US-V4-RECOVERY, its relevant latest canonical continuations and the current
@@ -114,9 +119,15 @@ prs: [6264]
 # Dated publication qualification — 2026-11-05
 
 Current Chairman intent authorizes this editorial preservation under parent
-`macro-backlog-oldest-first-20261105-c3` and compatible protected procedure
-`531bd22b03ffac002221b6a75fe70be70e13f417`. This is the publication record for the August
-research package; operational continuity stays with the current workstream and its later handoffs.
+`macro-backlog-oldest-first-20261105-c3`. The preparation used compatible protected procedure
+`531bd22b03ffac002221b6a75fe70be70e13f417`; current release policy is verified at
+`5fbcbffe77a06e41bc590fa09d12a7e2baefb4f7`, including protected Mastermind #2064.
+That material policy change removes blanket formal approval and a separate release/arming
+actor. It preserves actual GitHub/CODEOWNERS requirements, security/release holds, required
+CI and this PR's existing C4 review. This qualification repairs that review's delivery-instruction
+finding (5785154068) without replacing its carrier or claiming its disposition.
+This is the publication record for the August research package; operational continuity stays
+with the current workstream and its later handoffs.
 
 The original carrier is composed with parent base `e34bd7a6ba8e09cb801a51600d465a6f7db380d7`.
 The exact new commit and its source/check/review disposition are recorded on PR #6264.
