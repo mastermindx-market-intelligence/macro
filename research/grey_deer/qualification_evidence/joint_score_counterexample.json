@@ -1,0 +1,43 @@
+{
+  "kind": "SYNTHETIC_EXACT_SCORING_COUNTEREXAMPLE",
+  "market_data": false,
+  "model_fit": false,
+  "production_effect": false,
+  "n": 12,
+  "marginal_loss_probability_both_worlds": {"exact": "1/5", "decimal": 0.2},
+  "marginal_expected_brier_both_worlds": {"exact": "4/25", "decimal": 0.16},
+  "expected_losing_fraction_both_worlds": {"exact": "1/5", "decimal": 0.2},
+  "probability_all_lose": {
+    "independent": {"exact": "1/244140625", "decimal": 4.096e-09},
+    "shared": {"exact": "1/5", "decimal": 0.2}
+  },
+  "expected_normalized_count_score": {
+    "truth_shared_forecast_shared": {"exact": "4/25", "decimal": 0.16},
+    "truth_shared_forecast_independent": {"exact": "15278668695086676/59604644775390625", "decimal": 0.2563335248899073},
+    "truth_independent_forecast_independent": {"exact": "3794817633038324/59604644775390625", "decimal": 0.0636664751100927},
+    "truth_independent_forecast_shared": {"exact": "4/25", "decimal": 0.16},
+    "wrong_count_distribution_excess_in_either_world": {"exact": "5741925531024176/59604644775390625", "decimal": 0.0963335248899073}
+  },
+  "exact_identity_grid": {"pmfs": 35, "ordered_pairs": 1225, "failed": 0},
+  "partial_outcome_example": {
+    "n": 12,
+    "observed": 3,
+    "observed_losses": 1,
+    "feasible_total_losses": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "score_identification_bounds": [
+      {"exact": "9632023156848181/357627868652343750", "decimal": 0.026933088836573967},
+      {"exact": "203728756555285681/357627868652343750", "decimal": 0.569666892356574}
+    ],
+    "point_score_identified": false,
+    "confidence_interval": false
+  },
+  "limits": [
+    "Count/fraction scoring does not identify which security loses.",
+    "Different full joint distributions can induce the same loss count distribution.",
+    "No return severity, executable fill, cost, target, horizon or trading utility is learned here.",
+    "The p=1/5 probability is chosen for arithmetic illustration, not estimated.",
+    "Population, horizon and loss definition must be fixed by the existing owner before evaluation.",
+    "Missing outcomes cannot be assumed non-losses or removed from the original denominator."
+  ],
+  "source_sha256": "6c1b9535e8be42bb42b29d6ac0cf00e3e2906aef9baf3ffe6f34e2c2a4fab5bd"
+}
