@@ -1,15 +1,15 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-04T04:22:35Z",
+  "generated_at": "2026-11-05T03:10:57Z",
   "sources": {
     "macro": {
       "available": true,
-      "root": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/shared-shell-catalog-gates-current-20261103-8348a95921f818a4",
+      "root": "/Volumes/Mastermind 2/agent-workspaces/macro/web/gmi-product-upgrade-20261103-sol",
       "ref": "HEAD",
-      "sha": "ec7eae774e493bbd535926dde7c2437c02daa25d",
+      "sha": "ce005b5d9d7cabcbbed9a053ff3fbe2cf61ca8f7",
       "page_inventory": "git ls-files site/*.html",
-      "tracked_html_pages": 14025,
-      "write_page_sites": 167,
+      "tracked_html_pages": 14026,
+      "write_page_sites": 168,
       "write_page_unresolved": 40,
       "public_carrier_held_write_sites": [
         "scripts/build_consumer_cyclical_plnt_page.py:121 /consumer_cyclical_plnt.html"
@@ -5599,6 +5599,54 @@
       "notes": []
     },
     {
+      "page_id": "macro:gmi_companies",
+      "repo": "macro",
+      "route": "/gmi-companies.html",
+      "route_kind": "page",
+      "source_template": "templates/gmi_companies.html.j2",
+      "builder": [
+        "scripts/build_gmi_explorer.py"
+      ],
+      "data_sources": [],
+      "access_shell": "anonymous",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "discovery_board",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": true,
+      "bilingual": true,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "config/site_access.yml:1",
+        "research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md",
+        "scripts/build_gmi_explorer.py",
+        "scripts/build_gmi_explorer.py:272",
+        "site/gmi-companies.html",
+        "templates/gmi_companies.html.j2"
+      ],
+      "notes": [
+        "The standalone company-evidence catalogue retains its bounded public-fact projection. Shared Shell consumer-purpose qualification remains withheld; this classification grants no additional audience, source redistribution or graph authority."
+      ]
+    },
+    {
       "page_id": "macro:gmi_coverage",
       "repo": "macro",
       "route": "/gmi-coverage.html",
@@ -5636,7 +5684,7 @@
       "source_evidence": [
         "config/site_access.yml:1",
         "scripts/build_gmi_explorer.py",
-        "scripts/build_gmi_explorer.py:123",
+        "scripts/build_gmi_explorer.py:272",
         "site/gmi-coverage.html",
         "templates/gmi_coverage.html.j2"
       ],
@@ -5680,7 +5728,7 @@
       "source_evidence": [
         "config/site_access.yml:1",
         "scripts/build_gmi_explorer.py",
-        "scripts/build_gmi_explorer.py:123",
+        "scripts/build_gmi_explorer.py:272",
         "site/gmi-index.html",
         "templates/gmi_index.html.j2"
       ],
@@ -5726,7 +5774,7 @@
         "agentos/handoffs/GMI-THEME-GRAPH-2026-11-02.md",
         "config/site_access.yml:1",
         "scripts/build_gmi_explorer.py",
-        "scripts/build_gmi_explorer.py:129",
+        "scripts/build_gmi_explorer.py:278",
         "scripts/gmi_explorer/model.py",
         "site/gmi-issuer-mu.html",
         "templates/gmi_issuer.html.j2"
@@ -5776,7 +5824,7 @@
         "agentos/decisions/DEC-GMI-RELATIONSHIP-ENVELOPE-CONTRACT.md",
         "config/site_access.yml:1",
         "scripts/build_gmi_explorer.py",
-        "scripts/build_gmi_explorer.py:123",
+        "scripts/build_gmi_explorer.py:272",
         "site/gmi-relationships.html",
         "templates/gmi_relationships.html.j2"
       ],
@@ -5823,7 +5871,7 @@
         "config/site_access.yml:1",
         "mockups/refs/gmi_explorer/SPECS.md",
         "scripts/build_gmi_explorer.py",
-        "scripts/build_gmi_explorer.py:123",
+        "scripts/build_gmi_explorer.py:272",
         "site/gmi-states.html",
         "templates/gmi_states.html.j2"
       ],
@@ -5870,7 +5918,7 @@
         "config/site_access.yml",
         "config/site_access.yml:1",
         "scripts/build_gmi_explorer.py",
-        "scripts/build_gmi_explorer.py:123",
+        "scripts/build_gmi_explorer.py:272",
         "site/gmi.html",
         "templates/_navlinks.html.j2",
         "templates/gmi_map.html.j2"
@@ -7951,7 +7999,7 @@
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
-        "scripts/build_ticker_pages.py:6470",
+        "scripts/build_ticker_pages.py:6524",
         "site/movers.html"
       ],
       "notes": []
@@ -9909,7 +9957,7 @@
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
-        "scripts/build_spr.py:283",
+        "scripts/build_spr.py:297",
         "site/spr.html",
         "templates/_navlinks.html.j2",
         "templates/spr.html.j2"

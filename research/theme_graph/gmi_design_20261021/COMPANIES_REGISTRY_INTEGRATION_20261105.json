@@ -1,0 +1,138 @@
+{
+  "schema": "gmi.companies_registry_integration.v1",
+  "source_sha": "ce005b5d9d7cabcbbed9a053ff3fbe2cf61ca8f7",
+  "parent_gmi": "be851458055efbffa1f2db61da12b7744502479a",
+  "parent_registry": "e5dd3a7393bfc82c86217c134ed7022505f6ee2b",
+  "registry_sha256": "fc3780a33f2f78fa1ce4f19ec75b4b72b4a84e8179a00e491c9089d8ff581a38",
+  "normal_registry_rows": 356,
+  "gmi_routes": [
+    "/gmi-companies.html",
+    "/gmi-coverage.html",
+    "/gmi-index.html",
+    "/gmi-issuer-mu.html",
+    "/gmi-relationships.html",
+    "/gmi-states.html",
+    "/gmi.html"
+  ],
+  "html_blobs": {
+    "/gmi-companies.html": "904fa29d9c7265fb8d8b5ac311b8c4ea24f5b1b7",
+    "/gmi-coverage.html": "3c0f21129b1a799e4406998ad1a69b373b339071",
+    "/gmi-index.html": "80f2c8bc0a5e9dc2925e8fad6c2552e3ef4a5c83",
+    "/gmi-issuer-mu.html": "3a4515417dbc651737c954799fa6f234d7a178da",
+    "/gmi-relationships.html": "f154c2fcbd2a5fffb012ea6d2a22994c900f8c75",
+    "/gmi-states.html": "6f31a9ea9deb80794422096fd4233a566502de6e",
+    "/gmi.html": "317db9c58873d1b67bb10771bd19cbed4b51b400"
+  },
+  "admitted_gmi_routes": [
+    "/gmi-coverage.html",
+    "/gmi-index.html",
+    "/gmi.html"
+  ],
+  "excluded_gmi_routes": {
+    "/gmi-companies.html": "consumer_admission_withheld",
+    "/gmi-issuer-mu.html": "consumer_admission_withheld",
+    "/gmi-relationships.html": "consumer_admission_withheld",
+    "/gmi-states.html": "lifecycle_internal"
+  },
+  "withdrawn_plnt_present": false,
+  "scope": "Actual generated three-repository registry, immutable seven-route HTML inventory, actual serving deny policy and production exporter; not a full-estate export, deployment or consumer-purpose grant.",
+  "protected_law_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+  "operation": "gmi-product-upgrade-20261103-sol",
+  "registry_generation": {
+    "source_commit": "ce005b5d9d7cabcbbed9a053ff3fbe2cf61ca8f7",
+    "as_of": "2026-11-05T03:10:57Z",
+    "command": [
+      "python3",
+      "scripts/build_product_page_registry.py",
+      "--terminal-root",
+      "/Users/chriswong/Documents/Cluade/charting-app",
+      "--terminal-ref",
+      "e0d4cabfccd3f1fd83b4362288124ba8078de731",
+      "--mastermind-root",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/44ff44e73b840f81/shared-shell-registry-mastermind-c245-c35a5115e973cfc5",
+      "--as-of",
+      "2026-11-05T03:10:57Z"
+    ],
+    "rows_before": 355,
+    "rows_after": 356,
+    "added": [
+      "macro:gmi_companies"
+    ],
+    "removed": [],
+    "semantic_deltas": [],
+    "companies": {
+      "page_id": "macro:gmi_companies",
+      "repo": "macro",
+      "route": "/gmi-companies.html",
+      "route_kind": "page",
+      "source_template": "templates/gmi_companies.html.j2",
+      "builder": [
+        "scripts/build_gmi_explorer.py"
+      ],
+      "data_sources": [],
+      "access_shell": "anonymous",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "discovery_board",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": true,
+      "bilingual": true,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "config/site_access.yml:1",
+        "research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md",
+        "scripts/build_gmi_explorer.py",
+        "scripts/build_gmi_explorer.py:272",
+        "site/gmi-companies.html",
+        "templates/gmi_companies.html.j2"
+      ],
+      "notes": [
+        "The standalone company-evidence catalogue retains its bounded public-fact projection. Shared Shell consumer-purpose qualification remains withheld; this classification grants no additional audience, source redistribution or graph authority."
+      ]
+    },
+    "artifact_sha256": "fc3780a33f2f78fa1ce4f19ec75b4b72b4a84e8179a00e491c9089d8ff581a38"
+  },
+  "tests": {
+    "red": "2 failed, 95 deselected in 1.66s; both Companies entries missing",
+    "first_integration_run": "414 passed; 2 errors due only to omitted sparse fixtures",
+    "fixture_repair": "Exact unchanged HEAD blobs materialized for PLNT fixture and two SEO JSON files; no test assertions or source behavior changed",
+    "withdrawal_full_module": "6 passed in 5.25s",
+    "distinct_cases_verified": 416,
+    "existing_registry_validator": "page registry OK: 356 rows",
+    "normal_generator_reproduction": "BYTE_IDENTICAL"
+  },
+  "unchanged_feature_inputs": {
+    "scripts/build_gmi_explorer.py": true,
+    "scripts/gmi_explorer/model.py": true,
+    "scripts/gmi_explorer/present.py": true,
+    "templates/gmi.css": true,
+    "templates/gmi.js": true,
+    "site/gmi.html": true,
+    "site/gmi-companies.html": true
+  },
+  "evidence_carrier": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/companies-registry-integration-be851458",
+  "limits": [
+    "This candidate does not grant Shared Shell purpose rights; Companies is explicitly withheld.",
+    "Existing front-end/Paper/browser evidence is preserved, not recaptured.",
+    "The original model run remains EFFECT_UNKNOWN; no result consumption, retry or replacement.",
+    "No merge, Ready, enqueue, relabel, production deployment or live user acceptance is established."
+  ]
+}
