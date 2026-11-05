@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 
+from engine.prophet_source_epochs import read_source_epochs
+
 ROOT = Path(__file__).resolve().parents[1]
 T = "2026-10-04T09:00:00.123456Z"
 OLD = "2026-10-04T08:00:00Z"
@@ -428,6 +430,7 @@ def test_actual_first_and_fresh_us_reader_failures_preserve_board(tmp_path,monke
     log=SimpleNamespace(warning=lambda *args:None)
     namespace=dict(json=json,site=tmp_path,_us=tmp_path/"factordata/us_standouts.json",
         us_standouts=None,_us_w3c=None,_us_w3c_binding=None,log=log,
+        read_source_epochs=read_source_epochs,_us_prophet_source_capture={},
         config=SimpleNamespace(data_dir=lambda:tmp_path/"internal"),
         _attach_board_display_chips=lambda site,doc:doc)
     exec(compile(ast.Module(body=_actual_us_today_source_helpers(module),type_ignores=[]),
@@ -738,6 +741,8 @@ def test_actual_us_typed_refusal_reaches_product_projection_only(tmp_path, monke
         site=tmp_path,
         _us=tmp_path / "factordata/us_standouts.json",
         us_standouts=None,
+        read_source_epochs=read_source_epochs,
+        _us_prophet_source_capture={},
         _us_w3c=None,
         _us_w3c_refusal=None,
         _us_w3c_binding=None,

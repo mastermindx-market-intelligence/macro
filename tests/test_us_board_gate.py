@@ -1268,6 +1268,8 @@ def _actual_fresh_board_condition(prior, fresh, *, prior_view=None, fresh_view=N
         # This candidate-pool fixture holds the independent W3C inputs fixed.
         # The real predicate now compares them even when the pool is unchanged.
         "_fresh_w3c_binding": None, "_us_w3c_binding": None, "_fresh_w3c": None,
+        # Source-epoch metadata is held fixed in this candidate/Today fixture.
+        "_fresh_source_epochs": None,
         # Today native binding inputs, overridable per test.
         "_fresh_today_native": fresh_native,
         "_fresh_candidate_visibility": fresh_view if fresh_view is not None else project_candidate_visibility(fresh),

@@ -1,0 +1,31 @@
+{
+  "source_commit": "9fe98ab14db8ccc1bb35d9dd8b1d11617527dfdf",
+  "observation": "committed tree, not served production",
+  "bytes": {
+    "index": 11846549,
+    "current_board": 2627139,
+    "frozen_board": 2636414
+  },
+  "projection": {
+    "schema": "prophet_source_epochs.v1",
+    "relation": "SEPARATE_EPOCHS",
+    "settlement_status": "PENDING",
+    "reason_codes": [
+      "FOUR_FAMILY_RECEIPT_NOT_EVALUATED"
+    ],
+    "current_board": {
+      "sha256": "2de0cfff3d10218163bd67465e9e7e8a7ab5d5817ec7628d62b9581d2cb5db2d",
+      "source_asof": "2026-10-30"
+    },
+    "index": {
+      "sha256": "3ff270912b6522ec9edf050a606c4a302403e6f25006b7534d33971d6468d725",
+      "asof": "2026-11-01",
+      "source_asof": "2026-10-30"
+    },
+    "origination_board": {
+      "sha256": "f4e834dc62541c21e2a9b6d5525662aabd28e6c1af12d71fe03e70fb0d046dc9",
+      "source_asof": "2026-10-30",
+      "snapshot_verified": true
+    }
+  }
+}
