@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/markets.html.j2
+  - site/markets.html
+  - site/markets.css
+  - site/markets_app.js
+manifest: mockups/evidence/markets-cyc-stage-mobile/manifest.json

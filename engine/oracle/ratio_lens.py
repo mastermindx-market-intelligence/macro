@@ -35,7 +35,7 @@ import inspect
 import json
 import logging
 import warnings
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -177,20 +177,19 @@ def _registry_hash(registry: dict) -> str:
 # ---------------------------------------------------------------------------
 
 def _etf_close(sym: str, data_root: Path) -> pd.Series | None:
-    """Load ETF close from data/yahoo/{sym}.parquet via lib.store pattern."""
-    import sys
-    sys.path.insert(0, str(data_root.parent))
-    from lib import store as _store
-    df = _store.read("yahoo", sym)
-    if df is None or df.empty:
-        log.warning("ETF close missing: %s", sym)
+    """Read the selected Yahoo close store without touching another data root."""
+    safe = sym.replace("^", "_").replace("=", "_").replace("/", "_").replace(" ", "_")
+    path = data_root / "yahoo" / f"{safe}.parquet"
+    if not path.is_file():
         return None
-    if "close" not in df.columns:
-        log.warning("ETF %s has no 'close' column (cols=%s)", sym, list(df.columns))
+    df = pd.read_parquet(path)
+    if df.empty or "close" not in df.columns:
         return None
-    s = df["close"].dropna()
-    return s if not s.empty else None
-
+    s = df["close"].copy()
+    s.index = pd.to_datetime(s.index)
+    s = s.sort_index()
+    s.attrs["source_root"] = f"yahoo/{safe}.parquet#close"
+    return s
 
 # ---------------------------------------------------------------------------
 # Basket EW level builder (mirrors engine/baskets._ew_level, RL-R5)
@@ -293,6 +292,228 @@ def _compute_log_ratio(num_lvl: pd.Series, den_lvl: pd.Series) -> pd.Series | No
     ln_ratio = np.log(combined["num"]) - np.log(combined["den"])
     ln_ratio = ln_ratio - ln_ratio.iloc[0]  # rebase to 0 at eff_start
     return ln_ratio
+
+
+
+# ------------------------------------------------------------------ short horizons ----
+
+SHORT_HORIZONS = (1, 2, 5, 20)
+SHORT_DEFINITION_ID = "ratio_lens.short_horizons/1"
+CONTEXT_GROUPS = ("defensive_sector", "retailer_context", "broadening_proxy")
+
+
+def _cutoff_prices(levels: pd.Series, as_of: str) -> pd.Series:
+    """Copy daily prices at/before cutoff; never repair duplicate daily rows."""
+    cut = date.fromisoformat(as_of)
+    if not isinstance(levels, pd.Series):
+        raise ValueError("price input is not a series")
+    out = levels.copy()
+    idx = pd.DatetimeIndex(pd.to_datetime(out.index, errors="raise"))
+    if idx.hasnans:
+        raise ValueError("invalid price date")
+    if idx.tz is not None:
+        idx = idx.tz_localize(None)  # daily labels, not intraday timestamps
+    out.index = idx
+    # as_of is a session date. First exclude later dates, then validate only
+    # retained labels; a future malformed row cannot rewrite an older receipt.
+    out = out.loc[out.index.normalize() <= pd.Timestamp(cut)]
+    if not (out.index == out.index.normalize()).all():
+        raise ValueError("daily price input contains intraday timestamps")
+    if out.index.has_duplicates:
+        raise ValueError("duplicate daily price dates")
+    out = pd.to_numeric(out, errors="coerce").sort_index()
+    out.attrs.update(levels.attrs)
+    return out
+
+
+def _window_sessions(end: date, bars: int) -> list[date]:
+    from lib import nyse_calendar
+    # A session is an exchange-calendar session, not a surviving common row.
+    days = nyse_calendar.sessions_between(end - timedelta(days=bars * 3 + 15), end)
+    return days[-(bars + 1):]
+
+
+def _short_shape(num: float, den: float) -> str:
+    if num > 0 and den > 0:
+        return "BOTH_UP"
+    if num > 0 and den < 0:
+        return "RECEIVER_UP_DONOR_DOWN"
+    if num < 0 and den < 0:
+        return "BOTH_DOWN"
+    if num < 0 and den > 0:
+        return "RECEIVER_DOWN_DONOR_UP"
+    return "FLAT" if num == 0 and den == 0 else "ONE_LEG_FLAT"
+
+
+def short_horizon_receipt(
+    pair: dict, num_lvl: pd.Series | None, den_lvl: pd.Series | None, *, as_of: str,
+) -> dict:
+    """Exact 1/2/5/20-session descriptive receipts, with no historical credit.
+
+    Source-root labels identify logical observations; value digests identify
+    revisions separately. Price history alone supplies no first-available clock.
+    This function has no file or ledger side effects and does not assign RL state.
+    """
+    from lib import nyse_calendar
+
+    cut = date.fromisoformat(as_of)
+    end = nyse_calendar.last_session_on_or_before(cut)
+    out: dict[str, Any] = {
+        "schema": "ratio_lens.short_horizon.v1",
+        "definition_id": SHORT_DEFINITION_ID,
+        "pair_id": pair["id"], "num": pair["num"], "den": pair["den"],
+        "kind": pair.get("kind"), "context_group": pair.get("context_group"),
+        "name_en": pair.get("name_en"), "name_zh": pair.get("name_zh"),
+        "requested_as_of": as_of, "expected_session": end.isoformat(),
+        "value_as_of": None,
+        "basis": "dividend_adjusted_close",
+        "reason_codes": [], "horizons": {},
+        "availability": {"status": "UNKNOWN", "available_at": None},
+        "lineage": {
+            "definition_id": SHORT_DEFINITION_ID, "status": "UNKNOWN",
+            "roots": [], "revisions": {}, "dependency_groups": ["equity_price"],
+            "derived_from": ["oracle.ratio_lens"],
+        },
+    }
+    series: dict[str, pd.Series | None] = {}
+    for key, incoming in (("num", num_lvl), ("den", den_lvl)):
+        try:
+            if incoming is None:
+                raise ValueError("missing series")
+            got = _cutoff_prices(incoming, as_of)
+            got = got[[nyse_calendar.is_session(t.date()) for t in got.index]]
+            series[key] = got
+        except (TypeError, ValueError, OverflowError):
+            series[key] = None
+            out["reason_codes"].append("INVALID_NUMERATOR" if key == "num" else "INVALID_DENOMINATOR")
+
+    latest: dict[str, str | None] = {}
+    for key in ("num", "den"):
+        s = series[key]
+        valid = None if s is None else s[np.isfinite(s) & (s > 0)]
+        latest[key] = None if valid is None or valid.empty else valid.index[-1].date().isoformat()
+        if latest[key] != end.isoformat():
+            out["reason_codes"].append("STALE_NUMERATOR" if key == "num" else "STALE_DENOMINATOR")
+    out["leg_as_of"] = latest
+    if all(latest.values()):
+        # This is an actual common valid observation, not min(two unmatched dates).
+        ns, ds = series["num"], series["den"]
+        assert ns is not None and ds is not None
+        joined = pd.DataFrame({"n": ns, "d": ds}).dropna()
+        joined = joined[np.isfinite(joined).all(axis=1) & (joined > 0).all(axis=1)]
+        if not joined.empty:
+            out["value_as_of"] = joined.index[-1].date().isoformat()
+
+    roots: set[str] = set()
+    revisions: dict[str, str] = {}
+    identified_legs: set[str] = set()
+    for bars in SHORT_HORIZONS:
+        dates = _window_sessions(end, bars)
+        idx = pd.DatetimeIndex(dates)
+        row: dict[str, Any] = {
+            "sessions": bars, "start": dates[0].isoformat(), "end": end.isoformat(),
+            "eligible": False, "numerator_return_pct": None,
+            "denominator_return_pct": None, "ratio_return_pct": None, "shape": None,
+            "missing_num_sessions": [], "missing_den_sessions": [], "reason_codes": [],
+        }
+        window = {}
+        for key in ("num", "den"):
+            s = series[key]
+            values = None if s is None else s.reindex(idx)
+            if values is None:
+                missing = idx
+                row["reason_codes"].append("INVALID_NUMERATOR" if key == "num" else "INVALID_DENOMINATOR")
+            else:
+                bad = ~np.isfinite(values) | (values <= 0)
+                missing = idx[bad]
+                if len(missing):
+                    row["reason_codes"].append("INCOMPLETE_NUMERATOR_WINDOW" if key == "num" else "INCOMPLETE_DENOMINATOR_WINDOW")
+            row[f"missing_{key}_sessions"] = [t.date().isoformat() for t in missing]
+            window[key] = values
+        if len(dates) != bars + 1:
+            row["reason_codes"].append("INSUFFICIENT_CALENDAR_WINDOW")
+        if not row["reason_codes"]:
+            n, d = window["num"], window["den"]
+            log_ratio = _compute_log_ratio(n, d)
+            if log_ratio is not None and len(log_ratio) == bars + 1:
+                with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+                    nr = float(n.iloc[-1] / n.iloc[0] - 1)
+                    dr = float(d.iloc[-1] / d.iloc[0] - 1)
+                    rr = float(np.expm1(log_ratio.iloc[-1] - log_ratio.iloc[0]))
+                if not all(np.isfinite(v) for v in (nr, dr, rr)):
+                    row["reason_codes"].append("NONFINITE_RATIO_RETURN")
+                    out["horizons"][f"{bars}s"] = row
+                    continue
+                # Numerical zero only; this is not a fitted economic threshold.
+                nr, dr, rr = (0.0 if abs(v) < 1e-12 else v for v in (nr, dr, rr))
+                row.update({
+                    "eligible": True, "numerator_return_pct": nr * 100,
+                    "denominator_return_pct": dr * 100, "ratio_return_pct": rr * 100,
+                    "shape": _short_shape(nr, dr),
+                })
+                for key, values in (("num", n), ("den", d)):
+                    source_root = series[key].attrs.get("source_root")
+                    if isinstance(source_root, str) and source_root:
+                        identified_legs.add(key)
+                        for ts, value in values.items():
+                            root = f"{source_root}@{ts.date().isoformat()}"
+                            roots.add(root)
+                            revisions[root] = hashlib.sha256(float(value).hex().encode()).hexdigest()
+            else:
+                row["reason_codes"].append("INVALID_RATIO_WINDOW")
+        out["horizons"][f"{bars}s"] = row
+
+    out["reason_codes"] = sorted(set(out["reason_codes"]))
+    lineage = out["lineage"]
+    lineage["roots"] = sorted(roots)
+    lineage["revisions"] = dict(sorted(revisions.items()))
+    lineage["status"] = ("COMPLETE" if len(identified_legs) == 2
+                         else "PARTIAL" if identified_legs else "UNKNOWN")
+    return out
+
+
+def registered_short_horizon_context(
+    data_root: Path, *, as_of: str, closes: dict[str, pd.Series] | None = None,
+) -> dict:
+    """Read registered listed-instrument context pairs once, without slow RL fitting.
+
+    The optional series map is useful to pure callers; unlabelled supplied series
+    retain unknown lineage. Missing registry/legs remains explicit, never quiet.
+    """
+    out: dict[str, Any] = {
+        "schema": "ratio_lens.short_horizons/v1", "as_of": as_of,
+        "definition_id": SHORT_DEFINITION_ID, "pairs": [], "reason_codes": [],
+    }
+    try:
+        registry = _load_registry(data_root)
+        configs = [p for p in registry.get("pairs", [])
+                   if isinstance(p, dict) and p.get("context_group") in CONTEXT_GROUPS]
+        ids = [p.get("id") for p in configs]
+        economic = [(p.get("num"), p.get("den")) for p in configs]
+        if not configs or not all(ids) or len(ids) != len(set(ids)) or len(economic) != len(set(economic)):
+            raise ValueError("missing or duplicate context registry")
+        out["registry_hash"] = _registry_hash(registry)
+    except (OSError, ValueError, TypeError, KeyError):
+        out["reason_codes"] = ["CONTEXT_REGISTRY_UNAVAILABLE"]
+        return out
+
+    cache: dict[str, pd.Series | None] = {}
+    for p in configs:
+        if p.get("kind") not in ("etf", "equity"):
+            out["reason_codes"].append("UNSUPPORTED_CONTEXT_PAIR")
+            continue
+        for sym in (p["num"], p["den"]):
+            if sym not in cache:
+                try:
+                    cache[sym] = (closes.get(sym) if closes is not None
+                                  else _etf_close(sym, data_root))
+                except (OSError, ValueError, TypeError):
+                    cache[sym] = None
+        out["pairs"].append(short_horizon_receipt(
+            p, cache[p["num"]], cache[p["den"]], as_of=as_of,
+        ))
+    out["reason_codes"] = sorted(set(out["reason_codes"]))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -579,8 +800,9 @@ def _compute_pair_record(
     num_lvl: pd.Series,
     den_lvl: pd.Series,
     kind: str,
+    *, as_of: str | None = None,
 ) -> dict:
-    """Compute all fields for a single pair record."""
+    """Compute all fields for a single pair record from cutoff-qualified inputs."""
     pair_id = pair["id"]
 
     # Log ratio series (inner-join, no forward-fill)
@@ -699,6 +921,11 @@ def _compute_pair_record(
         "reads_as_en": pair["reads_as_en"],
         "reads_as_zh": pair["reads_as_zh"],
         "eff_start": eff_start,
+        "value_as_of": L.index[-1].date().isoformat(),
+        "short_horizon": short_horizon_receipt(
+            pair, num_lvl, den_lvl,
+            as_of=as_of or L.index[-1].date().isoformat(),
+        ) if kind in ("etf", "equity") else None,
         "n_bars": len(L),
         "overlap_names": pair.get("overlap_names", []),
         "yield_flag": pair.get("yield_flag", False),
@@ -708,6 +935,9 @@ def _compute_pair_record(
             "Basket legs: equal-weight PIT membership rebase. "
             "Inner-join only; no forward-fill (RL-R7)."
         ) if kind == "etf" else (
+            "Listed equity comparison: dividend-adjusted close (total-return proxy). "
+            "Inner-join only; no forward-fill (RL-R7)."
+        ) if kind == "equity" else (
             "Basket legs: equal-weight PIT membership rebase, seed_date 2023-05-09. "
             "Inner-join only; no forward-fill (RL-R7)."
         ),
@@ -885,7 +1115,7 @@ def compute(
         log.info("[ratio_lens] computing pair %s (%s/%s)", pair_id, num_sym, den_sym)
 
         try:
-            if kind == "etf":
+            if kind in ("etf", "equity"):
                 num_lvl = _etf_close(num_sym, data_root)
                 den_lvl = _etf_close(den_sym, data_root)
             elif kind == "basket":
@@ -909,7 +1139,14 @@ def compute(
                 })
                 continue
 
-            rec = _compute_pair_record(pair, num_lvl, den_lvl, kind)
+            # The requested cutoff bounds ALL pair math, not only its label.
+            num_lvl = _cutoff_prices(num_lvl, as_of_str)
+            den_lvl = _cutoff_prices(den_lvl, as_of_str)
+            for level in (num_lvl, den_lvl):
+                values = level.dropna()
+                if not (np.isfinite(values) & (values > 0)).all():
+                    raise ValueError("nonpositive or nonfinite price before cutoff")
+            rec = _compute_pair_record(pair, num_lvl, den_lvl, kind, as_of=as_of_str)
             pair_records.append(rec)
 
         except Exception as exc:  # noqa: BLE001

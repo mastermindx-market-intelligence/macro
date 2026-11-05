@@ -1,33 +1,56 @@
 {
   "snap": false,
   "relief_magnitude": null,
-  "roro": 0.851,
-  "cap_recent": false,
-  "fear_built": 0.186,
-  "roro_velocity": -0.137,
-  "vel_pctile": 0.218,
-  "legs_up": 1,
+  "roro": -0.424,
+  "cap_recent": true,
+  "fear_built": 0.65,
+  "roro_velocity": 0.463,
+  "vel_pctile": 0.962,
+  "legs_up": 2,
   "legs_total": 7,
   "flipped_legs": [
-    "copper_gold"
+    "vix",
+    "vix_term"
   ],
-  "days_since_last_snap": 56,
-  "fear_rebuilding": true,
-  "vix_term": 0.851,
-  "status": "dormant",
+  "days_since_last_snap": 10,
+  "fear_rebuilding": false,
+  "vix_term": 0.884,
+  "status": "building",
   "gates": {
-    "velocity": false,
+    "velocity": true,
     "legs": false,
-    "fear": false,
-    "washout": false
+    "fear": true,
+    "washout": true
   },
   "min_legs": 4,
   "flipped_legs_named": [
     {
-      "key": "copper_gold",
-      "en": "Copper/Gold",
-      "zh": "\u94dc\uff0f\u91d1 \u6bd4"
+      "key": "vix",
+      "en": "VIX",
+      "zh": "\u6ce2\u52a8\u7387 VIX"
+    },
+    {
+      "key": "vix_term",
+      "en": "VIX term structure",
+      "zh": "VIX \u671f\u9650\u7ed3\u6784"
     }
   ],
-  "magnitude_band": null
+  "magnitude_band": null,
+  "veto": {
+    "schema": "regime_snap_veto.v1",
+    "is_context_only": true,
+    "lean": "unclear",
+    "confidence": "low",
+    "checks": {
+      "catalyst": "The catalyst is not legible: an FOMC statement is listed, but no actual policy/rate shift or hard-data surprise is described.",
+      "premium": "Most fear premium appears left to unwind; only 2 of 7 legs have flipped and the snap is still building rather than confirmed.",
+      "washout": "Capitulation is flagged as recent, supporting a real washout, though fear built is moderate rather than extreme.",
+      "follow_through": "Next-session confirmation looks doubtful because only VIX and its term structure have turned while broader cross-asset legs remain unconfirmed amid mixed tech and oil pressure."
+    },
+    "read": "There is evidence of a genuine washout, but the relief lacks breadth and its catalyst cannot be classified as structural or verbal. Treat durability as unclear until more cross-asset legs confirm or the catalyst becomes explicit.",
+    "model": "deepseek-v4-pro",
+    "generated_at": "2026-11-05T07:46:11.755711+00:00",
+    "degraded_reason": null,
+    "disclaimer": "AI durability read \u2014 context only, never scored or sized. The snap detector is coincident; this is a fallible judgement on whether the relief is structural or a dead-cat, not a trade recommendation."
+  }
 }

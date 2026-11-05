@@ -1,0 +1,14 @@
+{
+  "schema": "defense.public_theme_state_field_verification.v1",
+  "source_hash_unchanged": true,
+  "public_theme_sha256": "07b5292b1be8b07741287b5ce40268cc50b2d77abfe1aa68c2b323b04a660967",
+  "states": {
+    "golden_dome": "EVIDENCE_INSUFFICIENT",
+    "munitions_replenishment": "EVIDENCE_INSUFFICIENT",
+    "space": "EVIDENCE_INSUFFICIENT",
+    "nato_fms_demand": "EVIDENCE_INSUFFICIENT",
+    "fleet_sustainment_upgrades": "EVIDENCE_INSUFFICIENT",
+    "shipbuilding": "EVIDENCE_INSUFFICIENT"
+  },
+  "report_correction_only": "Capture actualresearch_state field; earlier reportsummarizer used absentoverall_state/state fields; no source/fingerprint/data changes"
+}

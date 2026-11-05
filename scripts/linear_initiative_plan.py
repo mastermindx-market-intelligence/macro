@@ -9,11 +9,15 @@ path stable.
 from __future__ import annotations
 
 import hashlib
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any, Mapping
 
-from scripts import linear_initiative_plan_legacy as _legacy
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
+from scripts import linear_initiative_plan_legacy as _legacy  # noqa: E402
 
 # Preserve the complete established API, including helper names used by tests
 # and downstream tooling, before overriding the current-epoch seams below.

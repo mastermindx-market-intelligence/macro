@@ -1,0 +1,80 @@
+{
+  "started_at": "2026-10-19T09:22:10.794542+00:00",
+  "head": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "incoming": "69dd6e774cc48223005426765e74aed193d55954",
+  "index_tree": "dbcaadef4514bb614aa266992fa681b3fee2d6bf",
+  "checks": [
+    {
+      "check": 0,
+      "argv": [
+        "bash",
+        "-n",
+        "app/deploy/update.sh"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.039
+    },
+    {
+      "check": 1,
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_shared_shell_injection.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 40.723
+    },
+    {
+      "check": 2,
+      "argv": [
+        "node",
+        "--test",
+        "tests/js/shared_shell_navigation_adapters.test.cjs",
+        "tests/js/shared_shell_owner_adapters.test.cjs"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.35
+    },
+    {
+      "check": 3,
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 2.178
+    },
+    {
+      "check": 4,
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_site_asset_refs.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 97.034
+    },
+    {
+      "check": 5,
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "69dd6e774cc48223005426765e74aed193d55954"
+      ],
+      "exit": 0,
+      "duration_seconds": 3.216
+    }
+  ],
+  "visual_admission": "BLOCKED: no valid active-frame capture receipt; not claimed by these checks",
+  "completed_at": "2026-10-19T09:24:34.345680+00:00",
+  "index_tree_after": "dbcaadef4514bb614aa266992fa681b3fee2d6bf",
+  "unstaged_after": "",
+  "unmerged_after": "",
+  "log_path": "/tmp/shared-shell-macro-integrated-conflict-validation-20261019.log",
+  "log_sha256": "d86f0fe10267966f4d38f01ed56a401c78522467048a2f376f90594a05d12ad4",
+  "pass": true
+}

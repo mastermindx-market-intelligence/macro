@@ -1,0 +1,38 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "observed_at": "2026-10-11T22:38:36.968Z",
+  "kind": "existing_live_customer_journey",
+  "url": "https://app.mastermind-x.com/terminal?sym=NVDA&pane=transcripts&tx=2027Q1&utm_source=earnings_wire&utm_medium=organic_research&utm_campaign=company_intelligence",
+  "browser": "existing Chrome session",
+  "observations": {
+    "exact_dossier_continuation_loaded": true,
+    "selected_transcripts_pane": true,
+    "opened_record": "NVDA Earnings Call Q1 FY2027",
+    "record_date": "2026-05-20",
+    "segments": 76,
+    "source_label": "DefeatBeta corpus",
+    "existing_account_visible_after_fresh_navigation": true,
+    "existing_NVDA_watchlist_entry_visible_after_fresh_navigation": true,
+    "new_account_created": false,
+    "new_follow_mutation_performed": false,
+    "fresh_follow_write_persistence_proven": false
+  },
+  "authentication_attempt": {
+    "submissions": 1,
+    "saved_credentials_used_without_plaintext_output": true,
+    "stalled_busy_sheet_observed": true,
+    "manual_dismissal_and_navigation_required": true,
+    "pristine_end_to_end_pass": false
+  },
+  "screenshot": {
+    "path": "existing_live_nvda_terminal_continuation.jpg",
+    "sha256": "88ce54afd1bf5021d168f4c9449c7c4f339333db3e97ac82165f5a9a33a4c826",
+    "scope": "Public transcript header crop excludes account and private watchlist"
+  },
+  "limits": [
+    "Existing capability, not PR8786 installation proof",
+    "No transcript redistribution or article rights grant",
+    "No new signup or saved-follow write acceptance",
+    "Busy-sheet regression is being repaired on a separate Terminal source branch"
+  ]
+}
