@@ -91,6 +91,53 @@ a fixed order, so a diff of the file is a diff of facts.
 | `source_evidence` | `path` or `path:line` strings backing the derived facts. Every row has at least one. |
 | `notes` | Free text: caveats, counts, why a fact is missing. |
 
+### Shared Shell consumer admission
+
+The exact, case-sensitive `known_contracts` list element
+`shared_shell:admission_withheld` withholds a Macro row from the Shared Shell
+consumer. It does not change the document's standalone `lifecycle`, `access_shell`,
+or `payload_tier`. A public, anonymously readable document may still need its
+specific Shared Shell consumer purpose qualified before adoption.
+
+`scripts/export_shared_shell_routes.py` records `consumer_admission_withheld` for
+otherwise eligible documents selected by a marked canonical row, excluding them
+from `legacyPaths`, the directory, and admitted family-member counts. Existing
+serving-policy, fragment, unregistered, lifecycle, and access/payload exclusions
+retain precedence and their existing reasons. Native Terminal routes retain their
+native owner. Unmarked rows retain ordinary eligibility.
+
+Existing exact-before-family matching applies: a marked exact row affects only
+that row; a marked family affects its selected concrete members. A marker on one
+concrete page does not qualify or withhold future rows. There are no brand or
+path-name heuristics. Preserve other source-derived contracts when adding this
+marker through the existing override layer. The source owner removes the marker
+only after the exact Shared Shell consumer purpose is qualified; standalone
+availability alone does not supply that qualification.
+
+Publication consumers share
+`scripts.export_shared_shell_routes.validate_publication_sources(registry: dict) -> str`.
+After the caller validates the canonical registry schema, this pure helper
+requires immutable Macro, Terminal, and Mastermind SHA metadata and rejects any
+explicit availability value other than `true`. Older SHA-only source records
+remain compatible. It returns the registry's Macro SHA and performs no Git,
+filesystem, or network operations. It does not replace the exporter's separate
+`bind_inventory_commit(candidate, registry_bytes)` proof of an inventory commit
+on protected `origin/main` carrying the exact canonical registry bytes.
+
+For admitted GMI index and coverage directory entries, the exporter reuses the
+rendered document's complete `l-en`/`l-zh` H1 text when no bilingual navigation
+label exists. Missing, incomplete, or ambiguous headings fail publication rather
+than inventing a translation. Historical inventories without those directory
+entries require no heading read. Label extraction changes no membership or group.
+
+Calculator directory titles come from explicitly authored `title` and `title_zh`
+fields in the existing `content/seo/calculators.yml`, read at the same immutable
+inventory revision. Only concrete calculator paths already admitted as members of
+`macro:tools_family` receive these directory entries. Metadata adds no route or
+family membership and cannot bypass existing exclusions. Existing directory names
+retain precedence. Missing metadata or missing `title_zh` preserves historical
+output; malformed explicit bilingual metadata fails publication before replacement.
+
 ### `payload_tier`, precisely
 
 Every macro `*.html` **shell** has been anonymous since 2026-08-04

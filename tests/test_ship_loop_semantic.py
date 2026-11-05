@@ -1559,7 +1559,14 @@ def test_ship_loop_linked_red_call_delta_is_three_json_plus_one_archive(monkeypa
     archive_calls = []
     loader_kwargs = {}
     loaded = SimpleNamespace(
-        mode="semantic", evidence={"fixture": True, "tested_tree_sha": MERGE}
+        mode="semantic",
+        evidence={
+            "fixture": True,
+            "role": "pr_head",
+            "subject_head_sha": HEAD,
+            "base_sha": BASE,
+            "tested_tree_sha": MERGE,
+        },
     )
     artifact = {
         "name": "ci-semantic-evidence-77",
@@ -1656,7 +1663,13 @@ def test_ship_loop_artifact_cannot_self_claim_tested_merge_tree(
         GUARD.semantic_proof,
         "load_semantic_evidence",
         lambda *_a, **_k: SimpleNamespace(
-            mode="semantic", evidence={"tested_tree_sha": MERGE}
+            mode="semantic",
+            evidence={
+                "role": "pr_head",
+                "subject_head_sha": HEAD,
+                "base_sha": BASE,
+                "tested_tree_sha": MERGE,
+            },
         ),
     )
 
@@ -1674,6 +1687,149 @@ def test_ship_loop_artifact_cannot_self_claim_tested_merge_tree(
             },
             role="pr_head",
             expected_base_sha=BASE,
+        )
+
+
+TESTED_BASE = "e" * 40
+
+
+def _stale_base_run() -> dict:
+    return {
+        "id": 77,
+        "name": "ci",
+        "path": ".github/workflows/ci.yml",
+        "event": "pull_request",
+        "head_sha": HEAD,
+        "pull_requests": _check("ci-gate", "failure")["pull_requests"],
+    }
+
+
+def _faithful_loader(evidence: dict):
+    """Mirror the real loader's exact-string identity check on ``base_sha``."""
+
+    def load(_source, *, advertised, **expected):
+        assert advertised is True
+        bound = expected.get("expected_base_sha")
+        if bound is not None and str(evidence.get("base_sha")) != str(bound):
+            raise GUARD.semantic_proof.SemanticProofError(
+                "semantic evidence base_sha mismatch"
+            )
+        return SimpleNamespace(mode="semantic", evidence=evidence)
+
+    return load
+
+
+def test_ship_loop_accepts_stale_advertised_base_that_is_an_ancestor(monkeypatch):
+    """Guard mirror of the PR #8844 stale-base defect (2026-10-11)."""
+    api_calls = []
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": HEAD,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        api_calls.append(url)
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        if url.endswith(f"/compare/{BASE}...{TESTED_BASE}?per_page=1"):
+            return {"status": "ahead", "ahead_by": 12, "behind_by": 0}
+        if url.endswith(f"/git/commits/{MERGE}"):
+            return {"sha": MERGE, "parents": [{"sha": TESTED_BASE}, {"sha": HEAD}]}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    loaded = GUARD._semantic_evidence_for_run(
+        "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
+    )
+    assert loaded.mode == "semantic"
+    assert loaded.evidence is evidence
+    assert [url.rsplit("/repos/acme/widgets/", 1)[1] for url in api_calls] == [
+        "actions/runs/77/artifacts?per_page=100",
+        f"compare/{BASE}...{TESTED_BASE}?per_page=1",
+        f"git/commits/{MERGE}",
+    ]
+
+
+@pytest.mark.parametrize("relation", ["diverged", "behind"])
+def test_ship_loop_refuses_a_non_ancestor_advertised_base(monkeypatch, relation):
+    api_calls = []
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": HEAD,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        api_calls.append(url)
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        if url.endswith(f"/compare/{BASE}...{TESTED_BASE}?per_page=1"):
+            return {"status": relation}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    with pytest.raises(GUARD.semantic_proof.SemanticProofError, match="base_sha mismatch"):
+        GUARD._semantic_evidence_for_run(
+            "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
+        )
+    assert not any("/git/commits/" in url for url in api_calls)
+
+
+def test_ship_loop_refuses_a_stale_base_with_a_different_head(monkeypatch):
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": "f" * 40,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    with pytest.raises(
+        GUARD.semantic_proof.SemanticProofError, match="subject_head_sha mismatch"
+    ):
+        GUARD._semantic_evidence_for_run(
+            "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
         )
 
 
@@ -1941,3 +2097,203 @@ def test_unreadable_inventory_leaves_the_old_refusal_intact(monkeypatch, tmp_pat
     )
     assert ok is False
     assert "No ancestry-valid descendant PASS" in detail
+
+
+def _fabric_lane_fixture(tmp_path, monkeypatch, *, run_id="opus-sparse-w9", branch=None):
+    home = tmp_path / "home"
+    (home / "lanes" / "wt").mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    primary = _root_fixture(tmp_path)
+    lane = home / "lanes" / "wt" / run_id
+    _git(primary, "worktree", "add", "-b", branch or f"lane/{run_id}", str(lane))
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", run_id)
+    return primary, lane
+
+
+def _bash_decision(root, state_path, capsys):
+    GUARD._pre_tool_use(
+        root, state_path, {"hook_event_name": "PreToolUse", "tool_name": "Bash"}
+    )
+    out = capsys.readouterr().out.strip()
+    if not out:
+        return "allow"
+    return json.loads(out)["hookSpecificOutput"]["permissionDecision"]
+
+
+def test_minted_fabric_lane_admits_tools_without_completion_state(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    state_path = tmp_path / "lane-state.json"
+
+    assert GUARD._delivery_root_admission(lane)[0] is False
+    assert GUARD._fabric_lane_admission(lane) == "opus-sparse-w9"
+    assert _bash_decision(lane, state_path, capsys) == "allow"
+    assert GUARD._load(state_path) is None
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda mp: mp.delenv("FABRIC_WORKSPACE_READY"),
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_READY", "0"),
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "other-run"),
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "../wt/opus-sparse-w9"),
+        # Accepted by the run-id charset, so this one exercises the path check.
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9.."),
+    ],
+)
+def test_fabric_lane_requires_matching_readiness_env(tmp_path, monkeypatch, capsys, mutate):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    mutate(monkeypatch)
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_rejects_branch_that_does_not_name_the_run(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(
+        tmp_path, monkeypatch, branch="lane/some-other-run"
+    )
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_env_does_not_admit_other_roots(tmp_path, monkeypatch, capsys):
+    primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    # The primary checkout stays quarantined even with the lane's readiness env
+    # inherited. Admission is decided for the lane top level only: a direct
+    # subdirectory path is not a lane (the hook's _repo_root normalises a
+    # subdirectory cwd to the top level first, so the whole tree is one unit).
+    assert GUARD._fabric_lane_admission(primary) == ""
+    assert _bash_decision(primary, tmp_path / "s.json", capsys) == "deny"
+    (lane / "sub").mkdir()
+    assert GUARD._fabric_lane_admission(lane / "sub") == ""
+
+
+def test_fabric_lane_rejects_detached_head(tmp_path, monkeypatch, capsys):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    _git(lane, "checkout", "--detach")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_rejects_symlinked_lane_path(tmp_path, monkeypatch, capsys):
+    home = tmp_path / "home"
+    (home / "lanes" / "wt").mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    primary = _root_fixture(tmp_path)
+    elsewhere = tmp_path / "elsewhere"
+    # A real linked worktree on the right branch, reached through a symlink.
+    _git(primary, "worktree", "add", "-b", "lane/opus-sparse-w9", str(elsewhere))
+    lane = home / "lanes" / "wt" / "opus-sparse-w9"
+    lane.symlink_to(elsewhere, target_is_directory=True)
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_unreadable_git_identity_is_not_a_lane(
+    tmp_path, monkeypatch, capsys
+):
+    home = tmp_path / "home"
+    lane = home / "lanes" / "wt" / "opus-sparse-w9"
+    lane.mkdir(parents=True)
+    (lane / ".git").write_text("gitdir: /nonexistent/worktrees/x\n", encoding="utf-8")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+
+
+def test_fabric_lane_cannot_promote_itself_into_the_ship_loop(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    state_path = tmp_path / "lane-state.json"
+    GUARD._session_start(
+        lane, state_path, {"hook_event_name": "SessionStart", "source": "startup"}
+    )
+    capsys.readouterr()
+    assert GUARD._load(state_path)["fabric_lane_run_id"] == "opus-sparse-w9"
+
+    # The worker renames its own branch into the delivery namespace.
+    _git(lane, "branch", "-m", "lane/opus-sparse-w9", "claude/escape")
+
+    admitted, reason = GUARD._delivery_root_admission(lane)
+    assert admitted is False
+    assert "never a delivery root" in reason
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, state_path, capsys) == "deny"
+
+    GUARD._session_start(
+        lane, state_path, {"hook_event_name": "SessionStart", "source": "compact"}
+    )
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION ROOT QUARANTINE" in context
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is False
+    assert "fabric_lane_run_id" not in state
+    GUARD._stop(
+        lane,
+        state_path,
+        {"hook_event_name": "Stop", "last_assistant_message": "done"},
+    )
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_fabric_lane_path_on_primary_checkout_is_not_a_lane(
+    tmp_path, monkeypatch, capsys
+):
+    home = tmp_path / "home"
+    lane = home / "lanes" / "wt" / "opus-sparse-w9"
+    lane.mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    _git(lane, "init", "-b", "lane/opus-sparse-w9")
+    _git(lane, "config", "user.name", "Test")
+    _git(lane, "config", "user.email", "test@example.com")
+    (lane / "f.txt").write_text("x", encoding="utf-8")
+    _git(lane, "add", "f.txt")
+    _git(lane, "commit", "-m", "initial")
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_session_gets_lane_context_and_stop_stays_out(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    state_path = tmp_path / "lane-state.json"
+
+    GUARD._session_start(
+        lane, state_path, {"hook_event_name": "SessionStart", "source": "startup"}
+    )
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "FABRIC LANE WORKER" in context
+    assert "SESSION ROOT QUARANTINE" not in context
+    assert "MANDATORY SHIP LOOP" not in context
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is False
+    assert state["fabric_lane_run_id"] == "opus-sparse-w9"
+
+    assert _bash_decision(lane, state_path, capsys) == "allow"
+    GUARD._stop(
+        lane,
+        state_path,
+        {"hook_event_name": "Stop", "last_assistant_message": "SPARSE_CENSUS_RESULT {}"},
+    )
+    assert capsys.readouterr().out.strip() == ""

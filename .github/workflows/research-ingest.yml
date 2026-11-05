@@ -36,6 +36,16 @@ name: research-ingest
 on:
   workflow_dispatch:
     inputs:
+      materialize_only:
+        description: "Bounded immutable full-text derivatives only; no catalog/corpus/receipt publication"
+        required: false
+        default: false
+        type: boolean
+      qualify_discovery_only:
+        description: "Read-only full-body resource check on this runner; no ingestion, generation or publication"
+        required: false
+        default: false
+        type: boolean
       publish_forensics:
         description: "Build and publish the private Filing Forensics launch state"
         required: false
@@ -58,9 +68,9 @@ permissions:
   contents: write
 
 concurrency:
-  # Only the latest ingest matters — cancel any in-flight run.
+  # Let the active publication writer settle; newer pending cycles may coalesce.
   group: research-ingest
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   ingest:
@@ -80,7 +90,43 @@ jobs:
       R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
       R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
       R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+      # Optional pinned-producer selector (RV). When the repo variable is set to
+      # the 64-lowercase-hex SHA-256 of an installed release manifest, the ingest
+      # step routes ONLY through that pinned offline producer; empty/absent keeps
+      # the unchanged legacy mode. The admission step refuses any malformed value
+      # before checkout/pip/ingest, and a pinned release can never be combined
+      # with materialize_only.
     steps:
+      - name: admit one explicit producer mode
+        env:
+          MATERIALIZE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize_only }}
+          QUALIFICATION_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.qualify_discovery_only }}
+          PUBLISH_FORENSICS: ${{ inputs.publish_forensics }}
+          BOOTSTRAP_FORENSICS: ${{ inputs.bootstrap_forensics_sources }}
+          PRODUCER_RELEASE: ${{ vars.RESEARCH_VAULT_PRODUCER_RELEASE }}
+        run: |
+          if [ "$QUALIFICATION_ONLY" = "true" ] && { [ "$MATERIALIZE_ONLY" = "true" ] || [ "$PUBLISH_FORENSICS" = "true" ] || [ "$BOOTSTRAP_FORENSICS" = "true" ] || [ "${{ inputs.run_census }}" = "true" ]; }; then
+            echo "::error::qualify_discovery_only cannot be combined with publication, materialization or post-ingest census modes"
+            exit 1
+          fi
+          if [ "$MATERIALIZE_ONLY" = "true" ] && { [ "$PUBLISH_FORENSICS" = "true" ] || [ "$BOOTSTRAP_FORENSICS" = "true" ]; }; then
+            echo "::error::materialize_only cannot be combined with forensics publication or bootstrap"
+            exit 1
+          fi
+          # Pinned-producer selector admission (RV). This is the first step, so a
+          # malformed selector refuses BEFORE checkout/pip/ingest can touch any
+          # store. The value is matched without eval/source: grep reads it on
+          # stdin, so no expansion ever re-parses as shell.
+          if [ -n "${PRODUCER_RELEASE:-}" ]; then
+            if [ "${#PRODUCER_RELEASE}" -ne 64 ] || ! printf '%s' "$PRODUCER_RELEASE" | LC_ALL=C grep -Eq '^[0-9a-f]{64}$'; then
+              echo "::error title=research-ingest::RESEARCH_VAULT_PRODUCER_RELEASE must be exactly 64 lowercase hex characters (the SHA-256 of the pinned release manifest) — refusing before checkout/ingest"
+              exit 1
+            fi
+            if [ "$MATERIALIZE_ONLY" = "true" ]; then
+              echo "::error title=research-ingest::RESEARCH_VAULT_PRODUCER_RELEASE (pinned producer) cannot be combined with materialize_only — refusing"
+              exit 1
+            fi
+          fi
       - uses: actions/checkout@v4
         id: checkout
         with:
@@ -105,7 +151,7 @@ jobs:
             exit 1
           fi
       - name: bootstrap Filing Forensics private state
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_forensics }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_forensics && !inputs.qualify_discovery_only }}
         # Manual launch/recovery hook. The normal refresh owner is daily.yml.
         # This deliberately runs the SEC source spine BEFORE the broad state build:
         # a fresh runner must restore its verified raw/archive snapshot, acquire its
@@ -163,6 +209,7 @@ jobs:
           python -m scripts.build_fundamental_forensics --publish-private
       - name: research vault ingest (hourly)
         id: ingest
+        if: ${{ !inputs.qualify_discovery_only }}
         # `set +e` + exit 0 keeps the SALVAGE step below reachable — it must run
         # even when the plane failed, so whatever WAS published still reaches git.
         # The captured rc is re-emitted by the final step, which is what actually
@@ -170,19 +217,122 @@ jobs:
         # an hour in which ingestion accomplished nothing concluded green.
         # --require-store: on the scheduled run, "no store configured" means the R2
         # secrets did not reach the runner, not "nothing to do".
+        env:
+          MATERIALIZE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize_only }}
+          PRODUCER_RELEASE: ${{ vars.RESEARCH_VAULT_PRODUCER_RELEASE }}
         run: |
           set +e
-          python -m scripts.ingest_research --require-store
+          # Pinned-producer mode (RV). When the repo variable selects a release,
+          # the ingest runs ONLY through that pinned offline bundle. Preparation
+          # is verified here against the fixed installation prefix (release
+          # bundle present, manifest.json SHA-256 equal to the selector, fixed
+          # interpreter present) before anything is launched, and every refusal
+          # or nonzero launch records a nonzero rc in GITHUB_OUTPUT. There is
+          # deliberately NO legacy fallback: silently falling forward to the
+          # legacy CLI would republish from an unverified producer. The launcher
+          # itself verifies secure config and release bytes and retains the
+          # private evidence; this workflow adds no recovery authority and prints
+          # no private config or log body — refusal messages are fixed strings.
+          # The launcher uses --require-store and an absolute --repo-dir at the
+          # configured public_checkout/data/research_vault. Installation must bind
+          # public_checkout to this runner's GITHUB_WORKSPACE so salvage/freshness
+          # below consume this run's snapshots. Private child logs use an absolute
+          # retention root outside that checkout; the child cwd is its pinned tree.
+          # Poppler remains a qualified host dependency in BOTH producer modes;
+          # the legacy venv is still used by freshness and optional census steps.
+          if [ -n "${PRODUCER_RELEASE:-}" ]; then
+            pinned_rc=1
+            if [ "$MATERIALIZE_ONLY" = "true" ]; then
+              echo "::error title=research-ingest::pinned producer cannot execute materialize_only; legacy fallback is not permitted"
+              echo "rc=$pinned_rc" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            bundle="/Volumes/Mastermind/runtime/research-producer/releases/$PRODUCER_RELEASE"
+            pinned_python="/Volumes/Mastermind/runtime/research-producer/dependencies/0c43d2132a6afaba75e5b5720c234d1b565679b650d7c04c024a1a12d711206a/venv/bin/python"
+            if [ -f "$bundle/manifest.json" ] && [ -f "$bundle/producer.json" ] \
+               && [ -x "$pinned_python" ]; then
+              if command -v shasum >/dev/null 2>&1; then
+                manifest_digest="$(shasum -a 256 "$bundle/manifest.json" 2>/dev/null | awk '{print $1}')"
+              elif command -v sha256sum >/dev/null 2>&1; then
+                manifest_digest="$(sha256sum "$bundle/manifest.json" 2>/dev/null | awk '{print $1}')"
+              else
+                manifest_digest=""
+              fi
+              if [ "$manifest_digest" = "$PRODUCER_RELEASE" ]; then
+                # Verified archives live under commit-named roots, as required
+                # by the incumbent verifier. Resolve only a bounded manifest's
+                # strict commit identifier; never source config or fall back.
+                mastermind_commit="$("$pinned_python" -I -B - "$bundle/manifest.json" "$PRODUCER_RELEASE" <<'PYCOMMIT'
+          import hashlib, json, re, sys
+          def unique(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError()
+                  result[key] = value
+              return result
+          try:
+              with open(sys.argv[1], 'rb') as stream:
+                  raw = stream.read(4 * 1024 * 1024 + 1)
+              if (len(raw) > 4 * 1024 * 1024
+                      or hashlib.sha256(raw).hexdigest() != sys.argv[2]):
+                  raise ValueError()
+              document = json.loads(raw, object_pairs_hook=unique)
+              if (type(document) is not dict
+                      or document.get('schema') != 'mastermind.research_read_stage.v1'
+                      or document.get('state') != 'INERT_CANDIDATE'):
+                  raise ValueError()
+              commit = document.get('mastermind_commit')
+              if type(commit) is not str or re.fullmatch(r'[0-9a-f]{40}', commit) is None:
+                  raise ValueError()
+              print(commit)
+          except Exception:
+              raise SystemExit(1)
+          PYCOMMIT
+          )"
+                preparation_rc=$?
+                launcher="$bundle/mastermind/$mastermind_commit/ops/research_producer/launch.py"
+                if [ "$preparation_rc" = "0" ] && [ "${#mastermind_commit}" -eq 40 ] \
+                   && [ -f "$launcher" ]; then
+                  "$pinned_python" -I -B "$launcher" --config "$bundle/producer.json" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" --execute
+                  pinned_rc=$?
+                  if [ "$pinned_rc" != "0" ]; then
+                    echo "::error title=research-ingest::pinned producer launch FAILED (rc=$pinned_rc); legacy fallback is not permitted"
+                  fi
+                else
+                  echo "::error title=research-ingest::pinned producer release preparation refused; nothing was ingested and legacy mode is not permitted"
+                fi
+              else
+                echo "::error title=research-ingest::pinned producer release preparation refused; nothing was ingested and legacy mode is not permitted"
+              fi
+            else
+              echo "::error title=research-ingest::pinned producer release preparation refused; nothing was ingested and legacy mode is not permitted"
+            fi
+            echo "rc=$pinned_rc" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$MATERIALIZE_ONLY" = "true" ]; then
+            python -m scripts.ingest_research --require-store --materialize-only
+          else
+            python -m scripts.ingest_research --require-store
+          fi
           echo "rc=$?" >> "$GITHUB_OUTPUT"
           exit 0
+      - name: read-only full-body resource qualification
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.qualify_discovery_only }}
+        run: |
+          python -m engine.research_vault.fulltext_qualification \
+            --scratch-root /Volumes/Mastermind/runtime/research-producer/retention
       # Salvage-push the repo snapshots regardless of the ingest step's rc
       # (never-raise: the CLI exits 0 even on internal error). Commit ONLY the
       # catalog + first-pages-excerpt snapshots (both are what the nightly render
       # reads) — the PDFs + corpus.sqlite live in R2, never in git. The excerpts
       # payload is deterministic + timestamp-free, so an hour with no new/changed
       # reports produces no diff and no commit.
+      # A refused first-step admission skips checkout. Never salvage stale runner
+      # files or run the optional census/upload without this run's checkout.
       - name: commit catalog snapshot (salvage-push)
-        if: always()
+        if: ${{ always() && steps.checkout.outcome == 'success' && !inputs.materialize_only && !inputs.qualify_discovery_only }}
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           git config user.name "dashboard-bot"
@@ -210,7 +360,7 @@ jobs:
       # producer verdict (MINOR 5).
       - name: grade Research Vault source-content freshness
         id: source_freshness
-        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        if: ${{ always() && steps.checkout.outcome == 'success' && !inputs.qualify_discovery_only }}
         env:
           RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS: ${{ vars.RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS }}
           RESEARCH_VAULT_SOURCE_OUTAGE_ACK: ${{ vars.RESEARCH_VAULT_SOURCE_OUTAGE_ACK }}
@@ -231,11 +381,11 @@ jobs:
       # the failure step so a census is still taken on an hour whose ingest failed
       # — that is exactly the hour whose id sets an operator wants to see.
       - name: research vault id-set census (read-only)
-        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.run_census }}
+        if: ${{ always() && steps.checkout.outcome == 'success' && github.event_name == 'workflow_dispatch' && inputs.run_census && !inputs.qualify_discovery_only }}
         run: |
           python -m scripts.research_vault_census --json "$RUNNER_TEMP/rv_census.json"
       - name: upload census report
-        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.run_census }}
+        if: ${{ always() && steps.checkout.outcome == 'success' && github.event_name == 'workflow_dispatch' && inputs.run_census && !inputs.qualify_discovery_only }}
         uses: actions/upload-artifact@v4
         with:
           name: research-vault-census
@@ -247,7 +397,7 @@ jobs:
       # healthy-looking timestamp-only commit. The typed guard has already applied
       # any stale-only acknowledgement; every nonzero rc here remains fatal.
       - name: fail the lane if ingest or source freshness failed
-        if: always()
+        if: ${{ always() && !inputs.qualify_discovery_only }}
         run: |
           ingest_rc="${{ steps.ingest.outputs.rc }}"
           source_rc="${{ steps.source_freshness.outputs.rc }}"

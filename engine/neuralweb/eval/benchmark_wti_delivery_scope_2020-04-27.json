@@ -1,0 +1,66 @@
+{
+  "benchmark_id": "wti_delivery_scope_2020-04-27",
+  "frozen": true,
+  "source": "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2020-04-27",
+    "session_label": "date only",
+    "adjudication_date": "2026-10-15",
+    "historical_source_availability": "unverified",
+    "dependence_group": "oil-delivery-dislocation-april-2020",
+    "source": {
+      "path": "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+      "sha256": "ddcde453e8c828904670f5a5b1017601dbfea7df23f99261285de559f8966113"
+    },
+    "input_facts": [
+      {
+        "event_date": "2020-04-27",
+        "source_lines": [
+          59,
+          61
+        ],
+        "text": "An EIA article published April 27, 2020 reports that May-delivery WTI futures traded as low as minus $40.32 per barrel around 2:30 p.m. ET on April 20. June-delivery Brent closed at positive $19.33 per barrel on April 21; longer-dated WTI prices were also positive.\nWTI contracts held through expiration require delivery arrangements at Cushing unless other arrangements were made in advance.\nFor April 17, the article reports 76 million barrels of working storage capacity and about 58 million barrels in tanks, with another roughly 2 million in transit. Physically unfilled capacity may already be leased or committed.",
+        "sha256": "c14d9e865a786c3cd92a464b006baddd9c856bd7998ea419b7d753370e4abaae"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        65,
+        65
+      ],
+      "text": "The negative observation is an intraday price for a specified WTI contract, not a quoted settlement or a universal oil price. The positive Brent comparison differs in benchmark, delivery month and day. Eighteen million barrels of arithmetic tank space does not establish that an unprepared trader could rent it. Physical emptiness and commercial availability differ. This April 27 retrospective cannot be represented as a proved April 20 decision-time input, and supplies no forecast or trade.",
+      "sha256": "6a3e91c1861fda976509db6080f7b14314a1ba3b26bfa9a05146b8b6795a06ab"
+    }
+  },
+  "question_en": "Compare the reported oil prices by instrument, time and price type; calculate the apparent tank space and assess its significance for a trader facing delivery, including the information-date limitation.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT \u2014 cutoff date 2020-04-27 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2020-04-27] An EIA article published April 27, 2020 reports that May-delivery WTI futures traded as low as minus $40.32 per barrel around 2:30 p.m. ET on April 20. June-delivery Brent closed at positive $19.33 per barrel on April 21; longer-dated WTI prices were also positive.\nWTI contracts held through expiration require delivery arrangements at Cushing unless other arrangements were made in advance.\nFor April 17, the article reports 76 million barrels of working storage capacity and about 58 million barrels in tanks, with another roughly 2 million in transit. Physically unfilled capacity may already be leased or committed.",
+  "expected_properties": [
+    {
+      "tag": "instrument_identity",
+      "check": "The negative observation is a price for the specified May-delivery WTI contract, and the positive Brent comparison differs in benchmark, delivery month and day."
+    },
+    {
+      "tag": "price_type_clock",
+      "check": "The minus $40.32 observation is an intraday price around 2:30 p.m. ET on April 20, not a quoted settlement or a universal oil price."
+    },
+    {
+      "tag": "capacity_availability",
+      "check": "About 76 million barrels of working storage capacity minus about 58 million barrels in tanks leaves about 18 million barrels of arithmetic tank space, which does not establish that an unprepared trader could rent it; physical emptiness and commercial availability differ."
+    },
+    {
+      "tag": "retrospective_scope",
+      "check": "This April 27 retrospective cannot be represented as a proved April 20 decision-time input, and it supplies no forecast or trade."
+    }
+  ],
+  "known_failure_modes": [
+    "Presenting the negative observation as a universal oil price or a Brent price, or ignoring that the positive $19.33 Brent close differs in benchmark, delivery month and day from the specified WTI contract.",
+    "Representing the intraday April 20 observation as a quoted settlement price or as a price observed on the same clock as the April 21 Brent close.",
+    "Claiming the eighteen million barrels of arithmetic tank space proves an unprepared trader could rent it, conflating physical emptiness with commercial availability of capacity that may already be leased or committed.",
+    "Representing the April 27 retrospective as a proved April 20 decision-time input, or deriving a forecast or trade from it."
+  ],
+  "gold_standard_sentence": "The negative observation is an intraday price for a specified WTI contract, not a quoted settlement or a universal oil price. The positive Brent comparison differs in benchmark, delivery month and day. Eighteen million barrels of arithmetic tank space does not establish that an unprepared trader could rent it. Physical emptiness and commercial availability differ. This April 27 retrospective cannot be represented as a proved April 20 decision-time input, and supplies no forecast or trade.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}
