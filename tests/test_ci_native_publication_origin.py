@@ -597,3 +597,26 @@ class ProviderIdentityIntegrationTests(unittest.TestCase):
         for bad in ("2026-11-05T09:14:07Z", "g" * 12, "a" * 11, "a" * 13, "A" * 12, True, None):
             with self.subTest(bad=bad), self.assertRaises(MalformedOriginError):
                 encode(origin(producer_origin={"original_generation": bad}))
+
+
+class PreUploadLocatorTests(unittest.TestCase):
+    def identity(self):
+        return dict(run_id=42000000000, run_attempt=1, job="shock", step="native_publication_stage", generation="012345abcdef")
+
+    def test_pointer_and_artifact_locator_exist_before_pr_creation(self):
+        fields = self.identity()
+        self.assertEqual(npo.producer_origin_pointer(**fields), '<!-- mastermind-native-publication-origin:v1 {"run_id":42000000000,"run_attempt":1,"job":"shock","step":"native_publication_stage","generation":"012345abcdef"} -->')
+        self.assertEqual(npo.producer_origin_artifact_name(**fields), "ci-proof-producer-origin-42000000000-1-shock-native_publication_stage-012345abcdef")
+        self.assertNotIn("artifact_id", npo.producer_origin_pointer(**fields))
+
+    def test_untrusted_marker_cannot_inject_comment_or_artifact_path(self):
+        for key, value in (("job", "a/b"), ("step", "x -->"), ("step", "x:y"), ("generation", "x" * 12), ("run_id", True)):
+            for render in (npo.producer_origin_pointer, npo.producer_origin_artifact_name):
+                with self.subTest(key=key, render=render.__name__), self.assertRaises(MalformedOriginError):
+                    render(**{**self.identity(), key: value})
+
+    def test_envelope_identifiers_share_locator_safe_grammar(self):
+        for field in ("publishing_job", "publishing_step"):
+            for bad in ("a/b", "a -->", "a:b", "a*b", "a b"):
+                with self.subTest(field=field, bad=bad), self.assertRaises(MalformedOriginError):
+                    encode(origin(producer_origin={field: bad}))

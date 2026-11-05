@@ -79,6 +79,8 @@ __all__ = [
     "encode_origin",
     "decode_origin",
     "origin_sha256",
+    "producer_origin_pointer",
+    "producer_origin_artifact_name",
 ]
 
 
@@ -118,6 +120,7 @@ _REPO_FULL_NAME_RE = re.compile(
 )
 _LOGIN_RE = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9-]{0,38}(?:\[bot\])?\Z")
 _GENERATION_RE = re.compile(r"\A[0-9a-f]{12}\Z")
+_COMPONENT_RE = re.compile(r"\A[A-Za-z_][A-Za-z0-9_-]{0,127}\Z")
 
 _WORKFLOW_REF_TAIL = "refs/heads/main"
 _MAX_WORKFLOW_REF_LEN = 512
@@ -186,6 +189,13 @@ def _require_safe_text(value: object, field: str) -> str:
             "%s must not have leading or trailing whitespace" % field
         )
     return value  # type: ignore[return-value]
+
+
+def _require_component(value: object, field: str) -> str:
+    value = _require_safe_text(value, field)
+    if not _COMPONENT_RE.fullmatch(value):
+        raise MalformedOriginError("%s must be a safe explicit workflow identifier" % field)
+    return value
 
 
 def _require_sha(value: object, field: str) -> str:
@@ -320,8 +330,8 @@ def _validate_origin(
     workflow_path = _require_workflow_path(origin["workflow_path"], "workflow_path")
     _require_workflow_ref(origin["workflow_ref"], workflow_path, expected_full_name)
     _require_sha(origin["workflow_sha"], "producer_origin.workflow_sha")
-    _require_safe_text(origin["publishing_job"], "producer_origin.publishing_job")
-    _require_safe_text(origin["publishing_step"], "producer_origin.publishing_step")
+    _require_component(origin["publishing_job"], "producer_origin.publishing_job")
+    _require_component(origin["publishing_step"], "producer_origin.publishing_step")
     _require_exact(
         origin["credential_origin"],
         "producer_origin.credential_origin",
@@ -447,3 +457,29 @@ def origin_sha256(payload: object) -> str:
             % type(payload).__name__
         )
     return hashlib.sha256(payload).hexdigest()
+
+
+def _lookup_fields(*, run_id: int, run_attempt: int, job: str, step: str, generation: str) -> dict:
+    _require_positive_int(run_id, "run_id")
+    _require_positive_int(run_attempt, "run_attempt")
+    _require_component(job, "job")
+    _require_component(step, "step")
+    if not isinstance(generation, str) or not _GENERATION_RE.fullmatch(generation):
+        raise MalformedOriginError("generation must be 12 lowercase hex characters")
+    return {"run_id": run_id, "run_attempt": run_attempt, "job": job, "step": step, "generation": generation}
+
+
+def producer_origin_pointer(**identity) -> str:
+    """Pre-upload PR-body locator, available before PR creation. No authority."""
+    fields = _lookup_fields(**identity)
+    return "<!-- mastermind-native-publication-origin:v1 " + json.dumps(fields, separators=(",", ":")) + " -->"
+
+
+def producer_origin_artifact_name(**identity) -> str:
+    """Exact original Actions artifact name; no artifact ID or digest is invented."""
+    fields = _lookup_fields(**identity)
+    name = "ci-proof-producer-origin-{run_id}-{run_attempt}-{job}-{step}-{generation}".format(**fields)
+    # Bounded protocol locator, independent of any platform maximum.
+    if len(name) > 240:
+        raise MalformedOriginError("producer origin artifact locator exceeds protocol name budget")
+    return name
