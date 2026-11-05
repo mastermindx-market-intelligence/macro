@@ -182,6 +182,23 @@ sub-minute refusal is retained, with no tenor floor. Immutable source identity
 binds raw captures/receipts, selection, policy, terms, rates and derivation. This
 engineering seam does not authenticate caller-supplied provenance or grant rights.
 
+Derived IV also carries a `local_python_implementation_fingerprint/v1`. It binds
+the actually called solver/kernel code objects, module-scoped helper code and
+constants, function defaults, and Python/NumPy/SciPy versions. Code filenames and
+line tables are excluded so SSD/worktree placement does not change identity. The
+fingerprint is computed locally, not accepted from a caller's model-version text.
+It is included in the sealed source reference and IV model reference. It identifies
+the local implementation; it is not provider authentication, data admission, or PIT
+proof. A changed kernel/runtime identity withholds this source pending qualification.
+
+The existing scenario output retains the complete bounded capsule as
+`source.quote_valuation`, including raw events, transport/availability clocks,
+valuation/evaluation times, implementation identity and false PIT flags. Quote
+source references require a matching canonical capsule seal and local model
+identity; missing/tampered/oversized provenance returns explicit unavailable.
+Canonical capsule bytes are bounded to 256 KiB. Ordinary sources retain their
+existing output shape and all numerical/equal-valuation checks are preserved.
+
 The raw parser retains the existing selected-expiry bounds (256 KiB, 100 rows per
 response). No request cap/profile or runtime allowance is enlarged. A wholly fresh
 single-call input would require at least four physical market/reference GETs

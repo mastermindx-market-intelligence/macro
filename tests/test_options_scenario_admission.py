@@ -555,3 +555,101 @@ def test_declared_capability_refusal_survives_new_composition():
     out = build_admitted_scenario_surface(g, oi, QUOTE_DAY, "SPY", source_context=context,
         request=dict(price_grid=[100., 101.], horizons_minutes=[0], r=.02, q=0., mult=100., pm=.01))
     assert out["unavailable_reasons"] == ["source_capability_refused"]
+
+
+@pytest.mark.parametrize("field", ["contract_terms", "expected_contracts"])
+@pytest.mark.parametrize("row", [None, "malformed", 123, [], True])
+def test_quote_composer_malformed_rows_raise_value_error(field, row):
+    args = quote_valuation_case()
+    args["source_context"][field] = [row]
+    with pytest.raises(ValueError, match="row shape"):
+        compose_quote_valuation_inputs(**args)
+
+
+def quoted_surface(g, oi, context):
+    return build_admitted_scenario_surface(g, oi, QUOTE_DAY, "SPY", source_context=context,
+        request=dict(price_grid=[100., 101.], horizons_minutes=[0], r=.02, q=0., mult=100., pm=.01))
+
+
+def test_quote_capsule_survives_actual_scenario_output_and_json_roundtrip():
+    import json
+    args = quote_valuation_case()
+    g, oi, context = compose_quote_valuation_inputs(**args)
+    wire_context = json.loads(json.dumps(context))
+    out = quoted_surface(g, oi, wire_context)
+    assert out["status"] == "complete_for_supplied_universe", out
+    capsule = out["source"]["quote_valuation"]
+    assert capsule == wire_context["quote_valuation"]
+    assert capsule["option_quotes"][0]["raw_event_at"] == QUOTE_DAY + "T14:59:59.000"
+    assert capsule["underlying_quote"]["raw_event_at"] == QUOTE_DAY + "T14:59:58.750"
+    assert capsule["underlying_quote"]["receipt"]["received_at"] == QUOTE_RECEIVED
+    assert capsule["valuation_at"] == QUOTE_TARGET
+    assert capsule["evaluated_at"] == QUOTE_EVALUATED
+    assert capsule["pit_qualified"] is False
+    assert capsule["historical_first_availability_established"] is False
+    identity = capsule["implementation"]
+    assert identity["kind"] == "local_python_implementation_fingerprint/v1"
+    assert len(identity["sha256"]) == 64
+    assert identity["sha256"] == out["pricing"]["iv_provenance"]["implementation_sha256"]
+    assert identity["sha256"] in out["pricing"]["iv_provenance"]["model_ref"]
+    capsule["pit_qualified"] = True
+    assert context["quote_valuation"]["pit_qualified"] is False
+
+
+@pytest.mark.parametrize("mutation", ["missing", "pit", "event", "availability", "model_ref", "implementation", "oversized"])
+def test_quote_provenance_tampering_fails_closed(mutation):
+    args = quote_valuation_case()
+    g, oi, context = compose_quote_valuation_inputs(**args)
+    capsule = context["quote_valuation"]
+    if mutation == "missing":
+        del context["quote_valuation"]
+    elif mutation == "pit":
+        capsule["pit_qualified"] = True
+    elif mutation == "event":
+        capsule["option_quotes"][0]["raw_event_at"] = QUOTE_TARGET
+    elif mutation == "availability":
+        capsule["underlying_quote"]["receipt"]["received_at"] = QUOTE_TARGET
+    elif mutation == "model_ref":
+        context["greek_provenance"]["iv"]["model_ref"] = "caller:fabricated-version"
+    elif mutation == "implementation":
+        capsule["implementation"]["sha256"] = "0" * 64
+    else:
+        capsule["padding"] = "x" * 262144
+    out = quoted_surface(g, oi, context)
+    assert out["status"] == "unavailable"
+    assert out["unavailable_reasons"] == ["quote_valuation_provenance_unqualified"]
+    assert "quote_valuation" not in out["source"]
+
+
+def test_fingerprint_tracks_actual_executed_solver_code_and_constants(monkeypatch):
+    import types
+    from engine import options_scenario_admission as admission, intraday_greeks as kernel
+    _, _, original = compose_quote_valuation_inputs(**quote_valuation_case())
+    first = original["quote_valuation"]["implementation"]
+    assert first == admission._quote_kernel_identity()
+    solver = admission.implied_vol_vec
+    constants = list(solver.__code__.co_consts)
+    constants[0] = str(constants[0]) + " synthetic implementation mutation"
+    changed = types.FunctionType(solver.__code__.replace(co_consts=tuple(constants)),
+        solver.__globals__, solver.__name__, solver.__defaults__, solver.__closure__)
+    monkeypatch.setattr(admission, "implied_vol_vec", changed)
+    g, oi, second = compose_quote_valuation_inputs(**quote_valuation_case())
+    assert first["sha256"] != second["quote_valuation"]["implementation"]["sha256"]
+    assert original["source_snapshot_ref"] != second["source_snapshot_ref"]
+    assert original["greek_provenance"]["iv"]["model_ref"] != second["greek_provenance"]["iv"]["model_ref"]
+    assert quoted_surface(g, oi, second)["status"] == "complete_for_supplied_universe"
+    monkeypatch.setattr(kernel, "IV_TOL", kernel.IV_TOL * 2)
+    assert admission._quote_kernel_identity()["sha256"] != second["quote_valuation"]["implementation"]["sha256"]
+    assert quoted_surface(g, oi, second)["unavailable_reasons"] == ["quote_valuation_provenance_unqualified"]
+
+
+def test_resealing_cannot_turn_a_caller_fabricated_model_identity_into_local_identity():
+    from engine.options_scenario_admission import _quote_capsule_ref
+    g, oi, context = compose_quote_valuation_inputs(**quote_valuation_case())
+    forged = "0" * 64
+    context["quote_valuation"]["implementation"]["sha256"] = forged
+    context["source_snapshot_ref"] = _quote_capsule_ref(context["quote_valuation"])
+    iv = context["greek_provenance"]["iv"]
+    iv.update(source_ref=context["source_snapshot_ref"], implementation_sha256=forged,
+        model_ref="black_scholes_merton|engine.intraday_greeks.implied_vol_vec|local-implementation-sha256:" + forged)
+    assert quoted_surface(g, oi, context)["unavailable_reasons"] == ["quote_valuation_provenance_unqualified"]
