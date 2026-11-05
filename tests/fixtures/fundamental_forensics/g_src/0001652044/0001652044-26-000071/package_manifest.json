@@ -1,0 +1,988 @@
+{
+  "schema": "fundamental_forensics.golden_filing_package/v1",
+  "entity_id": "ISS:US-XNAS-GOOG",
+  "cik": "0001652044",
+  "security_id": "SEC:US-XNAS-GOOGL",
+  "listing_key": "US-XNAS-GOOGL",
+  "legal_name": "Alphabet Inc.",
+  "accession": "0001652044-26-000071",
+  "form": "10-Q",
+  "primary_document": "goog-20260630.htm",
+  "period_of_report": "2026-06-30",
+  "filing_date": "2026-07-23",
+  "source_accepted_at": "2026-07-23T01:15:54.000Z",
+  "fixture_recorded_at": "2026-10-12T21:11:15Z",
+  "acceptance_witness": {
+    "path": "sec_submissions_witness.json",
+    "source_url": "https://data.sec.gov/submissions/CIK0001652044.json",
+    "content_sha256": "722263434e6a11e640a33c1c1535e6f7c2a462c27f282f05a29e4c41808869ad",
+    "byte_length": 364
+  },
+  "archive_index_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/index.json",
+  "index_sha256": "7bc604df4b8748ab1de9dbe1b986fb039c03fe90f6a4c8ee00061688c1ed0c38",
+  "index_byte_length": 9891,
+  "index_http_last_modified": null,
+  "member_count": 104,
+  "retained_count": 6,
+  "statement_roles": {
+    "income_statement": {
+      "role_uri": "http://www.google.com/role/CONSOLIDATEDSTATEMENTSOFINCOME",
+      "title": "CONSOLIDATED STATEMENTS OF INCOME",
+      "title_search": "CONSOLIDATED STATEMENTS OF INCOME"
+    },
+    "balance_sheet": {
+      "role_uri": "http://www.google.com/role/CONSOLIDATEDBALANCESHEETS",
+      "title": "CONSOLIDATED BALANCE SHEETS",
+      "title_search": "CONSOLIDATED BALANCE SHEETS"
+    },
+    "cash_flow": {
+      "role_uri": "http://www.google.com/role/CONSOLIDATEDSTATEMENTSOFCASHFLOWS",
+      "title": "CONSOLIDATED STATEMENTS OF CASH FLOWS",
+      "title_search": "CONSOLIDATED STATEMENTS OF CASH FLOWS"
+    }
+  },
+  "members": [
+    {
+      "name": "0001652044-26-000071-index-headers.html",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/0001652044-26-000071-index-headers.html"
+    },
+    {
+      "name": "0001652044-26-000071-index.html",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/0001652044-26-000071-index.html"
+    },
+    {
+      "name": "0001652044-26-000071.txt",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/0001652044-26-000071.txt"
+    },
+    {
+      "name": "0001652044-26-000071-xbrl.zip",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "366083",
+      "index_type": "compressed.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/0001652044-26-000071-xbrl.zip"
+    },
+    {
+      "name": "FilingSummary.xml",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "50989",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/FilingSummary.xml"
+    },
+    {
+      "name": "goog-20260630.htm",
+      "state": "stored",
+      "role": "primary",
+      "content_sha256": "d9046d6fe9355dfb46942dc51ebc947b62787d9f06635745cd3da54167c697ea",
+      "byte_length": 2464244,
+      "path": "members/goog-20260630.htm",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "http_last_modified": "Thu, 23 Jul 2026 10:04:02 GMT"
+    },
+    {
+      "name": "goog-20260630.xsd",
+      "state": "stored",
+      "role": "schema",
+      "content_sha256": "c9004fc84d4741bb76ba1f08af455366156233dd3ca393e0c211e3350c204e6c",
+      "byte_length": 81587,
+      "path": "members/goog-20260630.xsd",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.xsd",
+      "http_last_modified": "Thu, 23 Jul 2026 10:04:02 GMT"
+    },
+    {
+      "name": "goog-20260630_cal.xml",
+      "state": "stored",
+      "role": "calculation",
+      "content_sha256": "867bbeb3532a871bae5faffdb119e651001cff81337902d677343d7df94b50fa",
+      "byte_length": 154896,
+      "path": "members/goog-20260630_cal.xml",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630_cal.xml",
+      "http_last_modified": "Thu, 23 Jul 2026 10:04:02 GMT"
+    },
+    {
+      "name": "goog-20260630_def.xml",
+      "state": "stored",
+      "role": "definition",
+      "content_sha256": "6013801236dd63586981d00bc3d5cda176118c338cfb10c0dc8214bb16b8ebfc",
+      "byte_length": 440201,
+      "path": "members/goog-20260630_def.xml",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630_def.xml",
+      "http_last_modified": "Thu, 23 Jul 2026 10:04:02 GMT"
+    },
+    {
+      "name": "goog-20260630_htm.xml",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "3046086",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630_htm.xml"
+    },
+    {
+      "name": "goog-20260630_lab.xml",
+      "state": "stored",
+      "role": "label",
+      "content_sha256": "053da83861be0c285d9bf330fef7d096b35a03247267fa729171db4355f4bccb",
+      "byte_length": 1017326,
+      "path": "members/goog-20260630_lab.xml",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630_lab.xml",
+      "http_last_modified": "Thu, 23 Jul 2026 10:04:02 GMT"
+    },
+    {
+      "name": "goog-20260630_pre.xml",
+      "state": "stored",
+      "role": "presentation",
+      "content_sha256": "56d14716c7019bd4221aaa35f664aa221d55bc0c05fb80c7b1a0e7131ca47450",
+      "byte_length": 716424,
+      "path": "members/goog-20260630_pre.xml",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630_pre.xml",
+      "http_last_modified": "Thu, 23 Jul 2026 10:04:02 GMT"
+    },
+    {
+      "name": "googexhibit1004q22026.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "38849",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/googexhibit1004q22026.htm"
+    },
+    {
+      "name": "googexhibit1005q22026.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "46194",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/googexhibit1005q22026.htm"
+    },
+    {
+      "name": "googexhibit3101q22026.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "10971",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/googexhibit3101q22026.htm"
+    },
+    {
+      "name": "googexhibit3102q22026.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "10728",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/googexhibit3102q22026.htm"
+    },
+    {
+      "name": "googexhibit3201q22026.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "9328",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/googexhibit3201q22026.htm"
+    },
+    {
+      "name": "MetaLinks.json",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "1470554",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/MetaLinks.json"
+    },
+    {
+      "name": "R1.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "124286",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R1.htm"
+    },
+    {
+      "name": "R10.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "33619",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R10.htm"
+    },
+    {
+      "name": "R11.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "66529",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R11.htm"
+    },
+    {
+      "name": "R12.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "342606",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R12.htm"
+    },
+    {
+      "name": "R13.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "155171",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R13.htm"
+    },
+    {
+      "name": "R14.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "8964",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R14.htm"
+    },
+    {
+      "name": "R15.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "56608",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R15.htm"
+    },
+    {
+      "name": "R16.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "110551",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R16.htm"
+    },
+    {
+      "name": "R17.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "25130",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R17.htm"
+    },
+    {
+      "name": "R18.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "48607",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R18.htm"
+    },
+    {
+      "name": "R19.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "32479",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R19.htm"
+    },
+    {
+      "name": "R2.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "138040",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R2.htm"
+    },
+    {
+      "name": "R20.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "26856",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R20.htm"
+    },
+    {
+      "name": "R21.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "196710",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R21.htm"
+    },
+    {
+      "name": "R22.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "15567",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R22.htm"
+    },
+    {
+      "name": "R23.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "20582",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R23.htm"
+    },
+    {
+      "name": "R24.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "69964",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R24.htm"
+    },
+    {
+      "name": "R25.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "21853",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R25.htm"
+    },
+    {
+      "name": "R26.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "84665",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R26.htm"
+    },
+    {
+      "name": "R27.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "63335",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R27.htm"
+    },
+    {
+      "name": "R28.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "380485",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R28.htm"
+    },
+    {
+      "name": "R29.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "97212",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R29.htm"
+    },
+    {
+      "name": "R3.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "47824",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R3.htm"
+    },
+    {
+      "name": "R30.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "45192",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R30.htm"
+    },
+    {
+      "name": "R31.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "115780",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R31.htm"
+    },
+    {
+      "name": "R32.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "24108",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R32.htm"
+    },
+    {
+      "name": "R33.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "82280",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R33.htm"
+    },
+    {
+      "name": "R34.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "192478",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R34.htm"
+    },
+    {
+      "name": "R35.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "12841",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R35.htm"
+    },
+    {
+      "name": "R36.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "16591",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R36.htm"
+    },
+    {
+      "name": "R37.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "61947",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R37.htm"
+    },
+    {
+      "name": "R38.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "17637",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R38.htm"
+    },
+    {
+      "name": "R39.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "46396",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R39.htm"
+    },
+    {
+      "name": "R4.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "95387",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R4.htm"
+    },
+    {
+      "name": "R40.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "47961",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R40.htm"
+    },
+    {
+      "name": "R41.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "20464",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R41.htm"
+    },
+    {
+      "name": "R42.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "79682",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R42.htm"
+    },
+    {
+      "name": "R43.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "28887",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R43.htm"
+    },
+    {
+      "name": "R44.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "22013",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R44.htm"
+    },
+    {
+      "name": "R45.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "44590",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R45.htm"
+    },
+    {
+      "name": "R46.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "30472",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R46.htm"
+    },
+    {
+      "name": "R47.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "13454",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R47.htm"
+    },
+    {
+      "name": "R48.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "16517",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R48.htm"
+    },
+    {
+      "name": "R49.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "15807",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R49.htm"
+    },
+    {
+      "name": "R5.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "51355",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R5.htm"
+    },
+    {
+      "name": "R50.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "26202",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R50.htm"
+    },
+    {
+      "name": "R51.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "44656",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R51.htm"
+    },
+    {
+      "name": "R52.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "29866",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R52.htm"
+    },
+    {
+      "name": "R53.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "84125",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R53.htm"
+    },
+    {
+      "name": "R54.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "41639",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R54.htm"
+    },
+    {
+      "name": "R55.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "17613",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R55.htm"
+    },
+    {
+      "name": "R56.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "42533",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R56.htm"
+    },
+    {
+      "name": "R57.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "18321",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R57.htm"
+    },
+    {
+      "name": "R58.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "48184",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R58.htm"
+    },
+    {
+      "name": "R59.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "17054",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R59.htm"
+    },
+    {
+      "name": "R6.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "11087",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R6.htm"
+    },
+    {
+      "name": "R60.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "8312",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R60.htm"
+    },
+    {
+      "name": "R61.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "102929",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R61.htm"
+    },
+    {
+      "name": "R62.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "79509",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R62.htm"
+    },
+    {
+      "name": "R63.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "9518",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R63.htm"
+    },
+    {
+      "name": "R64.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "22959",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R64.htm"
+    },
+    {
+      "name": "R65.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "16427",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R65.htm"
+    },
+    {
+      "name": "R66.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "36254",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R66.htm"
+    },
+    {
+      "name": "R67.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "54138",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R67.htm"
+    },
+    {
+      "name": "R68.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "25061",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R68.htm"
+    },
+    {
+      "name": "R69.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "35360",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R69.htm"
+    },
+    {
+      "name": "R7.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "109771",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R7.htm"
+    },
+    {
+      "name": "R70.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "40563",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R70.htm"
+    },
+    {
+      "name": "R71.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "26524",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R71.htm"
+    },
+    {
+      "name": "R72.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "23456",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R72.htm"
+    },
+    {
+      "name": "R73.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "29124",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R73.htm"
+    },
+    {
+      "name": "R74.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "7167",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R74.htm"
+    },
+    {
+      "name": "R75.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "18651",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R75.htm"
+    },
+    {
+      "name": "R76.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "38072",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R76.htm"
+    },
+    {
+      "name": "R77.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "148433",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R77.htm"
+    },
+    {
+      "name": "R78.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "109820",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R78.htm"
+    },
+    {
+      "name": "R79.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "11689",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R79.htm"
+    },
+    {
+      "name": "R8.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "5087",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R8.htm"
+    },
+    {
+      "name": "R80.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "24083",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R80.htm"
+    },
+    {
+      "name": "R81.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "17622",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R81.htm"
+    },
+    {
+      "name": "R82.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "7022",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R82.htm"
+    },
+    {
+      "name": "R83.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "60096",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R83.htm"
+    },
+    {
+      "name": "R84.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "9615",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R84.htm"
+    },
+    {
+      "name": "R9.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "101184",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R9.htm"
+    },
+    {
+      "name": "report.css",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "2767",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/report.css"
+    },
+    {
+      "name": "Show.js",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction",
+      "index_size": "1085",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/Show.js"
+    }
+  ]
+}

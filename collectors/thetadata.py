@@ -142,6 +142,7 @@ from __future__ import annotations
 
 import io
 import logging
+import math
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -151,6 +152,8 @@ from typing import Iterator
 
 import pandas as pd
 import requests
+
+from lib.options_source_receipts import ACQUISITION_COLUMN, THETA_ENDPOINTS, THETA_SNAPSHOT_ENDPOINTS, theta_acquisition
 
 
 class _StreamTruncated(Exception):
@@ -333,7 +336,54 @@ def list_expirations(symbol: str) -> list[str] | None:
 # Low-level HTTP helpers — CSV streaming
 # --------------------------------------------------------------------------- #
 
-def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame | None:
+class _AbsoluteCSVDeadline(BaseException):
+    """Interrupt the synchronous native request without entering HTTP retries."""
+
+
+def _get_csv(session: requests.Session, path: str, params: dict, *, request_budget=None,
+             max_bytes=None, max_rows=None, limit_profile="selected_expiry",
+             response_handler=None, raw_response_handler=None, deadline_at=None,
+             expected_origin=None) -> pd.DataFrame | None:
+    options = dict(request_budget=request_budget, max_bytes=max_bytes, max_rows=max_rows,
+        limit_profile=limit_profile, response_handler=response_handler,
+        raw_response_handler=raw_response_handler, deadline_at=deadline_at,
+        expected_origin=expected_origin)
+    if deadline_at is None:
+        return _get_csv_inner(session, path, params, **options)
+    # Socket inactivity timeouts do not bound a continuously trickling response.
+    # The optional daily pilot runs synchronously on the native POSIX main thread:
+    # raise through the actual blocking GET/read, then let its existing finally
+    # close the response. No background capture/thread survives a timeout.
+    import signal
+    import threading
+    if (request_budget is None or type(deadline_at) not in (int, float)
+            or not math.isfinite(deadline_at) or deadline_at <= time.monotonic()
+            or threading.current_thread() is not threading.main_thread()
+            or not hasattr(signal, 'setitimer') or not hasattr(signal, 'ITIMER_REAL')
+            or signal.getitimer(signal.ITIMER_REAL) != (0., 0.)):
+        raise ValueError('Exclusive native main-thread absolute deadline unavailable')
+    previous = signal.getsignal(signal.SIGALRM)
+    def expired(signum, frame):
+        raise _AbsoluteCSVDeadline()
+    signal.signal(signal.SIGALRM, expired)
+    try:
+        remaining = deadline_at-time.monotonic()
+        if remaining <= 0:
+            raise _AbsoluteCSVDeadline()
+        signal.setitimer(signal.ITIMER_REAL, remaining)
+        return _get_csv_inner(session, path, params, **options)
+    except _AbsoluteCSVDeadline:
+        request_budget.stop()
+        raise _StreamTruncated('Absolute shared deadline interrupted native CSV request') from None
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0.)
+        signal.signal(signal.SIGALRM, previous)
+
+
+def _get_csv_inner(session: requests.Session, path: str, params: dict, *, request_budget=None,
+             max_bytes=None, max_rows=None, limit_profile="selected_expiry",
+             response_handler=None, raw_response_handler=None, deadline_at=None,
+             expected_origin=None) -> pd.DataFrame | None:
     """Single streaming CSV GET; returns a parsed DataFrame or None on any error.
 
     v3 returns chunked streaming CSV.  No pagination — one continuous response.
@@ -343,20 +393,69 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
     produces no bytes for READ_TIMEOUT_BETWEEN_BYTES seconds raises ReadTimeout,
     which is caught and re-raised as _StreamTruncated so callers return None.
     """
-    url = f"{_base_url()}{path}"
+    if request_budget is None and (response_handler is not None or raw_response_handler is not None
+                                   or deadline_at is not None or expected_origin is not None):
+        raise ValueError("Response retention requires a bounded request")
+    source_origin = _base_url()
+    if expected_origin is not None and expected_origin != source_origin:
+        raise ValueError("Configured source origin changed")
+    url = f"{source_origin}{path}"
+    timeouts = _TIMEOUTS
+    if deadline_at is not None:
+        if type(deadline_at) not in (int, float) or not math.isfinite(deadline_at):
+            raise ValueError("Explicit finite shared deadline required")
+        remaining = deadline_at-time.monotonic()
+        if remaining <= 0:
+            raise ValueError("Shared deadline exhausted before request")
+        from requests.adapters import TimeoutSauce
+        timeouts = TimeoutSauce(total=remaining, connect=min(CONNECT_TIMEOUT, remaining),
+                                read=min(READ_TIMEOUT_BETWEEN_BYTES, remaining))
     params = dict(params)
     params.setdefault("format", "csv")
+    if request_budget is not None:
+        profiles = {"selected_expiry": (262144, 100), "observed_root": (16 * 1024 * 1024, 100000)}
+        if limit_profile not in profiles:
+            raise ValueError("Unknown bounded CSV limit profile")
+        byte_cap, row_cap = profiles[limit_profile]
+        if type(max_bytes) is not int or type(max_rows) is not int or not (0 < max_bytes <= byte_cap and 0 < max_rows <= row_cap):
+            raise ValueError("Bounded CSV needs explicit byte/row caps")
+        request_budget.begin(session, url)
     try:
-        r = session.get(url, params=params, timeout=_TIMEOUTS, stream=True)
+        if deadline_at is not None and time.monotonic() >= deadline_at:
+            raise _StreamTruncated("Shared deadline exhausted after reservation")
+        if deadline_at is not None:
+            remaining = deadline_at-time.monotonic()
+            timeouts = TimeoutSauce(total=remaining, connect=min(CONNECT_TIMEOUT, remaining),
+                                    read=min(READ_TIMEOUT_BETWEEN_BYTES, remaining))
+        r = session.get(url, params=params, timeout=timeouts, stream=True,
+                        **({"allow_redirects": False} if request_budget is not None else {}))
     except requests.exceptions.ConnectionError:
         log.warning("thetadata: terminal unreachable at %s — skip", _base_url())
+        if request_budget is not None:
+            request_budget.stop()
         return None
     except requests.exceptions.ReadTimeout as e:
+        if request_budget is not None:
+            request_budget.stop()
         raise _StreamTruncated(f"read timeout (no bytes for {READ_TIMEOUT_BETWEEN_BYTES}s): {e}") from e
     except Exception as e:  # noqa: BLE001
         log.warning("thetadata: request error %s %s — %s", path, params, e)
+        if request_budget is not None:
+            request_budget.stop()
         return None
 
+    if response_handler is not None:
+        try:
+            response_handler(r.status_code)
+        except BaseException:
+            request_budget.stop()
+            r.close()
+            raise
+    if request_budget is not None and r.status_code != 200:
+        request_budget.stop()
+        r.close()
+        log.warning("thetadata: bounded acquisition HTTP%d", r.status_code)
+        return None
     if r.status_code in (404, 472):
         # 404: empty range for this request
         # 472: ThetaData NO_DATA — valid empty response (e.g., holiday, pre-history date)
@@ -387,8 +486,15 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
 
     try:
         chunks = []
+        size = 0
         for chunk in r.iter_content(chunk_size=65536):
+            if deadline_at is not None and time.monotonic() >= deadline_at:
+                raise _StreamTruncated("Shared deadline exhausted during stream")
             if chunk:
+                size += len(chunk)
+                if request_budget is not None and size > max_bytes:
+                    request_budget.stop()
+                    raise _StreamTruncated("bounded CSV byte limit exceeded")
                 chunks.append(chunk)
         raw = b"".join(chunks)
     except requests.exceptions.ReadTimeout as e:
@@ -399,6 +505,19 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
     except Exception as e:  # noqa: BLE001
         raise _StreamTruncated(f"unexpected stream error: {e}") from e
 
+    finally:
+        if request_budget is not None:
+            import sys
+            if sys.exc_info()[0] is not None:
+                request_budget.stop()
+            r.close()
+
+    if raw_response_handler is not None:
+        try:
+            raw_response_handler(raw)  # durable complete bytes before ANY CSV validation
+        except Exception as exc:
+            request_budget.stop()
+            raise _StreamTruncated("bounded raw response retention failed") from exc
     if not raw or raw.strip() in (b"", b"No data found for your request"):
         return pd.DataFrame()
 
@@ -407,9 +526,24 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
         # Canada on TSX). na_values=[""] keeps blank -> NaN so dropna/to_numeric are unchanged.
         df = pd.read_csv(io.BytesIO(raw), low_memory=False,
                          keep_default_na=False, na_values=[""])
+        if deadline_at is not None and time.monotonic() >= deadline_at:
+            raise ValueError("Shared deadline exhausted during parse")
+        if request_budget is not None and len(df) > max_rows:
+            request_budget.stop()
+            raise ValueError("bounded CSV row limit exceeded")
+        if path in (*THETA_ENDPOINTS.values(), *THETA_SNAPSHOT_ENDPOINTS.values()) and not df.empty:
+            try:
+                df[ACQUISITION_COLUMN] = theta_acquisition(path, params, raw, origin=source_origin)
+            except (ValueError, TypeError):
+                # Additive evidence cannot discard otherwise valid legacy rows.
+                # Without this receipt the qualification adapter fails closed.
+                df.drop(columns=[ACQUISITION_COLUMN], inplace=True, errors="ignore")
+                log.warning("thetadata: acquisition provenance unavailable for %s", path)
         return df
     except Exception as e:  # noqa: BLE001
         log.warning("thetadata: CSV parse error for %s %s — %s", path, params, e)
+        if request_budget is not None:
+            request_budget.stop()
         return None
 
 
@@ -696,8 +830,139 @@ def _concurrent_windows(
 # Public API
 # --------------------------------------------------------------------------- #
 
+class _DSessionRequestNotStarted(ValueError):
+    """A source validation rejected this call before its physical attempt."""
+    request_started = False
+
+
+class _SPYDSessionObservationTransport:
+    """Explicit two-request native adapter. Construction does not enable a caller.
+
+    No reachable probe, window worker, retry, fallback, pagination, OI or write.
+    The daily owner still supplies its durable shared budget and raw callbacks.
+    """
+    def __init__(self, day):
+        from urllib.parse import urlsplit
+        if type(day) is not date:
+            raise ValueError('Exact observation date required')
+        self.origin = _base_url()
+        parsed = urlsplit(self.origin)
+        if (parsed.scheme not in ('http', 'https') or not parsed.hostname
+                or parsed.username or parsed.password or parsed.query or parsed.fragment
+                or parsed.path not in ('', '/')):
+            raise ValueError('Unqualified native source origin')
+        self.day = day
+        self._index = 0
+        self._budget = None
+        self._deadline = None
+        self._closed = False
+
+    def preflight(self, *, deadline_at):
+        """Inspect local transport capacity before a durable pilot claim; no GET.
+
+        Account/source admission remains the installing owner's factual check.
+        The in-flight adapter repeats its deadline/retry guards at each attempt.
+        """
+        import signal
+        import threading
+        try:
+            if (self._closed or self._index != 0 or self.origin != _base_url()
+                    or type(deadline_at) not in (int, float) or not math.isfinite(deadline_at)
+                    or deadline_at <= time.monotonic()
+                    or threading.current_thread() is not threading.main_thread()
+                    or not hasattr(signal, 'setitimer') or not hasattr(signal, 'ITIMER_REAL')
+                    or signal.getitimer(signal.ITIMER_REAL) != (0., 0.)):
+                return False
+            session = _session()  # construction/adapter inspection only, never reachable()
+            for path in ('/v3/option/history/eod', '/v3/option/history/greeks/eod'):
+                if session.get_adapter(self.origin+path).max_retries.total not in (0, False):
+                    return False
+            return True
+        except Exception:
+            return False
+
+    def __call__(self, kind, *, root, day, order, request_options, request_budget,
+                 max_bytes, max_rows, deadline_at, response_handler, raw_response_handler):
+        import hashlib
+        before = getattr(request_budget, 'attempts', None)
+        try:
+            expected = ('eod', 'greeks')
+            if (self._closed or self._index >= 2 or kind != expected[self._index]
+                    or root != 'SPY' or type(day) is not date or day != self.day
+                    or order != (3 if kind == 'greeks' else None)
+                    or request_options != ({'version':'1'} if kind == 'greeks' else {})
+                    or self.origin != _base_url()
+                    or getattr(request_budget, 'max_gets', None) != 2
+                    or getattr(request_budget, 'stopped', True)
+                    or before != self._index
+                    or (self._budget is not None and request_budget is not self._budget)
+                    or (self._deadline is not None and deadline_at != self._deadline)
+                    or type(deadline_at) not in (int, float) or not math.isfinite(deadline_at)
+                    or time.monotonic() >= deadline_at
+                    or type(max_bytes) is not int or not 0 < max_bytes <= 16*1024*1024
+                    or type(max_rows) is not int or not 0 < max_rows <= 100000
+                    or not callable(response_handler) or not callable(raw_response_handler)):
+                raise _DSessionRequestNotStarted('Observation source/scope/budget contract refused')
+            self._budget, self._deadline = request_budget, deadline_at
+            self._index += 1  # a failed call cannot be retried on this adapter
+            path = '/v3/option/history/eod' if kind == 'eod' else '/v3/option/history/greeks/eod'
+            params = dict(symbol='SPY', expiration='*', start_date=_date_int(day),
+                          end_date=_date_int(day), format='csv')
+            if kind == 'greeks':
+                params.update(right='both', version='1')
+            captured = {}
+            def retain(body):
+                captured.update(payload_sha256=hashlib.sha256(body).hexdigest(), payload_bytes=len(body))
+                raw_response_handler(body)  # durable complete body before _get_csv parses it
+            frame = _get_csv(_session(), path, params, request_budget=request_budget,
+                max_bytes=max_bytes, max_rows=max_rows, limit_profile='observed_root',
+                response_handler=response_handler, raw_response_handler=retain,
+                deadline_at=deadline_at, expected_origin=self.origin)
+            if frame is None or frame.empty:
+                self._closed = True
+                request_budget.stop()
+                return frame
+            clock = 'last_trade' if kind == 'eod' else 'timestamp'
+            required = {'symbol', 'expiration', 'strike', 'right', clock}
+            if not required <= set(frame):
+                raise ValueError('Observation source contract/clock columns missing')
+            observed = pd.to_datetime(frame[clock], errors='coerce')
+            if observed.isna().any() or observed.dt.tz is not None:
+                raise ValueError('Observation source clock unavailable')
+            if '_date' in frame:
+                declared = pd.to_datetime(frame['_date'], errors='coerce')
+                if declared.isna().any() or not declared.eq(observed.dt.normalize()).all():
+                    raise ValueError('Contradictory raw date override')
+            raw_rows = len(frame)
+            normalized = _normalize_eod_df(frame, root) if kind == 'eod' else _normalize_greeks_df(frame, order=3)
+            normalized.attrs['_bounded_raw_rows'] = raw_rows
+            normalized.attrs['_d_session_binding'] = dict(origin=self.origin, endpoint=path,
+                parameters=params, raw_rows=raw_rows, **captured)
+            if kind == 'greeks':
+                normalized.attrs['requested_version'] = '1'  # request provenance, not observed model
+            if time.monotonic() >= deadline_at:
+                raise ValueError('Observation shared deadline exhausted during normalization')
+            return normalized
+        except BaseException as exc:
+            self._closed = True
+            request_budget.stop()
+            if isinstance(exc, Exception) and getattr(request_budget, 'attempts', None) == before:
+                raise _DSessionRequestNotStarted('Observation rejected before physical attempt') from exc
+            raise
+
+
+def bounded_spy_d_session_transport(day: date):
+    """Prepare an adapter; exact default-off CLI operation may bind it.
+
+    Source availability is not activation, installed-source admission or a budget.
+    Absent exact operation configuration the daily caller still supplies None.
+    """
+    return _SPYDSessionObservationTransport(day)
+
+
 def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
-             end_date: date | str | int) -> pd.DataFrame | None:
+             end_date: date | str | int, *, request_budget=None, max_bytes=None,
+             max_rows=None, response_handler=None, raw_response_handler=None) -> pd.DataFrame | None:
     """EOD option chain data for all strikes of a given root+expiry, over a date range.
 
     Endpoint: GET /v3/option/history/eod
@@ -723,6 +988,32 @@ def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
       date (datetime64), open, high, low, close, volume, count, bid, ask
     or None if the terminal is unreachable or returns a permission error.
     """
+    if request_budget is not None:
+        start, end = _parse_date_int(start_date), _parse_date_int(end_date)
+        if (root not in {"GLD", "SLV", "TLT", "HYG"}
+                or _normalize_expiration_param(exp) != "*"
+                or not 0 <= (end - start).days <= 4
+                or end >= pd.Timestamp.now(tz="America/New_York").date()):
+            raise ValueError("Bounded EOD requires one supported root and at most5 historical days")
+        params = dict(symbol=root, expiration="*", start_date=_date_int(start),
+                      end_date=_date_int(end), format="csv")
+        try:
+            frame = _get_csv(_session(), "/v3/option/history/eod", params,
+                request_budget=request_budget, max_bytes=max_bytes, max_rows=max_rows,
+                limit_profile="observed_root", response_handler=response_handler,
+                raw_response_handler=raw_response_handler)
+        except _StreamTruncated:
+            request_budget.stop()
+            return None
+        if frame is None or frame.empty:
+            return frame
+        raw_rows = len(frame)
+        _validate_bounded_eod_source(frame, start, end)
+        normalized = _normalize_eod_df(frame, root)
+        normalized.attrs["_bounded_raw_rows"] = raw_rows
+        return normalized
+    if response_handler is not None or raw_response_handler is not None:
+        raise ValueError("Response retention requires a bounded request")
     if not reachable():
         log.warning("thetadata: terminal not reachable — bulk_eod returning None")
         return None
@@ -766,6 +1057,26 @@ def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
             return pd.DataFrame()
 
     return _normalize_eod_df(df, root)
+
+
+def _validate_bounded_eod_source(df: pd.DataFrame, start: date, end: date) -> None:
+    """Require the native EOD last-trade clock; created is ingestion, not session.
+
+    This guard is only for the explicitly bounded route. Legacy normalization
+    retains its existing fallback behavior. No timezone/availability is inferred.
+    """
+    required = {"symbol", "expiration", "strike", "right", "last_trade", "close", "volume"}
+    if not required <= set(df.columns):
+        raise ValueError("EOD source schema requires last_trade and contract fields")
+    observed = pd.to_datetime(df["last_trade"], errors="coerce")
+    if (observed.isna().any() or observed.dt.tz is not None
+            or not observed.dt.date.between(start, end).all()):
+        raise ValueError("EOD source last_trade does not establish requested sessions")
+    if "_date" in df.columns:
+        supplied = pd.to_datetime(df["_date"], errors="coerce")
+        if (supplied.isna().any() or supplied.dt.tz is not None
+                or not supplied.eq(observed.dt.normalize()).all()):
+            raise ValueError("EOD source _date contradicts last_trade session")
 
 
 def _normalize_eod_df(df: pd.DataFrame, root: str) -> pd.DataFrame:
@@ -845,8 +1156,38 @@ def _normalize_eod_df(df: pd.DataFrame, root: str) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
+def bounded_observed_root_history(root: str, day: date | str | int, kind: str, *,
+                                  request_budget, max_bytes: int, max_rows: int,
+                                  version: str | None = None) -> pd.DataFrame | None:
+    """One explicit full observed-root history GET through the native normalizers.
+
+    This does not assert market completeness, identity, terms, or rights. No
+    health probe, concurrent windows, retry, pagination, store mutation or
+    publication occurs. A failed acquisition closes the supplied budget. Existing
+    selected-expiry bounds and ordinary legacy callers remain unchanged.
+    """
+    if (root not in {"SPY", "QQQ"} or kind not in THETA_ENDPOINTS or request_budget is None
+            or (kind == "greeks" and version != "1") or (kind == "oi" and version is not None)):
+        raise ValueError("Observed-root history requires an explicit supported source profile")
+    session_day = _date_int(day)
+    params = dict(symbol=root, expiration="*", start_date=session_day, end_date=session_day,
+                  right="both", format="csv")
+    if version is not None:
+        params["version"] = version
+    try:
+        frame = _get_csv(_session(), THETA_ENDPOINTS[kind], params, request_budget=request_budget,
+                         max_bytes=max_bytes, max_rows=max_rows, limit_profile="observed_root")
+    except _StreamTruncated:
+        request_budget.stop()
+        return None
+    if frame is None or frame.empty:
+        return frame
+    return _normalize_greeks_df(frame, order=3) if kind == "greeks" else _normalize_oi_df(frame)
+
+
 def bulk_open_interest(root: str, exp: int | str | date, start_date: date | str | int,
-                       end_date: date | str | int) -> pd.DataFrame | None:
+                       end_date: date | str | int, *, request_budget=None, strike_range=None,
+                       max_bytes=None, max_rows=None) -> pd.DataFrame | None:
     """Open interest for all contracts of a given root+expiry over a date range.
 
     Endpoint: GET /v3/option/history/open_interest  (bulk; wildcard supported)
@@ -861,11 +1202,17 @@ def bulk_open_interest(root: str, exp: int | str | date, start_date: date | str 
     Returns DataFrame: root, expiration, strike, right, date, open_interest
     or None if terminal is unreachable.
     """
-    if not reachable():
+    exp_param = _normalize_expiration_param(exp) if request_budget is not None else None
+
+    if request_budget is not None and (exp_param == "*" or _date_int(start_date) != _date_int(end_date)
+            or type(strike_range) is not int or not 0 <= strike_range <= 5):
+        raise ValueError("Bounded history requires one exact expiry/session and at most11strikes")
+    if request_budget is None and not reachable():
         log.warning("thetadata: terminal not reachable — bulk_open_interest returning None")
         return None
 
-    exp_param = _normalize_expiration_param(exp)
+    if exp_param is None:
+        exp_param = _normalize_expiration_param(exp)
 
     if exp_param == "*":
         # STALL FIX: iterate in ≤WINDOW_DAYS windows concurrently.
@@ -889,9 +1236,14 @@ def bulk_open_interest(root: str, exp: int | str | date, start_date: date | str 
             "start_date": _date_int(start_date),
             "end_date": _date_int(end_date),
         }
+        if request_budget is not None:
+            params["right"] = "both"
+        if strike_range is not None:
+            params["strike_range"] = strike_range
+        bounded = {} if request_budget is None else dict(request_budget=request_budget, max_bytes=max_bytes, max_rows=max_rows)
         session = _session()
         try:
-            df = _get_csv(session, "/v3/option/history/open_interest", params)
+            df = _get_csv(session, "/v3/option/history/open_interest", params, **bounded)
         except _StreamTruncated as e:
             log.warning("thetadata: bulk_open_interest(%s, %s, start=%s, end=%s) truncated — "
                         "returning None: %s", root, exp_param, start_date, end_date, e)
@@ -944,7 +1296,9 @@ def _normalize_oi_df(df: pd.DataFrame) -> pd.DataFrame:
     if "symbol" in df.columns:
         df = df.rename(columns={"symbol": "root"})
 
-    keep = ["root", "expiration", "strike", "right", "date", "open_interest"]
+    # Retain supplied report-observation text without timezone or availability
+    # inference. The legacy analytics view preserves pre-clock row equality.
+    keep = ["root", "expiration", "strike", "right", "date", "open_interest", "timestamp", ACQUISITION_COLUMN]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
 
@@ -965,7 +1319,8 @@ def _normalize_oi_df(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
-                end_date: date | str | int, *, order: int = 1) -> pd.DataFrame | None:
+                end_date: date | str | int, *, order: int = 1, request_budget=None,
+                strike_range=None, version=None, max_bytes=None, max_rows=None) -> pd.DataFrame | None:
     """Greeks for all contracts of a given root+expiry, one row per contract per day (EOD).
 
     Endpoint: GET /v3/option/history/greeks/eod  (all orders in one buffered response)
@@ -994,7 +1349,10 @@ def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
 
     exp_param = _normalize_expiration_param(exp)
 
-    if not reachable():
+    if request_budget is not None and (exp_param == "*" or _date_int(start_date) != _date_int(end_date)
+            or type(strike_range) is not int or not 0 <= strike_range <= 5):
+        raise ValueError("Bounded history requires one exact expiry/session and at most11strikes")
+    if request_budget is None and not reachable():
         log.warning("thetadata: terminal not reachable — bulk_greeks(order=%d) returning None",
                     order)
         return None
@@ -1008,6 +1366,8 @@ def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
             "symbol": root.upper(),
             "expiration": "*",
         }
+        if version is not None:
+            base_params["version"] = version
         df = _concurrent_windows(
             "/v3/option/history/greeks/eod", base_params, start_date, end_date,
             root=root, window_days=1)
@@ -1025,9 +1385,16 @@ def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
             "start_date": _date_int(start_date),
             "end_date": _date_int(end_date),
         }
+        if request_budget is not None:
+            params["right"] = "both"
+        if strike_range is not None:
+            params["strike_range"] = strike_range
+        if version is not None:
+            params["version"] = version
+        bounded = {} if request_budget is None else dict(request_budget=request_budget, max_bytes=max_bytes, max_rows=max_rows)
         session = _session()
         try:
-            df = _get_csv(session, "/v3/option/history/greeks/eod", params)
+            df = _get_csv(session, "/v3/option/history/greeks/eod", params, **bounded)
         except _StreamTruncated as e:
             log.warning("thetadata: bulk_greeks(%s, exp=%s, start=%s, end=%s) truncated — "
                         "returning None: %s", root, exp_param, start_date, end_date, e)
@@ -1046,6 +1413,10 @@ def _normalize_greeks_df(df: pd.DataFrame, *, order: int = 1) -> pd.DataFrame:
     API DEDUP (2026-07-07): same v3 API full-row duplication as EOD and OI
     (see _normalize_eod_df docstring); the same drop_duplicates is applied here
     after column selection.
+
+    Retain supplied timestamp and underlying_timestamp as raw source evidence.
+    The derived date is a legacy grouping key, not an availability clock; raw
+    clocks are neither receipt times nor a freshness/point-in-time admission.
     """
     if df.empty:
         return df
@@ -1086,8 +1457,12 @@ def _normalize_greeks_df(df: pd.DataFrame, *, order: int = 1) -> pd.DataFrame:
     else:
         greek_cols = _ALL_GREEK_COLS
 
+    # Retain supplied observation text, including naive/unknown clocks. Neither
+    # is first availability; date derivation above remains the historical rule.
+    # Missing columns stay absent. Different observations must not dedup merely
+    # because their rounded Greek values happen to match.
     id_cols = ["root", "expiration", "strike", "right", "date", "bid", "ask",
-               "underlying_price"]
+               "underlying_price", "timestamp", "underlying_timestamp", ACQUISITION_COLUMN]
     keep = id_cols + [c for c in greek_cols if c not in id_cols and c in df.columns]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
@@ -1147,12 +1522,16 @@ def _normalize_snapshot_df(df: pd.DataFrame, keep_cols: list[str],
     with timestamp while the greeks snapshots lead with symbol (both measured
     verbatim 2026-07-16 — see module docstring).
 
-    snapshot_ts is parsed from the response 'timestamp' column (the terminal's
-    per-contract quote timestamp; the OI snapshot stamp is ~06:30 ET, when OPRA
-    publishes EOD t-1 positions).
+    snapshot_ts is parsed from the response timestamp. Vendor observation and
+    collector known-by clocks do not establish provider first publication or an
+    OI release instant; no missing clock is synthesized.
 
     API DEDUP: the same full-row drop_duplicates law as the history endpoints
     (see _normalize_eod_df docstring) is applied after column selection.
+
+    Keep supplied timestamp and underlying_timestamp verbatim as well as the
+    legacy parsed snapshot_ts. Missing or malformed source clocks must remain
+    distinguishable; retaining them does not certify freshness or availability.
     """
     if df.empty:
         return df
@@ -1184,6 +1563,7 @@ def _normalize_snapshot_df(df: pd.DataFrame, keep_cols: list[str],
         df = df.rename(columns={"symbol": "root"})
 
     keep = ["root", "expiration", "strike", "right", "snapshot_ts"] + keep_cols
+    keep += [c for c in ("timestamp", "underlying_timestamp", ACQUISITION_COLUMN) if c in df.columns]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
 
@@ -1201,8 +1581,9 @@ def _normalize_snapshot_df(df: pd.DataFrame, keep_cols: list[str],
     return df.reset_index(drop=True)
 
 
+
 def _snapshot_get(root: str, path: str, keep_cols: list[str],
-                  label: str) -> pd.DataFrame | None:
+                  label: str, *, version: str | None = None) -> pd.DataFrame | None:
     """Shared fetch+normalize for the snapshot endpoints.
 
     NO reachable() pre-check (deliberate deviation from the bulk_* helpers):
@@ -1213,6 +1594,10 @@ def _snapshot_get(root: str, path: str, keep_cols: list[str],
     probes reachable() once at startup instead.
     """
     params = {"symbol": root.upper(), "expiration": "*", "strike": "*"}
+    if version is not None:
+        if path == THETA_SNAPSHOT_ENDPOINTS["oi"] or version not in ("1", "latest"):
+            raise ValueError("Unsupported explicit snapshot version")
+        params["version"] = version
     session = _session()
     try:
         df = _get_csv(session, path, params)
@@ -1227,7 +1612,7 @@ def _snapshot_get(root: str, path: str, keep_cols: list[str],
     return _normalize_snapshot_df(df, keep_cols=keep_cols, label=label)
 
 
-def snapshot_greeks(root: str, order: str = "first") -> pd.DataFrame | None:
+def snapshot_greeks(root: str, order: str = "first", *, version: str | None = None) -> pd.DataFrame | None:
     """Live full-chain greeks snapshot for one root (U-CHAIN lane).
 
     Endpoint: GET /v3/option/snapshot/greeks/{first,second}_order
@@ -1262,6 +1647,7 @@ def snapshot_greeks(root: str, order: str = "first") -> pd.DataFrame | None:
         endpoint,
         keep_cols=_SNAPSHOT_KEEP_COLS[order],
         label=f"snapshot_greeks/{order}",
+        version=version,
     )
 
 
@@ -1271,7 +1657,7 @@ def snapshot_open_interest(root: str) -> pd.DataFrame | None:
     Endpoint: GET /v3/option/snapshot/open_interest (expiration=*, strike=*).
     Measured 2026-07-16: full SPY chain 13,731 rows in 0.21s.
 
-    OI TIMING LAW: the snapshot is stamped ~06:30 ET, when OPRA publishes OI —
+    OI TIMING LAW: the snapshot is typically stamped ~06:30 ET —
     the value represents END-OF-PREVIOUS-DAY positions and does NOT update
     intraday.  One pull per root per day is sufficient; same-day OI in a day-t
     feature is a data leak (see the module docstring).

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-05T10:00:46Z",
+ "accession": "0001193125-26-258284",
+ "cik": "0001836833",
+ "doc_byte_length": 231005,
+ "doc_sha256": "e4fa8a65e671bd37d7821e458b72078f1df2b85171321d7cc04d769046d87505",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-05",
+ "form": "10-K/A",
+ "period_of_report": "2026-01-31",
+ "primary_document": "pl-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 49095,
+  "byte_start": 48580,
+  "normalized": "Portions of the registrant's definitive proxy statement for its 2026 Annual Meeting of Stockholders, which was filed with the Securities and Exchange Commission within 120 days of January 31, 2026, are incorporated by reference into Part III of the Annual Report on Form 10-K for the registrant's fiscal year ended January 31, 2026, as amended by this Amendment No. 1 hereto.",
+  "normalized_sha256": "6fc31ee4416abcc5077a2148906415f4e9ae41153b5899bd6513c4a08d2a9602",
+  "raw": " </span><span style=\"color:#000000;white-space:pre-wrap;font-size:8pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">Portions of the registrant's definitive proxy statement for its 2026 Annual Meeting of Stockholders, which was filed with the Securities and Exchange Commission within 120 days of January 31, 2026, are incorporated by reference into Part III of the Annual Report on Form 10-K for the registrant's fiscal year ended January 31, 2026, as amended by this Amendment No. 1 hereto.",
+  "raw_sha256": "8332994e9c41d0ec371131b19b37f39420af74797b9c911c70e6495b91c3bb12"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1836833/000119312526258284/pl-20260131.htm",
+ "xbrl_contexts": []
+}
