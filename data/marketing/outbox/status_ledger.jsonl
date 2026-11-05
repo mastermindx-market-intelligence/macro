@@ -13029,3 +13029,11 @@
 {"id":"ob-2026-11-05-d301a51834","from":"queued","to":"approved","at":"2026-11-05T18:40:22Z","actor":"approval-desk","note":"approval-desk: payload, session_language, expired_session, number_sanity, liveness, chart_law, banned_language, dedup","receipt":null}
 {"id":"ob-2026-11-05-d249262aa2","from":"approved","to":"posting","at":"2026-11-05T18:40:25Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-11-05-d249262aa2","from":"posting","to":"posted","at":"2026-11-05T18:40:26Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aeccd9a7c2c23ac24ca5b5f","external_url":null,"at":"2026-11-05T18:40:22Z","booked_at":"2026-11-05T18:41:22Z"}}
+{"id":"ob-2026-11-05-28fb7b5614","from":"queued","to":"approved","at":"2026-11-05T20:44:42Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-05-bd65520c05","from":"queued","to":"approved","at":"2026-11-05T20:44:43Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-05-ee7230bca5","from":"queued","to":"approved","at":"2026-11-05T20:44:43Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-05-28fb7b5614","from":"approved","to":"posting","at":"2026-11-05T20:44:47Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-11-05-28fb7b5614","from":"posting","to":"posted","at":"2026-11-05T20:44:48Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aeceabfcf99e575e90ab6cf","external_url":null,"at":"2026-11-05T20:44:41Z","booked_at":"2026-11-05T20:44:41Z"}}
+{"id":"ob-2026-11-05-bd65520c05","from":"approved","to":"posting","at":"2026-11-05T20:44:48Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-11-05-bd65520c05","from":"posting","to":"posted","at":"2026-11-05T20:44:49Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aeceac1cf99e575e90ab715","external_url":null,"at":"2026-11-05T20:44:41Z","booked_at":"2026-11-05T20:44:41Z"}}
+{"id":"ob-2026-11-05-ee7230bca5","from":"approved","to":"quarantined","at":"2026-11-05T20:44:49Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
