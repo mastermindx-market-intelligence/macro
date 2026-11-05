@@ -1,0 +1,90 @@
+# Bottom Pivot Intelligence: delivery increment, 2026-11-05
+
+Operation: `bottom-pivot-delivery-20261105`. Current Chairman assignment: fully architect and implement the earlier-pivot versus false-bounce capability end to end, using admitted Fabric and fleet resources. The assigned Web principal owns this increment and its integration; historical authors are not live ownership gates. No existing writer, held PR, running worker or uncertain effect is displaced.
+
+Protected procedure: `Mastermind@49c2e1d93e5e080b1671c98087a845e5beb09dd5`, skillpack 1.0.1 / bootstrap 1. Initial implementation baseline: `macro@02839f000f3e0623ad65c8bc2fb3b910b7cce6d2`. Source workspace: `sol/web-bottom-pivot-delivery-20261105`, acquired through the installed workspace owner. Organizational parents: existing `WS:PROPHET-US-ENTRY-TIMING` and `WS:LEADERSHIP-ROTATION-INTELLIGENCE`; this is a source-plan increment, not a new workstream, runtime, publisher, signal authority or Agent OS task store. Initial organizational linkage is pending; code source custody is established.
+
+## Original outcome and DONE_WHEN
+
+Chris can distinguish an early, risk-defined reversal opportunity from a falling knife, a short-lived rebound and a durable recovery without requiring a 50/200-day moving-average reclaim. The machine explains the current evidence, earliest actually available observation, remaining uncertainty, conditions that invalidate the idea, and how much price movement has already occurred. It never describes an ex-post ultimate low as a contemporaneous certainty.
+
+DONE_WHEN has four distinct layers:
+1. Product: real qualified inputs reach an existing Macro/Terminal/Brain consumer, with separate market, group and stock context; the user can inspect the early signal, failure conditions, time horizon and source delay. Loading, missing, delayed, stale, contradictory and historical states are truthful. No forecast score is necessary to ship useful measured context.
+2. Engineering: source-bound contracts, hermetic and replay tests, required exact-head CI, normal protected release, and actual production input-to-consumer/browser proof. A source-only patch is not delivery.
+3. Science: frozen comparison against existing timing baselines; report false-bottom, dead-money, missed/late and coverage together. Qualified predictive improvement must be earned out of sample and prospectively; a negative or insufficient result remains useful and must not be relabeled success.
+4. Action authority: no new rank, sizing, trading, order, risk-state override or live notification authority is created here. Any promotion goes through its incumbent owner with its specific evidence. A real product can be useful while its probability/entry-policy extension remains unqualified.
+
+## Incumbents and do-not-redo
+
+Read `research/signal_engine/CHARTER.md` and `DURABLE_BOTTOM_FRAMEWORK.md` as a pair; the later specific durable-bottom protocol governs its evaluation. Reuse, do not replace:
+- `engine/coiled.py`: accepted cohort-washout/context and fire observations, with low recall and scoped ranking/display permissions; do not turn COILED into a mandatory whole-market bottom gate.
+- `engine/postcross.py`: BASED and SHAKEN retain exact scope. ARMED failed its out-of-sample gate and stays silent; no chip, probability or eligibility resurrection.
+- `engine/neuralweb/bottom_sensors.py`: existing display-only bound evidence envelope and source provenance. It already binds trigger, COILED/STAR, knife, hold, sponsorship and distance fields. Prefer an additive consumer here over another bottom detector.
+- `engine/bottom_ruler.py`, `scripts/grade_bottom_calls.py` and the existing bottom ledger: canonical four-axis, once-matured grading. Do not create a rival outcome ledger or change the frozen 60-session ruler.
+- `engine/live_breadth.py`, the single full-market poller, `leadership_rotation_context.py`, existing GMI membership and source-clock owners: market/group observations, not a new collector or taxonomy.
+- `engine.signal_quality` and the existing signal archive/chart marker contract: validated signals and early warnings remain distinct.
+
+Preserve `DNR:KILL-PRIMED-DIRECTIONAL-GATE`, `KILL-LIQUIDITY-SHOCK-REVERSAL-CLASSIFIER`, `KILL-PSS-SR2-PEER-DIFFUSION`, `KILL-PSS-SR3-PARTICIPATION`, `KILL-REGIME-SCORECARD`, `KILL-COMPOSITE-REGIME-RELIABILITY-MONITOR`, and `KILL-MCO-THRUST`. These are construction-scoped failures/prohibitions, not proof that all future pivot research is impossible. A materially different proposed experiment must identify the difference before results, not rename a failed score.
+
+Adjacent source carriers #10212, #10213, #10225, #10227, #10219 and #10604 retain their branches, holds and effects. #10227's tested quote qualifier remains unwired and held; no cherry-pick or release is inferred from this assignment. New work uses disjoint paths until exact affected-path reconciliation. Existing source reports are evidence, not proof of current production operation.
+
+Prior conversation market statistics and opaque web citation IDs are NOT research inputs. They require independent source verification before any dated case study. A morning rally followed by a selloff is not proof of its causal mechanism.
+
+## Architecture: one evidence journey, independent questions
+
+### 1. Setup, trigger, failure and durability are distinct
+
+The existing entry engines supply setup/trigger/knife/hold evidence. A new read-only presentation contract may organize it into (a) early-turn evidence, (b) observed price/path repair, (c) current failure risk and missing evidence, (d) historical outcome maturity. It must not add arbitrary weighted votes or an uncalibrated bottom probability.
+
+A stock turning does not establish a sector bottom; a sector turning does not establish the market bottom. Market context can disagree with a stock-level opportunity. A 30-minute rebound, five-session turn and 126-session durable low are different targets, not one binary label. An ultimate-bottom claim has no finite operational meaning until its horizon and tolerated undercut are declared.
+
+### 2. Source and clock contract
+
+Every input carries subject identity, scope, source artifact/revision, market/session, observed period, available/first-seen clock when known, decision cutoff, evidence mode, coverage and price basis. Unknown is not neutral or zero. A recently rebuilt artifact is not newly observed market information. Reconstructed history must never masquerade as issued history.
+
+Use native price bases consistently. Adjusted daily total-return close is not a raw executable trade price. Do not splice raw intraday prices into adjusted history without an accepted reconciliation. Delisted securities, as-known membership, symbol changes, halts, partial coverage, corporate actions and session boundaries remain explicit. Breadth changes compare matched members and same elapsed-session clocks. One fresh quote cannot qualify an entire cohort.
+
+The current display feed's documented delay is not fit evidence for 1-5 minute entry precision. Qualify existing entitled low-latency routes before enabling such horizons; do not buy data, read new credentials or launch a second collector. Commercial rights are already Chairman-attested in the existing rights owner; historical vintage, actual access and timing quality are separate checks.
+
+### 3. No-lookahead and correction rules
+
+At decision t, use only observations available by t. Tests must show that appending future bars, future membership or a later correction cannot change the as-issued result. Retrospective calculations may change only as a separately versioned reconstruction. First-seen, feature time, publication time and user-delivery time are separately evaluated.
+
+V-turns need not retest; W/base turns may retest. Retest absence is not failure and retest occurrence is not automatic confirmation. A narrow stop does not guarantee small realized loss across gaps. Do not impose a 200-day reclaim on an early candidate; show trend damage separately. Do not claim price/volume bars measure actual dealer inventory, aggressive order imbalance or institutional accumulation.
+
+### 4. Consumer and retention
+
+First vertical: additive, claim-free early-pivot context inside the existing bottom-sensor consumer, reusing its producer and output. It should show what supports early timing, what contradicts it, what cannot yet be measured, and the distinction between an observation and a trade instruction. The exact integration is frozen after a bounded consumer census.
+
+Use existing forward observation/ledger ownership for issued evidence and maturity. Existing Macro presentation, Terminal data adapters and Mastermind Brain consumers read the same contract; no duplicate API backend, database, scheduler, forecast engine, alert queue or publication plane.
+
+## Scientific protocol: specification before running outcomes
+
+Keep the incumbent 60-session four-axis ruler unchanged. Research-only auxiliary horizons may report 1/5/21/63/126-session outcomes, with target/horizon/basis named, but cannot silently replace production grades.
+
+Primary comparisons: existing raw/early timing and accepted COILED/BASED/SHAKEN context, simple price-only baselines, and one prespecified incremental evidence family at a time. MA-reclaim timing is a latency comparator, not the primary buy gate. An incremental feature must add discrimination among otherwise similar early opportunities rather than win by suppressing most alerts.
+
+Report episode-level precision, event recall, alerts per episode, false-start/failed-floor rate, dead-money/censored counts, entry premium and latency from the subsequently identified trough, adverse excursion, favorable excursion, and forward outcome maturity. Report distinct market episodes and clustered uncertainty; thousands of correlated stocks on one crash date are not thousands of independent bottoms. Unknown or unobserved sessions remain in availability accounting.
+
+Separate development, chronological validation and untouched forward issuance. Purge overlapping forward labels, respect label maturity at training cutoff, and retain crisis/era holdouts plus benign/no-bottom periods. Treat both-bar target/stop ambiguity honestly; exact intrabar order cannot be recovered from daily OHLC. Costs and gaps are execution limitations, not reasons to overwrite the measurement target.
+
+Never fit an event ex-post then describe its label as known at the low. Neither novel probabilities nor promotion criteria are considered validated in this source plan. Any probability requires an exact event definition, calibration/Brier or log-loss evidence versus same-row baselines, confidence support and sample counts. Failure to qualify leaves a measured research context, not a fabricated confidence score.
+
+## Delivery task tree (editorial; not runtime state)
+
+| ID | Current boundary | Acceptance / next work |
+| --- | --- | --- |
+| BP0 | Source recovery complete; no code changed yet | Pin incumbents and failed constructions; record source-linked current assignment and preserve adjacent writers. |
+| BP1 | Ready | Freeze additive evidence contract; paid Fabric implements pure composer and adversarial fixtures on disjoint paths. Explicit null, stale, future-time, contradictory, false-bounce and no-probability tests. |
+| BP2 | Ready after contract | Integrate with existing bottom-sensor producer and consumer; demonstrate real qualified local data, with no writes to production ledgers. Register focused tests in incumbent CI owner. |
+| BP3 | Architecture frozen; source experiment pending | Implement offline causal replay through existing ruler/ledger semantics. Qualify actual data/vintages and record what is executable; no blind backfill or automatic collection. |
+| BP4 | Dependent | Add market/group breadth and leadership context from incumbent source contracts, preserve scope and latency. No predictive fusion or old-PR hold removal. |
+| BP5 | Dependent | Existing UI design system, desktop/mobile, dark/light, EN/ZH, accessible missing/stale/history views. No invented market data in production proof. |
+| BP6 | Dependent | Exact-head self-check/focused CI; genuinely required formal non-author approval only; normal release; production producer-to-user proof. |
+| BP7 | Continuing scientific obligation | Natural as-issued shadow observations and matured outcomes; independent scientific challenge before any prediction/policy promotion. |
+
+Direct principal work now: PRINCIPAL_JUDGMENT for architecture, claim boundaries, existing-failure adjudication and integrated acceptance. Delegable bounded implementation uses paid Fabric AUTO under its existing admission, root and spend controls. WHY NOT FABLE: frozen pure-contract implementation and tests do not require scarce principal continuity. A worker has no release, trade, credential, new provider or recursive-worker authority. Parent consumes results in the attended session; no autonomous wake is claimed.
+
+## Initial acceptance falsifiers
+
+Reject if any: below-MA implies unavailable early timing; unknown becomes false/zero; a future observation changes an earlier frame; failed ARMED/PRIMED becomes actionable; same-source redundant legs become independent votes; a delayed snapshot is called real-time; absent tape is called absorption; one stock is called the market bottom; retrospective output is called as-issued; expected performance appears without calibration; schema/code/CI is called production proof; a useful source slice is called completion of this programme.
