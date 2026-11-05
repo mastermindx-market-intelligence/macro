@@ -28,6 +28,8 @@ from __future__ import annotations
 
 import copy
 from hashlib import sha256
+from contextvars import ContextVar
+from threading import get_ident, local
 import os
 from pathlib import Path
 import re
@@ -67,6 +69,29 @@ _COMPACT_FIELDS = frozenset({"operation_id", "intent", "sha256", "bytes"})
 _SCOPE_KEYS = ("store_id", "generation_id", "generation_sha256", "query_cutoff")
 _UTC_MICRO = (r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
               r"\.[0-9]{6}Z")
+
+
+_ACTION_FRAME = ContextVar("market_memory_fitted_factory_action", default=None)
+_FRAME_TOKEN = object()
+_ISSUERS = local()
+
+
+class _ActionFrame:
+    """Execution-local dispatch state, never a reusable permission grant."""
+    def __init__(self, policy, scope, action, resource_bytes):
+        self.policy, self.scope = policy, scope
+        self.action, self.resource_bytes = action, resource_bytes
+        self.thread, self.nonce, self.active = get_ident(), object(), True
+        self.seal = _FRAME_TOKEN
+
+
+class _FrameIssuer:
+    """Synchronous thread-local issuance, independent of copied Context state."""
+    def __init__(self, frame):
+        self.frame, self.nonce = frame, frame.nonce
+        self.policy, self.scope = frame.policy, frame.scope
+        self.action, self.resource_bytes = frame.action, frame.resource_bytes
+        self.thread, self.pending = get_ident(), True
 
 
 class FittedFactoryUseError(ValueError):
@@ -281,6 +306,13 @@ class _FittedFactoryScope(house.RetainedHouseUsePolicy):
     source-registration-derived policy_id that feature bodies hash.
     """
 
+    def check(self, action, resource):
+        principal = getattr(self, "_owner", None)
+        _require(type(self) is _FittedFactoryScope
+            and type(principal) is FittedFactoryUsePolicy,
+            "fitted_factory_principal_required")
+        principal._check_owned_scope(self, action, resource)
+
     def _enforce_current_principal(self):
         owner_policy = getattr(self, "_owner", None)
         if (type(self) is not _FittedFactoryScope
@@ -374,9 +406,28 @@ class FittedFactoryUsePolicy:
             return
         _require(scope is self._training_scope or scope is self._query_scope,
                  "fitted_factory_principal_required")
-        # A private scope cannot become an alternate authority avenue. Its
-        # inherited source check uses the same current owner/custody gates.
-        self._recheck_owner()
+        frame = _ACTION_FRAME.get()
+        if frame is None:
+            # Direct principal-hook calls still qualify current custody.
+            self._recheck_owner()
+            return
+        stack = getattr(_ISSUERS, "stack", ())
+        issuer = stack[-1] if stack else None
+        _require(type(frame) is _ActionFrame and frame.seal is _FRAME_TOKEN
+            and frame.active and frame.thread == get_ident()
+            and type(issuer) is _FrameIssuer and issuer.pending
+            and issuer.thread == get_ident() and issuer.frame is frame
+            and issuer.nonce is frame.nonce
+            and issuer.policy is self and frame.policy is self
+            and issuer.scope is scope and frame.scope is scope
+            and issuer.action == frame.action and frame.action in house._ACTIONS
+            and type(frame.resource_bytes) is bytes
+            and issuer.resource_bytes == frame.resource_bytes,
+            "invalid_fitted_factory_action_frame")
+        # The fixed synchronous base check invokes this hook exactly once.
+        # A copied Context or frame cannot consume the same issuance twice.
+        issuer.pending = False
+        self._validate_scopes()
 
     def _recheck_owner(self):
         """Current service, trial, source, control and scope gates."""
@@ -427,20 +478,49 @@ class FittedFactoryUsePolicy:
                 and scope.expected == {k: v for k, v in bound.items() if k != "mode"},
                 "fitted_factory_scope_changed")
 
-    def check(self, action, resource):
+    def _check_owned_scope(self, scope, action, resource):
+        # Every action has a fresh owner boundary, including direct scope calls.
         self._recheck_owner()
+        _require(action in house._ACTIONS and type(resource) is dict,
+                 "named_fitted_house_use_required")
+        _require(scope is self._training_scope or scope is self._query_scope,
+                 "fitted_factory_principal_required")
+        bound = self._training_bound if scope is self._training_scope else self._query_bound
+        frozen = cohort.canonical(resource)
+        _require(_matches_scope(resource, bound),
+                 "only_original_training_or_exact_query_scope_allowed")
+        frame = _ActionFrame(self, scope, action, frozen)
+        issuer = _FrameIssuer(frame)
+        previous = getattr(_ISSUERS, "stack", ())
+        _ISSUERS.stack = (*previous, issuer)
+        token = None
+        try:
+            token = _ACTION_FRAME.set(frame)
+            # The incumbent rights validator is unchanged. Only its nested
+            # principal hook shares this exact owner-dispatched action frame.
+            result = house.RetainedHouseUsePolicy.check(scope, action, resource)
+            _require(cohort.canonical(resource) == frozen, "fitted_action_resource_changed")
+            _require(result is None and issuer.pending is False,
+                     "inherited_fitted_house_check_not_completed")
+        finally:
+            issuer.pending = False
+            frame.active = False
+            _ISSUERS.stack = previous
+            if token is not None:
+                _ACTION_FRAME.reset(token)
+        self._recheck_owner()
+
+    def check(self, action, resource):
         if action not in house._ACTIONS or type(resource) is not dict:
             raise FittedFactoryUseError("named_fitted_house_use_required")
-        matched = False
         for scope, bound in ((self._training_scope, self._training_bound),
                              (self._query_scope, self._query_bound)):
             if _matches_scope(resource, bound):
-                # Incumbent current registration, revocation and resource
-                # checks run here on every single authorization.
-                scope.check(action, resource)
-                matched = True
-        _require(matched, "only_original_training_or_exact_query_scope_allowed")
+                return self._check_owned_scope(scope, action, resource)
+        # Failed dispatch still checks current source/custody, without creating
+        # an exemption frame or routing a direct scope call to the other scope.
         self._recheck_owner()
+        raise FittedFactoryUseError("only_original_training_or_exact_query_scope_allowed")
 
     def disclosure(self):
         self.check("read_retained_generation_metadata", dict(self._training_bound))
