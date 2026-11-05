@@ -5468,9 +5468,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_670),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5478,6 +5478,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    P12.T2.S14.S8.S7 (2026-11-05): local canonical differential on source
+    4462b2a41291 (tested merge 245162700ec5, exact tree 19da7f2a1f6d) against
+    base d3ab2890c210 measured index 137 jobs/5912->5914,
+    free 137 jobs/5927->5929, Prophet 131 jobs/5668->5670, all ten packs and
+    identical selected job IDs. The sole selected-weight delta is existing
+    research-vault-api 12->14: its required test_macro_policy_preview_api.py
+    entry adds one explicit tests/test_ command token under the unchanged *2
+    estimator. Removing only that token in an in-memory attribution probe
+    restores 12; the pandas/numpy install text does not move the floor term.
+    Calibrate only these three estimated-weight baselines by the exact 2 units,
+    with no margin or selector/job-count/pack/runtime/security/test change.
+    These are planning units, not measured runtime or hosted CI clearance.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
