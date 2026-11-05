@@ -72,6 +72,12 @@ from engine.marketing.cold_read import reset_run_budget as _cold_read_reset  # n
 from engine.marketing.copywriter import batch_body_duplicate_violations as _batch_body_duplicate_violations  # noqa: E402
 from engine.marketing.copywriter import repeated_sentence_violations as _repeated_sentence_violations  # noqa: E402
 from engine.marketing import market_clock as _clock  # noqa: E402
+from engine.marketing.outbox import (  # noqa: E402
+    CHART_BEARING_KINDS as _CHART_BEARING_KINDS,
+    TICKER_ROLLUP_KINDS as _TICKER_ROLLUP_KINDS,
+    load_media_sidecar as _load_media_sidecar,
+    media_sidecar_key as _media_sidecar_key,
+)
 # Top-level for the same reason as the gates above: the subscription-lock branch
 # decides whether the run keeps calling a backend that has locked us out, and a
 # lazily-imported predicate that failed to import would read as "no lock" —
@@ -377,7 +383,7 @@ def _media_paths_for(it: dict, pub_cfg: dict, sidecar: dict | None = None) -> li
             continue
         u = str(m.get("media_url") or "").strip()
         if not u and sidecar:
-            key = f"{str(it.get('as_of') or '').strip()}/{str(m.get('chart_id') or '').strip()}"
+            key = _media_sidecar_key(it.get("as_of"), m.get("chart_id"))
             u = str(sidecar.get(key) or "").strip()
         if u.lower().startswith(("http://", "https://")):
             urls.append(u)
@@ -390,9 +396,7 @@ def _media_paths_for(it: dict, pub_cfg: dict, sidecar: dict | None = None) -> li
 # Every other member of outbox.KINDS — macro, education, event, theme_list,
 # wire, breaking, earnings, mover — is a method, breadth or news post that
 # legitimately goes out as text and must keep flowing.
-_CHART_BEARING_KINDS: frozenset[str] = frozenset({
-    "signal", "chart", "watchlist", "receipt",
-})
+# _CHART_BEARING_KINDS is imported from the shared outbox contract.
 
 # ROLLUPS: not about ONE name, but about the basket they enumerate — so a post
 # that lists $ALL $ERIE $TRV is about those three, and shipping it bare is the
@@ -404,9 +408,7 @@ _CHART_BEARING_KINDS: frozenset[str] = frozenset({
 # A breadth read may mention $SPY in passing; that is not a post about $SPY, and
 # holding it for an upload strangles the desks' non-ticker voice for a rule
 # written about rollups.
-_TICKER_ROLLUP_KINDS: frozenset[str] = frozenset({
-    "theme_list", "mover",
-})
+# _TICKER_ROLLUP_KINDS is imported from the same outbox contract.
 
 # Kinds whose post is REFUSED for naming a ticker with no card of any sort —
 # the scope of :func:`_bare_cashtag_post`'s no-media-at-all branch. DERIVED from
@@ -2085,8 +2087,7 @@ def main(argv: list[str] | None = None) -> int:
     # exactly, so a broken ledger costs an image and never a post.
     _media_sidecar: dict = {}
     try:
-        from scripts.marketing_media_backfill import load_sidecar as _load_sidecar  # noqa: PLC0415
-        _media_sidecar = _load_sidecar(root)
+        _media_sidecar = _load_media_sidecar(root)
         if _media_sidecar:
             log.info("media backfill sidecar: %d recovered chart URLs", len(_media_sidecar))
     except Exception as _sc_exc:  # noqa: BLE001

@@ -73,6 +73,13 @@ KINDS: frozenset[str] = frozenset({
     "congress", "insider",
 })
 
+# Shared media requirements used by the queue, approval desk and publisher.
+CHART_BEARING_KINDS: frozenset[str] = frozenset({
+    "signal", "chart", "watchlist", "receipt",
+})
+TICKER_ROLLUP_KINDS: frozenset[str] = frozenset({"theme_list", "mover"})
+MEDIA_SIDECAR_NAME = "media_urls.jsonl"
+
 # The one source trigger whose SECOND post about a fact is by design rather
 # than fan-out — see the exemption in `_rejection_reason`'s fact-anchor guard.
 #
@@ -267,6 +274,27 @@ def outbox_dir(root: Path | str | None = None) -> Path:
     """Return the outbox directory: <root>/data/marketing/outbox."""
     r = Path(root) if root is not None else _repo_root()
     return r / "data" / "marketing" / "outbox"
+
+
+def media_sidecar_path(root: Path | str | None = None) -> Path:
+    """The shared media URL ledger beside the existing outbox ledgers."""
+    return outbox_dir(root) / MEDIA_SIDECAR_NAME
+
+
+def media_sidecar_key(as_of: str, chart_id: str) -> str:
+    """Stable lookup identity, independent of the public asset's object key."""
+    return f"{str(as_of or '').strip()}/{str(chart_id or '').strip()}"
+
+
+def load_media_sidecar(root: Path | str | None = None) -> dict[str, str]:
+    """Fold the shared projection; the last valid URL for each key wins."""
+    urls: dict[str, str] = {}
+    for row in read_jsonl(media_sidecar_path(root)):
+        key = str(row.get("key") or "").strip()
+        url = str(row.get("media_url") or "").strip()
+        if key and url.lower().startswith(("http://", "https://")):
+            urls[key] = url
+    return urls
 
 
 def _items_path(root: Path | str | None) -> Path:
@@ -889,20 +917,8 @@ MEDIA_REPAIR_STATES: frozenset[str] = frozenset({
 
 
 def chart_bearing_kinds() -> frozenset[str]:
-    """Kinds that owe a publishable chart, from the publisher's live contract.
-
-    The publisher remains the authority. The literal set is only a fail-soft
-    floor for isolated tests or an import failure, matching Approval Desk's
-    existing dependency pattern.
-    """
-    try:
-        from scripts.marketing_publisher import (  # noqa: PLC0415
-            _CHART_BEARING_KINDS, _TICKER_ROLLUP_KINDS,
-        )
-        return frozenset(_CHART_BEARING_KINDS) | frozenset(_TICKER_ROLLUP_KINDS)
-    except Exception:  # noqa: BLE001
-        return frozenset({"signal", "chart", "watchlist", "receipt",
-                          "theme_list", "mover"})
+    """Shared chart-family requirements without importing a publisher command."""
+    return CHART_BEARING_KINDS | TICKER_ROLLUP_KINDS
 
 
 def media_repair_observation(
@@ -2015,9 +2031,7 @@ def _approval_media_sidecar(
     a decision made without the overlay cannot silently authorize a later one.
     """
     try:
-        from scripts.marketing_media_backfill import load_sidecar  # noqa: PLC0415
-
-        return load_sidecar(root)
+        return load_media_sidecar(root)
     except Exception as exc:  # noqa: BLE001
         log.warning("outbox: media approval projection unavailable: %s", exc)
         return {}
@@ -2038,7 +2052,7 @@ def _approval_media_urls(
         if not url:
             chart_id = str(media.get("chart_id") or "").strip()
             if chart_id:
-                url = str(sidecar.get(f"{as_of}/{chart_id}") or "").strip()
+                url = str(sidecar.get(media_sidecar_key(as_of, chart_id)) or "").strip()
         if url.lower().startswith(("http://", "https://")):
             urls.append(url)
     return urls

@@ -44,12 +44,13 @@ from pathlib import Path
 
 _CODE_ROOT = str(Path(__file__).resolve().parent.parent)
 sys.path.insert(0, _CODE_ROOT)
+from engine.marketing import outbox as _outbox  # noqa: E402
 
 log = logging.getLogger("marketing_media_backfill")
 
 # Sidecar filename, relative to the outbox dir. Kept beside the other ledgers so
 # the publish workflow's `git add data/marketing/outbox` already stages it.
-SIDECAR_NAME = "media_urls.jsonl"
+SIDECAR_NAME = _outbox.MEDIA_SIDECAR_NAME
 
 
 def _repo_root() -> Path:
@@ -57,32 +58,18 @@ def _repo_root() -> Path:
 
 
 def sidecar_path(root: Path | str | None = None) -> Path:
-    r = Path(root) if root is not None else _repo_root()
-    return r / "data" / "marketing" / "outbox" / SIDECAR_NAME
+    """Compatibility entry point for the shared outbox media ledger."""
+    return _outbox.media_sidecar_path(root if root is not None else _repo_root())
 
 
 def load_sidecar(root: Path | str | None = None) -> dict[str, str]:
-    """{as_of/chart_id: media_url} folded LAST-row-wins.
-
-    Last-row-wins on purpose: a re-upload (new bucket, corrected render) must be
-    able to supersede an earlier row without rewriting the file. Rows missing a
-    key or url are skipped — a malformed row must never poison the map.
-    """
-    from engine.marketing.ledgers import read_jsonl  # noqa: PLC0415
-
-    out: dict[str, str] = {}
-    for row in read_jsonl(sidecar_path(root)):
-        key = str(row.get("key") or "").strip()
-        url = str(row.get("media_url") or "").strip()
-        if key and url.lower().startswith(("http://", "https://")):
-            out[key] = url
-    return out
+    """Compatibility projection; preserve this command's default data root."""
+    return _outbox.load_media_sidecar(root if root is not None else _repo_root())
 
 
 def media_key(as_of: str, chart_id: str) -> str:
-    """Sidecar lookup key. Distinct from the R2 object key so the sidecar stays
-    readable if the R2 prefix ever changes."""
-    return f"{str(as_of or '').strip()}/{str(chart_id or '').strip()}"
+    """Compatibility entry point for the shared sidecar lookup key."""
+    return _outbox.media_sidecar_key(as_of, chart_id)
 
 
 def r2_key_for(as_of: str, chart_id: str, png_bytes: bytes) -> str:
