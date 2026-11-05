@@ -548,8 +548,14 @@ def test_publisher_static_wiring_uses_native_publication_and_preserves_failures(
         if isinstance(node, ast.FunctionDef) and node.name == "_publication_workspace"
     )
     text = ast.get_source_segment(source, function)
-    assert "measures={}" in text
-    assert "field_support={}" in text
+    # The original official annual adapter is now restored alongside, and
+    # remains separately evidence-qualified from the native summary receipt.
+    assert 'annual_field = admit_current_account_field(' in text
+    assert 'ez_annual_field = admit_eurostat_annual_field(' in text
+    assert '"JP.annual_current_account": annual_field["measure"]' in text
+    assert 'EUROSTAT_ANNUAL_FIELD: ez_annual_field["measure"]' in text
+    assert 'if item["support"] is not None' in text
+    assert 'if ez_annual_field["evidence"] is not None else {}' in text
     risk_call = next(node for node in ast.walk(function) if isinstance(node, ast.Call)
                      and isinstance(node.func, ast.Name) and node.func.id == "attach_risks")
     _assert_native_summary_bound(function, _keyword_value(risk_call, "summary_eligibility"))

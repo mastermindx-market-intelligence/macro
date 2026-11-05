@@ -42,18 +42,27 @@
           <summary>{{ words('Inspect dated observations','查看带日期的观测') }} ({{ s.points|length }})</summary>
           <table><caption>{{ words('Current reconstruction · source dates preserved','当前重建 · 保留来源日期') }}</caption>
             <thead><tr><th scope="col">{{ words('Observation','观测日期') }}</th><th scope="col">{{ words('Growth score','增长评分') }}</th><th scope="col">{{ words('Inflation score','通胀评分') }}</th></tr></thead>
-            <tbody>{% for point in s.points %}<tr><th scope="row">{{ point.observation_at|e }}</th><td>{{ point.growth_score|e if point.growth_score is not none else words('Unavailable','不可用') }}</td><td>{{ point.inflation_score|e if point.inflation_score is not none else words('Unavailable','不可用') }}</td></tr>{% endfor %}</tbody>
+            <tbody data-im-history-rows></tbody>
           </table>
+          <div class="intl-history__actions" data-im-history-paging hidden>
+            <button type="button" data-im-history-page="prev">{{ words('Previous','上一页') }}</button>
+            <span class="intl-history__muted" data-im-history-range role="status" aria-live="polite" aria-atomic="true"></span>
+            <button type="button" data-im-history-page="next">{{ words('Next','下一页') }}</button>
+          </div>
+          <p class="intl-history__muted">{{ words('All supplied observations stay available in their original order through these pages.','全部已提供观测均按原始顺序保留在这些分页中。') }}</p>
         </details>
         {% endif %}
         <form data-im-snapshot-form novalidate>
           <fieldset data-im-snapshot-fields disabled>
             <legend>{{ words('Compare two supplied dates','比较两个已提供的日期') }}</legend>
             {% for side, en, zh in [('left','First observation','第一条观测'),('right','Second observation','第二条观测')] %}
+            <label for="im-snapshot-{{ s.selected_market|e }}-{{ side }}-year">{{ words('Supplied year','已提供年份') }}</label>
+            <select id="im-snapshot-{{ s.selected_market|e }}-{{ side }}-year" data-im-snapshot-year="{{ side }}" aria-describedby="im-snapshot-{{ s.selected_market|e }}-status">
+              <option value="" data-im-label-en="Select a year" data-im-label-zh="选择年份">Select a year</option>
+            </select>
             <label for="im-snapshot-{{ s.selected_market|e }}-{{ side }}">{{ words(en,zh) }}</label>
             <select id="im-snapshot-{{ s.selected_market|e }}-{{ side }}" data-im-snapshot-date="{{ side }}" aria-describedby="im-snapshot-{{ s.selected_market|e }}-status">
               <option value="" data-im-label-en="Select an observation" data-im-label-zh="选择观测">Select an observation</option>
-              {% if s.snapshot_compare.selection.eligible %}{% for date in s.snapshot_compare.available_dates %}<option value="{{ date|e }}" data-im-label-en="{{ date|e }}" data-im-label-zh="{{ date|e }}">{{ date|e }}</option>{% endfor %}{% endif %}
             </select>
             {% endfor %}
             <div class="intl-history__actions"><button type="submit">{{ words('Compare selected dates','比较所选日期') }}</button></div>

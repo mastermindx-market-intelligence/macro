@@ -295,6 +295,109 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2463,6 +2566,109 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3538,6 +3744,109 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -7611,6 +7920,12 @@ jobs:
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
     paths:
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Derived-closure coverage (compose with origin/main 7abc73b9): these
       # concrete paths enter this job's own import closure through upstream
       # modules. `scope: exclusive` means declared paths REPLACE inference,
@@ -8130,6 +8445,109 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9257,6 +9675,60 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -10638,6 +11110,22 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -10992,6 +11480,57 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/thetadata_store.py
+      - scripts/fetch_r2.py
+      - templates/intl_workspace_risk.css
+      - tests/test_intl_workspace_risk_render.py
+      - tests/test_publish_r2.py
+      - collectors/imf_weo.py
+      - collectors/intl_macro.py
+      - scripts/build_feeds.py
+      - scripts/publish_r2.py
+      - templates/intl_workspace.js
+      - templates/intl_workspace/coverage.html.j2
+      - templates/intl_workspace/dossier.html.j2
+      - templates/intl_workspace/history.html.j2
+      - templates/intl_workspace/macro.html.j2
+      - templates/intl_workspace/shell.html.j2
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
+      - tests/test_intl_boe_collector.py
+      - tests/test_intl_boe_publication.py
+      - tests/test_intl_boe_source.py
+      - tests/test_intl_ecb_policy_publication.py
+      - tests/test_intl_ecb_policy_source.py
+      - tests/test_intl_eurostat_annual_pressure.py
+      - tests/test_intl_eurostat_annual_publication.py
+      - tests/test_intl_eurostat_annual_source.py
+      - tests/test_intl_eurostat_publication.py
+      - tests/test_intl_eurostat_source.py
+      - tests/test_intl_generation_publish_join.py
+      - tests/test_intl_investigation_action.py
+      - tests/test_intl_investigation_owner.py
+      - tests/test_intl_investigation_projection.py
+      - tests/test_intl_investigation_publication.py
+      - tests/test_intl_real_field_publication.py
+      - tests/test_intl_investigation_action_render.py
+      - tests/test_intl_investigation_action_mount.py
+      - tests/intl_investigation_action_controller.test.cjs
+      - tests/fixtures/intl_workspace/boe_iudbedr_2026.xml
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11328,9 +11867,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install numerical test dependencies
-        run: pip install pytest pandas numpy pyyaml pyarrow jinja2
+        run: pip install pytest pandas numpy pyyaml pyarrow jinja2 requests openpyxl
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_feed_reader.py tests/test_intl_policy_feed_preview.py tests/test_intl_generation_publication.py tests/test_intl_risk_native_publication.py tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
+        run: python -m pytest tests/test_intl_boe_collector.py tests/test_intl_boe_publication.py tests/test_intl_boe_source.py tests/test_intl_ecb_policy_publication.py tests/test_intl_ecb_policy_source.py tests/test_intl_eurostat_annual_pressure.py tests/test_intl_eurostat_annual_publication.py tests/test_intl_eurostat_annual_source.py tests/test_intl_eurostat_publication.py tests/test_intl_eurostat_source.py tests/test_intl_generation_publication.py tests/test_intl_generation_publish_join.py tests/test_intl_investigation_action.py tests/test_intl_investigation_owner.py tests/test_intl_investigation_projection.py tests/test_intl_investigation_publication.py tests/test_intl_policy_feed_preview.py tests/test_intl_real_field_publication.py tests/test_intl_risk_native_publication.py tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py tests/test_intl_feed_reader.py -q
 
   international-global-watch:
     # IM18: GS-local watch-condition lifecycle contract — the pure evaluator
@@ -11370,6 +11909,48 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - collectors/imf_weo.py
+      - collectors/intl_macro.py
+      - scripts/build_feeds.py
+      - scripts/publish_r2.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
+      - tests/test_intl_boe_collector.py
+      - tests/test_intl_boe_publication.py
+      - tests/test_intl_boe_source.py
+      - tests/test_intl_ecb_policy_publication.py
+      - tests/test_intl_ecb_policy_source.py
+      - tests/test_intl_eurostat_annual_pressure.py
+      - tests/test_intl_eurostat_annual_publication.py
+      - tests/test_intl_eurostat_annual_source.py
+      - tests/test_intl_eurostat_publication.py
+      - tests/test_intl_eurostat_source.py
+      - tests/test_intl_generation_publication.py
+      - tests/test_intl_generation_publish_join.py
+      - tests/test_intl_investigation_action.py
+      - tests/test_intl_investigation_owner.py
+      - tests/test_intl_investigation_projection.py
+      - tests/test_intl_investigation_publication.py
+      - tests/test_intl_policy_feed_preview.py
+      - tests/test_intl_real_field_publication.py
+      - tests/test_intl_investigation_action_render.py
+      - tests/test_intl_investigation_action_mount.py
+      - tests/intl_investigation_action_controller.test.cjs
+      - tests/fixtures/intl_workspace/boe_iudbedr_2026.xml
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11787,7 +12368,7 @@ jobs:
         with:
           node-version: "20"
       - name: install render test dependencies
-        run: pip install pytest pandas numpy pyyaml jinja2 pyarrow
+        run: pip install pytest pandas numpy pyyaml jinja2 pyarrow requests openpyxl
       - name: install browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0 jsdom@26.1.0
@@ -11806,11 +12387,11 @@ jobs:
           )
           PY
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py -q
+        run: python -m pytest tests/test_intl_investigation_action_render.py tests/test_intl_investigation_action_mount.py tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py -q
       - name: History authored-date selection source DOM (no browser)
         run: node --test tests/intl_workspace_history_selection.test.cjs
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_gs_foundation_browser.test.cjs
+        run: node --test tests/intl_investigation_action_controller.test.cjs tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_gs_foundation_browser.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
         run: node --test tests/js/tablesort_browser.test.cjs
       # W2A (IM13) test steps: insert below this line
@@ -12382,6 +12963,110 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/__init__.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -14912,6 +15597,22 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -16632,6 +17333,109 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -19103,6 +19907,22 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -23213,6 +24033,22 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -23654,6 +24490,22 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -23991,6 +24843,22 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -28492,6 +29360,60 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -29101,6 +30023,12 @@ jobs:
     # Derived with infer_job_scopes for both suites; no packing ceilings changed.
     scope: exclusive
     paths:
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       - "app/**"
       - "collectors/**"
       - "config/**"
@@ -30779,6 +31707,110 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/__init__.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -32655,6 +33687,11 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -33498,6 +34535,60 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -35245,6 +36336,22 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -39886,6 +40993,60 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -40437,6 +41598,109 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -43752,6 +45016,110 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/__init__.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45026,6 +46394,109 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - app/macro_policy_preview.py
+      - config/intl_global_universe_v1.json
+      - config/intl_library_catalogue.json
+      - config/intl_source_rights_matrix_v1.json
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/cb_desk.py
+      - engine/china_pboc_stance.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/election_cycle.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/global_liquidity.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_global_observation.py
+      - engine/intl_global_universe.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_charts.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/market_state.py
+      - engine/ohlc_reconstruct.py
+      - engine/oracle/washout_counterread.py
+      - engine/prophet_board_since.py
+      - engine/regime.py
+      - engine/regime_one.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - lib/global_regime_fragment.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eod_publication.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_global_observation_adapter.py
+      - lib/intl_gs_display.py
+      - lib/intl_gs_observations.py
+      - lib/intl_history_materialization.py
+      - lib/intl_history_mount.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_retained.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_policy_publication.py
+      - lib/intl_risk_mount.py
+      - lib/intl_risk_publication.py
+      - lib/intl_surveillance_mount.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_history.py
+      - lib/intl_workspace_macro.py
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_currency.py
+      - lib/intl_workspace_risk_pressure.py
+      - lib/intl_workspace_risk_section.py
+      - lib/intl_yield_publication.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/publish_ohlc.py
+      - scripts/validate_regime_fwd.py
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -50222,6 +51693,23 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - app/macro_policy_preview.py
+      - lib/intl_annual_publication.py
+      - lib/intl_boe_publication.py
+      - lib/intl_boe_source.py
+      - lib/intl_ecb_policy_publication.py
+      - lib/intl_ecb_policy_source.py
+      - lib/intl_eurostat_publication.py
+      - lib/intl_eurostat_source.py
+      - lib/intl_feed_reader.py
+      - lib/intl_generation_publication.py
+      - lib/intl_investigation_action.py
+      - lib/intl_investigation_action_mount.py
+      - lib/intl_investigation_owner.py
+      - lib/intl_investigation_projection.py
+      - lib/intl_library_retained.py
+      - lib/intl_policy_publication.py
+      - lib/intl_yield_publication.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"

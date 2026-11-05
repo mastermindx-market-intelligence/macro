@@ -1565,7 +1565,7 @@ fi
 # The native International policy-preview service imports these exact source
 # readers/comparator modules in-process. A source-only helper update must not
 # leave the previous code cached in the API worker.
-if grep -qE '^(lib/intl_(feed_reader|policy_publication|generation_publication|investigation_projection|investigation_owner|workspace_macro|boe_publication|boe_source|macro_publication)\.py|engine/(intl_rates|intl_compare|intl_inputs|ird_velocity)\.py)$' <<<"$CHANGED"; then
+if grep -qE '^(lib/intl_(feed_reader|policy_publication|generation_publication|investigation_projection|investigation_owner|workspace_macro|boe_publication|boe_source|ecb_policy_publication|ecb_policy_source|macro_publication)\.py|engine/(intl_rates|intl_compare|intl_inputs|ird_velocity)\.py)$' <<<"$CHANGED"; then
 	API_RESTART_NEEDED=1
 fi
 # END MACRO_API_RESTART_TRIGGER

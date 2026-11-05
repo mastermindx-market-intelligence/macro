@@ -16,8 +16,8 @@ function setup(t,change){
  const h=w.IntlWorkspace.mountIntlWorkspace(w.document.querySelector('[data-im-workspace]'),w.JSON.parse(JSON.stringify(fixture.config)));
  const slot=w.document.querySelector('[data-im-history-market="JP"]');
  const q=s=>slot.querySelector(s),event=(node,type)=>node.dispatchEvent(new w.Event(type,{bubbles:true,cancelable:true}));
- function pick(side,value){const el=q('[data-im-snapshot-date="'+side+'"]');el.value=value;event(el,'change');}
- const dates=()=>Array.from(q('[data-im-snapshot-date="left"]').options).slice(1).map(o=>o.value);
+ function pick(side,value){const year=q('[data-im-snapshot-year="'+side+'"]'),bucket=value.split('-')[0];if(value&&year.value!==bucket){year.value=bucket;event(year,'change');}const el=q('[data-im-snapshot-date="'+side+'"]');el.value=value;event(el,'change');}
+ const dates=()=>JSON.parse(q('[data-im-snapshot-payload]').textContent).points.map(row=>row[0]);
  const submit=()=>event(q('[data-im-snapshot-form]'),'submit');
  return {w,h,q,slot,event,pick,dates,submit};
 }
@@ -99,5 +99,55 @@ test('missing payload or partial controls clear the committed pair and disable r
   assert.equal(x.q('[data-im-snapshot-score="right-growth_score"]').textContent,'');
   assert.equal(x.q('[data-im-snapshot-date="left"]').value,'');
   assert.match(x.q('[data-im-snapshot-status]').textContent,/withheld/);
+ }
+});
+
+test('bounded pages expose every supplied row and preserve exact score strings',t=>{
+ const rows=Array.from({length:21},(_,i)=>['2026-'+String(1+Math.floor(i/12)).padStart(2,'0')+'-'+String(1+i%12).padStart(2,'0'),'9007199254740993',String(i)]);
+ const x=setup(t,d=>{const p=d.querySelector('[data-im-snapshot-payload]'),v=JSON.parse(p.textContent);v.points=rows;p.textContent=JSON.stringify(v);});
+ const seen=[],next=x.q('[data-im-history-page="next"]'),prev=x.q('[data-im-history-page="prev"]');
+ assert.equal(prev.disabled,true);
+ for(let page=0;page<3;page++){
+  const trs=Array.from(x.q('[data-im-history-rows]').rows);assert.ok(trs.length<=8);
+  trs.forEach(tr=>seen.push(Array.from(tr.cells).map(td=>td.textContent)));
+  assert.match(x.q('[data-im-history-range]').textContent,/of 21$/);
+  assert.equal(x.q('[data-im-history-range]').getAttribute('aria-live'),'polite');
+  if(page<2){assert.equal(next.disabled,false);next.click();}
+ }
+ assert.deepEqual(seen,rows);assert.equal(next.disabled,true);prev.click();
+ assert.equal(x.q('[data-im-history-rows] th').textContent,rows[8][0]);
+ x.h.destroy();assert.equal(x.q('[data-im-history-rows]').children.length,0);
+ assert.equal(x.q('[data-im-history-paging]').hidden,true);
+});
+
+test('only active market mounts exact year-filtered options with blank intent',t=>{
+ const rows=[['2025-12','1','2'],['2026-02','3','4'],['2026-01','5','6']];
+ const x=setup(t,d=>{const p=d.querySelector('[data-im-snapshot-payload]'),v=JSON.parse(p.textContent);v.points=rows;p.textContent=JSON.stringify(v);});
+ const year=x.q('[data-im-snapshot-year="left"]'),date=x.q('[data-im-snapshot-date="left"]');
+ assert.deepEqual(Array.from(year.options).map(o=>o.value),['','2025','2026']);assert.equal(year.value,'');assert.equal(date.options.length,1);
+ const inactive=x.w.document.querySelector('[data-im-history-market="KR"]');
+ assert.equal(inactive.querySelector('[data-im-snapshot-year]').options.length,1);
+ assert.equal(inactive.querySelectorAll('[data-im-history-rows] tr').length,0);
+ year.value='2026';x.event(year,'change');assert.equal(date.value,'');
+ assert.deepEqual(Array.from(date.options).map(o=>o.value),['','2026-02','2026-01']);
+ x.pick('left','2026-02');x.pick('right','2025-12');x.submit();assert.equal(x.q('[data-im-snapshot-result]').hidden,false);
+ year.value='2025';x.event(year,'change');assert.equal(date.value,'');assert.equal(x.q('[data-im-snapshot-result]').hidden,true);
+ x.h.destroy();assert.equal(year.options.length,1);assert.equal(date.options.length,1);assert.equal(year.value,'');
+});
+
+test('duplicate reordered and other-year supplied options fail closed without silent repair',t=>{
+ for(const kind of ['duplicate','reorder','other-year']){
+  const rows=[['2025-12','1','2'],['2026-02','3','4'],['2026-01','5','6']];
+  const x=setup(t,d=>{const p=d.querySelector('[data-im-snapshot-payload]'),v=JSON.parse(p.textContent);v.points=rows;p.textContent=JSON.stringify(v);});
+  x.pick('left','2026-02');x.pick('right','2025-12');x.submit();assert.equal(x.q('[data-im-snapshot-result]').hidden,false);
+  const select=x.q('[data-im-snapshot-date="left"]');
+  if(kind==='duplicate')select.appendChild(select.options[1].cloneNode(true));
+  else if(kind==='reorder')select.insertBefore(select.options[2],select.options[1]);
+  else{const o=x.w.document.createElement('option');o.value='2025-12';select.appendChild(o);select.value=o.value;}
+  const altered=Array.from(select.options).map(o=>o.value);x.submit();
+  assert.equal(x.q('[data-im-snapshot-result]').hidden,true);assert.equal(x.q('[data-im-snapshot-fields]').disabled,true);
+  assert.equal(x.q('[data-im-snapshot-at="left"]').textContent,'');
+  assert.deepEqual(Array.from(select.options).map(o=>o.value),altered);
+  x.submit();assert.equal(x.q('[data-im-snapshot-result]').hidden,true);
  }
 });

@@ -34,6 +34,7 @@ class ActualShell:
         self.calls = []
         self.template = jinja2.Environment(loader=jinja2.FileSystemLoader(
             Path(__file__).resolve().parents[1] / 'templates'), autoescape=False).get_template('intl_workspace/shell.html.j2')
+        self.environment = self.template.environment
 
     def render(self, **vm):
         self.calls.append(vm)

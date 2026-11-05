@@ -190,6 +190,11 @@ def test_derived_policy_cannot_admit_legacy_or_changed_scope(tmp_path, monkeypat
         assert build_intl._history_disclosure_allowed(receipt,'JP',candidate) is False
     legacy = {k:v for k,v in receipt.items() if k!='materialization'}
     assert build_intl._history_disclosure_allowed(legacy,'JP',policy) is False
+    original_timeout = settings['intl']['macro']['official_series']['GB_bank_rate_official']['timeout_s']
+    settings['intl']['macro']['official_series']['GB_bank_rate_official']['timeout_s'] = original_timeout + 1
+    assert build_intl._history_disclosure_allowed(receipt,'JP',policy) is False
+    settings['intl']['macro']['official_series']['GB_bank_rate_official']['timeout_s'] = original_timeout
+    assert build_intl._history_disclosure_allowed(receipt,'JP',policy) is True
     settings['intl']['countries']['JP']['index'] = 'different-universe'
     assert build_intl._history_disclosure_allowed(receipt,'JP',policy) is False
 

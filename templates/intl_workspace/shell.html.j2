@@ -1,3 +1,4 @@
+{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}{#- the deferred-context placeholder below reuses the canonical panel root #}
 <section class="intl-workspace" data-im-workspace{% if intl_workspace.binding_version is defined %} data-im-binding-version="{{ intl_workspace.binding_version|e }}"{% endif %} data-im-mode="macro" aria-labelledby="intl-workspace-title">
   <header>
     <h1 id="intl-workspace-title" data-im-heading>{{ t('International markets', '国际市场') }}</h1>
@@ -45,10 +46,10 @@
     {% with compare_catalogue=panel.compare_catalogue, context_id=panel.context_id, generation=panel.generation|default('') %}{% include 'intl_workspace/compare.html.j2' %}{% endwith %}
   {% endfor %}
   {% for panel in intl_workspace.macros|default([]) %}
-    {% with macro_section=panel.macro_section, registry=intl_workspace.macro_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none), source_notice=panel.source_notice|default(none) %}{% include 'intl_workspace/macro.html.j2' %}{% endwith %}
+    {% with macro_section=panel.macro_section, registry=intl_workspace.macro_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none), source_notice=panel.source_notice|default(none), field_evidence=panel.field_evidence|default({}), investigation_actions=panel.investigation_actions|default({}) %}{% include 'intl_workspace/macro.html.j2' %}{% endwith %}
   {% endfor %}
   {% for panel in intl_workspace.risks|default([]) %}
-    {% with risk_section=panel.risk_section, registry=intl_workspace.risk_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none) %}{% include 'intl_workspace/risk.html.j2' %}{% endwith %}
+    {% with risk_section=panel.risk_section, registry=intl_workspace.risk_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none), field_evidence=panel.field_evidence|default({}), investigation_actions=panel.investigation_actions|default({}) %}{% include 'intl_workspace/risk.html.j2' %}{% endwith %}
   {% endfor %}
   {% if intl_workspace.library|default(none) %}
     {% with payload=intl_workspace.library, context_id='im-catalogue', generation=intl_workspace.library_generation|default('') %}{% include 'intl_workspace/library.html.j2' %}{% endwith %}
@@ -64,7 +65,30 @@
   <div class="intl-gs">
     {% include 'intl_workspace/_gs_snapshot.html.j2' ignore missing %}
     {% for panel in intl_workspace.surveillance_panels|default([]) %}
-      {% with gs_panel=panel %}{% include 'intl_workspace/' ~ panel.view ~ '.html.j2' %}{% endwith %}
+      {#- INTL-GS deferred contexts (active-page performance). A view that
+          publishes its own panel as an inert carrier (Dossier, Coverage) is
+          rendered ONCE by its canonical partial here and shipped as escaped
+          JSON text; the controller materializes only the selected context and
+          evicts the rest. The canonical partials stay the sole renderer and
+          the published HTML semantics are unchanged — a deferred panel is the
+          same panel root, carried as text instead of as live DOM. -#}
+      {% if panel.view in ['dossier', 'coverage'] %}
+        {% set panel_markup %}{% with gs_panel=panel %}{% include 'intl_workspace/' ~ panel.view ~ '.html.j2' %}{% endwith %}{% endset %}
+        {% if 'data-im-deferrable="v1"' in panel_markup %}
+          {% set deferred_markets = [] %}
+          {% if panel.payload is defined and panel.payload.markets is defined and panel.payload.markets %}
+            {% for entry in panel.payload.markets %}{% if entry is mapping and entry.id is defined and entry.id not in deferred_markets %}{% set _ = deferred_markets.append(entry.id) %}{% endif %}{% endfor %}
+          {% endif %}
+          {% set carrier_markup %}{% call gs.gs_panel_root(view=panel.view, panel=panel, extra_attrs=' hidden data-im-deferred="v1" data-im-deferred-markets="' ~ (deferred_markets|join(',')|e) ~ '"') %}
+            <script type="application/json" data-im-deferred-payload>{{ {'schema': 'intl-gs-deferred.v1', 'view': panel.view, 'context_id': panel.context_id, 'horizon': panel.context.horizon, 'basis': panel.context.currency_basis, 'generation': panel.generation, 'markets': deferred_markets, 'markup': panel_markup}|intl_inert_json if 'intl_inert_json' is filter else {'schema': 'intl-gs-deferred.v1', 'view': panel.view, 'context_id': panel.context_id, 'horizon': panel.context.horizon, 'basis': panel.context.currency_basis, 'generation': panel.generation, 'markets': deferred_markets, 'markup': panel_markup}|tojson }}</script>
+          {% endcall %}{% endset %}
+          {{ carrier_markup|replace(' id="' ~ panel.context_id ~ '-' ~ panel.view ~ '"', ' id="' ~ panel.context_id ~ '-' ~ panel.view ~ '-carrier"', 1)|safe }}
+        {% else %}
+          {{ panel_markup|safe }}
+        {% endif %}
+      {% else %}
+        {% with gs_panel=panel %}{% include 'intl_workspace/' ~ panel.view ~ '.html.j2' %}{% endwith %}
+      {% endif %}
     {% endfor %}
   </div>
   {% endif %}
