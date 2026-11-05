@@ -3,6 +3,8 @@ pytest's CI-mode failure messages so semantic failure atoms can match."""
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from scripts import run_ci_pack
 
 
@@ -68,6 +70,17 @@ def test_replay_env_drops_every_capability_and_candidate_binding() -> None:
 
 
 def test_replay_env_allowlist_names_no_token_or_url_variable() -> None:
+    # Whole underscore-separated words: `CURL_CA_BUNDLE` is a CA bundle path,
+    # not a URL; `GITHUB_TOKEN`, `R2_SECRET_KEY` or `API_URL` would be caught.
+    forbidden = {"TOKEN", "SECRET", "KEY", "URL", "PASSWORD", "CREDENTIALS"}
     for name in run_ci_pack.EXACT_BASE_REPLAY_SAFE_PARENT_ENV:
-        upper = name.upper()
-        assert not any(tok in upper for tok in ("TOKEN", "SECRET", "KEY", "URL", "GITHUB_")), name
+        words = set(name.upper().split("_"))
+        assert not (words & forbidden), name
+        assert not name.upper().startswith("GITHUB_"), name
+    assert "PYTHONUTF8" in run_ci_pack.EXACT_BASE_REPLAY_SAFE_PARENT_ENV
+
+
+def test_exact_base_replay_call_site_uses_the_named_allowlist() -> None:
+    # The replay must derive its child env from the helper, not an inline list.
+    source = Path(run_ci_pack.__file__).read_text(encoding="utf-8")
+    assert "child_env = _exact_base_replay_parent_env(os.environ)" in source

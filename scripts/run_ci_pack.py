@@ -4968,12 +4968,14 @@ def _base_replay_unavailable(base_sha: str, detail: object) -> dict[str, Any]:
 # `CI` is deliberately on the list. pytest decides whether the short-summary
 # `FAILED nodeid - msg` line carries the failure message via
 # `running_on_ci()`, i.e. whether `CI` is set. The candidate runs with the
-# runner's `CI=true` and emits the message; a replay without it emits a bare
-# `FAILED nodeid`, so the semantic failure atoms (`ci_semantic_proof`
-# `:reason=` digest) can never match and every base-red failure that has a
-# message is refused as a signature mismatch (#10735 run 41925067587 pack 11:
-# candidate `FAILED ... - AssertionError...`, replay `FAILED ...`). `CI` is a
-# boolean the runner sets, not a bearer of any capability.
+# runner's `CI=true` and emits the whole message; a replay without it trims
+# the message to the terminal width or drops it, so the semantic failure
+# atoms (`ci_semantic_proof` `:reason=` digest) do not match and a base-red
+# failure that has a message is refused as a signature mismatch (#10735 run
+# 41925067587 pack 11: candidate `FAILED ... - AssertionError...`, replay
+# `FAILED ...`). `CI` is a boolean the runner sets, not a bearer of any
+# capability. `PYTHONUTF8` and `PYTHONIOENCODING` keep the child's text
+# encoding identical to the candidate's.
 EXACT_BASE_REPLAY_SAFE_PARENT_ENV: frozenset[str] = frozenset({
     "PATH",
     "SHELL",
@@ -4999,6 +5001,7 @@ EXACT_BASE_REPLAY_SAFE_PARENT_ENV: frozenset[str] = frozenset({
     "all_proxy",
     "no_proxy",
     "PYTHONIOENCODING",
+    "PYTHONUTF8",
     "PYTHONDONTWRITEBYTECODE",
     "RUNNER_OS",
     "RUNNER_ARCH",
