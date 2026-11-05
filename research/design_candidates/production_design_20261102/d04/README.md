@@ -1,18 +1,19 @@
 # D04 — Discovery, Confluence & Heatmaps
 
-**Three bounded source increments are published in held drafts: Confluence, US Heatmap and Top Picks.** Local source/browser evidence is complete for their recorded scopes. Confluence and the current Heatmap head have successful hosted CI; Top Picks' original hosted runs were last observed queued. Full D04, final editable composition and production acceptance remain open.
+**Three bounded source increments are published in held Drafts: Confluence, US Heatmap and Top Picks. Quant Lab is implemented and locally verified, but its first push remains EFFECT_UNKNOWN.** The original workspace owner now reports REPOSITORY_SOURCE_CHANGED; no Quant Lab PR or verified GitHub source persistence is claimed. Confluence and Heatmap have successful exact-head CI. Top Picks fences and authority checks passed; its original main CI remains queued. Full D04, final editable composition and production acceptance remain open.
 
-[Current continuation and exact next action](https://github.com/mastermindx-market-intelligence/macro/blob/da8f67c26baf4eef7a3954e3b1eb736d5f88651d/research/design_candidates/production_design_20261102/d04/CONTINUATION_IMPLEMENTATION_20261104.md) · [Foundation qualification](https://github.com/mastermindx-market-intelligence/macro/blob/02dc894d6aab8e331150e0b44dc178b18f8db4a4/research/design_candidates/production_design_20261102/d04/FOUNDATION_DELTA_20261104.md) · [Domain draft #7727](https://github.com/mastermindx-market-intelligence/macro/pull/7727)
+[Current continuation and exact next action](https://github.com/mastermindx-market-intelligence/macro/blob/f9c78bb68496a236338344b4f8da5cd16c111e52/research/design_candidates/production_design_20261102/d04/CONTINUATION_IMPLEMENTATION_20261104.md) · [Foundation qualification](https://github.com/mastermindx-market-intelligence/macro/blob/02dc894d6aab8e331150e0b44dc178b18f8db4a4/research/design_candidates/production_design_20261102/d04/FOUNDATION_DELTA_20261104.md) · [Domain draft #7727](https://github.com/mastermindx-market-intelligence/macro/pull/7727)
 
-## Published source and evidence
+## Source deliveries and qualified local evidence
 
 | Source carrier | Exact current source | Bounded proof |
 | --- | --- | --- |
 | [Confluence #10705](https://github.com/mastermindx-market-intelligence/macro/pull/10705) | `126bb13421d7052527ce034a900c89cd1a7fb9e6` | 138 unit/miner tests; 39 browser cases; 24 canonical captures plus 23 preserved additional images |
 | [US Heatmap #10719](https://github.com/mastermindx-market-intelligence/macro/pull/10719) | `3b3d65c8b5484a6735dd1c8cf3e296a6b8ae0c7e` | 45 browser cases/29 current captures; 89 Node and 84 Python tests; 90 Theme-render semantic comparisons; retained 24 canonical captures |
 | [Top Picks #10753](https://github.com/mastermindx-market-intelligence/macro/pull/10753) | `583c039ad0506c9dbff0dd829a3fb51730e9ebe7` | 51 browser cases/22 functional captures; 92 source tests; 16/16 canonical rest/focus captures; six source gates |
+| Quant Lab — local only; original push EFFECT_UNKNOWN | Managed local commit receipt `8328021d0bddbf1855ed7ba2496c978898e6029c`; remote head unproven | 28 focused tests; 24/24 Chromium cases; 16 functional screenshots; 24/24 canonical captures; final source/style/UI gates passed |
 
-All remain Draft/HOLD. Original managed source operations and publication custody are retained. No replacement carrier, formal self-approval, release or production acceptance is inferred.
+The three published source carriers remain Draft/HOLD. Quant Lab has no PR yet. Original managed source operations and publication custody are retained. No replacement carrier, formal self-approval, release or production acceptance is inferred.
 
 ### Confluence
 
@@ -48,7 +49,21 @@ The sparse checkout lacks complete enrichment inputs. The served evidence preser
 
 The final browser run uses Chromium 151 and controlled same-origin company/Terminal fixtures; fresh-document tests disable BFCache. It does not prove live D07/auth, Safari/physical devices, cross-origin full-state transport or production. Eight existing acceptance cases receive explicitly bounded subcoverage in the continuation; all whole-case statuses stay unchanged.
 
-Top Picks [ci 42004061273](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004061273), [fences 42004060987](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004060987) and [ci-authority 42004060319](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004060319) were last observed **queued** at this exact head. No rerun or watcher was created. Any introduced failure remains with the original source operation.
+Top Picks [fences 42004060987](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004060987) and [ci-authority 42004060319](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004060319) completed **success** at this exact head. The original [main CI 42004061273](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42004061273) remains **queued**, conclusion=null, at the final closeout observation. #10753 remains open/Draft/unmerged at the exact published head. No rerun or watcher was created; any actual introduced failure remains with the original operation.
+
+### Quant Lab — completed local proof, unresolved original push
+
+The bounded `/advanced.html` change retains `#cross-asset`, `#risk-budget` and `#stress-replay` for unavailable or malformed snapshots and known insufficient-input/history states. It displays supplied observation dates and correlation windows, identifies the portfolio horizon as a lookback cap, and keeps missing readings distinct from real zero. Native bilingual method disclosures and contained keyboard-reachable tables preserve the narrow-screen workflow.
+
+**28 focused source/producer tests and 24/24 Chromium cases passed**, with zero page/console errors and 16 functional screenshots. **24/24 canonical captures** cover 1440/390 × EN/ZH × dark/light × rest/table-focus/method-focus. Root directly inspected seven final images. Added-line design, runtime-style and canonical UI-evidence gates passed; scoped contrast minima are **5.734:1 dark / 5.445:1 light**. Disposition is **LOCAL_PASS_SELF_REVIEWED**, not formal non-author approval.
+
+The actual builder and qualified committed-input context retain the original normal analytical cells/order, all seven other modules and all producer mathematics. Source observations are 2026-11-04; global snapshot 2026-11-03; correlation window 63 and risk lookback cap 126. Optional caches remain incomplete. No fresh data, new analytics model, auth, shared-shell integration, Web Vitals pass or whole-case acceptance is claimed. Shared tooltip owner [#6860](https://github.com/mastermindx-market-intelligence/macro/pull/6860) remains separate; its repair was not adopted here.
+
+The original operation is **`d04-quant-lab-availability-20261105`**, original workspace **`/Volumes/Mastermind/agent-workspaces/macro/web/d04-quant-lab-availability-20261105`**, branch **`sol/web-d04-quant-lab-availability-20261105`**. Managed commit **`8328021d0bddbf1855ed7ba2496c978898e6029c`** returned APPLIED/clean. The first and only push, action **`0f53c59e8c4f4bbebf3986ea2bab9edee0adc548e731def8dee1d4ac73495177`**, returned **EFFECT_UNKNOWN / PUSH_RESULT_UNCERTAIN / INVALID_ARGUMENT**.
+
+Same-operation typed status was refused. Exact remote-branch lookup returned 404. The original owner reports **REPOSITORY_SOURCE_CHANGED**, and the existing workspace Git metadata link does not resolve. Host m2studio is unchanged. Read-only file checks confirm the three source/test files and key evidence still match their final hashes. This does not resolve the original push or establish current commit reachability.
+
+**Quant Lab source/evidence is NOT_CANONICALLY_PERSISTED on GitHub.** Its local evidence directory is `mockups/evidence/d04-quant-lab-availability-20261105/`; the [current continuation](https://github.com/mastermindx-market-intelligence/macro/blob/f9c78bb68496a236338344b4f8da5cd16c111e52/research/design_candidates/production_design_20261102/d04/CONTINUATION_IMPLEMENTATION_20261104.md) durably records exact hashes, proof limits, action receipts and recovery steps. No uncertain push replay, alternate carrier, raw publication or Quant Lab PR followed.
 
 ## Retained discovery package
 
@@ -60,7 +75,7 @@ All **75 full-programme acceptance cases remain NOT_RUN_PRODUCT_ACCEPTANCE**, an
 
 The earlier Git tree publication returned a definitive 422 and was stopped. Fourteen supported Contents-API parts on this same carrier preserve all 50 prepared artifacts as original text or base64 PNG bytes. Combined with pinned baseline `23bd2c0b7400548485e39c119954977b8a9f3472`, they reconstruct the **70-file packet**, whose **30 integrity checks** passed. Native placement of that prepared 50-file tree remains unmaterialized; encoded canonical persistence is complete. Plain baseline contract files retain their historical role; the bundle and later continuation increments identify current evidence.
 
-## Current dependencies and the next source action
+## Current dependencies and exact recovery action
 
 F01 #10645 at `dce261d07ebc993e8a9579cca2200e445b6636d4` retains candidate.4 as operative and candidate.5 as proposed/not adopted. Final joint v1 remains unreleased.
 
@@ -68,11 +83,9 @@ F02 #10630 at `3b27c7b9c8382ac8f21161a37b833dd6cb4f4933` now has 32 full native 
 
 No inspected durable D23 return supplies the qualified D04 authenticated save/readback and fixed-snapshot/live-query contract. This bounded finding does not claim that no D23/backend work exists. D23 keeps its persistence and uncertain-save ownership.
 
-The next bounded product slice is **Quant Lab `/advanced.html`: retain `#cross-asset`, `#risk-budget` and `#stress-replay` when source inputs are unavailable, explain insufficient inputs/history, and display supplied observation dates and correlation horizons**. Exact source findings, target boundaries and DONE_WHEN are in the continuation. Producer mathematics and the other seven modules remain outside the change.
+Quant Lab's bounded local implementation is now complete. The remaining publication action is blocked by the original owner's changed source identity and the unresolved first push. The existing workspace/runtime owner must restore and qualify the original enrollment/link; root must then reconcile the original action and read exact local/remote state before taking any further source publication step. Restoration alone does not authorize replay. After exact remote publication is proven, read back immutable source/evidence, create the held Draft and inspect actual hosted checks.
 
-The original workspace owner refused acquisition for `d04-quant-lab-availability-20261105` at canonical base `3e4821132540270d52f6e83c29638ec2eeb16e3f` with **REPOSITORY_SOURCE_UNAVAILABLE / NOT_APPLIED**. Same-owner status confirms no registered workspace. Repository READY inventory does not grant allocation. No retry, older-base fallback, raw worktree creation, alternate host or source-carrier change followed.
-
-The next source action requires the existing owner to resolve and qualify that exact source condition. The concrete successor is saved; no background repair worker or delegated START is claimed. Basket-date concerns remain with active #7669/#8639 and D05 #10703 rather than being taken over here.
+Accepted unchanged proof remains DO_NOT_REDO. No background repair worker or delegated START is claimed. Basket-date concerns remain with #7669/#8639 and D05 #10703; D04 has not taken over those source hunks.
 
 The original optional Fabric commission retains its own historical unknown effect and was not replayed or replaced. Native read-only children returned and were accepted/STOP. Current Web self-QA applies under protected Mastermind pin `d753bd6e9ef3e5a5435ba5649e448b1610185f6e`; actual source custody, platform approvals and holds remain binding.
 
