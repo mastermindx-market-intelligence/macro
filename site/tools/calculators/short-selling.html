@@ -442,7 +442,10 @@
           " return on the notional sold short";
         plain += res.hasFee ? ", after a " + money(res.borrowCost) + " borrow fee." : ".";
       } else if(res.net < 0){
-        plain = "This short lost " + money(res.net) + " — the stock rose against the position, a " +
+        var lossCause = res.gross < 0 ? "the stock rose against the position"
+          : res.gross > 0 ? "borrow costs outweighed the profit from the price decline"
+          : "the price was unchanged and borrow costs caused the loss";
+        plain = "This short lost " + money(Math.abs(res.net)) + " — " + lossCause + ", a " +
           pct(res.returnPct) + " return on the notional";
         plain += res.hasFee ? ", including a " + money(res.borrowCost) + " borrow fee." : ".";
         outPlain.className="co-plain warn";
