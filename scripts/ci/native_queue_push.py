@@ -454,6 +454,16 @@ def producer_identity(head, digest, *, require_staging_step=True,publishing_step
     else:raise PublicationHeld('producer_original_credential_not_bound')
     job = os.environ.get('GITHUB_JOB')
     workflow = producers.get(job)
+    if credential == 'GITHUB_TOKEN' and job == 'refresh':
+        # SAME run/caller path, never an invented callee workflow identity.
+        # This selector is syntax only; CORE must authenticate the one literal
+        # same-SHA local call/provider graph (or the separate direct tuple).
+        from scripts.ci.govrev_source_binding import select_source
+        try:
+            binding = select_source(os.environ)
+        except ValueError:
+            raise PublicationHeld('govrev_original_source_binding_unqualified') from None
+        workflow = binding['caller_workflow_ref'].removeprefix(REPOSITORY+'/').split('@',1)[0]
     allowed_steps={step}
     if credential=='GITHUB_TOKEN' and job=='collect':
         allowed_steps={'native_publication_stage','native_publication_salvage_stage'}

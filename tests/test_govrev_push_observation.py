@@ -93,8 +93,11 @@ def test_same_origin_observer_preserves_original_effect_and_unknown(tmp_path,sta
 
 def wrapper():
     doc=yaml.safe_load((BASE/'.github/workflows/government-revenue-live.yml').read_text())
+    from scripts.workflow_run_source import resolve_run_source
+    for step in doc['jobs']['refresh']['steps']:
+        if isinstance(step.get('run'),str):step['original_run_scalar']=step['run'];step['run']=resolve_run_source(step['run'],BASE)
     body=next(s['run'] for s in doc['jobs']['refresh']['steps'] if s.get('name')=='stage reviewed source guards')
-    return body[body.index('govrev_push_same_carrier()'):body.index('prepare_candidate_research_state()')]
+    return 'native_code_root="${native_code_root:-$PWD}"\n'+body[body.index('govrev_push_same_carrier()'):body.index('prepare_candidate_research_state()')]
 
 
 @pytest.mark.parametrize('state', ['landed_timeout','unknown','refused','qledger_refused','contention'])
@@ -137,11 +140,14 @@ fi
 
 def test_workflow_freezes_before_cleanup_and_preserves_budget_and_size():
     doc=yaml.safe_load((BASE/'.github/workflows/government-revenue-live.yml').read_text())
+    from scripts.workflow_run_source import resolve_run_source
+    for step in doc['jobs']['refresh']['steps']:
+        if isinstance(step.get('run'),str):step['original_run_scalar']=step['run'];step['run']=resolve_run_source(step['run'],BASE)
     commit=next(s['run'] for s in doc['jobs']['refresh']['steps'] if 'commit complete' in s.get('name',''))
     assert commit.index('elif [ "$govrev_push_rc" -ne 1 ]') < commit.index('push_abort_rebase')
     assert 'exit "$govrev_push_rc"' in commit
     assert 'PUSH_MAX_ATTEMPTS=2' in commit and 'PUSH_BUDGET_SECS=2700' in commit and 'GOVREV_REPROOFS=0' in commit
-    assert len(commit)<=20563
+    assert len(next(s['original_run_scalar'] for s in doc['jobs']['refresh']['steps'] if 'commit complete' in s.get('name','')))<=20563
     for step in doc['jobs']['refresh']['steps']:
         if 'run' in step:
             result=subprocess.run(['/bin/bash','-n'],input=step['run'],text=True,capture_output=True)
@@ -402,10 +408,13 @@ def test_workflow_wires_the_original_push_identity_into_the_witness():
     assert 'GOVREV_PUSH_IDENTITY="$prefix.identity.json"' in body
     assert '"$prefix.identity.json"' in body and '--attempt "$PUSH_ATTEMPT"' in body
     doc=yaml.safe_load((BASE/'.github/workflows/government-revenue-live.yml').read_text())
+    from scripts.workflow_run_source import resolve_run_source
+    for step in doc['jobs']['refresh']['steps']:
+        if isinstance(step.get('run'),str):step['original_run_scalar']=step['run'];step['run']=resolve_run_source(step['run'],BASE)
     commit=next(s['run'] for s in doc['jobs']['refresh']['steps'] if 'commit complete' in s.get('name',''))
     assert '--push-identity "$GOVREV_PUSH_IDENTITY"' in commit
     assert commit.index('publication-witness')<commit.index('--push-identity "$GOVREV_PUSH_IDENTITY"')<commit.index('--out "$RUNNER_TEMP/govrev-candidate-proof.publication.json"')
-    assert len(commit)<=20563
+    assert len(next(s['original_run_scalar'] for s in doc['jobs']['refresh']['steps'] if 'commit complete' in s.get('name','')))<=20563
 
 
 def test_interrupted_push_raw_response_is_outside_retained_artifact_namespace(tmp_path):
@@ -447,7 +456,7 @@ def test_wrapper_checks_actual_main_before_any_push_effect(tmp_path, checkout):
     runtemp = tmp_path / "temp"
     runtemp.mkdir()
     script = "set -euo pipefail\n" + f'. "{BASE / "scripts/ci/push_retry.sh"}"\n' + wrapper() + '''
-python() { printf '%s\n' "$*" >> "$RUNNER_TEMP/python-called"; }
+python3() { printf '%s\n' "$*" >> "$RUNNER_TEMP/python-called"; }
 push_do() { touch "$RUNNER_TEMP/push-called"; }
 govrev_push_same_carrier
 '''

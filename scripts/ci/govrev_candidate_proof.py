@@ -57,12 +57,14 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import math
 import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import xml.etree.ElementTree as ET
 from collections import Counter
 from importlib import metadata
@@ -974,6 +976,95 @@ def _material_delta(root: Path, receipt: dict, base_commit: str, head_commit: st
     )
 
 
+def validate_native_group(root, candidate, group_base, group_commit, receipt, *,
+                          git_read=None, deadline=None):
+    """Read-only fence for an AUTHENTICATED original producer proof.
+
+    Core must authenticate the original producer run, protected publishing
+    source/step, successful committed-proof verification, original official
+    proof archive and exact candidate BEFORE calling this. Receipt syntax is
+    never origin authority. No receipt mint, new proof, input refresh, acquisition,
+    enqueue, network read or budget extension occurs here. The injected reader
+    consumes core's SAME original allowance/absolute monotonic deadline.
+    """
+    if (not isinstance(receipt, dict) or _required_receipt_fields(receipt)
+            or receipt_identity(receipt) != receipt.get('identity')):
+        raise ValueError('original_govrev_proof_receipt_unqualified')
+    source = receipt['source_checkout']
+    for identity in (candidate, group_base, group_commit, source):
+        if not isinstance(identity, str) or not re.fullmatch('[0-9a-f]{40}', identity):
+            raise ValueError('immutable_govrev_group_identity_required')
+    if git_read is not None and deadline is None:
+        raise ValueError('original_group_deadline_required')
+    if deadline is not None and (type(deadline) not in (int, float) or not math.isfinite(deadline)):
+        raise ValueError('original_group_deadline_invalid')
+
+    def read(*args):
+        remaining = 30 if deadline is None else min(30, deadline-time.monotonic())
+        if remaining <= 0:
+            raise ValueError('original_group_deadline_expired')
+        if git_read is None:
+            result = subprocess.run(['git', '-C', str(root), *args], capture_output=True,
+                timeout=remaining, env={**os.environ, 'GIT_OPTIONAL_LOCKS':'0',
+                    'GIT_NO_REPLACE_OBJECTS':'1', 'GIT_NO_LAZY_FETCH':'1'})
+        else:
+            result = git_read(root, *args, timeout=remaining)
+        if deadline is not None and time.monotonic() >= deadline:
+            raise ValueError('original_group_deadline_expired')
+        if (type(result.returncode) is not int or result.returncode != 0
+                or not isinstance(result.stdout, bytes)):
+            raise ValueError('govrev_original_group_git_read_unavailable')
+        return result.stdout
+
+    parents = read('rev-list', '--parents', '-n', '1', candidate).split()
+    if len(parents) != 2 or parents[0].decode() != candidate:
+        raise ValueError('one_original_govrev_candidate_parent_required')
+    base = parents[1].decode()
+    read('merge-base', '--is-ancestor', source, base)
+    read('merge-base', '--is-ancestor', base, group_base)
+    def changed(older, newer):
+        return {os.fsdecode(p) for p in read('diff', '--name-only', '-z', '--no-renames',
+                                            older, newer).split(b'\0') if p}
+    selected = set(receipt['source_dependencies']) | set(receipt['inputs'])
+    def material(path):
+        return path in selected or any(path.startswith(p) for p in MATERIAL_PREFIXES)
+    # No queued source OR sealed-generation movement is silently reconciled.
+    # A later same-path publisher wins; this original proof may not overwrite it.
+    if any(material(p) for p in changed(base, group_base)):
+        raise ValueError('govrev_material_or_sealed_generation_advanced_while_queued')
+    if any(p not in receipt['outputs'] and material(p) for p in changed(source, base)):
+        raise ValueError('govrev_proof_source_changed_before_candidate')
+    delta = changed(base, candidate)
+    if not delta or any(p not in receipt['outputs'] or not _is_sealed_output_path(p) for p in delta):
+        raise ValueError('govrev_candidate_outside_original_sealed_outputs')
+    def projection(commit):
+        result = {}
+        for row in read('ls-tree', '-r', '-z', commit, '--', 'data/government_revenue', 'site').split(b'\0'):
+            if not row:
+                continue
+            metadata_row, name = row.split(b'\t', 1);path = os.fsdecode(name)
+            if not _is_sealed_output_path(path):
+                continue
+            mode, kind, oid = metadata_row.split()
+            if mode not in (b'100644', b'100755') or kind != b'blob':
+                raise ValueError('govrev_sealed_output_not_regular')
+            if receipt['outputs'].get(path) in (None, 'absent'):
+                raise ValueError('govrev_sealed_output_not_in_original_receipt')
+            result[path] = (mode, oid)
+        if not result:
+            raise ValueError('govrev_original_sealed_projection_empty')
+        return result
+    sealed = projection(candidate)
+    if projection(group_commit) != sealed:
+        raise ValueError('native_group_changed_original_govrev_projection')
+    # Integration itself cannot smuggle a changed input outside the sealed set.
+    if any(p not in receipt['outputs'] and material(p) for p in changed(group_base, group_commit)):
+        raise ValueError('native_group_changed_original_govrev_source')
+    return {'candidate':candidate, 'candidate_base':base, 'source_checkout':source,
+            'group_base':group_base, 'group_commit':group_commit,
+            'proof_identity':receipt['identity']}
+
+
 def _ensure_remote_objects(root: Path, *commits: str) -> None:
     """One bounded same-origin fetch of the observed tip, when not already local.
 
@@ -1109,6 +1200,22 @@ def command_publication_witness(args: argparse.Namespace) -> int:
         landing = _landing_generation(root, receipt, args.commit)
         if origin_binding is None or _origin_binding(root) != origin_binding:
             raise ValueError('original_origin_changed_during_readback')
+        native_release = getattr(args, 'native_release', None)
+        if native_release is not None:
+            # Supplied ONLY by the actual native.settle callback in the protected
+            # producer graph. Shape/readback is not admission authority and this
+            # witness continues to grant no issuance or serving permission.
+            if (not isinstance(native_release, dict)
+                    or set(native_release) != {'source_head','merge_sha','observed_target_sha','projection_sha256','pr_number'}
+                    or native_release['source_head'] != args.commit
+                    or native_release['merge_sha'] == args.commit
+                    or type(native_release['pr_number']) is not int or native_release['pr_number'] <= 0
+                    or not re.fullmatch('[0-9a-f]{64}', native_release['projection_sha256'])
+                    or any(not re.fullmatch('[0-9a-f]{40}', native_release[k]) for k in ('source_head','merge_sha','observed_target_sha'))):
+                raise ValueError('original_native_publication_record_unqualified')
+            _ensure_remote_objects(root, native_release['merge_sha'], landing['observed_commit'])
+            if _git(root,'merge-base','--is-ancestor',native_release['merge_sha'],landing['observed_commit'],check=False).returncode != 0:
+                raise ValueError('actual_native_merge_not_in_observed_protected_target')
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
         # Do not retain Git errors/URLs: they can contain provisioned credentials.
         _say("::error title=govrev publication witness::same-origin readback "
@@ -1128,6 +1235,8 @@ def command_publication_witness(args: argparse.Namespace) -> int:
                "serving_generation_authority": False,
                "observed_at": datetime.now(timezone.utc).isoformat(),
                "issuance_authority": False}
+    if native_release is not None:
+        witness['native_publication'] = dict(native_release)
     try:
         _atomic_create(out, _canonical(witness) + "\n")
     except FileExistsError:

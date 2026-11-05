@@ -23,8 +23,11 @@ import urllib.parse
 import urllib.request
 import zipfile
 
-import govrev_candidate_proof as proof
-import govrev_source_binding as source_binding
+# Both the direct-script and private -P module entry resolve the SAME captured
+# package. No sibling/ambient workspace fallback can replace either helper.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from scripts.ci import govrev_candidate_proof as proof
+from scripts.ci import govrev_source_binding as source_binding
 
 REPOSITORY = 'mastermindx-market-intelligence/macro'
 FAMILIES = {'government-revenue-live.yml': 'refresh',
@@ -60,6 +63,11 @@ def digest(body):
 
 
 def source_closure(root):
+    execution_root = Path(__file__).resolve().parents[2]
+    if execution_root.name.startswith('native-publication-code-'):
+        # The selected DATA checkout may be newer. Record the actually executed
+        # original private code, already verified by the protected Git loader.
+        root = execution_root
     return {p: digest((root / p).read_bytes()) for p in SOURCE_PATHS}
 
 

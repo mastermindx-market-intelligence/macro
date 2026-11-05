@@ -7,12 +7,13 @@
     "fms-acquire.yml": "publish / refresh"
   },
   "source_closure": {
-    "scripts/ci/govrev_publisher_preflight.py": "f5fb09af2d8bfe34065b3e3c23082021398e6af146ea9e9fe74b5ca393e80878",
-    "scripts/ci/govrev_candidate_proof.py": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
-    "scripts/ci/fms_persist.py": "6b0decd045e494d1aaf4f77b00eade3d205e17004470b2cb081311bbabbed4d1",
-    ".github/workflows/government-revenue-live.yml": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376",
-    ".github/workflows/daily.yml": "bc3a1e6c97479b2ac07de56fca0efae3a159b94c93ce40adb7c4a3a834f23e77",
-    ".github/workflows/fms-acquire.yml": "91e65a31eb3c38c38dad3aa99e9c4f80c7c31fa44820af1d7a6720aa2e0b904a"
+    "scripts/ci/govrev_publisher_preflight.py": "1f95dc4af4d86d7f050ddea88e5aded873c0115ad524fc4ece673e79007b198a",
+    "scripts/ci/govrev_candidate_proof.py": "9fe914f0d1fd11744a26b5d0d4ae420c3ce5320658e724cbc767fcce78fe918f",
+    "scripts/ci/govrev_source_binding.py": "d0b58a3237f6c764b79657d74ef3db519e61e2594cc505d4404dd0df469efd4c",
+    "scripts/ci/fms_persist.py": "859b4ab687aa1aa97d6b219efa337e701b262687824f4c5c998a0bf321ae13b5",
+    ".github/workflows/government-revenue-live.yml": "6bffc14f2b5a4e658613179913ea5cc24fc9765f676e51490c6805dc1fbd594d",
+    ".github/workflows/daily.yml": "df081f29d64bf2b96e4287ad85123c7355c484d971216ce2b36e5bd35484fe5c",
+    ".github/workflows/fms-acquire.yml": "c35f148038a9e268027b079cc44b37537ee2b43bd493540ae215c12f05c6ad95"
   },
   "scan_created_after": "2026-10-10T17:26:49Z",
   "legacy_effects_reconciled_at": "2026-10-13T06:55:59.489033+00:00",

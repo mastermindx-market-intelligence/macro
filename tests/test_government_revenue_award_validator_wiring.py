@@ -28,9 +28,10 @@ BUNDLE = [
 
 
 def _invocation_args() -> list[str]:
-    src = WORKFLOW.read_text(encoding="utf-8")
+    from scripts.workflow_run_source import resolved_workflow_text
+    src = resolved_workflow_text(WORKFLOW, REPO)
     match = re.search(
-        r"python scripts/ci/validate_government_revenue_award_event_bundle\.py"
+        r"python3 -P -m scripts\.ci\.validate_government_revenue_award_event_bundle"
         r"((?:\s*\\\n\s*\S+)+)",
         src,
     )

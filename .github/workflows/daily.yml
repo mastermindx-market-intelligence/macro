@@ -1565,6 +1565,7 @@ jobs:
     needs: collect
     if: needs.collect.outputs.government_revenue_projection_needed == 'true'
     permissions:
+      pull-requests: write
       contents: write
       actions: read
     uses: ./.github/workflows/government-revenue-live.yml

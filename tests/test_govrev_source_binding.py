@@ -25,6 +25,41 @@ def native(workflow=binding.PUBLISHER, source=""):
             "GOVREV_CALL_SOURCE_SHA": source}
 
 
+@pytest.mark.parametrize('state',['qualified','unreviewed','dirty','foreign-branch','existing-owned-ref','rerun'])
+def test_exact_immutable_checkout_gets_only_its_fresh_protected_source_branch(tmp_path,monkeypatch,state):
+    from scripts.ci import native_queue_push
+    root=tmp_path/'checkout';root.mkdir();origin=tmp_path/'origin.git'
+    def git(*args):
+        return subprocess.run(['git','-C',str(root),*args],check=True,capture_output=True,text=True).stdout.strip()
+    subprocess.run(['git','init','--bare','-q',str(origin)],check=True)
+    git('init','-q','-b','main');git('config','user.name','fixture');git('config','user.email','fixture@example.invalid')
+    (root/'seed').write_text('protected source');git('add','.');git('commit','-qm','protected main')
+    selected=git('rev-parse','HEAD');git('remote','add','origin',str(origin));git('push','origin','main')
+    protected=selected
+    if state=='unreviewed':
+        (root/'seed').write_text('unreviewed source');git('add','.');git('commit','-qm','unreviewed')
+        selected=git('rev-parse','HEAD')
+    git('checkout','--detach',selected)
+    if state=='dirty':(root/'unfinished-writer').write_text('keep')
+    if state=='foreign-branch':git('switch','-c','another-writer')
+    if state=='existing-owned-ref':git('branch','_govrev_source_123_1',selected)
+    env=dict(native('fms-acquire.yml',selected),GITHUB_RUN_ID='123',GITHUB_RUN_ATTEMPT='2' if state=='rerun' else '1')
+    # Provider identity is a test fake; the branch/source ancestry and refusal
+    # behavior below use real Git, including an actually unlanded source commit.
+    calls=[]
+    monkeypatch.setattr(native_queue_push,'repository_for',lambda where:calls.append(where) or binding.REPOSITORY)
+    if state=='qualified':
+        result=binding.bind_checkout(root,env)
+        assert result=={'source_sha':selected,'source_branch':'_govrev_source_123_1'}
+        assert git('symbolic-ref','--short','HEAD')==result['source_branch']
+        with pytest.raises(binding.BindingRefused):binding.bind_checkout(root,env)
+    else:
+        with pytest.raises(binding.BindingRefused):binding.bind_checkout(root,env)
+        if state=='rerun':assert calls==[]
+    assert git('rev-parse','HEAD')==selected
+    assert git('ls-remote','origin','refs/heads/main').split()[0]==protected
+
+
 def test_direct_event_binds_native_sha():
     assert binding.check_checkout(native(), EVENT)["kind"] == "native_event"
     with pytest.raises(binding.BindingRefused):
@@ -151,8 +186,10 @@ def test_workflow_contract_no_floating_main_or_shell_input_interpolation():
     assert steps[0]["with"]["ref"] == "${{ github.sha }}"
     assert steps[1]["id"] == "source_binding"
     assert steps[2]["with"]["ref"] == "${{ steps.source_binding.outputs.source_sha }}"
-    assert steps[3]["name"] == pre.STEP_NAME
-    for step in (steps[1], steps[3]):
+    assert steps[3]["id"] == "govrev_checkout"
+    assert "--bind-checkout" in steps[3]["run"]
+    assert steps[4]["name"] == pre.STEP_NAME
+    for step in (steps[1], steps[3], steps[4]):
         assert step["env"]["GOVREV_CALL_SOURCE_SHA"] == "${{ inputs.source_sha }}"
         assert "${{ inputs." not in step["run"]
     daily = load_workflow("daily.yml")["jobs"]

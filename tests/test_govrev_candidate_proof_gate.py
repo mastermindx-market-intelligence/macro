@@ -437,9 +437,11 @@ def test_material_source_change_alone_requires_reproof(tmp_path: Path) -> None:
 
 def test_patched_workflow_gates_publication_through_the_proof_helper() -> None:
     """The lane calls the helper, dropped the fail-open branch, uploads on failure."""
-    text = (ROOT / ".github/workflows/government-revenue-live.yml").read_text(encoding="utf-8")
-    assert "scripts/ci/govrev_candidate_proof.py prove" in text
-    assert "scripts/ci/govrev_candidate_proof.py verify" in text
+    from scripts.workflow_run_source import resolved_workflow_text
+    text = resolved_workflow_text(ROOT / ".github/workflows/government-revenue-live.yml", ROOT)
+    assert '-m scripts.ci.govrev_candidate_proof prove' in text
+    assert '-m scripts.ci.govrev_candidate_proof verify' in text
+    assert 'native_publication_prepare_source "$native_code_root" "$GITHUB_WORKFLOW_SHA"' in text
     # The fail-open escape is gone.
     assert "publishing UNPROVEN" not in text
     # Bounded failure diagnostics via the standard artifact owner, always on.

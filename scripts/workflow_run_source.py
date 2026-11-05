@@ -72,6 +72,9 @@ MARKER = "EXTRACTED-VERBATIM-FROM: .github/workflows/daily.yml"
 
 #: How many leading lines of a script are scanned for :data:`MARKER`.
 MARKER_SCAN_LINES = 5
+EXTRACTION_MARKERS = (MARKER,
+    'EXTRACTED-VERBATIM-FROM: .github/workflows/government-revenue-live.yml',
+    'EXTRACTED-VERBATIM-FROM: .github/workflows/asia-close.yml')
 
 #: ``scripts/ci`` helpers that predate the marker contract and are NOT
 #: extracted step bodies.  Pass through unchanged (zero parse delta).
@@ -181,7 +184,7 @@ def resolve_run_source(run: str, repo_root: Path) -> str:
 
     text = script.read_text(encoding="utf-8")
     head = text.splitlines()[:MARKER_SCAN_LINES]
-    if any(MARKER in line for line in head):
+    if any(marker in line for line in head for marker in EXTRACTION_MARKERS):
         return text
 
     if script.name in LEGACY_UNMARKED:

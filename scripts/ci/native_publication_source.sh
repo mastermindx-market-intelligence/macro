@@ -2,10 +2,31 @@ _native_publication_source_paths() {
   # Closed CORE+supplier potential import closure; copying code activates no
   # deferred controller, CI executor or native QLedger mutation path.
   printf '%s\n' \
+    collectors/__init__.py \
+    collectors/base.py \
+    collectors/usaspending_awards.py \
+    collectors/yahoo.py \
+    lib/__init__.py \
+    lib/cn_calendar.py \
+    lib/config.py \
+    lib/delisted_symbols.py \
+    lib/exchange_holidays.py \
+    lib/hk_calendar.py \
+    lib/market_observations.py \
+    lib/market_session.py \
+    lib/nyse_calendar.py \
+    lib/stooq.py \
+    lib/store.py \
+    lib/ticker_aliases.py \
+    lib/tsx_calendar.py \
+    lib/us_cash_calendar.py \
     .github/workflows/ci-authority.yml \
     .github/workflows/ci.yml \
     .github/workflows/fences.yml \
     .github/workflows/merge-on-green.yml \
+    .github/workflows/government-revenue-live.yml \
+    .github/workflows/daily.yml \
+    .github/workflows/fms-acquire.yml \
     .github/workflows/trusted-ci-executor.yml \
     engine/__init__.py \
     engine/commodity_decision_workspace.py \
@@ -18,10 +39,16 @@ _native_publication_source_paths() {
     scripts/check_runner_policy.py \
     scripts/check_commodity_publication.py \
     scripts/check_conflict_markers.py \
+    scripts/check_fms_bundle.py \
     scripts/check_site_asset_refs.py \
     scripts/check_start_runtime.py \
     scripts/ci/fms_persist.py \
     scripts/ci/govrev_source_binding.py \
+    scripts/ci/govrev_candidate_proof.py \
+    scripts/ci/govrev_publisher_preflight.py \
+    scripts/ci/govrev_guard_stage.sh \
+    scripts/ci/govrev_native_settle.py \
+    scripts/ci/validate_government_revenue_award_event_bundle.py \
     scripts/ci/native_checkpoint.py \
     scripts/ci/native_publication.py \
     scripts/ci/native_publication_origin.py \
@@ -164,4 +191,26 @@ native_publication_prepare_source() {
     "$protected_source:scripts/ci/native_publication_source.sh" \
     > "$code_root/scripts/ci/native_publication_source.sh" || return 76
   native_publication_capture_source "$code_root" "$protected_source"
+}
+
+# The incumbent GovRev guard functions are generated once from their protected
+# step body. Verify that EXACT body before sourcing it after mutable DATA code.
+native_publication_verify_govrev_guards() {
+  local code_root="$1" protected_source="$2"
+  native_publication_verify_source "$code_root" "$protected_source" || return 76
+  python3 -I - "$code_root/scripts/ci/govrev_guard_stage.sh" \
+    "$RUNNER_TEMP/govrev-reviewed-source-guards.sh" <<'PYGUARDS' || return 76
+import os,stat,sys
+from pathlib import Path
+try:
+ original=Path(sys.argv[1]).read_bytes()
+ marker=b'cat > "$RUNNER_TEMP/govrev-reviewed-source-guards.sh" <<\'SH\'\n'
+ if original.count(marker)!=1:raise ValueError('ambiguous protected guard source')
+ expected=original.split(marker,1)[1].split(b'\nSH\n',1)[0]+b'\n'
+ path=Path(sys.argv[2]);info=path.lstat()
+ if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode)!=0o400 or info.st_uid!=os.getuid() or info.st_nlink!=1:
+  raise ValueError('guard source ownership/mode changed')
+ if path.read_bytes()!=expected:raise ValueError('guard executable differs from protected original')
+except (OSError,ValueError):sys.exit(76)
+PYGUARDS
 }
