@@ -588,3 +588,32 @@ def test_empty_body_400_is_plain_bilingual_and_names_alert_settings(auth, store)
     assert "alert" in en.lower()
     assert "提醒" in zh
     assert auth.calls == []
+
+
+def test_u2_alert_categories_include_cs_saved_scenario_and_drain_accepts_it():
+    """SPEC_U2 gate 39: the registry gains exactly one member, the stored-pref
+    door normalizes it, and the incumbent drain's unknown-category refusal
+    does NOT fire for it — a user opted into ``cs_saved_scenario`` receives
+    the monitor's rows through the existing chain, unedited."""
+    from datetime import datetime, timezone
+
+    from engine.alert_delivery_drain import TypedRead, decide_row, parse_alert_prefs
+
+    assert "cs_saved_scenario" in user_prefs.ALERT_CATEGORIES
+    assert user_prefs.normalize_value(
+        "alert_categories", ["cs_saved_scenario"]
+    ) == ["cs_saved_scenario"]
+    meta = {
+        "alert_email_optin": "true",
+        "alert_categories": ["cs_saved_scenario"],
+    }
+    assert parse_alert_prefs(meta).categories == ("cs_saved_scenario",)
+    decision = decide_row(
+        {"payload": {"category": "cs_saved_scenario", "kind": "correction"}},
+        user_state="READ_OK",
+        record={"email": "reader@example.com", "user_metadata": meta},
+        ent=TypedRead("READ_OK_ZERO", []),
+        suppression=TypedRead("READ_OK_ZERO", []),
+        now_utc=datetime(2026, 10, 19, tzinfo=timezone.utc),
+    )
+    assert (decision.action, decision.reason) == ("send", "ok")

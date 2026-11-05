@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 401116,
+  "byte_start": 400532,
+  "normalized": "Additionally, Barnes & Noble Education is a national distributor for rental textbooks offered through McGraw-Hill Education's consignment rental program (which includes approximately 1,428 titles) and Pearson Education’s consignment rental program (which includes approximately 1,077 titles). Through Barnes & Noble Education’s centrally located, advanced distribution center, Barnes & Noble Education offers seamless integration of these consignment rental programs and centralized administration and distribution to 1,268 stores, including the retail stores.",
+  "normalized_sha256": "11622bb9fc755e242acc7d843ad4679c7e11ee82749ded542f9f827f82ca2966",
+  "raw": "Additionally, Barnes &amp; Noble Education is a national distributor for rental textbooks offered through McGraw-Hill Education's consignment rental program (which includes approximately 1,428 titles) and Pearson Education&#8217;s consignment rental program (which includes approximately 1,077 titles). Through Barnes &amp; Noble Education&#8217;s centrally located, advanced distribution center, Barnes &amp; Noble Education offers seamless integration of these consignment rental programs and centralized administration and distribution to 1,268 stores, including the retail stores.",
+  "raw_sha256": "53bdfadf89980ff601fc32a93e4694ec795e83b434bea7a5f7483c84936067fe"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

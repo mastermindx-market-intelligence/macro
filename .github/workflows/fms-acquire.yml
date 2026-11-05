@@ -47,6 +47,7 @@ jobs:
       cancel-in-progress: false
     outputs:
       publish_default: ${{ steps.persist.outputs.publish_default }}
+      source_sha: ${{ steps.persist.outputs.source_sha }}
     runs-on: [self-hosted, macstudio-light]
     timeout-minutes: 30
     steps:
@@ -104,15 +105,35 @@ jobs:
             data/government_revenue/fms_projection_state.json \
             data/government_revenue/fms_case_graph.json
           git commit -m "fms-acquire: official 36(b) notification acquisition $(date -u +%FT%H:%MZ)"
-          git push origin "HEAD:$FMS_TARGET_REF"
+          # Preserve this acquisition across unrelated branch movement. Never
+          # rerun source effects or blindly replay an uncertain Git push.
+          python -B -m scripts.ci.fms_persist \
+            --branch "$FMS_TARGET_REF" \
+            --receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
           echo "projection_changed=true" >> "$GITHUB_OUTPUT"
           # Only released main code committing main may request the main publisher.
           # GITHUB_TOKEN pushes do not trigger its on:push subscription.
           if [ "${FMS_DEFAULT_BRANCH:-}" = "main" ] && [ "$FMS_TARGET_REF" = "main" ] && [ "${GITHUB_REF:-}" = "refs/heads/main" ]; then
+            python3 scripts/ci/govrev_source_binding.py \
+              --fms-receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
             echo "publish_default=true" >> "$GITHUB_OUTPUT"
           else
             echo "publish_default=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: retain the original acquisition persistence outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fms-persistence-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/fms-persist-${{ github.run_id }}-${{ github.run_attempt }}.json
+            data/government_revenue/fms_collection_receipts.jsonl
+            data/government_revenue/fms_observations.jsonl
+            data/government_revenue/fms_projection_state.json
+            data/government_revenue/fms_case_graph.json
 
       - name: record check outcome separately from notification freshness
         id: check_summary
@@ -138,8 +159,12 @@ jobs:
   publish:
     needs: acquire
     if: needs.acquire.outputs.publish_default == 'true'
+    permissions:
+      contents: write
+      actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
+      source_sha: ${{ needs.acquire.outputs.source_sha }}
       projection_only: true
 
   # The reusable publisher historically returned success after exhausting its

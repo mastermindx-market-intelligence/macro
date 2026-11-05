@@ -247,7 +247,8 @@ def test_to_alerts_only_announces_tonights_creations():
 
 def test_run_nightly_persists_state_ledger_and_payload(tmp_path):
     a, b = _aligned_pair()
-    payload = re_.run_nightly(_sectors(a, b), tmp_path, generated_utc="test")
+    payload = re_.run_nightly(_sectors(a, b), tmp_path,
+                              generated_utc="2026-10-01 05:00 UTC")
     assert payload["schema"] == "rotation_events.v1"
     assert payload["authority"]["may_gate"] is False
     # first run cold-starts: the event is created during the replay (flagged in the
@@ -258,9 +259,47 @@ def test_run_nightly_persists_state_ledger_and_payload(tmp_path):
     lines = (tmp_path / "rotation_events" / "events.jsonl").read_text().strip().splitlines()
     assert any('"event": "created"' in ln or '"event":"created"' in ln for ln in lines)
     # second run: same event still active, nothing re-created
-    payload2 = re_.run_nightly(_sectors(a, b), tmp_path, generated_utc="test")
+    payload2 = re_.run_nightly(_sectors(a, b), tmp_path,
+                               generated_utc="2026-10-01 05:00 UTC")
     assert not payload2["created_tonight"]
     assert any(e["id"] == "xlk:memory->mag7" for e in payload2["active"])
+
+
+@pytest.mark.parametrize("stamp", [
+    "2026-13-01 00:00 UTC",     # month out of range
+    "2026-10-32 05:00 UTC",     # day out of range (the #9258 R4 fixture stamp)
+    "not-a-date",
+    "2026-10-07T01:00:00Z",     # ISO-8601, not the canonical build-stamp form
+    "",                         # empty string is invalid, NOT "no stamp given"
+    12345,                       # non-string
+])
+def test_run_nightly_rejects_noncanonical_generated_utc(tmp_path, stamp):
+    # MUTATION: engine/rotation_events.run_nightly keeping
+    #   `now = generated_utc or datetime.now(...)` (no _coerce_generated_utc call) ->
+    #   no ValueError is raised and the run writes rotation_events/state.json, so both
+    #   the pytest.raises and the empty-tmp_path assertions fail.
+    a, b = _aligned_pair()
+    with pytest.raises(ValueError):
+        re_.run_nightly(_sectors(a, b), tmp_path, generated_utc=stamp)
+    assert list(tmp_path.rglob("*")) == [], (
+        "a rejected generated_utc must not reach any ledger/state write"
+    )
+
+
+def test_run_nightly_stamp_none_is_canonical_and_valid_passes_through(tmp_path):
+    # MUTATION: _coerce_generated_utc returning `value` unchanged for a non-canonical
+    #   string -> the payload stamp below would not round-trip through strptime.
+    from datetime import datetime
+
+    a, b = _aligned_pair()
+    fmt = "%Y-%m-%d %H:%M UTC"
+
+    auto = re_.run_nightly(_sectors(a, b), tmp_path / "auto", generated_utc=None)
+    assert datetime.strptime(auto["generated_utc"], fmt).strftime(fmt) == auto["generated_utc"]
+
+    stamp = "2026-10-02 05:00 UTC"
+    given = re_.run_nightly(_sectors(a, b), tmp_path / "given", generated_utc=stamp)
+    assert given["generated_utc"] == stamp
 
 
 def test_lockout_expires_when_close_date_predates_window():

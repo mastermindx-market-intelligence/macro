@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-05-21T21:02:23Z",
+ "accession": "0001032975-26-000021",
+ "cik": "0001032975",
+ "doc_byte_length": 2478904,
+ "doc_sha256": "831eb4d383cf493b8a27c8d4067b830b3976d8a5cdfb91200aa8235588c71f93",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-31",
+ "primary_document": "logi-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1426854,
+  "byte_start": 1425281,
+  "normalized": "Customer C13 %10 %",
+  "normalized_sha256": "15319f2b4746ea884400fc30552ea5cdbbe53da7e57b1a285a345344a17d72d0",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">Customer C</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-63\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-453\">13</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-64\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-454\">10</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td></tr>",
+  "raw_sha256": "64b995828832a4a543893b5668aeb1bc89bd68efb1c5db4a7bae8d9ad866d2c8"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1032975/000103297526000021/logi-20260331.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 40140,
+   "byte_start": 39477,
+   "context_ref": "c-63",
+   "raw": "<xbrli:context id=\"c-63\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001032975</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">logi:CustomerCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-04-01</xbrli:startDate><xbrli:endDate>2026-03-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e7bb0e933674d3d02fa80db4c98ca73514012e15c02f5b27641d18118e31ea43"
+  },
+  {
+   "byte_end": 40803,
+   "byte_start": 40140,
+   "context_ref": "c-64",
+   "raw": "<xbrli:context id=\"c-64\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001032975</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">logi:CustomerCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-04-01</xbrli:startDate><xbrli:endDate>2025-03-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "0af3d8ba27b6f8b0494739fa7402eaf754a83f861a3f91726b44e7a335232eb4"
+  }
+ ]
+}

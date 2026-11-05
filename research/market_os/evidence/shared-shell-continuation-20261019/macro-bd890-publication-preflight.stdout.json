@@ -1,0 +1,128 @@
+{
+  "started_at": "2026-10-20T19:57:36.934289+00:00",
+  "scope": "Read-only existing publication owner/runtime readiness. No updater, render, Caddy reload, installer or service operation.",
+  "head_before": {
+    "argv": [
+      "git",
+      "--no-optional-locks",
+      "-C",
+      "/opt/macro",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit": 0,
+    "stdout": "8128e4085d8aa346c969de186f05694afbbe6274\n",
+    "stderr": ""
+  },
+  "free_bytes": {
+    "/": 33585438720,
+    "/opt/terminal": 16115818496,
+    "/opt/macro": 33585438720
+  },
+  "existing_interpreter": {
+    "path": "/opt/macro-api/.venv/bin/python",
+    "exists": true,
+    "executable": true
+  },
+  "dependency_presence": {
+    "argv": [
+      "/opt/macro-api/.venv/bin/python",
+      "-I",
+      "-B",
+      "-c",
+      "import importlib.util,json,sys;print(json.dumps({'python':sys.version.split()[0],'modules':{m:importlib.util.find_spec(m) is not None for m in ['yaml','rjsmin','bs4','jinja2']}}))"
+    ],
+    "exit": 0,
+    "stdout": "{\"python\": \"3.12.3\", \"modules\": {\"yaml\": true, \"rjsmin\": false, \"bs4\": false, \"jinja2\": false}}\n",
+    "stderr": ""
+  },
+  "owner_files": [
+    {
+      "path": "/usr/local/bin/macro-update",
+      "bytes": 142277,
+      "sha256": "003007489480c6172d202323953535630d41e6f4b60918d0441d27fa3a15285e",
+      "complete": true,
+      "stable": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o755"
+    },
+    {
+      "path": "/opt/macro/app/deploy/update.sh",
+      "bytes": 142277,
+      "sha256": "003007489480c6172d202323953535630d41e6f4b60918d0441d27fa3a15285e",
+      "complete": true,
+      "stable": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o755"
+    },
+    {
+      "path": "/etc/caddy/Caddyfile",
+      "bytes": 74183,
+      "sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+      "complete": true,
+      "stable": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644"
+    }
+  ],
+  "updater_process_observation": {
+    "owners": [
+      {
+        "pid": 3360873,
+        "start_ticks": "762663456",
+        "uid": 0
+      }
+    ],
+    "errors": [],
+    "reservation": false
+  },
+  "updater_log_tail": {
+    "path": "/var/log/macro-update.log",
+    "tail_bytes": 16384,
+    "tail_sha256": "157ad08c67b77c046779f8cdf3a966c384474386ee187236dd4002a001a8fa76",
+    "selected_lines": [
+      "macro-update: project active-build source publication deferred",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: self-updated from repo",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: macro-api systemd sandbox updated",
+      "macro-update: deferring W2C replay and attestation until reciprocal boundary closure",
+      "macro-update: Market Memory option-OI canary units updated",
+      "macro-update: option-OI lane remains disarmed until units, credential, and API fence are verified",
+      "macro-update: W2C installation and terminal state were not authenticated",
+      "macro-update: W2C lane frozen \u2014 W2C installation and terminal state were not authenticated; continuing lane-independent deploy steps",
+      "macro-update: deploy finished with status 1 (frozen lanes: w2c)",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: deferring W2C replay and attestation until reciprocal boundary closure",
+      "macro-update: option-OI capture failed closed; weekday timer will retry",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: deferring W2C replay and attestation until reciprocal boundary closure",
+      "macro-update: deferring Market Memory production-record capture until reciprocal boundary attestation",
+      "macro-update: Market Memory production-record capture failed closed; nightly timer will retry",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: project active-build source publication deferred"
+    ]
+  },
+  "head_after": {
+    "argv": [
+      "git",
+      "--no-optional-locks",
+      "-C",
+      "/opt/macro",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit": 0,
+    "stdout": "8128e4085d8aa346c969de186f05694afbbe6274\n",
+    "stderr": ""
+  },
+  "finished_at": "2026-10-20T19:57:37.043314+00:00"
+}

@@ -62,6 +62,9 @@ def _write_identity_root(
     ]
     pd.DataFrame(security_rows).to_parquet(reference / "security_master.parquet", index=False)
     pd.DataFrame(alias_rows).to_parquet(reference / "vendor_aliases.parquet", index=False)
+    for name in ("issuer_master.parquet", "issuer_migrations.parquet", "security_migrations.parquet"):
+        pd.DataFrame({"synthetic": []}).to_parquet(reference / name, index=False)
+    (reference / "_receipt.json").write_text('{"fixture":"legacy"}', encoding="utf-8")
     stage = root / "data/stage_analysis"
     stage.mkdir(parents=True)
     (stage / "industry_ranks.json").write_text(
@@ -79,6 +82,83 @@ def _write_identity_root(
         encoding="utf-8",
     )
     return root
+
+
+def test_legacy_consumer_decodes_one_captured_pair_without_latest_reopens(tmp_path, monkeypatch):
+    from engine.entry_radar.replay.identity_observation_snapshot import read_reference_generation
+    import engine.intelligence_workspace.entity as owner
+    root = _write_identity_root(tmp_path)
+    captured = read_reference_generation(root / "data/reference")
+    calls = []
+    def acquire(directory):
+        calls.append(directory)
+        # Simulate a later coherent publication after this acquisition completed.
+        (directory / "security_master.parquet").write_bytes(b"later master")
+        (directory / "vendor_aliases.parquet").write_bytes(b"later aliases")
+        return captured
+    monkeypatch.setattr(owner, "read_reference_generation", acquire)
+    monkeypatch.setattr(pd, "read_parquet", lambda *a, **kw: pytest.fail("latest Parquet reopen"))
+    normalizer = DataOSIdentityNormalizer(root, today=lambda: date(2026, 8, 23))
+    result = normalizer.normalize_many([EntityRequest("security", symbol="MRSH"),
+                                       EntityRequest("security", id="SEC:US-XNAS-AAPL")])
+    assert [entity.id for entity in result] == ["SEC:US-XNYS-MMC", "SEC:US-XNAS-AAPL"]
+    assert calls == [root / "data/reference"]
+
+
+def test_records_compatibility_helper_remains_available_for_existing_non_iw_callers(tmp_path):
+    from engine.intelligence_workspace.entity import _records
+    path = tmp_path / "synthetic.parquet"
+    pd.DataFrame([{"retained": "compatibility"}]).to_parquet(path, index=False)
+    assert _records(path) == [{"retained": "compatibility"}]
+    with pytest.raises(IdentityResolutionError, match="missing"):
+        _records(tmp_path / "missing.parquet")
+    path.write_bytes(b"synthetic invalid parquet")
+    with pytest.raises(IdentityResolutionError, match="unreadable"):
+        _records(path)
+
+
+def test_current_resolver_lifetime_uses_one_captured_map_then_new_request_refreshes(tmp_path):
+    root = _write_identity_root(tmp_path)
+    resolver = current_symbol_resolver(root, "yahoo_fetch", on=date(2026, 8, 23))
+    path = root / "data/reference/vendor_aliases.parquet"
+    aliases = pd.read_parquet(path)
+    aliases.loc[aliases.security_id == "SEC:US-XNYS-MMC", "vendor_symbol"] = "NEW"
+    aliases.to_parquet(path, index=False)
+    entity = CanonicalEntity(type="security", id="SEC:US-XNYS-MMC", universe="us_equity")
+    assert resolver(entity) == "MRSH"
+    assert current_symbol_resolver(root, "yahoo_fetch", on=date(2026, 8, 23))(entity) == "NEW"
+
+
+def test_legacy_queries_explicitly_project_whole_unrelated_clocked_rows(tmp_path):
+    root = _write_identity_root(tmp_path)
+    path = root / "data/reference/vendor_aliases.parquet"
+    rows = pd.read_parquet(path).to_dict("records")
+    rows.append({"vendor": "polygon", "vendor_symbol": "NATIVE", "security_id": "SEC:US-XNAS-AAPL",
+                 "attempt_id": "not-a-legacy-binding", "alias_revision_id": "retained-not-stripped"})
+    pd.DataFrame(rows).to_parquet(path, index=False)
+    assert load_current_symbol_map(root, "store", on=date(2026, 8, 23))["SEC:US-XNAS-AAPL"] == "AAPL"
+    assert DataOSIdentityNormalizer(root).normalize_many([EntityRequest("security", symbol="AAPL")])[0].id == "SEC:US-XNAS-AAPL"
+    with pytest.raises(IdentityResolutionError, match="clocked.*native"):
+        load_current_symbol_map(root, "polygon", on=date(2026, 8, 23))
+
+
+@pytest.mark.parametrize("defect", ["native_receipt", "revisioned_legacy", "incomplete"])
+def test_iw_legacy_consumer_never_borrows_native_proof_or_partial_input(tmp_path, defect):
+    root = _write_identity_root(tmp_path)
+    reference = root / "data/reference"
+    if defect == "native_receipt":
+        (reference / "_receipt.json").write_text('{"publication":null}', encoding="utf-8")
+    elif defect == "revisioned_legacy":
+        path = reference / "vendor_aliases.parquet"
+        rows = pd.read_parquet(path)
+        rows["attempt_id"] = "requires-native-context"
+        rows.to_parquet(path, index=False)
+    else:
+        (reference / "issuer_migrations.parquet").unlink()
+    with pytest.raises(IdentityResolutionError):
+        load_current_symbol_map(root, "store", on=date(2026, 8, 23))
+    with pytest.raises(IdentityResolutionError):
+        DataOSIdentityNormalizer(root).normalize_many([EntityRequest("security", symbol="AAPL")])
 
 
 def _context() -> RequestContext:

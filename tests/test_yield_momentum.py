@@ -618,3 +618,287 @@ def test_lag_read_is_deterministic_and_keeps_every_wire_key():
     payload = yield_momentum.build_yield_momentum(_attach_origin(f.copy(), raw))
     assert payload['calculation_version'] == 'fixed_grid_origin.v4'
     assert any('publication lag' in c and 'at most 3' in c for c in payload['caveats'])
+
+
+# --- Y0 (RIC-INCLUDED-CORE): curve convention + endpoint qualification ---------
+# Golden v4 payloads captured at base 402b57defb3 with /tmp/y0_golden.py (never
+# committed); the control test proves every pre-existing output byte is unchanged.
+_GOLDEN_G1 = '{"asof": "2025-05-21", "authority": false, "calculation_version": "fixed_grid_origin.v4", "can_score": false, "can_size": false, "can_trade": false, "caveats": ["Weekday grid intervals are not verified Treasury trading sessions.", "Captured source rows do not certify historical availability.", "Endpoint changes do not prove continuous deceleration or a market turn.", "Expected absences are US federal holidays and Good Friday only; a carried print on any other weekday still withholds path qualification.", "A trailing publication lag of at most 3 weekday rows is an expected absence: momentum is then measured and dated at the last captured source row (as_of), never at the frame date."], "display_only": true, "schema": "yield_momentum.v1", "series": {"10y": {"acceleration_bp": 0.0, "as_of": "2025-05-21", "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": ["2025-04-21", "2025-05-21"], "5d": ["2025-05-14", "2025-05-21"], "63d": ["2025-02-21", "2025-05-21"]}, "expected_absent_grid_rows": 3, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": {"age_calendar_days": 0, "age_grid_intervals": 0, "as_of": "2025-05-21", "basis": "latest_two_captured_source_rows_on_retained_grid", "change_bp": 1.0, "elapsed_calendar_days": 1, "elapsed_grid_intervals": 1, "historical_availability_qualified": false, "is_current_grid_row": true, "level": 4.99, "previous_as_of": "2025-05-20", "previous_level": 4.98}, "level": 4.99, "measurement_origin": "latest_grid_row", "null_reason": null, "observation_origin": "captured_source_row", "origin_status": "matched_captured_alignment", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": true, "source_basis": "captured_source_rows", "source_column": "us10y", "source_digest": "753242c43199b3031f40faea72065a7b3194420d7af18fe343746ac6d029fd86", "source_id": "DGS10", "status": "available", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": "extreme_high_watch", "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": 22.0, "5d": 5.0, "63d": 63.0}}, "20y": {"acceleration_bp": null, "as_of": null, "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": null, "5d": null, "63d": null}, "expected_absent_grid_rows": 0, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": null, "measurement_origin": "latest_grid_row", "null_reason": "source column us20y unavailable", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us20y", "source_id": null, "status": "missing", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": null, "5d": null, "63d": null}}, "2y": {"acceleration_bp": null, "as_of": null, "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": null, "5d": null, "63d": null}, "expected_absent_grid_rows": 0, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": null, "measurement_origin": "latest_grid_row", "null_reason": "source column us2y unavailable", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us2y", "source_id": null, "status": "missing", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": null, "5d": null, "63d": null}}, "30y": {"acceleration_bp": null, "as_of": null, "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": null, "5d": null, "63d": null}, "expected_absent_grid_rows": 0, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": null, "measurement_origin": "latest_grid_row", "null_reason": "source column us30y unavailable", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us30y", "source_id": null, "status": "missing", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": null, "5d": null, "63d": null}}, "5y": {"acceleration_bp": null, "as_of": null, "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": null, "5d": null, "63d": null}, "expected_absent_grid_rows": 0, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": null, "measurement_origin": "latest_grid_row", "null_reason": "source column us5y unavailable", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us5y", "source_id": null, "status": "missing", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": null, "5d": null, "63d": null}}}}'
+_GOLDEN_G2 = '{"asof": "2025-05-21", "authority": false, "calculation_version": "fixed_grid_origin.v4", "can_score": false, "can_size": false, "can_trade": false, "caveats": ["Weekday grid intervals are not verified Treasury trading sessions.", "Captured source rows do not certify historical availability.", "Endpoint changes do not prove continuous deceleration or a market turn.", "Expected absences are US federal holidays and Good Friday only; a carried print on any other weekday still withholds path qualification.", "A trailing publication lag of at most 3 weekday rows is an expected absence: momentum is then measured and dated at the last captured source row (as_of), never at the frame date."], "display_only": true, "schema": "yield_momentum.v1", "series": {"10y": {"acceleration_bp": 0.0, "as_of": "2025-05-19", "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": 4.97, "endpoint_dates": {"22d": ["2025-04-17", "2025-05-19"], "5d": ["2025-05-12", "2025-05-19"], "63d": ["2025-02-19", "2025-05-19"]}, "expected_absent_grid_rows": 3, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": {"age_calendar_days": 2, "age_grid_intervals": 2, "as_of": "2025-05-19", "basis": "latest_two_captured_source_rows_on_retained_grid", "change_bp": 1.0, "elapsed_calendar_days": 3, "elapsed_grid_intervals": 1, "historical_availability_qualified": false, "is_current_grid_row": false, "level": 4.97, "previous_as_of": "2025-05-16", "previous_level": 4.96}, "level": 4.97, "measurement_origin": "last_captured_source_row", "null_reason": null, "observation_origin": "carried", "origin_status": "matched_captured_alignment", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": true, "source_basis": "captured_source_rows", "source_column": "us10y", "source_digest": "09250db561f503f32cecadf5d29799d38fd2ddbc27a3d1b376d5b48959709d84", "source_id": "DGS10", "status": "available", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 2, "turn_watch": "extreme_high_watch", "unexpected_carried_grid_rows": 2, "velocity_bp": {"22d": 22.0, "5d": 5.0, "63d": 63.0}}, "20y": {"acceleration_bp": null, "as_of": null, "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": null, "5d": null, "63d": null}, "expected_absent_grid_rows": 0, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": null, "measurement_origin": "latest_grid_row", "null_reason": "source column us20y unavailable", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us20y", "source_id": null, "status": "missing", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": null, "5d": null, "63d": null}}, "2y": {"acceleration_bp": null, "as_of": null, "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": null, "5d": null, "63d": null}, "expected_absent_grid_rows": 0, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": null, "measurement_origin": "latest_grid_row", "null_reason": "source column us2y unavailable", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us2y", "source_id": null, "status": "missing", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": null, "5d": null, "63d": null}}, "30y": {"acceleration_bp": null, "as_of": null, "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": null, "5d": null, "63d": null}, "expected_absent_grid_rows": 0, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": null, "measurement_origin": "latest_grid_row", "null_reason": "source column us30y unavailable", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us30y", "source_id": null, "status": "missing", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": null, "5d": null, "63d": null}}, "5y": {"acceleration_bp": null, "as_of": null, "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": null, "5d": null, "63d": null}, "expected_absent_grid_rows": 0, "frame_as_of": "2025-05-21", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": null, "measurement_origin": "latest_grid_row", "null_reason": "source column us5y unavailable", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us5y", "source_id": null, "status": "missing", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": null, "5d": null, "63d": null}}}}'
+_GOLDEN_G3 = '{"asof": "2027-02-24", "authority": false, "calculation_version": "fixed_grid_origin.v4", "can_score": false, "can_size": false, "can_trade": false, "caveats": ["Weekday grid intervals are not verified Treasury trading sessions.", "Captured source rows do not certify historical availability.", "Endpoint changes do not prove continuous deceleration or a market turn.", "Expected absences are US federal holidays and Good Friday only; a carried print on any other weekday still withholds path qualification.", "A trailing publication lag of at most 3 weekday rows is an expected absence: momentum is then measured and dated at the last captured source row (as_of), never at the frame date."], "display_only": true, "schema": "yield_momentum.v1", "series": {"10y": {"acceleration_bp": 0.0, "as_of": "2027-02-24", "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": ["2027-01-25", "2027-02-24"], "5d": ["2027-02-17", "2027-02-24"], "63d": ["2026-11-27", "2027-02-24"]}, "expected_absent_grid_rows": 0, "frame_as_of": "2027-02-24", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": 3.7, "measurement_origin": "latest_grid_row", "null_reason": "endpoint comparisons only; complete observed path not qualified", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us10y", "source_id": null, "status": "available", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": 3.7, "5d": 0.8, "63d": 10.5}}, "20y": {"acceleration_bp": 0.0, "as_of": "2027-02-24", "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": ["2027-01-25", "2027-02-24"], "5d": ["2027-02-17", "2027-02-24"], "63d": ["2026-11-27", "2027-02-24"]}, "expected_absent_grid_rows": 0, "frame_as_of": "2027-02-24", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": 3.8, "measurement_origin": "latest_grid_row", "null_reason": "endpoint comparisons only; complete observed path not qualified", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us20y", "source_id": null, "status": "available", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": 3.7, "5d": 0.8, "63d": 10.5}}, "2y": {"acceleration_bp": 0.0, "as_of": "2027-02-24", "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": ["2027-01-25", "2027-02-24"], "5d": ["2027-02-17", "2027-02-24"], "63d": ["2026-11-27", "2027-02-24"]}, "expected_absent_grid_rows": 0, "frame_as_of": "2027-02-24", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": 3.5, "measurement_origin": "latest_grid_row", "null_reason": "endpoint comparisons only; complete observed path not qualified", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us2y", "source_id": null, "status": "available", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": 3.7, "5d": 0.8, "63d": 10.5}}, "30y": {"acceleration_bp": 0.0, "as_of": "2027-02-24", "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": ["2027-01-25", "2027-02-24"], "5d": ["2027-02-17", "2027-02-24"], "63d": ["2026-11-27", "2027-02-24"]}, "expected_absent_grid_rows": 0, "frame_as_of": "2027-02-24", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": 3.9, "measurement_origin": "latest_grid_row", "null_reason": "endpoint comparisons only; complete observed path not qualified", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us30y", "source_id": null, "status": "available", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": 3.7, "5d": 0.8, "63d": 10.5}}, "5y": {"acceleration_bp": 0.0, "as_of": "2027-02-24", "availability_status": "not_provided_by_feature_frame", "available_at": null, "carried_level": null, "endpoint_dates": {"22d": ["2027-01-25", "2027-02-24"], "5d": ["2027-02-17", "2027-02-24"], "63d": ["2026-11-27", "2027-02-24"]}, "expected_absent_grid_rows": 0, "frame_as_of": "2027-02-24", "historical_availability_qualified": false, "holiday_basis": "us_federal_holidays_plus_good_friday_v1", "horizon_basis": "fixed_weekday_grid_intervals", "lag_basis": "fred_next_business_day_publication_v1", "lag_tolerance_rows": 3, "last_observed": null, "level": 3.6, "measurement_origin": "latest_grid_row", "null_reason": "endpoint comparisons only; complete observed path not qualified", "observation_origin": "unverified", "origin_status": "not_provided", "path_qualification_basis": "captured_source_rows_or_expected_absent", "path_qualified": false, "source_column": "us5y", "source_id": null, "status": "available", "trailing_expected_absent_rows": 0, "trailing_publication_lag_rows": 0, "turn_watch": null, "unexpected_carried_grid_rows": 0, "velocity_bp": {"22d": 3.7, "5d": 0.8, "63d": 10.5}}}}'
+
+
+def _g1_payload():
+    return yield_momentum.build_yield_momentum(_attach_origin(_origin_frame(100)))
+
+
+def _g2_payload_and_frame():
+    f, raw = _lagged(2)
+    return yield_momentum.build_yield_momentum(_attach_origin(f, raw)), f
+
+
+def _g3_payload():
+    return yield_momentum.build_yield_momentum(_frame(300))
+
+
+def _y0_carried_fixture():
+    # An interior unexpected absence: 2025-05-14 is an ordinary Wednesday whose
+    # frame value is a carried prior print.
+    f = _origin_frame(100)
+    d = f.index[-6]
+    assert d == pd.Timestamp('2025-05-14')
+    assert not yield_momentum.expected_absent_grid(pd.DatetimeIndex([d]))[0]
+    raw = f.us10y.drop([d]).copy()
+    f.loc[d, 'us10y'] = f.us10y.loc[f.index[-7]]
+    return _origin_read(_attach_origin(f, raw)), f
+
+
+def _y0_holiday_fixture(carried_fill=False):
+    # 100 bdays ending 2025-02-24; index[-6] = 2025-02-17 (Presidents' Day).
+    idx = pd.bdate_range(end='2025-02-24', periods=100)
+    assert idx[-6] == pd.Timestamp('2025-02-17')
+    f = pd.DataFrame({'us10y': 4.0 + np.arange(100) / 100}, index=idx)
+    if carried_fill:
+        f.loc[idx[-6], 'us10y'] = f.us10y.loc[idx[-7]]
+    raw = f.us10y.drop([idx[-6]])
+    return _origin_read(_attach_origin(f.copy(), raw))
+
+
+def _y0_caller_fixture():
+    f = _origin_frame(100)
+    f.attrs['rate_observations'] = {'us10y': yield_momentum.capture_rate_observations(
+        f.us10y, f.us10y, source_id='DGS10', source_column='us10y',
+        source_basis='caller_override')}
+    return _origin_read(f)
+
+
+def _y0_endpoint_points(payload):
+    for read in payload['series'].values():
+        for endpoint in read.get('endpoints', {}).values():
+            if endpoint is None:
+                continue
+            for side in ('start', 'end'):
+                yield endpoint[side]
+
+
+def test_y0_golden_control_keeps_every_v4_byte():
+    import json
+    golden = {'G1': _GOLDEN_G1, 'G2': _GOLDEN_G2, 'G3': _GOLDEN_G3}
+    builds = {'G1': _g1_payload(), 'G2': _g2_payload_and_frame()[0],
+              'G3': _g3_payload()}
+    for name, payload in builds.items():
+        stripped = dict(payload)
+        stripped.pop('qualification_version', None)
+        stripped['series'] = {
+            label: {k: v for k, v in read.items() if k not in (
+                'curve_convention', 'level_unit', 'change_unit', 'endpoints',
+                'turn_certified')}
+            for label, read in payload['series'].items()}
+        assert json.dumps(stripped, sort_keys=True, ensure_ascii=False,
+                          default=str) == golden[name]
+    for payload in builds.values():
+        assert list(payload)[-1] == 'qualification_version'
+        for read in payload['series'].values():
+            assert list(read)[-5:] == ['curve_convention', 'level_unit',
+                                       'change_unit', 'endpoints',
+                                       'turn_certified']
+
+
+def test_captured_endpoints_are_certified_par_with_units():
+    read = _g1_payload()['series']['10y']
+    f = _origin_frame(100)
+    assert read['curve_convention'] == 'par'
+    assert read['level_unit'] == 'pct_ann_rate'
+    assert read['change_unit'] == 'bp'
+    for h in (5, 22, 63):
+        endpoint = read['endpoints'][f'{h}d']
+        assert endpoint is not None
+        assert endpoint['certified'] is True
+        assert endpoint['not_certified_reason'] is None
+        assert endpoint['change_unit'] == 'bp'
+        for side, date in zip(('start', 'end'), read['endpoint_dates'][f'{h}d']):
+            point = endpoint[side]
+            assert point['origin'] == 'captured_source_row'
+            assert point['value_state'] == 'present'
+            assert point['unit'] == 'pct_ann_rate'
+            assert point['curve_convention'] == 'par'
+            assert point['quality'] == [] and point['limitations'] == []
+            assert point['carried_from'] is None
+            assert point['date'] == date
+            assert point['level'] == round(float(f.loc[pd.Timestamp(date), 'us10y']), 3)
+    assert read['turn_certified'] is True
+
+
+def test_carried_endpoint_never_certifies():
+    read, f = _y0_carried_fixture()
+    endpoint = read['endpoints']['5d']
+    start = endpoint['start']
+    assert start['origin'] == 'carried'
+    assert start['value_state'] == 'stale'
+    assert start['quality'] == ['carried']
+    assert start['level'] is None
+    assert start['carried_from'] == str(f.index[-7].date())
+    assert endpoint['certified'] is False
+    assert endpoint['not_certified_reason'] == 'start_endpoint_carried'
+    assert read['velocity_bp']['5d'] is None  # v4 unchanged by qualification.
+    assert read['endpoints']['22d']['certified'] is True  # endpoint comparison.
+    assert read['turn_certified'] is False  # the PATH is not qualified.
+
+
+def test_holiday_endpoint_is_expected_absent_not_certified():
+    read = _y0_holiday_fixture()
+    endpoint = read['endpoints']['5d']
+    start = endpoint['start']
+    assert start['origin'] == 'expected_absent'
+    assert 'expected_absence_holiday_basis' in start['limitations']
+    assert start['level'] is None
+    assert start['value_state'] == 'missing'
+    assert start['carried_from'] is None  # frame kept its own (unequal) value.
+    assert endpoint['certified'] is False
+    assert endpoint['not_certified_reason'] == 'start_endpoint_expected_absent'
+    assert read['endpoints']['22d']['certified'] is True
+
+    carried = _y0_holiday_fixture(carried_fill=True)
+    start = carried['endpoints']['5d']['start']
+    assert start['origin'] == 'expected_absent'  # precedence 3 beats 4.
+    assert start['value_state'] == 'stale'
+    assert start['quality'] == ['carried']
+    assert start['carried_from'] == '2025-02-14'
+    assert carried['endpoints']['5d']['certified'] is False
+
+
+def test_lagged_end_endpoint_is_the_last_captured_row():
+    payload, f = _g2_payload_and_frame()
+    read = payload['series']['10y']
+    endpoint = read['endpoints']['5d']
+    assert endpoint['end']['date'] == str(f.index[-3].date())
+    assert endpoint['end']['origin'] == 'captured_source_row'
+    assert endpoint['certified'] is True
+    latest = str(f.index[-1].date())
+    for h in (5, 22, 63):
+        for side in ('start', 'end'):
+            assert read['endpoints'][f'{h}d'][side]['date'] != latest
+
+
+def test_unverified_frame_endpoints_never_certify():
+    for read in _g3_payload()['series'].values():
+        assert read['turn_certified'] is False
+        for h in (5, 22, 63):
+            endpoint = read['endpoints'][f'{h}d']
+            assert endpoint is not None
+            assert endpoint['certified'] is False
+            assert endpoint['not_certified_reason'] == 'origin_not_provided'
+            for side in ('start', 'end'):
+                point = endpoint[side]
+                assert point['origin'] == 'unverified'
+                assert point['limitations'] == ['observation_origin_unverified']
+                assert point['value_state'] == 'present'
+                assert isinstance(point['level'], float)
+    f = _attach_origin(_origin_frame(100))
+    f.iloc[-1, 0] += 0.1  # frame no longer matches the captured alignment.
+    read = _origin_read(f)
+    assert read['origin_status'] == 'frame_mismatch'
+    for h in (5, 22, 63):
+        endpoint = read['endpoints'][f'{h}d']
+        assert endpoint is not None
+        assert endpoint['certified'] is False
+        assert endpoint['not_certified_reason'] == 'origin_frame_mismatch'
+
+
+def test_caller_override_endpoints_are_not_certified():
+    read = _y0_caller_fixture()
+    endpoint = read['endpoints']['5d']
+    for side in ('start', 'end'):
+        assert endpoint[side]['origin'] == 'caller_supplied_row'
+        assert endpoint[side]['value_state'] == 'present'
+    assert endpoint['certified'] is False
+    assert endpoint['not_certified_reason'] == 'caller_override_basis'
+    assert read['turn_certified'] is False
+
+
+def test_missing_and_short_series_have_no_invented_endpoints():
+    missing = _build(_frame(100).drop(columns=['us30y']))['series']['30y']
+    assert missing['endpoints'] == {'5d': None, '22d': None, '63d': None}
+    assert missing['turn_certified'] is False
+    assert missing['curve_convention'] == 'par'
+    assert missing['level_unit'] == 'pct_ann_rate'
+    short = _build(_frame(10))['series']['10y']
+    assert short['endpoints']['5d'] is not None
+    assert short['endpoints']['22d'] is None
+    assert short['endpoints']['63d'] is None
+    # A non-captured, non-unverified endpoint NEVER carries a numeric level
+    # (missing is never 0, a carry is never a print).
+    payloads = [_g1_payload(), _g2_payload_and_frame()[0], _g3_payload(),
+                _build(_frame(10)), _build(_frame(100).drop(columns=['us30y']))]
+    for payload in payloads:
+        for point in _y0_endpoint_points(payload):
+            assert point['level'] is None or point['origin'] in (
+                'captured_source_row', 'caller_supplied_row', 'unverified')
+
+
+def test_treasury_cmt_endpoints_are_par_never_zero():
+    assert set(yield_momentum.CURVE_CONVENTION) == set(yield_momentum.SERIES.values())
+    assert set(yield_momentum.CURVE_CONVENTION.values()) == {'par'}
+    for payload in (_g1_payload(), _g2_payload_and_frame()[0], _g3_payload()):
+        for read in payload['series'].values():
+            assert read['curve_convention'] != 'zero'
+            for point in _y0_endpoint_points(payload):
+                assert point['curve_convention'] != 'zero'
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setitem(yield_momentum.SERIES, '7y', 'us7y')
+        f = _frame(100)
+        f['us7y'] = 4.0 + np.arange(100) / 100
+        seven = _build(f)['series']['7y']
+    assert seven['curve_convention'] is None  # unknown, never par or zero.
+    for h in (5, 22, 63):
+        endpoint = seven['endpoints'][f'{h}d']
+        if endpoint is None:
+            continue
+        for side in ('start', 'end'):
+            assert endpoint[side]['curve_convention'] is None
+
+
+def test_turn_certified_only_on_a_qualified_turn():
+    read = _g1_payload()['series']['10y']
+    assert read['turn_watch'] is not None
+    assert read['turn_certified'] is True
+    f = _origin_frame(100)
+    unexpected = pd.Timestamp('2025-03-05')  # ordinary Wednesday inside the grid
+    assert unexpected in f.index
+    raw = f.us10y.drop([unexpected])
+    withheld = _origin_read(_attach_origin(f.copy(), raw))
+    assert withheld['path_qualified'] is False
+    assert withheld['turn_certified'] is False
+    for read in _g3_payload()['series'].values():
+        assert read['turn_certified'] is False
+
+
+def test_authority_flags_stay_false_and_versions():
+    for payload in (_g1_payload(), _g2_payload_and_frame()[0], _g3_payload()):
+        assert payload['display_only'] is True
+        for key in ('authority', 'can_score', 'can_size', 'can_trade'):
+            assert payload[key] is False
+        assert payload['calculation_version'] == 'fixed_grid_origin.v4'
+        assert payload['qualification_version'] == 'curve_endpoint_qualification.v1'
+
+
+@pytest.mark.parametrize('index_kind', ['range_index', 'date_strings', 'tz_utc'])
+def test_invalid_grid_read_never_raises_and_dates_no_endpoint(index_kind):
+    # A frame whose index is not a naive weekday date grid reads as the explicit
+    # invalid_grid null state; the endpoint provenance must never index that
+    # undated grid by date. Origin is deliberately not attached.
+    f = _origin_frame(100)
+    if index_kind == 'range_index':
+        f.index = pd.RangeIndex(len(f))
+    elif index_kind == 'date_strings':
+        f.index = [str(d.date()) for d in f.index]
+    else:
+        f.index = f.index.tz_localize('UTC')
+    p = yield_momentum.build_yield_momentum(f)  # must not raise
+    read = p['series']['10y']
+    assert read['status'] == 'invalid_grid'
+    assert all(value is None for value in read['endpoints'].values())
+    assert read['turn_certified'] is False
+    assert read['curve_convention'] == 'par'
+    assert read['level_unit'] == 'pct_ann_rate'
+    assert p['qualification_version'] == 'curve_endpoint_qualification.v1'

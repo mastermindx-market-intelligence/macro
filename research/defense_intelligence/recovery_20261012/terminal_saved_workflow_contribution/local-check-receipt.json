@@ -1,0 +1,25 @@
+{
+  "schema": "defense.p2.exact_byte_requalification.v1",
+  "materialization_cause_receipt": "durable-exact-source-manifest.json",
+  "macro_baseline_commit": "eaca36470dbda4e6d3b0827cb82abcf0e9ef594d",
+  "macro_origin_main_same_two_blobs": "9d3fe8db76b4eac204a186d68b6cf85228b8fa74",
+  "macro_exact_module_sha256": "a75c7c9f2dcb07711fce3610920555134fe6039e4579aae89c535481d8277015",
+  "macro_tests": {
+    "passed": 71,
+    "seconds": 3.83,
+    "actual_import_closure": true
+  },
+  "terminal_checks": {
+    "passed": 12,
+    "failed": 0,
+    "source_hash_binding_before_import": true,
+    "drift_negative_control": "original malformed retained stage rejected before import with source drift savedViewContract; exit1",
+    "node_version": "v26.5.0"
+  },
+  "macro_patch_sha256": "b55c197911dcbbc284359bfda03a7fd13c9503b1ef040cb22d1daafa4c0788ff",
+  "terminal_patch_sha256": "a77f3f43eaeeb51a5ee3680a82bbb9b69449dd746e3af02152a615e49455ed89",
+  "shared_mutation": false,
+  "sql_apply": false,
+  "delivery_enablement": false,
+  "product_or_native_terminal_acceptance": false
+}

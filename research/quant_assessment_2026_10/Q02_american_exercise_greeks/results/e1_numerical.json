@@ -1,0 +1,723 @@
+{
+ "all_pass": true,
+ "checks": [
+  {
+   "case": "call K=80 T=0.5",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.00045986331905112365
+  },
+  {
+   "case": "call K=80 T=0.5",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 6.333414411541227e-05
+  },
+  {
+   "case": "call K=80 T=0.5",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 1.082738318166493e-06
+  },
+  {
+   "case": "call K=80 T=0.5",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.04129220471563112,
+   "value": 0.0011053222903015802
+  },
+  {
+   "case": "call K=80 T=0.5",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.013696685204270406,
+   "value": 0.0001253619197814082
+  },
+  {
+   "case": "call K=80 T=0.1",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 4.9123032603404226e-05
+  },
+  {
+   "case": "call K=80 T=0.1",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 2.2854762664281658e-05
+  },
+  {
+   "case": "call K=80 T=0.1",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 2.992751680534495e-06
+  },
+  {
+   "case": "call K=80 T=0.1",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.008464086229075296,
+   "value": 0.0005075776311135455
+  },
+  {
+   "case": "call K=80 T=0.1",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.009750624447760144,
+   "value": 0.0002787093226885723
+  },
+  {
+   "case": "call K=100 T=0.5",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.0014564448801186458
+  },
+  {
+   "case": "call K=100 T=0.5",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 2.664823410492012e-05
+  },
+  {
+   "case": "call K=100 T=0.5",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 4.899865750529475e-06
+  },
+  {
+   "case": "call K=100 T=0.5",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.0074997886888745315,
+   "value": 8.019853489291129e-07
+  },
+  {
+   "case": "call K=100 T=0.5",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.007569558379043538,
+   "value": 2.7500614287072345e-05
+  },
+  {
+   "case": "call K=100 T=0.1",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.0015736620612742946
+  },
+  {
+   "case": "call K=100 T=0.1",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 2.8672398229012686e-05
+  },
+  {
+   "case": "call K=100 T=0.1",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 2.5490987598582315e-05
+  },
+  {
+   "case": "call K=100 T=0.1",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.006131893900182759,
+   "value": 9.099473316616022e-05
+  },
+  {
+   "case": "call K=100 T=0.1",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.011182847719425805,
+   "value": 0.0001447201696499617
+  },
+  {
+   "case": "call K=120 T=0.5",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.0007358555564027647
+  },
+  {
+   "case": "call K=120 T=0.5",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 7.868957714235458e-06
+  },
+  {
+   "case": "call K=120 T=0.5",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 2.803299275841095e-06
+  },
+  {
+   "case": "call K=120 T=0.5",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.06198500603587502,
+   "value": 0.00028746314708349985
+  },
+  {
+   "case": "call K=120 T=0.5",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.02066885999475588,
+   "value": 8.422262163482186e-05
+  },
+  {
+   "case": "call K=120 T=0.1",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.0002446427839775389
+  },
+  {
+   "case": "call K=120 T=0.1",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 0.00010720251330634256
+  },
+  {
+   "case": "call K=120 T=0.1",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 7.4979806219191425e-06
+  },
+  {
+   "case": "call K=120 T=0.1",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.02000291122973053,
+   "value": 4.535793275295408e-05
+  },
+  {
+   "case": "call K=120 T=0.1",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.024156312663931496,
+   "value": 0.00041574593323034925
+  },
+  {
+   "case": "put K=80 T=0.5",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.0004599108256344575
+  },
+  {
+   "case": "put K=80 T=0.5",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 6.333422179310988e-05
+  },
+  {
+   "case": "put K=80 T=0.5",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 1.0827383211259312e-06
+  },
+  {
+   "case": "put K=80 T=0.5",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.04129220471563112,
+   "value": 0.0011053222915915484
+  },
+  {
+   "case": "put K=80 T=0.5",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.013199178964674062,
+   "value": 0.00012536191999532043
+  },
+  {
+   "case": "put K=80 T=0.1",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 4.9124963071014646e-05
+  },
+  {
+   "case": "put K=80 T=0.1",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 2.285476577166168e-05
+  },
+  {
+   "case": "put K=80 T=0.1",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 2.9927516957514895e-06
+  },
+  {
+   "case": "put K=80 T=0.1",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.008464086229075296,
+   "value": 0.0005075776295349194
+  },
+  {
+   "case": "put K=80 T=0.1",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.009251124197843456,
+   "value": 0.000278709321241688
+  },
+  {
+   "case": "put K=100 T=0.5",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.0014563835546042014
+  },
+  {
+   "case": "put K=100 T=0.5",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 2.664831178561533e-05
+  },
+  {
+   "case": "put K=100 T=0.5",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 4.899865757294897e-06
+  },
+  {
+   "case": "put K=100 T=0.5",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.0074997886888745315,
+   "value": 8.019858679583769e-07
+  },
+  {
+   "case": "put K=100 T=0.5",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.00806706461863988,
+   "value": 2.750061579440133e-05
+  },
+  {
+   "case": "put K=100 T=0.1",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.001573659570738517
+  },
+  {
+   "case": "put K=100 T=0.1",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 2.867240132448101e-05
+  },
+  {
+   "case": "put K=100 T=0.1",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 2.5490987598582315e-05
+  },
+  {
+   "case": "put K=100 T=0.1",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.006131893900182759,
+   "value": 9.099473369906727e-05
+  },
+  {
+   "case": "put K=100 T=0.1",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.011682347969342493,
+   "value": 0.00014472016966654566
+  },
+  {
+   "case": "put K=120 T=0.5",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.0007357804120289302
+  },
+  {
+   "case": "put K=120 T=0.5",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 7.86903541405426e-06
+  },
+  {
+   "case": "put K=120 T=0.5",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 2.803299268206577e-06
+  },
+  {
+   "case": "put K=120 T=0.5",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.06198500603587502,
+   "value": 0.0002874631457248089
+  },
+  {
+   "case": "put K=120 T=0.5",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.02116636623435222,
+   "value": 8.422262040508333e-05
+  },
+  {
+   "case": "put K=120 T=0.1",
+   "id": "T1a",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.00024464583514927085
+  },
+  {
+   "case": "put K=120 T=0.1",
+   "id": "T1b",
+   "pass": true,
+   "tolerance": 0.002,
+   "value": 0.00010720251017293236
+  },
+  {
+   "case": "put K=120 T=0.1",
+   "id": "T1c",
+   "pass": true,
+   "tolerance": 0.0005,
+   "value": 7.49798057443022e-06
+  },
+  {
+   "case": "put K=120 T=0.1",
+   "id": "T1d_vanna",
+   "pass": true,
+   "tolerance": 0.02000291122973053,
+   "value": 4.5357932312084515e-05
+  },
+  {
+   "case": "put K=120 T=0.1",
+   "id": "T1d_charm",
+   "pass": true,
+   "tolerance": 0.024655812913848184,
+   "value": 0.0004157459398042018
+  },
+  {
+   "case": "analytic grid",
+   "id": "T1e",
+   "pass": true,
+   "tolerance": 1e-12,
+   "value": 0.0
+  },
+  {
+   "case": "call price err4N-errN",
+   "id": "T1f",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -0.02129110163187331
+  },
+  {
+   "case": "call delta err4N-errN",
+   "id": "T1f",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -0.0003906855312317825
+  },
+  {
+   "case": "call gamma err4N-errN",
+   "id": "T1f",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -7.233158772688292e-05
+  },
+  {
+   "case": "call D=2@0.25",
+   "id": "T1g",
+   "pass": true,
+   "tolerance": 0.01,
+   "value": 0.00036827031360431306
+  },
+  {
+   "case": "put price err4N-errN",
+   "id": "T1f",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -0.021290181749959558
+  },
+  {
+   "case": "put delta err4N-errN",
+   "id": "T1f",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -0.00039068669627900787
+  },
+  {
+   "case": "put gamma err4N-errN",
+   "id": "T1f",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -7.233158771989892e-05
+  },
+  {
+   "case": "put D=2@0.25",
+   "id": "T1g",
+   "pass": true,
+   "tolerance": 0.01,
+   "value": 0.00036814595078382695
+  },
+  {
+   "case": "put K=80 min(V-intrinsic)",
+   "id": "T2a",
+   "pass": true,
+   "tolerance": -1e-10,
+   "value": 0.0
+  },
+  {
+   "case": "put K=100 min(V-intrinsic)",
+   "id": "T2a",
+   "pass": true,
+   "tolerance": -1e-10,
+   "value": 0.0
+  },
+  {
+   "case": "put K=120 min(V-intrinsic)",
+   "id": "T2a",
+   "pass": true,
+   "tolerance": -1e-10,
+   "value": 0.0
+  },
+  {
+   "case": "call divs=0 min(Am-Eu)",
+   "id": "T2b",
+   "pass": true,
+   "tolerance": -1e-10,
+   "value": 0.0
+  },
+  {
+   "case": "call divs=1 min(Am-Eu)",
+   "id": "T2b",
+   "pass": true,
+   "tolerance": -1e-10,
+   "value": 0.0
+  },
+  {
+   "case": "put divs=0 min(Am-Eu)",
+   "id": "T2b",
+   "pass": true,
+   "tolerance": -1e-10,
+   "value": 0.0
+  },
+  {
+   "case": "put divs=1 min(Am-Eu)",
+   "id": "T2b",
+   "pass": true,
+   "tolerance": -1e-10,
+   "value": 0.0
+  },
+  {
+   "case": "K=80 put<K and call<S",
+   "id": "T2c",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -78.6245088003786
+  },
+  {
+   "case": "K=100 put<K and call<S",
+   "id": "T2c",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -92.52210049866255
+  },
+  {
+   "case": "K=120 put<K and call<S",
+   "id": "T2c",
+   "pass": true,
+   "tolerance": 0.0,
+   "value": -98.32936156023669
+  },
+  {
+   "case": "call q=0 no dividend",
+   "id": "T2d",
+   "pass": true,
+   "tolerance": 0.005,
+   "value": 0.00146300932706378
+  },
+  {
+   "case": "put K=80 FD-CRR",
+   "id": "T2e",
+   "pass": true,
+   "tolerance": 0.02,
+   "value": 0.0003670889830776902
+  },
+  {
+   "case": "put K=100 FD-CRR",
+   "id": "T2e",
+   "pass": true,
+   "tolerance": 0.02,
+   "value": 0.0011345755088489895
+  },
+  {
+   "case": "put K=120 FD-CRR",
+   "id": "T2e",
+   "pass": true,
+   "tolerance": 0.02,
+   "value": 0.0009199407062183695
+  },
+  {
+   "case": "deep-ITM D=5 call FD-CRR",
+   "id": "T2f",
+   "pass": true,
+   "tolerance": 0.05,
+   "value": 0.00023156961501413775
+  },
+  {
+   "case": "deep-ITM D=5 call Am-Eu",
+   "id": "T2f_premium",
+   "pass": true,
+   "tolerance": 0.5,
+   "value": 3.8304849747499468
+  }
+ ],
+ "classification_status": {
+  "american call deep-ITM D=5@0.25": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "near_exercise_boundary": false,
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "american put K=100 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "near_exercise_boundary": false,
+   "price": "INTERVAL",
+   "vanna": "CONVERGED"
+  },
+  "american put K=120 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "near_exercise_boundary": false,
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "american put K=80 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "near_exercise_boundary": false,
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "european call K=100 T=0.1": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "INTERVAL",
+   "vanna": "CONVERGED"
+  },
+  "european call K=100 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "INTERVAL",
+   "vanna": "CONVERGED"
+  },
+  "european call K=120 T=0.1": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "european call K=120 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "INTERVAL",
+   "vanna": "CONVERGED"
+  },
+  "european call K=80 T=0.1": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "european call K=80 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "european put K=100 T=0.1": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "INTERVAL",
+   "vanna": "CONVERGED"
+  },
+  "european put K=100 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "INTERVAL",
+   "vanna": "CONVERGED"
+  },
+  "european put K=120 T=0.1": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "european put K=120 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "european put K=80 T=0.1": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  },
+  "european put K=80 T=0.5": {
+   "charm": "CONVERGED",
+   "delta": "CONVERGED",
+   "gamma": "CONVERGED",
+   "price": "CONVERGED",
+   "vanna": "CONVERGED"
+  }
+ },
+ "failed": [],
+ "finest_levels": 400,
+ "n_checks": 85,
+ "n_failed": 0,
+ "scenarios": "PREREG section 7 (synthetic, relative units)"
+}

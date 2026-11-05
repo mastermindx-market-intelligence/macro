@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:06:52Z",
+ "accession": "0001104659-26-037706",
+ "cik": "0001951222",
+ "doc_byte_length": 5523011,
+ "doc_sha256": "0cce91aa4fda1161c07cc338f0e8a1391b21e40d6de6f3ae380609ef733002e7",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "laes-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1206588,
+  "byte_start": 1205603,
+  "normalized": "The global semiconductor supply crisis of recent years, combined with increasing geopolitical instability, has exposed two structural vulnerabilities: (i) the critical dependence of all major industries on semiconductors, with widespread supply disruptions affecting automotive, consumer electronics, network infrastructure, industrial equipment, and defense-related systems; and (ii) a high level of geostrategic concentration, with semiconductor manufacturing and processing largely dependent on a limited number of countries, primarily in Southeast Asia, creating systemic supply and security risks. To mitigate these risks and strengthen supply chain resilience, SEALSQ has expanded its ecosystem through the acquisition of IC’Alps and the establishment of preferred partnerships with leading global foundries, including TSMC, X-FAB, ams-OSRAM, Intel Foundry, and GlobalFoundries. These partnerships enable design expertise across various process nodes and CMOS technologies.",
+  "normalized_sha256": "43ba6a20d0115a4cfce6a5d405c76ca21a8ad9d3abb9d8f246a6b9a4717a7f11",
+  "raw": "The global semiconductor supply crisis of recent years, combined with increasing geopolitical instability, has exposed two structural vulnerabilities: (i) the critical dependence of all major industries on semiconductors, with widespread supply disruptions affecting automotive, consumer electronics, network infrastructure, industrial equipment, and defense-related systems; and (ii) a high level of geostrategic concentration, with semiconductor manufacturing and processing largely dependent on a limited number of countries, primarily in Southeast Asia, creating systemic supply and security risks. To mitigate these risks and strengthen supply chain resilience, SEALSQ has expanded its ecosystem through the acquisition of IC&#8217;Alps and the establishment of preferred partnerships with leading global foundries, including TSMC, X-FAB, ams-OSRAM, Intel Foundry, and GlobalFoundries. These partnerships enable design expertise across various process nodes and CMOS technologies.",
+  "raw_sha256": "e009606dfaddf512f156a39110a94f0cf0fa852ea93c9654428e9f207a23e62d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/laes-20251231x20f.htm",
+ "xbrl_contexts": []
+}

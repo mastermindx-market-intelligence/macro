@@ -1,0 +1,10 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - lib/intl_gs_scanner_view.py
+  - lib/intl_gs_coverage_view.py
+  - templates/intl_workspace/scanner.html.j2
+  - templates/intl_workspace/coverage.html.j2
+  - templates/intl_workspace/_gs_scanner_macros.html.j2
+  - templates/intl_workspace_surveillance.css
+  - site/intl_workspace_surveillance.css
+manifest: mockups/evidence/intl-gs-w2a/scanner-abstain/manifest.json

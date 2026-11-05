@@ -766,3 +766,104 @@ def test_bilingual_why_zh_is_chinese_for_whale():
     # Chinese characters have codepoints in the CJK Unified Ideographs range
     has_chinese = any("一" <= ch <= "鿿" for ch in enriched["why_zh"])
     assert has_chinese, f"why_zh contains no Chinese characters: {enriched['why_zh']!r}"
+
+
+def _package_field_names(payload: dict) -> list[str]:
+    """Keys that would be package identity rather than single-contract urgency."""
+    return [
+        key for key in payload
+        if key.startswith("package_") or key.startswith("multi_leg")
+    ]
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+# 29. swept stays urgency-only on the enriched event
+# Existing pins (do not duplicate their narrower claims):
+#   test_multi_leg_does_not_fire_on_swept_true
+#   test_multi_leg_stays_unresolved_on_swept_false
+#   test_multi_leg_stays_unresolved_when_swept_absent
+#   test_swept_urgency_is_preserved_without_multi_leg_or_direction_discount
+#   test_direction_discounted_false_for_sweep_urgency
+#   test_direction_discounted_false_without_package_evidence
+# ════════════════════════════════════════════════════════════════════════════════
+
+def test_swept_true_changes_urgency_only():
+    """swept=True passes through as urgency and changes no other enriched field.
+
+    No MULTI_LEG badge, no package/multi-leg field, and direction_discounted
+    stays False. An otherwise identical swept=False event enriches to the
+    same payload except the swept flag itself.
+    """
+    swept = _mk_event(swept=True)
+    quiet = _mk_event(swept=False)
+    thresholds = fe.compute_thresholds([swept, quiet])
+    swept_env = fe.build_enrich_envelope([swept], SESSION_DATE, ASOF, thresholds=thresholds)
+    quiet_env = fe.build_enrich_envelope([quiet], SESSION_DATE, ASOF, thresholds=thresholds)
+    swept_row = swept_env["events"][0]
+    quiet_row = quiet_env["events"][0]
+
+    assert swept_row["swept"] is True
+    assert quiet_row["swept"] is False
+    assert "MULTI_LEG" not in swept_row["badges"]
+    assert swept_row["direction_discounted"] is False
+    assert _package_field_names(swept_row) == []
+
+    swept_rest = {k: v for k, v in swept_row.items() if k != "swept"}
+    quiet_rest = {k: v for k, v in quiet_row.items() if k != "swept"}
+    assert swept_rest == quiet_rest
+
+
+def test_enriched_event_carries_no_new_package_or_multi_leg_field():
+    """Enrichment does not invent package_* or multi_leg* fields.
+
+    The input carries neither prefix. The enriched event may only carry such
+    a field when the input already did.
+    """
+    ev = _mk_event(swept=True)
+    assert _package_field_names(ev) == []
+    envelope = fe.build_enrich_envelope(
+        [ev], SESSION_DATE, ASOF,
+        thresholds=fe.compute_thresholds([ev]),
+    )
+    enriched = envelope["events"][0]
+    fabricated = [key for key in _package_field_names(enriched) if key not in ev]
+    assert fabricated == []
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+# 30. F02-Q2 — unknown expiry enriches; DTE factor matches 0DTE on purpose
+# Existing pins of the 0.20 factor (not repeated here):
+#   test_q_score_matches_hand_computation — case B is dte=0, dte_bucket="0d"
+#   test_fresh_near_miss_0dte — FRESH does not fire at dte 0; not the factor
+# Nothing pins dte=None or dte_bucket="unknown".
+# ════════════════════════════════════════════════════════════════════════════════
+
+def test_unknown_expiry_dte_factor_matches_0dte():
+    """An unknown-expiry event enriches, scores like 0DTE, and stays unknown.
+
+    ``compute_q_score`` coerces ``dte: None`` with ``int(event.get("dte", 0) or 0)``,
+    so the factor is the 0DTE factor 0.20. That parity with the Terminal scorer
+    is intentional. The enriched row must still say ``zerodte`` False and
+    ``dte_bucket`` "unknown" — the score does not relabel the event.
+    """
+    unknown = _mk_event(dte=None, dte_bucket="unknown", zerodte=False)
+    zero = _mk_event(dte=0, dte_bucket="0d", zerodte=True)
+    coerced = int(unknown.get("dte", 0) or 0)
+    assert fe._dte_factor(coerced, str(unknown.get("dte_bucket", "") or "")) == 0.20
+    assert fe._dte_factor(coerced, "unknown") == fe._dte_factor(0, "0d")
+
+    q_unknown = fe.compute_q_score(unknown)
+    q_zero = fe.compute_q_score(zero)
+    unknown_dte = next(c for c in q_unknown["components"] if c["key"] == "dteRelevance")
+    zero_dte = next(c for c in q_zero["components"] if c["key"] == "dteRelevance")
+    assert unknown_dte["value"] == zero_dte["value"]
+
+    thresholds = fe.compute_thresholds([unknown])
+    envelope = fe.build_enrich_envelope(
+        [unknown], SESSION_DATE, ASOF, thresholds=thresholds,
+    )
+    assert envelope["n_events"] == 1
+    row = envelope["events"][0]
+    assert row["dte"] is None
+    assert row["dte_bucket"] == "unknown"
+    assert row["zerodte"] is False

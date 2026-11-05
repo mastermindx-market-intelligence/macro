@@ -1,0 +1,100 @@
+{
+  "schema": "eval_os.normal_owner_observation.v1",
+  "task": "T21",
+  "acceptance": "A39",
+  "observed_at": "2026-10-13T23:49:47.860356+00:00",
+  "qualification": "GENUINE_PRE_RELEASE_OWNER_PROGRESSION",
+  "run": {
+    "id": 38406512307,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38406512307",
+    "event": "schedule",
+    "conclusion": "success",
+    "head_sha": "1dec2bf96fb0bf508643fa023c5baa075250b8f2",
+    "job_id": 115350383434,
+    "job_name": "asia",
+    "started_at": "2026-10-13T15:02:07Z",
+    "completed_at": "2026-10-13T16:35:34Z",
+    "published_data_commit": "98a395f149decf146dd19826a70e6cc1fd00a1e9",
+    "published_at": "2026-10-13T15:52:57Z"
+  },
+  "source": {
+    "path": "data/qledger/run_status.json",
+    "sha256": "0978e2e51f2ee7c36486efa7ccdc1c310e2e5b616c4959b604a5641644146278",
+    "bytes": 877,
+    "status": {
+      "generated_at": "2026-10-13T15:50:09.665675+00:00",
+      "as_of": "2026-10-13",
+      "n_open": 118124,
+      "n_graded_today": 812,
+      "n_blocked_by_coverage": 22896,
+      "n_ungradeable": 22,
+      "n_already_graded": 178212,
+      "clock_unresolvable_claims": {
+        "n": 22,
+        "by_reason": {
+          "clock_unresolvable:mixed_markets": 12,
+          "clock_unresolvable:unsupported_exchange_suffix:.BJ": 10
+        },
+        "by_family": {
+          "cn_special_sits": 10,
+          "us_importance_v0": 6,
+          "us_importance_v0_pit": 6
+        }
+      },
+      "dry_run": false,
+      "w6_readiness": {
+        "n_families_ready": 0,
+        "n_families_approaching": 2,
+        "families_ready": [],
+        "families_approaching": [
+          "radar@5d",
+          "radar@63d"
+        ],
+        "grader_quiet_days": 0
+      },
+      "regime_stamp_backfill": {
+        "n_claims": 118147,
+        "n_backfilled": 0,
+        "n_unstamped": 6673,
+        "n_precoverage": 4361
+      }
+    }
+  },
+  "production_observation": {
+    "observed_at": "2026-10-13T23:49:47.860356+00:00",
+    "installed_head": "398c40c4787c97da1c6f4ecd72aabc11b34844cc",
+    "sha256": "0978e2e51f2ee7c36486efa7ccdc1c310e2e5b616c4959b604a5641644146278"
+  },
+  "retained_log": {
+    "sha256": "182e2cb3f28570924a7674766a82dde40b7e8307f4ae69502658f9c49d9243d2",
+    "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/asia-38406512307.log",
+    "selected_lines": [
+      {
+        "line": 84,
+        "text": "asia\tUNKNOWN STEP\t2026-10-13T15:02:16.0485080Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1dec2bf96fb0bf508643fa023c5baa075250b8f2:refs/remotes/origin/main"
+      },
+      {
+        "line": 86,
+        "text": "asia\tUNKNOWN STEP\t2026-10-13T15:02:17.2206770Z  + 70387eb777b...1dec2bf96fb 1dec2bf96fb0bf508643fa023c5baa075250b8f2 -> origin/main  (forced update)"
+      },
+      {
+        "line": 112,
+        "text": "asia\tUNKNOWN STEP\t2026-10-13T15:02:18.2333590Z 1dec2bf96fb0bf508643fa023c5baa075250b8f2"
+      },
+      {
+        "line": 7993,
+        "text": "asia\tUNKNOWN STEP\t2026-10-13T15:50:09.6664420Z 2026-10-13 08:50:09,666 grade_qledger INFO [grade_qledger] open=118124 graded_today=812 blocked=22896 ungradeable=22 already_graded=178212 clock_unresolvable=22 regime_backfilled=0 regime_unstamped=6673"
+      },
+      {
+        "line": 8137,
+        "text": "asia\tUNKNOWN STEP\t2026-10-13T15:52:57.3392570Z pushed asia data (attempt 1)"
+      }
+    ]
+  },
+  "limits": [
+    "Read-only operational observation; no manual dispatch, clock reset, forced data publication or changed schedule.",
+    "Earlier failed daily38340204231 remains failed; this is a separate genuine subsequent scheduled owner run.",
+    "812 new grades do not establish class-specific validity, investment authority or fleet completeness. Coverage blocks and22 unresolved clocks remain explicit.",
+    "CandidateA1/readiness-receipt producer is not installed. T23 authenticated candidate API/render and post-release source/update proof remain open."
+  ]
+}

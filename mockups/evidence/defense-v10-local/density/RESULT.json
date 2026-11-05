@@ -1,0 +1,397 @@
+{
+  "scope": "Actual canonical rendered local source ASGI; normal DOM/controller/native keyboard, canonical setLang API; not installed entitlement acceptance",
+  "stage_receipt_sha256": "13e164fd1efc95f8df389ade245109fde84179036bdd10d6b16f681d0a7035a3",
+  "server_receipt_sha256": "5cb43cc7e62231b4f6fee431acc799917ef64845c133f0bf59770a11fd086b24",
+  "all_pass": true,
+  "cases": [
+    {
+      "case": "390x844-dark-en",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 3329.96875,
+        "queueHeight": 506.390625,
+        "pageHeight": 8198,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 536.484375,
+          "bottom": 641.546875
+        },
+        "queue": {
+          "top": 135.203125,
+          "bottom": 641.59375,
+          "scrollTop": 52383
+        },
+        "viewport": 844,
+        "barTop": 770
+      },
+      "footer": {
+        "x": 12,
+        "y": 676.203125,
+        "width": 366,
+        "height": 55.625
+      }
+    },
+    {
+      "case": "390x844-dark-zh",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 3041.21875,
+        "queueHeight": 506.390625,
+        "pageHeight": 7339,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 538.578125,
+          "bottom": 643.640625
+        },
+        "queue": {
+          "top": 137.203125,
+          "bottom": 643.59375,
+          "scrollTop": 52279
+        },
+        "viewport": 844,
+        "barTop": 770
+      },
+      "footer": {
+        "x": 12,
+        "y": 676.109375,
+        "width": 366,
+        "height": 55.625
+      }
+    },
+    {
+      "case": "390x844-light-en",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 3323.96875,
+        "queueHeight": 506.390625,
+        "pageHeight": 8190,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 536.484375,
+          "bottom": 641.546875
+        },
+        "queue": {
+          "top": 135.203125,
+          "bottom": 641.59375,
+          "scrollTop": 52383
+        },
+        "viewport": 844,
+        "barTop": 770
+      },
+      "footer": {
+        "x": 12,
+        "y": 676.203125,
+        "width": 366,
+        "height": 55.625
+      }
+    },
+    {
+      "case": "390x844-light-zh",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 3035.21875,
+        "queueHeight": 506.390625,
+        "pageHeight": 7331,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 538.578125,
+          "bottom": 643.640625
+        },
+        "queue": {
+          "top": 137.203125,
+          "bottom": 643.59375,
+          "scrollTop": 52279
+        },
+        "viewport": 844,
+        "barTop": 770
+      },
+      "footer": {
+        "x": 12,
+        "y": 676.109375,
+        "width": 366,
+        "height": 55.625
+      }
+    },
+    {
+      "case": "390x600-dark-en",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 3329.96875,
+        "queueHeight": 360,
+        "pageHeight": 8198,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 364.484375,
+          "bottom": 469.546875
+        },
+        "queue": {
+          "top": 109.203125,
+          "bottom": 469.203125,
+          "scrollTop": 52529
+        },
+        "viewport": 600,
+        "barTop": 526
+      },
+      "footer": {
+        "x": 12,
+        "y": 432.203125,
+        "width": 366,
+        "height": 55.625
+      }
+    },
+    {
+      "case": "390x600-light-en",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 3323.96875,
+        "queueHeight": 360,
+        "pageHeight": 8190,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 364.484375,
+          "bottom": 469.546875
+        },
+        "queue": {
+          "top": 109.203125,
+          "bottom": 469.203125,
+          "scrollTop": 52529
+        },
+        "viewport": 600,
+        "barTop": 526
+      },
+      "footer": {
+        "x": 12,
+        "y": 432.203125,
+        "width": 366,
+        "height": 55.625
+      }
+    },
+    {
+      "case": "1440x1000-dark-en",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 1654.65625,
+        "queueHeight": 585,
+        "pageHeight": 4688,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 765.828125,
+          "bottom": 870.890625
+        },
+        "queue": {
+          "top": 285.640625,
+          "bottom": 870.640625,
+          "scrollTop": 51946
+        },
+        "viewport": 1000,
+        "barTop": 1000
+      },
+      "footer": {
+        "x": 21,
+        "y": 871.640625,
+        "width": 1398,
+        "height": 38.3125
+      }
+    },
+    {
+      "case": "1440x1000-dark-zh",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 1654.65625,
+        "queueHeight": 585,
+        "pageHeight": 4533,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 766.234375,
+          "bottom": 871.296875
+        },
+        "queue": {
+          "top": 286.046875,
+          "bottom": 871.046875,
+          "scrollTop": 51946
+        },
+        "viewport": 1000,
+        "barTop": 1000
+      },
+      "footer": {
+        "x": 21,
+        "y": 872.046875,
+        "width": 1398,
+        "height": 38.3125
+      }
+    },
+    {
+      "case": "1440x1000-light-en",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 1651.65625,
+        "queueHeight": 585,
+        "pageHeight": 4685,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 765.828125,
+          "bottom": 870.890625
+        },
+        "queue": {
+          "top": 285.640625,
+          "bottom": 870.640625,
+          "scrollTop": 51946
+        },
+        "viewport": 1000,
+        "barTop": 1000
+      },
+      "footer": {
+        "x": 21,
+        "y": 871.640625,
+        "width": 1398,
+        "height": 38.3125
+      }
+    },
+    {
+      "case": "1440x1000-light-zh",
+      "pass": true,
+      "overview": {
+        "cards": 6,
+        "themeHeight": 1651.65625,
+        "queueHeight": 585,
+        "pageHeight": 4530,
+        "rows": 500,
+        "horizontalOverflow": false
+      },
+      "end": {
+        "last": true,
+        "selected": "true",
+        "rowId": "ws:govws-e8c7d9ab21b2e0f9fc920cab",
+        "row": {
+          "top": 766.234375,
+          "bottom": 871.296875
+        },
+        "queue": {
+          "top": 286.046875,
+          "bottom": 871.046875,
+          "scrollTop": 51946
+        },
+        "viewport": 1000,
+        "barTop": 1000
+      },
+      "footer": {
+        "x": 21,
+        "y": 872.046875,
+        "width": 1398,
+        "height": 38.3125
+      }
+    },
+    {
+      "case": "A40-Virginia-class-program-deeplink-reload-back",
+      "pass": true,
+      "observed": "PROGRAM DOSSIER\nacq-program:virginia-class-ssn\nVirginia (SSN-774) class attack submarine program\nPROGRAM IDENTITY REVIEWED\nDISPLAY ONLY\nWATCH — DON'T CHASE\nWHAT IS THIS?\n\nVirginia (SSN-774) class attack submarine program\n\nPhase: production · Sponsor: Department of the Navy\n\nLatest block in the reviewed record: Virginia class Block VI (SSN 814-822)\n\nWHY DOES GOVERNMENT NEED IT?\n\nUndersea warfare - nuclear-powered attack submarines (SSN)\n\nThe technical (including acoustic) superiority of U.S. Navy nuclear-powered submarines is generally considered a foundation of U.S. superiority in undersea warfare.\n\nQuantity is not representable from the award tape (v1); available once SAR/budget sources land\nNo reviewed economic exposure — participation is not a revenue share\nWHAT CHANGED?\nAWARD SOURCE\nAward tape current — reviewed: no linkable events on the tape\nContract type: available once an event is reviewed against this program\nWHICH LISTED COMPANIES HAVE REVIEWED ACCESS?\nPrime contractor — the program's prime contractor\ncentral:GD · verified\nREVIEWED\nTeaming partner — each Virginia-class boat is built jointly by GD/EB and HII/NNS\ncentral:HII · verified\nREVIEWED\nSupplier — naval nuclear reactor components\ncentral:BWXT · verified\nREVIEWED\nSUPPLIER SCOPE SHARED ACROSS PROGRAMS\n\nCompanies on this rail participate in the same program; no commercial relationship between them is asserted.\n\nReviewed participation is not a share of revenue. Nothing here allocates award value to a ticker.\n\nWHAT REMAINS UNRESOLVED?\nBUDGET\nBudget source unavailable\nECONOMIC RELATIONSHIPS\nNo reviewed economic-relationship data\nSUPPLIER SCOPE\nSupplier scope shared across programs\nOVERSIGHT\nGAO/DOT&E assessment: not yet on file\nWHAT HAPPENS NEXT?\nFORWARD MILESTONE\nAUKUS Pillar 1: first Virginia-class boat sale to Australia (FY2032)\n2031-10-01 – 2032-09-30\n\nWindows, not certainties. The watch window is re-drawn nightly as the evidence changes.\n\nINSPECTOR · TECHNICAL IDENTITY\nTECHNICAL IDENTITY\nprogram_id: acq-program:virginia-class-ssn program_revision: 1 latest_platform_id: platform:virginia-block-vi capability_id: acq-capability:undersea-warfare program_capability_link_id: prog-cap:06be4ffa4506 role_assertion_id (prime_contractor): prog-role:c483832bff9d role_assertion_id (teaming_partner): prog-role:c9ba4a07ebb2 role_assertion_id (supplier): prog-role:d9b93b4439c3 milestone_id: prog-milestone:a904b5338b54\nREAD-MODEL LIMITATIONS\nProgram/capability/platform truth is reviewed acquisition-domain ontology, not budget or contract-value truth. · The awards rail is a pointer to the reviewed program<->event relation; amounts, dates, and agencies live in the award plane's own artifacts. · Economic relationships between participants are not asserted anywhere in this bundle.",
+      "url": "http://127.0.0.1:58753/government_revenue.html?mode=programs&item=program%3Aacq-program%3Avirginia-class-ssn"
+    }
+  ],
+  "images": {
+    "390x844-dark-en-sources-open.png": "a399d51345ec677aeeb8f8e844af91a32ede03204db66d5991bc3f039ab9f75b",
+    "1440x1000-dark-zh-footer.png": "f21a0433205782142aeb9c9c0f685f8d26f383ba69a765d8ce4c90ba8e0a4380",
+    "390x600-dark-en-themes.png": "f37cad5f717560cc0addd2268f6f0463e673fba988ce33cd12e91c2dbf4b039a",
+    "1440x1000-light-en-footer.png": "965de2b3233f74148f82eda947d0191859a909e9a2be5742f7059a7023843b2e",
+    "390x844-dark-zh-themes.png": "1998a47543d096d47b652c7f4602b92e8b29ceccf75283cbc69e8b3db43a3684",
+    "390x844-light-en-themes.png": "0c9605e21f42d40d8222141699b4bf01b394a1905e2aa7ddbcacbf922f49db71",
+    "390x600-light-en-sources-open.png": "36493e0806db9880fdbf7f7087f482a94b65993ddb59af786b433246585cf747",
+    "390x600-light-en-themes.png": "85914f5660d6b0120101766224054f05af378f6731eee199dddcab80a29f55e6",
+    "A40-program.png": "33ddd093c7e6839c43f8e03613527604fc8ab92ea09af6b71a4b2861be7c2f59",
+    "1440x1000-dark-en-themes.png": "92bcad51c1b4a65d05886611573ebecc488ef5fa547ced5c5d3885c9b24b88b2",
+    "390x600-light-en-queue-end.png": "60c0b6049b3ed5ad4adb9bde8727ac2512b29de3be4fc875a16c2a02d086430b",
+    "390x600-dark-en-sources-open.png": "a5cf5d27f8c59e948ca4ac2626104967ca011dda9b71c1eaa7d35e3cb17784bf",
+    "390x844-dark-en-footer.png": "530e25d793e7b0575c8dec8ea13aa6af86ecdc9e20a442bd0b6f7d8f4309e1d6",
+    "1440x1000-light-en-sources-open.png": "ce6653710f7094183156564a6c067456a34341ffa67c4c48755f08ee49aa0a69",
+    "1440x1000-light-zh-themes.png": "3171e764f3626778a494aaf26cae6055a080987ebfff296c75e18b63a461e1db",
+    "390x844-light-en-sources-open.png": "09b2126d27defd4e630428770434f8c6b01fe1a531b61817967da621c6186ec7",
+    "390x600-dark-en-queue-end.png": "f8f5f198ac247d19fb05b44482fb5d91df08dfd623416bed33586f0c448b8a34",
+    "390x844-light-zh-footer.png": "5df6833f0cbb0eaf24197e1b0bf9e82ea1665e13686a12809f342ae1af3d6f77",
+    "1440x1000-dark-zh-sources-open.png": "131db3654e1c9157f4217eb295116f25f4553b9da5fe5faf2abe84f221ddcab1",
+    "390x844-dark-zh-footer.png": "2efe631e34e5bfe102b5b0d30707b1fa4e2f9c6fb0374b6496c0bb1e036ca195",
+    "390x844-dark-zh-sources-open.png": "a41e84b63182c1d34a332531e12d73d3cc4bd35aa2d5fc19cd43c8faeb47f2dd",
+    "1440x1000-light-en-themes.png": "ab94bf6e0c0a84d35416c0841778406f4174eb80bf7a7aea9afce2f9cf637ab1",
+    "1440x1000-dark-en-queue-end.png": "7875cbcbbd7638e6cc57e322e956dd1ccc8305fae9abd2b59aa3fa68c7b18d31",
+    "390x844-light-en-queue-end.png": "686c9ae1cd497fe7710d0926f3699002c5f23b0177d72dff1f5f87f577202934",
+    "390x600-dark-en-footer.png": "2ac907231f26ad6e534d2529aac79bf652811a40c6c14cf110108dacf79da4d9",
+    "1440x1000-dark-zh-themes.png": "ee5e24055e611718f7ef04c931857e62a8e24ba941b24a7a733f9a52b1ba139b",
+    "1440x1000-light-zh-queue-end.png": "41a0a0e1ad2701060e3ba96869e2107fd9c75af6ff204b65a3727e1284484b9d",
+    "390x600-light-en-footer.png": "86287324d24b100b5350c31cefa923cdf2fdee60a50f62a25b6292c88ad98339",
+    "390x844-dark-en-queue-end.png": "c5ee79247230893d10fc2e26e02f4e3aac7eeaededd39f43a946826d41307176",
+    "390x844-light-en-footer.png": "5c6ea321a5593ae3e132c7131dd50ab32b3562f9708e4aee8389058af3c67957",
+    "1440x1000-light-zh-footer.png": "4ec57c9d7415c0ef29841070a141e5e27944ed3d3f666a51138f51fed1538142",
+    "390x844-dark-zh-queue-end.png": "cb2638da5491049a816f59a3bc05b9ca1f802aed46d855282a96a8b71d14ada9",
+    "390x844-dark-en-themes.png": "b3cfbf9f443a6362051c1a043d872ffd253e7bf51b653c7989cc7cb6941c1e59",
+    "1440x1000-light-zh-sources-open.png": "088914f60a34e4af853706e38bca348c4cd6921daae474e805cf1610266d4998",
+    "1440x1000-dark-en-footer.png": "459bcae446869547bb9ae15e83c41fa03cdcf5baeda2aa00d41ab0dc86edf2ac",
+    "390x844-light-zh-sources-open.png": "5433cd7a3a0bdd5458e0982c8ed67fa064e8ce78c7bb30aa718172c4bfc4427b",
+    "1440x1000-dark-zh-queue-end.png": "b5243436c3d883bca67b49c9484e66652862cc2741563206b49a7f3863274d39",
+    "390x844-light-zh-queue-end.png": "245a2ebbafee0601af3cbae7b2ed3c77be098a957783c482aa4a12f4f969915c",
+    "1440x1000-dark-en-sources-open.png": "b06ea9a12f9e10d72fd6c1a259598b16aba22e881427d4923cd42bc553a506f4",
+    "390x844-light-zh-themes.png": "e06b9d16a361cd160f981ff552acc067c70942b2f0943c5fe48bfd8e522b77bf",
+    "1440x1000-light-en-queue-end.png": "d4c622688007e5016076a2bce1a30e6e6f3993f30f05d6e52b602f67c3fecb41"
+  }
+}

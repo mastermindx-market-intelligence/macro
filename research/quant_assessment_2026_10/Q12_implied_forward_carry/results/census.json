@@ -1,0 +1,36 @@
+{
+ "alias_candidates": [],
+ "data_root": "/Users/chriswong/Documents/Cluade/macro-main/data",
+ "eligible": [],
+ "errors": [],
+ "near_miss_by_dir": {
+  "flow_signals": {
+   "example": "flow_signals/ledger.parquet",
+   "has": {
+    "ask": false,
+    "bid": false,
+    "expiry": true,
+    "identity": true,
+    "right": true,
+    "strike": true,
+    "ts": true
+   },
+   "n_files": 1
+  },
+  "polygon_gex/chains": {
+   "example": "polygon_gex/chains/2026-06-15.parquet",
+   "has": {
+    "ask": false,
+    "bid": false,
+    "expiry": true,
+    "identity": false,
+    "right": true,
+    "strike": true,
+    "ts": true
+   },
+   "n_files": 28
+  }
+ },
+ "parquet_schemas": 25246,
+ "text_heads": 39175
+}

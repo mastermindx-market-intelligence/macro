@@ -4585,7 +4585,7 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
           if (!tk) return;
           var T = window.MDXTerminal;
           if (T && T.on && T.on() && T.open && T.open(tk, tr)) return;
-          location.href = 'hk_lookup.html#' + encodeURIComponent(tk);
+          var _d = 'hk_lookup.html#' + encodeURIComponent(tk); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; }
         });
       })();
       </script>

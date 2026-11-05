@@ -9,7 +9,7 @@ objective: >
 status: active
 program: gmi-theme-graph
 repos: [macro]
-owner: ceo-fable
+owner: fable-meta-ceo
 class: research
 blast_radius: user_facing
 ambiguity: scoped
@@ -29,6 +29,7 @@ depends_on:
   - WS:GMI-THEME-GRAPH
 decisions:
   - DEC:GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING
+  - DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11
 do_not_redo:
   - >-
     Do not rebuild the shared base (theme-graph assertion/evidence/rights/route/mount);
@@ -93,6 +94,12 @@ waves:
       adjudication.
     status: todo
 next_action: >
+  2026-10-11 CONSOLIDATION: owner is now fable-meta-ceo (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11). D1 merged via #7930
+  (1c85f27bfe7e, 2026-09-27); under the new owner the first act is to VERIFY, not assume, the
+  D1 live-proof items listed on the D1 wave (render.yml covering run, nightly receipt line,
+  sidecar on main, foresight chip EN/ZH dark/light) before any PRODUCTION_PROOF post on #7788.
+  D2 still holds for #7870 (WS:GMI-SEMICONDUCTORS SB-W1). Packet HC-1.
+  .
   Adjudicate the independent D1 review on #7788, post START naming carrier
   claude/healthcare-d1-fda-supply, run lanes hc_t02_fda_sweep then
   hc_t01_supply_meaning, run Opus red-team, merge, and verify the nightly drip and

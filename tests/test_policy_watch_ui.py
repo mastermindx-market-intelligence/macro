@@ -650,7 +650,7 @@ def test_build_current_no_prior_statement_comparison_unavailable(tmp_path):
 
 
 def test_build_current_year_beyond_coverage_is_not_quiet(tmp_path):
-    out = build_current(tmp_path, now=datetime(2027, 2, 1, tzinfo=timezone.utc))
+    out = build_current(tmp_path, now=datetime(2028, 2, 1, tzinfo=timezone.utc))
     assert out["calendar"]["state"] == "schedule_needs_updating"
     assert out["calendar"]["meetings"] == []
     assert out["calendar"]["state"] != "no_events"

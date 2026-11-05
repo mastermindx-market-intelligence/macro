@@ -1,0 +1,181 @@
+{
+  "schema": "gmi.wp02.required_frame_evidence_handoff/v1",
+  "status": "RESEARCH_HANDOFF_NOT_ADOPTED_CONTRACT",
+  "accepted_quota_shape_only": true,
+  "thresholds": null,
+  "fields": [
+    {
+      "required_field": "issuer_identity",
+      "existing_partial_inputs": [
+        "reference.security_master.issuer_id",
+        "reference.security_master.issuer_state",
+        "reference.security_master.issuer_cik",
+        "reference.issuer_master"
+      ],
+      "custodian_role": "Existing identity owner",
+      "required_evidence_or_rule": "Resolved issuer evidence and foreign cross-listing linkage; preserve current IDs, superseded rows, migrations and all unresolved cases.",
+      "required_vintage_semantics": [
+        "identity_evidence_source",
+        "evidence_version",
+        "evidence_observed_at",
+        "valid_scope"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "security_identity",
+      "existing_partial_inputs": [
+        "reference.security_master.security_id",
+        "reference.security_master.listing_key",
+        "reference.vendor_aliases"
+      ],
+      "custodian_role": "Existing identity owner",
+      "required_evidence_or_rule": "Dated security-to-economic-issuer mapping with alias/class/counter distinctions; no symbol-only deduplication.",
+      "required_vintage_semantics": [
+        "alias_valid_from",
+        "alias_valid_to",
+        "observed_at",
+        "known_at"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "primary_listing",
+      "existing_partial_inputs": [
+        "reference.security_master.country",
+        "reference.security_master.mic"
+      ],
+      "custodian_role": "Existing listing/source owner with identity owner",
+      "required_evidence_or_rule": "Primary/secondary/dual-primary assertion from official issuer/exchange source; accepted geography and tie rule. Current country/mic fields are partial inputs only.",
+      "required_vintage_semantics": [
+        "source_published_at",
+        "source_observed_at",
+        "listing_status_valid_at",
+        "decision_policy_version"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "sector_group",
+      "existing_partial_inputs": [
+        "breadth.ticker_sectors.sector/source",
+        "universe.membership.sector",
+        "china_sectors.membership.l1_code/l1_name",
+        "canada_search.members.sector"
+      ],
+      "custodian_role": "Research/source classification owner",
+      "required_evidence_or_rule": "Accepted six-group mapping and original dated classification plus issuer-activity evidence for narrow/mixed groups; retain unmappable states.",
+      "required_vintage_semantics": [
+        "classification_as_of",
+        "classification_observed_at",
+        "crosswalk_version"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "market_cap",
+      "existing_partial_inputs": [
+        "polygon_universe.reference.market_cap_usd",
+        "polygon_universe.reference.asof"
+      ],
+      "custodian_role": "Existing market/reference source owner",
+      "required_evidence_or_rule": "Authorized original or entitled capitalization value with issuer/security basis, original unit/currency, share-class/ADR handling, value provenance and revision. Cache asof is not valuation proof.",
+      "required_vintage_semantics": [
+        "valuation_date_or_timestamp",
+        "source_published_at",
+        "source_observed_at",
+        "system_available_at",
+        "revision_id"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "size_category",
+      "existing_partial_inputs": [],
+      "custodian_role": "Commissioning/research owner",
+      "required_evidence_or_rule": "Exact numeric thresholds, boundary inclusivity, currency, valuation cutoff, aggregation and FX rules; all currently unfrozen.",
+      "required_vintage_semantics": [
+        "policy_frozen_at",
+        "market_cap_cutoff",
+        "policy_version"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "population",
+      "existing_partial_inputs": [
+        "symbol_directory completion receipts",
+        "source-specific universe rosters"
+      ],
+      "custodian_role": "Research and source owners",
+      "required_evidence_or_rule": "Declared venue/instrument population, coverage limits, selected extract completeness, row/pagination reconciliation and exclusions.",
+      "required_vintage_semantics": [
+        "source_snapshot_as_of",
+        "source_observed_at",
+        "selection_cutoff",
+        "population_revision"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "documents",
+      "existing_partial_inputs": [
+        "Existing SEC and regional issuer/source owners; no per-issuer inventory in inspected frame tables"
+      ],
+      "custodian_role": "Incumbent filing/source owners",
+      "required_evidence_or_rule": "Attempt/status inventory for annual2023–2025 plus actually available2026 interim/material events. Unavailable or not-expected documents remain explicit; do not require successful disclosure to keep an issuer.",
+      "required_vintage_semantics": [
+        "reporting_period",
+        "document_publication_at",
+        "observed_at",
+        "system_available_at",
+        "amendment_or_revision"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "rights",
+      "existing_partial_inputs": [
+        "Existing source rights/policy owners"
+      ],
+      "custodian_role": "Source/rights owner",
+      "required_evidence_or_rule": "Purpose-specific collection, retention, derivation and publication rights/entitlements. Public browsing is not an automatic production or training right.",
+      "required_vintage_semantics": [
+        "terms_version",
+        "entitlement_effective_at",
+        "retention_deadline",
+        "revocation_at"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "selection",
+      "existing_partial_inputs": [
+        "Accepted WP02 quota shape"
+      ],
+      "custodian_role": "Research owner; independent verification",
+      "required_evidence_or_rule": "All method inputs frozen; deterministic seed/order/ties and simultaneous INT quotas; no replacement conditioned on vendor output.",
+      "required_vintage_semantics": [
+        "frame_frozen_at",
+        "method_frozen_at",
+        "selection_executed_at",
+        "vendor_output_first_access_at"
+      ],
+      "adopted_as_application_contract": false
+    },
+    {
+      "required_field": "difficult_cases",
+      "existing_partial_inputs": [
+        "Accepted stress-label vocabulary"
+      ],
+      "custodian_role": "Research/source owners and independent reviewers",
+      "required_evidence_or_rule": "At least30 difficult cases, six per stratum; source-linked absence/substitution rule and review/disagreement record.",
+      "required_vintage_semantics": [
+        "case_rule_frozen_at",
+        "annotation_at",
+        "independent_review_at"
+      ],
+      "adopted_as_application_contract": false
+    }
+  ]
+}

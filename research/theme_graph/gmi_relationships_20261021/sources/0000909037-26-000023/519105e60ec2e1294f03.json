@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-22T15:31:05Z",
+ "accession": "0000909037-26-000023",
+ "cik": "0000909037",
+ "doc_byte_length": 13218054,
+ "doc_sha256": "f74e20149613e8b3dd58c2c8e8d220f25950a2655c93de977e306d24b2a4a68f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-22",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sqm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3226053,
+  "byte_start": 3225627,
+  "normalized": "for at least 25% of lithium and lithium derivatives sales, representing approximately 24% of our lithium revenues in 2025. Our ten largest customers together accounted for approximately 63% of revenues. One supplier, Corfo, accounted for approximately 25% of this business line's cost of sales, mainly related to lease payments payable to Corfo under the Corfo Agreements for lithium products produced in the Salar de Atacama.",
+  "normalized_sha256": "519105e60ec2e1294f03ce6efbb7c732f9d94719b2b33a7df698e8ec7977b485",
+  "raw": "for at least 25% of lithium and lithium derivatives sales, representing approximately 24% of our lithium revenues in 2025. Our ten largest customers together accounted for approximately 63% of revenues. One supplier, Corfo, accounted for approximately 25% of this business line's cost of sales, mainly related to lease payments payable to Corfo under the Corfo Agreements for lithium products produced in the Salar de Atacama.",
+  "raw_sha256": "519105e60ec2e1294f03ce6efbb7c732f9d94719b2b33a7df698e8ec7977b485"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/909037/000090903726000023/sqm-20251231.htm",
+ "xbrl_contexts": []
+}

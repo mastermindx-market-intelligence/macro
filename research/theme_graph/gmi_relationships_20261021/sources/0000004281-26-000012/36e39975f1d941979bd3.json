@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-12T22:23:47Z",
+ "accession": "0000004281-26-000012",
+ "cik": "0000004281",
+ "doc_byte_length": 3061915,
+ "doc_sha256": "944f4eb4245e8bbf7150459e84ae51d6d890f797d59da002ebc0d358f7b7fdb6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "hwm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1645500,
+  "byte_start": 1644848,
+  "normalized": "RTX Corporation and GE Aerospace each represented approximately 11% of the Company’s third-party sales for the year ended December 31, 2025. These sales were primarily from the Engine Products segment.",
+  "normalized_sha256": "cc51c1892c584ac76ba83b44cf571bfaa11f7b8fcc71e985d724ff1359f6bbd8",
+  "raw": "RTX Corporation and GE Aerospace each represented approximately</span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:112%\"> <ix:nonFraction unitRef=\"number\" contextRef=\"c-259\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-806\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-260\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-807\">11</ix:nonFraction></ix:nonFraction>% of the Company&#8217;s third-party sales for the year ended December&#160;31, 2025. These sales were primarily from the Engine Products segment.",
+  "raw_sha256": "36e39975f1d941979bd338d76466d8d8f21d633536945896291ab13d8a2278ec"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/4281/000000428126000012/hwm-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 123746,
+   "byte_start": 122970,
+   "context_ref": "c-259",
+   "raw": "<xbrli:context id=\"c-259\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000004281</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:ProductOrServiceAxis\">hwm:AerospaceMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">hwm:GeneralElectricCompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "350ad38867529b5937956ef029bd795e28b1be3c2843a46718a66c53dd22fb4f"
+  }
+ ]
+}

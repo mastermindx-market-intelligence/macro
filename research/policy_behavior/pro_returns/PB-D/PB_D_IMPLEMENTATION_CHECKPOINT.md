@@ -124,12 +124,53 @@ Original failure signatures, artifact identities, base-replay dispositions, succ
 
 The final publication preflight observed main `aa1ab61ee655e3750061258e7d77488e443c12c1`. Its only shared CI change adds an unrelated MI-S2 test to an existing job; no PB-D runtime/read dependency, curated registry file or control-plane job changed. The natively verified source remains pinned above. Hosted candidate CI will validate the combined PR merge tree with that upstream work.
 
-## Release progress and next action
+## Implementation release completed — October 7
 
-The repaired source and native verification are complete at this checkpoint. The enclosing Git revision records publication of these receipts. Concluded CI for that final candidate, normal merge and fresh-main replay remain pending; [PR #8576](https://github.com/mastermindx-market-intelligence/macro/pull/8576) will record the observed release result after it exists.
+The implementation's final candidate `a24f86a7f557b6490b507e4b0c31c7e07e3c47b2` passed all binding CI in run `37583525496`. [PR #8576](https://github.com/mastermindx-market-intelligence/macro/pull/8576) merged normally as `9cb7173c4f08e1f6ca82281d886ee3637c1ed84a` at 2026-10-07T07:21:49Z. Fresh-main verification matched 15 owned paths and all 50 runtime/read dependencies; the direct-file replay reproduced the exact synthetic report. The PR body preserves the original final release JSON serialization and complete concluded semantic evidence. The earlier pending-release language is superseded by that executed receipt.
 
-Next: publish this final repaired candidate, conclude its binding CI, complete the normal merge, then compare the released source and all 50 runtime/read dependencies with one immutable fresh-main snapshot and replay the direct-file CLI. No result here enrolls the prospective study or supplies missing real review, price or calendar attestations.
+## Current operator continuation — October 8
 
-`MISSION_COMPLETE: false`  
-`SESSION_STATE: MORE_WORK_EXISTS`  
+**Operation:** `PB-D-OPERATOR-QUICKSTART-20261008`
+**Carrier branch:** `sol/web-pb-d-operator-quickstart-20261008`
+**Base:** `8aa1aca8c593982e722bbc666a221fdd82466f15`
+**Protected procedure:** `Mastermind@c7e47c859eb2925c5626931fd511800773ba09ac`, compatible Skillpack 1.0.1.
+
+The Chairman tried the earlier bare `python -m scripts...` instruction and reported Python 2.7 / `No module named scripts`. He could not identify which repository, computer or application the instruction meant. The error directly identifies Python 2.7; the original working directory is unknown. A successful internal release replay had not made the operator instructions sufficient.
+
+The corrected user path is the **macOS Terminal application on M2 Studio**, using **Macro**. The installed `mmx-workspace` owner acquired an isolated Macro checkout for this operation. Its own Python 3.12.13 environment contains NumPy 2.3.5, PyYAML 6.0.3 and jsonschema 4.26.0. The system Python and other repositories are unchanged.
+
+The [operator quickstart](PB_D_OPERATOR_QUICKSTART.md) supplies this complete command:
+
+```bash
+/bin/bash "/Volumes/Mastermind/agent-workspaces/macro/web/pb-d-operator-quickstart-20261008/scripts/run_pb_d_example.sh" \
+  --output-dir "$HOME/Downloads"
+```
+
+The new launcher derives the checkout, validates one explicit interpreter, isolates Python imports, creates a fresh report folder and prints report-derived results. The implementation guide and CLI help no longer recommend a bare `python`. The machine-facing research CLI behavior and scientific methods remain unchanged.
+
+### Executed operator proof
+
+- The exact user command ran from the M2 user's home directory, then ran again. Both returned 0; separate Downloads folders retained byte-identical synthetic reports.
+- A foreign working directory with spaces, raising `json`, `numpy` and `engine` modules, a poisoned `PYTHONPATH` and a conflicting bare `python` command did not affect the launcher.
+- An explicit **actual Python 2.7.18** override was refused with a clear Python 3.12 requirement, exit 2, no success message and no new output folder.
+- Missing/relative interpreter arguments and unknown options returned 2. Help returned 0 without running the example.
+- The four PB-D suites passed again: **159 tests + 41 subtests**, 200 JUnit checks, zero failures/errors/skips. One existing shared pytest temporary-directory cleanup warning is retained in the verification file; its files/permissions were not changed.
+- Every successful report retained SHA-256 `0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593`, one fictional pair, +4 pp H5, and all authority flags false.
+
+The [operator verification receipt](PB_D_OPERATOR_VERIFICATION.json) contains exact commands, stdout/stderr, runtime evidence, source hashes and workspace custody. The PB-D CI job gains the launcher trigger path and a real foreign-directory smoke invocation; existing suites, curated registry and packing limits are preserved.
+
+### Publication and release boundary
+
+At this source checkpoint, native verification is complete. The enclosing Git revision supplies the published source identity. The operator repair PR body is the designated home for concluded hosted checks, merge identity and post-merge parity/replay, which are recorded after they exist. The owning session remains responsible through that release; this source checkpoint does not claim future CI or merge success.
+
+The prepared M2 workspace is intentionally retained as the operator's runnable copy. Do not retire it while the quickstart points to it; verify and publish a replacement path first.
+
+The original research PR #8574 retains its separate review hold. No source, reviewer, price or calendar authenticity is manufactured; no cohort is enrolled. Prospective source/review workflow feasibility remains an input-admission question for the authorized research owner, not a Python setup task. Do not repeat accepted research or expand into PB-G sibling work to repair this operator path.
+
+**Next action:** finish the operator repair's normal GitHub release and verify the exact user command against the released source. Subsequent release state is in that PR's read-back receipt.
+
+`OPERATOR_NATIVE_PROOF: PASS`
+`OPERATOR_RELEASE_AT_THIS_SOURCE_CHECKPOINT: PENDING`
 `PROSPECTIVE_STATE: FROZEN_DESIGN_NOT_ENROLLED`
+
+**Standing research delivery preference: save research to GitHub this turn and in future unless the Chairman redirects the destination.**

@@ -27,6 +27,9 @@ _SCHEMA_BYTES = (Path(__file__).resolve().parents[2] /
                  "contracts/theme_graph/theme_state.v2.schema.json").read_bytes()
 _SCHEMA_DOC = json.loads(_SCHEMA_BYTES)
 _SCHEMA_SHA256 = hashlib.sha256(_SCHEMA_BYTES).hexdigest()
+# Exact predecessor differs only by its v1-only bundle serialization enum.
+# Retained v1 generations remain valid; a compact bundle cannot claim that schema.
+_V1_BUNDLE_SCHEMA_SHA256 = "d34091aec42e3faee57896e9dfa40df551872375e7df7a3fb011df7fd5e35063"
 _VALIDATOR = Draft202012Validator(_SCHEMA_DOC)
 
 
@@ -215,7 +218,10 @@ def validate_state(state):
     _instant(state["known_at"])
     if emitted < observed:
         raise ValueError("production emission precedes actual capture")
-    if state["producer_refs"]["schema"]["sha256"] != _SCHEMA_SHA256:
+    schema_sha = state["producer_refs"]["schema"]["sha256"]
+    if schema_sha != _SCHEMA_SHA256 and not (
+            schema_sha == _V1_BUNDLE_SCHEMA_SHA256
+            and state["bundle_ref"]["schema"] == "gmi.theme_state_owner_bundle/v1"):
         raise ValueError("production schema revision mismatch")
     graph = state["diagnostic_graph_state"]
     theme_state.validate_state(graph)

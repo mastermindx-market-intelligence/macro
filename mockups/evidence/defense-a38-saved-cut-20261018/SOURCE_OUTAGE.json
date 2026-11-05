@@ -1,0 +1,11 @@
+{
+  "banner": "Showing the first 2 governed records while the complete workspace is unavailable.",
+  "bannerHidden": false,
+  "retainedRecords": 10,
+  "selected": "govws-22f2ee53487e1e6c760c13e0",
+  "sourceClocks": "Evidence date: 2026-10-16\nKnown to Mastermind: 2026-10-15T01:51:37.472913+00:00\nSource build: 2026-10-16T01:52:43.565231+00:00\nDevice copy: 2026-10-19T11:30:42.731Z\nWorkspace: grw2-120d87bf4021f8d3610168df\nSaved filters: {\"mode\":\"changes\",\"truth\":\"defense\",\"q\":\"\",\"agency\":\"\",\"ticker\":\"LMT\"}",
+  "newCapture": {
+    "options": "Current unsaved viewA38 browser verificationA38 Defense LMT exact windowA38 empty visible search",
+    "status": "Wait for the complete verified workspace before saving its original evidence window."
+  }
+}

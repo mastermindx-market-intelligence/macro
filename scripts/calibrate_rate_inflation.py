@@ -53,7 +53,8 @@ warnings.filterwarnings("ignore")
 from lib import config, store  # noqa: E402
 from engine import inputs  # noqa: E402
 from engine.rate_inflation_transmission import (build_drivers, DRIVERS_META,  # noqa: E402
-                                                ASSETS_META)
+                                                ASSETS_META, scenario_cell_metadata,
+                                                scenario_calibration_metadata)
 from engine.validation import (clark_west, oos_r2,  # noqa: E402
                                purged_folds, fold_robust, vif, top_correlated_pairs)
 
@@ -321,14 +322,17 @@ SCENARIO_UNDERLYING = {
 }
 
 
-def scenario_betas(f: pd.DataFrame) -> dict:
+def scenario_betas(f: pd.DataFrame, *, metadata: dict | None = None,
+                   generated_at: str | None = None) -> dict:
     closes = inputs.yahoo_closes()
     out = {}
+    cells = {}
     for drv, ucol in SCENARIO_UNDERLYING.items():
         if ucol not in f:
             continue
         dch = f[ucol] - f[ucol].shift(H)                 # contemporaneous 63d change ending at t
         row = {}
+        cell_row = {}
         for tkr, _lbl, _kind in ASSETS:
             s = closes.get(tkr)
             if s is None:
@@ -343,7 +347,14 @@ def scenario_betas(f: pd.DataFrame) -> dict:
             if not v:
                 continue
             row[tkr] = round(float(j["x"].cov(j["r"]) / v), 4)
+            if metadata is not None:
+                cell_row[tkr] = scenario_cell_metadata(j, row[tkr])
         out[drv] = row
+        cells[drv] = cell_row
+    if metadata is not None:
+        metadata.clear()
+        metadata.update(scenario_calibration_metadata(f, out, cells, generated_at=generated_at,
+                                                      horizon_sessions=H, minimum_n=MIN_OBS))
     return out
 
 
@@ -381,7 +392,9 @@ def main() -> int:
                 "purged-CV sign robustness + bootstrap-CI tercile edge + Clark-West "
                 "return-forecast bar. No look-ahead."}}
     report["transmission_matrix"] = transmission_matrix(drivers, fwd, split)
-    report["scenario_betas"] = scenario_betas(f)
+    scenario_metadata = {}
+    report["scenario_betas"] = scenario_betas(f, metadata=scenario_metadata)
+    report["scenario_beta_metadata"] = scenario_metadata
     report["scored_gate"] = scored_gate(drivers, eq, fwd_spy, split)
     report["collinearity"] = collinearity(drivers, f)
 

@@ -1,0 +1,156 @@
+Risk Radar
+2026-10-16
+×
+CAUTION
+83/100
+Growth scare / defensive rotation
+Trim chasing; favour good entries over extended leaders.
+Pullback odds ≥5%
+5d 5%
+10d 12%
+21d 22%
+1.24× vs normal 18%
+Fed: Hawkish
+Seasonal caution
+Overseas low
+Market internals
+Incomplete picture
+Trend
+Risk-off▼
+Stress
+Incomplete read
+
+Some inputs are unavailable; this is not an all-clear.
+
+Growth scare / defensive rotation: building
+
+Settled 2026-10-16
+Odds evidence · 21d thin history · n=66
+Settled evidence · 4 sources
+
+Leadership and risk · settled evidence
+
+Rotation evidence is unavailable for this session. This does not establish a stable market.
+
+The macro backdrop and relative leadership describe different aspects of the market. Shared price or breadth inputs do not count as independent confirmation.
+
+Some source relationships remain unknown; there is no independent-signal count.
+
+Last recorded backdrop change: Risk-on → Mixed · 2026-09-30.
+
+Relative strength can reflect a smaller decline. It does not establish fund inflows, institutional distribution, or a forecast of the next selloff.
+
+SOURCE↕	ITS OWN READ↕	AS OF↕	FRESHNESS↕
+Market state	RISK_OFF · 40	2026-10-16	This session required
+Leadership cohort	CRACKING	2026-10-14	Older than this session required
+Cross-asset scares	caution · 83	2026-10-16	This session
+Relative leadership	Defensive groups and broader-market proxies gaining relative strength	2026-10-15	Older than this session
+
+grey-deer-v1-2026-08-19 · bundle 2025aa98261ad22b · coverage DEGRADED · coherence MIXED (scope market_reads) · stage null (required_coverage_unavailable) · stage_since null (no_episode_lifecycle_in_v0) · engine/risk_envelope.py
+
+No capital restrictions in force 0 active Separate from the market readings.
+
+What's driving it?
+Leading
+Cyclicals fading vs defensives
+— clearly
+?
+Calendar
+Midterm year · weaker stretch
+rotate
+?
+Overseas
+Pressure from abroad
+Low
+?
+Correlation
+Syncing up
+?
+Tracked overseas markets
+Scare ladder
+highest first
+Credit stress
+89.7
+risk-off
+Growth scare / defensive rotation
+82.7
+elevated
+Global breadth breakdown · data 2 days behind
+76.5
+caution
+Rates / inflation shock
+69.7
+caution
+Volatility event
+28.8
+calm
+Trend extension watch
+23.9
+calm
+Breadth internals deterioration
+—
+Unavailable
+Volatility & correlation
+as of 2026-10-15
+Detailed volatility, curve, correlation and dispersion context. Display-only — the regime read above remains primary.
+Volatility level
+breeze
+5-day volatility change
+breeze
+Near-term vs far-term outlook
+breeze
+How much traders expect next
+breeze
+Overnight price swings
+breeze
+How much stocks move together
+breeze
+3-month implied correlation
+breeze
+Stock-by-stock swings
+breeze
+Sentiment
+?
+Risk appetite
+12
+/100
+Fear
+Sentiment mix
+49
+/100
+Neutral
+Panic
+Fear
+Neutral
+Greed
+Euphoria
+Use both lenses to size risk — neither is a trade signal.
+The lenses disagree — the broader mix reads Neutral while risk appetite reads Fear: read both before leaning on either.
+Advanced sentiment context
+Model estimates and mood gauges are display-only context — not forecasts; the response is sizing, not selection; forward records accruing.
+Leadership context
+as of 2026-10-14
+Current theme pulse
+as of 2026-10-14
+AI Software
+#10
+AI Agents
+#18
+Other Software
+#7
+View all 7 themes
+Compare live rank and five-session momentum across software, semis and prior hardware leaders. Descriptive rotation only — not a forecast or Market-State input.
+
+It is not today's leader roster or a broad-market veto.
+
+Residual hardware damage
+— median
+21%
+below
+63
+-session high
+Method & track record
+Track record
+Grading calls as they mature
+
+Advisory — sizes risk; does not override the measured tape.

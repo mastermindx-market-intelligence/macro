@@ -1,0 +1,78 @@
+{
+  "benchmark_id": "mag7_forced_override_2026-07-11",
+  "frozen": true,
+  "source": "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-11",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-23",
+    "historical_source_availability": "unverified",
+    "dependence_group": "mag7-july-2026",
+    "source": {
+      "path": "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+      "sha256": "6d696600e09a105b74c02fa42090d75a821b59177c28630af918f8a9ec2adb50"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-11",
+        "source_lines": [
+          15,
+          20
+        ],
+        "text": "On 2026-07-11 the operator ordered the site to reflect Mag-7 leadership (\"MAG 7 is on the\nrun … yet our us_stocks.html and baskets.html dashboard does not reflect any of this\") at a\nmoment when the engines' own reads were bearish-to-skeptical: the action board had mag7\n**deteriorating → avoid**, the Ignition Radar read **⚪ OFF · K=0/8**, and the masterplan\nitself noted MAGS was \"~8% below its 52-week high: the run is a **recovery inside a larger\nconsolidation** — which is exactly why every trend-anchored engine read it as a bounce.\"",
+        "sha256": "43962991434a201f8370e227d01ca660f215417df0c4ae70dc351308fe2b0404"
+      },
+      {
+        "event_date": "2026-07-11",
+        "source_lines": [
+          33,
+          34
+        ],
+        "text": "- **07-11** — Operator initiates the Mag 7 Command program over the engines' reads\n  (masterplan §0 records both sides verbatim). The board lands on us_stocks.",
+        "sha256": "aee610fedef6404a909eb59592b8d4b987a2121ad8c27ef25f212a8062558eb5"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        92,
+        103
+      ],
+      "text": "## §4. Rules derived (with promotion status — house epistemics: n=1 anecdotes seed\ncandidate rules; process rules that are structurally obvious promote immediately;\nmarket-behavior rules stay candidates until gauntleted)\n\n- **R1 (PROMOTED — process; registry §2 row).** No operator force-adds of directional\n  calls to signal surfaces. Operator conviction enters the system as a display-tier watch\n  item or a pre-registration — never as a pinned board/alert. Removal of the un-gauntleted\n  surface is not optional cleanup; it is the enforcement.\n- **R2 (CANDIDATE — market; needs prereg + gauntlet before becoming a gate).**\n  Higher-timeframe veto: a leadership/breakout call on cohort X may not surface as\n  actionable while the parent index's weekly+monthly structure is in a topping/distribution\n  read. To be tested as a formal gate on future leadership constructions, not assumed.",
+      "sha256": "0fcfee7ad9b2bd0fda8bf5c15d93abe35270b7574f77eeffd802e15dd2315e9b"
+    }
+  },
+  "question_en": "Given the supplied July 11 observations and operator request, what may the system lawfully infer and display, and which proposed rule still needs testing?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-11 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-11] On 2026-07-11 the operator ordered the site to reflect Mag-7 leadership (\"MAG 7 is on the\nrun … yet our us_stocks.html and baskets.html dashboard does not reflect any of this\") at a\nmoment when the engines' own reads were bearish-to-skeptical: the action board had mag7\n**deteriorating → avoid**, the Ignition Radar read **⚪ OFF · K=0/8**, and the masterplan\nitself noted MAGS was \"~8% below its 52-week high: the run is a **recovery inside a larger\nconsolidation** — which is exactly why every trend-anchored engine read it as a bounce.\"\n[2026-07-11] - **07-11** — Operator initiates the Mag 7 Command program over the engines' reads\n  (masterplan §0 records both sides verbatim). The board lands on us_stocks.",
+  "expected_properties": [
+    {
+      "tag": "evidence_over_override",
+      "check": "Acknowledge the skeptical engine reads and recovery inside consolidation; operator conviction does not justify a directional force-add."
+    },
+    {
+      "tag": "process_vs_market",
+      "check": "Distinguish the promoted no-force-add process rule from the still-candidate higher-timeframe market veto; do not turn the latter into an established gate."
+    },
+    {
+      "tag": "lawful_next_step",
+      "check": "Allow a display-tier watch item or preregistration while retaining ordinary gauntlet and surface controls."
+    },
+    {
+      "tag": "cutoff",
+      "check": "Do not use the later crash or future returns as July 11 inputs or claim they were predictable."
+    },
+    {
+      "tag": "source_limits",
+      "check": "Describe this as supplied retrospective text under current doctrine; historical source availability remains unverified."
+    }
+  ],
+  "known_failure_modes": [
+    "Promote operator conviction, context or an anecdote into a directional execution grant.",
+    "Use subsequent outcomes or silently assume historical source availability.",
+    "Treat related Mag-7 cases as independent empirical observations."
+  ],
+  "gold_standard_sentence": "The recorded engines support a skeptical, conditional watch or preregistration, not an operator-forced directional call; the higher-timeframe veto remains a candidate market rule requiring its own tests.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

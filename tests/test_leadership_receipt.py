@@ -349,6 +349,20 @@ class TestTemplate:
             "  .lrc-figure.down { color:var(--ink-down, var(--down)); }",
         ]
 
+    def test_ts_chip_invalid_label_en_zh(self):
+        text = TEMPLATE.read_text(encoding="utf-8")
+        assert "const tsChip={" in text
+        assert "}[tsStat]" in text
+        block = text.split("const tsChip={", 1)[1].split("}[tsStat]", 1)[0]
+        assert "invalid:L('Theme state dated after this read','主题状态日期晚于本次判读')" in block
+        assert block.count("Theme state dated after this read") == 1
+        assert block.count("主题状态日期晚于本次判读") == 1
+        assert all(
+            f"{key}:L(" in block
+            for key in ("fresh", "stale", "missing", "not_published", "invalid")
+        )
+        assert "const tsChipCls=tsStat==='fresh'?'state-fresh':'state-stale';" in text
+
 
 class TestParity:
     def test_theme_state_max_age_days(self):

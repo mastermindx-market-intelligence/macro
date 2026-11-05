@@ -1,0 +1,60 @@
+{
+  "state": "PASS",
+  "changed_fields": [
+    "contractors",
+    "observations"
+  ],
+  "all_other_case_fields_unchanged": true,
+  "before_known_at": null,
+  "after_known_at": null,
+  "correction_known_at": "2026-10-14T02:33:08.231760+00:00",
+  "original_source_observed_at": "2026-08-26T09:37:21.528793+00:00",
+  "preserved_fields": {
+    "_population_clock": "2026-01-29",
+    "case_key": "fms:transmittal:25-104",
+    "transmittal_number": "25-104",
+    "identity_basis": "transmittal",
+    "case_identity_state": "resolved",
+    "aliases": [],
+    "customer_country": "Spain",
+    "capability_title": "Spain \u2013 F-100 Frigate Mid-Life Upgrade",
+    "source_item_enumeration": "Major Defense Equipment (MDE): Five (5) Shipsets AEGIS Weapon System Six (6) Shipsets Digital Signal Processor Five (5) Shipsets MK 41 Baseline VIII Vertical Launching System Five (5) Shipsets of Next Generation Surface Search Radar Non-Major Defense Equipment: The following non-MDE items will also be included: ultra high frequency satellite communications radio terminal systems; Global Positioning System Miniature Precision Lightweight GPS Receiver Engines with M-Code; AN/SRQ-4 Ku-band hardware; material required to support the upgrade of NIXIE SLQ-25A to a SLQ-25E; MK 331 Torpedo Setting Panels; MK 32 surface vessel torpedo tube upgrades; U.S. Government support for the MK 45 Mod 2 and Mod 2B Gun Weapon System; modernization efforts, integration, and test support and equipment; munitions support and support equipment; spare parts; consumables and accessories; repair and return support; classified software delivery and support; classified and unclassified publications; technical documentation; personnel training and training equipment; studies and surveys; Contractor Logistics Support; United States (U.S.) Government and contractor engineering, technical and logistics support services; and other related elements of logistics and program support.",
+    "stage": "congressional_notification",
+    "later_stages": "stage_not_observed",
+    "advancement_condition": "official_evidence_of_offered_accepted_or_implemented_loa",
+    "estimated_notification_value": 1700000000,
+    "currency": "USD",
+    "source_caveat": "The description and dollar value are for the highest estimated quantity and dollar value based on initial requirements. Actual dollar value will be lower depending on final requirements, budget authority, and signed sales agreement(s), if and when concluded.",
+    "value_provenance": "dsca_body",
+    "contractor_note": null,
+    "program_links": [
+      {
+        "state": "not_reviewed",
+        "reason_code": "no_reviewed_program_link",
+        "program_id": null,
+        "program_case_link_id": null,
+        "ontology_graph_id": null
+      }
+    ],
+    "clocks": {
+      "official_notification_date": {
+        "value": "2026-01-29",
+        "provenance": "dsca_body_dateline"
+      },
+      "official_web_publication_date": {
+        "value": "2026-01-29",
+        "provenance": "dsca_article_date"
+      },
+      "first_observed_at": "2026-08-26T09:37:21.528793+00:00"
+    },
+    "source_coverage": {
+      "classification": "dsca_and_fr",
+      "surfaces": [
+        "dsca",
+        "federal_register"
+      ],
+      "web_presence": true
+    },
+    "case_state": "current"
+  }
+}

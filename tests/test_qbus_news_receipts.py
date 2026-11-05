@@ -217,3 +217,90 @@ def test_health_rejects_future_observation_and_counter_booleans():
         m.parse_health_receipt(_health(observed_at="2026-10-06T00:00:00+00:00"), now=NOW)
     with pytest.raises(m.NewsReceiptError):
         m.parse_health_receipt(_health(connect_attempts=True), now=NOW)
+
+
+def test_health_projects_diagnostic_error_codes_when_well_formed():
+    from engine import qbus_news_receipts as m
+
+    parsed = m.parse_health_receipt(
+        _health(last_catchup_error="http_401", last_stream_error="stream_auth_error_406"),
+        now=NOW,
+    )
+
+    assert parsed["last_catchup_error"] == "http_401"
+    assert parsed["last_stream_error"] == "stream_auth_error_406"
+    assert parsed["state"] == "live"
+    assert parsed["reason"] == "fresh"
+
+
+@pytest.mark.parametrize(
+    "bad",
+    ["Bearer abc/def", "HTTP 401 Bearer abc", 406, True, "", "a" * 65, ["http_401"]],
+)
+def test_health_invalid_diagnostic_codes_parse_as_none_and_never_gate(bad):
+    from engine import qbus_news_receipts as m
+
+    without_keys = m.parse_health_receipt(_health(), now=NOW)
+
+    parsed = m.parse_health_receipt(
+        _health(last_catchup_error=bad, last_stream_error=bad), now=NOW
+    )
+
+    assert parsed["last_catchup_error"] is None
+    assert parsed["last_stream_error"] is None
+    assert parsed["state"] == without_keys["state"]
+    assert parsed["reason"] == without_keys["reason"]
+
+
+def test_health_receipt_without_diagnostic_codes_parses_both_as_none():
+    from engine import qbus_news_receipts as m
+
+    parsed = m.parse_health_receipt(_health(), now=NOW)
+
+    assert parsed["last_catchup_error"] is None
+    assert parsed["last_stream_error"] is None
+
+
+def test_health_base_carries_both_diagnostic_codes_as_none():
+    from engine import qbus_news_receipts as m
+
+    base = m._health_base("receipt_missing")
+
+    assert base["last_catchup_error"] is None
+    assert base["last_stream_error"] is None
+
+
+def test_additional_health_reports_observations_without_inventing_upstream_recency():
+    from engine.qbus_news_receipts import parse_health_receipt
+
+    extra = {
+        "provider": "massive", "state": "available",
+        "last_successful_poll": "2026-10-05T21:59:50+00:00",
+        "publishers": ["zacks.com", "fool.com"],
+        "accepted_reports": 37, "last_error": None,
+        "upstream_recency": "hourly",
+    }
+    health = parse_health_receipt(_health(additional_sources=[extra]), now=NOW)
+    projected = health["additional_sources"][0]
+    assert projected["state"] == "available"
+    assert projected["delivery"] == "polled"
+    assert projected["configured_publishers"] == ["fool.com", "zacks.com"]
+    assert projected["accepted_reports_since_start"] == 37
+    assert "upstream_recency" not in projected
+
+
+@pytest.mark.parametrize("publishers,count", [
+    (["https://zacks.com"], True), (["zacks.com"] * 65, -1), ("zacks.com", "37"),
+])
+def test_invalid_additional_health_diagnostics_do_not_become_coverage(publishers, count):
+    from engine.qbus_news_receipts import parse_health_receipt
+
+    extra = {
+        "provider": "massive", "state": "available",
+        "last_successful_poll": "2026-10-05T21:59:50+00:00",
+        "publishers": publishers, "accepted_reports": count,
+    }
+    projected = parse_health_receipt(_health(additional_sources=[extra]), now=NOW)["additional_sources"][0]
+    assert projected["state"] == "available"
+    assert "configured_publishers" not in projected
+    assert "accepted_reports_since_start" not in projected

@@ -7,12 +7,15 @@
 # FRESHNESS GATE
 # ─────────────────────────────────────────────────────────────────────────────
 # Before running the matrix builder, this script verifies that the ThetaData
-# OI store contains SPY data for the expected last NYSE session.
+# OI plane has reached the conservative T-1 readiness floor for SPY.
 #
-# The gate reads the OI store (not EOD) because build_matrix() resolves its
-# published asof date from the OI parquet (engine/options_matrix.py line ~478:
-# asof = latest date in oi_all).  Gating on EOD while the builder keys off OI
-# would allow a stale-OI / fresh-EOD mismatch to slip through undetected.
+# This is deliberately a COARSE scheduling/readiness gate, not the source-session
+# selector. build_matrix() independently resolves a bounded common OI/EOD/Greeks
+# session and refuses one more than five NYSE sessions behind the latest OI
+# publication. Keeping the gate on OI is intentionally conservative: if the OI
+# plane itself is stale we do not publish merely because an older common session
+# still exists. EOD/Greeks skew after this gate is handled truthfully by the
+# builder's common-session/null and anti-regression publication rules.
 #
 # Logic:
 #   1. Ask lib/nyse_calendar.expected_last_session() for the expected date, then
@@ -111,10 +114,9 @@ expected = expected_last_session()
 # OI the store can honestly hold at run time is the session BEFORE expected.
 required = last_session_on_or_before(expected - timedelta(days=1))
 
-# Gate on the OI shard — build_matrix() resolves its published asof from
-# the OI store, so freshness of the OI store is what actually matters.
-# Gating on EOD (as before) would silently pass when EOD is fresh but OI
-# lags a session, publishing a mismatched artifact.
+# Gate on the OI shard as a conservative readiness FLOOR. The builder does
+# not use this row as its source session; it resolves and validates a bounded
+# common OI/EOD/Greeks session after this gate passes.
 year = expected.year
 shard = Path(store) / "oi" / "SPY" / f"{year}.parquet"
 if not shard.exists():
@@ -147,19 +149,99 @@ else:
 PYEOF
 }
 
+# Bounded freshness read. Sets status to the first stdout line (fresh/stale),
+# "timeout", or "error". The first 20 stderr lines are copied to the job log.
+# A child in uninterruptible sleep cannot be killed; the marker still lets the
+# retry budget move on, and that child may outlive the job.
+_read_freshness_bounded() {
+    _gate_dir=$(mktemp -d "${TMPDIR:-/tmp}/options_matrix_gate.XXXXXX")
+    (
+        _check_freshness
+    ) > "$_gate_dir/out" 2> "$_gate_dir/err" &
+    _gate_reader_pid=$!
+
+    (
+        _gate_elapsed=0
+        while [ "$_gate_elapsed" -lt "$GATE_READ_TIMEOUT_SECS" ]; do
+            if ! kill -0 "$_gate_reader_pid" 2>/dev/null; then
+                exit 0
+            fi
+            sleep 1
+            _gate_elapsed=$((_gate_elapsed + 1))
+        done
+        if ! kill -0 "$_gate_reader_pid" 2>/dev/null; then
+            exit 0
+        fi
+        touch "$_gate_dir/timeout"
+        # Snapshot children before TERM. Killing the reader reparents them, so a
+        # later pkill -P cannot see a child that ignored TERM.
+        _gate_kids=$(pgrep -P "$_gate_reader_pid" 2>/dev/null || true)
+        pkill -TERM -P "$_gate_reader_pid" 2>/dev/null || true
+        for _gate_kid in $_gate_kids; do
+            kill -TERM "$_gate_kid" 2>/dev/null || true
+        done
+        kill -TERM "$_gate_reader_pid" 2>/dev/null || true
+        sleep 10
+        pkill -KILL -P "$_gate_reader_pid" 2>/dev/null || true
+        for _gate_kid in $_gate_kids; do
+            kill -KILL "$_gate_kid" 2>/dev/null || true
+        done
+        kill -KILL "$_gate_reader_pid" 2>/dev/null || true
+        exit 0
+    ) >/dev/null 2>&1 &
+    _gate_watch_pid=$!
+
+    _gate_rc=0
+    wait "$_gate_reader_pid" 2>/dev/null || _gate_rc=$?
+    if [ -f "$_gate_dir/timeout" ]; then
+        wait "$_gate_watch_pid" 2>/dev/null || true
+    else
+        kill -TERM "$_gate_watch_pid" 2>/dev/null || true
+        wait "$_gate_watch_pid" 2>/dev/null || true
+    fi
+
+    if [ -f "$_gate_dir/timeout" ]; then
+        status=timeout
+    elif [ "$_gate_rc" -eq 0 ]; then
+        status=""
+        IFS= read -r status < "$_gate_dir/out" || true
+    else
+        status=error
+    fi
+
+    _gate_n=0
+    _gate_line=""
+    if [ -f "$_gate_dir/err" ]; then
+        while IFS= read -r _gate_line; do
+            _gate_n=$((_gate_n + 1))
+            if [ "$_gate_n" -gt 20 ]; then
+                break
+            fi
+            printf '%s\n' "[options_matrix] gate stderr: ${_gate_line}"
+        done < "$_gate_dir/err"
+    fi
+
+    rm -rf "$_gate_dir"
+    return 0
+}
+
 # ── freshness gate ────────────────────────────────────────────────────────────
 if [ "${MATRIX_FRESHNESS_BYPASS:-0}" = "1" ]; then
     echo "[options_matrix] MATRIX_FRESHNESS_BYPASS=1 — skipping freshness gate"
 else
     MAX_ATTEMPTS=6
     SLEEP_SECS=1200   # 20 min
+    GATE_READ_TIMEOUT_SECS=600
 
     attempt=1
     while [ "$attempt" -le "$MAX_ATTEMPTS" ]; do
-        status=$(_check_freshness 2>/dev/null || echo "error")
+        _read_freshness_bounded
         if [ "$status" = "fresh" ]; then
             echo "[options_matrix] store fresh (attempt $attempt/$MAX_ATTEMPTS) — proceeding"
             break
+        fi
+        if [ "$status" = "timeout" ]; then
+            echo "[options_matrix] freshness read timed out after ${GATE_READ_TIMEOUT_SECS}s (attempt $attempt/$MAX_ATTEMPTS)"
         fi
         echo "[options_matrix] store not fresh yet (attempt $attempt/$MAX_ATTEMPTS) — sleeping ${SLEEP_SECS}s"
         if [ "$attempt" -eq "$MAX_ATTEMPTS" ]; then

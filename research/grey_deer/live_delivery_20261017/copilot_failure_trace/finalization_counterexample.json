@@ -1,0 +1,331 @@
+{
+  "source_sha256": "78f4d3b320d25ff1b6b86c933fbac725fb0fe1784fe3ec7c4874564a08e926bf",
+  "source_ref": "15bdaec7351dbe2f1bf1a227b6e7498a8b3c0ac7",
+  "source_lines_executed": [
+    8308,
+    8309
+  ],
+  "mode": "pure AST counterexample; no runtime imports",
+  "live_record_id": "68d6442e07c446ac96a8fd7fc33eaf7a",
+  "live_answer_matches_counterexample": true,
+  "live_flags": {
+    "filtered": false,
+    "degraded": false,
+    "error": false,
+    "screened": false
+  },
+  "cases": {
+    "blank_without_repair": {
+      "before": "",
+      "gate_issued": false,
+      "receipt": {
+        "qualified": true,
+        "families": [
+          {
+            "family": "portfolio_current",
+            "label": "portfolio",
+            "state": "NOT_COVERED",
+            "freshness": "NOT_OBSERVED",
+            "conditions": [],
+            "attempted": [],
+            "as_of": [],
+            "contradicted": true
+          }
+        ]
+      },
+      "after_coverage": "Evidence caveat \u2014 portfolio: not covered (contradiction present).",
+      "after_suggestion_split": "Evidence caveat \u2014 portfolio: not covered (contradiction present).",
+      "empty_after_coverage": false,
+      "suggestions": []
+    },
+    "blank_with_repair": {
+      "before": "",
+      "gate_issued": true,
+      "receipt": {
+        "qualified": true,
+        "families": [
+          {
+            "family": "portfolio_current",
+            "label": "portfolio",
+            "state": "NOT_COVERED",
+            "freshness": "NOT_OBSERVED",
+            "conditions": [],
+            "attempted": [],
+            "as_of": [],
+            "contradicted": true
+          }
+        ]
+      },
+      "after_coverage": "I couldn't produce a supported answer after the evidence-coverage repair. Evidence status \u2014 portfolio: not covered. I won't fill missing or unavailable evidence with unsupported inference.",
+      "after_suggestion_split": "I couldn't produce a supported answer after the evidence-coverage repair. Evidence status \u2014 portfolio: not covered. I won't fill missing or unavailable evidence with unsupported inference.",
+      "empty_after_coverage": false,
+      "suggestions": []
+    },
+    "supported_prose_without_repair": {
+      "before": "Supported market answer.",
+      "gate_issued": false,
+      "receipt": {
+        "qualified": true,
+        "families": [
+          {
+            "family": "portfolio_current",
+            "label": "portfolio",
+            "state": "NOT_COVERED",
+            "freshness": "NOT_OBSERVED",
+            "conditions": [],
+            "attempted": [],
+            "as_of": [],
+            "contradicted": true
+          }
+        ]
+      },
+      "after_coverage": "Supported market answer.\n\nEvidence caveat \u2014 portfolio: not covered (contradiction present).",
+      "after_suggestion_split": "Supported market answer.\n\nEvidence caveat \u2014 portfolio: not covered (contradiction present).",
+      "empty_after_coverage": false,
+      "suggestions": []
+    },
+    "blank_without_adverse_coverage": {
+      "before": "",
+      "gate_issued": false,
+      "receipt": {
+        "qualified": true,
+        "families": []
+      },
+      "after_coverage": "",
+      "after_suggestion_split": "",
+      "empty_after_coverage": true,
+      "suggestions": []
+    },
+    "portfolio_witness_no_contradiction": {
+      "before": "Supported market answer.",
+      "gate_issued": false,
+      "receipt": {
+        "qualified": true,
+        "families": [
+          {
+            "family": "portfolio_current",
+            "label": "portfolio",
+            "state": "AVAILABLE",
+            "freshness": "CURRENT_OR_UNSPECIFIED",
+            "conditions": [],
+            "attempted": [
+              "get_portfolio_brief"
+            ],
+            "as_of": [],
+            "contradicted": false
+          }
+        ]
+      },
+      "after_coverage": "Supported market answer.",
+      "after_suggestion_split": "Supported market answer.",
+      "empty_after_coverage": false,
+      "suggestions": []
+    }
+  },
+  "classifier_source_sha256": "a982ab591c3d1a4f940d69bf95e7b499f61af505e35c1f40e3ff50070c758a9d",
+  "classification_cases": {
+    "exact_live_question": {
+      "question": "Is this just rotation out of technology, or is it becoming a broader risk-off move? What should I protect now, what would confirm spreading danger, and what would justify re-entry? Give the source dates and explain what the 21-day 22% figure means. No portfolio percentages or trades.",
+      "context_ticker": null,
+      "profile": {
+        "name": "portfolio_current",
+        "budget": 8,
+        "seed_tools": [
+          "get_portfolio_brief",
+          "read_world_state",
+          "read_factor_state"
+        ],
+        "grounding_scope": "portfolio_current"
+      },
+      "required": {
+        "portfolio_current": [
+          "get_portfolio_brief",
+          "get_watchlist"
+        ]
+      },
+      "visible_tools": [
+        "get_portfolio_brief",
+        "get_watchlist",
+        "read_world_state",
+        "read_factor_state",
+        "list_factor_contradictions",
+        "get_market_events",
+        "read_contradictions"
+      ],
+      "portfolio_trigger": {
+        "text": "portfolio",
+        "span": [
+          252,
+          261
+        ]
+      }
+    },
+    "same_question_without_final_constraint": {
+      "question": "Is this just rotation out of technology, or is it becoming a broader risk-off move? What should I protect now, what would confirm spreading danger, and what would justify re-entry? Give the source dates and explain what the 21-day 22% figure means.",
+      "context_ticker": null,
+      "profile": {
+        "name": "ambiguous",
+        "budget": 3,
+        "seed_tools": [
+          "read_world_state"
+        ],
+        "grounding_scope": "ambiguous"
+      },
+      "required": null,
+      "visible_tools": null,
+      "portfolio_trigger": null
+    },
+    "same_constraint_without_portfolio_token": {
+      "question": "Is this just rotation out of technology, or is it becoming a broader risk-off move? What should I protect now, what would confirm spreading danger, and what would justify re-entry? Give the source dates and explain what the 21-day 22% figure means. No numerical allocations or trades.",
+      "context_ticker": null,
+      "profile": {
+        "name": "ambiguous",
+        "budget": 3,
+        "seed_tools": [
+          "read_world_state"
+        ],
+        "grounding_scope": "ambiguous"
+      },
+      "required": null,
+      "visible_tools": null,
+      "portfolio_trigger": null
+    },
+    "explicit_portfolio_exclusion": {
+      "question": "Is this just rotation out of technology, or is it becoming a broader risk-off move? What should I protect now, what would confirm spreading danger, and what would justify re-entry? Give the source dates and explain what the 21-day 22% figure means. Do not analyze my portfolio.",
+      "context_ticker": null,
+      "profile": {
+        "name": "portfolio_current",
+        "budget": 8,
+        "seed_tools": [
+          "get_portfolio_brief",
+          "read_world_state",
+          "read_factor_state"
+        ],
+        "grounding_scope": "portfolio_current"
+      },
+      "required": {
+        "portfolio_current": [
+          "get_portfolio_brief",
+          "get_watchlist"
+        ]
+      },
+      "visible_tools": [
+        "get_portfolio_brief",
+        "get_watchlist",
+        "read_world_state",
+        "read_factor_state",
+        "list_factor_contradictions",
+        "get_market_events",
+        "read_contradictions"
+      ],
+      "portfolio_trigger": {
+        "text": "my portfolio",
+        "span": [
+          264,
+          276
+        ]
+      }
+    },
+    "affirmative_private_portfolio": {
+      "question": "What risks are building in my portfolio?",
+      "context_ticker": null,
+      "profile": {
+        "name": "portfolio_current",
+        "budget": 8,
+        "seed_tools": [
+          "get_portfolio_brief",
+          "read_world_state",
+          "read_factor_state"
+        ],
+        "grounding_scope": "portfolio_current"
+      },
+      "required": {
+        "portfolio_current": [
+          "get_portfolio_brief",
+          "get_watchlist"
+        ]
+      },
+      "visible_tools": [
+        "get_portfolio_brief",
+        "get_watchlist",
+        "read_world_state",
+        "read_factor_state",
+        "list_factor_contradictions",
+        "get_market_events",
+        "read_contradictions"
+      ],
+      "portfolio_trigger": {
+        "text": "my portfolio",
+        "span": [
+          27,
+          39
+        ]
+      }
+    },
+    "affirmative_portfolio_with_allocation_constraint": {
+      "question": "What risks are building in my portfolio? No portfolio percentages or trades.",
+      "context_ticker": null,
+      "profile": {
+        "name": "portfolio_current",
+        "budget": 8,
+        "seed_tools": [
+          "get_portfolio_brief",
+          "read_world_state",
+          "read_factor_state"
+        ],
+        "grounding_scope": "portfolio_current"
+      },
+      "required": {
+        "portfolio_current": [
+          "get_portfolio_brief",
+          "get_watchlist"
+        ]
+      },
+      "visible_tools": [
+        "get_portfolio_brief",
+        "get_watchlist",
+        "read_world_state",
+        "read_factor_state",
+        "list_factor_contradictions",
+        "get_market_events",
+        "read_contradictions"
+      ],
+      "portfolio_trigger": {
+        "text": "my portfolio",
+        "span": [
+          27,
+          39
+        ]
+      }
+    }
+  },
+  "exact_classification_to_finalization": {
+    "before": "",
+    "gate_issued": false,
+    "receipt": {
+      "qualified": true,
+      "families": [
+        {
+          "family": "portfolio_current",
+          "label": "portfolio",
+          "state": "NOT_COVERED",
+          "freshness": "NOT_OBSERVED",
+          "conditions": [],
+          "attempted": [],
+          "as_of": [],
+          "contradicted": true
+        }
+      ]
+    },
+    "after_coverage": "Evidence caveat \u2014 portfolio: not covered (contradiction present).",
+    "after_suggestion_split": "Evidence caveat \u2014 portfolio: not covered (contradiction present).",
+    "empty_after_coverage": false,
+    "suggestions": []
+  },
+  "limitations": [
+    "Exact source classifier requires portfolio_current; live model-visible authorized schemas were not replayed.",
+    "Tool payloads are synthetic; live contradiction payload scope was not retrieved.",
+    "Provider stop reason/repair flag are not contained in the sanitized runtime record.",
+    "Post-filter function belongs to ask_brain.py and is not substituted or claimed executed here."
+  ]
+}
