@@ -1,0 +1,157 @@
+{
+  "scope": "Synthetic selected legacy provider/readiness only; no protected outcomes or production capacity claim",
+  "environment": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "source_sha256": {
+    "admin/intelligence_os.py": "23127e39063ff02d467d8fa5e5b191b48829d2c0f60c6855954660be1bfcadea",
+    "engine/qledger_store.py": "b34edaad1cb5010093acbb4321b4ecf9287beea3422918f7e9f3b43f94584877",
+    "scripts/grade_qledger.py": "3121b259afaa64c181619cccf128b6fceadf8870147458b7ad351a3c9adbb56c"
+  },
+  "results": [
+    {
+      "rows": 0,
+      "input_bytes": 0,
+      "seconds_with_tracemalloc": 0.19088525000006484,
+      "python_traced_peak_bytes": 1103262,
+      "raw_read_calls": [
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 0,
+          "decoded_bytes": 0
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 0,
+          "decoded_bytes": 0
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 0,
+          "decoded_bytes": 0
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 0,
+          "decoded_bytes": 0
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 0,
+          "decoded_bytes": 0
+        }
+      ],
+      "phase": "first provider after module import (cold remaining lazy imports)"
+    },
+    {
+      "rows": 100,
+      "input_bytes": 26390,
+      "seconds_with_tracemalloc": 0.04161554199981765,
+      "python_traced_peak_bytes": 606800,
+      "raw_read_calls": [
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 100,
+          "decoded_bytes": 26290
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 100,
+          "decoded_bytes": 26290
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 100,
+          "decoded_bytes": 26290
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 100,
+          "decoded_bytes": 26290
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 100,
+          "decoded_bytes": 26290
+        }
+      ],
+      "phase": "warm imported modules; new synthetic corpus generation"
+    },
+    {
+      "rows": 1000,
+      "input_bytes": 264890,
+      "seconds_with_tracemalloc": 0.11284962500030815,
+      "python_traced_peak_bytes": 4816580,
+      "raw_read_calls": [
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 1000,
+          "decoded_bytes": 263890
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 1000,
+          "decoded_bytes": 263890
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 1000,
+          "decoded_bytes": 263890
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 1000,
+          "decoded_bytes": 263890
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 1000,
+          "decoded_bytes": 263890
+        }
+      ],
+      "phase": "warm imported modules; new synthetic corpus generation"
+    },
+    {
+      "rows": 10000,
+      "input_bytes": 2658890,
+      "seconds_with_tracemalloc": 1.1777177499998288,
+      "python_traced_peak_bytes": 48078533,
+      "raw_read_calls": [
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 10000,
+          "decoded_bytes": 2648890
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 10000,
+          "decoded_bytes": 2648890
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 10000,
+          "decoded_bytes": 2648890
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 10000,
+          "decoded_bytes": 2648890
+        },
+        {
+          "owner_store": "claims.jsonl",
+          "lines": 10000,
+          "decoded_bytes": 2648890
+        }
+      ],
+      "phase": "warm imported modules; new synthetic corpus generation"
+    }
+  ],
+  "limits": [
+    "Python tracemalloc peak is allocated Python memory, not whole-process RSS/native allocations.",
+    "One memory/work sample per scale; prior five-sample latency distribution remains synthetic-read-cost.json.",
+    "Legacy provider reads full selected corpus and readiness recomputes it; there is no hard corpus-size bound or whole-request deadline. Fixed owner horizons/families determine repeated passes.",
+    "Source declaration links have a separate eight-reference/three-second Git budget; it does not bound provider/readiness work."
+  ]
+}

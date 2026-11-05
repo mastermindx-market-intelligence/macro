@@ -1,4 +1,63 @@
 ---
+workstream: WS:RUNNER-FLEET-RESILIENCE
+session: github-pr-sweep-2028-c4
+model: sol
+ended_because: ci_handoff
+mission: >-
+  Preserve the complete R1 architecture and incident handoff while correcting the obsolete open-source routing for merged PR6728. Keep current source continuity distinct from host, fleet and production acceptance.
+state_before: >-
+  The original ef2d495972c6 records still describe PR6728 as an active source repair and include September fleet and continuation observations. Canonical PR6728 merged on 2026-09-04 as 6ba3db8543241a2117980206f096b4643aab5163. Later real host, runtime and acceptance outcomes require their existing canonical receipts, not inference from merge.
+changed:
+  - path: docs/superpowers/specs/2026-09-01-ci-runtime-continuity-and-live-fleet-hardening.md
+    what: Retain the entire R1 spec verbatim as dated source and make the already-merged dependency, current owner boundaries and remaining evidence reconciliation explicit.
+  - path: agentos/handoffs/RUNNER-FLEET-RESILIENCE-2026-09-01-runtime-continuity-live-fleet-hardening.md
+    what: Preserve the complete original incident/acceptance handoff verbatim beneath current source-only metadata, without resuming its old operations or manufacturing action-time liveness.
+verified:
+  - command: GitHub canonical PR6728 read
+    result: Merged 2026-09-04T04:33:42Z as 6ba3db8543241a2117980206f096b4643aab5163 from final head 24705fe1fb072032753ef3357c231172215ad7fe.
+  - command: GitHub immutable PR6729 source and review reads
+    result: Original spec blob 2fbb84eaf20cd02f7db99700af894c276fb9f321 and handoff blob 279087230b5b7059ed287b6d6b9d7fe22a5174c1 are retained. Historical review5086239834 binds ef2d495972c6; login/body identity discrepancy remains explicit and is not new-head approval.
+  - command: GitHub current owner record reads at main e26dddef9b88ebefbcb9600423a069a829c6899d
+    result: Runner Fleet and CI merge workstream records remain the existing owners and are not edited here.
+unverified:
+  - Current live fleet size, host reachability, runner admission, cgroup state, queue pressure, source installation or production concurrency.
+  - Later C3R-B or C3P acceptance and runtime-continuity implementation beyond actual existing owner receipts; consume those receipts before considering new effects.
+  - Full current Agent OS store or installed-context compilation, hosted CI and production/browser acceptance for this new source head.
+unresolved:
+  - Current-head CI, merge compatibility and eligible non-author approval of this source reconciliation.
+  - Any remaining implementation, host or product gap after the existing assigned owners reconcile accepted evidence and original effects.
+next_actions:
+  - Qualify this same two-file records carrier through current checks and genuine eligible non-author review; preserve accepted R1 technical evidence without rerunning it solely due to age.
+  - The currently assigned receiver should consume merged6728 and existing later Runner Fleet, CI merge and Wake/Agent Dialogue evidence before any new child or host action. Reconcile actual live writer and uncertain effects on their original carriers.
+  - Continue only the actual remaining accepted journey under current owner admission; source merge never substitutes for staged host or production acceptance.
+do_not_redo:
+  - Do not reopen merged6728 or terminal September source/review children, or assume the old delivered repair ask is a present START.
+  - Do not create independent LFO, QPC, SQH or CR owners, watchers, queues, lifecycle, registry or publication planes outside W5A/EC2A.
+  - Do not infer current three-slot/four-slot capacity, concurrency or liveness from historical records, policy, CI green or branch state.
+  - Do not transfer unknown effects, local unpublished work, host/provider/credential custody or real live writers to another carrier.
+  - Do not repeat rejected self-review, self-merge, privileged host action or account switching; source authors cannot provide the required independent approval.
+danger_areas:
+  - Historical assertions and commands below are immutable evidence at their original epoch, not current runtime authorization.
+  - Existing source, host, release and production proofs remain distinct; all actual security and release holds bind.
+---
+
+# 2026-11-05 source continuity
+
+PR #6728 is merged. Reuse accepted source and existing later owner receipts.
+The complete R1 architectural and incident history remains preserved; the source
+spec above names current owners and the exact next source release action.
+This publication grants no runtime effect and does not declare the operating
+journey complete.
+
+## Original R1 handoff — historical source
+
+The following is the exact original blob `279087230b5b7059ed287b6d6b9d7fe22a5174c1` at PR #6729 head
+`ef2d495972c6d4ce24ccaa5f7173cecaf8c3cec1`, path `agentos/handoffs/RUNNER-FLEET-RESILIENCE-2026-09-01-runtime-continuity-live-fleet-hardening.md`.
+Its observations and action instructions retain their September 2026 epoch.
+Current continuation is stated above; this quotation neither reopens children nor grants effects.
+
+``````text
+---
 schema: agentos.handoff.v1
 workstream: "WS:RUNNER-FLEET-RESILIENCE"
 session: "sol/ci-runtime-continuity-live-fleet-hardening-20260901-r1"
@@ -177,3 +236,4 @@ danger_areas:
     Terminal STOP removes only the exact child watcher source. WATCH_STOP_FAILED reports transport cleanup
     failure but never reopens the child or authorizes a successor.
 ---
+``````

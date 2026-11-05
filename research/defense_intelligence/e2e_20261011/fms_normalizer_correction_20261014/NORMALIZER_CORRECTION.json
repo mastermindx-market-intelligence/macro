@@ -1,0 +1,49 @@
+{
+  "schema": "defense.fms_retained_normalizer_correction.v1",
+  "correction_id": "fmsnorm:a101bfd903c9885b8a14f7de806cf63ff45e284ee028baa769747f74f1cad227",
+  "original_observation_id": "fmsobs:4b439e7cb63c805bcbce99c7b815c789aa061aacf5515cb9bc57177d6c03b013",
+  "corrected_observation_id": "fmsobs:8a4c6c549448c73835152c25c679eb1ae6fbddd440618cb7268f83a5b1d0652c",
+  "source_sha256": "6be5c6c6407aaf54457d4d660d25218caeba031d9a33b0abddde786eae3d24f2",
+  "normalizer_sha256": "0a41031901a0e63177fd98de5b76bea039341e97858fb483cf5adcf0ca3591f6",
+  "contractors": [
+    {
+      "name_as_printed": "Lockheed Martin",
+      "location_as_printed": "Moorestown, NJ, and Manassas, VA",
+      "identity_state": "not_reviewed",
+      "issuer_ref": null
+    },
+    {
+      "name_as_printed": "RTX Corporation",
+      "location_as_printed": "Arlington, VA",
+      "identity_state": "not_reviewed",
+      "issuer_ref": null
+    },
+    {
+      "name_as_printed": "Ultra Maritime Naval Systems and Sensors",
+      "location_as_printed": "Braintree, MA",
+      "identity_state": "not_reviewed",
+      "issuer_ref": null
+    },
+    {
+      "name_as_printed": "General Dynamics",
+      "location_as_printed": "Williston, VT",
+      "identity_state": "not_reviewed",
+      "issuer_ref": null
+    }
+  ],
+  "correction_known_at": "2026-10-14T02:33:08.231760+00:00",
+  "original_source_known_at": "2026-08-26T09:37:21.528793+00:00",
+  "source_observations_sha256": "535f74f59ea4bdcc01937293347b9f5d4c6203e55a446f75003c6e514ee33ce3",
+  "corrected_observations_sha256": "b19633e56ce95c1178db38699fdcfeb50602e9b6962f790b312fab216d822dae",
+  "original_observations_preserved_bytes": 169753,
+  "original_rows": 94,
+  "candidate_rows": 95,
+  "original_known_at": "2026-08-26T09:37:21.528793+00:00",
+  "original_observed_at": "2026-08-26T09:37:21.528793+00:00",
+  "source_acquisition": false,
+  "new_collection_receipt": false,
+  "theme_fingerprint_restamp": false,
+  "correction_availability_not_backdated": true,
+  "stage_authority": "congressional_notification only; same original source evidence",
+  "promotion_state": "isolated_candidate_requires_root_review_and_projection_rebuild"
+}

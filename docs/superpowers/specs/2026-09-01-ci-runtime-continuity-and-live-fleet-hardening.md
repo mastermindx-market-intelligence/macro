@@ -1,3 +1,67 @@
+# CI Runtime Continuity and Live Fleet Hardening — dated R1 source continuity
+
+**Source reconciliation: 2026-11-05.** This PR preserves the R1 architecture and
+handoff without activating its historical implementation instructions. The complete
+original records are quoted verbatim below and in the linked handoff.
+
+## Current source disposition
+
+Macro [#6728](https://github.com/mastermindx-market-intelligence/macro/pull/6728)
+merged on 2026-09-04 at 04:33:42 UTC from exact final head
+`24705fe1fb072032753ef3357c231172215ad7fe` as
+`6ba3db8543241a2117980206f096b4643aab5163`. Its descriptions below as an open
+source-repair candidate are historical. Reuse that merged source; do not reopen
+its source child or reproduce the accepted architectural analysis merely to
+refresh its date.
+
+The source merge does not establish present host admission, C3R-B or production
+acceptance. Before any new implementation or proof, the currently assigned owner
+must consume existing later canonical receipts and reconcile actual remaining
+scope, custody and effects. This record does not declare those receipts absent.
+
+## Preserved architectural boundaries
+
+- Runner Fleet W5A/EC2A remains the sole owner of live-fleet, queue and host-reachability
+  projection. LFO/QPC/SQH/CR remain non-owning internal descriptions; no new queue,
+  watcher, scheduler, liveness store, registry or publication path is created.
+- Source acceptance, host proof, staged rollout, production promotion and live
+  observation remain distinct. The historical three-slot / max-parallel-three
+  descriptions do not assert today's fleet count or concurrency policy. Current
+  availability requires action-time, timestamped owner evidence.
+- Terminal STOP remains terminal. An unchanged remote branch or a CI result does
+  not prove local cleanup, ownership transfer or absence of unknown effects.
+- Any actual C3R-B host/admin/credential ceremony and subsequent production change
+  remain separate actions under current source law and actual owner admission.
+  No listener, label, host, runner, cgroup, credential or capacity change occurs here.
+- Existing Wake/Agent Dialogue, Runner Fleet and CI merge owners retain their
+  boundaries. Current owner records are `agentos/workstreams/WS-RUNNER-FLEET-RESILIENCE.md`
+  (blob `bdfb0876b16c1e5a1add1d00d980ee6eb5c85c33`) and
+  `agentos/workstreams/WS-CI-MERGE-CONTROL-PLANE.md`
+  (blob `12274e2c6205becf4ee1aea877eeeac3110bab69`) as read at main
+  `e26dddef9b88ebefbcb9600423a069a829c6899d`. These records are not changed by this PR.
+
+## Review and remaining release
+
+The historical R1 [approval 5086239834](https://github.com/mastermindx-market-intelligence/macro/pull/6729#pullrequestreview-5086239834)
+remains evidence for its stated exact head. GitHub records login `MastermindX1`,
+while the body names `chriswong6031-creator`; the latter also appears as a candidate
+commit author. This reconciliation preserves that provenance rather than using
+prose to establish a new reviewer identity or transferring the approval to changed source.
+
+The new records head requires applicable current CI, exact scope/mergeability
+proof and genuine eligible non-author formal approval before incumbent
+merge-on-green release. The current assignment owns this source continuation;
+no old author or chat is made an approver. The retained architecture is
+`SPEC_ONLY / R1_FROZEN`, not proof that its entire operating journey is implemented.
+
+## Original R1 architecture — historical source
+
+The following is the exact original blob `2fbb84eaf20cd02f7db99700af894c276fb9f321` at PR #6729 head
+`ef2d495972c6d4ce24ccaa5f7173cecaf8c3cec1`, path `docs/superpowers/specs/2026-09-01-ci-runtime-continuity-and-live-fleet-hardening.md`.
+Its observations and action instructions retain their September 2026 epoch.
+Current continuation is stated above; this quotation neither reopens children nor grants effects.
+
+``````text
 # CI Runtime Continuity + Live Fleet Hardening Architecture — R1 Reconciled
 
 **Status:** records-only architecture freeze; implementation and release remain separately gated  
@@ -618,3 +682,4 @@ Completion requires:
 - **Operations:** exact durable decisions/discoveries/handoffs let a fresh session recover the ruling and next action without this chat.
 
 This architecture authorizes no source implementation, review approval, merge, CI retry/cancellation, watcher creation, host action, registration, credential handling, label/group change, ruleset/admin change, provider action, or production promotion by itself.
+``````

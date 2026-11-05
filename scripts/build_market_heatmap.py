@@ -3,7 +3,10 @@
 The international sibling of ``scripts/build_sp500_heatmap.py``. Reads each
 market's local close matrix + sector classification (offline-safe, no keys) and
 writes ``site/marketdata/<market>_heatmap.json`` consumed by the shared
-``site/heatmap.js`` (flat Sector → stock treemap, ``map_type:"stocks"``).
+``site/heatmap.js`` (flat Sector → stock treemap, ``map_type:"stocks"``). The
+optional page publisher renders the matching standalone SSR shell from that
+same payload so a close-cycle lane cannot advance the JSON while leaving the
+crawler-visible summary on an older observation session.
 
 Sizing
 ------
@@ -15,25 +18,32 @@ Sizing
 
 Usage
 -----
-    python -m scripts.build_market_heatmap                 # all three markets
-    python -m scripts.build_market_heatmap --market china  # one market
+    python -m scripts.build_market_heatmap                 # all three feeds
+    python -m scripts.build_market_heatmap --market china  # one feed
+    python -m scripts.build_market_heatmap --market china --render-page
+                                                          # feed + matching SSR page
 """
 from __future__ import annotations
 
 import argparse
 import json
 import logging
+import os
+import shutil
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import market_heatmap as hm  # noqa: E402
 from lib import config  # noqa: E402
+from lib.pages import write_page  # noqa: E402
 
 log = logging.getLogger("build_market_heatmap")
 
@@ -301,15 +311,174 @@ def build_all(site: Path | None = None, *, generated_utc: str | None = None) -> 
     return out
 
 
+def _page_environment() -> Environment:
+    """Standalone renderer environment matching the build_site heatmap surface."""
+    env = Environment(loader=FileSystemLoader(config.ROOT / "templates"), autoescape=True)
+    env.filters["min"] = lambda seq: min(seq)
+    from engine import i18n
+    from lib.seo import SITE_BASE
+
+    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip, SITE_BASE=SITE_BASE)
+    return env
+
+
+def _page_payload(market: str, payload: dict | None, site: Path) -> dict | None:
+    """Use the just-built payload or the last committed file, exactly as the browser will."""
+    if payload:
+        return payload
+    try:
+        return json.loads((site / "marketdata" / f"{market}_heatmap.json").read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001 — no map means an honest empty shell
+        log.debug("%s heatmap page has no readable payload (%s)", market, e)
+        return None
+
+
+def render_page(
+    market: str,
+    payload: dict | None = None,
+    site: Path | None = None,
+    *,
+    env: Environment | None = None,
+) -> Path:
+    """Render one standalone heatmap page from the payload its browser will fetch."""
+    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    payload = _page_payload(market, payload, site)
+    summary = hm.page_summary(payload)
+    from lib.seo import is_public_path
+
+    gated = is_public_path(f"/{market}_heatmap.html")
+    env = env or _page_environment()
+    out = site / f"{market}_heatmap.html"
+    write_page(out, env.get_template("market_heatmap.html.j2").render(
+        mk=hm.PAGE_META[market],
+        summary=summary,
+        gated=gated,
+        n_tiles=(summary or {}).get("n_tiles") or (payload or {}).get("n_tiles") or 0,
+        siblings=hm.sibling_markets(market),
+    ))
+    log.info("wrote %s (%.0f KB, ssr=%s, gated=%s)", out, out.stat().st_size / 1024,
+             bool(summary), gated)
+    return out
+
+
+def render_pages(
+    payloads: dict[str, dict] | None = None,
+    site: Path | None = None,
+    *,
+    env: Environment | None = None,
+) -> dict[str, Path]:
+    """Render all three pages through the one shared payload-to-SSR owner."""
+    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    payloads = payloads or {}
+    env = env or _page_environment()
+    return {market: render_page(market, payloads.get(market), site, env=env) for market in MARKETS}
+
+
+def _commit_staged_pair(market: str, staged_site: Path, site: Path) -> None:
+    """Replace the generated pair only after both staged artifacts exist."""
+    source_json = staged_site / "marketdata" / f"{market}_heatmap.json"
+    source_page = staged_site / f"{market}_heatmap.html"
+    if not source_json.is_file() or not source_page.is_file():
+        raise RuntimeError(f"{market} heatmap staging did not produce a complete pair")
+
+    target_json = site / "marketdata" / f"{market}_heatmap.json"
+    target_page = site / f"{market}_heatmap.html"
+    target_json.parent.mkdir(parents=True, exist_ok=True)
+    site.mkdir(parents=True, exist_ok=True)
+    token = f"{os.getpid()}-{market}"
+    pending_json = target_json.with_name(f".{target_json.name}.{token}.tmp")
+    pending_page = target_page.with_name(f".{target_page.name}.{token}.tmp")
+    backup_json = target_json.with_name(f".{target_json.name}.{token}.bak")
+    backup_page = target_page.with_name(f".{target_page.name}.{token}.bak")
+    had_json = target_json.is_file()
+    had_page = target_page.is_file()
+    replaced_json = False
+    replaced_page = False
+    try:
+        # Prepare both target-filesystem copies and rollback material before
+        # exposing either new artifact. Two paths cannot be renamed atomically;
+        # if the second replacement fails, restore the first before returning.
+        shutil.copyfile(source_json, pending_json)
+        shutil.copyfile(source_page, pending_page)
+        if had_json:
+            shutil.copy2(target_json, backup_json)
+        if had_page:
+            shutil.copy2(target_page, backup_page)
+        os.replace(pending_json, target_json)
+        replaced_json = True
+        os.replace(pending_page, target_page)
+        replaced_page = True
+    except Exception as exc:
+        rollback_errors: list[str] = []
+        for replaced, had_prior, backup, target in (
+            (replaced_page, had_page, backup_page, target_page),
+            (replaced_json, had_json, backup_json, target_json),
+        ):
+            if not replaced:
+                continue
+            try:
+                if had_prior:
+                    os.replace(backup, target)
+                else:
+                    target.unlink(missing_ok=True)
+            except Exception as rollback_exc:  # noqa: BLE001 — preserve exact damage
+                rollback_errors.append(f"{target}: {rollback_exc}")
+        if rollback_errors:
+            raise RuntimeError(
+                f"{market} heatmap pair replacement failed and rollback was incomplete: "
+                + "; ".join(rollback_errors)
+            ) from exc
+        raise
+    finally:
+        for path in (pending_json, pending_page, backup_json, backup_page):
+            path.unlink(missing_ok=True)
+
+
+def publish(
+    market: str,
+    site: Path | None = None,
+    *,
+    generated_utc: str | None = None,
+    env: Environment | None = None,
+) -> dict:
+    """Publish one coherent JSON + SSR-page pair and return the exact payload.
+
+    The payload and page are built outside the destination first. A template or
+    validation failure therefore leaves the prior committed pair untouched rather
+    than advancing only the browser JSON before asia-close's final site commit.
+    """
+    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    site.parent.mkdir(parents=True, exist_ok=True)
+    # Stage outside the repository: an interrupted runner must not leave an
+    # untracked publish directory in the worktree that the final site commit can
+    # mistake for product output. _commit_staged_pair prepares same-filesystem
+    # destination temps only after both artifacts are complete.
+    with tempfile.TemporaryDirectory(prefix=f".{market}-heatmap-publish-") as staging:
+        staged_site = Path(staging)
+        payload = build(market, staged_site, generated_utc=generated_utc)
+        render_page(market, payload, staged_site, env=env)
+        _commit_staged_pair(market, staged_site, site)
+    return payload
+
+
 def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     ap = argparse.ArgumentParser(description="Build the CN/HK/CA sector heatmap feeds")
     ap.add_argument("--market", choices=MARKETS, help="build a single market (default: all)")
+    ap.add_argument("--render-page", action="store_true",
+                    help="also render the matching standalone SSR page(s)")
+    ap.add_argument("--generated-utc",
+                    help="stable generation label (YYYY-MM-DD HH:MM) for publish retries")
     args = ap.parse_args(argv)
     if args.market:
-        build(args.market)
+        if args.render_page:
+            publish(args.market, generated_utc=args.generated_utc)
+        else:
+            build(args.market, generated_utc=args.generated_utc)
     else:
-        build_all()
+        payloads = build_all(generated_utc=args.generated_utc)
+        if args.render_page:
+            render_pages(payloads)
     return 0
 
 

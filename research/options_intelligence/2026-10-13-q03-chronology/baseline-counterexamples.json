@@ -1,0 +1,52 @@
+{
+  "schema": "options.q03.chronology_probe.v1",
+  "source_ref": "d680a52d98a41264c8ee8d929726c9e0231a4e2a",
+  "git_blob": "088f5a3f1086147ebc89a66cb86b35d612f69c16",
+  "source_sha256": "b52c55c7838d83e7c966da394eed4afa7381698bc628cbb50c84fb826529dd8d",
+  "synthetic_only": true,
+  "empirical_gates_changed": false,
+  "results": [
+    {
+      "case": "P1_outcome_after_fit_but_claimed_mature",
+      "kept": 1,
+      "purged": 0,
+      "label_interval": [
+        "2026-10-01 15:00:00+00:00",
+        "2026-10-01 15:30:00+00:00"
+      ]
+    },
+    {
+      "case": "P1_naive_clocks",
+      "kept": 1,
+      "purged": 0,
+      "label_interval": [
+        "2026-10-01 15:00:00",
+        "2026-10-01 15:30:00"
+      ]
+    },
+    {
+      "case": "P1_mixed_maturity_awareness",
+      "exception": "TypeError",
+      "code": null,
+      "detail": "can't compare offset-naive and offset-aware datetimes"
+    },
+    {
+      "case": "P3_duplicate_sessions_collapse_20_session_horizon",
+      "kept": 1,
+      "purged": 0,
+      "label_interval": [
+        "2026-10-01",
+        "2026-10-01"
+      ]
+    },
+    {
+      "case": "P3_reverse_endpoint",
+      "kept": 1,
+      "purged": 0,
+      "label_interval": [
+        "2026-10-01",
+        "2026-09-30"
+      ]
+    }
+  ]
+}

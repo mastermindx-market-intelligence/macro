@@ -1,22 +1,22 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-01",
-  "scored_total": 166,
-  "open": 43,
-  "unscored_neutral": 197,
+  "as_of": "2026-11-04",
+  "scored_total": 332,
+  "open": 56,
+  "unscored_neutral": 426,
   "overall": {
-    "n": 166,
-    "hits": 110,
-    "misses": 56,
+    "n": 332,
+    "hits": 220,
+    "misses": 112,
     "hit_rate": 0.663,
-    "dir_accuracy": 0.422
+    "dir_accuracy": 0.446
   },
   "by_lean": {
     "constructive": {
-      "n": 101,
-      "hits": 60,
-      "misses": 41,
-      "hit_rate": 0.594,
+      "n": 205,
+      "hits": 116,
+      "misses": 89,
+      "hit_rate": 0.566,
       "dir_accuracy": 0.317
     },
     "neutral": {
@@ -27,11 +27,11 @@
       "dir_accuracy": null
     },
     "cautious": {
-      "n": 64,
-      "hits": 50,
-      "misses": 14,
-      "hit_rate": 0.781,
-      "dir_accuracy": 0.594
+      "n": 126,
+      "hits": 104,
+      "misses": 22,
+      "hit_rate": 0.825,
+      "dir_accuracy": 0.659
     },
     "avoid": {
       "n": 1,
@@ -43,18 +43,18 @@
   },
   "by_conviction": {
     "low": {
-      "n": 138,
-      "hits": 89,
-      "misses": 49,
-      "hit_rate": 0.645,
-      "dir_accuracy": 0.384
+      "n": 260,
+      "hits": 161,
+      "misses": 99,
+      "hit_rate": 0.619,
+      "dir_accuracy": 0.377
     },
     "medium": {
-      "n": 26,
-      "hits": 19,
-      "misses": 7,
-      "hit_rate": 0.731,
-      "dir_accuracy": 0.654
+      "n": 70,
+      "hits": 57,
+      "misses": 13,
+      "hit_rate": 0.814,
+      "dir_accuracy": 0.714
     },
     "high": {
       "n": 2,
@@ -64,115 +64,115 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "166 leans scored, hit-rate 0.663 (directional accuracy 0.422). The no-skill base rate for these exact conditions is not yet measured \u2014 read the hit-rate as unbenchmarked, not as evidence of skill.",
+  "calibration_note": "332 leans scored, hit-rate 0.663 (directional accuracy 0.446). Chance alone would land a hit-rate near 0.7484 (directional accuracy near 0.5049) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
     {
-      "id": "2026-07-20-BG-1",
-      "ticker": "BG",
-      "lean": "cautious",
+      "id": "2026-10-06-URBN-20261007112041-1",
+      "ticker": "URBN",
+      "lean": "constructive",
       "conviction": "low",
       "outcome": "hit",
-      "realized": -0.0692,
-      "check_by": "2026-08-31"
+      "realized": 0.1124,
+      "check_by": "2026-11-03"
     },
     {
-      "id": "2026-07-31-NUE-20260806134914-1",
-      "ticker": "NUE",
-      "lean": "cautious",
+      "id": "2026-10-06-URBN-20261008150353-1",
+      "ticker": "URBN",
+      "lean": "constructive",
       "conviction": "low",
       "outcome": "hit",
-      "realized": -0.0565,
-      "check_by": "2026-08-31"
+      "realized": 0.1124,
+      "check_by": "2026-11-03"
     },
     {
-      "id": "2026-07-31-SHOO-20260806134914-2",
-      "ticker": "SHOO",
+      "id": "2026-10-06-URBN-20261008152814-1",
+      "ticker": "URBN",
       "lean": "constructive",
       "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0897,
-      "check_by": "2026-08-31"
+      "outcome": "hit",
+      "realized": 0.1124,
+      "check_by": "2026-11-03"
     },
     {
-      "id": "2026-07-31-GE-20260806235557-1",
-      "ticker": "GE",
+      "id": "2026-10-05-LECO-20261006155813-3",
+      "ticker": "LECO",
       "lean": "constructive",
       "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0945,
-      "check_by": "2026-08-31"
+      "outcome": "hit",
+      "realized": 0.0677,
+      "check_by": "2026-11-02"
     },
     {
-      "id": "2026-07-31-SHOO-20260806235557-2",
-      "ticker": "SHOO",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0897,
-      "check_by": "2026-08-31"
-    },
-    {
-      "id": "2026-07-31-SHOO-2",
-      "ticker": "SHOO",
-      "lean": "constructive",
+      "id": "2026-10-05-DOCS-20261006155813-5",
+      "ticker": "DOCS",
+      "lean": "cautious",
       "conviction": "medium",
       "outcome": "miss",
-      "realized": -0.0698,
-      "check_by": "2026-08-28"
+      "realized": 0.1794,
+      "check_by": "2026-11-02"
     },
     {
-      "id": "2026-07-31-BEN-4",
-      "ticker": "BEN",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0065,
-      "check_by": "2026-08-28"
-    },
-    {
-      "id": "2026-07-31-KSS-6",
-      "ticker": "KSS",
+      "id": "2026-10-05-VST-20261006155813-6",
+      "ticker": "VST",
       "lean": "cautious",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.1156,
-      "check_by": "2026-08-28"
-    },
-    {
-      "id": "2026-07-31-SHOO-20260804044138-3",
-      "ticker": "SHOO",
-      "lean": "constructive",
       "conviction": "medium",
-      "outcome": "miss",
-      "realized": -0.0698,
-      "check_by": "2026-08-28"
+      "outcome": "hit",
+      "realized": -0.0416,
+      "check_by": "2026-11-02"
     },
     {
-      "id": "2026-07-31-NUE-20260805094020-1",
-      "ticker": "NUE",
-      "lean": "cautious",
+      "id": "2026-09-25-LRCX-20260929165612-3",
+      "ticker": "LRCX",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2212,
+      "check_by": "2026-10-30"
+    },
+    {
+      "id": "2026-09-25-LFUS-20260930055843-2",
+      "ticker": "LFUS",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0639,
+      "check_by": "2026-10-30"
+    },
+    {
+      "id": "2026-09-25-LRCX-20260930055843-3",
+      "ticker": "LRCX",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2212,
+      "check_by": "2026-10-30"
+    },
+    {
+      "id": "2026-09-25-LFUS-20261001052901-2",
+      "ticker": "LFUS",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0639,
+      "check_by": "2026-10-30"
+    },
+    {
+      "id": "2026-09-25-LRCX-20261001052901-3",
+      "ticker": "LRCX",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2212,
+      "check_by": "2026-10-30"
+    },
+    {
+      "id": "2026-10-02-BJ-20261003215957-1",
+      "ticker": "BJ",
+      "lean": "constructive",
       "conviction": "low",
       "outcome": "hit",
-      "realized": -0.0563,
-      "check_by": "2026-08-28"
-    },
-    {
-      "id": "2026-07-31-SHOO-20260805094020-2",
-      "ticker": "SHOO",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0698,
-      "check_by": "2026-08-28"
-    },
-    {
-      "id": "2026-07-31-SHOO-20260805162632-2",
-      "ticker": "SHOO",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0698,
-      "check_by": "2026-08-28"
+      "realized": 0.1482,
+      "check_by": "2026-10-30"
     }
   ]
 }
