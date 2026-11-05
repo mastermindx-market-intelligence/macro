@@ -1,7 +1,7 @@
 {
   "schema": "rates_command.v1",
   "asof": "2026-11-03",
-  "built": "2026-11-05T11:18:46.948139+00:00",
+  "built": "2026-11-05T13:32:07.427023+00:00",
   "display_only": true,
   "authority": false,
   "board": {
@@ -1645,8 +1645,8 @@
   "regime_outlook": {
     "schema_version": "regime_outlook.v1",
     "scope": "US",
-    "analysis_cutoff": "2026-11-05T11:18:46.910561+00:00",
-    "built_at": "2026-11-05T11:18:46.917694+00:00",
+    "analysis_cutoff": "2026-11-05T13:32:07.413110+00:00",
+    "built_at": "2026-11-05T13:32:07.416539+00:00",
     "mapping_version": "VERDICT_MAPPING_V2",
     "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
     "inputs": {
@@ -1657,7 +1657,7 @@
       },
       "R": {
         "path": "data/regime/latest.json",
-        "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+        "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
         "read_status": "available"
       },
       "M": {
@@ -1682,7 +1682,7 @@
       },
       "C": {
         "path": "data/commodity/latest.json",
-        "sha256": "1407c69be39d723e51e237026e6be2e74507775d80ffd12d6fd1040da2c864c7",
+        "sha256": "155242d7fdee3c7e6109791f1bc7c54f2b2f302517a0a1d8e0de3755aed95987",
         "read_status": "available"
       }
     },
@@ -2300,7 +2300,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/labor_nowcast/read",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-04",
           "precision": "date",
@@ -2337,7 +2337,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/state",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-30",
           "precision": "date",
@@ -2374,7 +2374,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/complacency/breadth_div",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-04",
           "precision": "date",
@@ -2411,7 +2411,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/label",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-04",
           "precision": "date",
@@ -2448,7 +2448,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-04",
           "precision": "date",
@@ -2628,7 +2628,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-04",
           "precision": "date",
@@ -2702,16 +2702,16 @@
         "source": {
           "artifact": "C",
           "pointer": "/assets/oil/trend",
-          "sha256": "1407c69be39d723e51e237026e6be2e74507775d80ffd12d6fd1040da2c864c7",
+          "sha256": "155242d7fdee3c7e6109791f1bc7c54f2b2f302517a0a1d8e0de3755aed95987",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-04",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
           "expected_us_session": "2026-11-04",
-          "session_relation": "older_than_completed_session",
+          "session_relation": "same_completed_session",
           "reference_period": null
         }
       },
@@ -2850,7 +2850,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/trend",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-30",
           "precision": "date",
@@ -2887,7 +2887,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-          "sha256": "0464627e81cbd969a530092c3f3ae0e2842e57b14e27b45be8c413229f778617",
+          "sha256": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-04",
           "precision": "date",
@@ -4185,6 +4185,26 @@
         "to": {
           "values": {
             "hy_oas_pct": 3.4
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-11-04"
+        }
+      },
+      {
+        "evidence_id": "C.assets.oil.trend",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "trend": "up"
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-11-03"
+        },
+        "to": {
+          "values": {
+            "trend": "up"
           },
           "owner_verdict": null,
           "status": "partial",
