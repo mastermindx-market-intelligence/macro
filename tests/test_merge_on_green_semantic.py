@@ -70,6 +70,7 @@ def _loaded(label: str) -> SimpleNamespace:
 def _pull() -> dict:
     return {
         "number": 9,
+        "node_id": "PR-node-9",
         "head": {"sha": HEAD, "ref": "codex/example"},
         "base": {"ref": "main", "sha": BASE},
         "labels": [{"name": MOG.MERGE_ON_GREEN_LABEL}],
@@ -90,6 +91,161 @@ class _Fresh:
     def stale_for(self, _pull, _runs):
         self.stale_calls += 1
         return self._stale
+
+
+
+def test_native_queue_probe_binds_exact_repository_and_base(monkeypatch):
+    calls = []
+
+    def request(method, url, token, payload=None):
+        calls.append((method, url, token, payload))
+        return 200, {
+            "data": {
+                "repository": {
+                    "mergeQueue": {"id": "MQ-main"},
+                }
+            }
+        }
+
+    monkeypatch.setattr(MOG, "_request", request)
+    assert MOG.active_merge_queue_id("acme/widgets", "main", "read") == "MQ-main"
+    assert calls[0][0:3] == ("POST", MOG.GITHUB_GRAPHQL, "read")
+    assert calls[0][3]["variables"] == {
+        "owner": "acme",
+        "name": "widgets",
+        "branch": "main",
+    }
+
+
+def test_queue_enqueue_is_idempotent_when_exact_pr_is_already_queued(monkeypatch):
+    monkeypatch.setattr(
+        MOG,
+        "merge_queue_entry_id",
+        lambda pull_request_id, token: "MQE-existing",
+    )
+    monkeypatch.setattr(
+        MOG,
+        "_request",
+        lambda *_a, **_k: pytest.fail("already queued must not mutate"),
+    )
+    assert MOG.enqueue_pull_request_to_queue(
+        "PR-node-9", HEAD, "read", "write"
+    ) == ("already-queued", "MQE-existing")
+
+
+def test_queue_enqueue_pins_exact_pr_and_head(monkeypatch):
+    entry_reads = iter([None])
+    monkeypatch.setattr(
+        MOG,
+        "merge_queue_entry_id",
+        lambda *_a, **_k: next(entry_reads),
+    )
+    seen = []
+
+    def request(method, url, token, payload=None):
+        seen.append((method, url, token, payload))
+        return 200, {
+            "data": {
+                "enqueuePullRequest": {
+                    "mergeQueueEntry": {"id": "MQE-9"},
+                }
+            }
+        }
+
+    monkeypatch.setattr(MOG, "_request", request)
+    assert MOG.enqueue_pull_request_to_queue(
+        "PR-node-9", HEAD, "read", "write"
+    ) == ("queued", "MQE-9")
+    assert seen == [
+        (
+            "POST",
+            MOG.GITHUB_GRAPHQL,
+            "write",
+            {
+                "query": seen[0][3]["query"],
+                "variables": {
+                    "pullRequestId": "PR-node-9",
+                    "expectedHeadOid": HEAD,
+                },
+            },
+        )
+    ]
+
+
+def test_queue_enqueue_reconciles_lost_response_without_retry(monkeypatch):
+    entry_reads = iter([None, "MQE-after"])
+    monkeypatch.setattr(
+        MOG,
+        "merge_queue_entry_id",
+        lambda *_a, **_k: next(entry_reads),
+    )
+    calls = []
+
+    def request(*_a, **_k):
+        calls.append("mutation")
+        raise OSError("connection dropped")
+
+    monkeypatch.setattr(MOG, "_request", request)
+    assert MOG.enqueue_pull_request_to_queue(
+        "PR-node-9", HEAD, "read", "write"
+    ) == ("queued", "MQE-after")
+    assert calls == ["mutation"]
+
+
+def test_queue_mode_preserves_stale_source_head_and_enqueues(monkeypatch):
+    item = _pull()
+    fresh = _Fresh(stale=(True, "main touched tested surface"))
+    monkeypatch.setattr(MOG, "proof_anchor_verdict", lambda _runs: ("clean", []))
+    monkeypatch.setattr(MOG, "decide_verdict", lambda _runs: ("clean", []))
+    monkeypatch.setattr(
+        MOG,
+        "reprove",
+        lambda *_a, **_k: pytest.fail("native queue must not update-branch"),
+    )
+    monkeypatch.setattr(MOG, "live_diff_state", lambda *_a, **_k: (1, BASE))
+    monkeypatch.setattr(MOG, "live_authorized_pull", lambda *_a, **_k: (item, "ok"))
+    monkeypatch.setattr(MOG, "fetch_issue_comments", lambda *_a, **_k: [])
+    monkeypatch.setattr(MOG, "recorded_hold", lambda *_a, **_k: None)
+    monkeypatch.setattr(MOG, "clear_blocked", lambda *_a, **_k: None)
+    enqueued = []
+    monkeypatch.setattr(
+        MOG,
+        "enqueue_pull_request_to_queue",
+        lambda pr_id, head, read, write: (
+            enqueued.append((pr_id, head, read, write)) or ("queued", "MQE-9")
+        ),
+    )
+
+    assert MOG.sweep_pull(
+        "acme/widgets",
+        item,
+        "read",
+        "write",
+        fresh,
+        check_runs=[],
+        merge_queue_id="MQ-main",
+    ) == "queued"
+    assert enqueued == [("PR-node-9", HEAD, "read", "write")]
+
+
+def test_unreadable_queue_state_never_falls_through_to_direct_merge(monkeypatch):
+    fresh = _Fresh(stale=(True, "main touched tested surface"))
+    monkeypatch.setattr(MOG, "proof_anchor_verdict", lambda _runs: ("clean", []))
+    monkeypatch.setattr(MOG, "decide_verdict", lambda _runs: ("clean", []))
+    monkeypatch.setattr(
+        MOG,
+        "reprove",
+        lambda *_a, **_k: pytest.fail("unknown queue state must not update-branch"),
+    )
+    assert MOG.sweep_pull(
+        "acme/widgets",
+        _pull(),
+        "read",
+        "write",
+        fresh,
+        check_runs=[],
+        merge_queue_probe_error="GraphQL unavailable",
+    ) == "merge-queue-unreadable"
 
 
 def test_pack_red_is_transport_only_when_semantic_gate_is_clear(monkeypatch):
