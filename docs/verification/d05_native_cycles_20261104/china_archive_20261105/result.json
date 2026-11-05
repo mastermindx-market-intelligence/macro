@@ -1,0 +1,2542 @@
+{
+  "candidate_source_sha256": {
+    "si_workspace_china.js": "f50df7ebae181485486b520944b27c61aaa7c823caa14b7d3d3166404b8577c0",
+    "sector_cycles.js": "15e490116b21e276b21c10e94563f87bc4a1880d1c5b614278b03d52f705dd0d",
+    "macro-desk.css": "0a154674f36450059813acd831a1d99db3a42914e7084c083ee49bc1288d4acf",
+    "sector_central_china.html": "e15166d00cf5a7b6a57f9a339d6111e0673cf99da0dbc7c4b641ab304db8a973"
+  },
+  "schema": "d05.archived_china_browser.v1",
+  "fixture_only": true,
+  "fixture_manifest_sha256": "5d653b8341144dd9e4721d0aba1ae88c5cb8523d88f110e3708d393fe13ca6ed",
+  "cases": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "steps": [
+        "actual Next China Central mounts archived native China cycle map",
+        "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+        "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized",
+        "actual Open in Sector Central link returns to China map with selected Shenwan identity",
+        "browser Back and Forward preserve China source and selected sector across both routes"
+      ],
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        }
+      ],
+      "intercepted": [
+        "sector_central_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "account.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "marketdata/rotation_events_china.json",
+        "marketdata/rotation_events_china.json",
+        "supabase.js",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "nav_market.js",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "sector_cycles_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "theme.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "product-nav-icons.css",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_series_data.js",
+        "supabase.js",
+        "nav_market.js",
+        "marketdata/rotation_events_china.json",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_central_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "supabase.js",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "terminal_overlay.js",
+        "marketdata/rotation_events_china.json",
+        "nav_market.js",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_cycles_china.html",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "theme.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "product-nav-icons.css",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_series_data.js",
+        "supabase.js",
+        "nav_market.js",
+        "marketdata/rotation_events_china.json",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_central_china.html",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_central_china.html",
+        "terminal_overlay.js",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "supabase.js",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "terminal_overlay.js",
+        "marketdata/rotation_events_china.json",
+        "nav_market.js",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json"
+      ],
+      "central": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": null,
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 1216,
+        "viewport": 1216,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "screenshots": [
+        {
+          "file": "1440-dark-en-01-central.png",
+          "sha256": "7129c94c8ff6840b987fd2e64434e378daabed4065057d7007cd6f4e1858ca2a"
+        },
+        {
+          "file": "1440-dark-en-02-cycles.png",
+          "sha256": "5686a0ec4ce545442c9433bd83fbd2ef61d22516931d76b511f1aa4ebcc33980"
+        },
+        {
+          "file": "1440-dark-en-03-return.png",
+          "sha256": "52535c1db1b3e1cedada41996805642fc6b615476373cc430c04b085e8dd9781"
+        }
+      ],
+      "outer_widths": [
+        {
+          "viewport": 1440,
+          "document": 1440
+        },
+        {
+          "viewport": 1440,
+          "document": 1440
+        },
+        {
+          "viewport": 1440,
+          "document": 1440
+        }
+      ],
+      "standalone": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 1216,
+        "viewport": 1216,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "members_destination": null,
+      "first_unsupported_transition": "China cycle selection -> integrated Dossier/Members (US-only current contract)",
+      "selected_after_extras": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "price",
+          "scale": "linear",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 1216,
+        "viewport": 1216,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "selected_panel_text": "\u2190 All sectors\n\ud83d\udcc4\nOpen in Sector Central\n\u2197\nAgriculture\n801010 \u00b7 Consumer \u00b7 below 200d\nRolling over\nAct\n\u2194 Mixed\nWHERE IT STANDS\n45/100 \u00b7 mid-cycle\nWASHOUT \u2194 EUPHORIA\n38/100 \u00b7 Mid-cycle\nvs 200d -5.5% \u00b7 drawdown -19%\nLAST TROUGH\nJun \u201926\nLAST PEAK\nSep \u201926\nNEXT PEAK\nNov \u201926\nTYPICAL \u00bd-CYCLE\n0.64 yr\nRS VS SHCOMP\n21d +6.4% #\u2014 \u00b7 63d +12.2% #6\n15Y CHANGE\n+21%\nTURN HAZARD\nUnavailable today \u2014 the model's short- and long-window reads disagreed, so no clean probability can be shown.\nEngine provenance\nTHE READ\n\nThis sector is rolling over \u2014 cycle position 45/100, below its 200-day. Engine read unavailable in this source.\n\n\u25b2\nPROJECTED NEXT PEAK\nNov \u201926\ntypical range Aug \u201926 \u2013 Feb \u201927\nFrom this series\u2019 own median half-cycle (0.64 yr) \u2014 a timing RHYTHM, not a backtested prediction.\nCYCLE LEGS \u2014 TAP FOR THE STORY\nRALLY\nRally +28.1% \u00b7 Jun \u201926 \u2192 Sep \u201926\n+28.1%\nSELLOFF\nSelloff \u221230.8% \u00b7 Sep \u201925 \u2192 Jun \u201926\n\u221230.8%\nRALLY\nRally +49.7% \u00b7 Sep \u201924 \u2192 Sep \u201925\n+49.7%\nSELLOFF\nSelloff \u221227.9% \u00b7 May \u201924 \u2192 Sep \u201924\n\u221227.9%\nRALLY\nRally +22.7% \u00b7 Feb \u201924 \u2192 May \u201924\n+22.7%\nSELLOFF\nSelloff \u221238.2% \u00b7 Jul \u201922 \u2192 Feb \u201924\n\u221238.2%\nRALLY\nRally +21.1% \u00b7 Apr \u201922 \u2192 Jul \u201922\n+21.1%\nSELLOFF\nSelloff \u221218.5% \u00b7 Jan \u201922 \u2192 Apr \u201922\n\u221218.5%\nRALLY\nRally +28.5% \u00b7 Jul \u201921 \u2192 Jan \u201922\n+28.5%\nSELLOFF\nSelloff \u221233.4% \u00b7 Feb \u201921 \u2192 Jul \u201921\n\u221233.4%\nRALLY\nRally +23.8% \u00b7 Nov \u201920 \u2192 Feb \u201921\n+23.8%\nSELLOFF\nSelloff \u221222.9% \u00b7 Aug \u201920 \u2192 Nov \u201920\n\u221222.9%\nRALLY\nRally +66.3% \u00b7 Feb \u201920 \u2192 Aug \u201920\n+66.3%\nSELLOFF\nSelloff \u221222.1% \u00b7 Oct \u201919 \u2192 Feb \u201920\n\u221222.1%\nRALLY\nRally +20.9% \u00b7 Sep \u201919 \u2192 Oct \u201919\n+20.9%\nSELLOFF\nSelloff \u221218.3% \u00b7 Apr \u201919 \u2192 Sep \u201919\n\u221218.3%\nRALLY\nRally +82.5% \u00b7 Oct \u201918 \u2192 Apr \u201919\n+82.5%\nSELLOFF\nSelloff \u221240.7% \u00b7 Nov \u201916 \u2192 Oct \u201918\n\u221240.7%\nRALLY\nRally +28% \u00b7 Jan \u201916 \u2192 Nov \u201916\n+28%\nSELLOFF\nSelloff \u221229.2% \u00b7 Dec \u201915 \u2192 Jan \u201916\n\u221229.2%\nRALLY\nRally +44.2% \u00b7 Sep \u201915 \u2192 Dec \u201915\n+44.2%\nSELLOFF\nSelloff \u221235.4% \u00b7 Aug \u201915 \u2192 Sep \u201915\n\u221235.4%\nRALLY\nRally +46.5% \u00b7 Jul \u201915 \u2192 Aug \u201915\n+46.5%\nSELLOFF\nSelloff \u221243.5% \u00b7 Jun \u201915 \u2192 Jul \u201915\n\u221243.5%\nRALLY\nRally +208% \u00b7 Apr \u201914 \u2192 Jun \u201915\n+208%\nSELLOFF\nSelloff \u221219.4% \u00b7 Dec \u201913 \u2192 Apr \u201914\n\u221219.4%\nRALLY\nRally +37.8% \u00b7 Jul \u201913 \u2192 Dec \u201913\n+37.8%\nSELLOFF\nSelloff \u221219% \u00b7 Mar \u201913 \u2192 Jul \u201913\n\u221219%\nRALLY\nRally +32.5% \u00b7 Dec \u201912 \u2192 Mar \u201913\n+32.5%\nSELLOFF\nSelloff \u221230.1% \u00b7 Mar \u201912 \u2192 Dec \u201912\n\u221230.1%\nRALLY\nRally +25% \u00b7 Jan \u201912 \u2192 Mar \u201912\n+25%",
+      "panel_links": [
+        {
+          "href": "http://localhost:3100/sector_central_china.html#801010",
+          "text": "\ud83d\udcc4Open in Sector Central\u2197"
+        }
+      ],
+      "actual_return_href": "http://localhost:3100/sector_central_china.html#801010",
+      "returned": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 1216,
+        "viewport": 1216,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "history_back": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 1216,
+        "viewport": 1216,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "history_forward": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 1216,
+        "viewport": 1216,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "lang": "zh",
+      "steps": [
+        "actual Next China Central mounts archived native China cycle map",
+        "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+        "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized",
+        "actual Open in Sector Central link returns to China map with selected Shenwan identity",
+        "browser Back and Forward preserve China source and selected sector across both routes",
+        "localized close control is exposed to accessibility tree and Enter dismisses the selected sheet"
+      ],
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        }
+      ],
+      "intercepted": [
+        "sector_central_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "nav_market.js",
+        "supabase.js",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "theme.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "product-nav-icons.css",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "sector_cycles_china_series_data.js",
+        "supabase.js",
+        "nav_market.js",
+        "marketdata/rotation_events_china.json",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_central_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "supabase.js",
+        "terminal_overlay.js",
+        "marketdata/rotation_events_china.json",
+        "nav_market.js",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_cycles_china.html",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "theme.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "product-nav-icons.css",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "sector_cycles_china_series_data.js",
+        "supabase.js",
+        "nav_market.js",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_central_china.html",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "chinabasketdata/baskets.json",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_central_china.html",
+        "terminal_overlay.js",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "supabase.js",
+        "terminal_overlay.js",
+        "marketdata/rotation_events_china.json",
+        "nav_market.js",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js"
+      ],
+      "central": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": null,
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "zh",
+        "theme": "light"
+      },
+      "screenshots": [
+        {
+          "file": "390-light-zh-01-central.png",
+          "sha256": "3cd684275eaf4dd55587d3593e1a9508f939001b6680e62181ad15879709358f"
+        },
+        {
+          "file": "390-light-zh-02-cycles.png",
+          "sha256": "e66d48d7bf6144471ab44f961e146cf4623f9ed56a803114213c6c5ec956be64"
+        },
+        {
+          "file": "390-light-zh-03-return.png",
+          "sha256": "a478ae139df1108f70ecf6fb0f79bafbf583b7ce62b46d37e96e22afcd345bbc"
+        }
+      ],
+      "outer_widths": [
+        {
+          "viewport": 390,
+          "document": 390
+        },
+        {
+          "viewport": 390,
+          "document": 390
+        },
+        {
+          "viewport": 390,
+          "document": 390
+        }
+      ],
+      "standalone": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "zh",
+        "theme": "light"
+      },
+      "members_destination": null,
+      "first_unsupported_transition": "China cycle selection -> integrated Dossier/Members (US-only current contract)",
+      "selected_after_extras": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "price",
+          "scale": "linear",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "zh",
+        "theme": "light"
+      },
+      "selected_panel_text": "\u2190 \u5168\u90e8\u677f\u5757\n\ud83d\udcc4\n\u5728\u677f\u5757\u4e2d\u67a2\u67e5\u770b\n\u2197\n\u519c\u6797\u7267\u6e14\n801010 \u00b7 \u6d88\u8d39 \u00b7 200\u65e5\u4e0b\n\u56de\u843d\n\u884c\u52a8\n\u2194 \u4e2d\u6027\n\u6240\u5904\u4f4d\u7f6e\n45/100 \u00b7 \u5468\u671f\u4e2d\u6bb5\n\u8d85\u5356 \u2194 \u8fc7\u70ed\n38/100 \u00b7 \u5468\u671f\u4e2d\u6bb5\n\u8ddd200\u65e5 -5.5% \u00b7 \u56de\u64a4 -19%\n\u4e0a\u6b21\u5e95\u90e8\n2026\u5e746\u6708\n\u4e0a\u6b21\u9876\u90e8\n2026\u5e749\u6708\n\u4e0b\u6b21\u9876\u90e8\n2026\u5e7411\u6708\n\u5178\u578b\u534a\u5468\u671f\n0.64 \u5e74\n\u76f8\u5bf9\u4e0a\u8bc1\u7efc\u6307\n21d +6.4% #\u2014 \u00b7 63d +12.2% #6\n15\u5e74\u6da8\u8dcc\n+21%\n\u8f6c\u6298\u98ce\u9669\n\u4eca\u65e5\u6682\u4e0d\u53ef\u7528\u2014\u2014\u6a21\u578b\u7684\u77ed\u7a97\u4e0e\u957f\u7a97\u8bfb\u6570\u4e0d\u4e00\u81f4\uff0c\u65e0\u6cd5\u7ed9\u51fa\u53ef\u9760\u6982\u7387\u3002\n\u5f15\u64ce\u6765\u6e90\n\u89e3\u8bfb\n\n\u8be5\u677f\u5757\u56de\u843d \u2014 \u5468\u671f\u4f4d\u7f6e 45/100\uff0c\u4f4e\u4e8e200\u65e5\u5747\u7ebf\u3002\u6b64\u6570\u636e\u6e90\u6682\u65e0\u5f15\u64ce\u89e3\u8bfb\u3002\n\n\u25b2\n\u63a8\u6f14\u4e0b\u4e00\u9876\u90e8\n2026\u5e7411\u6708\n\u5178\u578b\u533a\u95f4 2026\u5e748\u6708 \u2013 2027\u5e742\u6708\n\u57fa\u4e8e\u8be5\u5e8f\u5217\u81ea\u8eab\u7684\u4e2d\u4f4d\u534a\u5468\u671f\uff080.64 \u5e74\uff09\u2014\u2014\u5c5e\u65f6\u95f4\u8282\u594f\uff0c\u5e76\u975e\u56de\u6d4b\u9884\u6d4b\u3002\n\u5468\u671f\u533a\u6bb5 \u2014 \u70b9\u51fb\u67e5\u770b\u6545\u4e8b\n\u4e0a\u6da8\n\u4e0a\u6da8 +28.1% \u00b7 2026\u5e746\u6708 \u2192 2026\u5e749\u6708\n+28.1%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221230.8% \u00b7 2025\u5e749\u6708 \u2192 2026\u5e746\u6708\n\u221230.8%\n\u4e0a\u6da8\n\u4e0a\u6da8 +49.7% \u00b7 2024\u5e749\u6708 \u2192 2025\u5e749\u6708\n+49.7%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221227.9% \u00b7 2024\u5e745\u6708 \u2192 2024\u5e749\u6708\n\u221227.9%\n\u4e0a\u6da8\n\u4e0a\u6da8 +22.7% \u00b7 2024\u5e742\u6708 \u2192 2024\u5e745\u6708\n+22.7%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221238.2% \u00b7 2022\u5e747\u6708 \u2192 2024\u5e742\u6708\n\u221238.2%\n\u4e0a\u6da8\n\u4e0a\u6da8 +21.1% \u00b7 2022\u5e744\u6708 \u2192 2022\u5e747\u6708\n+21.1%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221218.5% \u00b7 2022\u5e741\u6708 \u2192 2022\u5e744\u6708\n\u221218.5%\n\u4e0a\u6da8\n\u4e0a\u6da8 +28.5% \u00b7 2021\u5e747\u6708 \u2192 2022\u5e741\u6708\n+28.5%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221233.4% \u00b7 2021\u5e742\u6708 \u2192 2021\u5e747\u6708\n\u221233.4%\n\u4e0a\u6da8\n\u4e0a\u6da8 +23.8% \u00b7 2020\u5e7411\u6708 \u2192 2021\u5e742\u6708\n+23.8%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221222.9% \u00b7 2020\u5e748\u6708 \u2192 2020\u5e7411\u6708\n\u221222.9%\n\u4e0a\u6da8\n\u4e0a\u6da8 +66.3% \u00b7 2020\u5e742\u6708 \u2192 2020\u5e748\u6708\n+66.3%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221222.1% \u00b7 2019\u5e7410\u6708 \u2192 2020\u5e742\u6708\n\u221222.1%\n\u4e0a\u6da8\n\u4e0a\u6da8 +20.9% \u00b7 2019\u5e749\u6708 \u2192 2019\u5e7410\u6708\n+20.9%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221218.3% \u00b7 2019\u5e744\u6708 \u2192 2019\u5e749\u6708\n\u221218.3%\n\u4e0a\u6da8\n\u4e0a\u6da8 +82.5% \u00b7 2018\u5e7410\u6708 \u2192 2019\u5e744\u6708\n+82.5%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221240.7% \u00b7 2016\u5e7411\u6708 \u2192 2018\u5e7410\u6708\n\u221240.7%\n\u4e0a\u6da8\n\u4e0a\u6da8 +28% \u00b7 2016\u5e741\u6708 \u2192 2016\u5e7411\u6708\n+28%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221229.2% \u00b7 2015\u5e7412\u6708 \u2192 2016\u5e741\u6708\n\u221229.2%\n\u4e0a\u6da8\n\u4e0a\u6da8 +44.2% \u00b7 2015\u5e749\u6708 \u2192 2015\u5e7412\u6708\n+44.2%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221235.4% \u00b7 2015\u5e748\u6708 \u2192 2015\u5e749\u6708\n\u221235.4%\n\u4e0a\u6da8\n\u4e0a\u6da8 +46.5% \u00b7 2015\u5e747\u6708 \u2192 2015\u5e748\u6708\n+46.5%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221243.5% \u00b7 2015\u5e746\u6708 \u2192 2015\u5e747\u6708\n\u221243.5%\n\u4e0a\u6da8\n\u4e0a\u6da8 +208% \u00b7 2014\u5e744\u6708 \u2192 2015\u5e746\u6708\n+208%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221219.4% \u00b7 2013\u5e7412\u6708 \u2192 2014\u5e744\u6708\n\u221219.4%\n\u4e0a\u6da8\n\u4e0a\u6da8 +37.8% \u00b7 2013\u5e747\u6708 \u2192 2013\u5e7412\u6708\n+37.8%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221219% \u00b7 2013\u5e743\u6708 \u2192 2013\u5e747\u6708\n\u221219%\n\u4e0a\u6da8\n\u4e0a\u6da8 +32.5% \u00b7 2012\u5e7412\u6708 \u2192 2013\u5e743\u6708\n+32.5%\n\u4e0b\u8dcc\n\u4e0b\u8dcc \u221230.1% \u00b7 2012\u5e743\u6708 \u2192 2012\u5e7412\u6708\n\u221230.1%\n\u4e0a\u6da8\n\u4e0a\u6da8 +25% \u00b7 2012\u5e741\u6708 \u2192 2012\u5e743\u6708\n+25%",
+      "panel_links": [
+        {
+          "href": "http://localhost:3100/sector_central_china.html#801010",
+          "text": "\ud83d\udcc4\u5728\u677f\u5757\u4e2d\u67a2\u67e5\u770b\u2197"
+        }
+      ],
+      "actual_return_href": "http://localhost:3100/sector_central_china.html#801010",
+      "returned": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "zh",
+        "theme": "light"
+      },
+      "mobile_surface": {
+        "sheet": {
+          "color": "rgb(255, 255, 255)",
+          "alpha": 255,
+          "radius": "18px",
+          "padding": "0px",
+          "transition": "0s"
+        },
+        "rail": {
+          "color": "rgb(255, 255, 255)",
+          "alpha": 255,
+          "radius": "0px",
+          "padding": "0px",
+          "transition": "0s"
+        },
+        "panels": {
+          "color": "rgba(0, 0, 0, 0)",
+          "alpha": 0,
+          "radius": "0px",
+          "padding": "4px 18px 18px",
+          "transition": "0s"
+        },
+        "closeHidden": false
+      },
+      "history_back": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "zh",
+        "theme": "light"
+      },
+      "history_forward": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "zh",
+        "theme": "light"
+      },
+      "passed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "lang": "en",
+      "steps": [
+        "actual Next China Central mounts archived native China cycle map",
+        "standalone China deep link selects exact Shenwan 801010 and real chart controls work",
+        "unsupported US-only Members handoff stays unavailable; absent DNA is not synthesized",
+        "actual Open in Sector Central link returns to China map with selected Shenwan identity",
+        "browser Back and Forward preserve China source and selected sector across both routes",
+        "localized close control is exposed to accessibility tree and Enter dismisses the selected sheet"
+      ],
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinasectordata/desk.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinabasketdata/narrative_emergence.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/basketdata/pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://localhost:8765/chinastatedata/participation.json",
+          "status": 404
+        }
+      ],
+      "intercepted": [
+        "sector_central_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "nav_market.js",
+        "supabase.js",
+        "fonts/Inter-400.woff2",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "sector_cycles_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "theme.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "product-nav-icons.css",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_series_data.js",
+        "supabase.js",
+        "nav_market.js",
+        "marketdata/rotation_events_china.json",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_central_china.html",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "supabase.js",
+        "fonts/Inter-400.woff2",
+        "terminal_overlay.js",
+        "nav_market.js",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_cycles_china.html",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "fonts/Inter-700.woff2",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china.html",
+        "terminal_overlay.js",
+        "sector_cycles_china_narr_data.js",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "theme.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "product-nav-icons.css",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-700.woff2",
+        "fonts/Inter-400.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_series_data.js",
+        "supabase.js",
+        "marketdata/rotation_events_china.json",
+        "nav_market.js",
+        "marketdata/rotation_events_china.json",
+        "terminal_overlay.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "sector_central_china.html",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_central_china.html",
+        "terminal_overlay.js",
+        "shared_shell.css",
+        "shared_shell_bridge.js",
+        "theme.css",
+        "dashboard-icons.css",
+        "cycle.css",
+        "sector_cycles.css",
+        "sector_central_china_data.js",
+        "macro-desk.css",
+        "navigation-refresh.css",
+        "logo_config.js",
+        "stock-logos.js",
+        "live_config.js",
+        "live.js",
+        "forming_narratives.js",
+        "lightweight-charts.js",
+        "baskets_desk.js",
+        "theme.js",
+        "si_workspace_china.js",
+        "dashboard-icons.js",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "sector_cycles_china_series_data.js",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js",
+        "subsector_rotation.js",
+        "subsectors_china.js",
+        "product-nav-icons.css",
+        "marketdata/rotation_events_china.json",
+        "chinabasketdata/baskets.json",
+        "account.js",
+        "fonts/Inter-600.woff2",
+        "fonts/Inter-800.woff2",
+        "sector_cycles_china_data.js",
+        "mm_charts.js",
+        "sector_cycles.js",
+        "supabase.js",
+        "fonts/Inter-400.woff2",
+        "terminal_overlay.js",
+        "marketdata/rotation_events_china.json",
+        "nav_market.js",
+        "sector_cycles_china_series_data.js",
+        "marketdata/rotation_events_china.json",
+        "sector_cycles_china_narr_data.js",
+        "sector_cycles_china_dna_data.js"
+      ],
+      "central": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": null,
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "screenshots": [
+        {
+          "file": "390-dark-en-01-central.png",
+          "sha256": "c4bca4999ac7d3a99344f9d835d2bf4e394ca8ab94fd7b09b5fcb950492fe094"
+        },
+        {
+          "file": "390-dark-en-02-cycles.png",
+          "sha256": "8bda57298aa75a417a3bb848ad8cf2f83c2a6a5a866ba52ec6f69eb7ee394e8d"
+        },
+        {
+          "file": "390-dark-en-03-return.png",
+          "sha256": "b9df0815b9dce0b2940808d28dc8380a1b1d8b8ec8f7fc677ad79d0ddc8c653c"
+        }
+      ],
+      "outer_widths": [
+        {
+          "viewport": 390,
+          "document": 390
+        },
+        {
+          "viewport": 390,
+          "document": 390
+        },
+        {
+          "viewport": 390,
+          "document": 390
+        }
+      ],
+      "standalone": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "members_destination": null,
+      "first_unsupported_transition": "China cycle selection -> integrated Dossier/Members (US-only current contract)",
+      "selected_after_extras": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "price",
+          "scale": "linear",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "selected_panel_text": "\u2190 All sectors\n\ud83d\udcc4\nOpen in Sector Central\n\u2197\nAgriculture\n801010 \u00b7 Consumer \u00b7 below 200d\nRolling over\nAct\n\u2194 Mixed\nWHERE IT STANDS\n45/100 \u00b7 mid-cycle\nWASHOUT \u2194 EUPHORIA\n38/100 \u00b7 Mid-cycle\nvs 200d -5.5% \u00b7 drawdown -19%\nLAST TROUGH\nJun \u201926\nLAST PEAK\nSep \u201926\nNEXT PEAK\nNov \u201926\nTYPICAL \u00bd-CYCLE\n0.64 yr\nRS VS SHCOMP\n21d +6.4% #\u2014 \u00b7 63d +12.2% #6\n15Y CHANGE\n+21%\nTURN HAZARD\nUnavailable today \u2014 the model's short- and long-window reads disagreed, so no clean probability can be shown.\nEngine provenance\nTHE READ\n\nThis sector is rolling over \u2014 cycle position 45/100, below its 200-day. Engine read unavailable in this source.\n\n\u25b2\nPROJECTED NEXT PEAK\nNov \u201926\ntypical range Aug \u201926 \u2013 Feb \u201927\nFrom this series\u2019 own median half-cycle (0.64 yr) \u2014 a timing RHYTHM, not a backtested prediction.\nCYCLE LEGS \u2014 TAP FOR THE STORY\nRALLY\nRally +28.1% \u00b7 Jun \u201926 \u2192 Sep \u201926\n+28.1%\nSELLOFF\nSelloff \u221230.8% \u00b7 Sep \u201925 \u2192 Jun \u201926\n\u221230.8%\nRALLY\nRally +49.7% \u00b7 Sep \u201924 \u2192 Sep \u201925\n+49.7%\nSELLOFF\nSelloff \u221227.9% \u00b7 May \u201924 \u2192 Sep \u201924\n\u221227.9%\nRALLY\nRally +22.7% \u00b7 Feb \u201924 \u2192 May \u201924\n+22.7%\nSELLOFF\nSelloff \u221238.2% \u00b7 Jul \u201922 \u2192 Feb \u201924\n\u221238.2%\nRALLY\nRally +21.1% \u00b7 Apr \u201922 \u2192 Jul \u201922\n+21.1%\nSELLOFF\nSelloff \u221218.5% \u00b7 Jan \u201922 \u2192 Apr \u201922\n\u221218.5%\nRALLY\nRally +28.5% \u00b7 Jul \u201921 \u2192 Jan \u201922\n+28.5%\nSELLOFF\nSelloff \u221233.4% \u00b7 Feb \u201921 \u2192 Jul \u201921\n\u221233.4%\nRALLY\nRally +23.8% \u00b7 Nov \u201920 \u2192 Feb \u201921\n+23.8%\nSELLOFF\nSelloff \u221222.9% \u00b7 Aug \u201920 \u2192 Nov \u201920\n\u221222.9%\nRALLY\nRally +66.3% \u00b7 Feb \u201920 \u2192 Aug \u201920\n+66.3%\nSELLOFF\nSelloff \u221222.1% \u00b7 Oct \u201919 \u2192 Feb \u201920\n\u221222.1%\nRALLY\nRally +20.9% \u00b7 Sep \u201919 \u2192 Oct \u201919\n+20.9%\nSELLOFF\nSelloff \u221218.3% \u00b7 Apr \u201919 \u2192 Sep \u201919\n\u221218.3%\nRALLY\nRally +82.5% \u00b7 Oct \u201918 \u2192 Apr \u201919\n+82.5%\nSELLOFF\nSelloff \u221240.7% \u00b7 Nov \u201916 \u2192 Oct \u201918\n\u221240.7%\nRALLY\nRally +28% \u00b7 Jan \u201916 \u2192 Nov \u201916\n+28%\nSELLOFF\nSelloff \u221229.2% \u00b7 Dec \u201915 \u2192 Jan \u201916\n\u221229.2%\nRALLY\nRally +44.2% \u00b7 Sep \u201915 \u2192 Dec \u201915\n+44.2%\nSELLOFF\nSelloff \u221235.4% \u00b7 Aug \u201915 \u2192 Sep \u201915\n\u221235.4%\nRALLY\nRally +46.5% \u00b7 Jul \u201915 \u2192 Aug \u201915\n+46.5%\nSELLOFF\nSelloff \u221243.5% \u00b7 Jun \u201915 \u2192 Jul \u201915\n\u221243.5%\nRALLY\nRally +208% \u00b7 Apr \u201914 \u2192 Jun \u201915\n+208%\nSELLOFF\nSelloff \u221219.4% \u00b7 Dec \u201913 \u2192 Apr \u201914\n\u221219.4%\nRALLY\nRally +37.8% \u00b7 Jul \u201913 \u2192 Dec \u201913\n+37.8%\nSELLOFF\nSelloff \u221219% \u00b7 Mar \u201913 \u2192 Jul \u201913\n\u221219%\nRALLY\nRally +32.5% \u00b7 Dec \u201912 \u2192 Mar \u201913\n+32.5%\nSELLOFF\nSelloff \u221230.1% \u00b7 Mar \u201912 \u2192 Dec \u201912\n\u221230.1%\nRALLY\nRally +25% \u00b7 Jan \u201912 \u2192 Mar \u201912\n+25%",
+      "panel_links": [
+        {
+          "href": "http://localhost:3100/sector_central_china.html#801010",
+          "text": "\ud83d\udcc4Open in Sector Central\u2197"
+        }
+      ],
+      "actual_return_href": "http://localhost:3100/sector_central_china.html#801010",
+      "returned": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "mobile_surface": {
+        "sheet": {
+          "color": "rgb(21, 24, 32)",
+          "alpha": 255,
+          "radius": "18px",
+          "padding": "0px",
+          "transition": "0s"
+        },
+        "rail": {
+          "color": "rgb(21, 24, 32)",
+          "alpha": 255,
+          "radius": "0px",
+          "padding": "0px",
+          "transition": "0s"
+        },
+        "panels": {
+          "color": "rgba(0, 0, 0, 0)",
+          "alpha": 0,
+          "radius": "0px",
+          "padding": "4px 18px 18px",
+          "transition": "0s"
+        },
+        "closeHidden": false
+      },
+      "history_back": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "source_unavailable",
+            "dna": "source_unavailable"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "history_forward": {
+        "receipt": {
+          "schema": "sector_cycles.evidence.v1",
+          "status": "verified",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "asOf": "2026-11-03",
+          "region": "china",
+          "spine": {
+            "schema": "sector_cycles.sector_spine.v1",
+            "scope": "china:sectors",
+            "sha256": "1b750fd57fbfc4213420f4635aad4c5cacb7f79505f6d0e32906db18cc3a3716"
+          },
+          "parts": {
+            "core": "verified",
+            "series": "verified",
+            "narr": "pending",
+            "dna": "pending"
+          },
+          "sources": {
+            "dna": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            },
+            "narr": {
+              "reason": "archive_annotation_unavailable",
+              "records": 0,
+              "status": "missing"
+            }
+          }
+        },
+        "capture": {
+          "schema": "sector_cycles.view.v1",
+          "publicationId": "cycp1-50deb45af82026a1f6d27d9ff7b8a09e20703100dd99af67098f0246255fff2a",
+          "region": "china",
+          "family": "sectors",
+          "focus": "801010",
+          "mode": "osc",
+          "scale": "log",
+          "range": [
+            2019.838,
+            2027.338
+          ],
+          "phases": [
+            "Peak",
+            "Expansion",
+            "Downturn",
+            "Recovery",
+            "Trough"
+          ],
+          "selectedIds": [],
+          "mobileSelection": {
+            "mode": "leaders",
+            "ids": []
+          },
+          "leg": null
+        },
+        "meta": {
+          "region": "china",
+          "asOf": "2026-11-03",
+          "benchmark": "SHCOMP"
+        },
+        "sectorCount": 31,
+        "basketCount": 22,
+        "viewButtons": [
+          "overview",
+          "map",
+          "moving",
+          "explore",
+          "confluence"
+        ],
+        "dossierMounts": 0,
+        "dossierModule": "undefined",
+        "visibleDna": 0,
+        "narrativeKeys": [],
+        "dnaKeys": [],
+        "documentWidth": 390,
+        "viewport": 390,
+        "lang": "en",
+        "theme": "dark"
+      },
+      "passed": true
+    }
+  ]
+}

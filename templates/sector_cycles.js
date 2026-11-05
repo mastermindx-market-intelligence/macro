@@ -1765,8 +1765,8 @@
          '</div>')
       : ('<div class="cyc-read"><div class="cyc-lbl">' + L("The read", "解读") + '</div><p class="sc-leg-pending">' +
          L("This " + noun.toLowerCase() + " is " + phaseLabel(s).toLowerCase() + " — cycle position " + Math.round(nw.pos) + "/100, " +
-           (nw.above200d ? "above" : "below") + " its 200-day. Engine read generating.",
-           "该" + nounZh + phaseLabel(s) + " — 周期位置 " + Math.round(nw.pos) + "/100，" + (nw.above200d ? "位于" : "低于") + "200日均线。引擎解读生成中。") + '</p>' +
+           (nw.above200d ? "above" : "below") + " its 200-day. Engine read unavailable in this source.",
+           "该" + nounZh + phaseLabel(s) + " — 周期位置 " + Math.round(nw.pos) + "/100，" + (nw.above200d ? "位于" : "低于") + "200日均线。此数据源暂无引擎解读。") + '</p>' +
          analystNoteHTML +
          '</div>'));
     var subtitle = isB
@@ -2056,9 +2056,11 @@
       return;
     }
     // China: inject a visible ✕ close — the grabber alone is easy to miss (NN/g).
+    // The handle now contains a real control; expose it to assistive technology.
+    handle.removeAttribute("aria-hidden");
     if (!handle.querySelector(".sc-sheet-x")) {
       var x = el("button", "sc-sheet-x"); x.type = "button";
-      x.setAttribute("aria-label", "Close"); x.innerHTML = "✕";
+      x.setAttribute("aria-label", curLang() === "zh" ? "关闭" : "Close"); x.innerHTML = "✕";
       x.addEventListener("click", function (e) { e.stopPropagation(); setFocus(null); });
       handle.appendChild(x);
     }
@@ -2271,6 +2273,8 @@
 
   /* ---- lang/theme re-render --------------------------------------------- */
   function rerender() {
+    var sheetClose = document.querySelector("#sc-handle .sc-sheet-x");
+    if (sheetClose) sheetClose.setAttribute("aria-label", curLang() === "zh" ? "关闭" : "Close");
     clearFirstHint();                              // drop the stale-language onboarding pill on a lang flip
     var savedFocus = state.focus, savedPhase = {};
     PHASE_FILTER.forEach(function (p) { savedPhase[p.key] = phaseState[p.key]; });
