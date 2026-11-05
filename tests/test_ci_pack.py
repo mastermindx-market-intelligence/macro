@@ -5472,9 +5472,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Trusted application-owner composition at 26f62c1a adds six measured weight
 # seconds: 137/5930, 137/5945, 131/5686; all ten packs, no new selected jobs.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_955),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_711),
+    ("templates/index.html", 137, 5_960),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_975),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_716),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5482,6 +5482,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Native caller joins and held Go recipe (2026-11-05): the actual managed
+    source planner measured index137/5959, free137/5974 and Prophet131/5715,
+    all ten packs. Two suites added to the existing Fabric command cost four
+    weight units, with no new selected jobs. Preserve every job-count, pack,
+    runtime and admission bound.
+    Qualifying the external native fixture paths then measures 5960, 5975,
+    and 5716 respectively: one additional estimator unit on the same command,
+    with identical job counts and ten packs. Fund only that measured unit.
 
     Buffered native Brain delivery (2026-11-05): actual current-source
     measurements are index137/5955, free137/5970 and Prophet131/5711,

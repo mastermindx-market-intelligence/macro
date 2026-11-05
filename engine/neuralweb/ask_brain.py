@@ -2876,22 +2876,18 @@ def _ask_fabric_tool_batch(response, schemas, seen_ids, remaining):
 
 
 def _ask_fabric_settle(provider) -> dict:
-    """One existing ledger write for completed usage; unknown totals stay null."""
+    """Settle each observed model once through the existing shared writer."""
     from engine import llm_auth
-    from lib import ai_costs
     usage = llm_auth.fabric_usage(provider)
-    if provider["_fabric_known_responses"]:
-        try:
-            ai_costs.record_usage(
-                lane="ask-brain", provider=provider["provider"], model=provider["model"],
-                key_id=provider["cap_id"], cost_basis=provider["cost_basis"], stage="ask-brain",
-                input_tokens=usage["completed_input_tokens"],
-                output_tokens=usage["completed_output_tokens"],
-                note=("partial_known_usage; turn_total_unknown" if usage["usage_state"] != "known" else ""),
-                **({"est_cost_usd": 0.0} if provider["cost_basis"] == "local" else {}),
-            )
-        except Exception:
-            log.warning("ask_brain: selected usage settlement unavailable")
+    try:
+        # This loop invokes the wrapped messages client directly, so make_call
+        # has not written these observations. Its original counters distinguish
+        # a known error's actual model from the requested model and keep unknown
+        # usage nullable; the shared writer also owns local-zero semantics.
+        llm_auth._capture_usage(
+            provider, llm_auth._fabric_usage_delta(provider, (0, 0, 0)), "ask-brain")
+    except Exception:
+        log.warning("ask_brain: selected usage settlement unavailable")
     return usage
 
 
@@ -2927,6 +2923,11 @@ def _run_fabric_ask(question, context_ticker, root, budget, *, selected, factory
         if not llm_auth.is_fabric_selection(operation.providers) or len(operation.providers) != 1:
             raise llm_auth.FabricProviderError("fabric_selection_changed")
         provider = operation.providers[0]
+        # This trusted caller binds directly and owns the loop's one settlement.
+        # Preserve its ledger attribution when using the shared usage writer.
+        provider["usage_lane"] = "ask-brain"
+        provider["usage_stage"] = "ask-brain"
+        provider["usage_cycle_id"] = operation_id
         schemas = _read_tool_schemas()
         seen_ids = set()
         user_content = f"[Context ticker: {context_ticker}]\n\n{question}" if context_ticker else question
@@ -2979,10 +2980,12 @@ def _run_fabric_ask(question, context_ticker, root, budget, *, selected, factory
         result = _ask_fabric_unavailable(error, operation_id=operation_id)
         result["tool_call_census"] = census
     finally:
-        if operation is not None:
-            operation.close()
-        if provider is not None:
-            usage = _ask_fabric_settle(provider)
+        try:
+            if provider is not None:
+                usage = _ask_fabric_settle(provider)
+        finally:
+            if operation is not None:
+                operation.close()
     if result is not None:
         result["usage"] = usage
         yield {"result": result}

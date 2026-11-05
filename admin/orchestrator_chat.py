@@ -38,6 +38,8 @@ from collections import deque
 from collections.abc import Mapping
 from pathlib import Path
 
+from engine.fabric_inference_client import FabricInferenceClient as _NativeFabricClient
+
 from . import neural_web
 from .paths import ROOT
 
@@ -351,7 +353,7 @@ class _FabricUsage:
 
     __slots__ = ("rounds", "known_rounds", "known_input", "known_output",
                  "input_tokens", "output_tokens", "state", "invalidated",
-                 "uncertainty")
+                 "uncertainty", "model_usage")
 
     def __init__(self):
         self.rounds = 0
@@ -363,8 +365,9 @@ class _FabricUsage:
         self.state = "unknown"
         self.invalidated = False
         self.uncertainty = None
+        self.model_usage = {}
 
-    def add_response(self, input_tokens, output_tokens) -> None:
+    def add_response(self, input_tokens, output_tokens, *, serving_model=None) -> None:
         """Account one VALIDATED, trusted response.
 
         Unknown tokens poison the aggregate: it becomes None and stays None,
@@ -378,6 +381,9 @@ class _FabricUsage:
         self.known_rounds += 1
         self.known_input += input_tokens
         self.known_output += output_tokens
+        totals = self.model_usage.setdefault(serving_model, [0, 0])
+        totals[0] += input_tokens
+        totals[1] += output_tokens
         if not self.invalidated and self.known_rounds == self.rounds:
             self.input_tokens = self.known_input
             self.output_tokens = self.known_output
@@ -474,7 +480,7 @@ def _response_usage(resp) -> tuple[int | None, int | None]:
     out = []
     for name in ("input_tokens", "output_tokens"):
         value = _obj_field(usage, name)
-        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        if type(value) is not int or not 0 <= value <= 10 ** 12:
             out.append(None)
         else:
             out.append(value)
@@ -764,6 +770,7 @@ def _run_loop(messages: list[dict], client, repo: Path) -> tuple[str, dict, str,
 
 def _run_loop_fabric(messages: list[dict], binding: dict, repo: Path,
                      *, turn_id: str,
+                     native_response_owner: bool = False,
                      usage: "_FabricUsage | None" = None,
                      census: dict | None = None) -> tuple[str, dict, _FabricUsage]:
     """Bounded read-only tool loop over the BOUND Fabric client.
@@ -803,25 +810,46 @@ def _run_loop_fabric(messages: list[dict], binding: dict, repo: Path,
         except Exception as exc:  # noqa: BLE001
             log.warning("orchestrator_chat: fabric inference failed (%s)",
                         type(exc).__name__)
-            # The request may have been dispatched upstream: the turn total is
-            # unknown from here on, whatever the earlier rounds reported.
-            usage.invalidate(_FABRIC_UNCERTAINTY_TRANSPORT)
+            from engine.fabric_inference_client import FabricInferenceError
+
+            # A correlated native response may be unusable as an answer while
+            # carrying known usage. Preserve its actual model, including None,
+            # independently of normalization and without another request.
+            observed = (isinstance(exc, FabricInferenceError)
+                        and exc.request_id == request_id
+                        and exc.observed_usage is not None
+                        and exc.disposition in {"terminal", "effect_unknown"})
+            if observed:
+                usage.add_response(*_response_usage({"usage": exc.observed_usage}),
+                    serving_model=exc.serving_model if _is_safe_token(exc.serving_model) else None)
+            if not observed or exc.effect_unknown:
+                usage.invalidate(_FABRIC_UNCERTAINTY_TRANSPORT)
             raise _FabricRefusal("fabric_inference_failed", usage,
                                   attempted=True, census=census) from None
+        # The exact application owner gives native transport responses a
+        # correlated terminal receipt. Caller tool-policy rejection cannot
+        # erase that already observed usage. Generic injected clients retain
+        # their existing validate-before-account contract.
+        if native_response_owner:
+            usage.add_response(*_response_usage(resp),
+                               serving_model=_obj_field(resp, "model"))
         # The echoed model must equal the BOUND model before anything is done
         # with the response.
         if _obj_field(resp, "model") != model:
-            usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+            if not native_response_owner:
+                usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
             raise _FabricRefusal("fabric_model_mismatch", usage,
                                   attempted=True, census=census)
         stop_reason = _obj_field(resp, "stop_reason")
         if stop_reason not in _FABRIC_STOP_REASONS:
-            usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+            if not native_response_owner:
+                usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
             raise _FabricRefusal("fabric_stop_reason_unsupported", usage,
                                   attempted=True, census=census)
         content = _obj_field(resp, "content")
         if not isinstance(content, (list, tuple)):
-            usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+            if not native_response_owner:
+                usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
             raise _FabricRefusal("fabric_protocol_invalid", usage,
                                   attempted=True, census=census)
         # Decode and validate EVERY block BEFORE dispatching anything, so a
@@ -833,7 +861,8 @@ def _run_loop_fabric(messages: list[dict], binding: dict, repo: Path,
             if btype == "text":
                 text = _obj_field(block, "text")
                 if not isinstance(text, str):
-                    usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+                    if not native_response_owner:
+                        usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
                     raise _FabricRefusal("fabric_protocol_invalid", usage,
                                           attempted=True, census=census)
                 plain_blocks.append({"type": "text", "text": text})
@@ -846,7 +875,8 @@ def _run_loop_fabric(messages: list[dict], binding: dict, repo: Path,
                 # corrupt the tool_use / tool_result correlation.
                 if (not _is_safe_tool_token(block_id) or not _is_safe_tool_token(block_name)
                         or block_id in seen_tool_ids or decoded is None):
-                    usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+                    if not native_response_owner:
+                        usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
                     raise _FabricRefusal("fabric_tool_call_malformed", usage,
                                           attempted=True, census=census)
                 seen_tool_ids.add(block_id)
@@ -854,25 +884,29 @@ def _run_loop_fabric(messages: list[dict], binding: dict, repo: Path,
                                      "name": block_name, "input": decoded})
                 tool_calls.append((block_id, block_name, decoded))
             else:
-                usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+                if not native_response_owner:
+                    usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
                 raise _FabricRefusal("fabric_protocol_invalid", usage,
                                       attempted=True, census=census)
         # The stop reason and the tool blocks must AGREE: a tool block next to
         # a terminal text stop, or a tool_use stop without a tool block, is a
         # protocol violation and is refused BEFORE anything is dispatched.
         if (stop_reason == "tool_use") != bool(tool_calls):
-            usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+            if not native_response_owner:
+                usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
             raise _FabricRefusal("fabric_tool_call_malformed", usage,
                                   attempted=True, census=census)
         if synthesis and tool_calls:
             # The synthesis step may not call tools.  The refusal happens
-            # BEFORE the response is accounted, so an untrusted response never
-            # settles as a known step.
-            usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+            # BEFORE any tool is dispatched. A native terminal keeps its
+            # observed usage; a generic untrusted response does not settle.
+            if not native_response_owner:
+                usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
             raise _FabricRefusal("fabric_tool_call_malformed", usage,
                                   attempted=True, census=census)
-        # The response is validated and trusted now, so its usage counts.
-        usage.add_response(*_response_usage(resp))
+        # Generic response usage becomes trusted only after local validation.
+        if not native_response_owner:
+            usage.add_response(*_response_usage(resp), serving_model=model)
         # The assistant turn is fed back as PLAIN blocks (model_dump) so the
         # adapter receives the blocks it supports; tool-use ids are preserved
         # exactly.
@@ -974,7 +1008,7 @@ def _append_chat_log(repo: Path, *, model: str, key_source: str | None,
         log.warning("orchestrator_chat._append_chat_log: %s", exc)
 
 
-def _record_ai_costs(repo: Path, *, lane: str, provider: str, model: str,
+def _record_ai_costs(repo: Path, *, lane: str, provider: str, model: str | None,
                      key_id: str | None, input_tokens: int, output_tokens: int,
                      cost_basis: str, est_cost_usd: float | None,
                      note: str = "") -> None:
@@ -1018,45 +1052,33 @@ def _live_result(*, answer: str, was_filtered: bool, census: dict, model: str,
 
 def _fabric_account_turn(repo: Path, *, binding: dict, usage: _FabricUsage,
                          census: dict, degraded: bool):
-    """Write the ONE cost-record aggregate of this turn plus its chat-log row.
+    """Settle each observed model once through the incumbent cost writer.
 
-    A turn with fully known usage is recorded exactly once — the aggregate over
-    its rounds, never one row per round.  A turn whose aggregate is UNKNOWN
-    still settles the steps that really completed, exactly once, labelled as
-    partial in the EXISTING writer's note; its chat-log row and its answer
-    carry the UNKNOWN totals, never the partial sum.  A turn with no known
-    step at all is NEVER inserted into ai_costs: a fabricated zero would read
-    as free usage.
+    Known subtotals survive an unknown turn; absent or partial usage creates no
+    fabricated zero row. The bound model remains the request identity, while
+    complete native errors may report a different or unknown serving model.
     """
-    model = binding["model"]
-    cap_id = binding["cap_id"]
-    completed = usage.completed_step_usage()
-    if usage.fully_known:
-        settled_in, settled_out = usage.input_tokens, usage.output_tokens
-        note = ""
-    elif completed:
-        settled_in = completed["input_tokens"]
-        settled_out = completed["output_tokens"]
-        note = _FABRIC_PARTIAL_KNOWN_NOTE
-    else:
-        settled_in, settled_out = None, None
-        note = ""
-    est_cost = None
-    if settled_in is not None:
-        est_cost = _estimate_chat_cost(model, settled_in, settled_out, repo)
-    _append_chat_log(repo, model=model, key_source=cap_id,
-                     input_tokens=usage.input_tokens, output_tokens=usage.output_tokens,
-                     est_cost_usd=est_cost if usage.fully_known else None,
-                     degraded=degraded, tool_call_census=census,
-                     usage_state=usage.state,
-                     usage_uncertainty=usage.uncertainty)
-    if settled_in is not None:
+    note = "" if usage.fully_known else _FABRIC_PARTIAL_KNOWN_NOTE
+    estimates = []
+    for model, (input_tokens, output_tokens) in usage.model_usage.items():
+        if binding["cost_basis"] == "local":
+            estimate = 0.0
+        elif model is None or binding["cost_basis"] == "unknown":
+            estimate = None
+        else:
+            estimate = _estimate_chat_cost(model, input_tokens, output_tokens, repo)
+        estimates.append(estimate)
         _record_ai_costs(repo, lane="orchestrator-chat", provider=binding["provider"],
-                         model=model, key_id=cap_id,
-                         input_tokens=settled_in, output_tokens=settled_out,
-                         cost_basis=binding["cost_basis"], est_cost_usd=est_cost,
-                         note=note)
-    return est_cost if usage.fully_known else None
+                         model=model, key_id=binding["cap_id"], input_tokens=input_tokens,
+                         output_tokens=output_tokens, cost_basis=binding["cost_basis"],
+                         est_cost_usd=estimate, note=note)
+    est_cost = (sum(estimates) if usage.fully_known and estimates
+                and all(value is not None for value in estimates) else None)
+    _append_chat_log(repo, model=binding["model"], key_source=binding["cap_id"],
+                     input_tokens=usage.input_tokens, output_tokens=usage.output_tokens,
+                     est_cost_usd=est_cost, degraded=degraded, tool_call_census=census,
+                     usage_state=usage.state, usage_uncertainty=usage.uncertainty)
+    return est_cost
 
 
 def _fabric_degraded_result(repo: Path, *, reason: str, text: str,
@@ -1113,7 +1135,7 @@ def _chat_fabric(repo: Path, msg: str, history, *, fabric_provider_factory,
         turn_id = new_request_id()
     else:
         turn_id = _valid_request_id(request_id)
-        if turn_id is None:
+        if turn_id is None or turn_id != request_id:
             return _fabric_degraded_result(repo, reason="invalid_request_id",
                                            text="invalid request id")
     # Only the exact trusted owner factory composes the startup and host
@@ -1130,7 +1152,15 @@ def _chat_fabric(repo: Path, msg: str, history, *, fabric_provider_factory,
         return _fabric_degraded_result(repo, reason="fabric_binding_invalid",
                                        text="fabric binding unavailable")
     try:
-        descriptor = fabric_provider_factory()
+        if type(fabric_provider_factory) is ApplicationFabricFactory:
+            if (fabric_provider_factory.lane != "admin-orchestrator"
+                    or fabric_provider_factory.root.resolve() != repo.resolve()):
+                raise ValueError("fabric_binding_scope_invalid")
+            descriptor, _ = fabric_provider_factory._bind_with_workload(
+                {"provider_order": ["fabric"], "workload_profile": "site_interactive"},
+                operation_id=turn_id)
+        else:
+            descriptor = fabric_provider_factory()
     except Exception as exc:  # noqa: BLE001
         log.warning("orchestrator_chat: fabric provider factory failed (%s)",
                     type(exc).__name__)
@@ -1140,71 +1170,87 @@ def _chat_fabric(repo: Path, msg: str, history, *, fabric_provider_factory,
     if binding is None:
         return _fabric_degraded_result(repo, reason=reason or "fabric_binding_invalid",
                                        text="fabric binding invalid")
-    # The rate cap is enforced on this path exactly as on the legacy path.
-    if not _rate_ok():
-        return _fabric_degraded_result(
-            repo, reason="rate_cap",
-            text=f"rate cap {_RATE_MAX_PER_HOUR} messages/hour reached",
-            binding=binding, request_id=turn_id)
-    messages = _sanitize_history(history)
-    if messages and messages[-1]["role"] == "user":
-        messages[-1]["content"] += "\n\n" + msg
-    else:
-        messages.append({"role": "user", "content": msg})
-    usage = _FabricUsage()
-    census: dict[str, int] = {}
     try:
-        answer, census, usage = _run_loop_fabric(messages, binding, repo,
-                                                 turn_id=turn_id, usage=usage,
-                                                 census=census)
-    except _FabricRefusal as refusal:
-        est_cost = None
-        if refusal.attempted:
-            est_cost = _fabric_account_turn(repo, binding=binding,
-                                            usage=refusal.usage,
-                                            census=refusal.census, degraded=True)
-        return _fabric_degraded_result(
-            repo, reason=refusal.reason,
-            text=_FABRIC_REFUSAL_TEXT.get(refusal.reason, "fabric turn refused"),
-            binding=binding, usage=refusal.usage, request_id=turn_id,
-            est_cost=est_cost)
-    except Exception as exc:  # noqa: BLE001
-        # An unexpected adapter-side failure is contained HERE: this module
-        # never raises, and no exception text can reach a reply, a log line
-        # or the cost ledger.  The steps that really completed are still
-        # settled once, through the same owner.
-        log.warning("orchestrator_chat: fabric turn failed (%s)",
-                    type(exc).__name__)
-        usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+        # The rate cap is enforced on this path exactly as on the legacy path.
+        if not _rate_ok():
+            return _fabric_degraded_result(
+                repo, reason="rate_cap",
+                text=f"rate cap {_RATE_MAX_PER_HOUR} messages/hour reached",
+                binding=binding, request_id=turn_id)
+        messages = _sanitize_history(history)
+        if messages and messages[-1]["role"] == "user":
+            messages[-1]["content"] += "\n\n" + msg
+        else:
+            messages.append({"role": "user", "content": msg})
+        usage = _FabricUsage()
+        census: dict[str, int] = {}
+        try:
+            answer, census, usage = _run_loop_fabric(messages, binding, repo,
+                                                     turn_id=turn_id, usage=usage,
+                                                     census=census,
+                                                     native_response_owner=(
+                                                         type(fabric_provider_factory) is ApplicationFabricFactory
+                                                         and type(binding["client"]) is _NativeFabricClient
+                                                         and getattr(binding["client"], "_native", False) is True
+                                                         and getattr(binding["client"], "operation_id", None) == turn_id))
+        except _FabricRefusal as refusal:
+            est_cost = None
+            if refusal.attempted:
+                est_cost = _fabric_account_turn(repo, binding=binding,
+                                                usage=refusal.usage,
+                                                census=refusal.census, degraded=True)
+            return _fabric_degraded_result(
+                repo, reason=refusal.reason,
+                text=_FABRIC_REFUSAL_TEXT.get(refusal.reason, "fabric turn refused"),
+                binding=binding, usage=refusal.usage, request_id=turn_id,
+                est_cost=est_cost)
+        except Exception as exc:  # noqa: BLE001
+            # An unexpected adapter-side failure is contained HERE: this module
+            # never raises, and no exception text can reach a reply, a log line
+            # or the cost ledger.  The steps that really completed are still
+            # settled once, through the same owner.
+            log.warning("orchestrator_chat: fabric turn failed (%s)",
+                        type(exc).__name__)
+            usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+            est_cost = _fabric_account_turn(repo, binding=binding, usage=usage,
+                                            census=census, degraded=True)
+            return _fabric_degraded_result(
+                repo, reason="fabric_inference_failed",
+                text=_FABRIC_REFUSAL_TEXT.get("fabric_inference_failed",
+                                               "fabric turn refused"),
+                binding=binding, usage=usage, request_id=turn_id,
+                est_cost=est_cost)
+        answer, was_filtered = _advice_filter(answer)
         est_cost = _fabric_account_turn(repo, binding=binding, usage=usage,
-                                        census=census, degraded=True)
-        return _fabric_degraded_result(
-            repo, reason="fabric_inference_failed",
-            text=_FABRIC_REFUSAL_TEXT.get("fabric_inference_failed",
-                                           "fabric turn refused"),
-            binding=binding, usage=usage, request_id=turn_id,
-            est_cost=est_cost)
-    answer, was_filtered = _advice_filter(answer)
-    est_cost = _fabric_account_turn(repo, binding=binding, usage=usage,
-                                    census=census, degraded=False)
-    result = _live_result(answer=answer, was_filtered=was_filtered, census=census,
-                          model=binding["model"], key_source=binding["cap_id"],
-                          input_tok=usage.input_tokens,
-                          output_tok=usage.output_tokens, est_cost=est_cost)
-    result.update({
-        "provider": binding["provider"],
-        "cost_basis": binding["cost_basis"],
-        "cap_id": binding["cap_id"],
-        "usage_state": usage.state,
-        "request_id": turn_id,
-    })
-    if usage.uncertainty:
-        # A bounded slug, never an exception message or an env value.
-        result["usage_uncertainty"] = usage.uncertainty
-    completed = usage.completed_step_usage()
-    if completed:
-        result["completed_step_usage"] = completed
-    return result
+                                        census=census, degraded=False)
+        result = _live_result(answer=answer, was_filtered=was_filtered, census=census,
+                              model=binding["model"], key_source=binding["cap_id"],
+                              input_tok=usage.input_tokens,
+                              output_tok=usage.output_tokens, est_cost=est_cost)
+        result.update({
+            "provider": binding["provider"],
+            "cost_basis": binding["cost_basis"],
+            "cap_id": binding["cap_id"],
+            "usage_state": usage.state,
+            "request_id": turn_id,
+        })
+        if usage.uncertainty:
+            # A bounded slug, never an exception message or an env value.
+            result["usage_uncertainty"] = usage.uncertainty
+        completed = usage.completed_step_usage()
+        if completed:
+            result["completed_step_usage"] = completed
+        return result
+    finally:
+        # Close the same raw five-key binding on every post-bind exit. Native
+        # close observes its original operation; pristine binding closes locally
+        # and pending/unknown upstream work cannot be cancelled or redispatched.
+        try:
+            close = getattr(binding["client"], "close", None)
+            if callable(close):
+                close()
+        except Exception:
+            log.warning("orchestrator_chat: original Fabric close unavailable")
 
 
 def chat(message: str, history=None, root=None, *, fabric_selected=False,

@@ -676,11 +676,10 @@ class _ApplicationFabricTransport:
     protocol: str = "openai_chat_v1"
 
 
-# The only inspected application HTTP implementation is the existing
-# Experiential gateway. Its native manual pin, account/retention/quota holds and
-# missing transport qualification DO NOT authorize ordinary application usage.
-# No mode is enrolled below or in the shipped configuration. In particular this
-# is not an alias for GLM, and no subscription/metered billing is inferred.
+# Closed application implementations remain held until independently qualified
+# and permitted by this owner. Neither native worker availability nor a config
+# edit grants application permission. No mode is enrolled below or in shipped
+# configuration, and no subscription/metered billing is inferred.
 _APPLICATION_FABRIC_TRANSPORTS = {
     "experiential_proxy_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.1:8311/v1",
@@ -690,6 +689,18 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         cost_basis="unknown",
         cap_id="fabric:experiential_proxy",
         capability_id="fabric_application_proxy",
+    ),
+    "native_go_application_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1",
+        secret_ref="MACRO_FABRIC_APPLICATION_TOKEN",
+        provider_id="go",
+        model="deepseek-v4.1-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_application",
+        capability_id="fabric_application_go",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
     ),
 }
 _APPLICATION_MODE_IDS = frozenset({"shared_fabric"})

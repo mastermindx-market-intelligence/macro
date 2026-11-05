@@ -310,15 +310,20 @@ class MasterBrainFabricCompositionTests(unittest.TestCase):
     def test_an_unqualified_binding_refuses_closed_and_never_reads_the_cache(self):
         self.synthesize()
         before = len(self.wire.calls)
-        with patch.object(llm_auth, "build_fabric_provider",
-                          side_effect=llm_auth.FabricProviderError(
-                              "fabric_binding_invalid")), \
+        bindings_before = self.owner.invocations
+        config = self.root / "config/provider_production_modes.v1.json"
+        document = json.loads(config.read_text())
+        document["application_fabric_modes"][MODE]["qualification"] = owner.PROFILE_UNQUALIFIED_PENDING_CANARY
+        config.write_text(json.dumps(document))
+        with patch.object(owner, "_resolve_credential",
+                          side_effect=AssertionError("credential read reached")), \
              patch.object(master_brain, "_mb_reply_cache_get",
                           side_effect=AssertionError("cache read reached")):
             brief = self.synthesize()
         self.assertIsNone(brief["summary"])
-        self.assertEqual(brief["degraded_reason"], "application_fabric_binding_invalid")
+        self.assertEqual(brief["degraded_reason"], "application_fabric_binding_unavailable")
         self.assertEqual(len(self.wire.calls), before)
+        self.assertEqual(self.owner.invocations, bindings_before)
 
     # -- 4. a post-dispatch failure never retries, marks dead or falls back -- #
     def test_post_dispatch_failures_never_retry_mark_dead_or_fall_back(self):

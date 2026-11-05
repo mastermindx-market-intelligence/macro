@@ -427,8 +427,10 @@ def test_public_http_startup_owner_composes_real_brain_and_gateway(
     monkeypatch.setattr(main, "_brain_track_event", lambda *a: None)
     monkeypatch.setattr(main, "_brain_throttle_check", lambda *a: None)
     # Save/restorable server state before running the actual startup compositor.
-    monkeypatch.setattr(main.app.state, "fabric_selected", False)
-    monkeypatch.setattr(main.app.state, "fabric_provider_factory", None)
+    monkeypatch.setattr(main.app.state, "fabric_selected", False, raising=False)
+    monkeypatch.setattr(main.app.state, "fabric_provider_factory", None, raising=False)
+    monkeypatch.setattr(main.app.state, "ask_fabric_selected", False, raising=False)
+    monkeypatch.setattr(main.app.state, "ask_fabric_provider_factory", None, raising=False)
     user = {"id": "owner-http-" + str(streaming), "email": "", "user_metadata": {}}
     main.app.dependency_overrides[main._brain_user_or_guest] = lambda: user
     try:

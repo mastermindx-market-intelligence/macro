@@ -227,24 +227,33 @@ def test_real_tool_loop_and_synthesis_use_distinct_steps(loop_inputs, stream):
         assert "grounded result" in result[0]
 
 
-@pytest.mark.parametrize("failure_after_text", [False, True])
-def test_stream_failure_never_replays_as_blocking(loop_inputs, failure_after_text, monkeypatch):
-    failure = TransportFailure("SECRET provider detail must not escape")
-    step = {"response": response(), "chunks": ["The market context is " * 25] * 2, "failure": failure} if failure_after_text else failure
+@pytest.mark.parametrize("failure_kind", ["transport", "invalid_buffered"])
+def test_buffered_failure_never_replays_or_leaks(loop_inputs, failure_kind, monkeypatch):
+    # Public SSE uses one original wrapped completion for selected Fabric.
+    # No draft is emitted before the complete response has been validated.
+    if failure_kind == "transport":
+        step = TransportFailure("SECRET provider detail must not escape")
+    else:
+        step = response("SECRET unvalidated model prose", tokens=None, tool=True)
+        step.content.append(Block(type="unsupported", text="SECRET unsupported block"))
     raw = Client(step)
     p = provider(raw)
     dead = Mock(side_effect=AssertionError("global account state touched"))
     monkeypatch.setattr(gw, "_pool_cool_for_exc", dead)
     monkeypatch.setattr(gw, "_mark_provider_dead_if_auth", dead)
-    events, usage, _ = loop(p, loop_inputs, stream=True)
-    assert [c[0] for c in raw.calls] == ["stream"]
+    monkeypatch.setattr(gw, "_dispatch_brain_tool", dead)
+    monkeypatch.setattr(gw, "_create_failover", dead)
+    events, usage, answer = loop(p, loop_inputs, stream=True)
+    assert [c[0] for c in raw.calls] == ["create"]
     assert events[-1]["degraded"] is True
     assert usage[0]["input_tokens"] is None
     assert usage[0]["usage_state"] == "unknown"
     assert "SECRET" not in json.dumps(events)
     dead.assert_not_called()
-    if failure_after_text:
-        assert any(e["type"] == "retract" for e in events)
+    # The only display delta is the incumbent bounded failure notice.
+    assert [e["text"] for e in events if e["type"] == "delta"] == [gw._DEGRADED_USER_MSG]
+    assert not any(e["type"] in {"retract", "tool"} for e in events)
+    assert answer == []
 
 
 @pytest.mark.parametrize("stream", [False, True])

@@ -1726,7 +1726,7 @@ def _call_production_mode(system: str, user: str, cfg: dict,
 # --------------------------------------------------------------------------- #
 _APPLICATION_MODE_ENV = "MM_PROVIDER_APPLICATION_MODE"
 _APPLICATION_FABRIC_LANE = "master-brain"
-_APPLICATION_FABRIC_CACHE_SCHEMA = "master_brain.application_fabric.v1"
+_APPLICATION_FABRIC_CACHE_SCHEMA = "master_brain.application_fabric.v2"
 
 
 def _bounded_reason(value) -> str:
@@ -1799,14 +1799,13 @@ def _application_workload_cfg(cfg: dict) -> dict:
 
 
 def _resolve_application_route(cfg: dict, mode_id: str, root, operation_id: str):
-    """Resolve the incumbent owner's Fabric binding for THIS operation.
+    """Inspect the incumbent owner's eligible identity without binding a client.
 
     Returns ``(route, refusal)``. The route carries the owner's per-turn
-    provider descriptor and the identity the reply cache is keyed on. A
+    narrowed factory and the identity the reply cache is keyed on. A
     refusal means the owner did not admit this workload; the caller must not
     substitute another selection, client, credential or cache.
     """
-    from engine import llm_auth
     from engine import provider_production_modes as owner
 
     maker = getattr(owner, "make_application_fabric_factory", None)
@@ -1825,22 +1824,23 @@ def _resolve_application_route(cfg: dict, mode_id: str, root, operation_id: str)
         )
     except Exception:  # noqa: BLE001 — the owner's refusal is the answer
         return None, "application_fabric_owner_refused"
+    if type(factory) is not owner.ApplicationFabricFactory:
+        return None, "application_fabric_owner_unavailable"
     try:
-        provider = llm_auth.build_fabric_provider(
-            factory, request_id=operation_id, workload_cfg=_application_workload_cfg(cfg))
-        provider["usage_cycle_id"] = operation_id
-    except llm_auth.FabricProviderError as exc:
-        return None, "application_fabric_" + _fabric_reason(
-            getattr(exc, "code", "") or "binding_unavailable")
-    except Exception:  # noqa: BLE001 — degrade, never raise
+        identity = factory.inspect(_application_workload_cfg(cfg))
+        factory = factory.with_inspection(identity)
+    except Exception:
         return None, "application_fabric_binding_unavailable"
     return {
         "mode_id": mode_id,
-        "provider": provider,
-        "provider_id": provider.get("provider"),
-        "model": provider.get("model"),
-        "cap_id": provider.get("cap_id"),
-        "cost_basis": provider.get("cost_basis"),
+        "factory": factory,
+        "operation_id": operation_id,
+        "inspection": identity,
+        "provider": None,
+        "provider_id": identity["provider"],
+        "model": identity["model"],
+        "cap_id": identity["cap_id"],
+        "cost_basis": identity["cost_basis"],
         "max_tokens": max_tokens,
     }, None
 
@@ -1857,6 +1857,16 @@ def _call_application_fabric(system: str, user: str, cfg: dict, route: dict,
     from engine import llm_auth
 
     provider = route["provider"]
+    if provider is None:
+        try:
+            provider = llm_auth.build_fabric_provider(
+                route["factory"], request_id=route["operation_id"],
+                workload_cfg=_application_workload_cfg(cfg))
+        except Exception as exc:  # A changed inspection refuses before a secret.
+            code = exc.code if isinstance(exc, llm_auth.FabricProviderError) else "binding_unavailable"
+            return None, "application_fabric_" + _fabric_reason(code)
+        route["provider"] = provider
+        provider["usage_cycle_id"] = route["operation_id"]
     max_tokens = route["max_tokens"]
     # Attribution for the owner's usage write: this lane and this step. The
     # owner still owns the write; the consumer only names the lane it serves.
@@ -1945,7 +1955,8 @@ def _call_model(system: str, user: str, cfg: dict,
         try:
             return _call_application_fabric(system, user, cfg, route, served=served)
         finally:
-            llm_auth.close_fabric_provider(route["provider"])
+            if route["provider"] is not None:
+                llm_auth.close_fabric_provider(route["provider"])
     # Presence is intentional: an empty/unknown mode must fail closed, not enter
     # the legacy ladder. This branch also bypasses its empty-reply/SDK retries.
     if "production_mode" in cfg:
@@ -2247,9 +2258,8 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
     if application_selected:
         # The owner's eligibility is resolved BEFORE any cache read: a revoked,
         # disabled or unqualified binding must never be able to look healthy on
-        # a stale cached reply. Binding construction may read the proxy
-        # credential only after the owner's own gates, but a cache hit performs
-        # NO provider call, admission or charge.
+        # a stale cached reply. Inspection reads no credential and constructs no
+        # client. Only a cache miss conditionally binds this exact inspection.
         cache_allowed = False
         if application_refusal:
             brief["degraded_reason"] = application_refusal
@@ -2261,14 +2271,13 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             return brief
         brief["model"] = route["model"]
         application_cache_identity = (route["provider_id"], route["model"])
-        # A distinct Fabric identity: mode, actual provider, exact model, the
-        # closed binding identity and the output limit. It can never alias the
-        # legacy model cache or the PAYG production-mode cache.
+        # Include the whole inspected transport/workload identity and output
+        # contract. Same-model changes of protocol, route or policy cannot alias
+        # a prior eligible result. Binding rechecks this exact snapshot.
         model = json.dumps(
             [_APPLICATION_FABRIC_CACHE_SCHEMA, route["mode_id"],
-             route["provider_id"], route["model"], route["cap_id"],
-             route["cost_basis"], route["max_tokens"]],
-            separators=(",", ":"),
+             route["inspection"], {"max_tokens": route["max_tokens"], "format": "text"}],
+            sort_keys=True, separators=(",", ":"), allow_nan=False,
         )
         cache_allowed = True
     elif production_selected:
@@ -2389,6 +2398,9 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
                                 reply = rw_reply
                                 parsed = rw_parsed
                                 violations = rw_violations
+                                if application_selected and rw_reason:
+                                    rewrite_degraded = True
+                                    brief["degraded_reason"] = rw_reason
                                 if rw_served.get("provider"):
                                     brief["served_by"] = rw_served["provider"]
                                 if rw_served.get("model"):
@@ -2412,7 +2424,7 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
                     # cache under a stale identity, and a degraded rewrite is never
                     # a clean success.
                     cache_identity_matches = (
-                        not rewrite_degraded
+                        not reason and not rewrite_degraded
                         and application_cache_identity == (brief["served_by"], brief["model"]))
                 else:
                     cache_identity_matches = (
@@ -2473,7 +2485,7 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             brief["degraded_reason"] = reason          # parsed, but flag e.g. truncation
         return brief
     finally:
-        if route is not None:
+        if route is not None and route["provider"] is not None:
             from engine import llm_auth
             llm_auth.close_fabric_provider(route["provider"])
 
