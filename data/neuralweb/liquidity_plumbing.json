@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.liquidity_plumbing.v1",
-  "asof": "2026-08-28",
+  "asof": "2026-10-14",
   "phase_status": {
     "p0_p1_quantity_quality": "integrated",
     "p3_funding_spreads": "integrated",
@@ -19,22 +19,22 @@
     "hard_gate": false
   },
   "headline": {
-    "state": "orderly_drain",
-    "summary": "Net liquidity is contracting in an orderly manner; conditions may steer toward headwind for buy setups (existing engine limits apply)."
+    "state": "neutral_hollow",
+    "summary": "Net liquidity is neutral but RRP exhausted or composition is mechanical — buffer is hollow; net-neutral read with limited downside cushion. RRP buffer is empty — the next liquidity drain hits bank reserves directly."
   },
   "fed": {
-    "assets_bn": 6730.912,
-    "assets_chg_20d_bn": -7.278,
-    "reserve_balances_bn": 2924.936,
-    "walcl_stale_days": 2,
+    "assets_bn": 6747.56,
+    "assets_chg_20d_bn": 6.941,
+    "reserve_balances_bn": 3029.659,
+    "walcl_stale_days": 6,
     "policy_stance": "hawkish",
-    "administered_rate_posture": "on_hold",
-    "asof": "2026-08-28"
+    "administered_rate_posture": "tightening",
+    "asof": "2026-10-14"
   },
   "treasury": {
-    "tga_bn": 950.804,
-    "tga_chg_20d_bn": -47.142,
-    "net_issuance_20d_bn": 282.772,
+    "tga_bn": 920.214,
+    "tga_chg_20d_bn": 48.99,
+    "net_issuance_20d_bn": 127.142,
     "expected_tga_pressure": "unknown_until_financing_estimates_parser",
     "coupon_supply_pressure": "context_only",
     "tga_impulse": {
@@ -47,197 +47,69 @@
       "summary_en": "No TGA impulse detected.",
       "summary_zh": "未检测到TGA冲量。"
     },
-    "asof": "2026-08-27"
+    "asof": "2026-10-13"
   },
   "rrp": {
-    "rrp_bn": 0.175,
-    "rrp_chg_20d_bn": -1.976,
+    "rrp_bn": 0.201,
+    "rrp_chg_20d_bn": -0.499,
     "buffer_state": "exhausted"
   },
   "quantity": {
-    "netliq_bn": 5779.933,
-    "netliq_chg_20d_bn": -79.54,
-    "netliq_chg_65d_bn": -73.577,
-    "netliq_pctile_expanding": 0.765368,
-    "overlay": "contracting"
+    "netliq_bn": 5827.145,
+    "netliq_chg_20d_bn": 78.783,
+    "netliq_chg_65d_bn": -157.387,
+    "netliq_pctile_expanding": 0.776982,
+    "overlay": "neutral"
   },
   "quality": {
-    "label": "contracting",
-    "fed_share": 0.06,
-    "mechanical": true,
-    "stress_confirming": false,
+    "label": "neutral-hollow",
+    "fed_share": 0.74,
+    "mechanical": false,
+    "stress_confirming": true,
     "stress_overlay": {
-      "hy_oas_pct": 2.67,
-      "hy_oas_z": -0.87,
-      "nfci": -0.566,
-      "nfci_trend": "loose",
-      "confirming_stress": false
+      "hy_oas_pct": 3.16,
+      "hy_oas_z": 2.16,
+      "nfci": -0.494,
+      "nfci_trend": "tightening",
+      "confirming_stress": true
     },
-    "walcl_stale_days": 2
+    "walcl_stale_days": 6
   },
   "funding": {
     "effr_minus_iorb_bp": -2.0,
     "effr_minus_iorb_d20_bp": 0.0,
-    "effr_minus_iorb_pctile": 0.9137,
+    "effr_minus_iorb_pctile": 0.9158,
     "sofr_minus_iorb_bp": -1.0,
-    "sofr_minus_iorb_d20_bp": -1.0,
-    "sofr_minus_iorb_pctile": 0.8746,
-    "sofr_99pctl_minus_iorb_bp": 7.0,
-    "sofr_99pctl_minus_iorb_d20_bp": -1.0,
-    "sofr_99pctl_minus_iorb_pctile": 0.809,
+    "sofr_minus_iorb_d20_bp": 2.0,
+    "sofr_minus_iorb_pctile": 0.8699,
+    "sofr_99pctl_minus_iorb_bp": 8.0,
+    "sofr_99pctl_minus_iorb_d20_bp": 3.0,
+    "sofr_99pctl_minus_iorb_pctile": 0.8521,
     "srf_takeup_bn": null,
     "discount_window_primary_credit_bn": null,
     "reserve_scarcity_state": "tightening",
-    "asof": "2026-08-27"
+    "asof": "2026-10-13"
   },
   "components": {
     "walcl": {
-      "level_bn": 6730.9,
-      "d20_bn": -7.3,
-      "d65_bn": 26.5,
-      "pctile": 0.7652
+      "level_bn": 6747.6,
+      "d20_bn": 6.9,
+      "d65_bn": 12.0,
+      "pctile": 0.7728
     },
     "rrp": {
       "level_bn": 0.2,
-      "d20_bn": -2.0,
-      "d65_bn": -1.0,
-      "pctile": 0.0561
+      "d20_bn": -0.5,
+      "d65_bn": -0.6,
+      "pctile": 0.0863
     },
     "tga": {
-      "level_bn": 950.8,
-      "d20_bn": 74.2,
-      "d65_bn": 101.1,
-      "pctile": 0.9437
+      "level_bn": 920.2,
+      "d20_bn": -71.3,
+      "d65_bn": 169.9,
+      "pctile": 0.9315
     },
     "netliq_sparkline_90d": [
-      {
-        "d": "2026-06-01",
-        "v": 5846.2
-      },
-      {
-        "d": "2026-06-02",
-        "v": 5835.8
-      },
-      {
-        "d": "2026-06-03",
-        "v": 5863.7
-      },
-      {
-        "d": "2026-06-04",
-        "v": 5865.9
-      },
-      {
-        "d": "2026-06-05",
-        "v": 5885.2
-      },
-      {
-        "d": "2026-06-08",
-        "v": 5865.4
-      },
-      {
-        "d": "2026-06-09",
-        "v": 5880.5
-      },
-      {
-        "d": "2026-06-10",
-        "v": 5923.9
-      },
-      {
-        "d": "2026-06-11",
-        "v": 5925.4
-      },
-      {
-        "d": "2026-06-12",
-        "v": 5908.9
-      },
-      {
-        "d": "2026-06-15",
-        "v": 5745.0
-      },
-      {
-        "d": "2026-06-16",
-        "v": 5733.6
-      },
-      {
-        "d": "2026-06-17",
-        "v": 5773.1
-      },
-      {
-        "d": "2026-06-18",
-        "v": 5821.1
-      },
-      {
-        "d": "2026-06-22",
-        "v": 5789.7
-      },
-      {
-        "d": "2026-06-23",
-        "v": 5804.1
-      },
-      {
-        "d": "2026-06-24",
-        "v": 5829.3
-      },
-      {
-        "d": "2026-06-25",
-        "v": 5858.5
-      },
-      {
-        "d": "2026-06-26",
-        "v": 5833.6
-      },
-      {
-        "d": "2026-06-29",
-        "v": 5855.1
-      },
-      {
-        "d": "2026-06-30",
-        "v": 5789.6
-      },
-      {
-        "d": "2026-07-01",
-        "v": 5916.2
-      },
-      {
-        "d": "2026-07-02",
-        "v": 5951.8
-      },
-      {
-        "d": "2026-07-03",
-        "v": 5945.5
-      },
-      {
-        "d": "2026-07-06",
-        "v": 5938.7
-      },
-      {
-        "d": "2026-07-07",
-        "v": 5935.1
-      },
-      {
-        "d": "2026-07-08",
-        "v": 5983.0
-      },
-      {
-        "d": "2026-07-09",
-        "v": 5985.2
-      },
-      {
-        "d": "2026-07-10",
-        "v": 5996.8
-      },
-      {
-        "d": "2026-07-13",
-        "v": 5984.5
-      },
-      {
-        "d": "2026-07-14",
-        "v": 5947.5
-      },
-      {
-        "d": "2026-07-15",
-        "v": 5946.9
-      },
       {
         "d": "2026-07-16",
         "v": 5920.4
@@ -364,27 +236,151 @@
       },
       {
         "d": "2026-08-28",
-        "v": 5779.9
+        "v": 5759.4
+      },
+      {
+        "d": "2026-08-31",
+        "v": 5700.6
+      },
+      {
+        "d": "2026-09-01",
+        "v": 5787.4
+      },
+      {
+        "d": "2026-09-02",
+        "v": 5792.3
+      },
+      {
+        "d": "2026-09-03",
+        "v": 5832.6
+      },
+      {
+        "d": "2026-09-04",
+        "v": 5847.6
+      },
+      {
+        "d": "2026-09-08",
+        "v": 5856.6
+      },
+      {
+        "d": "2026-09-09",
+        "v": 5896.5
+      },
+      {
+        "d": "2026-09-10",
+        "v": 5917.8
+      },
+      {
+        "d": "2026-09-11",
+        "v": 5913.2
+      },
+      {
+        "d": "2026-09-14",
+        "v": 5868.0
+      },
+      {
+        "d": "2026-09-15",
+        "v": 5748.4
+      },
+      {
+        "d": "2026-09-16",
+        "v": 5749.5
+      },
+      {
+        "d": "2026-09-17",
+        "v": 5773.6
+      },
+      {
+        "d": "2026-09-18",
+        "v": 5760.0
+      },
+      {
+        "d": "2026-09-21",
+        "v": 5741.6
+      },
+      {
+        "d": "2026-09-22",
+        "v": 5788.7
+      },
+      {
+        "d": "2026-09-23",
+        "v": 5799.9
+      },
+      {
+        "d": "2026-09-24",
+        "v": 5822.4
+      },
+      {
+        "d": "2026-09-25",
+        "v": 5801.8
+      },
+      {
+        "d": "2026-09-28",
+        "v": 5787.3
+      },
+      {
+        "d": "2026-09-29",
+        "v": 5799.7
+      },
+      {
+        "d": "2026-09-30",
+        "v": 5747.4
+      },
+      {
+        "d": "2026-10-01",
+        "v": 5849.0
+      },
+      {
+        "d": "2026-10-02",
+        "v": 5870.3
+      },
+      {
+        "d": "2026-10-05",
+        "v": 5858.7
+      },
+      {
+        "d": "2026-10-06",
+        "v": 5857.2
+      },
+      {
+        "d": "2026-10-07",
+        "v": 5859.4
+      },
+      {
+        "d": "2026-10-08",
+        "v": 5859.8
+      },
+      {
+        "d": "2026-10-09",
+        "v": 5874.7
+      },
+      {
+        "d": "2026-10-13",
+        "v": 5827.1
+      },
+      {
+        "d": "2026-10-14",
+        "v": 5827.1
       }
     ],
     "reserves": {
-      "level_bn": 2924.9,
-      "d20_bn": -191.3,
-      "d65_bn": -345.7,
-      "pctile": 0.7559
+      "level_bn": 3029.7,
+      "d20_bn": -99.9,
+      "d65_bn": -300.6,
+      "pctile": 0.7852
     }
   },
   "foreign_dollar": {
-    "swap_lines_bn": 0.121,
-    "facility_loans_bn": 4.962,
+    "swap_lines_bn": 0.207,
+    "facility_loans_bn": 10.006,
     "fima_repo_bn": null,
     "state": "quiescent",
     "note": "IRD-R5: swap-line levels are confirmation tier — they grade severity after price signals fire, never trigger alerts. FIMA repo: no free per-facility breakout; aggregate rides H.4.1 repo line.",
-    "asof": "2026-08-26"
+    "asof": "2026-10-07"
   },
   "entry_effect": {
-    "direction": "headwind",
-    "quality": "contraction",
+    "direction": "neutral",
+    "quality": "neutral",
     "measured_basis": "cycle_ladder_21d_odds",
     "use": "support existing buy setup, never originate one"
   },
@@ -394,7 +390,7 @@
   "degraded": false,
   "schema_version": 1,
   "produced_by": "scripts/build_liquidity_plumbing.py",
-  "produced_at": "2026-08-29T12:54:03Z",
-  "inputs_hash": "sha256:f587c683daf8cc4b8a227d40dde13e7c47351ad9beb9f49db9bc3e1b59edbab0",
+  "produced_at": "2026-10-16T18:16:51Z",
+  "inputs_hash": "sha256:a1c743b3594d18f32bf06f8921b2e7d4977a861782993267eb271d953a321b4c",
   "tier": "shadow"
 }

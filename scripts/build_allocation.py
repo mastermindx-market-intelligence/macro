@@ -300,9 +300,18 @@ def _run_thematic_desk(regions: list[str]) -> None:
         log.error("thematic_desk score_ledger failed: %s", e)
 
 
-def main(regions: list[str] | None = None) -> bool:
-    """Build all allocation pages.  Returns True (stale) when any region failed or produced
-    no output — used by build_baskets.py to stamp site/allocationdata/freshness.json."""
+def main(
+    regions: list[str] | None = None,
+    *,
+    run_auxiliary: bool = True,
+    run_ai: bool = True,
+) -> bool:
+    """Build allocation pages and optional auxiliary/AI layers.
+
+    ``run_auxiliary=False, run_ai=False`` is the focused Sector Intelligence path:
+    it refreshes the deterministic US allocation JSON needed by ``theme_context``
+    without launching unrelated narrative discovery or model calls.
+    """
     site = config.ROOT / "site"
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
@@ -317,9 +326,11 @@ def main(regions: list[str] | None = None) -> bool:
     js = config.ROOT / "templates" / "ai_desk_thematic.js"
     if js.exists():
         (site / "ai_desk_thematic.js").write_text(js.read_text())
-    _run_macro_narrative()             # GDELT macro-narrative backdrop the desk reads (bus owned here)
-    _run_theme_discovery()             # candidate-theme radar (US) → feeds the scout + a page panel
-    _run_thematic_desk(regions)        # additive AI layer; gated + never fatal
+    if run_auxiliary:
+        _run_macro_narrative()         # GDELT macro-narrative backdrop the desk reads
+        _run_theme_discovery()         # candidate-theme radar (US)
+    if run_ai:
+        _run_thematic_desk(regions)    # additive AI layer; gated + never fatal
     return any_failed  # True = stale; build_baskets stamps freshness.json
 
 

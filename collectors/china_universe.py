@@ -50,6 +50,7 @@ import yfinance as yf
 from collectors.base import Adapter, is_connection_error
 from collectors.breadth import repair_seams
 from lib import config
+from lib.market_observations import current_adjusted_columns, filter_session_observations
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +68,9 @@ def _overwrite_overlap(fresh: pd.DataFrame, prev: pd.DataFrame) -> pd.DataFrame:
     if prev is None or prev.empty:
         return fresh.sort_index()
     if fresh is None or fresh.empty:
+        return prev.sort_index()
+    fresh = current_adjusted_columns(fresh, prev)
+    if fresh.empty:
         return prev.sort_index()
     # defensive: a duplicated column label makes df[col] return a DataFrame → later boolean
     # checks would raise 'truth value of a Series is ambiguous'. Dedup keeps the last.
@@ -278,6 +282,73 @@ class ChinaUniverseAdapter(Adapter):
         log.info("china_universe: Sina returned %d ranked A-shares", len(out))
         return out.set_index("ticker")
 
+    def _cached_universe(self) -> pd.DataFrame:
+        """Last-known-good Sina-shaped universe from ``members.parquet``.
+
+        Membership moves slowly while closes must advance every session. A transient
+        Sina/DNS outage must therefore degrade membership discovery, not freeze the
+        entire price plane. The cache is accepted only when it has the same minimum
+        population and the columns needed to reconstruct the live Sina shape; a first
+        run or malformed cache still fails honestly.
+        """
+        if not self.members_path.exists():
+            raise RuntimeError("cached members.parquet absent")
+        cached = pd.read_parquet(self.members_path)
+        if "ticker" in cached.columns and cached.index.name != "ticker":
+            cached = cached.set_index("ticker")
+        cached.index = cached.index.astype(str)
+        required = {"name_zh", "mktcap_yi"}
+        missing = sorted(required - set(cached.columns))
+        if missing:
+            raise RuntimeError(f"cached membership missing columns: {missing}")
+        cached = cached.loc[~cached.index.duplicated(keep="last"), ["name_zh", "mktcap_yi"]].copy()
+        cached = cached[cached.index.str.endswith((".SS", ".SZ"))]
+        cached["mktcap_yi"] = pd.to_numeric(cached["mktcap_yi"], errors="coerce")
+        cached = cached.dropna(subset=["mktcap_yi"]).sort_values("mktcap_yi", ascending=False)
+        size = int(self.cfg["size"])
+        cached = cached.head(size)
+        minimum = min(size, max(1, (size * 3 + 3) // 4))
+        if len(cached) < minimum:
+            raise RuntimeError(f"cached universe too small: {len(cached)} rows (need {minimum})")
+        cached.index.name = "ticker"
+        return cached
+
+    def _load_universe(self) -> pd.DataFrame:
+        """Live Sina membership, degrading to the committed last-known-good table."""
+        try:
+            return self._sina_universe()
+        except Exception as live_exc:
+            # Degrade only source/network/data-shape failures. A programming
+            # defect (KeyError/TypeError/AssertionError, etc.) must stay loud
+            # rather than being laundered into a healthy-looking cached run.
+            recoverable = (
+                is_connection_error(live_exc)
+                or isinstance(live_exc, (
+                    OSError,
+                    RuntimeError,
+                    ValueError,
+                ))
+            )
+            if not recoverable:
+                raise
+            try:
+                cached = self._cached_universe()
+            except Exception as cache_exc:
+                raise RuntimeError(
+                    f"Sina membership unavailable ({type(live_exc).__name__}: {live_exc}); "
+                    f"cached membership unusable ({type(cache_exc).__name__}: {cache_exc})"
+                ) from live_exc
+            detail = f"{type(live_exc).__name__}: {live_exc}"
+            print(
+                "::warning title=china-universe-membership-fallback::"
+                f"Sina membership unavailable ({detail}); serving cached membership "
+                f"for {len(cached)} names and continuing the close refresh.",
+                flush=True,
+            )
+            log.warning("china_universe: Sina unavailable; using %d cached members (%s)",
+                        len(cached), detail)
+            return cached
+
     # -- closes (yfinance) -----------------------------------------------------
     def _download_closes(self, tickers: list[str], period: str) -> pd.DataFrame:
         bs = int(self.ycfg["batch_size"])
@@ -291,7 +362,9 @@ class ChinaUniverseAdapter(Adapter):
                     if df is None or df.empty:
                         break
                     closes = df["Close"] if "Close" in df.columns.get_level_values(0) else df
-                    parts.append(closes)
+                    closes = filter_session_observations(closes, "CN")
+                    if not closes.empty:
+                        parts.append(closes)
                     break
                 except Exception as e:  # noqa: BLE001
                     wait = self.ycfg["backoff_base_s"] * (2 ** attempt)
@@ -315,10 +388,35 @@ class ChinaUniverseAdapter(Adapter):
         basis: a permanent fake step exactly at the fresh window's lower edge.
         Flagged tickers are re-pulled over the full window and replaced
         wholesale; never fatal (see collectors.breadth.repair_seams)."""
+        accepted = current_adjusted_columns(fresh, prev)
+        if len(accepted.columns) < len(fresh.columns):
+            log.warning("%s: stale/invalid adjusted columns rejected; last-good histories retained", self.name)
+        if accepted.empty:
+            return prev.sort_index()
+        fresh = accepted
         merged = _overwrite_overlap(fresh, prev)
-        merged, _ = repair_seams(merged, fresh, prev, self._download_closes,
+        rejected_repulls = set()
+
+        def current_repull(tickers, period):
+            # Download failures are caught by repair_seams; retain the old whole
+            # column unless a successful response proves its rebase is current.
+            rejected_repulls.update(tickers)
+            response = self._download_closes(tickers, period)
+            accepted = current_adjusted_columns(response, merged)
+            rejected_repulls.difference_update(accepted.columns)
+            return accepted
+
+        merged, _ = repair_seams(merged, fresh, prev, current_repull,
                                  name=self.name)
-        return merged
+        for ticker in rejected_repulls:
+            if ticker in prev:
+                # A failed/stale full rebase cannot replace a current bar or leave
+                # a partial new adjustment basis spliced onto the prior history.
+                merged[ticker] = prev[ticker].reindex(merged.index)
+        if rejected_repulls:
+            log.warning("%s: stale/empty full adjustment re-pulls rejected; "
+                        "complete last-good columns retained", self.name)
+        return merged.dropna(how="all")
 
     # -- English name + sector (yfinance get_info, cached + bounded) ----------
     def _enrich(self, members: pd.DataFrame, prev: pd.DataFrame | None,
@@ -608,7 +706,7 @@ class ChinaUniverseAdapter(Adapter):
             raise RuntimeError("china_universe disabled in config")
         self.dir.mkdir(parents=True, exist_ok=True)
 
-        uni = self._sina_universe()
+        uni = self._load_universe()
 
         # Union with CSI index constituents (CSI 300 + CSI 1000 by default).
         # Stocks already ranked by Sina are kept with their real mktcap; extras

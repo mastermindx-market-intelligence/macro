@@ -1,0 +1,183 @@
+{
+  "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
+  "generated_at": "2026-10-14T03:34:48Z",
+  "metric_notes": {
+    "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
+    "duplicate_heading_texts": "case-folded visible heading text seen more than once; a repeated section label across tabs is a legitimate duplicate",
+    "panel_count": "class-name heuristic over the configured selector list; both over- and under-counts are expected",
+    "payload_bytes_total": "sum of response body sizes reported by the driver for the reference state; excludes bodies the driver could not size",
+    "raw_slug_hits": "visible text matching 3+ segment snake_case; legitimate identifiers (file names, API keys quoted on purpose) match too",
+    "screenshot_completion": "captured states / attempted states for this page; states the registry excludes are not attempted and are recorded as gaps",
+    "section_count": "direct <section> children of <body> plus direct element children of <main>; an approximation of 'how many blocks is this page'",
+    "source_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "visible_word_count": "whitespace-split innerText of <body>; Chinese text is not word-segmented, so a zh capture undercounts relative to en"
+  },
+  "pages": [
+    {
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1384,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2015,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 1384,
+        "duplicate_heading_texts": [
+          "later outcomes"
+        ],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 4,
+          "h3": 2,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 565552,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 26,
+        "screenshot_completion": 1.0,
+        "section_count": 1,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 264
+      },
+      "page_id": "market_memory.html?mm_mode=saved&mm_query=mmquery_ef8f00ade0de779694fa3933236f1a5de6af33aa7368783fc56877cc202819f7&mm_subject=mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c&mm_gen=mmgeneration_6a84e973a3bde5aa7528174f562b3310ddb2df78314471f50983e6dc46e1f3ce&mm_gen_sha=9b0c018e4c69b8279d010f648707eac7a17636667380bac8a1948ea158cfee6b&mm_cutoff=2026-08-20T12%3A00%3A00Z&mm_context=mmctx_1a2692c8568fce5b63b005e55ef98c17af2906f36e1d072df3a13070d4d2a99b",
+      "route": "/market_memory.html?mm_mode=saved&mm_query=mmquery_ef8f00ade0de779694fa3933236f1a5de6af33aa7368783fc56877cc202819f7&mm_subject=mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c&mm_gen=mmgeneration_6a84e973a3bde5aa7528174f562b3310ddb2df78314471f50983e6dc46e1f3ce&mm_gen_sha=9b0c018e4c69b8279d010f648707eac7a17636667380bac8a1948ea158cfee6b&mm_cutoff=2026-08-20T12%3A00%3A00Z&mm_context=mmctx_1a2692c8568fce5b63b005e55ef98c17af2906f36e1d072df3a13070d4d2a99b"
+    },
+    {
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1569,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2141,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 1569,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 3,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 640623,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 26,
+        "screenshot_completion": 1.0,
+        "section_count": 1,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 330
+      },
+      "page_id": "market_memory.html?mm_mode=historical&mm_query=mmquery_ef8f00ade0de779694fa3933236f1a5de6af33aa7368783fc56877cc202819f7&mm_subject=mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c&mm_gen=mmgeneration_855da3bb40a2502e33119854bc6655b07492018e8dde7f66d18a8be4474d528e&mm_gen_sha=dd599258b44e72749f8dc0d7c788d46e252bf3ff69626634fe8107d216c6d29f&mm_cutoff=2026-08-20T12%3A00%3A00Z&mm_context=mmctx_1a2692c8568fce5b63b005e55ef98c17af2906f36e1d072df3a13070d4d2a99b&mm_method=mmretainedmethod_e3a65e7758a98eafd5e82eff478fd5e3c633e3628aa4ab0939d8ea3463c1d980",
+      "route": "/market_memory.html?mm_mode=historical&mm_query=mmquery_ef8f00ade0de779694fa3933236f1a5de6af33aa7368783fc56877cc202819f7&mm_subject=mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c&mm_gen=mmgeneration_855da3bb40a2502e33119854bc6655b07492018e8dde7f66d18a8be4474d528e&mm_gen_sha=dd599258b44e72749f8dc0d7c788d46e252bf3ff69626634fe8107d216c6d29f&mm_cutoff=2026-08-20T12%3A00%3A00Z&mm_context=mmctx_1a2692c8568fce5b63b005e55ef98c17af2906f36e1d072df3a13070d4d2a99b&mm_method=mmretainedmethod_e3a65e7758a98eafd5e82eff478fd5e3c633e3628aa4ab0939d8ea3463c1d980"
+    },
+    {
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1813,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2478,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 1813,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 4,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 211650,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 26,
+        "screenshot_completion": 1.0,
+        "section_count": 1,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 386
+      },
+      "page_id": "market_memory.html?mm_mode=current&mm_query=mmquery_ef8f00ade0de779694fa3933236f1a5de6af33aa7368783fc56877cc202819f7&mm_subject=mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c&mm_gen=mmgeneration_855da3bb40a2502e33119854bc6655b07492018e8dde7f66d18a8be4474d528e&mm_gen_sha=dd599258b44e72749f8dc0d7c788d46e252bf3ff69626634fe8107d216c6d29f&mm_cutoff=2026-10-13T22%3A05%3A58.094284Z&mm_context=mmctx_1a2692c8568fce5b63b005e55ef98c17af2906f36e1d072df3a13070d4d2a99b&mm_method=mmretainedmethod_198c0649d3f8c822f0af70b11580207904a46c6bcbee081c4d7d06ecafa72ae7",
+      "route": "/market_memory.html?mm_mode=current&mm_query=mmquery_ef8f00ade0de779694fa3933236f1a5de6af33aa7368783fc56877cc202819f7&mm_subject=mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c&mm_gen=mmgeneration_855da3bb40a2502e33119854bc6655b07492018e8dde7f66d18a8be4474d528e&mm_gen_sha=dd599258b44e72749f8dc0d7c788d46e252bf3ff69626634fe8107d216c6d29f&mm_cutoff=2026-10-13T22%3A05%3A58.094284Z&mm_context=mmctx_1a2692c8568fce5b63b005e55ef98c17af2906f36e1d072df3a13070d4d2a99b&mm_method=mmretainedmethod_198c0649d3f8c822f0af70b11580207904a46c6bcbee081c4d7d06ecafa72ae7"
+    }
+  ],
+  "schema": "mastermind.ux_smell_report.v1",
+  "target": {
+    "base_url": "http://127.0.0.1:52864",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "version": "1.3.0"
+  }
+}
