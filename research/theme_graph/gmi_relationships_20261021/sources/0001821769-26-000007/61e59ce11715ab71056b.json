@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T19:58:40Z",
+ "accession": "0001821769-26-000007",
+ "cik": "0001821769",
+ "doc_byte_length": 1600578,
+ "doc_sha256": "783bd188b20989e8d4ffb9a61875a2c9b5e3c5f38c296519406605a3b05e74e9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nvts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 215353,
+  "byte_start": 215132,
+  "normalized": "For GaN products, our existing wafer fabrication partner is TSMC located in Taiwan. Our US based GaN fabrication partner is GlobalFoundries. We have two additional wafer fabs supporting GaN and CMOS technologies in Asia.",
+  "normalized_sha256": "b4488c9b9a9239abc3705b9cf5e380b1fc1eeb4d0e2143587fbe32c12f28fc23",
+  "raw": " For GaN products, our existing wafer fabrication partner is TSMC located in Taiwan. Our US based GaN fabrication partner is GlobalFoundries. We have two additional wafer fabs supporting GaN and CMOS technologies in Asia.",
+  "raw_sha256": "61e59ce11715ab71056b582456fd79e286ef75237dfc58578e37bb42f3305d2f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1821769/000182176926000007/nvts-20251231.htm",
+ "xbrl_contexts": []
+}

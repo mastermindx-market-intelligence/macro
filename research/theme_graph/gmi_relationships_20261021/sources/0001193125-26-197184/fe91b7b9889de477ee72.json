@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-30T20:06:29Z",
+ "accession": "0001193125-26-197184",
+ "cik": "0001329394",
+ "doc_byte_length": 1847893,
+ "doc_sha256": "c644d1945ac159c271ddc2cfd8a33e67865af891cd41991430291b389552f880",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-30",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d17718d20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 324367,
+  "byte_start": 323808,
+  "normalized": "Instead, we rely on third parties to manufacture our semiconductors. Two outside foundries, primarily TSMC, and secondarily SMIC, fabricate our semiconductors. As a result, we face several significant risks, including wafer cost, availability of wafers and other raw materials, manufacturing capacity, quality assurance, manufacturing yields and production costs, control over delivery schedules and product quality, control of our intellectual property, labor availability or strikes and actions taken by third-party contractors that breach our agreements.",
+  "normalized_sha256": "478ef8c674fab735bd29a4d7fa6725a84d5c9d54e0c388a7042222bf8c613eec",
+  "raw": " Instead, we rely on third parties to manufacture our semiconductors. Two outside foundries, primarily TSMC, and secondarily SMIC, fabricate our semiconductors. As a result, we face several significant risks, including wafer cost, availability of wafers and other raw materials, manufacturing capacity, quality assurance, manufacturing yields and production costs, control over delivery schedules and product quality, control of our intellectual property, labor availability or strikes and actions taken by third-party contractors that breach our agreements. ",
+  "raw_sha256": "fe91b7b9889de477ee72e34329e5f469435ad250d542331650d1fde1e409a116"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1329394/000119312526197184/d17718d20f.htm",
+ "xbrl_contexts": []
+}

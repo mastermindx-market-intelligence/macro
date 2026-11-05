@@ -371,10 +371,14 @@ def score(
     dict  {
         'epoch': str,
         'revision_optimistic': bool,
+        'direction': 'up'|'down',
+        'turn_kind': 'peak'|'trough',
         '1m': {'p': float, 'source': 'MODEL'|'PRIOR', 'cell_verdict': str},
         '3m': {...},
         '6m': {...},
     }
+    or the same header with 'unavailable': True and no horizon cells when the
+    mixed MODEL/PRIOR set is not a monotone CDF,
     or None when the schema guard fails or features are insufficient.
     """
     if not hazard_features:
@@ -408,6 +412,9 @@ def score(
         "epoch": _EPOCH,
         "revision_optimistic": bool(model.get("revision_optimistic", True)),
         "direction": direction,
+        # direction=="up" watches for a peak; "down" watches for a trough
+        # (see score_from_record). The UI must label from this, never proj.nextTurn.
+        "turn_kind": "peak" if direction == "up" else "trough",
     }
 
     for h_str in _HORIZONS:
@@ -428,7 +435,48 @@ def score(
             p_prior = _km_prior(km, direction, family, h_int)
             out[h_label] = {"p": round(p_prior, 4), "source": "PRIOR", "cell_verdict": "PRIOR"}
 
-    return out
+    return _enforce_hazard_cdf(out)
+
+
+def _hazard_cdf_cells(hz: dict) -> list[tuple[str, float]]:
+    """Ordered (horizon, p) pairs present on a hazard block."""
+    cells: list[tuple[str, float]] = []
+    for h in ("1m", "3m", "6m"):
+        cell = hz.get(h) or {}
+        p = cell.get("p")
+        if p is not None:
+            cells.append((h, float(p)))
+    return cells
+
+
+def _hazard_cdf_is_monotone(cells: list[tuple[str, float]]) -> bool:
+    return all(cells[i][1] <= cells[i + 1][1] + 1e-12 for i in range(len(cells) - 1))
+
+
+def _unavailable_hazard(hz: dict, reason: str = "non_monotone_cdf") -> dict:
+    """Worded unavailable block — no contradicting 1m/3m/6m cells."""
+    out = {
+        "epoch": hz.get("epoch"),
+        "revision_optimistic": hz.get("revision_optimistic"),
+        "direction": hz.get("direction"),
+        "turn_kind": hz.get("turn_kind"),
+        "unavailable": True,
+        "unavailable_reason": reason,
+    }
+    return {k: v for k, v in out.items() if v is not None}
+
+
+def _enforce_hazard_cdf(hz: dict | None) -> dict | None:
+    """Require P(≤1m) ≤ P(≤3m) ≤ P(≤6m). Mixed MODEL/PRIOR inversions cannot be
+    repaired without fabricating a CDF, so the whole block becomes unavailable."""
+    if not hz or hz.get("unavailable"):
+        return hz
+    cells = _hazard_cdf_cells(hz)
+    if len(cells) < 2:
+        return hz
+    if _hazard_cdf_is_monotone(cells):
+        return hz
+    return _unavailable_hazard(hz)
 
 
 def score_from_record(rec: dict) -> dict | None:

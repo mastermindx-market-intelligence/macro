@@ -1,0 +1,13 @@
+# account.js sha256 6c14fe90aab48eb5f2a54284922e55e027411488646c52c36865ad97016d56ca
+# S1-03 failed account read vs signed-out browser acceptance — variant=fix page=site/alerts.html (local-only, fictional fixtures)
+# result: 10 pass / 0 fail
+PASS K 503 -> unavailable (not guest, not account) :: {'unavail': True, 'name': False, 'guest': False, 'text': 'Account✕Can’t load your account right nowThis is a connection problem, not a sign-out. Nothing has changed — try again in a moment.Try again'}
+PASS K 503 shows 'Can’t load your account right now' :: Account✕Can’t load your account right nowThis is a connection problem, not a sig
+PASS K abort -> unavailable (not guest, not account) :: {'unavail': True, 'name': False, 'guest': False, 'text': 'Account✕Can’t load your account right nowThis is a connection problem, not a sign-out. Nothing has changed — try again in a moment.Try again'}
+PASS K malformed -> unavailable (not guest, not account) :: {'unavail': True, 'name': False, 'guest': False, 'text': 'Account✕Can’t load your account right nowThis is a connection problem, not a sign-out. Nothing has changed — try again in a moment.Try again'}
+PASS K nonjson -> unavailable (not guest, not account) :: {'unavail': True, 'name': False, 'guest': False, 'text': 'Account✕Can’t load your account right nowThis is a connection problem, not a sign-out. Nothing has changed — try again in a moment.Try again'}
+PASS K 401 -> signed-out guest flow :: {'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}
+PASS K anon -> signed-out guest flow :: {'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}
+PASS K 503 ZH copy :: 账户✕暂时无法加载你的账户这是连接问题，并非已退出登录。没有任何改动，请稍后重试。重试
+PASS K retry restores account without reload; plan label intact :: ('Pat Fictional', 'Pro', 'kept')
+PASS K late 503 from older load ignored; account stays :: ({'unavail': False, 'name': True, 'guest': False, 'text': 'PFPat FictionalSigned in · emailPro✕✨ ProProYour full desk is unlocked. Manage billing any time.Manage planEmailpat.fictional@example.testChangeCancelSavePasswo'}, 2)

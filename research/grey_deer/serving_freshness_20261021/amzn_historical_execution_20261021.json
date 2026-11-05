@@ -1,0 +1,456 @@
+{
+  "schema": "census-risk-historical-execution-evidence.v1",
+  "programme": "MAS-258",
+  "observed_on": "2026-10-21",
+  "mode": "read_only_historical_evidence_and_unapplied_current_correction_proposal",
+  "subject": {
+    "ticker": "AMZN",
+    "marker_type": "buy",
+    "market_date": "2026-07-31"
+  },
+  "conclusion": {
+    "historical_validation": "REJECTED",
+    "publication": "COMMITTED_DESPITE_VALIDATION_REJECTION",
+    "historical_admission": "NOT_ESTABLISHED",
+    "correction_applied": false,
+    "retrospective_eligibility_authorized": false
+  },
+  "run": {
+    "id": 31452043288,
+    "attempt": 1,
+    "event": "push",
+    "head_sha": "d90753171038dc318e55f71cf441a33db0757b02",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-08-11T02:19:56Z",
+    "updated_at": "2026-08-11T03:38:25Z",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/31452043288",
+    "job_id": 93658213173,
+    "job_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/31452043288/job/93658213173",
+    "job_conclusion": "success"
+  },
+  "timeline": [
+    {
+      "at": "2026-08-11T02:20:08.5289385Z",
+      "event": "checkout_hard_reset",
+      "detail": "Checkout cleaned the prior shared workspace before checking out the run head."
+    },
+    {
+      "at": "2026-08-11T02:21:29.9579422Z",
+      "event": "checked_out_source",
+      "sha": "d90753171038dc318e55f71cf441a33db0757b02"
+    },
+    {
+      "at": "2026-08-11T02:21:31.2920519Z",
+      "event": "pull_main",
+      "result": "Already up to date."
+    },
+    {
+      "at": "2026-08-11T02:23:17.1646608Z",
+      "event": "builder_output",
+      "detail": "wrote 240 tickers; site/signals and data/signal_archive/mtf_signals_latest.json; asof 2026-08-10"
+    },
+    {
+      "at": "2026-08-11T02:23:23.6379278Z",
+      "event": "validation_rejection",
+      "detail": "2 errors across 242 files: AMZN chart marker 175 and AMZN.last brain snapshot carry divergence-led reasons with failed-next-bar-hold primary."
+    },
+    {
+      "at": "2026-08-11T02:23:23.6412026Z",
+      "event": "execution_continued",
+      "detail": "regime engine begins after validator error."
+    },
+    {
+      "at": "2026-08-11T03:36:29.2997896Z",
+      "event": "local_render_commit",
+      "abbreviated_sha": "2663c4ab7b"
+    },
+    {
+      "at": "2026-08-11T03:36:32.1348710Z",
+      "event": "fetch_before_rebase",
+      "old_sha": "d90753171038dc318e55f71cf441a33db0757b02",
+      "new_sha": "13a234e7f88e5b2e50dcf324acbb254ea20b5438"
+    },
+    {
+      "at": "2026-08-11T03:36:42.0293755Z",
+      "event": "rebase_completed"
+    },
+    {
+      "at": "2026-08-11T03:38:08.5600386Z",
+      "event": "published_main",
+      "parent": "13a234e7f88e5b2e50dcf324acbb254ea20b5438",
+      "commit": "210d11aae688bd2ce4f40937cc8636562d0135f4"
+    }
+  ],
+  "snapshots": {
+    "actual_checkout": {
+      "pin": "d90753171038dc318e55f71cf441a33db0757b02",
+      "path": "site/signals/AMZN.json",
+      "document": {
+        "asof": "2026-08-05",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 42952,
+          "refined": 2,
+          "appended": 3,
+          "drift_lost": 1,
+          "drift_deep_new": 0,
+          "relabel_blocked": 56,
+          "prev_asof": "2026-08-05",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 187
+          },
+          "date_backfilled": 258,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 176,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "marker_count": 176
+      },
+      "marker": {
+        "date": "2026-07-31",
+        "type": "buy",
+        "quality": "block",
+        "reason": "veto: bearish divergence",
+        "reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "signal_date": "2026-08-04",
+        "confirmed_date": null,
+        "recorded_at": null
+      },
+      "sha256": "58ef7011d6cba31a0f35a056b219f260e2c9dc2badf6d4cc1588b64836d4a634",
+      "git_blob_sha1": "accd347ccf188bba0931bc3ebf40c386ce9b9770",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/d90753171038dc318e55f71cf441a33db0757b02/site/signals/AMZN.json"
+    },
+    "final_git_parent": {
+      "pin": "13a234e7f88e5b2e50dcf324acbb254ea20b5438",
+      "path": "site/signals/AMZN.json",
+      "document": {
+        "asof": "2026-08-05",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 42952,
+          "refined": 2,
+          "appended": 3,
+          "drift_lost": 1,
+          "drift_deep_new": 0,
+          "relabel_blocked": 56,
+          "prev_asof": "2026-08-05",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 187
+          },
+          "date_backfilled": 258,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 176,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "marker_count": 176
+      },
+      "marker": {
+        "date": "2026-07-31",
+        "type": "buy",
+        "quality": "block",
+        "reason": "veto: bearish divergence",
+        "reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "signal_date": "2026-08-04",
+        "confirmed_date": null,
+        "recorded_at": null
+      },
+      "sha256": "58ef7011d6cba31a0f35a056b219f260e2c9dc2badf6d4cc1588b64836d4a634",
+      "git_blob_sha1": "accd347ccf188bba0931bc3ebf40c386ce9b9770",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/13a234e7f88e5b2e50dcf324acbb254ea20b5438/site/signals/AMZN.json"
+    },
+    "published_child": {
+      "pin": "210d11aae688bd2ce4f40937cc8636562d0135f4",
+      "path": "site/signals/AMZN.json",
+      "document": {
+        "asof": "2026-08-10",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 43128,
+          "refined": 3,
+          "appended": 3,
+          "drift_lost": 1,
+          "drift_deep_new": 0,
+          "relabel_blocked": 56,
+          "prev_asof": "2026-08-05",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 187
+          },
+          "date_backfilled": 259,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 176,
+            "refined": 1,
+            "appended": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 1,
+            "date_backfill_blocked": 0
+          }
+        },
+        "marker_count": 176
+      },
+      "marker": {
+        "date": "2026-07-31",
+        "type": "buy",
+        "quality": "block",
+        "reason": "failed next-bar hold",
+        "reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "signal_date": "2026-08-04",
+        "confirmed_date": "2026-08-10",
+        "recorded_at": null
+      },
+      "sha256": "723bec24d163f0ef002e8f97cfe185601e5c241342a6642c0f02e5133ccad247",
+      "git_blob_sha1": "28ad955e765618ee7c27bba0f303ffff7b86062e",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/210d11aae688bd2ce4f40937cc8636562d0135f4/site/signals/AMZN.json"
+    },
+    "current_inspected_base": {
+      "pin": "96649436590c5d25f503eac90a74c2379e4f8a8e",
+      "path": "site/signals/AMZN.json",
+      "document": {
+        "asof": "2026-10-16",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 94225,
+          "refined": 3,
+          "appended": 7,
+          "drift_lost": 1,
+          "drift_deep_new": 0,
+          "relabel_blocked": 56,
+          "prev_asof": "2026-10-13",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 187
+          },
+          "date_backfilled": 260,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 179,
+            "refined": 0,
+            "appended": 1,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 1,
+            "date_backfill_blocked": 0
+          }
+        },
+        "marker_count": 180
+      },
+      "marker": {
+        "date": "2026-07-31",
+        "type": "buy",
+        "quality": "block",
+        "reason": "failed next-bar hold",
+        "reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "signal_date": "2026-08-04",
+        "confirmed_date": "2026-08-10",
+        "recorded_at": null
+      },
+      "sha256": "53448cd7760dd270e3a01ccb2d1801382989af0c6d644c817ca2afd0e8095f40",
+      "git_blob_sha1": "f65420895d69de6d0dc63f740b429afa6abb8f9c",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/96649436590c5d25f503eac90a74c2379e4f8a8e/site/signals/AMZN.json"
+    }
+  },
+  "comparisons": {
+    "parent_and_child_marker_count_equal": true,
+    "changed_marker_indexes": [
+      175
+    ],
+    "input_marker_equals_final_parent": true,
+    "published_marker_equals_current": true
+  },
+  "sources": [
+    {
+      "pin": "d90753171038dc318e55f71cf441a33db0757b02",
+      "path": "engine/marker_integrity.py",
+      "same_content_as_final_parent": true,
+      "sha256": "eb7cf32e0d4a2c86174797706161de1bec64751a0bc6e3ec9d8317923ade727a",
+      "git_blob_sha1": "9ef1e9931585da69a11c3f93aeb0994baf47663e",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/d90753171038dc318e55f71cf441a33db0757b02/engine/marker_integrity.py"
+    },
+    {
+      "pin": "d90753171038dc318e55f71cf441a33db0757b02",
+      "path": "engine/signal_quality.py",
+      "same_content_as_final_parent": true,
+      "sha256": "b8000e0e072aff71dabdf275eac74ea6ca092f6691ad16ccae1d42f498aad49a",
+      "git_blob_sha1": "fcb2a7d015eed860250d9968e45f7386460c6c02",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/d90753171038dc318e55f71cf441a33db0757b02/engine/signal_quality.py"
+    },
+    {
+      "pin": "d90753171038dc318e55f71cf441a33db0757b02",
+      "path": "scripts/validate_signals.py",
+      "same_content_as_final_parent": true,
+      "sha256": "3d14c863dbcac7a95d29888f6d435df4b4e2f0158e3d7d86189f0ae32a051dac",
+      "git_blob_sha1": "8145ac384e97f14f8403b96ba97d4243b87732f5",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/d90753171038dc318e55f71cf441a33db0757b02/scripts/validate_signals.py"
+    },
+    {
+      "pin": "d90753171038dc318e55f71cf441a33db0757b02",
+      "path": "scripts/build_signal_quality.py",
+      "same_content_as_final_parent": null,
+      "sha256": "4f1c56c8bfbd72eb80dac4c2fb6330f1c3270008ca7d3b5fd439e64c26aa1455",
+      "git_blob_sha1": "8abc72ca77e6dbc05bc311c77510cd9152bcfac5",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/d90753171038dc318e55f71cf441a33db0757b02/scripts/build_signal_quality.py"
+    },
+    {
+      "pin": "d90753171038dc318e55f71cf441a33db0757b02",
+      "path": "research/signal_engine/SCHEMA.json",
+      "same_content_as_final_parent": null,
+      "sha256": "2a3a11aef706ba28f0799fc77988376c840fb9ecec8ea6ebaa3fa6bf82a2b2f8",
+      "git_blob_sha1": "0e60eeec0be5d93ef58bea1d1c059122f593273b",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/d90753171038dc318e55f71cf441a33db0757b02/research/signal_engine/SCHEMA.json"
+    },
+    {
+      "pin": "d90753171038dc318e55f71cf441a33db0757b02",
+      "path": ".github/workflows/engine-render.yml",
+      "sha256": "56ea1273f15e9b626857a9273d570daff2dba586f2ad98ad3805a2d5f01e773f",
+      "git_blob_sha1": "ad6fbe941508cdc08f25878b2d0d8bc9e6507d03",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/d90753171038dc318e55f71cf441a33db0757b02/.github/workflows/engine-render.yml"
+    },
+    {
+      "pin": "96649436590c5d25f503eac90a74c2379e4f8a8e",
+      "path": ".github/workflows/engine-render.yml",
+      "sha256": "3d457be046bca81404fcfea3f3439cb5c8cdde28c4e1933d66f1d67d22dfb220",
+      "git_blob_sha1": "21710c26896a46ebbe023b15942097a8c507f710",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/96649436590c5d25f503eac90a74c2379e4f8a8e/.github/workflows/engine-render.yml"
+    }
+  ],
+  "log_excerpts": [
+    {
+      "first_line": 34,
+      "last_line": 44,
+      "text": "2026-08-11T02:20:07.7656776Z ##[group]Run actions/checkout@v4\n2026-08-11T02:20:07.7656919Z with:\n2026-08-11T02:20:07.7657022Z   ref: main\n2026-08-11T02:20:07.7657207Z   repository: ***-market-intelligence/macro\n2026-08-11T02:20:07.7658284Z   token: ***\n2026-08-11T02:20:07.7658384Z   ssh-strict: true\n2026-08-11T02:20:07.7658499Z   ssh-user: git\n2026-08-11T02:20:07.7658600Z   persist-credentials: true\n2026-08-11T02:20:07.7658721Z   clean: true\n2026-08-11T02:20:07.7658846Z   sparse-checkout-cone-mode: true\n2026-08-11T02:20:07.7658967Z   fetch-depth: 1",
+      "sha256": "ee863c991cd33a785152f03bd141006bfab85bd8c702503567bf8b41d677b477"
+    },
+    {
+      "first_line": 438,
+      "last_line": 440,
+      "text": "2026-08-11T02:20:08.2065515Z [command]/usr/bin/git submodule status\n2026-08-11T02:20:08.2213848Z ##[group]Cleaning the repository\n2026-08-11T02:20:08.2215337Z [command]/usr/bin/git clean -ffdx",
+      "sha256": "5dd8a49391762f0b5ab6de24302ab8d07dadf0021d1bbebaeb9cef95a232ccbf"
+    },
+    {
+      "first_line": 469,
+      "last_line": 470,
+      "text": "2026-08-11T02:20:08.5289385Z [command]/usr/bin/git reset --hard HEAD\n2026-08-11T02:20:08.8039405Z HEAD is now at c319e22a1 feat: add synthetic per-event scoring contracts (#5284)",
+      "sha256": "f32ce425aa890dc1d50ab5ca972f5b06a4367bcfb6ff9661472b5b9f4be76ae8"
+    },
+    {
+      "first_line": 613,
+      "last_line": 624,
+      "text": "2026-08-11T02:21:29.9447478Z Switched to a new branch 'main'\n2026-08-11T02:21:29.9448862Z branch 'main' set up to track 'origin/main'.\n2026-08-11T02:21:29.9523374Z ##[endgroup]\n2026-08-11T02:21:29.9560465Z [command]/usr/bin/git log -1 --format=%H\n2026-08-11T02:21:29.9579422Z d90753171038dc318e55f71cf441a33db0757b02\n2026-08-11T02:21:29.9649541Z ##[group]Run git pull origin main\n2026-08-11T02:21:29.9649735Z \u001b[36;1mgit pull origin main\u001b[0m\n2026-08-11T02:21:29.9654619Z shell: /usr/bin/bash -e {0}\n2026-08-11T02:21:29.9654737Z ##[endgroup]\n2026-08-11T02:21:31.2805443Z From https://github.com/***-market-intelligence/macro\n2026-08-11T02:21:31.2805743Z  * branch                  main       -> FETCH_HEAD\n2026-08-11T02:21:31.2920519Z Already up to date.",
+      "sha256": "e4a8ba8601e0a699f7c9f906828528c4a16231e67edadf056fbae22fe0748831"
+    },
+    {
+      "first_line": 883,
+      "last_line": 913,
+      "text": "2026-08-11T02:22:15.7579519Z ##[group]Run set +e\n2026-08-11T02:22:15.7579706Z \u001b[36;1mset +e\u001b[0m\n2026-08-11T02:22:15.7579825Z \u001b[36;1mrun_py() {\u001b[0m\n2026-08-11T02:22:15.7579961Z \u001b[36;1m  local label=\"$1\"; local mod=\"$2\"; shift 2\u001b[0m\n2026-08-11T02:22:15.7580130Z \u001b[36;1m  echo \"::group::$label\"\u001b[0m\n2026-08-11T02:22:15.7580317Z \u001b[36;1m  python -m \"$mod\" \"$@\" > \"$RUNNER_TEMP/e.log\" 2>&1; local rc=$?\u001b[0m\n2026-08-11T02:22:15.7580505Z \u001b[36;1m  cat \"$RUNNER_TEMP/e.log\"\u001b[0m\n2026-08-11T02:22:15.7580652Z \u001b[36;1m  echo \"::endgroup::\"\u001b[0m\n2026-08-11T02:22:15.7580790Z \u001b[36;1m  if [ \"$rc\" -ne 0 ]; then\u001b[0m\n2026-08-11T02:22:15.7581020Z \u001b[36;1m    echo \"::error title=$label failed (rc=$rc)::$(tail -n 2 \"$RUNNER_TEMP/e.log\" | tr '\\n' ' ' | tail -c 600)\"\u001b[0m\n2026-08-11T02:22:15.7581456Z \u001b[36;1m    { echo \"### ❌ $label failed (rc=$rc)\"; echo '<details><summary>traceback</summary>'; echo; echo '```'; tail -n 60 \"$RUNNER_TEMP/e.log\"; echo '```'; echo '</details>'; } >> \"$GITHUB_STEP_SUMMARY\"\u001b[0m\n2026-08-11T02:22:15.7581939Z \u001b[36;1m  fi\u001b[0m\n2026-08-11T02:22:15.7582050Z \u001b[36;1m}\u001b[0m\n2026-08-11T02:22:15.7582245Z \u001b[36;1mrun_py \"MTF signal-quality leaf (build_signal_quality)\" scripts.build_signal_quality\u001b[0m\n2026-08-11T02:22:15.7582548Z \u001b[36;1mrun_py \"§7 signal contract gate (validate_signals)\"     scripts.validate_signals\u001b[0m\n2026-08-11T02:22:15.7582800Z \u001b[36;1mrun_py \"regime engine (engine.run)\"                     engine.run\u001b[0m\n2026-08-11T02:22:15.7583006Z \u001b[36;1mexit 0\u001b[0m\n2026-08-11T02:22:15.7589033Z shell: /usr/bin/bash -e {0}\n2026-08-11T02:22:15.7589194Z env:\n2026-08-11T02:22:15.7589311Z   REGIME_FORCE_RECOMPUTE: \n2026-08-11T02:22:15.7589442Z ##[endgroup]\n2026-08-11T02:22:15.7605918Z ##[group]MTF signal-quality leaf (build_signal_quality)\n2026-08-11T02:23:17.1646608Z wrote 240 tickers -> site/signals/ + data/signal_archive/mtf_signals_latest.json (asof 2026-08-10)\n2026-08-11T02:23:17.1647282Z ##[endgroup]\n2026-08-11T02:23:17.1647865Z ##[group]§7 signal contract gate (validate_signals)\n2026-08-11T02:23:23.6379278Z signal contract VIOLATED — 2 error(s) across 242 file(s); see data/quality/signals_audit.json\n2026-08-11T02:23:23.6379829Z   - site/signals/AMZN.json: markers[175]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'failed next-bar hold' — the exhaustive account must open on the first-match label it accompanies\n2026-08-11T02:23:23.6380522Z   - data/signal_archive/mtf_signals_latest.json: signal AMZN.last: markers[0]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'failed next-bar hold' — the exhaustive account must open on the first-match label it accompanies\n2026-08-11T02:23:23.6381164Z ##[endgroup]\n2026-08-11T02:23:23.6406338Z ##[error]  - site/signals/AMZN.json: markers[175]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'failed next-bar hold' — the exhaustive account must open on the first-match label it accompanies   - data/signal_archive/mtf_signals_latest.json: signal AMZN.last: markers[0]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'failed next-bar hold' — the exhaustive account must open on the first-match label it accompanies \n2026-08-11T02:23:23.6412026Z ##[group]regime engine (engine.run)",
+      "sha256": "59eafbbae3be0747eadcf172c5b92612449978f480564448ed132eee1a4d12b6"
+    },
+    {
+      "first_line": 33401,
+      "last_line": 33415,
+      "text": "2026-08-11T03:36:29.2997896Z [main 2663c4ab7b] engine-render: regime recompute + re-render 2026-08-11 (scope=all)\n2026-08-11T03:36:29.3000569Z  3135 files changed, 176974 insertions(+), 178165 deletions(-)\n2026-08-11T03:36:29.3000924Z  rename site/assets/css/{906b198a.css => 8952abfe.css} (99%)\n2026-08-11T03:36:29.3005277Z  create mode 100644 site/signals/PPL.json\n2026-08-11T03:36:32.1333803Z From https://github.com/***-market-intelligence/macro\n2026-08-11T03:36:32.1345672Z  * branch                  main       -> FETCH_HEAD\n2026-08-11T03:36:32.1348710Z    d907531710..13a234e7f8  main       -> origin/main\n2026-08-11T03:36:34.0085215Z From https://github.com/***-market-intelligence/macro\n2026-08-11T03:36:34.0088840Z  * branch                  main       -> FETCH_HEAD\n2026-08-11T03:36:35.2578460Z Created autostash: ad573f82c0\n2026-08-11T03:36:42.0291033Z Rebasing (1/1)\n2026-08-11T03:36:42.0291356Z Applied autostash.\n2026-08-11T03:36:42.0291443Z \n2026-08-11T03:36:42.0291563Z                                                                                 \n2026-08-11T03:36:42.0293755Z Successfully rebased and updated refs/heads/main.",
+      "sha256": "15bd86664869881aae7766d882979aa1c99c3cecc90158b55d2426e0d8990295"
+    },
+    {
+      "first_line": 33428,
+      "last_line": 33430,
+      "text": "2026-08-11T03:38:08.5600066Z To https://github.com/***-market-intelligence/macro\n2026-08-11T03:38:08.5600386Z    13a234e7f8..210d11aae6  main -> main\n2026-08-11T03:38:08.5600857Z pushed engine-rendered site on attempt 1",
+      "sha256": "5d525847e70719178abbf0f7b3866544041358ce10e45ce4cfd09df629172e37"
+    }
+  ],
+  "limitations": [
+    "The logs do not record a full SHA256 for the exact files supplied to validate_signals; do not claim byte-for-byte identity of all validator inputs and committed files.",
+    "Actual checkout and final Git parent differ because the local generated commit was rebased before publication.",
+    "Builder source reads the committed per-ticker predecessor; checkout/reset and cache paths support that binding, but no independent runtime predecessor-file digest was emitted.",
+    "A workflow/job success is not contract admission. This job explicitly rejected the AMZN pair and nevertheless published it.",
+    "The local six-row history is shallow at 69268b06502cdbfb9cdf9ae24e6e64663b17c8ed; its earliest AMZN/EQIX candidates do not identify first introduction.",
+    "The current correction proposal is a substantive explanation correction. No data artifact was modified and no retrospective eligibility is granted."
+  ],
+  "current_correction_proposal": {
+    "status": "UNAPPLIED_NOT_ACCEPTED",
+    "exact_base": "96649436590c5d25f503eac90a74c2379e4f8a8e",
+    "path": "site/signals/AMZN.json",
+    "operation": "Remove inherited reasons array from this exact marker only; preserve stored primary using the documented singleton representation.",
+    "before": {
+      "date": "2026-07-31",
+      "type": "buy",
+      "quality": "block",
+      "reason": "failed next-bar hold",
+      "reasons": [
+        "veto: bearish divergence",
+        "failed next-bar hold"
+      ],
+      "signal_date": "2026-08-04",
+      "confirmed_date": "2026-08-10",
+      "recorded_at": null
+    },
+    "after": {
+      "date": "2026-07-31",
+      "type": "buy",
+      "quality": "block",
+      "reason": "failed next-bar hold",
+      "signal_date": "2026-08-04",
+      "confirmed_date": "2026-08-10",
+      "recorded_at": null
+    },
+    "unchanged_fields": [
+      "date",
+      "type",
+      "quality",
+      "reason",
+      "signal_date",
+      "confirmed_date",
+      "recorded_at"
+    ],
+    "requirements": [
+      "Fence current commit/blob/full row and reconcile any intervening writer before applying.",
+      "Record present correction time with full before/after and original historical rejection.",
+      "Prove latest-file consumers cannot use this correction to admit the August observation retrospectively.",
+      "Obtain separate exact correction review and acceptance; prospective PR9957 and C3 historical advice are not correction acceptance."
+    ],
+    "expected_blob_sha1": "f65420895d69de6d0dc63f740b429afa6abb8f9c",
+    "expected_file_sha256": "53448cd7760dd270e3a01ccb2d1801382989af0c6d644c817ca2afd0e8095f40"
+  }
+}

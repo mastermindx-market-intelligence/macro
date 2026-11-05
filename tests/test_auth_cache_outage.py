@@ -10,6 +10,7 @@ Acceptance (research/MASTERMIND_RED_TEAM_REMEDIATION_PLAN.md WS-3):
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import threading
@@ -21,7 +22,10 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from app import paywall
+from app.forensics import FIF_FINANCIAL_DATASET_MODE_ENV
 from app.main import app, require_user
+
+import app.main as main
 
 UID = "11111111-1111-1111-1111-111111111111"
 ALICE = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -66,25 +70,33 @@ def _cache_key(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
+def _future_jwt(label: str) -> str:
+    """A structurally valid future-exp token for tests that exercise cache reuse."""
+    payload = base64.urlsafe_b64encode(json.dumps({"exp": 9_999_999_999}).encode()).decode()
+    return f"header.{payload.rstrip('=')}.{label}"
+
+
 def test_require_user_and_paywall_share_one_hashed_cache_entry(monkeypatch):
     """One upstream call, one cache map — require_user must not mint a second."""
     calls: list[str] = []
+    token = _future_jwt("shared")
 
     def urlopen(req, timeout=None):
         calls.append(getattr(req, "full_url", "") or "")
         return _Resp({"id": UID, "email": "Ops@Example.com", "role": "authenticated"})
 
     monkeypatch.setattr(paywall.urllib.request, "urlopen", urlopen)
-    user = _auth("tok-shared")
+    user = _auth(token)
     assert user["id"] == UID
     assert user["email"] == "Ops@Example.com"
-    assert paywall._fresh_identity("tok-shared") == (UID, "ops@example.com")
+    assert paywall._fresh_identity(token) == (UID, "ops@example.com")
     assert len(calls) == 1
-    assert _cache_key("tok-shared") in paywall._AUTH_CACHE
+    assert _cache_key(token) in paywall._AUTH_CACHE
     assert len(paywall._AUTH_CACHE) == 1
 
 
 def test_cached_valid_identity_survives_vendor_outage_for_ttl_only(monkeypatch):
+    token = _future_jwt("live")
     monkeypatch.setattr(
         paywall.urllib.request,
         "urlopen",
@@ -92,7 +104,7 @@ def test_cached_valid_identity_survives_vendor_outage_for_ttl_only(monkeypatch):
             {"id": UID, "email": "a@b.com", "user_metadata": {"lang": "en"}}
         ),
     )
-    user = _auth("tok-live")
+    user = _auth(token)
     assert user["id"] == UID
     assert user["user_metadata"]["lang"] == "en"
 
@@ -100,17 +112,17 @@ def test_cached_valid_identity_survives_vendor_outage_for_ttl_only(monkeypatch):
         raise urllib.error.URLError("supabase down")
 
     monkeypatch.setattr(paywall.urllib.request, "urlopen", boom)
-    still = _auth("tok-live")
+    still = _auth(token)
     assert still["id"] == UID
     assert still["email"] == "a@b.com"
-    assert paywall._fresh_identity("tok-live") == (UID, "a@b.com")
+    assert paywall._fresh_identity(token) == (UID, "a@b.com")
 
-    key = _cache_key("tok-live")
+    key = _cache_key(token)
     with paywall._AUTH_LOCK:
         uid, email, _exp, rec = paywall._AUTH_CACHE[key]
         paywall._AUTH_CACHE[key] = (uid, email, time.monotonic() - 1, rec)
     with pytest.raises(HTTPException) as ei:
-        _auth("tok-live")
+        _auth(token)
     assert ei.value.status_code == 502
 
 
@@ -158,6 +170,9 @@ def test_invalid_and_expired_tokens_are_rejected_and_cached(monkeypatch):
 
 
 def test_token_cache_does_not_leak_across_users(monkeypatch):
+    alice_token = _future_jwt("alice")
+    bob_token = _future_jwt("bob")
+
     def urlopen(req, timeout=None):
         tok = req.headers.get("Authorization", "")
         if tok.endswith("alice"):
@@ -167,8 +182,8 @@ def test_token_cache_does_not_leak_across_users(monkeypatch):
         raise _http_error(401)
 
     monkeypatch.setattr(paywall.urllib.request, "urlopen", urlopen)
-    assert _auth("alice")["id"] == ALICE
-    assert _auth("bob")["id"] == BOB
+    assert _auth(alice_token)["id"] == ALICE
+    assert _auth(bob_token)["id"] == BOB
     with pytest.raises(HTTPException) as ei:
         _auth("eve")
     assert ei.value.status_code == 401
@@ -180,8 +195,8 @@ def test_token_cache_does_not_leak_across_users(monkeypatch):
         return _Resp({"id": ALICE, "email": "alice@x.com"})
 
     monkeypatch.setattr(paywall.urllib.request, "urlopen", swapped)
-    assert _auth("alice")["id"] == ALICE
-    assert _auth("bob")["id"] == BOB
+    assert _auth(alice_token)["id"] == ALICE
+    assert _auth(bob_token)["id"] == BOB
     with pytest.raises(HTTPException) as ei:
         _auth("eve")
     assert ei.value.status_code == 401
@@ -275,3 +290,56 @@ def test_missing_bearer_is_rejected_without_touching_the_cache():
     assert ei.value.status_code == 401
     assert ei.value.detail == "missing bearer token"
     assert paywall._AUTH_CACHE == {}
+
+
+# ── FIF A0-a: names-only dataset-mode readout on /api/health ──────────────────
+# ONE additive key, resolved by the same helper the forensics routes use, so
+# the production switch is verifiable on the installed site without an
+# entitled session. The env-var NAME comes from app.forensics — never a second
+# hardcoded copy of the string.
+
+
+def test_health_dataset_mode_is_golden_when_unset_or_empty(monkeypatch):
+    monkeypatch.delenv(FIF_FINANCIAL_DATASET_MODE_ENV, raising=False)
+    body = client.get("/api/health").json()
+    assert body["fif_financial_dataset_mode"] == "golden"
+
+    monkeypatch.setenv(FIF_FINANCIAL_DATASET_MODE_ENV, "")
+    body = client.get("/api/health").json()
+    assert body["fif_financial_dataset_mode"] == "golden"
+
+
+def test_health_dataset_mode_reports_lawful_modes_verbatim(monkeypatch):
+    for value in ("golden", "production"):
+        monkeypatch.setenv(FIF_FINANCIAL_DATASET_MODE_ENV, value)
+        body = client.get("/api/health").json()
+        assert body["fif_financial_dataset_mode"] == value
+
+
+def test_health_dataset_mode_invalid_is_names_only_and_still_200(monkeypatch):
+    canary = "prod-SECRET-canary-7f3"
+    monkeypatch.setenv(FIF_FINANCIAL_DATASET_MODE_ENV, canary)
+    r = client.get("/api/health")
+    assert r.status_code == 200
+    assert canary not in r.text, "the configured value must never be echoed"
+    assert r.json()["fif_financial_dataset_mode"] == "invalid"
+
+
+def test_health_dataset_mode_key_is_additive_and_existing_keys_unchanged(monkeypatch):
+    monkeypatch.delenv(FIF_FINANCIAL_DATASET_MODE_ENV, raising=False)
+    body = client.get("/api/health").json()
+    assert set(body) == {"status", "commit", "checkout", "fif_financial_dataset_mode"}
+    assert body["status"] == "ok"
+    assert body["commit"] == main._PROCESS_COMMIT, "process-pinned commit contract"
+    assert body["checkout"], "live checkout read stays present with today's meaning"
+
+
+def test_health_dataset_mode_foreign_error_is_never_masked_as_invalid(monkeypatch):
+    """Only ProductionDatasetModeError becomes "invalid" — a resolver bug surfaces."""
+
+    def _bug():
+        raise RuntimeError("resolver bug — must surface, not become 'invalid'")
+
+    monkeypatch.setattr(main, "_financial_dataset_mode", _bug)
+    with pytest.raises(RuntimeError):
+        client.get("/api/health")

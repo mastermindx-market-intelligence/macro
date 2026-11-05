@@ -1929,6 +1929,18 @@ _FILING_FACT_FIELDS = (
 )
 
 
+def _filing_fact_values_are_compatible(field: str, left: Any, right: Any) -> bool:
+    """Compare duplicate filing facts without rewriting their source representation."""
+    if left == right:
+        return True
+    if field != "acceptance_datetime" or not isinstance(left, str) or not isinstance(right, str):
+        return False
+    try:
+        return _iso_order_key(left) == _iso_order_key(right)
+    except ValueError:
+        return False
+
+
 def _merge_filing_rows(*groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
     merged: dict[str, dict[str, Any]] = {}
     for rows in groups:
@@ -1946,7 +1958,9 @@ def _merge_filing_rows(*groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 continue
             for field in _FILING_FACT_FIELDS:
                 left, right = existing.get(field), row.get(field)
-                if left is not None and right is not None and left != right:
+                if left is not None and right is not None and not _filing_fact_values_are_compatible(
+                    field, left, right
+                ):
                     raise BroadSecError(
                         "historical_submissions_conflict",
                         f"accession {accession} conflicts on {field}",
@@ -4126,21 +4140,28 @@ def live_fetchers(
     submissions_session: Any = None,
     companyfacts_fetcher: Any = None,
     retrieved_at: str | None = None,
+    pacer: Any = None,
 ) -> tuple[FetchBytes, FetchHistorical, FetchCompanyFacts, FetchIndex]:
-    from collectors.edgar_forensics import SecForensicsCollector
+    from collectors.edgar_forensics import SecForensicsCollector, SecRequestPacer
     from collectors.fundamental_forensics_companyfacts import SecCompanyFactsCollector
 
     del retrieved_at
+    # ONE incumbent SEC request pacer for the whole poll (A20): both collectors
+    # acquire the same budget object so concurrent fetch paths in this process
+    # cannot multiply the per-interval SEC request rate.
+    shared_pacer = pacer if pacer is not None else SecRequestPacer()
     submissions = SecForensicsCollector(
         scratch_root,
         user_agent=user_agent,
         session=submissions_session,
         max_response_bytes=MAX_SUBMISSIONS_BYTES,
+        pacer=shared_pacer,
     )
     facts = SecCompanyFactsCollector(
         user_agent=user_agent,
         fetcher=companyfacts_fetcher,
         max_attempts=4,
+        pacer=shared_pacer,
     )
 
     def fetch_submissions(cik: str) -> tuple[bytes, Mapping[str, str | None]]:

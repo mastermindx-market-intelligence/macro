@@ -86,6 +86,68 @@ def test_alias_owner_is_also_flagged() -> None:
     assert "raw_githubusercontent" in _shapes(findings)
 
 
+@pytest.mark.parametrize(
+    "snippet, shape",
+    (
+        (
+            'URL = "https://raw.githubusercontent.com/MastermindX-Market-Intelligence/Macro/main/x.json"\n',
+            "raw_githubusercontent",
+        ),
+        (
+            'REMOTE = "git@github.com:ChrisWong6031-Creator/Macro.git"\n',
+            "wrong_owner_transport",
+        ),
+    ),
+)
+def test_github_identity_matching_is_case_insensitive(
+    snippet: str,
+    shape: str,
+) -> None:
+    findings = find_anonymous_macro_dependencies(snippet, "scripts/synthetic.py")
+    assert shape in _shapes(findings)
+
+
+@pytest.mark.parametrize(
+    "snippet",
+    [
+        'REMOTE = "git@github.com:chriswong6031-creator/macro.git"\n',
+        'REMOTE = "git@github.com:chriswong6031-creator/macro/"\n',
+        'REMOTE = "ssh://git@github.com/chriswong6031-creator/macro.git"\n',
+        'REMOTE = "ssh://git@github.com/chriswong6031-creator/macro/"\n',
+        'git remote set-url origin git@github.com:chriswong6031-creator/macro.git\n',
+    ],
+)
+def test_old_owner_git_transport_is_flagged(snippet: str) -> None:
+    findings = find_anonymous_macro_dependencies(snippet, "scripts/synthetic.sh")
+    assert "wrong_owner_transport" in _shapes(findings)
+
+
+@pytest.mark.parametrize(
+    "snippet",
+    [
+        'REMOTE = "git@github.com:mastermindx-market-intelligence/macro.git"\n',
+        'PR = "https://github.com/chriswong6031-creator/macro/pull/6363"\n',
+        'CMT = "https://github.com/chriswong6031-creator/macro/commit/deadbeef"\n',
+        'OTHER = "git@github.com:chriswong6031-creator/not-macro.git"\n',
+    ],
+)
+def test_canonical_ssh_and_human_old_owner_citations_are_not_wrong_owner_transport(
+    snippet: str,
+) -> None:
+    findings = find_anonymous_macro_dependencies(snippet, "scripts/synthetic.sh")
+    assert "wrong_owner_transport" not in _shapes(findings)
+
+
+def test_old_owner_ssh_subprocess_reports_the_transport_shape_only() -> None:
+    src = (
+        "import subprocess\n"
+        'REMOTE = "git@github.com:chriswong6031-creator/macro.git"\n'
+        "subprocess.run(['git', 'fetch', REMOTE])\n"
+    )
+    findings = find_anonymous_macro_dependencies(src, "scripts/synthetic.py")
+    assert _shapes(findings) == {"wrong_owner_transport"}
+
+
 def test_git_clone_subprocess_call_is_flagged() -> None:
     """shape 4 via subprocess argv, not just a bare string literal."""
     src = (
@@ -337,6 +399,20 @@ def test_scope_exclusion_is_not_vacuous(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert _walk(tmp_path, {}), "detector found nothing on a non-excluded path"
+
+
+def test_scope_does_not_exclude_ordinary_paths_named_like_worktrees(
+    tmp_path: Path,
+) -> None:
+    p = tmp_path / "scripts" / "worktrees-tools" / "download.py"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(
+        f'URL = "https://raw.githubusercontent.com/{OWNER}/macro/main/x.json"\n',
+        encoding="utf-8",
+    )
+
+    findings = _walk(tmp_path, {})
+    assert _shapes(findings) == {"raw_githubusercontent"}
 
 
 # ---------------------------------------------------------------------------
@@ -683,11 +759,17 @@ def test_m1_publishers_use_only_the_private_safe_machine_git_seam(runner_name: s
     assert " push origin " not in text
     assert 'fetch --no-tags --no-recurse-submodules --depth 1 "$REMOTE_URL"' in text
     assert 'push --recurse-submodules=no "$REMOTE_URL" HEAD:refs/heads/main' in text
+    artifact_binding = ""
+    if runner_name == "run_index_gex_history.sh":
+        artifact_binding = (
+            "#     INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history \\\n"
+        )
     post_source_manual_binding = (
         "/Users/chriswong/macro-publisher-runtime/ops/launchd/run_with_env.sh \\\n"
         "#     /Users/chriswong/flow-ops-wt/.env \\\n"
         "#     /usr/bin/env \\\n"
         "#     MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy \\\n"
+        f"{artifact_binding}"
         "#     PYTHONPATH=/Users/chriswong/flow-ops-wt \\\n"
         "#     /bin/sh \\\n"
         f"#     /Users/chriswong/macro-publisher-runtime/ops/launchd/{runner_name}"
@@ -716,6 +798,24 @@ def test_m1_publisher_launch_contract_separates_current_launcher_from_pinned_eng
     )
     plist_without_comments = re.sub(r"<!--.*?-->", "", plist_text, flags=re.DOTALL)
     payload = plistlib.loads(plist_without_comments.encode("utf-8"))
+    if plist_name == "com.macro.indexgexhistory.plist":
+        # The env wrapper and the key stay on the publisher runtime. The
+        # reviewed script, working directory, and PYTHONPATH are the index
+        # code checkout. The .env file stays on flow-ops-wt.
+        assert payload["ProgramArguments"] == [
+            "/Users/chriswong/macro-publisher-runtime/ops/launchd/run_with_env.sh",
+            "/Users/chriswong/flow-ops-wt/.env",
+            "/usr/bin/env",
+            "MACRO_PUBLISH_GIT_SSH_KEY=/Users/chriswong/.ssh/macro_dashboard_deploy",
+            "MACRO_INDEX_GEX_HISTORY_ROOT=/Users/chriswong/indexgex-ops-wt",
+            "INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history",
+            "PYTHONPATH=/Users/chriswong/indexgex-ops-wt",
+            "/bin/sh",
+            "/Users/chriswong/indexgex-ops-wt/ops/launchd/run_index_gex_history.sh",
+        ]
+        assert payload["WorkingDirectory"] == "/Users/chriswong/indexgex-ops-wt"
+        assert "EnvironmentVariables" not in payload
+        return
     assert payload["ProgramArguments"] == [
         "/Users/chriswong/macro-publisher-runtime/ops/launchd/run_with_env.sh",
         "/Users/chriswong/flow-ops-wt/.env",
