@@ -23,6 +23,7 @@ All artifacts are display-tier / de-escalation only (FT-R1, FT-R2).
 from __future__ import annotations
 
 import json
+from html.parser import HTMLParser
 import os
 import re
 import shutil
@@ -573,21 +574,30 @@ def test_all_basket_sort_artifacts_keep_semantics_and_static_styles():
 
 
 def test_basket_holdings_use_canonical_scroll_wrapper_before_late_load():
-    """Shared load setup must not reparent an already-focused sorting table."""
-    from pathlib import Path
-    root = Path(__file__).resolve().parents[1]
-    wrapper = '<div class="panel"><div class="ts tbl-scroll"><table id="hold">'
-    old = '<div class="panel"><div class="ts"><table id="hold">'
-    source = (root / "templates" / "basket_detail.html.j2").read_text(encoding="utf-8")
-    assert source.count(wrapper) == 1
-    assert old not in source
+    """Direct native scroll parent survives attributes and late-load enhancement."""
+    root = TMPL_DIR.parent
     pages = [p for name in ("basket", "basket_china", "basket_hk", "basket_canada", "basket_intl")
              for p in (root / "site" / name).glob("*.html")]
-    assert len(pages) >= 100
-    for page in pages:
-        text = page.read_text(encoding="utf-8")
-        assert text.count(wrapper) == 1, page
-        assert old not in text, page
+    assert len(pages) >= 121
+    for path in [TMPL_DIR / "basket_detail.html.j2", *pages]:
+        tree, region = _hold_region(path.read_text(encoding="utf-8"))
+        assert region["attrs"].get("role") == "region", path
+        assert region["attrs"].get("tabindex") == "0", path
+        label_id = region["attrs"].get("aria-labelledby")
+        assert label_id and sum(n["attrs"].get("id") == label_id for n in tree.nodes) == 1, path
+        assert "aria-label" not in region["attrs"], path
+
+
+def test_basket_scroll_structure_checks_semantics_not_attribute_order():
+    source = _src("basket_detail.html.j2")
+    reordered = source.replace('class="ts tbl-scroll hold-scroll" role="region"',
+                               'role="region" class="hold-scroll tbl-scroll ts"')
+    assert reordered != source
+    _hold_region(reordered)
+    missing_owner_class = source.replace('ts tbl-scroll hold-scroll', 'ts hold-scroll')
+    assert missing_owner_class != source
+    with pytest.raises(AssertionError):
+        _hold_region(missing_owner_class)
 
 
 # A pulse older than 12 hours must name the day it stopped. The clock below is
@@ -722,3 +732,70 @@ def test_stale_gate_runs_before_the_stamp_is_formatted():
     tail = fn[fn.find("if(stale)"):]
     assert "LAST SESSION · SETTLED" in tail
     assert "asofStr:asofStr" in tail
+
+
+class _HoldMarkupParser(HTMLParser):
+    """Small structural tree: compare semantics, not HTML attribute order."""
+    def __init__(self, html):
+        super().__init__(convert_charrefs=True)
+        self.nodes = []
+        self.stack = []
+        self.feed(html)
+
+    def handle_starttag(self, tag, attrs):
+        node = {"tag": tag, "attrs": dict(attrs),
+                "parent": self.stack[-1] if self.stack else None, "text": ""}
+        self.nodes.append(node)
+        if tag not in {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}:
+            self.stack.append(node)
+
+    def handle_endtag(self, tag):
+        for index in range(len(self.stack) - 1, -1, -1):
+            if self.stack[index]["tag"] == tag:
+                del self.stack[index:]
+                break
+
+    def handle_data(self, value):
+        for node in self.stack:
+            node["text"] += value
+
+
+def _render_holdings_fragment(source):
+    """Execute the actual template-literal and header helper with fixture rows."""
+    start = source.index('  h+=`<h2><span class="idx">04</span>')
+    end = source.index('  // ---- changelog + flags ----', start)
+    helpers = source[source.index("function holdSortHeader("):source.index("function render(){")]
+    setup = """const esc=s=>String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
+const L=(en,zh)=>'<span class="l-en">'+en+'</span><span class="l-zh">'+zh+'</span>';
+const _sort={col:'recommend',dir:-1}; const mem=[];const nBoard=0;
+const d={members_state:'empty'};const rows='';let h='';
+"""
+    return subprocess.check_output(["node", "-e", setup + helpers + source[start:end] + "console.log(h)"], text=True)
+
+
+def _hold_region(source):
+    tree = _HoldMarkupParser(_render_holdings_fragment(source))
+    tables = [node for node in tree.nodes if node["tag"] == "table" and node["attrs"].get("id") == "hold"]
+    assert len(tables) == 1
+    region = tables[0]["parent"]
+    assert region["tag"] == "div"
+    assert {"ts", "tbl-scroll"} <= set(region["attrs"].get("class", "").split())
+    assert region["parent"]["tag"] == "div"
+    assert "panel" in region["parent"]["attrs"].get("class", "").split()
+    return tree, region
+
+
+def test_holdings_region_has_one_localized_heading_name():
+    tree, region = _hold_region(_src("basket_detail.html.j2"))
+    assert region["attrs"].get("role") == "region"
+    assert region["attrs"].get("tabindex") == "0"
+    assert "aria-label" not in region["attrs"], "HTML-generating L() must not be embedded in an attribute"
+    label_id = region["attrs"].get("aria-labelledby")
+    assert label_id
+    labels = [node for node in tree.nodes if node["attrs"].get("id") == label_id]
+    assert len(labels) == 1
+    assert labels[0]["parent"]["tag"] == "h2"
+    assert "Holdings — own-it conviction + entry timing" in labels[0]["text"]
+    assert "成分股 — 持有信念 + 入场择时" in labels[0]["text"]
+    assert "names" not in labels[0]["text"] and "04" not in labels[0]["text"]
+    assert all("<" not in str(value) for value in region["attrs"].values())

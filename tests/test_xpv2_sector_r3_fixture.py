@@ -693,13 +693,13 @@ class TestPremiumPreviewLockedTotal:
 
 
 # ---------------------------------------------------------------------------
-# 10. Thin-but-listed wording -- present today, and its removal is caught
+# 10. Published-score coverage wording -- present today, and removal is caught
 #     (code constant, lane E SS4; the "removal" mutation is folded into the
 #     same class per S5 -- one checker, two directions)
 # ---------------------------------------------------------------------------
 
-_THIN_WORDING_EN_FRAGMENTS = ("have enough data to time", "thin (listed in the table, not timed)")
-_THIN_WORDING_ZH_FRAGMENTS = ("有足够数据可计时", "个数据稀疏（列于表内，不计时）")
+_THIN_WORDING_EN_FRAGMENTS = ("' scored'", "</span> not scored")
+_THIN_WORDING_ZH_FRAGMENTS = ("已评分", "个未评分")
 
 
 def _missing_thin_wording_fragments(text: str) -> list[str]:
@@ -711,11 +711,14 @@ class TestThinButListedWording:
         text = SUBSECTORS_JS.read_text(encoding="utf-8")
         assert not _missing_thin_wording_fragments(text)
 
-    def test_removing_the_en_wording_is_caught_by_the_same_checker(self):
+    @pytest.mark.parametrize("fragment", _THIN_WORDING_EN_FRAGMENTS + _THIN_WORDING_ZH_FRAGMENTS)
+    def test_removing_each_localized_disclosure_is_caught_by_the_same_checker(self, fragment):
         text = SUBSECTORS_JS.read_text(encoding="utf-8")
-        mutated = text.replace("have enough data to time", "")
+        assert fragment in text, "the mutation must remove a real disclosure"
+        mutated = text.replace(fragment, "")
+        assert mutated != text
         missing = _missing_thin_wording_fragments(mutated)
-        assert "have enough data to time" in missing
+        assert fragment in missing
 
 
 # ---------------------------------------------------------------------------

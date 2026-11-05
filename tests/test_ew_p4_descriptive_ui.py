@@ -622,23 +622,25 @@ def _git_blob_id(path: Path) -> str:
 
 
 def test_receipt_shots_depict_the_source_under_test():
-    """The shots were rendered from the receipt's source_revision. A file cannot name
-    the commit that contains it, so the receipt binds the render INPUTS instead: every
-    one must be byte-identical (git blob id) on the tree CI checks out, which makes the
-    receipt hold for the exact head under test and fail on any later render edit."""
+    """Captured visual assets must bind to the exact current render inputs.
+    A prepublication browser capture can name its checkout revision but cannot
+    claim its uncommitted input bytes were already present in that revision.
+    Captured Git blobs and screenshot SHA-256s provide the actual proof."""
     rec = json.loads((EVIDENCE / "receipt.json").read_text(encoding="utf-8"))
     assert rec["base"] == "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd"
-    eq = rec["pr_source_equivalence"]
-    assert eq["all_equal"] is True
-    paths = {r["path"] for r in eq["render_files"]}
-    assert {
+    # The updated capture may precede its eventual source commit.  The source
+    # revision is checkout provenance, not proof that dirty render inputs were
+    # already committed.  Bind each input by its exact Git blob, not a claimed
+    # immutable revision that did not contain these bytes.
+    captures = rec["capture_input_blobs"]
+    assert isinstance(captures, dict) and len(captures) >= 20
+    assert rec["capture_tree_state"].startswith("Qualified working-tree render inputs")
+    assert re.fullmatch(r"[0-9a-f]{40}", rec["capture_checkout_revision"])
+    required = {
         "templates/_risk_envelope_band.html.j2",
         "templates/_risk_envelope_band.css.j2",
         "templates/rotation_events.js",
         "templates/rotation_glance.css",
-        # Review (FU2): the tokens the L3/L4 claims rest on, the Radar host page and
-        # the Sector Central page are render inputs too; a later edit to any of
-        # them fails this test instead of leaving the shots silently stale.
         "templates/theme.css",
         "templates/dashboard.html.j2",
         "templates/_risk_radar_workspace.html.j2",
@@ -647,14 +649,16 @@ def test_receipt_shots_depict_the_source_under_test():
         "site/theme.css",
         "site/si_workspace.js",
         "tests/probe_ew_p4_descriptive_ui_browser.py",
-    } <= paths
-    assert {f"tests/fixtures/ew_p4_observation/{p.name}" for p in FIX.glob("*.json")} <= paths
-    for row in eq["render_files"]:
-        p = ROOT / row["path"]
-        if row["path"].startswith("site/") and not p.exists():
-            continue  # sparse local trees omit site/; templates/ carries the same bytes
-        assert row["blob_at_source_revision"] == row["blob_on_pr_branch"], row["path"]
-        assert _git_blob_id(p) == row["blob_at_source_revision"], row["path"]
+    }
+    required |= {f"tests/fixtures/ew_p4_observation/{p.name}" for p in FIX.glob("*.json")}
+    assert required <= captures.keys()
+    for path, blob in captures.items():
+        assert isinstance(path, str) and path and not Path(path).is_absolute()
+        assert ".." not in Path(path).parts and re.fullmatch(r"[0-9a-f]{40}", blob)
+        p = ROOT / path
+        if path.startswith("site/") and not p.exists():
+            continue  # A sparse checkout may omit a generated copy of the source.
+        assert _git_blob_id(p) == blob, path
 
     glance = (ROOT / "templates" / "rotation_glance.css").read_bytes()
     assert rec["glance_css_sha256"] == hashlib.sha256(glance).hexdigest()

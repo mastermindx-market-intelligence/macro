@@ -106,6 +106,8 @@ with sync_playwright() as pw:
    assert not f.locator('#sc-detail').is_visible(),results['sheet_readback']
    selected=f.evaluate('SectorCyclesCapture().focus')
    f.locator('#sc-dossier-toggle').click()
+   # Native <details> toggles dispatch asynchronously; await the existing parent CSS projection.
+   f.wait_for_function("!document.getElementById('sc-dossier').open && !document.getElementById('sc-native-study').classList.contains('sc-dossier-active') && getComputedStyle(document.getElementById('sc-detail')).display!=='none'",timeout=7000)
    assert f.locator('#sc-detail').is_visible(),'closing the Dossier must return the original selected Cycle sheet'
    assert f.evaluate('SectorCyclesCapture().focus')==selected
    f.locator('#sc-dossier-toggle').click()

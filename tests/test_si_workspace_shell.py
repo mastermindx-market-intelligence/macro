@@ -646,7 +646,9 @@ def _replay_router(hashes):
             head: { appendChild: () => {} },
           },
           history: { replaceState: () => {} },
-          location: { hash: '' },
+          // Match browser URL/base semantics; retain the real async fallback.
+          URL,
+          location: new URL('https://example.test/sector_central.html'),
           console,
           setTimeout, clearTimeout,
           addEventListener: () => {},
