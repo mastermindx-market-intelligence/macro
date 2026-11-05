@@ -6813,7 +6813,7 @@
       ]
     },
     "track_record": {
-      "n_recent_fires": 2205,
+      "n_recent_fires": 2155,
       "n_hostile_regime": 485,
       "n_breadth_unconfirmed": 1205,
       "n_repeat_fire": 75,
@@ -9040,7 +9040,7 @@
   "gaps": [],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/lagging.py",
-  "produced_at": "2026-11-05T11:17:25Z",
-  "inputs_hash": "sha256:4dac1adc869573b2c93969b72d2e94f16dcb861cae30e424aeb788dbb082bfa6",
+  "produced_at": "2026-11-05T13:31:26Z",
+  "inputs_hash": "sha256:7562bb25fa26777d623c4f58eeef9e12f1ae0f37078001f4c18b6159dedd0dd1",
   "tier": "infrastructure"
 }
