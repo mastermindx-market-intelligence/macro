@@ -94,3 +94,21 @@ increment as the requirement work - otherwise the next lane inherits the same si
 Related: `DSC:A-FROZEN-PLANS-EXAMPLE-TEST-CAN-BE-HALF-DEAD` (the same plan's frozen example
 bodies can be present but vacuous - this record is the case where the named test is not there at
 all).
+
+## Amendment 2026-09-29 - the cure named above is necessary and NOT sufficient
+
+The `so_what` and the ordering rule tell you to vendor the requirement-to-owning-test map into
+the repo and have a test assert every named owner resolves. Do that - it is still right - but do
+not read it as closing the hole. A vendored map makes a row GRADEABLE without making it HONEST,
+because the one thing a plan's traceability table never carries is the requirement's own text:
+the obligation lives in the upstream specifications the plan says it inherits "unchanged", and
+on this program those are not in the repository at all. Measured 2026-09-29 by two agreeing
+instruments: of the 56 ids the table names, 41 appear NOWHERE in the tree, and the 15 that do
+appear only because delivered code cites them. So an anchor row can be added for any id in the
+table, will resolve cleanly, and will assert a requirement rather than enforce one.
+
+What closes it is a declared `anchor_basis` per requirement in the vendored table - `RULING`,
+`LANDED_BEHAVIOUR`, or `NO_SOURCE` - with the guard refusing to anchor a `NO_SOURCE` row, so
+extending coverage requires naming a real source in the same change. See
+`DSC:A-VENDORED-TRACEABILITY-MAP-STILL-HAS-NO-REQUIREMENT-TEXT` for the measurement, the
+per-task table, and the seven mutations that prove the guard discriminates.

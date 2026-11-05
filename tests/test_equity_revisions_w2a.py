@@ -381,6 +381,7 @@ def test_lineage_history_is_indexed_once_per_collection_session(tmp_path: Path, 
     assert set(later_rows["correction_state"]) == {"unchanged"}
 
 
+
 def test_changed_payload_appends_supersession_without_mutating_prior_bytes(tmp_path: Path):
     _run(tmp_path, "scheduled-1")
     before = _observations(tmp_path).copy(deep=True)
@@ -947,3 +948,121 @@ def test_anchor_extraction_skips_items_missing_end_date(tmp_path: Path):
     plus1y = rows[(rows["metric"] == "EPS") & (rows["horizon_label_raw"] == "+1y") & (rows["observation_type"] == "average")].iloc[0]
     assert pd.isna(zeroq["period_end"])
     assert plus1y["period_end"] == "2027-09-30"
+
+
+def _lineage_fixture_row(**overrides):
+    row = {
+        "provider": "yfinance", "provider_record_class": "earnings_estimate",
+        "ticker_compat": "AAA", "metric": "EPS", "horizon_label_raw": "0q",
+        "observation_type": "average", "value": 1.0, "observation_id": "prior",
+        "system_observed_at": "2026-01-01T00:00:00Z", "period_end": "2026-12-31",
+        "unit": None, "currency": None, "basis": None,
+        "correction_state": "original", "supersedes_observation_id": None,
+    }
+    row.update(overrides)
+    return row
+
+
+@pytest.mark.parametrize("key", [
+    "provider", "provider_record_class", "ticker_compat", "metric",
+    "horizon_label_raw", "observation_type",
+])
+@pytest.mark.parametrize("missing", [None, float("nan"), pd.NA])
+def test_indexed_lineage_does_not_match_missing_keys(key, missing):
+    history = pd.DataFrame([_lineage_fixture_row(**{key: missing})])
+    current = _lineage_fixture_row(value=2.0, observation_id="new", **{key: missing})
+    revisions._apply_lineage([current], history, latest_by_key=revisions._latest_lineage_index(history))
+    assert current["correction_state"] == "original"
+    assert current["supersedes_observation_id"] is None
+
+
+@pytest.mark.parametrize("prior_key,current_key,state", [
+    (9007199254740993, 9007199254740993, "supersedes"),
+    (9007199254740993, "9007199254740993", "original"),
+    ("9007199254740993", 9007199254740993, "original"),
+])
+def test_indexed_lineage_preserves_legacy_key_equality(prior_key, current_key, state):
+    history = pd.DataFrame([_lineage_fixture_row(ticker_compat=prior_key)])
+    current = _lineage_fixture_row(ticker_compat=current_key, value=2.0, observation_id="new")
+    revisions._apply_lineage([current], history, latest_by_key=revisions._latest_lineage_index(history))
+    assert current["correction_state"] == state
+    assert current["supersedes_observation_id"] == ("prior" if state == "supersedes" else None)
+
+
+@pytest.mark.parametrize("clocks,expected", [
+    (["2026-01-01", "2026-01-01"], "second"),
+    ([None, "2026-01-01"], "first"),
+    (["2026-01-01", pd.NA], "second"),
+    (["2026-01-01", pd.NaT], "second"),
+])
+def test_indexed_lineage_keeps_stable_ties_and_null_clock_order(clocks, expected):
+    history = pd.DataFrame([
+        _lineage_fixture_row(observation_id="first", system_observed_at=clocks[0]),
+        _lineage_fixture_row(observation_id="second", system_observed_at=clocks[1], value=2.0),
+        _lineage_fixture_row(observation_id="missing", system_observed_at=None, value=None),
+    ], index=[8, 8, 2])
+    before = history.copy(deep=True)
+    current = _lineage_fixture_row(value=3.0, observation_id="new")
+    revisions._apply_lineage([current], history, latest_by_key=revisions._latest_lineage_index(history))
+    assert current["supersedes_observation_id"] == expected
+    pd.testing.assert_frame_equal(history, before)
+
+
+def test_indexed_lineage_keeps_disjoint_legacy_clock_sorting():
+    history = pd.DataFrame([
+        _lineage_fixture_row(system_observed_at=1),
+        _lineage_fixture_row(ticker_compat="BBB", system_observed_at="later"),
+    ])
+    current = _lineage_fixture_row(value=2.0, observation_id="new")
+    revisions._apply_lineage([current], history, latest_by_key=revisions._latest_lineage_index(history))
+    assert current["correction_state"] == "supersedes"
+    assert current["supersedes_observation_id"] == "prior"
+
+
+@pytest.mark.parametrize("field", ["unit", "currency", "basis"])
+@pytest.mark.parametrize("value", [1.0, 2.0])
+def test_indexed_lineage_keeps_noncomparable_changes_original(field, value):
+    history = pd.DataFrame([_lineage_fixture_row(**{field: "old"})])
+    current = _lineage_fixture_row(value=value, observation_id="new", **{field: "new"})
+    revisions._apply_lineage([current], history, latest_by_key=revisions._latest_lineage_index(history))
+    assert current["correction_state"] == "original"
+    assert current["supersedes_observation_id"] is None
+
+
+def test_indexed_lineage_only_uses_pre_session_history():
+    history = pd.DataFrame([_lineage_fixture_row()])
+    rows = [_lineage_fixture_row(value=value, observation_id=f"new-{value}") for value in (2.0, 3.0)]
+    revisions._apply_lineage(rows, history, latest_by_key=revisions._latest_lineage_index(history))
+    assert [row["supersedes_observation_id"] for row in rows] == ["prior", "prior"]
+
+
+def test_collection_retains_duplicate_id_counts_and_first_persisted_row(tmp_path: Path, monkeypatch):
+    original = revisions._expectation_rows
+
+    def repeated_identity(**kwargs):
+        rows = original(**kwargs)
+        rows[0]["observation_id"] = "repeated-provider-identity"
+        return rows
+
+    monkeypatch.setattr(revisions, "_expectation_rows", repeated_identity)
+    calls = []
+
+    def factory(ticker):
+        calls.append(ticker)
+        return _Ticker()
+
+    result = revisions.accrue_expectation_observations(
+        ["BBB", "AAA", "AAA"], output_dir=tmp_path,
+        collection_session_id="duplicates", ticker_factory=factory,
+    )
+    assert calls == ["AAA", "BBB"]
+    assert result == {"attempts": 2, "observations": 56}
+    rows = _observations(tmp_path)
+    assert len(rows) == 55
+    assert rows.loc[rows["observation_id"] == "repeated-provider-identity", "ticker_compat"].tolist() == ["AAA"]
+    replay = revisions.accrue_expectation_observations(
+        ["BBB", "AAA"], output_dir=tmp_path,
+        collection_session_id="duplicates", ticker_factory=factory,
+    )
+    assert replay == {"attempts": 0, "observations": 0}
+    pd.testing.assert_frame_equal(_observations(tmp_path), rows)

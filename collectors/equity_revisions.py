@@ -360,7 +360,7 @@ def _expectation_rows(
                     "missingness_reason": missingness,
                     "correction_state": "original",
                     "supersedes_observation_id": None,
-                    "rights_class": "UNKNOWN",
+                    "rights_class": "UNKNOWN",  # R1-OWNER-REFUSAL line 363: no rights class is assigned (owner refusal, labeled absence); DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07 WS:ALPHA-INTELLIGENCE-INTEGRATION
                     "provenance_note": f"yfinance_{record_class}_prospective_snapshot",
                 })
     return rows
@@ -391,30 +391,45 @@ _LINEAGE_KEY_COLUMNS = (
 )
 
 
-def _lineage_key(row: Any) -> tuple[Any, ...]:
-    """Canonical correction-lineage key for an observation row."""
-    return tuple(_json_scalar(row[column]) for column in _LINEAGE_KEY_COLUMNS)
+def _latest_lineage_index(existing: pd.DataFrame) -> dict[tuple[str, ...], int] | None:
+    """Index literal string keys once against this exact pre-session frame.
 
-
-def _latest_lineage_index(existing: pd.DataFrame) -> dict[tuple[Any, ...], dict[str, Any]]:
-    """Index the newest non-null PRIOR observation for each lineage key once.
-
-    This preserves the former per-row algorithm exactly: ignore null prior values,
-    stable-sort by system_observed_at, and take the last row for each key.  The
-    index is deliberately built from the pre-session durable corpus only; callers
-    must not add the current session's rows while it is being accrued.
+    Values are integer row positions, so the eventual lookup uses the same
+    pandas scalar types as the original filtered-frame ``iloc[-1]`` lookup.
+    Unsafe legacy key/clock shapes return None and retain the original per-row
+    comparison and sorting behavior. Never add current-session rows here.
     """
     if existing.empty:
         return {}
-    prior = existing[existing["value"].notna()]
+    columns = [*_LINEAGE_KEY_COLUMNS, "system_observed_at"]
+    if not set([*columns, "value"]).issubset(existing.columns):
+        return None
+    prior = existing.loc[:, columns].copy()
+    prior["_lineage_position"] = range(len(existing))
+    prior = prior.loc[existing["value"].notna()]
     if prior.empty:
         return {}
-    prior = prior.sort_values("system_observed_at", kind="stable")
-    latest = prior.drop_duplicates(subset=list(_LINEAGE_KEY_COLUMNS), keep="last")
-    fields = ("observation_id", "period_end", "value", "unit", "currency", "basis")
+    # pandas equality is broader than dictionary equality for some legacy
+    # dtypes. Do not JSON/string-normalize missing, numeric or other keys.
+    if any(
+        any(type(value) is not str for value in prior[column])
+        for column in _LINEAGE_KEY_COLUMNS
+    ):
+        return None
+    # Normal producer clocks are strings; null clocks retain pandas' original
+    # NA-last ordering. Mixed/incomparable clock types use per-key sorting.
+    if any(
+        type(value) is not str
+        and not (pd.api.types.is_scalar(value) and pd.isna(value))
+        for value in prior["system_observed_at"]
+    ):
+        return None
+    ordered = prior.sort_values("system_observed_at", kind="stable")
     return {
-        _lineage_key(row): {field: row[field] for field in fields}
-        for _, row in latest.iterrows()
+        tuple(values[:-1]): int(values[-1])
+        for values in ordered[[*_LINEAGE_KEY_COLUMNS, "_lineage_position"]].itertuples(
+            index=False, name=None
+        )
     }
 
 
@@ -422,22 +437,31 @@ def _apply_lineage(
     rows: list[dict[str, Any]],
     existing: pd.DataFrame,
     *,
-    latest_by_key: dict[tuple[Any, ...], dict[str, Any]] | None = None,
+    latest_by_key: dict[tuple[str, ...], int] | None = None,
 ) -> None:
     """Mark changed values as append-only supersessions; nulls never replace good rows."""
-    # Preserve the historical first-session behavior: with no prior durable
-    # observations, _apply_lineage is a no-op (including correction_state).
     if existing.empty:
         return
-    if latest_by_key is None:
-        latest_by_key = _latest_lineage_index(existing)
+    key_columns = _LINEAGE_KEY_COLUMNS
     for row in rows:
         if row["value"] is None:
             row["correction_state"] = "missing"
             continue
-        newest = latest_by_key.get(_lineage_key(row))
-        if newest is None:
-            continue
+        if latest_by_key is not None and all(type(row[column]) is str for column in key_columns):
+            position = latest_by_key.get(tuple(row[column] for column in key_columns))
+            if position is None:
+                continue
+            newest = existing.iloc[position]
+        else:
+            # Preserve pandas equality and per-key sorting for legacy inputs
+            # that are not eligible for the normal string-key fast path.
+            prior = existing
+            for column in key_columns:
+                prior = prior[prior[column] == row[column]]
+            prior = prior[prior["value"].notna()]
+            if prior.empty:
+                continue
+            newest = prior.sort_values("system_observed_at", kind="stable").iloc[-1]
         # Mutation gate 3: a fiscal rollover is not a revision.  horizon_label_raw
         # is a RELATIVE provider label (e.g. "0q" always means "the current
         # quarter"), so the same key can legitimately refer to a different
@@ -449,6 +473,21 @@ def _apply_lineage(
         prior_period_end = _json_scalar(newest["period_end"])
         current_period_end = _json_scalar(row["period_end"])
         if prior_period_end is not None and current_period_end is not None and prior_period_end != current_period_end:
+            continue
+        # Mutation gate 4: a unit, currency or basis change is noncomparable, not
+        # a revision (DEC:ITP-K3E-BASIS-CHANGE-IS-NONCOMPARABLE-2026-10-07).  When
+        # both the prior and the current row carry a real (non-null) value for
+        # any of unit, currency or basis and those differ, the two observations
+        # measure different things: leave the row a new original with no
+        # supersedes_observation_id, and never touch the prior row.  A null on
+        # either side (enrichment) falls through to the value comparison exactly
+        # as today.
+        if any(
+            _json_scalar(newest[field]) is not None
+            and _json_scalar(row[field]) is not None
+            and _json_scalar(newest[field]) != _json_scalar(row[field])
+            for field in ("unit", "currency", "basis")
+        ):
             continue
         same_value = (
             _json_scalar(newest["value"]) == _json_scalar(row["value"])
@@ -548,9 +587,7 @@ def accrue_expectation_observations(
             system_observed_at=system_observed_at, period_end_by_horizon=period_end_by_horizon,
         )
         _apply_lineage(
-            response_rows,
-            existing_observations,
-            latest_by_key=latest_lineage_by_key,
+            response_rows, existing_observations, latest_by_key=latest_lineage_by_key
         )
         deduped_rows = [
             row for row in response_rows

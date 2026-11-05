@@ -35,6 +35,7 @@ import inspect
 
 import json
 import os
+import shutil
 import signal
 import subprocess
 import sys
@@ -544,6 +545,111 @@ def test_temp_root_precedence(tmp_path: Path, monkeypatch) -> None:
     (tmp_path / "vol" / "ws").mkdir(parents=True)
     monkeypatch.setattr(CCD, "STORAGE_POLICY", policy)
     assert CCD.base_tree_temp_root() is None
+
+
+# ── leaked-base-tree reaper (2026-09-28) ─────────────────────────────────────
+# `cleanup()` cannot run when the process is SIGKILLed, and NOTHING else can
+# reclaim these: the mint root is outside every config/worktree_gc.json root, and
+# even added as one it is refused, because worktree_gc.host_checkouts() only
+# recognises a session tree by a repo-RELATIVE root segment (`.claude/worktrees`
+# and siblings) and takes an external-volume path for a HOST CHECKOUT. Measured
+# 2026-09-28: 12 registered leaks (43.1 GiB) + 8 unregistered leftovers (15.7
+# GiB) over six days, ~7 GiB/day. So the leak is collected where it is made.
+
+def _aged_dir(parent: Path, name: str, hours: float) -> Path:
+    d = parent / name
+    d.mkdir(parents=True)
+    (d / "filler").write_text("x")
+    old = time.time() - hours * 3600
+    os.utime(d, (old, old))
+    return d
+
+
+def test_reaper_takes_stale_base_trees_and_spares_a_concurrent_run(tmp_path: Path) -> None:
+    pool = tmp_path / "pool"
+    stale = _aged_dir(pool, "contract-delta-base-stale", hours=48)
+    fresh = _aged_dir(pool, "contract-delta-base-fresh", hours=0.1)
+    repo = _make_repo(tmp_path)
+
+    assert CCD.reap_stale_base_trees(pool, repo_root=repo) == 1
+    assert not stale.exists()
+    assert fresh.exists(), "a tree younger than the window may belong to a live gate run"
+
+
+def test_reaper_never_touches_a_name_it_did_not_mint(tmp_path: Path) -> None:
+    """The narrowness is the safety: only the `contract-delta-base-` prefix."""
+    pool = tmp_path / "pool"
+    foreign = _aged_dir(pool, "somebody-elses-worktree", hours=72)
+    also = _aged_dir(pool, "contract-delta-NOT-a-base", hours=72)
+    repo = _make_repo(tmp_path)
+
+    assert CCD.reap_stale_base_trees(pool, repo_root=repo) == 0
+    assert foreign.exists() and also.exists()
+
+
+def test_reaper_clears_a_locked_registration_whose_directory_is_gone(tmp_path: Path) -> None:
+    """`git worktree prune` SKIPS a locked worktree — which is why these pile up.
+
+    The external-storage helper stamps every tree it mints (`initializing`,
+    `removable volume protection`), so a leak that loses its directory keeps a
+    permanent phantom registration: 13 of them on this host, all `initializing`.
+    """
+    repo = _make_repo(tmp_path)
+    pool = tmp_path / "pool"
+    pool.mkdir()
+    phantom = pool / "contract-delta-base-phantom"
+    _git("worktree", "add", "--detach", "-q", str(phantom), "HEAD~1", cwd=repo)
+    _git("worktree", "lock", "--reason", "initializing", str(phantom), cwd=repo)
+    shutil.rmtree(phantom)
+
+    _git("worktree", "prune", cwd=repo)
+    assert "contract-delta-base-phantom" in _git(
+        "worktree", "list", "--porcelain", cwd=repo), "prune alone cannot clear it"
+
+    CCD.reap_stale_base_trees(pool, repo_root=repo)
+    assert "contract-delta-base-phantom" not in _git(
+        "worktree", "list", "--porcelain", cwd=repo)
+
+
+def test_reaper_is_switchable_and_retunable(tmp_path: Path, monkeypatch) -> None:
+    pool = tmp_path / "pool"
+    stale = _aged_dir(pool, "contract-delta-base-stale", hours=48)
+    repo = _make_repo(tmp_path)
+
+    monkeypatch.setenv(CCD.NO_REAP_ENV, "1")
+    assert CCD.reap_stale_base_trees(pool, repo_root=repo) == 0
+    assert stale.exists()
+    monkeypatch.delenv(CCD.NO_REAP_ENV)
+
+    monkeypatch.setenv(CCD.REAP_HOURS_ENV, "72")
+    assert CCD.reap_stale_base_trees(pool, repo_root=repo) == 0, "48h < a 72h window"
+    monkeypatch.setenv(CCD.REAP_HOURS_ENV, "1")
+    assert CCD.reap_stale_base_trees(pool, repo_root=repo) == 1
+
+
+def test_reaper_survives_an_uncollectable_leak(tmp_path: Path, monkeypatch) -> None:
+    """A leak that resists collection must never fail the contract gate."""
+    pool = tmp_path / "pool"
+    _aged_dir(pool, "contract-delta-base-stuck", hours=48)
+    repo = _make_repo(tmp_path)
+    monkeypatch.setattr(CCD.shutil, "rmtree", lambda *a, **k: None)
+
+    assert CCD.reap_stale_base_trees(pool, repo_root=repo) == 0, "counts only real removals"
+
+
+def test_materialize_reaps_before_it_mints(tmp_path: Path, monkeypatch) -> None:
+    """The wiring: the one code path that can collect the leak actually does."""
+    repo = _make_repo(tmp_path)
+    pool = tmp_path / "pool"
+    stale = _aged_dir(pool, "contract-delta-base-stale", hours=48)
+    monkeypatch.setenv(CCD.TEMP_ROOT_ENV, str(pool))
+
+    tree, _sha, cleanup = CCD.materialize_base_tree("HEAD~1", repo_root=repo)
+    try:
+        assert not stale.exists(), "a leaked base must be collected before adding another"
+        assert tree.parent == pool and tree.exists()
+    finally:
+        cleanup()
 
 
 def test_sigterm_handler_raises_system_exit() -> None:

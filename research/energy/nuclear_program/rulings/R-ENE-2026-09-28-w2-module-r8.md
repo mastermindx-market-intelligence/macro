@@ -13,7 +13,7 @@
 | Finding | Disposition |
 |---|---|
 | **MINOR-1.** Robotics' `known_revisions` is not count-only, so the r7 reversal of "(6b) relay-only" rested on a false premise. | Accepted. The r6 and r7 records are corrected at source in the same commit as this ruling. The relay went to #7870 as comment 5866433049 item 4: effects (a) and (b), with R-ENE-31's construction as the reference fix. Whether (c) is a Robotics defect is the owner's call. Nuclear's code is unaffected. |
-| **NIT-1.** The reviewer retracts its own round-6 line-number NIT: `:1300` was correct. | Accepted. The `:1298-1299` erratum is withdrawn at source in the r6 ruling, the r7 ruling, the r6 closure record and the handoff. It was dropped from the #7870 post, which says relay 5832062081 stands as posted. |
+| **NIT-1.** The reviewer retracts its own round-6 line-number NIT: `:1300` was correct. | Accepted. The `:1298-1299` erratum is withdrawn at source in the r6 ruling, the r7 ruling, the r6 closure record and the handoff. **[Seat annotation 2026-09-28 (round-8 closure NIT-C): that list was incomplete. Four copies stayed unmarked: the r6 closure record :16 and :209, the r7 ruling :9, and the handoff's count of "three places". `R-ENE-2026-09-28-w2-module-r9.md` annotates them.]** It was dropped from the #7870 post, which says relay 5832062081 stands as posted. |
 | **NIT-2.** The `_reviewed_by_cutoff` contract is unpinned on four axes, and the absent count has no positive control of its own. | Accepted. This is **R-ENE-33**. |
 | **NIT-3.** Two wording points at r7 :36 and :39. | Accepted. Both are corrected at source in the r7 ruling. |
 | **NIT-4.** A replay block with `reviewed_at=''` fails the whole request with HTTP 503. This is pre-existing and shared with the base. | Accepted. **R-ENE-34** is the nuclear-local guard. The base defect was relayed as 5866433049 item 5. |
@@ -60,19 +60,23 @@ The absent count (`test_a_replay_never_counts_a_block_reviewed_after_its_cutoff`
         return _le(reviewed, self.query.recorded_cutoff)
 ```
 
-- Every string that `_parse_day` accepts is one that `_le` also parses (`semiconductor_theme_research.py:141-163` at `a0d7b054ff23`). `_le` reads the value through `_parse_day` when it is date-only and through `_parse_clock` when it is an instant, and for an instant `_parse_day` is `_parse_clock(...).date()`. So, with a well-formed cutoff, the guard cannot let through a value that `_le` then rejects.
+- Every string that `_parse_day` accepts is one that `_le` also parses (`semiconductor_theme_research.py:138-164` at `a0d7b054ff23`). **[Corrected 2026-09-28 (round-8 closure O2): this cited `:141-163`.]** `_le` reads the value through `_parse_day` when it is date-only and through `_parse_clock` when it is an instant, and for an instant `_parse_day` is `_parse_clock(...).date()`. So, with a well-formed cutoff, the guard cannot let through a value that `_le` then rejects.
 - **Latent today.** The owner loader sends `interpretation_blocks=()` (`nuclear_owner_bundle.py:41`), so no served payload changes.
 
 **Tests (append-only, R-ENE-19).**
 - `tests/test_nuclear_research_interpretation_scope.py`: `test_a_replay_withholds_a_block_without_a_readable_review_time`, parametrized over `None`, `''`, `'not-a-date'` and `'2026-13-45'`. Each case asserts that the block is neither shown nor counted.
 - `tests/test_nuclear_research_route.py`: `test_a_replay_withholds_an_unreadable_review_time_instead_of_failing`, with cases `("2026-09-20", True)` and `("", False)`. Each case asserts HTTP 200, `no-store`, `noarchive`, and that the block's text is served exactly when its review time is readable.
-- **R-ENE-19 compliance.** No test is deleted or renamed, and no data fixture is reshaped. The route file's `client` helper gains an optional `registration` argument whose default reproduces its current behaviour exactly, and the file gains `import dataclasses`.
+- **R-ENE-19 compliance.** No test is deleted or renamed, and no data fixture is reshaped. The route file's `client` helper gains an optional `registration` argument whose default reproduces its current behaviour exactly, and the file gains `import dataclasses`. **[Seat annotation 2026-09-28 (round-8 closure O3): the scope test's module docstring was also edited, one line removed and two added. `R-ENE-2026-09-28-w2-module-r9.md` quotes its round-9 rewrite.]**
 
-**Documented residual: `m34_broad`.** This mutant moves the `try` around `_le` itself, so a malformed query cutoff is swallowed too. It survives, and it is left unpinned on purpose:
+**Documented residual: `m34_broad`.** **[Superseded 2026-09-28 by R-ENE-35 (round-8 closure NIT-A): `m34_broad` is now pinned, and the second reason below is false. An engine `pytest.raises(ValueError)` kills it without pinning any HTTP status, and it keeps passing after the base's fix, because `ResearchRefusal` subclasses `ValueError`. See `R-ENE-2026-09-28-w2-module-r9.md`.]** This mutant moves the `try` around `_le` itself, so a malformed query cutoff is swallowed too. It survives, and it is left unpinned on purpose:
 - It is observable only with a malformed query `recorded_cutoff` AND no assertion reaching nuclear's time gate. Any assertion that reaches `_passes_time_mode` (nuclear :199) raises first, at `semiconductor_theme_research.py:236`.
 - The only test that could kill it would pin today's 503 for a malformed user cutoff. That 503 is the base defect relayed below, and the pin would fight the base's fix (a 400).
 
 ## Queued base relay (next #7870 post): a malformed replay cutoff answers 503, not 400
+
+**[Corrected 2026-09-28 (round-8 closure NIT-D): the headline holds only when a time gate reads the cutoff. On an empty bundle, which is what nuclear's own owner loader returns, a malformed cutoff answers a silent 200, and `source_history` is affected too. The seat re-probed before posting, and the corrected relay went to #7870 as comment 5868018569, item 7. See R-ENE-35 in `R-ENE-2026-09-28-w2-module-r9.md`.]**
+
+**[Corrected again 2026-09-28 (round-9 closure NIT-3): "only when a time gate reads the cutoff" misses two nuclear readers, the replay review guard and the review-expiry gate, and the headline holds only within the 32-character bound. The relay was corrected on #7870 in comment 5869344590; see `R-ENE-2026-09-28-w2-module-r10.md`.]** **[Corrected a third time 2026-09-28 (round-10 closure): "misses two nuclear readers" should read three. The third is nuclear's target-window judgement, which reads `source_cutoff` in every mode, so a malformed `source_cutoff` answers 503 in `latest` too once a target-bearing record is in the slice. Corrected on #7870 in addendum 5870740225; see `R-ENE-2026-09-28-w2-module-r11.md`.]**
 
 - `_QueryBody.source_cutoff` and `recorded_cutoff` are bounded only by length (`app/theme_research.py:197-198`), and `_validate_query` never parses them.
 - Seat probe (`r8gate/probe_cutoff400.py`, nuclear on the `a0d7b054ff23` compat tree):

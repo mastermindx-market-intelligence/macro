@@ -6,7 +6,7 @@
   - The round-6 closure check (`../reviews/OPUS-REVIEW-2026-09-25-w2-module-r6-closure.md`, same independent Opus reviewer) returned **ACCEPT_WITH_NITS**.
     - It found R-ENE-29 correct and R-ENE-30 SOUND.
     - It raised one MINOR: `known_revisions` crosses the scope and time gate. This revised its own round-5 (6b) "relay-only" agreement.
-    - It raised two NITs: the lineage pointer after a served hop is not pinned, and a relay line number was wrong.
+    - It raised two NITs: the lineage pointer after a served hop is not pinned, and a relay line number was wrong. **[Seat annotation 2026-09-28 (round-8 closure NIT-C): the same reviewer retracted the second NIT in round-7 closure NIT-1; the line number was correct.]**
   - Five #7870 comments posted after the round-6 relay were read. They are 5832358700 and 5832596394 (RULING 12 and its fix), 5835036878 and 5835079563 (the fleet-blocker retraction and its verification), and 5835307458 (the Robotics owner's class sweep).
   - #7870 moved from `6cd958e92b25` to `a0d7b054ff23`. The move was a merge of main plus six carrier commits. The seat re-proved the module against the new head.
 

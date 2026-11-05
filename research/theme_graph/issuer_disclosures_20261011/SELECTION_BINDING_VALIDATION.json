@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-11T13:37:10.764056+00:00",
+  "red": {
+    "exec": 88575,
+    "rc": 1,
+    "cases": 2,
+    "observed": "Wrong CIK or snapshot received200 instead of503"
+  },
+  "repair": {
+    "explicit_subject_binding": true,
+    "comparison_before_store": true,
+    "fact_decision_validation_on_read_and_publish": true,
+    "real_snapshot_schema_not_relabelled": true
+  },
+  "green": {
+    "exec": 25715,
+    "rc": 0,
+    "tests": 125,
+    "seconds": 4.59
+  },
+  "ci_closure": {
+    "exec": 59398,
+    "rc": 0,
+    "owner": "ticker-news-qbus",
+    "missing": []
+  },
+  "production_accepted": false,
+  "review": {
+    "owner": "/root/native_fact_architecture",
+    "scope": "Reasoning-only correction adjudication",
+    "verdict": "No remaining architectural defect in specific identity repair; real subject decision records must still be verified by uninstalled resolver",
+    "tests_run_by_reviewer": false
+  },
+  "source_sha256": {
+    "engine/company_intelligence/issuer_disclosures.py": "45bfd2a4c8df6318a3b2530010a2bac1d50acea844b0d411c9a2f941c3492270",
+    "engine/company_intelligence/issuer_disclosure_selection.py": "7e584ba32e49ed285b60d1d961e8a4524855847e0a3760ce65d28708df222107",
+    "app/company_disclosures.py": "82de085d261130eb96f8f1b8f5097665e180bafed60a272287fbf9e3bde6f28a",
+    "tests/test_company_disclosures_api.py": "28afbede99069624642f2d62e5f3baae8cb16e44ac72221bd9ace284e1100f52",
+    "tests/test_company_issuer_disclosures.py": "614817f6309336d7eabfb80d15fa072fd01a41028a0ef6d7b3bad2e11e9b40db"
+  },
+  "http_boundary_followup": {
+    "red": [
+      {
+        "exec": 88089,
+        "rc": 1,
+        "failure": "Absent subject binding serialized200"
+      },
+      {
+        "exec": 27615,
+        "rc": 1,
+        "failure": "Binding removed during Store construction serialized200"
+      },
+      {
+        "exec": 40812,
+        "rc": 1,
+        "cases": 2,
+        "failure": "Transient A-B-B-A downgrade serialized200 on both fact and selection routes"
+      }
+    ],
+    "repair": "HTTP requires binding; both composed paths pass original expected_admission into native reader, which compares real preflight before artifact retrieval; internal and outer final checks remain",
+    "green": {
+      "exec": 25193,
+      "rc": 0,
+      "tests": 108,
+      "seconds": 3.93,
+      "scope": "Affected native and private API suites; unchanged public API proof reused"
+    },
+    "review": "Independent reasoning coordinator accepts pinning correction; no remaining make-or-break defect in this delta"
+  },
+  "updated_at": "2026-10-11T13:47:14.872094+00:00"
+}
