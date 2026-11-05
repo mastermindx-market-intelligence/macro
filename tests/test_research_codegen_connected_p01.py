@@ -491,3 +491,66 @@ def test_application_cycle_retains_attempt_if_review_consumer_refuses(connected_
     assert first.outcome.completed and len(first.outcome.attempts) == 6
     assert first.diagnostic is not None and first.review_packet is None
     assert later.outcome is None and engines[1].calls == []
+
+
+def _declared_variants(case):
+    from tests.test_research_codegen_contracts import role_declarations
+    variants = []
+    for variant in _cycle_variants(case):
+        declared = replace(variant.run,
+            role_declarations=pf.bound(role_declarations(json.loads(variant.run.manifest.raw))))
+        assessment = b.prepare_synthetic_identity_assessment(declared, commission=case[3]["commission"])
+        variants.append(replace(variant, run=replace(declared, identity_assessment=assessment)))
+    return tuple(variants)
+
+
+def test_declared_cycle_preserves_private_assessment_through_existing_consumers(connected_case):
+    from engine.research_factory.review_queue import diagnostic_review_packet
+    case = connected_case
+    variants = _declared_variants(case)
+    # The declaration helper requires no invented accounting receipt or effect.
+    assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == b""
+    result = _cycle(case, variants=variants)
+    assert result.status == "DIAGNOSTIC_CYCLE_COMPLETE"
+    commission = case[3]["commission"]
+    for variant, row in zip(variants, result.variants):
+        assert row.run.identity_assessment is variant.run.identity_assessment
+        assert json.loads(row.run.identity_assessment.raw)["status"] == "DECLARED_SEPARATION_UNATTESTED"
+        # The exact same receipt crosses unchanged output/review consumers.
+        legacy = replace(row.run, role_declarations=None, identity_assessment=None)
+        raw = (pd.connect_prepared_outputs(legacy, row.outcome, commission=commission)
+               if row.outcome.completed else b.compute_synthetic_diagnostic(legacy, commission=commission))
+        assert raw == row.diagnostic
+        _, public = _decode_public(legacy, commission, raw)
+        packet = diagnostic_review_packet(public, engineering_receipts=dict(run=legacy,
+            commission=commission, source=variant.source, staged=result.staged, outcome=row.outcome))
+        assert packet == row.review_packet
+        prepared = b.prepare_synthetic_inputs(row.run, commission=commission)
+        assert not hasattr(prepared, "identity_assessment")
+        assert not hasattr(prepared, "role_declarations")
+        encoded = json.dumps(packet)
+        for role in json.loads(row.run.role_declarations.raw)["roles"].values():
+            assert role["principal_sha256"] not in encoded
+            assert all(role["principal_sha256"].encode() not in task.input_bytes.raw
+                       for task in prepared.decisions)
+        assert public["authority_granted"] is False
+
+
+@pytest.mark.parametrize("damage", ["missing", "stale", "invalid_roles"])
+def test_declared_cycle_invalid_later_assessment_prevents_all_transport(connected_case, damage):
+    case = connected_case
+    first, later = _declared_variants(case)
+    if damage == "missing":
+        later = replace(later, run=replace(later.run, identity_assessment=None))
+    elif damage == "stale":
+        later = replace(later, run=replace(later.run, identity_assessment=first.run.identity_assessment))
+    else:
+        declaration = json.loads(later.run.role_declarations.raw)
+        declaration["roles"]["execution"]["capabilities"] = ["contents:write"]
+        later = replace(later, run=replace(later.run, role_declarations=pf.bound(declaration)))
+    engines = _cycle_engines(case)
+    result = _cycle(case, variants=(first, later), engines=engines)
+    assert result.status == "REFUSED"
+    assert all(row.status == "NOT_ATTEMPTED_INVALID_BATCH" for row in result.variants)
+    assert all(engine.calls == [] for engine in engines)
+    _assert_full_cold_accounting(case, result.staged)

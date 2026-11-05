@@ -303,3 +303,53 @@ def test_prepare_synthetic_inputs_is_a_pure_narrow_seam(tmp_path, monkeypatch):
     # Structural admission still refuses; it is never authority.
     with pytest.raises(b.BridgeRefused, match="PREREQUISITES_INVALID"):
         b.prepare_synthetic_inputs(replace(run, owner_references=bound({})), commission=commission)
+
+
+
+def test_private_role_assessment_is_bound_and_excluded_from_candidate_payload(tmp_path, monkeypatch):
+    from tests.test_research_codegen_contracts import role_declarations
+    run, commission = make_case(tmp_path, monkeypatch)
+    legacy = b.prepare_synthetic_inputs(run, commission=commission)
+    unknown = b.prepare_synthetic_identity_assessment(run, commission=commission)
+    assert json.loads(unknown.raw)["status"] == "UNKNOWN"
+    declared = replace(run, role_declarations=bound(role_declarations(json.loads(run.manifest.raw))))
+    private = b.prepare_synthetic_identity_assessment(declared, commission=commission)
+    assessment = json.loads(private.raw)
+    assert assessment["status"] == "DECLARED_SEPARATION_UNATTESTED"
+    assert assessment["credential_observation"] == assessment["effective_protection"] == "UNKNOWN"
+    retained = replace(declared, identity_assessment=private)
+    prepared = b.prepare_synthetic_inputs(retained, commission=commission)
+    assert prepared == legacy  # All candidate-adjacent fields remain exactly equal.
+    assert not hasattr(prepared, "identity_assessment")
+    assert not hasattr(prepared, "role_declarations")
+    assert b.compute_synthetic_diagnostic(retained, commission=commission) == b.compute_synthetic_diagnostic(run, commission=commission)
+    with pytest.raises(b.BridgeRefused, match="EXACT_BYTE_BINDING_REQUIRED"):
+        b.prepare_synthetic_inputs(declared, commission=commission)
+    with pytest.raises(b.BridgeRefused, match="IDENTITY_ASSESSMENT_MISMATCH"):
+        b.prepare_synthetic_inputs(replace(declared, identity_assessment=unknown), commission=commission)
+    changed = dict(assessment, authority_granted=True)
+    with pytest.raises(b.BridgeRefused, match="IDENTITY_ASSESSMENT_MISMATCH"):
+        b.prepare_synthetic_inputs(replace(declared, identity_assessment=bound(changed)), commission=commission)
+    altered = replace(private, raw=private.raw + b" ")
+    with pytest.raises(b.BridgeRefused):
+        b.prepare_synthetic_inputs(replace(declared, identity_assessment=altered), commission=commission)
+    other_declaration = role_declarations(json.loads(run.manifest.raw))
+    other_declaration["roles"]["publication"]["capabilities"] = []
+    swapped = replace(declared, role_declarations=bound(other_declaration))
+    with pytest.raises(b.BridgeRefused, match="IDENTITY_ASSESSMENT_MISMATCH"):
+        b.prepare_synthetic_inputs(replace(swapped, identity_assessment=private), commission=commission)
+
+
+def test_invalid_roles_refuse_before_prefix_preparation(tmp_path, monkeypatch):
+    from tests.test_research_codegen_contracts import role_declarations
+    run, commission = make_case(tmp_path, monkeypatch)
+    declaration = role_declarations(json.loads(run.manifest.raw))
+    declaration["roles"]["execution"]["capabilities"] = ["contents:write"]
+    declared = replace(run, role_declarations=bound(declaration))
+    def forbidden(*args, **kwargs):
+        pytest.fail("Invalid identity declaration reached prefix preparation")
+    monkeypatch.setattr(b, "_prepare_decisions", forbidden)
+    with pytest.raises(b.BridgeRefused, match="PREREQUISITES_INVALID"):
+        b.prepare_synthetic_inputs(declared, commission=commission)
+    with pytest.raises(b.BridgeRefused, match="PREREQUISITES_INVALID"):
+        b.prepare_synthetic_identity_assessment(declared, commission=commission)
