@@ -1,0 +1,28 @@
+{
+  "schema": "f02.f01-latest-source-readback.v1",
+  "recorded_at": "2026-11-04T02:29:09.906999+00:00",
+  "source_commit": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
+  "contract_path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+  "whole_contract_git_blob": "653d93bbce70a2515d677ecdb76bb21edfab750c",
+  "semantic_reference_commit": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "semantic_reference_blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+  "compared_policy": "Sections 2 through 5 inclusive, ending immediately before section 6",
+  "policy_byte_identical": true,
+  "policy_sha256": "c887ab7c2ab9055410ee57fb5a30763b35f509ce3f3a86b6c7a8c1356c982c6e",
+  "section_2_onward_byte_identical": false,
+  "later_changes": "Status/bindings and section 6 review/concurrence history changed; not a new candidate.4 policy approval.",
+  "source_review": {
+    "id": 5760649569,
+    "reviewed_commit": "3e334bd3eabf1d6ecc7980845fbd7a813dd023e1",
+    "scope": "Historical exact source-contract review; does not approve later proposal, conformance, implementation, native or runtime behavior."
+  },
+  "resize_proposal": {
+    "version": "F01-RESIZE-FOCUS/0.1",
+    "git_blob": "c5fcb502746843d10ce422ce3c1e35fcc1112a7f",
+    "sha256": "0d5555ebc04a1fda30b3b318f48514ee542a53db428ee4a73a6200d0ff6af5ac",
+    "status": "PROPOSED; F02 response supports next-version adoption with explicit constraints; candidate.4 remains operative"
+  },
+  "prior_readback": "paper/reviews/f01-current-source-readback-20261104.json is unchanged dated evidence at99df25ee.",
+  "f02_owner_response": "F01_RESIZE_FOCUS_RESPONSE.md",
+  "native_or_implementation_acceptance": false
+}

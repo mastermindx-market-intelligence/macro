@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-11-03T02:00:58.223414Z",
+  "operation": "executive_fabric(view=roots,limit=10)",
+  "effect": "read only; request not sent according to returned error",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"bounded\":[],\"data\":null,\"degraded\":[],\"error\":{\"code\":\"backend_unavailable\",\"message\":\"Executive reader request was not sent. Read-only describes this read operation; submission and execution readiness were not observed.\"},\"generated_at\":\"2026-11-03T02:00:58.223414+00:00\",\"grounding\":{},\"mode\":\"readonly\",\"ok\":false,\"schema\":\"mastermind.executive_mcp_result.v1\",\"server_version\":\"1.5.0\",\"tool\":\"executive_fabric\"}"
+      }
+    ],
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "interpretation": "Review admission and execution readiness not established; no formal review dispatch attempted through this unavailable projection."
+}

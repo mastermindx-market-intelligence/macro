@@ -1,0 +1,68 @@
+{
+  "schema": "f02.responsive-source-artifact-manifest.v2",
+  "status": "PREPARED_SOURCE_ONLY_NOT_NATIVE_REVIEW_FREEZE",
+  "root": "f02/paper/repairs/responsive-effective-v2",
+  "members": [
+    {
+      "path": "README.md",
+      "bytes": 10172,
+      "sha256": "ef55eab628707881a660c15f10f3af04719381f0c83fa493f56a1e6b7fea68c0"
+    },
+    {
+      "path": "build_packets.py",
+      "bytes": 20401,
+      "sha256": "c503dfb8c58738e76d823e6db375bfd786d0a7455f2009910a3d66906be110d1"
+    },
+    {
+      "path": "composition.v2.json",
+      "bytes": 197738,
+      "sha256": "2434f4c947b40fcfb903629e3c6ba32bb054845a98ee71e27d25004a6f2785b8"
+    },
+    {
+      "path": "effective/mobile-state-boards.json",
+      "bytes": 211900,
+      "sha256": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a"
+    },
+    {
+      "path": "effective/supplemental-boards.json",
+      "bytes": 149715,
+      "sha256": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f"
+    },
+    {
+      "path": "effective/supplemental-wide-clone.json",
+      "bytes": 75283,
+      "sha256": "1e2c04eaeec47360da8fefa292c72decb2a94ae6ee184ae4e87f7c6b191dfc2b"
+    },
+    {
+      "path": "pending-responsive-boards.v2.json",
+      "bytes": 176517,
+      "sha256": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8"
+    },
+    {
+      "path": "return-row-alignment.v2.json",
+      "bytes": 5035,
+      "sha256": "3ff5f71912924221d5aeffb74d830e076b2c0dc7f530b376656b5a260192864a"
+    },
+    {
+      "path": "subtree-reuse.v2.json",
+      "bytes": 1772,
+      "sha256": "c8a524b677e975a169cdf1ee5635c22bc7e8094ab87107fa7d3cdc3900af7ef6"
+    },
+    {
+      "path": "validate_packets.py",
+      "bytes": 24102,
+      "sha256": "893b8c654f48fb27dc5b979d7edabd99746c52d217e438bf78b4f74363e207d5"
+    },
+    {
+      "path": "validation.v2.json",
+      "bytes": 9916,
+      "sha256": "ad13637017e24a9585bd106b015b67ba67986904831b16f2a7d94bcaf884ff22"
+    }
+  ],
+  "member_count": 11,
+  "aggregate_algorithm": "SHA256(sorted relative path + NUL + lowercase member SHA256 + LF)",
+  "aggregate_sha256": "4b217ce1e1d5fb65184b8f9a613d700ae92b6ecd19493eb56e06c6c85af633b4",
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "native_effects": 0
+}

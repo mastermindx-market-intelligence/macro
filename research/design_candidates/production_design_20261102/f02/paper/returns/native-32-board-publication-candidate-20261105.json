@@ -1,0 +1,748 @@
+{
+  "schema": "f02.native-32-board-artifact-candidate.v1",
+  "recorded_at": "2026-11-05T00:06:34.121Z",
+  "status": "COMPLETE_ARTIFACT_SET_NOT_FINAL_NATIVE_FREEZE",
+  "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "source_pr": 10698,
+  "source_head": "aeecadd565322d5c26d44e7c0edd6ee4e5c4a856",
+  "design_pr": 10630,
+  "base_design_head": "5376ed0edb7fc84188aae3a54b84e2214f232e71",
+  "hosted_ci": {
+    "main_run": 41926207505,
+    "result": "SUCCESS",
+    "tests": "15/15 successful; trusted-ci intentionally skipped",
+    "fences_run": 41926207308,
+    "fences_result": "SUCCESS"
+  },
+  "coverage": {
+    "expected_boards": 32,
+    "integrity_verified_pairs": 32,
+    "actual_native_page_root_readback_at_final_ZH_board": "7IS-0",
+    "retained_originals": 67,
+    "unchanged_shared_tokens": 20,
+    "shared_token_hash": "356191c3",
+    "scoped_operations": 650,
+    "confirmed_operations": 649,
+    "uncertain_operations": 1,
+    "owned_target_violations": 0,
+    "native_roles": 21,
+    "unresolved_role_bindings": 0,
+    "predecessor_bindings": 67
+  },
+  "historical_effect_uncertainty": [
+    {
+      "id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+      "state": "TRANSPORT_ERROR_EFFECT_UNRESOLVED",
+      "tool": "write_html",
+      "carrier": "Mastermind Paper direct"
+    }
+  ],
+  "observed_same_carrier_reconciliation": "The intended original G15 footer was absent at reconciliation; corrected disjoint native children 9SE-0 and 9SM-0 now exist. This does not establish a terminal response for original G15.",
+  "visual_self_qa": {
+    "checked_native_board_root_ids": [
+      "7IS-0",
+      "5HV-0",
+      "6Q3-0",
+      "9K6-0",
+      "8PF-0",
+      "70C-0",
+      "8TF-0",
+      "771-0"
+    ],
+    "verdict": "NO_OBVIOUS_CLIPPING_OR_OVERLAP_IN_SCOPED_NATIVE_SCREENSHOT_READBACK",
+    "scope": "Eight representative native root screenshots including dark/light, Chinese/English, desktop/docked and320/390 phone specimens; other boards retain recorded captures but not newly visually accepted this turn.",
+    "not_verified": "Actual browser/keyboard focus visibility at 400% zoom (previous explicit browser security denial); real input, runtime integration, all board state transitions and design authority acceptance."
+  },
+  "freeze_preflight": {
+    "command": "python3 paper/prepare_final_native_freeze.py --dry-run --require-final-receipts",
+    "boards": 32,
+    "full_capture_receipts": 32,
+    "remaining_codes": {
+      "UNRESOLVED_OPERATIONS": 2,
+      "UNRESOLVED_OPERATION": 1,
+      "RETENTION_UNRESOLVED": 1,
+      "FINAL_RECEIPT_MISSING": 1
+    },
+    "freeze_created": false
+  },
+  "boundaries": [
+    "Draft/HOLD remains on both PRs",
+    "No merge/Ready/enqueue/deploy/purchase",
+    "Do not clear historical G15 without lawful original terminal receipt",
+    "No final-design or production acceptance"
+  ],
+  "boards": [
+    {
+      "key": "readme",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-9-0",
+      "board_id": "47Q-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 11,
+      "screenshot": {
+        "path": "paper/screenshots/readme.jpg",
+        "bytes": 330306,
+        "sha256": "e6181d0ff701d97a044e035ffbf7a2091352dbbe639022bd8821d2ed736b226a"
+      },
+      "jsx": {
+        "path": "paper/exports/readme.jsx",
+        "bytes": 24381,
+        "sha256": "c5dea90ad66dd10c701b6f04506d43964453e8bb2c90dc0224beed0ceb9a7db2"
+      },
+      "captured_at": "2026-11-04T02:00:07.005Z",
+      "captured_operations_through": 644,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "foundations",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-3-0",
+      "board_id": "48W-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 14,
+      "screenshot": {
+        "path": "paper/screenshots/foundations.jpg",
+        "bytes": 266223,
+        "sha256": "ac4efe0f29d51c061524949b4ca9d6edff4b8d1a4349720ca868369e42904699"
+      },
+      "jsx": {
+        "path": "paper/exports/foundations.jsx",
+        "bytes": 61002,
+        "sha256": "897fb43bf0fa0f04a3eeb36f7109609387f86e167abee21e8d48b08d9b27f027"
+      },
+      "captured_at": "2026-11-04T00:29:23.990Z",
+      "captured_operations_through": 545,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "metrics",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "4E3-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 13,
+      "screenshot": {
+        "path": "paper/screenshots/metrics.jpg",
+        "bytes": 286485,
+        "sha256": "e52bb36e241a6c00322ade1721553c5b7e4ddc1a2a53fc299fa304c106a09466"
+      },
+      "jsx": {
+        "path": "paper/exports/metrics.jsx",
+        "bytes": 31393,
+        "sha256": "72784df0b17c6cd06fa67adae68cc7e779b5a5c11a737482d2ec8de1f42d305b"
+      },
+      "captured_at": "2026-11-04T01:10:41.272Z",
+      "captured_operations_through": 638,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "metrics-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "4H1-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 10,
+      "screenshot": {
+        "path": "paper/screenshots/metrics-light.jpg",
+        "bytes": 184446,
+        "sha256": "93a001c4f20b567233353c58d9bea17153fd604c93c29e6021523b935f818c46"
+      },
+      "jsx": {
+        "path": "paper/exports/metrics-light.jsx",
+        "bytes": 22305,
+        "sha256": "c671cf53bd1568c1a58469200dc09cb863bbf90dd29ab4d59f96690ac89d1957"
+      },
+      "captured_at": "2026-11-04T01:04:05.689Z",
+      "captured_operations_through": 638,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "controls",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "4JP-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 9,
+      "screenshot": {
+        "path": "paper/screenshots/controls.jpg",
+        "bytes": 224071,
+        "sha256": "82dc8a33eaffbf485a601348da49cdca597ddaaf380a9dbb9ed55d8d3fa6181b"
+      },
+      "jsx": {
+        "path": "paper/exports/controls.jsx",
+        "bytes": 20482,
+        "sha256": "9c5b72b75ab9fc9564cfb1ea7b4e3b9c96d15875c527ad74388313200d699423"
+      },
+      "captured_at": "2026-11-04T02:00:00.855Z",
+      "captured_operations_through": 644,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "grammar",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "4LC-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 7,
+      "screenshot": {
+        "path": "paper/screenshots/grammar.jpg",
+        "bytes": 192521,
+        "sha256": "110bb0b4e62254c28efd6b30538a34b24d2c85e0673a25bfc67d5f539b76b7a3"
+      },
+      "jsx": {
+        "path": "paper/exports/grammar.jsx",
+        "bytes": 19058,
+        "sha256": "72458efda5533b05d7b228c53d3f8849c02141648a9ba66b44c4aa4652aabbee"
+      },
+      "captured_at": "2026-11-04T01:10:34.902Z",
+      "captured_operations_through": 638,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "builder",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-7-0",
+      "board_id": "4NV-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 12,
+      "screenshot": {
+        "path": "paper/screenshots/builder.jpg",
+        "bytes": 354436,
+        "sha256": "583f004c7fa502011f939b249eb38f142cf02ccb5984db99c38461e420fbce36"
+      },
+      "jsx": {
+        "path": "paper/exports/builder.jsx",
+        "bytes": 18436,
+        "sha256": "37a1f5ed0cef0e04a055457ced67762b65fe39dc923468faccb140247333d1c8"
+      },
+      "captured_at": "2026-11-04T01:03:07.783Z",
+      "captured_operations_through": 638,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "macro-dark",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "4PO-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 49,
+      "screenshot": {
+        "path": "paper/screenshots/macro-dark.jpg",
+        "bytes": 218554,
+        "sha256": "ec8e2cb509babde49d4cef1800171d0b4f3d234a1250c13b6e91d3211735e411"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-dark.jsx",
+        "bytes": 65690,
+        "sha256": "8ec8e6bf6d68f7139ba9c7ace89bc8670cbeea557b93c7f963b6257e2d6460c0"
+      },
+      "captured_at": "2026-11-04T02:09:36.128Z",
+      "captured_operations_through": 647,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "macro-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "4YD-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 49,
+      "screenshot": {
+        "path": "paper/screenshots/macro-light.jpg",
+        "bytes": 220959,
+        "sha256": "54c005bc81e293aaed0df9acce17a30b0ddaa90f4e5390cbd90a5765000337e1"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-light.jsx",
+        "bytes": 63929,
+        "sha256": "fd43721d93ed3a47f62660c235342b7423181ef6748bc0fd28bb97649d77eabd"
+      },
+      "captured_at": "2026-11-04T02:09:49.755Z",
+      "captured_operations_through": 648,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "company-dark",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "56L-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 31,
+      "screenshot": {
+        "path": "paper/screenshots/company-dark.jpg",
+        "bytes": 232274,
+        "sha256": "bff7d506be5a964450a71a76eb8bedcaeee16790ea8df83246fd28e5d26bbaa0"
+      },
+      "jsx": {
+        "path": "paper/exports/company-dark.jsx",
+        "bytes": 114462,
+        "sha256": "47459d21a0c1e5fa2692020cf8a9b868a760c3a559651075e0f0d9161efd5c24"
+      },
+      "captured_at": "2026-11-04T01:51:06.419Z",
+      "captured_operations_through": 641,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "company-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "5HV-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 31,
+      "screenshot": {
+        "path": "paper/screenshots/company-light.jpg",
+        "bytes": 234566,
+        "sha256": "1593519d6658b6e6d074a8a3911eb98aff0a00e305d2b4c9f7d4f660d9794d4d"
+      },
+      "jsx": {
+        "path": "paper/exports/company-light.jsx",
+        "bytes": 112068,
+        "sha256": "ca0613e8116c982aa3aa5e11f7c1c3aec4778f0d66c511803d8b7f01d9bb22c4"
+      },
+      "captured_at": "2026-11-04T01:51:20.696Z",
+      "captured_operations_through": 642,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "options-dark",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "5VE-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 34,
+      "screenshot": {
+        "path": "paper/screenshots/options-dark.jpg",
+        "bytes": 217393,
+        "sha256": "c77573eb730fc7e3e44298adfe434bfe13067c54e719debbcfdc7e722aed9ef4"
+      },
+      "jsx": {
+        "path": "paper/exports/options-dark.jsx",
+        "bytes": 103537,
+        "sha256": "3bc81291f4f4a3d55e0f855a9733d775b89d540c18585a102e93e10a0617b1de"
+      },
+      "captured_at": "2026-11-04T02:10:48.711Z",
+      "captured_operations_through": 649,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "options-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "67V-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 34,
+      "screenshot": {
+        "path": "paper/screenshots/options-light.jpg",
+        "bytes": 220446,
+        "sha256": "c2b855832b7e7d3ac40130fd301311c1662e0ee6b3df92097fd9c0401b41395a"
+      },
+      "jsx": {
+        "path": "paper/exports/options-light.jsx",
+        "bytes": 100404,
+        "sha256": "0d7d737e9e9463d521b5af35e31b912971203670d6aafe47e854d3ba5b795741"
+      },
+      "captured_at": "2026-11-04T02:11:00.340Z",
+      "captured_operations_through": 650,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "editorial-dark",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "6JX-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 32,
+      "screenshot": {
+        "path": "paper/screenshots/editorial-dark.jpg",
+        "bytes": 225037,
+        "sha256": "a7f1b9c8112e90f07ace7ccccc7efce498cfba77bd77f6b0bda35a3476c3fd1e"
+      },
+      "jsx": {
+        "path": "paper/exports/editorial-dark.jsx",
+        "bytes": 23737,
+        "sha256": "08c42ea3d984fe28f4e855f6b66702bae331ad0bc26b70b13feb1fed3d604402"
+      },
+      "captured_at": "2026-11-04T01:11:19.257Z",
+      "captured_operations_through": 639,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "editorial-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "6NG-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 32,
+      "screenshot": {
+        "path": "paper/screenshots/editorial-light.jpg",
+        "bytes": 226242,
+        "sha256": "40c188f628aa545e26b69ca497ddcb32d19247719f6ab3c807226553be876532"
+      },
+      "jsx": {
+        "path": "paper/exports/editorial-light.jsx",
+        "bytes": 23088,
+        "sha256": "e074559f314025ad84bce009762d8356587a3ebf8df697e833ec8646b5bcdcbf"
+      },
+      "captured_at": "2026-11-04T01:11:31.420Z",
+      "captured_operations_through": 640,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "states-matrix",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "6Q3-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 43,
+      "screenshot": {
+        "path": "paper/screenshots/states-matrix.jpg",
+        "bytes": 334139,
+        "sha256": "04a30ca2ce6efe3c0fde73b13f50600392b615aae408e13653cf15a2f9cf0b17"
+      },
+      "jsx": {
+        "path": "paper/exports/states-matrix.jsx",
+        "bytes": 96885,
+        "sha256": "b7b32cc09b26a2cea84a6e4ffe2bec9cda76a0b03d99aa40799542891f23962a"
+      },
+      "captured_at": "2026-11-04T01:10:47.026Z",
+      "captured_operations_through": 638,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "company-eps-overlay-320",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "70C-0",
+      "width_css_px": 320,
+      "steps_in_native_export": 21,
+      "screenshot": {
+        "path": "paper/screenshots/company-eps-overlay-320.jpg",
+        "bytes": 92352,
+        "sha256": "2d79781e27bd0f4784c6c2d6eb1223657609fe7008491f0eaa86d5792754d81e"
+      },
+      "jsx": {
+        "path": "paper/exports/company-eps-overlay-320.jsx",
+        "bytes": 16806,
+        "sha256": "f0b13b39cb540ddfcf8369edc30cbdd8627695415125e7a3098422e457f04e6b"
+      },
+      "captured_at": "2026-11-04T00:19:03.004Z",
+      "captured_operations_through": 499,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "company-dividend-overlay-320",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "72T-0",
+      "width_css_px": 320,
+      "steps_in_native_export": 21,
+      "screenshot": {
+        "path": "paper/screenshots/company-dividend-overlay-320.jpg",
+        "bytes": 97135,
+        "sha256": "4c389142f29603d1c775032d719089720133e0f21931cd588c9627256ae94ae8"
+      },
+      "jsx": {
+        "path": "paper/exports/company-dividend-overlay-320.jsx",
+        "bytes": 16844,
+        "sha256": "98cfca3a5c7d823d42e53634c1be28bb064d4e90f2f9b755b1ebcfbe3dbd4ee7"
+      },
+      "captured_at": "2026-11-04T00:59:52.704Z",
+      "captured_operations_through": 627,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "options-full-row-evidence-320",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "74P-0",
+      "width_css_px": 320,
+      "steps_in_native_export": 12,
+      "screenshot": {
+        "path": "paper/screenshots/options-full-row-evidence-320.jpg",
+        "bytes": 95541,
+        "sha256": "c0fa8c73239336d46f7995c65f7614f43f3e28c1d31bf03b9dd19f235c71b289"
+      },
+      "jsx": {
+        "path": "paper/exports/options-full-row-evidence-320.jsx",
+        "bytes": 19357,
+        "sha256": "d1a7ee7bca4caafe52a4d76d51baaebf04143f26d5e21ce52177349babd38800"
+      },
+      "captured_at": "2026-11-04T00:19:42.617Z",
+      "captured_operations_through": 499,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "controls-variants",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "771-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 40,
+      "screenshot": {
+        "path": "paper/screenshots/controls-variants.jpg",
+        "bytes": 252535,
+        "sha256": "f34598fa053e12dbf01e2912280dc0fae51b8fa8d61b02df6772748245f0cbf2"
+      },
+      "jsx": {
+        "path": "paper/exports/controls-variants.jsx",
+        "bytes": 43401,
+        "sha256": "4dca0d7d426283c0bcc880c75453db25f5550726f854b04c92f21c5780ae6b1f"
+      },
+      "captured_at": "2026-11-03T06:08:52.309Z",
+      "captured_operations_through": 384,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "macro-dark-en-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "7CM-0",
+      "width_css_px": 390,
+      "steps_in_native_export": 23,
+      "screenshot": {
+        "path": "paper/screenshots/macro-dark-en-390.jpg",
+        "bytes": 104376,
+        "sha256": "c07ce3efe942a83610b461a3f5be260fa6f44c2dc1c9917e1398e951488bfd6c"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-dark-en-390.jsx",
+        "bytes": 49534,
+        "sha256": "f3511aa4b575145ff9fb01109da0f85a98ac133a938d66ed511e3e385a620402"
+      },
+      "captured_at": "2026-11-04T00:59:57.002Z",
+      "captured_operations_through": 627,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "macro-light-zh-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "7IS-0",
+      "width_css_px": 390,
+      "steps_in_native_export": 23,
+      "screenshot": {
+        "path": "paper/screenshots/macro-light-zh-390.jpg",
+        "bytes": 98152,
+        "sha256": "adfc12f315dd8a95c18f96095ed98fbae57ffece991e7a8349ccec554bfb3d35"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-light-zh-390.jsx",
+        "bytes": 47639,
+        "sha256": "ace4135ce71a5e2114fd5603cc746cb06d6527b3e5412b307ac76ffa4a577363"
+      },
+      "captured_at": "2026-11-05T00:00:37.123Z",
+      "captured_operations_through": 650,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "macro-docked-1280",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "8G2-0",
+      "width_css_px": 1280,
+      "steps_in_native_export": 43,
+      "screenshot": {
+        "path": "paper/screenshots/macro-docked-1280.jpg",
+        "bytes": 192950,
+        "sha256": "201d981f159765e64beb6a5c9ad95644856eda3717834cbe26566bb278aeaadc"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-docked-1280.jsx",
+        "bytes": 57989,
+        "sha256": "2a78e1e76c027dc28645ba793fe9e78819036baa20cd5c716104ac68894ca3a4"
+      },
+      "captured_at": "2026-11-04T00:27:34.867Z",
+      "captured_operations_through": 544,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "macro-zh-evidence-return-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "8N8-0",
+      "width_css_px": 390,
+      "steps_in_native_export": 20,
+      "screenshot": {
+        "path": "paper/screenshots/macro-zh-evidence-return-390.jpg",
+        "bytes": 108877,
+        "sha256": "747f1fc898a3431f4fb68d9dc591f59baa0c19afe4c188f56f5ce0e10666e2bd"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-zh-evidence-return-390.jsx",
+        "bytes": 17199,
+        "sha256": "dad7ea3e90f72bb229bbcb37bbd14884ece74c9e3f4d8369ef0b868ea109c067"
+      },
+      "captured_at": "2026-11-04T00:38:41.067Z",
+      "captured_operations_through": 559,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "company-fy2025-eps-evidence-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "8PF-0",
+      "width_css_px": 390,
+      "steps_in_native_export": 13,
+      "screenshot": {
+        "path": "paper/screenshots/company-fy2025-eps-evidence-390.jpg",
+        "bytes": 118275,
+        "sha256": "13b9630072272a7e64edb5e6d854e05dd5373416df2059f780c284e5791cd08a"
+      },
+      "jsx": {
+        "path": "paper/exports/company-fy2025-eps-evidence-390.jsx",
+        "bytes": 17539,
+        "sha256": "587293bab42c6f6185058ead4d7a36e8be1eceadadeb481c534eabfbc76f9a8a"
+      },
+      "captured_at": "2026-11-04T00:40:00.659Z",
+      "captured_operations_through": 563,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "editorial-calculation-evidence-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "8R5-0",
+      "width_css_px": 390,
+      "steps_in_native_export": 15,
+      "screenshot": {
+        "path": "paper/screenshots/editorial-calculation-evidence-390.jpg",
+        "bytes": 97181,
+        "sha256": "5e8c02d66058848e2a1df1f8d7c61514dd26a5f0df99105c7ef2615ffdeaf9f4"
+      },
+      "jsx": {
+        "path": "paper/exports/editorial-calculation-evidence-390.jsx",
+        "bytes": 21315,
+        "sha256": "ce4d3b704f828b808eecc4893e2943969117c795d2aea015bb5074a90d554480"
+      },
+      "captured_at": "2026-11-04T00:41:21.724Z",
+      "captured_operations_through": 568,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "editorial-reading-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "8TF-0",
+      "width_css_px": 390,
+      "steps_in_native_export": 29,
+      "screenshot": {
+        "path": "paper/screenshots/editorial-reading-390.jpg",
+        "bytes": 144193,
+        "sha256": "4f62379abf654a995688fbd80f6b96dfdd987fab95dde595981e31f9ca3ed31b"
+      },
+      "jsx": {
+        "path": "paper/exports/editorial-reading-390.jsx",
+        "bytes": 26918,
+        "sha256": "edc19cf657b60462e465e4e17f786b6e6755e61144c334ccd72d235d722d6a4c"
+      },
+      "captured_at": "2026-11-04T00:43:30.510Z",
+      "captured_operations_through": 575,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "density-40-52-comparison",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "8W7-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 15,
+      "screenshot": {
+        "path": "paper/screenshots/density-40-52-comparison.jpg",
+        "bytes": 118846,
+        "sha256": "52440ebb193ccead87fc6e9f9e4cf90dd2201571763cb7257f19b252d07f320d"
+      },
+      "jsx": {
+        "path": "paper/exports/density-40-52-comparison.jsx",
+        "bytes": 35946,
+        "sha256": "c91a9c2741b396f2903e8bb3649237f36340c39b777390de35fb3c403ef8eb11"
+      },
+      "captured_at": "2026-11-04T00:44:59.282Z",
+      "captured_operations_through": 581,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "fault-compositions",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "905-0",
+      "width_css_px": 1440,
+      "steps_in_native_export": 25,
+      "screenshot": {
+        "path": "paper/screenshots/fault-compositions.jpg",
+        "bytes": 183205,
+        "sha256": "81858486311af908ec57a730bb629c7bfa9aead38636ef9953ef088d86d75bec"
+      },
+      "jsx": {
+        "path": "paper/exports/fault-compositions.jsx",
+        "bytes": 85621,
+        "sha256": "e27a35bc8b68522b094fdc72889f78806211ed626533c8ae53cbdf2e1ea143bc"
+      },
+      "captured_at": "2026-11-04T00:47:20.042Z",
+      "captured_operations_through": 591,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "width-768-overlay",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "98N-0",
+      "width_css_px": 768,
+      "steps_in_native_export": 31,
+      "screenshot": {
+        "path": "paper/screenshots/width-768-overlay.jpg",
+        "bytes": 140255,
+        "sha256": "61899b7f903963e2059dd589950cd5883ec5003cb7daa45f05b0d6fea580ac3c"
+      },
+      "jsx": {
+        "path": "paper/exports/width-768-overlay.jsx",
+        "bytes": 51909,
+        "sha256": "ed35b2e643444e62a2df219e75106c4b63d325a72e7344c1a52b9fd8b826e774"
+      },
+      "captured_at": "2026-11-04T00:51:12.387Z",
+      "captured_operations_through": 603,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "width-1024-overlay",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "9EB-0",
+      "width_css_px": 1024,
+      "steps_in_native_export": 32,
+      "screenshot": {
+        "path": "paper/screenshots/width-1024-overlay.jpg",
+        "bytes": 149744,
+        "sha256": "286da2903bc222a907a2e7c0e764ced2e3eb594e49989c3dcb5e9b2c5b87b23e"
+      },
+      "jsx": {
+        "path": "paper/exports/width-1024-overlay.jsx",
+        "bytes": 53654,
+        "sha256": "fbfab9ed85015cdf8e0577bab61290a848e67154711d8928f64d951b3d196e15"
+      },
+      "captured_at": "2026-11-04T00:55:28.185Z",
+      "captured_operations_through": 615,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    },
+    {
+      "key": "width-1600-docked",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "9K6-0",
+      "width_css_px": 1600,
+      "steps_in_native_export": 43,
+      "screenshot": {
+        "path": "paper/screenshots/width-1600-docked.jpg",
+        "bytes": 201441,
+        "sha256": "3bdda4cbd41f6b190b3eb4529beb3c1933254d9f21f895dd55d48c5890262d9f"
+      },
+      "jsx": {
+        "path": "paper/exports/width-1600-docked.jsx",
+        "bytes": 57952,
+        "sha256": "0f1b060c83de603530f25d73cc8dcdf65ba3a7bdc7439c8639e16af5cf41a4fc"
+      },
+      "captured_at": "2026-11-04T00:59:35.325Z",
+      "captured_operations_through": 627,
+      "integrity": "EXACT_BYTES_AND_NATIVE_ID_BINDINGS_VALIDATED"
+    }
+  ]
+}

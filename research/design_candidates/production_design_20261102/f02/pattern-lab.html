@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-density="dense" data-convention="west">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>F02 · Shared product patterns · candidate 2</title>
+<style>
+/* Standalone design specimen. No production stylesheet or application import. */
+:root{color-scheme:dark;--bg:#080808;--rail:#0c0c0c;--panel:#121212;--raised:#191919;--hover:#222;--selected:#292929;--line:#343434;--control-line:#6f6f6f;--ink:#f3f3f3;--secondary:#b8b8b8;--muted:#949494;--accent:#c9b99b;--link:#a7c9f1;--up:#b0d4b9;--down:#efa6ad;--warn:#e9be6a;--flow-buy:#70cbdc;--flow-sell:#d9a6ef;--focus:#c4d9f4;--shadow:0 20px 70px #0008;--rail-w:224px;--pad:24px;--row:40px;--reading:1.65}
+html[data-theme=light]{color-scheme:light;--bg:#f6f6f3;--rail:#efefec;--panel:#fff;--raised:#f0f0ed;--hover:#e8e8e4;--selected:#e2e2dc;--line:#cbccc7;--control-line:#85877f;--ink:#1a1c20;--secondary:#51555b;--muted:#5f6368;--accent:#66543b;--link:#235b8e;--up:#256341;--down:#a62d43;--warn:#82550d;--flow-buy:#18687c;--flow-sell:#7c3d9b;--focus:#245c91;--shadow:0 20px 70px #18202926}
+html[data-convention=east]{--up:#efa6ad;--down:#b0d4b9}html[data-theme=light][data-convention=east]{--up:#a62d43;--down:#256341}html[data-density=comfortable]{--row:52px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",Arial,sans-serif}button,select,input{font:inherit;color:inherit}button,select{min-height:36px}button,a,select,summary{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:not-allowed;color:var(--muted)}a{color:var(--link);text-underline-offset:3px}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--focus);outline-offset:3px}button,input,select{border:1px solid var(--control-line);background:var(--panel);border-radius:7px}button{padding:7px 12px}button:hover:not(:disabled){background:var(--hover)}button.primary{background:var(--ink);color:var(--bg);border-color:transparent;font-weight:600}button.primary:hover{opacity:.88}button.quiet{background:transparent;border-color:transparent}button.text{border:0;background:none;color:var(--link);padding:4px 8px;text-decoration:underline;text-underline-offset:3px}button.compact{font-size:12px;padding:4px 8px;min-height:30px}svg.icon{width:18px;height:18px;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}h1,h2,h3,p{margin:0}h1{font-size:28px;line-height:1.2;letter-spacing:-.7px;font-weight:650}h2{font-size:17px;line-height:1.4;font-weight:650}h3{font-size:14px;font-weight:650}.eyebrow{font-size:11px;letter-spacing:.11em;font-weight:650;text-transform:uppercase;color:var(--accent)}.muted{color:var(--muted)}.secondary{color:var(--secondary)}.small{font-size:12px}.number{font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.02em}.up{color:var(--up)}.down{color:var(--down)}.warning{color:var(--warn)}.buy{color:var(--flow-buy)}.sell{color:var(--flow-sell)}.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}[hidden]{display:none!important}.skip{position:absolute;left:12px;top:-100px;z-index:20;background:var(--panel);padding:12px}.skip:focus{top:12px}.lab{padding:12px 20px;background:var(--raised);border-bottom:1px solid var(--line)}.lab-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin-bottom:8px}.lab-title strong{font-size:13px}.lab-title small{font-size:11px;color:var(--secondary)}.lab-controls{display:flex;gap:8px 14px;flex-wrap:wrap}.lab label{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--secondary)}.lab select{font-size:12px;padding:5px 24px 5px 8px;max-width:170px}.app{display:grid;grid-template-columns:var(--rail-w) minmax(0,1fr);grid-template-areas:"header header" "rail main";min-height:800px}.shell-header{grid-area:header;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 24px;background:var(--rail);border-bottom:1px solid var(--line)}.brand{letter-spacing:.12em;font-size:12px;font-weight:750;display:flex;align-items:center;gap:10px}.mark{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--ink);color:var(--bg);font-size:16px;letter-spacing:0}.header-label{color:var(--muted);font-size:12px}.rail{grid-area:rail;padding:24px 16px;background:var(--rail);border-right:1px solid var(--line)}.rail p{font-size:10px;letter-spacing:.12em;color:var(--muted);margin:0 12px 12px}.rail a{display:block;padding:11px 12px;margin-bottom:4px;border-radius:8px;text-decoration:none;color:var(--secondary)}.rail .selected{color:var(--ink);background:var(--selected);font-weight:600}.rail .rail-note{padding:20px 12px;font-size:11px;line-height:1.6;color:var(--muted)}main{grid-area:main;min-width:0;padding:28px var(--pad) 48px}.page-head{display:flex;justify-content:space-between;align-items:start;gap:16px;margin-bottom:22px}.page-head .eyebrow{margin-bottom:8px}.deck{margin-top:10px;color:var(--secondary);max-width:72ch}.page-action{flex-shrink:0}.receipt{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:14px;font-size:12px;color:var(--secondary)}.receipt strong{font-weight:550;color:var(--ink)}.work-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start}.work-grid.has-inspector{grid-template-columns:minmax(0,1fr) 320px}.primary-object{min-width:0}.summary-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:20px 0 23px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);gap:20px}.metric-label{font-size:12px;color:var(--secondary);margin-bottom:5px}.metric-value{font-size:32px;font-weight:560;line-height:1.2;letter-spacing:-1px}.metric-unit{font-size:16px;color:var(--secondary);letter-spacing:0}.metric-change{font-size:12px;margin-top:6px}.metric-note{font-size:11px;color:var(--muted);margin-top:5px}.notice{display:flex;align-items:start;gap:12px;background:var(--raised);padding:14px 16px;border-radius:8px;margin:16px 0}.notice strong{font-size:13px}.notice p{font-size:12px;color:var(--secondary);margin-top:3px}.notice button{margin-left:auto;flex-shrink:0}.status-symbol{font-size:18px;color:var(--warn);line-height:1.3}.chart-block{padding:22px 0 10px}.section-heading{display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:10px}.section-heading p{font-size:12px;color:var(--secondary);margin-top:3px}.chart{width:100%;height:auto;max-height:260px;display:block;overflow:visible}.chart text{font-family:inherit;font-size:11px;fill:var(--muted)}.chart .grid{stroke:var(--line);stroke-width:1}.chart .series{stroke:var(--accent);stroke-width:2.5;fill:none}.chart .point{fill:var(--accent)}.chart .bar{fill:var(--accent)}.chart .series-label{fill:var(--ink);font-size:12px}.chart-note{font-size:12px;color:var(--secondary);margin:4px 0 14px}.chart-note strong{color:var(--ink);font-weight:500}.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding-bottom:8px;margin:8px 0 0;overflow-x:auto}.tabs button{white-space:nowrap;border-color:transparent;background:transparent}.tabs button[aria-selected=true]{background:var(--selected);font-weight:650}.table-wrap{max-width:100%;overflow:auto;overscroll-behavior-inline:contain;scroll-margin-top:20px;border-bottom:1px solid var(--line);background:var(--panel)}table{border-collapse:separate;border-spacing:0;width:100%;text-align:left;table-layout:auto}caption{text-align:left;padding:16px 12px 12px;font-size:12px;color:var(--secondary)}thead th{background:var(--raised);color:var(--secondary);font-size:11px;font-weight:600;position:sticky;top:0;z-index:1}th,td{padding:9px 12px;vertical-align:middle;border-bottom:1px solid var(--line);height:var(--row)}td{font-size:13px}tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}tbody th{font-size:13px;font-weight:550;background:var(--panel)}tbody tr:hover td,tbody tr:hover th{background:var(--hover)}th.numeric,td.numeric{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}.row-sub{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}.row-name{white-space:nowrap}.sort{border:0;background:transparent;padding:2px 0;min-height:28px;display:inline-flex;gap:6px;align-items:center;font-size:inherit;font-weight:inherit}.table-standard{min-width:700px}.table-company{min-width:780px}.table-options{min-width:1180px}.table-data{min-width:480px}.sticky-first th:first-child{position:sticky;left:0;z-index:2;width:172px;min-width:172px}.sticky-first thead th:first-child{z-index:3}.table-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;font-size:11px;color:var(--muted)}.mobile-evidence{display:none}.filter-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:18px 0 6px}.filter-row input{min-height:36px;padding:7px 10px;max-width:220px;min-width:140px}.chip{display:inline-block;border-radius:4px;padding:2px 6px;background:var(--raised);font-size:10px;color:var(--secondary);white-space:nowrap}.state-body{padding:42px 24px;min-height:280px;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:18px 0}.state-body p{color:var(--secondary);max-width:56ch;margin:8px 0 20px}.skeleton{height:14px;width:65%;background:var(--raised);border-radius:3px;margin:15px 0}.skeleton:nth-child(2n){width:43%}.save-area{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);display:flex;align-items:center;flex-wrap:wrap;gap:12px}.save-area span{font-size:12px;color:var(--secondary)}.inspector{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:0;overflow:hidden}.inspector-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px;border-bottom:1px solid var(--line)}.inspector-content{padding:18px;font-size:13px}.inspector-content h3{font-size:17px;margin-bottom:12px}.inspector-content p{margin:10px 0;color:var(--secondary)}.inspector-content dl{margin:18px 0}.inspector-content dt{font-size:11px;color:var(--muted);margin-top:14px}.inspector-content dd{margin:3px 0;overflow-wrap:anywhere}.inspector-content blockquote{margin:20px 0;padding:14px;background:var(--raised);border-radius:6px;color:var(--secondary)}.inspector-content .evidence-values{padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);line-height:1.9}.evidence-dialog{position:fixed;margin:0 0 0 auto;inset:0;width:min(440px,100%);max-width:100%;max-height:100dvh;height:100dvh;padding:0;background:var(--panel);color:var(--ink);border:0;border-left:1px solid var(--line);box-shadow:var(--shadow);overflow:auto}.evidence-dialog::backdrop{background:#0008}.public-app{grid-template-columns:minmax(0,1fr);grid-template-areas:"header" "main"}.public-app .rail{display:none}.public-app main{padding-top:34px;max-width:1180px;width:100%;margin:auto}.article-head{max-width:850px;margin-bottom:38px}.article-head h1{font-size:42px;max-width:720px;letter-spacing:-1.2px;line-height:1.1}.article-head .deck{font-size:18px;line-height:1.6}.article-layout{display:grid;grid-template-columns:210px minmax(0,720px);gap:48px}.toc{align-self:start;position:sticky;top:20px;font-size:12px}.toc strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px}.toc a{display:block;padding:8px 0;color:var(--secondary);text-decoration:none}.toc a:hover{text-decoration:underline}.prose{font-size:17px;line-height:1.75;min-width:0}.prose p{margin-bottom:20px}.prose h2{font-size:23px;margin:32px 0 14px;line-height:1.35;scroll-margin-top:20px}.prose h2:first-child{margin-top:0}.prose .lede{font-size:20px;line-height:1.55;color:var(--ink)}.prose table{font-size:14px}.prose .callout{background:var(--raised);border-radius:8px;padding:18px 20px;font-size:15px;margin:24px 0}.prose .callout p{margin:6px 0 0}.prose .related{display:flex;flex-wrap:wrap;gap:12px 20px;padding:24px 0;border-top:1px solid var(--line);margin-top:30px;font-size:14px}.specimens{margin-top:34px;border-top:1px solid var(--line);padding-top:18px}.specimens summary{font-size:13px;color:var(--secondary);cursor:pointer;padding:8px 0}.specimen-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px;padding:18px 0}.sample{padding:18px 0;border-top:1px solid var(--line)}.sample h3{margin-bottom:12px}.sample p{color:var(--secondary);font-size:12px;margin-top:8px}.sample .sample-row{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}.footer-note{margin-top:32px;font-size:11px;color:var(--muted);max-width:85ch}.zero{color:var(--ink)}
+@media(min-width:861px) and (max-width:1199px){:root{--rail-w:196px;--pad:20px}.work-grid.has-inspector{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:1279px){.work-grid.has-inspector{grid-template-columns:minmax(0,1fr)}.inspector{display:none}.article-layout{grid-template-columns:180px minmax(0,1fr);gap:28px}}
+@media(max-width:860px){:root{--rail-w:0px;--pad:20px}.app{grid-template-columns:minmax(0,1fr);grid-template-areas:"header" "main"}.rail{display:none}.shell-header{height:56px;padding:0 20px}.header-label{max-width:40%;text-align:right;font-size:11px}.article-layout{grid-template-columns:minmax(0,1fr);gap:24px}.toc{position:static;display:flex;flex-wrap:wrap;gap:4px 16px}.toc strong{width:100%;margin:0}.article-head{margin-bottom:24px}.article-head h1{font-size:34px}.article-head .deck{font-size:17px}.specimen-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){:root{--pad:16px;--row:48px}.lab{padding:10px 12px}.lab-title{margin-bottom:8px}.lab-controls{gap:6px 10px}.lab label{font-size:10px}.lab select{max-width:148px;min-height:36px}.shell-header{padding:0 16px}.brand{font-size:10px;letter-spacing:.08em}.mark{width:25px;height:25px}.header-label{font-size:10px}main{padding-top:24px}.page-head{display:block;margin-bottom:20px}.page-action{margin-top:14px}.page-head h1{font-size:26px}.deck{font-size:13px}.receipt{display:block;font-size:11px}.receipt span{display:block;margin:4px 0}.summary-strip{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 16px;padding:20px 0}.summary-strip .metric:first-child{grid-column:1/-1}.summary-strip .metric:first-child .metric-value{font-size:38px}.metric-value{font-size:25px}.metric-unit{font-size:13px}.metric-change{font-size:11px}.metric-note{font-size:11px}.section-heading{flex-wrap:wrap}.notice{padding:13px;gap:10px;flex-wrap:wrap}.notice button{margin-left:28px}.chart{min-height:190px}.chart text{font-size:12px}.chart-block{padding-top:20px}.table-wrap{max-height:530px}.mobile-evidence{display:inline-block;margin-top:4px!important}.row-name{white-space:normal;overflow-wrap:anywhere}.sticky-first th:first-child{width:136px;min-width:136px}.table-standard{min-width:650px}.table-company{min-width:730px}.table-options{min-width:1120px}th,td{padding:10px}button,.tabs button,.toc a{min-height:44px}.table-wrap button{min-height:44px}.table-wrap .sort{min-height:36px}.tabs{padding-bottom:8px}.toc a{padding:10px 0}.article-head h1{font-size:30px;letter-spacing:-.8px}.prose{font-size:16px}.prose .lede{font-size:18px}.prose h2{font-size:22px}.public-app main{padding-top:26px}.article-head .deck{font-size:16px}.evidence-dialog{width:100%;border:0}.inspector-head{padding:12px 16px}.inspector-content{padding:20px}.save-area{align-items:flex-start;flex-direction:column}.filter-row input{max-width:100%;width:100%;min-height:44px}.footer-note{font-size:11px}.table-foot{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media(forced-colors:active){button,a,select,summary:focus-visible{forced-color-adjust:auto}.chart .series,.chart .grid{stroke:CanvasText}.chart .point,.chart .bar{fill:CanvasText}.tabs button[aria-selected=true]{outline:1px solid Highlight}.chip{border:1px solid CanvasText}}
+
+/* Candidate 2: compact task hierarchy and explicit scoped two-dimensional charts. */
+:root{--series-1:#c9b99b;--series-2:#a7c9f1;--series-3:#b0d4b9;--series-4:#d9a6ef;--series-5:#efa6ad}
+html[data-theme=light]{--series-1:#66543b;--series-2:#235b8e;--series-3:#256341;--series-4:#7c3d9b;--series-5:#a62d43}
+.rail-item{display:block;padding:11px 12px;margin-bottom:4px;border-radius:8px;color:var(--secondary)}
+.page-head{margin-bottom:14px}.page-head .eyebrow{margin-bottom:6px}.page-head .deck{margin-top:6px;font-size:13px}.receipt{margin-top:8px;gap:4px 16px}
+.summary-strip{padding:12px 0 14px;gap:16px}.metric-value{font-size:27px}.metric-note{margin-top:3px}.metric-change{margin-top:3px}.metric-label{margin-bottom:3px}
+.table-wrap{scroll-padding-block-start:48px;scroll-padding-block-end:12px}.table-hint{margin:8px 0}.filter-row{margin:12px 0 6px}caption{padding:10px 12px}thead th{font-size:12px}.table-foot{padding:8px 0}
+.table-options tbody th,.table-options td{font-size:13px}.table-options td,.table-options tbody th{height:var(--row)}
+.chart-block{padding:16px 0 10px}.chart-scroll{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}.chart{max-height:none;max-width:none;min-height:0;overflow:visible}.chart text{font-size:12px}.chart-legend{display:flex;flex-wrap:wrap;gap:6px 16px;list-style:none;padding:0;margin:8px 0 10px;font-size:12px}.chart-legend li{display:flex;gap:6px;align-items:center}.legend-mark{display:inline-grid;place-items:center;width:18px;height:18px;color:var(--bg);background:var(--series-1);font-size:10px;font-weight:700}
+.series-1{fill:var(--series-1);background:var(--series-1)}.series-2{fill:var(--series-2);background:var(--series-2)}.series-3{fill:var(--series-3);background:var(--series-3)}.series-4{fill:var(--series-4);background:var(--series-4)}.series-5{fill:var(--series-5);background:var(--series-5)}
+.selected-row td,.selected-row th{background:var(--selected)}.selected-row .row-name{font-weight:700}.selected-row:hover td,.selected-row:hover th{background:var(--selected)}
+.row-identity{display:flex;align-items:center;justify-content:space-between;gap:8px}.row-identity>span:first-child{min-width:0}.formula{font-variant-numeric:tabular-nums;background:var(--raised);padding:14px;border-radius:6px;font-size:15px}
+@media(max-width:600px){html[data-density=comfortable]{--row:64px}main{padding-top:18px}.page-head{margin-bottom:12px}.page-head .deck{font-size:12px}.page-head h1{font-size:25px}.page-action{margin-top:8px}.receipt{font-size:11px}.receipt span{margin:2px 0}.summary-strip{grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:12px 0;gap:12px}.summary-strip .metric:first-child{grid-column:auto}.summary-strip .metric:first-child .metric-value{font-size:27px}.summary-strip .metric:last-child{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px}.summary-strip .metric:last-child .metric-value{grid-column:2;grid-row:1/3;font-size:23px;align-self:center}.summary-strip .metric:last-child .metric-change,.summary-strip .metric:last-child .metric-note{grid-column:1;font-size:11px}.metric-value{font-size:25px}.metric-note{font-size:11px}.mobile-evidence{display:inline-flex;margin:0!important;flex-shrink:0}.evidence-icon{width:44px;height:44px;min-width:44px;min-height:44px;padding:10px!important}.row-name{overflow-wrap:normal;word-break:normal}.sticky-first th:first-child{width:200px;min-width:200px;max-width:200px}th,td{padding:5px 10px}.table-options tbody th,.table-options td{height:max(52px,var(--row))}.row-sub{font-size:11px}.chart{min-height:0}.chart text{font-size:12px}.section-heading h2{font-size:16px}.table-hint{font-size:11px}.table-foot{font-size:11px}.filter-row input{width:auto;max-width:180px;min-width:100px}.table-company{min-width:950px}.table-data{min-width:480px}}
+@media(forced-colors:active){.selected-row td,.selected-row th{border-block:1px solid Highlight}.company-series{fill:CanvasText;stroke:Canvas;stroke-width:1}.legend-mark{color:CanvasText;background:Canvas;border:1px solid CanvasText}}
+/* Scroll restoration must reveal the focused value beyond the sticky row label. */
+#panel-comparison .table-wrap{scroll-padding-inline-start:188px;scroll-padding-inline-end:12px}
+#panel-comparison .table-wrap [data-evidence]{scroll-margin-inline:4px}
+/* At 400% zoom a 1280px desktop exposes only 320 CSS px. A 200px pinned
+   metric column otherwise covers most numeric values and their focus outlines. */
+@media(max-width:600px){
+  .sticky-first th:first-child{position:static}
+  #panel-comparison .table-wrap{scroll-padding-inline-start:12px}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" lang="en">Skip to specimen</a>
+<section class="lab" aria-label="Specimen controls" lang="en">
+ <div class="lab-title"><strong>F02 · Shared product patterns</strong><small>1.0.0-candidate.2 · Illustrative fixtures · Local fixtures and simulated saves · No account write · NOT_APPLIED_TO_PAPER</small></div>
+ <div class="lab-controls">
+ <label>Consumer <select id="consumer"><option value="macro">Macro</option><option value="company">Company</option><option value="options">Options</option><option value="editorial">Public editorial</option></select></label>
+ <label>Theme <select id="theme"><option value="dark">Dark</option><option value="light">Light</option></select></label>
+ <label>Language <select id="language"><option value="en">English</option><option value="zh" lang="zh-Hans">简体中文</option></select></label>
+ <label>Density <select id="density"><option value="dense">Analytical</option><option value="comfortable">Comfortable</option></select></label>
+ <label>Read <select id="availability"><option value="loaded">Loaded</option><option value="loading">Loading</option><option value="empty">Empty</option><option value="unavailable">Unsupported</option><option value="error">Refresh failed</option><option value="firstuse">First use</option></select></label>
+ <label>Freshness <select id="freshness"><option value="current">As expected</option><option value="stale">Stale</option></select></label>
+ <label>Coverage <select id="coverage"><option value="complete">Response complete</option><option value="partial">Partial</option></select></label>
+ <label>Access <select id="access"><option value="member">Member</option><option value="guest">Guest</option><option value="denied">Plan required</option><option value="expired">Session expired</option></select></label>
+ <label>Save <select id="write"><option value="idle">Ready</option><option value="pending">Pending</option><option value="saved">Saved</option><option value="failed">Failed</option><option value="uncertain">Uncertain</option></select></label>
+ <label>Direction <select id="convention"><option value="west">Green up</option><option value="east">Red up</option></select></label>
+ </div>
+</section>
+<div id="app" class="app"></div>
+<dialog id="evidence-dialog" class="evidence-dialog" aria-labelledby="dialog-title"></dialog>
+<div id="announcement" class="sr" aria-live="polite" aria-atomic="true"></div>
+<script id="company-fixture" type="application/json">{"schema": "f02.illustrative.company-history.v2", "entity": {"symbol": "EXM", "name": "Example Industries", "currency": "USD"}, "kind": "illustrative; not a real security, filing or producer response", "periods": [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026], "unit": "USD bn", "series": [{"id": "revenue", "en": "Revenue", "zh": "营业收入", "values": [1.2, 1.35, 1.6, 1.9, 2.3, 2.8, 3.3, 3.8, 4.6, 5.5, 6.8, 9, 12, 16, 24, 36, 48]}, {"id": "gross_profit", "en": "Gross profit", "zh": "毛利润", "values": [0.5, 0.6, 0.7, 0.9, 1.1, 1.3, 1.6, 1.9, 2.3, 2.7, 3.5, 4.6, 6, 8, 12, 19.8, 28.8]}, {"id": "operating_income", "en": "Operating income", "zh": "营业利润", "values": [0.12, 0.14, 0.18, 0.2, 0.25, 0.32, 0.4, 0.5, 0.7, 0.9, 1.2, 1.6, 2, 2.8, 4.8, 8.39, 11.76]}, {"id": "pretax_income", "en": "Pretax income", "zh": "税前利润", "values": [0.1, 0.13, 0.15, 0.19, 0.24, 0.3, 0.38, 0.46, 0.66, 0.85, 1.1, 1.5, 1.9, 2.7, 4.4, 7.1, 10.1]}, {"id": "net_income", "en": "Net income", "zh": "净利润", "values": [0.08, 0.1, 0.12, 0.15, 0.19, 0.23, 0.3, 0.36, 0.52, 0.65, 0.85, 1.2, 1.6, 2.2, 3.6, 6.2, 8.9]}], "statement_periods": [2022, 2023, 2024, 2025, 2026], "rows": [["Revenue", "营业收入", "12.00", "16.00", "24.00", "36.00", "48.00", "+33.3%", "USD bn"], ["Gross profit", "毛利润", "6.00", "8.00", "12.00", "19.80", "28.80", "+45.5%", "USD bn"], ["Operating income", "营业利润", "2.00", "2.80", "4.80", "8.39", "11.76", "+40.2%", "USD bn"], ["Operating margin", "营业利润率", "16.7%", "17.5%", "20.0%", "23.3%", "24.5%", "+1.2 pp", "percent"], ["Pretax income", "税前利润", "1.90", "2.70", "4.40", "7.10", "10.10", "+42.3%", "USD bn"], ["Net income", "净利润", "1.60", "2.20", "3.60", "6.20", "8.90", "+43.5%", "USD bn"], ["Diluted EPS", "稀释每股收益", "0.53", "0.73", "1.20", "2.07", null, null, "USD/share"], ["Dividend per share", "每股股息", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00 USD/share", "USD/share"], ["Free cash flow", "自由现金流", "1.80", "2.60", "4.10", "7.60", "10.20", "+34.2%", "USD bn"]], "comparability": "All five plotted series use this illustrative definition consistently from 2010 through 2026. Real definition changes must split or annotate a series; this fixture does not claim real source comparability.", "observed_period": "Fiscal years 2010–2026; fiscal label is not a calendar observation timestamp", "publication": "2026-10-30T20:02:00Z", "retrieval": "2026-10-30T20:03:00Z"}</script>
+<script>
+// Supporting reference only. All values and write outcomes are local fixtures.
+const $ = s => document.querySelector(s);
+const q = new URLSearchParams(location.search);
+const cfg = {
+  consumer: q.get('consumer') || 'macro', theme: q.get('theme') || 'dark',
+  language: q.get('lang') || 'en', density: q.get('density') || 'dense',
+  availability: q.get('availability') || 'loaded', freshness: q.get('freshness') || 'current',
+  coverage: q.get('coverage') || 'complete', access: q.get('access') || 'member',
+  write: q.get('write') || 'idle', convention: q.get('convention') || 'west'
+};
+let sorted = false, activeTab = 'comparison', filterText = '', saveGeneration = 0;
+let evidenceRow = null, evidenceTrigger = null, evidenceMode = null, evidenceSnapshot = null;
+let evidenceScroll = null, chartObserver = null;
+for (const key of Object.keys(cfg)) {
+  const el = $('#' + key);
+  if (el && !Array.from(el.options).some(o => o.value === cfg[key])) cfg[key] = el.options[0].value;
+}
+const t = (en, zh) => cfg.language === 'zh' ? zh : en;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icon = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H5v16h14V4h-3M9 3h6v4H9zM8 12h8M8 16h6"/></svg>';
+const companyFixture = JSON.parse($('#company-fixture').textContent);
+const companyRows = companyFixture.rows;
+const macroRows = [['Technology','科技',72.4,2.1,'42 / 42'],['Industrials','工业',70.8,1.5,'65 / 65'],['Financials','金融',69.2,.6,'52 / 52'],['Communication services','通信服务',66.7,1.13,'21 / 21'],['Consumer discretionary','可选消费',63.5,-.8,'47 / 47'],['Health care','医疗保健',61.1,0,'54 / 54'],['Utilities','公用事业',58.3,-1.2,'28 / 28'],['Energy','能源',null,null,'—'],['Consumer staples','日常消费',55.6,.4,'36 / 36'],['Materials','原材料',52.2,-.6,'23 / 23']];
+const macroPoints = [61.8,62.4,null,63.9,63.3,64.6,65.57,66.7];
+const macroDates = ['2026-10-21','2026-10-22','2026-10-23','2026-10-26','2026-10-27','2026-10-28','2026-10-29','2026-10-30'];
+const optionRows = Array.from({length:12}, (_, i) => ({id:'print-'+String(i+1).padStart(2,'0'),symbol:i%3===0?'EXM':i%3===1?'NOVA':'ALFA',time:`15:${String(58-i).padStart(2,'0')}:${String(42-i).padStart(2,'0')}`,expiry:i<5?'2026-11-20':'2026-12-18',kind:i%3===1?'Put':'Call',strike:i%3===0?'120.00':i%3===1?'85.00':'42.50',side:i%3===0?'Buy':i%3===1?'Sell':'Mixed',premium:[825000,612000,540000,455000,425000,390000,312000,280000,245000,195000,145000,120000][i],contracts:1500-i*70,dte:i<5?21:49,money:i===7?null:i%2?'OTM':'ITM',flags:i%4===0?'Sweep':'—'}));
+const expiryBuckets = ['2026-11-20','2026-12-18'].map(expiry => ({expiry, rows:optionRows.filter(r=>r.expiry===expiry), premium:optionRows.filter(r=>r.expiry===expiry).reduce((a,r)=>a+r.premium,0)}));
+const sign = (n, suffix='') => n===null ? '<span class="muted">—</span>' : `<span class="number ${n>0?'up':n<0?'down':'zero'}">${n>0?'+':n<0?'−':''}${Math.abs(n).toFixed(suffix===' pp'?2:1)}${suffix}</span>`;
+const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+
+// Pure transitions: write completion never changes read truth or access authority.
+function readSnapshot(state) {
+  return {availability:state.availability, freshness:state.freshness, coverage:state.coverage};
+}
+function transition(state, event) {
+  const next = {...state};
+  if (event.type === 'SAVE_START' && state.access === 'member' && !['pending','uncertain'].includes(state.write)) next.write = 'pending';
+  if (event.type === 'SAVE_RESULT' && state.write === 'pending') next.write = ['saved','failed','uncertain'].includes(event.outcome) ? event.outcome : 'uncertain';
+  if (event.type === 'SAVE_CHECK' && state.write === 'uncertain' && state.access === 'member') next.write = event.outcome === 'saved' ? 'saved' : 'uncertain';
+  if (event.type === 'ACCESS_CHANGE') {
+    next.access = event.access;
+    if (state.write === 'pending' && event.access !== 'member') next.write = 'uncertain';
+  }
+  if (event.type === 'READ_RESPONSE') next.availability = event.availability;
+  return next;
+}
+function apply(event) { Object.assign(cfg, transition(cfg, event)); }
+function fixtureDate(){return t('30 Oct 2026 · 20:00 UTC','2026年10月30日 · 20:00 UTC')}
+function heading() {
+  return {
+    macro:[t('MARKET / PARTICIPATION','市场 / 参与度'),t('Market breadth','市场广度'),t('Compare sector participation, then inspect the underlying observation.','比较行业参与度，然后查看底层观测数据。')],
+    company:[t('ANALYSIS / EXM · EXAMPLE INDUSTRIES','分析 / EXM · 示例工业'),t('Financial statements','财务报表'),t('Compare five income series across 17 fiscal years and inspect exact reported periods.','比较17个财年的五项利润表序列，并查看准确报告期。')],
+    options:[t('OPTIONS / FLOW','期权 / 资金流'),t('Options tape','期权成交明细'),t('Compare observed prints. Estimated trade side does not imply price direction.','比较已观测成交。估计交易方向不代表价格走势。')]
+  }[cfg.consumer];
+}
+function shell() {
+  const pub=cfg.consumer==='editorial'; $('#app').className='app'+(pub?' public-app':'');
+  return `<header class="shell-header"><div class="brand"><span class="mark">M</span>MASTERMIND</div><span class="header-label">${pub?t('Research · Tools · Learn','研究 · 工具 · 学习'):t('Workspace · Example view','工作区 · 示例视图')}</span></header><aside class="rail" aria-label="${t('Shell context reference','外壳上下文参考')}"><p>${t('WORKSPACE','工作区')}</p>${[['Today','今日'],['Discover','发现'],['Analysis','分析'],['Monitor','监控'],['Research','研究'],['Portfolio','投资组合']].map((v,i)=>`<span class="rail-item ${i===2?'selected':''}">${t(v[0],v[1])}</span>`).join('')}<div class="rail-note">${t('Context reference · navigation is specified by F01.','上下文参考 · 导航由F01定义。')}</div></aside>`;
+}
+
+function noticeBox(title, body, action='') {
+  return `<div class="notice" role="status"><span class="status-symbol" aria-hidden="true">○</span><div><strong>${title}</strong><p>${body}</p></div>${action}</div>`;
+}
+function notice() {
+  if(cfg.consumer==='editorial') return '';
+  let out='';
+  if(cfg.access==='guest') out+=noticeBox(t('Public evidence is available','可查看公开证据'),t('Sign in to save this view. Reading and source inspection remain available.','登录后可保存此视图。仍可阅读并查看来源。'));
+  if(cfg.access==='denied') out+=noticeBox(t('Access is needed for this view','此视图需要访问权限'),t('Choose an available view or check your access.','请选择可用视图或检查访问权限。'));
+  if(cfg.access==='expired') out+=noticeBox(t('Your session expired','会话已过期'),cfg.write==='uncertain'?t('Sign in again, then check whether your view was saved. Its outcome is still unknown.','请重新登录，然后检查视图是否已保存。目前结果仍未知。'):t('Sign in again to continue. Your view settings are retained.','请重新登录以继续。已保留视图设置。'));
+  if(cfg.freshness==='stale') out+=noticeBox(t('Older observations retained','保留较早观测'),t('Source: 30 Oct, 20:00 UTC. The expected update has not arrived. This is not a live reading.','来源：10月30日20:00 UTC。预期更新尚未到达。此处并非实时读数。'));
+  if(cfg.coverage==='partial') out+=noticeBox(t('Partial coverage','覆盖不完整'),t('Some expected observations are unavailable. Available values keep their source and time; missing is not zero.','部分预期观测不可用。可用数值保留来源和时间；缺失不等于零。'));
+  if(cfg.availability==='error') out+=noticeBox(t('Refresh failed','刷新失败'),t('The last successful view remains available with its existing age and coverage limits.','仍可查看上次成功加载的视图，并保留原有时效和覆盖限制。'),`<button data-action="retry">${t('Retry','重试')}</button>`);
+  return out;
+}
+
+function chartSvg(measuredWidth) {
+  const isM=cfg.consumer==='macro', isC=cfg.consumer==='company';
+  const w=isC?Math.max(840,Math.floor(measuredWidth||840)):Math.max(240,Math.floor(measuredWidth||358));
+  const h=isC?250:220, left=40, right=20, top=20, bottom=isC?208:178;
+  const max=isM?80:isC?60:3, min=isM?40:0;
+  const y=v=>bottom-(v-min)/(max-min)*(bottom-top);
+  const plot=w-left-right;
+  let marks='', labels='';
+  if(isM) {
+    const x=i=>left+i*plot/(macroPoints.length-1); let d='';
+    macroPoints.forEach((v,i)=>{if(v===null){if(d)marks+=`<path class="series" d="${d}"/>`;d='';marks+=`<text x="${x(i)}" y="${y(50)}" text-anchor="middle">${t('gap','缺失')}</text>`}else d+=(d?'L':'M')+x(i)+','+y(v)+' ';});
+    if(d) marks+=`<path class="series" d="${d}"/>`;
+    marks+=macroPoints.map((v,i)=>v===null?'':`<circle class="point" cx="${x(i)}" cy="${y(v)}" r="3.5"/>`).join('');
+    const ticks=w<500?[0,2,4,7]:[0,1,2,3,4,5,6,7];
+    labels=ticks.map(i=>`<text x="${x(i)}" y="204" text-anchor="${i===0?'start':i===7?'end':'middle'}">${macroDates[i].slice(8)} ${t('Oct','10月')}</text>`).join('');
+  } else if(isC) {
+    const group=plot/17, bar=Math.max(4,(group-10)/5);
+    companyFixture.periods.forEach((yr,i)=>{
+      companyFixture.series.forEach((s,j)=>{const val=s.values[i],x=left+i*group+5+j*bar;marks+=`<rect class="company-series series-${j+1}" x="${x}" y="${y(val)}" width="${bar-1}" height="${bottom-y(val)}"><title>EXM · ${esc(t(s.en,s.zh))} · FY ${yr}: ${val.toFixed(2)} USD bn</title></rect>`});
+      labels+=`<text x="${left+(i+.5)*group}" y="233" text-anchor="middle">${yr}</text>`;
+    });
+  } else {
+    expiryBuckets.forEach((b,i)=>{
+      const x=left+plot*(i+.5)/2,v=b.premium/1e6,bw=Math.min(62,plot/5);
+      marks+=`<rect class="bar" x="${x-bw/2}" y="${y(v)}" width="${bw}" height="${bottom-y(v)}"/><text class="series-label" x="${x}" y="${y(v)-7}" text-anchor="middle">${v.toFixed(3)}</text>`;
+      labels+=`<text x="${x}" y="204" text-anchor="middle">${b.expiry}</text>`;
+    });
+  }
+  const name=isM?t('Example universe participation','示例总体参与度'):isC?t('EXM · five income series · FY 2010–2026','EXM · 五项利润表序列 · 2010–2026财年'):t('Observed premium by contract expiry','按合约到期日分组的已观测权利金');
+  const desc=isM?t('Eight sessions; October 23 is missing. Universe-level share is separate from the sector rows. Exact values follow in Chart data.','八个交易日；10月23日缺失。总体比例与行业行独立。准确值见图表数据。'):isC?t('Seventeen annual groups, each with five bars in legend order: Revenue, Gross profit, Operating income, Pretax income, Net income. USD billions, zero baseline. Exact values are in Chart data.','17个年度组，每组按图例顺序显示五根柱：营业收入、毛利润、营业利润、税前利润、净利润。单位十亿美元，零基线。准确值见图表数据。'):t('Twelve fixture prints observed 30 October 2026, 15:47:31–15:58:42 America/New_York. Expiry is a contract attribute, not observation time.','2026年10月30日美东时间15:47:31至15:58:42观测到的12笔示例成交。到期日是合约属性，并非观测时间。');
+  return `<svg class="chart" width="${w}" height="${h}" style="width:${w}px;height:${h}px" viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="chart-title chart-desc"><title id="chart-title">${name}</title><desc id="chart-desc">${desc}</desc>${[min,(min+max)/2,max].map(v=>`<line class="grid" x1="${left}" x2="${w-right}" y1="${y(v)}" y2="${y(v)}"/><text x="${left-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`).join('')}${marks}${labels}</svg>`;
+}
+function chart() {
+  const m=cfg.consumer==='macro', c=cfg.consumer==='company';
+  return `<section class="chart-block" aria-labelledby="chart-heading"><div class="section-heading"><div><h2 id="chart-heading">${m?t('Example universe · eight sessions','示例总体 · 八个交易日'):c?t('EXM · income history, FY 2010–2026','EXM · 利润历史，2010–2026财年'):t('Premium by expiry','按到期日统计权利金')}</h2><p>${m?t('Share above 50D · % · scale 40–80','高于50日均线的比例 · % · 刻度40–80'):c?'USD bn · 0–60':'USD m · 0–3'}</p></div><button class="text" data-action="chart-values">${t('View exact values','查看准确数值')}</button></div>${c?`<ol class="chart-legend">${companyFixture.series.map((s,i)=>`<li><span class="legend-mark series-${i+1}">${i+1}</span>${esc(t(s.en,s.zh))}</li>`).join('')}</ol>`:''}<div id="chart-host" class="chart-scroll" tabindex="0" role="region" aria-label="${c?t('EXM income chart; horizontally scrollable on narrow screens','EXM利润图；窄屏可横向滚动'):t('Chart; exact values also available','图表；另提供准确数值')}">${chartSvg()}</div><p class="chart-note">${m?t('<strong>7 of 8 observations.</strong> Missing Oct 23 breaks the line. This universe series is not an aggregate of the illustrative sector subset.','<strong>8次观测中有7次可用。</strong> 10月23日缺失，折线断开。此总体序列并非示例行业子集的汇总。'):c?t('Five series; 17 fiscal years. Bars follow the numbered legend order. Scroll within the chart on narrow screens; labels retain their size.','五项序列；17个财年。柱按编号图例顺序排列。窄屏在图表内滚动；标签保持字号。'):t('Observed 30 Oct, 15:47:31–15:58:42 ET · 12 prints. Expiry buckets are contract dimensions.','观测于10月30日美东时间15:47:31–15:58:42 · 12笔成交。到期日分组是合约维度。')}</p></section>`;
+}
+function refreshChartGeometry() {
+  const host=$('#chart-host');
+  if(!host) return;
+  const width=host.clientWidth;
+  if(width>0 && host.dataset.width!==String(width)) {host.dataset.width=String(width);host.innerHTML=chartSvg(width);}
+}
+function observeChart() {
+  chartObserver?.disconnect(); refreshChartGeometry();
+  if(window.ResizeObserver && $('#chart-host')) {chartObserver=new ResizeObserver(refreshChartGeometry);chartObserver.observe($('#chart-host'));}
+}
+function tableValues() {
+  if(cfg.consumer==='company') return `<table class="table-company"><caption>${t('EXM · five income series · illustrative annual values · USD bn','EXM · 五项利润表序列 · 示例年度值 · 十亿美元')}</caption><thead><tr><th scope="col">${t('Fiscal year','财年')}</th>${companyFixture.series.map(s=>`<th scope="col" class="numeric">${esc(t(s.en,s.zh))}</th>`).join('')}<th scope="col">${t('Source','来源')}</th></tr></thead><tbody>${companyFixture.periods.map((yr,i)=>`<tr data-row-key="chart:company:${i}"><th scope="row">FY ${yr}</th>${companyFixture.series.map(s=>`<td class="numeric">${s.values[i].toFixed(2)}</td>`).join('')}<td>${evidenceButton('chart:company:'+i,'EXM · FY '+yr)}</td></tr>`).join('')}</tbody></table>`;
+  const m=cfg.consumer==='macro';
+  const data=m?macroDates.map((d,i)=>[d,macroPoints[i]===null?t('— · Missing','— · 缺失'):macroPoints[i].toFixed(2)+'%']):expiryBuckets.map(b=>[b.expiry,(b.premium/1e6).toFixed(3)]);
+  return `<table class="table-data"><caption>${m?t('Example universe · exact share above 50D · %','示例总体 · 高于50日均线的准确比例 · %'):t('Observed 30 Oct 2026, 15:47:31–15:58:42 ET · premium USD m','观测于2026年10月30日美东时间15:47:31–15:58:42 · 权利金百万美元')}</caption><thead><tr><th scope="col">${m?t('Observation date','观测日期'):t('Contract expiry bucket','合约到期日分组')}</th><th scope="col" class="numeric">${t('Value','数值')}</th><th scope="col">${t('Source','来源')}</th></tr></thead><tbody>${data.map((r,i)=>`<tr data-row-key="chart:${cfg.consumer}:${i}"><th scope="row">${r[0]}</th><td class="numeric">${r[1]}</td><td>${evidenceButton('chart:'+cfg.consumer+':'+i,r[0])}</td></tr>`).join('')}</tbody></table>`;
+}
+function evidenceButton(key,label,compact=false) {
+  return `<button class="text compact ${compact?'evidence-icon':''}" data-evidence="${key}" aria-label="${esc(t('Evidence','证据')+' — '+label)}">${compact?icon:t('Evidence','证据')}</button>`;
+}
+function rowEvidence(key,compact=false) {
+  const [kind,index]=key.split('-'),i=Number(index);
+  const label=kind==='macro'?t(macroRows[i][0],macroRows[i][1]):kind==='company'?'EXM · '+t(companyRows[i][0],companyRows[i][1]):`${optionRows[i].symbol} ${optionRows[i].time}`;
+  return evidenceButton(key,label,compact);
+}
+function rowClass(key) {return key===evidenceRow?' class="selected-row"':'';}
+function comparison() {
+  const c=cfg.consumer;let head,rows,cls,cap;
+  if(c==='macro') {
+    let data=macroRows.map((r,i)=>({r,i}));if(sorted)data.sort((a,b)=>(b.r[2]??-Infinity)-(a.r[2]??-Infinity));
+    head=`<th scope="col">${t('Sector','行业')}</th><th scope="col" class="numeric" aria-sort="${sorted?'descending':'none'}"><button class="sort" data-action="sort">${t('Above 50D','高于50日均线')} <span aria-hidden="true">${sorted?'↓':'↕'}</span></button></th><th scope="col" class="numeric">${t('Change · pp','变动 · 百分点')}</th><th scope="col" class="numeric">${t('Covered / eligible','已覆盖 / 符合条件')}</th><th scope="col">${t('Source','来源')}</th>`;
+    rows=data.map(({r,i})=>`<tr data-row-key="macro-${i}"${rowClass('macro-'+i)}><th scope="row"><span class="row-identity"><span><span class="row-name">${t(r[0],r[1])}</span>${r[2]===null?`<span class="row-sub">${t('Source unavailable','来源不可用')}</span>`:''}</span><span class="mobile-evidence">${rowEvidence('macro-'+i,true)}</span></span></th><td class="numeric">${r[2]===null?'—':r[2].toFixed(1)+'%'}</td><td class="numeric">${sign(r[3],' pp')}</td><td class="numeric">${r[4]}</td><td>${rowEvidence('macro-'+i)}</td></tr>`).join('');
+    cls='table-standard';cap=t('Sector comparison · illustrative subset · change versus prior session','行业对比 · 示例子集 · 变动基于上一交易日');
+  } else if(c==='company') {
+    head=`<th scope="col">${t('Reported metric','报告指标')}</th>${companyFixture.statement_periods.map(y=>`<th scope="col" class="numeric">FY ${y}</th>`).join('')}<th scope="col" class="numeric">${t('Change · FY26 / FY25','变动 · 26 / 25财年')}</th><th scope="col">${t('Source','来源')}</th>`;
+    rows=companyRows.map((r,i)=>`<tr data-row-key="company-${i}"${rowClass('company-'+i)}><th scope="row"><span class="row-identity"><span><span class="row-name">${t(r[0],r[1])}</span><span class="row-sub">${r[8]}</span></span><span class="mobile-evidence">${rowEvidence('company-'+i,true)}</span></span></th>${[2,3,4,5,6].map(k=>`<td class="numeric">${r[k]??'—'}</td>`).join('')}<td class="numeric ${r[7]?.startsWith('+')?'up':''}">${r[7]??'—'}</td><td>${rowEvidence('company-'+i)}</td></tr>`).join('');
+    cls='table-company';cap=t('EXM · Example Industries · FY22–26 · statement currency USD; units per row','EXM · 示例工业 · 22–26财年 · 报表币种USD；各行标明单位');
+  } else {
+    let data=optionRows.filter(r=>!filterText||r.symbol.includes(filterText.toUpperCase()));if(sorted)data.sort((a,b)=>b.premium-a.premium);
+    head=[t('Instrument','合约'),t('Time · ET','时间 · 美东'),t('Expiry','到期日'),t('Type','类型'),t('Strike · USD','行权价 · USD'),t('Est. side','估计方向'),t('Premium · USD','权利金 · USD'),t('Contracts','合约数'),'DTE',t('Moneyness','价内外'),t('Flags','标记'),t('Source','来源')].map((s,i)=>`<th scope="col" ${i===6?`aria-sort="${sorted?'descending':'none'}"`:''} class="${[4,6,7,8].includes(i)?'numeric':''}">${i===6?`<button class="sort" data-action="sort">${s} <span aria-hidden="true">${sorted?'↓':'↕'}</span></button>`:s}</th>`).join('');
+    rows=data.map(r=>{const i=optionRows.indexOf(r);return `<tr data-row-key="options-${i}"${rowClass('options-'+i)}><th scope="row"><span class="row-identity"><span><span class="row-name">${r.symbol}</span><span class="row-sub">${r.id}</span></span><span class="mobile-evidence">${rowEvidence('options-'+i,true)}</span></span></th><td class="number">${r.time}</td><td class="number">${r.expiry}</td><td>${r.kind==='Call'?t('Call','看涨'):t('Put','看跌')}</td><td class="numeric">${r.strike}</td><td class="${r.side==='Buy'?'buy':r.side==='Sell'?'sell':'secondary'}">${r.side==='Buy'?t('≈ Buy','≈ 买方'):r.side==='Sell'?t('≈ Sell','≈ 卖方'):t('Mixed','混合')}</td><td class="numeric">${r.premium.toLocaleString('en-US')}</td><td class="numeric">${r.contracts.toLocaleString('en-US')}</td><td class="numeric">${r.dte}</td><td>${r.money??t('Unknown','未知')}</td><td>${r.flags==='Sweep'?t('Sweep','扫单'):r.flags}</td><td>${rowEvidence('options-'+i)}</td></tr>`}).join('');
+    if(!data.length)rows=`<tr><td colspan="12">${t('No example prints match this symbol. Clear the filter to see all 12.','没有符合该代码的示例成交。清空筛选可查看全部12笔。')}</td></tr>`;
+    cls='table-options';cap=t(`${data.length} of 12 illustrative prints · estimated side; intent unknown`,`${data.length} / 12笔示例成交 · 估计方向；意图未知`);
+  }
+  return `<table class="${cls} sticky-first"><caption>${cap}</caption><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+function tableArea() {
+  return `${cfg.consumer==='options'?`<div class="filter-row"><label for="symbol-filter" class="small">${t('Symbol','代码')}</label><input id="symbol-filter" placeholder="EXM, NOVA, ALFA" value="${esc(filterText)}"><button data-action="filter">${t('Apply filter','应用筛选')}</button><button class="quiet" data-action="clear">${t('Clear','清空')}</button></div>`:''}<div class="tabs" role="tablist" aria-label="${t('Data views','数据视图')}"><button id="tab-comparison" role="tab" aria-selected="${activeTab==='comparison'}" tabindex="${activeTab==='comparison'?0:-1}" aria-controls="panel-comparison" data-tab="comparison">${t('Comparison','对比')}</button><button id="tab-values" role="tab" aria-selected="${activeTab==='values'}" tabindex="${activeTab==='values'?0:-1}" aria-controls="panel-values" data-tab="values">${t('Chart data','图表数据')}</button></div><p id="table-hint" class="small secondary table-hint">${t('Scroll within the table for all columns. Row evidence includes every field.','在表格内横向滚动可查看所有列。行证据包含全部字段。')}</p><div id="panel-comparison" role="tabpanel" aria-labelledby="tab-comparison" ${activeTab!=='comparison'?'hidden':''}><div class="table-wrap" tabindex="0" role="region" aria-label="${t('Comparison table, horizontally scrollable','对比表，可横向滚动')}" aria-describedby="table-hint">${comparison()}</div></div><div id="panel-values" role="tabpanel" aria-labelledby="tab-values" ${activeTab!=='values'?'hidden':''}><div class="table-wrap" tabindex="0" role="region" aria-label="${t('Exact chart values','准确图表数值')}">${tableValues()}</div></div><div class="table-foot"><span>${t('Illustrative values · source context remains attached','示例数值 · 保留来源上下文')}</span></div>`;
+}
+function emptyState() {
+  if(['denied','expired'].includes(cfg.access)) return `<section class="state-body"><h2>${cfg.access==='denied'?t('This view needs access','此视图需要访问权限'):t('Sign in to reopen this view','登录以重新打开此视图')}</h2><p>${t('Your view settings are retained.','已保留视图设置。')}</p></section>`;
+  const s=cfg.availability;if(!['loading','empty','unavailable','firstuse'].includes(s))return null;
+  const d={loading:[t('Loading observations','正在加载观测数据'),t('Values will appear when the source responds. No result count is available yet.','来源响应后将显示数值。当前尚无结果数量。'),null],empty:[t('No observations match this view','没有符合此视图的观测数据'),t('The request completed with zero matching records. Clear the example filter to continue.','请求已完成，匹配记录为零。清除示例筛选以继续。'),t('Clear filter','清除筛选')],unavailable:[t('This source is not supported for this listing','此挂牌标识尚不支持该来源'),t('No value has been inferred. View the source coverage boundary.','未推断任何数值。可查看来源覆盖范围。'),t('View coverage','查看覆盖范围')],firstuse:[t('Choose a starting view','选择起始视图'),t('Open the example dataset to compare observations and inspect their evidence.','打开示例数据集，比较观测值并查看其证据。'),t('Open example','打开示例')]}[s];
+  return `<section class="state-body" ${s==='loading'?'aria-busy="true"':''}><h2>${d[0]}</h2><p role="status">${d[1]}</p>${s==='loading'?'<div aria-hidden="true"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>':`<button ${s==='unavailable'?`data-evidence="coverage:${cfg.consumer}"`:'data-action="retry"'}>${d[2]}</button>`}</section>`;
+}
+function saveArea() {
+  const messages={pending:t('Saving your view…','正在保存视图…'),saved:t('Your view is saved.','视图已保存。'),failed:t('Save failed. Your previous saved view is unchanged.','保存失败。先前保存的视图未改变。'),uncertain:t('Save outcome unknown. Check before retrying.','保存结果未知。重试前请检查。'),idle:t('Save these view settings.','保存这些视图设置。')};
+  const accessMessage=cfg.access==='guest'?t('Sign in to save.','登录后可保存。'):cfg.access==='denied'?t('Access is required to save this view.','保存此视图需要访问权限。'):cfg.access==='expired'?t('Sign in again before saving.','请重新登录后再保存。'):'';
+  const blocked=cfg.access!=='member'||['pending','uncertain'].includes(cfg.write);
+  return `<div class="save-area"><button data-action="save" ${blocked?'disabled':''}>${cfg.write==='failed'?t('Retry save','重试保存'):t('Save view','保存视图')}</button>${cfg.write==='uncertain'?`<button data-action="check-save" ${cfg.access!=='member'?'disabled':''}>${t('Check save status','检查保存状态')}</button>`:''}<span role="status">${messages[cfg.write]} ${accessMessage}</span></div>`;
+}
+function analytical() {
+  const h=heading();const body=emptyState();
+  return `<main id="main" tabindex="-1"><div class="page-head"><div><div class="eyebrow">${h[0]}</div><h1>${h[1]}</h1><p class="deck">${h[2]}</p><div class="receipt"><span><strong>${t('Source','来源')}</strong> <time datetime="2026-10-30T20:00:00Z">${fixtureDate()}</time></span><span>${cfg.consumer==='options'?t('Connected · Market closed · Last session','已连接 · 市场已收盘 · 上一交易日'):t('Illustrative settled observation','示例已结算观测')}</span></div></div><button class="page-action" data-evidence="${canInspectObservations()?'overview:'+cfg.consumer:'coverage:'+cfg.consumer}">${icon} ${t('Source details','来源详情')}</button></div><div class="work-grid" id="work-grid"><div class="primary-object">${notice()}${body??(metrics()+(cfg.consumer==='company'?chart()+tableArea():tableArea()+chart()))}${saveArea()}${specimens()}</div><aside id="docked-evidence" class="inspector" aria-labelledby="dock-title" hidden></aside></div><p class="footer-note">${t('Illustrative shared-pattern reference. Existing domain controls and account recovery routes remain integration requirements; this slice does not replace a complete workspace.','共享模式参考示例。现有领域控件及账户恢复路径仍需集成；此切片不替代完整工作区。')}</p></main>`;
+}
+
+function evidenceRecord(key) {
+  const parts=key.split(':');
+  let consumer=parts.length>1?parts[1]:key.startsWith('macro-')?'macro':key.startsWith('company-')?'company':key.startsWith('options-')?'options':cfg.consumer;
+  const r={key,consumer,entity:consumer==='company'?'EXM · Example Industries':consumer==='macro'?'Example universe':consumer==='options'?'12-print illustrative cohort':'Editorial example',metric:'',period:'2026-10-30 · settled 20:00 UTC',publication:'2026-10-30 · 20:02 UTC',retrieval:'2026-10-30 · 20:03 UTC',unit:'',values:[],dimensions:[],notes:t('Illustrative values; not a live producer response.','示例数值；并非实时生产者响应。')};
+  if(key.startsWith('macro-')) {
+    const a=macroRows[Number(key.split('-')[1])];r.entity=t(a[0],a[1]);r.metric=t('Sector share above 50D','行业高于50日均线比例');r.unit=t('Percent; change in percentage points','百分比；变动以百分点表示');
+    r.values=[[t('Above 50D','高于50日均线'),a[2]===null?t('Unknown; source unavailable','未知；来源不可用'):a[2].toFixed(1)+'%'],[t('Change vs prior session','较上一交易日变动'),a[3]===null?'—':(a[3]>0?'+':'')+a[3].toFixed(2)+' pp'],[t('Covered / eligible','已覆盖 / 符合条件'),a[4]]];r.identity=`macro/sector/${slug(a[0])}/share_above_50d/2026-10-30`;
+  } else if(key.startsWith('company-')) {
+    const a=companyRows[Number(key.split('-')[1])];r.metric=t(a[0],a[1]);r.period='FY 2022 / FY 2023 / FY 2024 / FY 2025 / FY 2026';r.unit=a[8];r.values=companyFixture.statement_periods.map((yr,i)=>['FY '+yr,a[i+2]??t('Missing','缺失')]);r.values.push([t('Change · FY26 / FY25','变动 · 26 / 25财年'),a[7]??t('Unknown','未知')]);r.identity=`company/EXM/${slug(a[0])}/FY2022-FY2026`;r.notes=a[0]==='Dividend per share'?t('The absolute change is 0.00 USD/share. Percentage growth from a zero base is undefined.','绝对变动为每股0.00美元。零基数的百分比增长率未定义。'):t('Statement currency USD. Fiscal periods and publication clocks are separate.','报表币种USD。财务期间与发布时间分别记录。');
+  } else if(key.startsWith('options-')) {
+    const a=optionRows[Number(key.split('-')[1])];r.entity=`${a.symbol} · ${a.expiry} · ${a.strike} USD ${a.kind}`;r.metric=t('Observed option print','已观测期权成交');r.period=`2026-10-30 ${a.time} America/New_York`;r.unit=t('Premium USD; contracts; calendar DTE','权利金USD；合约数量；自然日DTE');r.values=[[t('Premium','权利金'),'USD '+a.premium.toLocaleString('en-US')],[t('Estimated side','估计方向'),a.side],[t('Contracts','合约数'),a.contracts],['DTE',a.dte],[t('Moneyness','价内外'),a.money??t('Unknown','未知')],[t('Flags','标记'),a.flags]];r.dimensions=[[t('Contract expiry','合约到期日'),a.expiry],[t('Print identity','成交标识'),a.id]];r.identity=`options/${a.symbol}/${a.expiry}/${a.kind}/${a.strike}/2026-10-30/${a.id}`;r.notes=t('Estimated side does not identify opening or closing intent, a price forecast, or signed exposure.','估计方向不代表开平仓意图、价格预测或带符号敞口。');
+  } else if(parts[0]==='chart') {
+    const i=Number(parts[2]);
+    if(consumer==='macro') {r.metric=t('Universe share above 50D','总体高于50日均线比例');r.period=macroDates[i];r.unit='%';r.values=[[r.metric,macroPoints[i]===null?t('Missing','缺失'):macroPoints[i].toFixed(2)+'%']];r.identity=`macro/example_universe/share_above_50d/${macroDates[i]}`;r.notes=t('Universe series is separate from the illustrative sector subset. Missing observations remain missing.','总体序列与示例行业子集独立。缺失观测保持缺失。');}
+    else if(consumer==='company') {const yr=companyFixture.periods[i];r.metric=t('Five income statement series','五项利润表序列');r.period='FY '+yr;r.unit='USD bn';r.values=companyFixture.series.map(s=>[t(s.en,s.zh),s.values[i].toFixed(2)]);r.identity=`company/EXM/income_statement_five_series/FY${yr}`;r.notes=t('All five series belong to EXM and this fiscal year. Exact definitions are illustrative and consistent across this fixture.','五项序列均属于EXM和此财年。定义为示例，并在此数据中保持一致。');}
+    else {const b=expiryBuckets[i];r.metric=t('Observed premium grouped by expiry','按到期日分组的已观测权利金');r.period='2026-10-30 · 15:47:31–15:58:42 America/New_York';r.unit='USD';r.values=[[t('Observed premium','已观测权利金'),'USD '+b.premium.toLocaleString('en-US')],[t('Contributing prints','贡献成交笔数'),b.rows.length]];r.dimensions=[[t('Contract expiry bucket','合约到期日分组'),b.expiry],[t('Contributing print identities','贡献成交标识'),b.rows.map(x=>x.id).join(', ')]];r.identity=`options/cohort_12/observed_premium/2026-10-30/expiry_${b.expiry}`;r.notes=t('Expiry groups contracts. The observed window describes when the prints occurred; these clocks are not interchangeable.','到期日用于合约分组。观测窗口描述成交发生时间；两者不可互换。');}
+  } else if(parts[0]==='overview') {
+    const targets={macro:'chart:macro:7',company:'company-0',options:'chart:options:0',editorial:'article'};
+    if(!Object.hasOwn(targets,consumer))throw new Error('Unsupported overview consumer');
+    const base=evidenceRecord(targets[consumer]);
+    if(consumer==='options') {
+      base.entity='12-print illustrative cohort';base.metric=t('Total observed premium','已观测权利金总额');
+      base.values=[[base.metric,'USD '+optionRows.reduce((a,x)=>a+x.premium,0).toLocaleString('en-US')],[t('Contributing prints','贡献成交笔数'),12]];
+      base.dimensions=[[t('Cohort','集合'),optionRows.map(x=>x.id).join(', ')]];
+      base.identity='options/cohort_12/total_observed_premium/2026-10-30';
+      base.sourceIdentity='f02.fixture.v2/'+base.identity;
+    }
+    base.key=key;return base;
+  } else if(key==='article') {
+    r.consumer='editorial';r.entity=t('Compound-growth example','复合增长示例');r.metric=t('Total return and annualized compound return','总收益率与年化复合收益率');r.period=t('Two annual periods; no cash flows','两个年度期间；无现金流');r.publication='2026-07-20';r.retrieval='2026-10-30';r.unit=t('USD balance; percent return','美元余额；百分比收益率');r.values=[['Balance','USD 10,000 × 1.50 × 0.50 = USD 7,500'],['Total return','(7,500 / 10,000) − 1 = −25%'],['CAGR','(7,500 / 10,000)^(1/2) − 1 ≈ −13.4%']];r.identity='editorial/compound_growth/two_annual_periods';r.notes=t('No cash flows, fees or taxes. Publication and update dates belong to the article; this arithmetic is not a forecast.','不含现金流、费用或税款。发布及更新日期属于文章；算术计算并非预测。');
+  } else {
+    r.metric=t('Coverage boundary','覆盖边界');r.unit=t('Field-specific; unavailable values are not zero','按字段定义；不可用值不等于零');r.values=[[t('Availability','可用性'),cfg.availability],[t('Freshness','时效'),cfg.freshness],[t('Coverage','覆盖'),cfg.coverage]];r.identity=`${consumer}/coverage/${cfg.availability}/${cfg.coverage}/2026-10-30`;
+  }
+  r.sourceIdentity='f02.fixture.v2/'+r.identity;
+  return r;
+}
+function evidenceContent(record,titleId) {
+  const row=(label,value)=>`<dt>${esc(label)}</dt><dd>${esc(value)}</dd>`;
+  return `<div class="inspector-head"><h2 id="${titleId}">${t('Evidence','证据')}</h2><button data-action="close-evidence" aria-label="${t('Close evidence','关闭证据')}">×</button></div><div class="inspector-content"><div class="eyebrow">${t('ILLUSTRATIVE SOURCE','示例来源')}</div><h3>${esc(record.entity)}</h3><p>${esc(record.metric)}</p><div class="evidence-values number">${record.values.map(([k,v])=>`<div><span>${esc(k)}:</span> ${esc(v)}</div>`).join('')}</div><dl>${row(t('Source identity','来源标识'),record.sourceIdentity)}${row(t('Consumer','使用页面'),record.consumer)}${row(t('Entity / cohort','实体 / 集合'),record.entity)}${row(t('Metric','指标'),record.metric)}${row(t('Observed period / window','观测期间 / 窗口'),record.period)}${record.dimensions.map(([k,v])=>row(k,v)).join('')}${row(t('Publication','发布'),record.publication)}${row(record.consumer==='editorial'?t('Article updated','文章更新'):t('Retrieved','获取'),record.retrieval)}${row(t('Units and currency','单位与币种'),record.unit)}</dl><blockquote>${esc(record.notes)}</blockquote><button data-action="close-evidence">${t('Return to comparison','返回对比')}</button></div>`;
+}
+function markSelected() {
+  document.querySelectorAll('[data-row-key]').forEach(row=>row.classList.toggle('selected-row',row.dataset.rowKey===evidenceRow));
+}
+function closeEvidence() {
+  const key=evidenceRow;const dlg=$('#evidence-dialog');if(dlg.open)dlg.close();
+  const dock=$('#docked-evidence');if(dock)dock.hidden=true;$('#work-grid')?.classList.remove('has-inspector');
+  evidenceRow=null;evidenceMode=null;evidenceSnapshot=null;markSelected();
+  const matches=[...document.querySelectorAll('[data-evidence]')].filter(el=>el.dataset.evidence===key&&el.getClientRects().length);
+  const trigger=evidenceTrigger?.isConnected&&evidenceTrigger.getClientRects().length?evidenceTrigger:matches[0];
+  const region=evidenceScroll?.panel?$('#'+evidenceScroll.panel+' .table-wrap'):null;
+  if(region){region.scrollLeft=evidenceScroll.left;region.scrollTop=evidenceScroll.top;}
+  if(trigger){trigger.focus({preventScroll:true});trigger.scrollIntoView({block:'nearest',inline:'nearest'});}
+  else {const fallback=$('#table-hint')||$('#main');if(fallback){fallback.tabIndex=-1;fallback.focus({preventScroll:true});announce(t('The source row is no longer in this view. Returned to the comparison.','来源行已不在当前视图中。已返回对比区域。'));}}
+  evidenceTrigger=null;evidenceScroll=null;refreshChartGeometry();
+}
+function showEvidenceMode() {
+  const dock=$('#docked-evidence'),wide=window.innerWidth>=1280&&dock,dlg=$('#evidence-dialog');
+  if(wide){if(dlg.open)dlg.close();dock.innerHTML=evidenceContent(evidenceSnapshot,'dock-title');dock.hidden=false;$('#work-grid').classList.add('has-inspector');evidenceMode='docked';dock.querySelector('button').focus();}
+  else {if(dock)dock.hidden=true;$('#work-grid')?.classList.remove('has-inspector');dlg.innerHTML=evidenceContent(evidenceSnapshot,'dialog-title');if(!dlg.open)dlg.showModal();evidenceMode='overlay';dlg.querySelector('button').focus();}
+  markSelected();refreshChartGeometry();
+}
+function canInspectObservations() {
+  return cfg.consumer==='editorial'||(['member','guest'].includes(cfg.access)&&['loaded','error'].includes(cfg.availability));
+}
+function openEvidence(key,trigger) {
+  if(!canInspectObservations()&&!key.startsWith('coverage:')) {announce(t('Observations are not available in this state.','当前状态无法查看观测数据。'));return;}
+  evidenceRow=key;evidenceTrigger=trigger||document.activeElement;evidenceSnapshot=evidenceRecord(key);
+  const wrap=evidenceTrigger?.closest('.table-wrap'),panel=wrap?.closest('[role=tabpanel]');
+  evidenceScroll=wrap?{panel:panel?.id,left:wrap.scrollLeft,top:wrap.scrollTop}:null;
+  showEvidenceMode();
+}
+function sync() {
+  const pub=cfg.consumer==='editorial';
+  for(const id of ['availability','freshness','coverage','access','write']) {$('#'+id).disabled=pub;$('#'+id).title=pub?'Not applicable to the retained static article.':'';}
+  document.documentElement.dataset.theme=cfg.theme;document.documentElement.dataset.density=cfg.density;document.documentElement.dataset.convention=cfg.convention;document.documentElement.lang=cfg.language==='zh'?'zh-Hans':'en';
+  for(const k of Object.keys(cfg))if($('#'+k))$('#'+k).value=cfg[k];
+  const params=new URLSearchParams({...cfg,lang:cfg.language});params.delete('language');
+  if(/^https?:$/.test(location.protocol))history.replaceState(null,'',location.pathname+'?'+params.toString()+location.hash);
+}
+function render() {
+  chartObserver?.disconnect();if($('#evidence-dialog').open)$('#evidence-dialog').close();evidenceRow=null;evidenceMode=null;evidenceSnapshot=null;evidenceTrigger=null;evidenceScroll=null;
+  sync();$('#app').innerHTML=shell()+(cfg.consumer==='editorial'?article():analytical());observeChart();
+}
+function renderSaveOnly() {
+  sync();const old=$('.save-area');if(!old)return;
+  const restore=old.contains(document.activeElement),action=document.activeElement?.dataset.action;
+  old.outerHTML=saveArea();
+  if(restore) {
+    const area=$('.save-area'),same=[...area.querySelectorAll('[data-action]')].find(x=>x.dataset.action===action&&!x.disabled);
+    const target=same||area.querySelector('[role=status]');target.tabIndex=target===same?0:-1;target.focus({preventScroll:true});
+  }
+}
+function announce(s){$('#announcement').textContent=s;}
+function selectTab(value) {
+  activeTab=value;document.querySelectorAll('[data-tab]').forEach(el=>{const selected=el.dataset.tab===activeTab;el.setAttribute('aria-selected',selected);el.tabIndex=selected?0:-1;});
+  $('#panel-comparison').hidden=activeTab!=='comparison';$('#panel-values').hidden=activeTab!=='values';
+}
+function updateComparison() {
+  const region=$('#panel-comparison .table-wrap');const {scrollLeft:left,scrollTop:top}=region;
+  region.innerHTML=comparison();region.scrollLeft=left;region.scrollTop=top;markSelected();
+}
+function metrics(){let m=cfg.consumer==='macro'?[[t('Example universe · above 50D','示例总体 · 高于50日均线'),'66.7','%',`${sign(1.13,' pp')} ${t('vs prior session','较上一交易日')}`,t('Universe share · separate from sector subset','总体比例 · 与行业子集独立')],[t('Sectors with data','已有数据的行业'),'9','/ 10',t('1 unavailable','1个不可用'),t('Missing does not mean zero','缺失不等于零')],[t('Unchanged example','持平示例'),'0.0','pp',t('Health care · no change','医疗保健 · 无变化'),t('A reported zero, not a placeholder','已报告的零值，非占位符')]]:cfg.consumer==='company'?[[t('Revenue · FY 2026','营业收入 · 2026财年'),'48.00','USD bn',`<span class="up">+33.3%</span> ${t('vs FY 2025','较2025财年')}`,t('Statement currency: USD','报表币种：USD')],[t('Operating margin','营业利润率'),'24.5','%',`<span class="up">+1.2 pp</span> ${t('vs FY 2025','较2025财年')}`,t('No currency conversion','未进行币种转换')],[t('Diluted EPS','稀释每股收益'),'—','USD / share',t('Not available','不可用'),t('Current filing field is missing','当前报告缺少该字段')]]:[[t('Observed premium','已观测权利金'),'4.54','USD m',t('12 example prints','12笔示例成交'),t('Fixture window · not a market total','示例窗口 · 非市场总量')],[t('Estimated buy side','估计为买方成交'),String(optionRows.filter(r=>r.side==='Buy').length),'/ 12',t('Example classification','示例分类'),t('Classification is not intent','分类不等于交易意图')],[t('Unknown moneyness','未知价内外状态'),'1','/ 12',t('Shown without inference','保留未知，不推断'),t('No underlying snapshot','缺少标的快照')]];return `<div class="summary-strip">${m.map(x=>`<div class="metric"><div class="metric-label">${x[0]}</div><div class="metric-value number">${x[1]} <span class="metric-unit">${x[2]}</span></div><div class="metric-change">${x[3]}</div><div class="metric-note">${x[4]}</div></div>`).join('')}</div>`}
+function specimens(){return `<details class="specimens" lang="${cfg.language==='zh'?'zh-Hans':'en'}"><summary>${t('Component specimens · semantics, controls and recovery','组件示例 · 语义、控件和恢复')}</summary><div class="specimen-grid"><section class="sample"><h3>${t('Direction, zero, unknown','方向、零与未知')}</h3><div class="sample-row">${sign(1.13,' pp')}${sign(-.8,' pp')}<span class="number">0.00 pp</span><span>— ${t('Unknown','未知')}</span></div><p>${t('The sign and unit carry meaning even without color.','即使没有颜色，正负号和单位仍表达含义。')}</p></section><section class="sample"><h3>${t('Trade side and exposure','交易方向与风险敞口')}</h3><div class="sample-row"><span class="buy">≈ ${t('Buy','买方')}</span><span class="sell">≈ ${t('Sell','卖方')}</span><span>${t('Positive exposure','正敞口')} +1.2</span><span class="chip">${t('Accepted','已接受')}</span></div><p>${t('These meanings do not change when language or market colors change.','这些含义不随语言或市场颜色设置而改变。')}</p></section><section class="sample"><h3>${t('Control emphasis','控件层级')}</h3><div class="sample-row"><button class="primary" data-evidence="${canInspectObservations()?'overview:'+cfg.consumer:'coverage:'+cfg.consumer}">${t('Inspect source','查看来源')}</button><button data-action="retry">${t('Refresh example','刷新示例')}</button><button disabled>${t('Saving…','正在保存…')}</button></div><p>${t('One primary action; disabled is accompanied by an explicit state.','一个主要操作；禁用状态需有明确说明。')}</p></section><section class="sample"><h3>${t('Persistent caveat','持续显示的限制说明')}</h3><p>${t('Partial coverage · 7 of 8 observations. A missing session stays missing. Evidence remains reachable.','覆盖不完整 · 8次观测中7次可用。缺失交易日保持缺失。仍可查看证据。')}</p><button class="text" data-evidence="coverage:${cfg.consumer}">${icon} ${t('Coverage and source','覆盖范围与来源')}</button></section></div></details>`}
+function article(){const t=(a,b)=>a;return `<main id="main" tabindex="-1" lang="en"><div class="eyebrow">${t('FROM THE DESK / READING PATTERN','研究札记 / 阅读模式')}</div><header class="article-head" style="margin-top:12px"><h1>${t('Why equal gains and losses do not cancel','为什么相等的涨幅与跌幅无法抵消')}</h1><p class="deck">${t('A compact example of compound growth, with the assumptions visible and the calculation open to inspection.','用一个简明例子说明复合增长，明确假设，并提供可查看的计算过程。')}</p><div class="receipt"><span>${t('Published','发布')} <time datetime="2026-07-20">2026-07-20</time></span><span>${t('Example updated','示例更新')} <time datetime="2026-10-30">2026-10-30</time></span><span>${t('Illustrative article specimen','文章示例')}</span></div></header>${notice()}<div class="article-layout"><nav class="toc" aria-label="${t('On this page','本页目录')}"><strong>${t('ON THIS PAGE','本页目录')}</strong><a href="#arithmetic">${t('Follow the calculation','跟随计算过程')}</a><a href="#difference">${t('Compare the averages','比较平均值')}</a><a href="#limits">${t('Where the example stops','示例的适用范围')}</a><a href="#next">${t('Explore the assumptions','探索假设')}</a></nav><article class="prose"><p class="lede">${t('A gain of 50% followed by a loss of 50% leaves less than you started with. The second return acts on a different base.','先上涨50%，再下跌50%，最终资产将低于初始值。第二次收益率作用于不同的基数。')}</p><h2 id="arithmetic">${t('Follow the calculation','跟随计算过程')}</h2><p>${t('Start with USD 10,000. The first period raises the balance to USD 15,000. Losing half of that balance in the next period leaves USD 7,500. There are no deposits, withdrawals, fees or taxes in this example.','初始资产为10,000美元。第一期后升至15,000美元。第二期损失其中的一半，剩余7,500美元。本例不包含存款、提款、费用或税款。')}</p><div class="table-wrap" tabindex="0" role="region" aria-label="${t('Compound growth calculation','复合增长计算')}"><table class="table-data"><caption>${t('Illustrative calculation · currency USD','示例计算 · 币种USD')}</caption><thead><tr><th scope="col">${t('Period','期间')}</th><th scope="col" class="numeric">${t('Return','收益率')}</th><th scope="col" class="numeric">${t('Balance · USD','余额 · USD')}</th></tr></thead><tbody><tr><th scope="row">${t('Start','期初')}</th><td class="numeric">${t('Not applicable','不适用')}</td><td class="numeric">10,000</td></tr><tr><th scope="row">${t('Year 1','第1年')}</th><td class="numeric up">+50%</td><td class="numeric">15,000</td></tr><tr><th scope="row">${t('Year 2','第2年')}</th><td class="numeric down">−50%</td><td class="numeric">7,500</td></tr></tbody></table></div><button class="text" data-evidence="article">${icon} ${t('Inspect the calculation','查看计算依据')}</button><h2 id="difference">${t('Compare the averages','比较平均值')}</h2><p>${t('The arithmetic average is 0%. The total return is −25%, and the annualized compound return is about −13.4%. These numbers answer different questions; they should not share an unlabeled metric tile.','算术平均收益率为0%。总收益率为−25%，年化复合收益率约为−13.4%。这些数值回答不同的问题，不应放进未标注含义的同一种指标卡片。')}</p><p class="formula">Total return = (7,500 / 10,000) − 1 = −25%.<br>CAGR = (7,500 / 10,000)<sup>1/2</sup> − 1 ≈ −13.4% per year.</p><div class="callout"><strong>${t('State the period and the unit','明确期间与单位')}</strong><p>${t('Total return: −25% over two years. CAGR: −13.4% per year. A change between two percentage readings is expressed in percentage points.','两年总收益率：−25%。年复合增长率：每年−13.4%。两次百分比读数之差以百分点表示。')}</p></div><h2 id="limits">${t('Where the example stops','示例的适用范围')}</h2><p>${t('Reordering the same returns does not change the final balance when no cash enters or leaves. Contributions and withdrawals change that relationship. A fixed-rate calculator describes its assumptions; it does not predict future returns.','没有资金流入或流出时，调整同一组收益率的顺序不会改变最终余额。存款和提款会改变这一关系。固定收益率计算器只描述其假设，并不预测未来收益。')}</p><h2 id="next">${t('Explore the assumptions','探索假设')}</h2><p>${t('Use the existing tools to examine an annualized return or a contribution schedule. Keep the period, currency and cash-flow assumptions in view.','使用现有工具研究年化收益或定期投入计划，并持续关注期间、币种和现金流假设。')}</p><div class="related"><a href="https://www.mastermind-x.com/tools/calculators/cagr.html" target="_blank" rel="noopener">${t('CAGR calculator','年复合增长率计算器')} ↗</a><a href="https://www.mastermind-x.com/tools/calculators/compounding.html" target="_blank" rel="noopener">${t('Compounding calculator','复利计算器')} ↗</a><a href="https://www.mastermind-x.com/blog/index.html" target="_blank" rel="noopener">${t('Back to the desk','返回研究札记')} ↗</a></div></article></div>${specimens()}<p class="footer-note">${t('Illustrative editorial pattern. Original English article body and bilingual chrome remain the content contract. This is an illustrative reading-pattern composition.','文章模式示例。实际内容生产仍由现有负责人负责。本实验中的中英文用于展示组件适应能力；文章正文翻译需由编辑负责人作出内容决策。')}</p></main>`}
+
+// Event bindings intentionally separated from pure model/evidence functions for bounded source checks.
+document.querySelectorAll('.lab select').forEach(el=>el.addEventListener('change',()=>{
+  if(el.id==='access'){apply({type:'ACCESS_CHANGE',access:el.value});saveGeneration++;}
+  else cfg[el.id]=el.value;
+  if(el.id==='consumer'){saveGeneration++;cfg.write='idle';activeTab='comparison';filterText='';sorted=false;}
+  if(el.id==='write')saveGeneration++;
+  render();announce(t('Reference state updated.','参考状态已更新。'));
+}));
+document.addEventListener('click',e=>{
+  const ev=e.target.closest('[data-evidence]');if(ev){openEvidence(ev.dataset.evidence,ev);return;}
+  const tab=e.target.closest('[data-tab]');if(tab){selectTab(tab.dataset.tab);return;}
+  const action=e.target.closest('[data-action]')?.dataset.action;
+  if(action==='close-evidence')closeEvidence();
+  if(action==='chart-values'){selectTab('values');$('#tab-values').focus();$('#tab-values').scrollIntoView({block:'nearest'});}
+  if(action==='sort'){sorted=!sorted;updateComparison();$('[data-action=sort]')?.focus();announce(sorted?t('Rows sorted by numeric value; unknowns last.','已按数值排序；未知值置后。'):t('Original row order restored.','已恢复原始行顺序。'));}
+  if(action==='filter'||action==='clear'){filterText=action==='clear'?'':$('#symbol-filter').value.trim();$('#symbol-filter').value=filterText;updateComparison();announce(t('Example filter applied.','已应用示例筛选。'));}
+  if(action==='retry'){filterText='';apply({type:'READ_RESPONSE',availability:'loaded'});render();$('#main').focus();announce(t('Example response restored. Source age, coverage and saved state are unchanged.','示例响应已恢复。来源时效、覆盖及保存状态未改变。'));}
+  if(action==='save'){
+    const before=cfg.write;apply({type:'SAVE_START'});if(cfg.write!=='pending'||before==='pending')return;
+    const ticket=++saveGeneration,consumerAtSend=cfg.consumer;renderSaveOnly();announce(t('Saving your view.','正在保存视图。'));
+    setTimeout(()=>{if(ticket===saveGeneration&&cfg.consumer===consumerAtSend&&cfg.write==='pending'){const returnFocus=$('.save-area')?.contains(document.activeElement);apply({type:'SAVE_RESULT',outcome:cfg.access==='member'?'saved':'uncertain'});renderSaveOnly();if(returnFocus)$('[data-action=save]:not(:disabled)')?.focus({preventScroll:true});announce(cfg.write==='saved'?t('Your view is saved.','视图已保存。'):t('The save result is still unknown.','保存结果仍未知。'));}},600);
+  }
+  if(action==='check-save'){apply({type:'SAVE_CHECK',outcome:'saved'});renderSaveOnly();$('[data-action=save]')?.focus();announce(cfg.write==='saved'?t('Your view is saved. No second save was sent.','视图已保存。未再次发送保存。'):t('The save result is still unknown.','保存结果仍未知。'));}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&evidenceRow){e.preventDefault();closeEvidence();return;}
+  const tab=e.target.closest('[role=tab]');if(tab&&['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const tabs=[...document.querySelectorAll('[role=tab]')];const n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(tabs.indexOf(tab)+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs.forEach((x,i)=>x.tabIndex=i===n?0:-1);tabs[n].focus();}
+  if(e.target.id==='symbol-filter'&&e.key==='Enter')$('[data-action=filter]').click();
+});
+$('#evidence-dialog').addEventListener('cancel',e=>{e.preventDefault();closeEvidence();});
+window.addEventListener('resize',()=>{if(evidenceRow){const next=window.innerWidth>=1280&&$('#docked-evidence')?'docked':'overlay';if(next!==evidenceMode)showEvidenceMode();}refreshChartGeometry();});
+render();
+</script>
+</body>
+</html>

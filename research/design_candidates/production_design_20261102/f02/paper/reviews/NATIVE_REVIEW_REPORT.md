@@ -1,0 +1,34 @@
+# F02 native review record
+
+**Current phase: all independently safe static repairs and R3 affected followups complete. Overall 31-board PASS_WITH_CONDITIONS; full joint v1 remains held.** The exact current 31-board input is `32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f`,89 members, aggregate `280483a1f8e2f9c005381ddf051265d59d3fa2df904b42ccb75eab094fdbf6a4`. [The final adjudication](SCOPED_REVIEW_ADJUDICATION_20261104.md) binds all six reports and finding-level limits. All 32 boards exist;31 full pairs and649 applied responses are observed. One original Chinese effect and its remaining native work are held. Formal RIG remains draft. The historical first-pass findings and reports below retain their original scope; their newer dispositions are recorded separately, never rewritten into retroactive passes.
+
+The closed first-pass artifact set is `245d70bbd3ac773f3074277c771095264b31269d`, 44 members, aggregate SHA256 `98c7569adb5827e7b3ab16350e56be642ede4ddd961dc4d599b99b7bf4d69b3b`. Both critics independently verified the set and examined every image. Their original BLOCK reports were preserved unchanged at `d3c24ceae3f234ce6eb756596367b2045f8ae3c6` before author rationale was revealed.
+
+Read [NATIVE_REVIEW_SEQUENCE.md](NATIVE_REVIEW_SEQUENCE.md), [product-native-first-pass.md](product-native-first-pass.md) and [taste-native-first-pass.md](taste-native-first-pass.md) for their exact scope and findings. The earlier `f02/reviews/` reports concern the historical source/static candidate; they are not native Paper approval.
+
+## Historical first-pass repair requirements
+
+| Finding | Required design repair or proof |
+| --- | --- |
+| NPRC-001 / NVTC-001 | Align actual consumer numeric frames to shared end edges and recapture both themes. |
+| NPRC-002 | Show the active descending Macro sort, place unavailable Energy last and retain stable entity keys. |
+| NPRC-003 | Supply coherent count-first breadth fixtures, exact cohort identity and raw-before-rounding calculations. |
+| NPRC-004 / NVTC-002 | Restore the visible annual Company change sequence alongside all existing values. |
+| NVTC-004 | Raise meaningful Company units to12px. |
+| NPRC-005 / NPRC-006 / NVTC-003 | Complete and freeze precise evidence/return, narrow, EN/ZH and density design variants; qualify runtime behavior separately. |
+| NPRC-007 | Preserve actual consumer/domain integration and its named acceptance gates. Static/native slices cannot substitute for real-path proof. |
+| NPRC-008 | Complete failure/state/access design coverage and retain actual owner-confirmed transition requirements. |
+
+Later reports will record their own exact artifact identity. Planned repairs and authored inputs are not counted as observed fixes. Formal admitted reviewer-class receipts, the designated design-authority verdict, F01 joint contract and browser/consumer proof remain independent gates.
+
+## Historical rationale and subsequent application
+
+The separate [product rationale pass](product-native-rationale-pass.md) and [taste rationale pass](taste-native-rationale-pass.md), committed at `ef27472069f8c5f86ad4bf7bb02f9cfd810d41d9`, retain both BLOCK verdicts and all original finding IDs. The first reports remain unchanged. A separate [implementation contract audit](implementation-contract-audit.md) was author-informed and source-only; it is not either independent critic's repaired-set verdict.
+
+The original source preflight established bindability only. Subsequent operation receipts and actual captures now establish the participation v3 text/chart/sort corrections, Company annual-growth v2/units,182 existing numeric frames,33 English phone frames and16 editorial numeric/header frames. Only 33 Chinese phone frames remain held with the original partial comparison. Additional320 evidence, control variants and all ten formerly absent disjoint boards are captured. See [the exact pending-work record](../NATIVE_PENDING_WORK.md).
+
+The 640-operation retention checkpoint confirms all 67 original identities/locations and 20 shared tokens, with zero original targets in its sequential custody audit. Ten later text/style-only operations on 18 existing F02 nodes are recorded in the owned delta; no new full retention read is claimed. This closes the stated preservation readback need; it does not close domain integration or the unresolved request. The strict32-board freeze preflight refuses the current incomplete state. It preserves the distinction between current-node absence and a terminal operation receipt.
+
+## Residual unit-header followup
+
+Both R2 affected reports close the three distinct minor findings in their exact static scope. Taste retained the historical NVTC-004 condition for meaningful unit/time-zone headers. Eight existing Macro/Options text nodes now use12px/18px type; six observed operations preserve all text, raw rows, numeric edges and row density. The new [R3 followup manifest](../freezes/scoped-native-20261104-r3/MANIFEST.json) contains89 members, aggregate `280483a1f8e2f9c005381ddf051265d59d3fa2df904b42ccb75eab094fdbf6a4`. Both independent affected followups PASS the eight-header correction after viewing all four actual full captures, verifying89 members initially/finally and reproducing the exact eight JSX style substitutions. NVTC-004 is closed for the included static reference; no new related regression was observed. R1 and R2 freezes/reports remain unchanged.

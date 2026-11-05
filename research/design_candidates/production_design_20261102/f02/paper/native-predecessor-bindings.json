@@ -1,0 +1,2813 @@
+{
+  "schema": "f02.native-predecessor-bindings.v1",
+  "generated_at": "2026-11-05T00:16:53.472842+00:00",
+  "counts": {
+    "IMPROVE": 42,
+    "RETAIN": 25
+  },
+  "rows": [
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FCS-2",
+      "name": "00 · System Charter · Governed Agentic Lab",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "readme",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-9-0",
+          "board_id": "47Q-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FE2-2",
+      "name": "01 · Component Atlas · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "foundations",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-3-0",
+          "board_id": "48W-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "metrics",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "4E3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FGO-2",
+      "name": "02 · Component Atlas · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "foundations",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-3-0",
+          "board_id": "48W-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "metrics-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "4H1-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FJA-2",
+      "name": "03 · Mobile Decision Thread · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-eps-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "70C-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark-en-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FLR-2",
+      "name": "04 · Mobile Decision Thread · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "macro-light-zh-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-zh-evidence-return-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FO8-2",
+      "name": "05 · Material UI Migration Packet · Working",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FPP-2",
+      "name": "06 · Data, Chart & Access · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "grammar",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "4LC-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FSH-2",
+      "name": "07 · Data, Chart & Access · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "grammar",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "4LC-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FV9-2",
+      "name": "08 · Archetype Starter Map · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "readme",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-9-0",
+          "board_id": "47Q-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1Q-0",
+      "board_id": "5FY3-2",
+      "name": "09 · Archetype Starter Map · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "readme",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-9-0",
+          "board_id": "47Q-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "1QM-0",
+      "name": "A · Command Center · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "1QM-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "1RY-0",
+      "name": "B · Discovery Board · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "1RY-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "1TH-0",
+      "name": "C · Instrument Analyzer · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "1TH-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "1UT-0",
+      "name": "D · Regime Dashboard · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "1UT-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "1W2-0",
+      "name": "E · Intelligence Desk · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "1W2-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "1X4-0",
+      "name": "F · Editorial · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "1X4-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "1XW-0",
+      "name": "G · Monitor · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "1XW-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "1Z5-0",
+      "name": "H · Marketing · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "1Z5-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-5-0",
+      "board_id": "20A-0",
+      "name": "I · Utility · Starter",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0",
+        "board_id": "20A-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-1-0",
+      "board_id": "423-1",
+      "name": "00 · Start Here · NOIR + Library Directory",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-1-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "readme",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-9-0",
+          "board_id": "47Q-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-1-0",
+      "board_id": "42T-0",
+      "name": "01 · Working Files · Workspace Navigator",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-1-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "readme",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-9-0",
+          "board_id": "47Q-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-2-0",
+      "board_id": "23T-0",
+      "name": "Getting Started · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-2-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "readme",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-9-0",
+          "board_id": "47Q-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-3-0",
+      "board_id": "24A-0",
+      "name": "Foundations · Legacy Dual-Theme Reference",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-3-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-3-0",
+        "board_id": "24A-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-3-0",
+      "board_id": "3XJ-1",
+      "name": "Foundations · NOIR Family System · Canonical",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-3-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "foundations",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-3-0",
+          "board_id": "48W-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "25V-0",
+      "name": "MX/Section Header",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "editorial-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "6JX-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "editorial-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "6NG-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark-en-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light-zh-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "25Z-0",
+      "name": "MX/Metric Tile",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-dividend-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "72T-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-eps-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "70C-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "metrics",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "4E3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "26C-0",
+      "name": "MX/Tab",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "controls",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "4JP-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "26J-0",
+      "name": "MX/Data Row",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-zh-evidence-return-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-full-row-evidence-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "74P-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "272-0",
+      "name": "MX/Freshness",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "metrics",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "4E3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-full-row-evidence-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "74P-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "27I-0",
+      "name": "MX/Data Row · Mobile",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-zh-evidence-return-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-full-row-evidence-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "74P-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "28D-0",
+      "name": "MX/Button",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-zh-evidence-return-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-full-row-evidence-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "74P-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "28Y-0",
+      "name": "MX/Decision Row",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0",
+        "board_id": "28Y-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "29H-0",
+      "name": "MX/Callout",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-dividend-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "72T-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-eps-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "70C-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "editorial-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "6JX-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "editorial-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "6NG-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-zh-evidence-return-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-full-row-evidence-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "74P-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2A7-0",
+      "name": "MX/State Panel",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "metrics",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "4E3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2BK-0",
+      "name": "MX/LENS Evidence",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-dividend-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "72T-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-eps-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "70C-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "foundations",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-3-0",
+          "board_id": "48W-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark-en-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-docked-1280",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8G2-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light-zh-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-zh-evidence-return-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-full-row-evidence-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "74P-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "width-1024-overlay",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "9EB-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "width-1600-docked",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "9K6-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "width-768-overlay",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "98N-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2BR-0",
+      "name": "MX/Verdict Hero",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0",
+        "board_id": "2BR-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2CM-0",
+      "name": "MX/Count Ladder",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0",
+        "board_id": "2CM-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2E3-0",
+      "name": "MX/Lifecycle Rail",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0",
+        "board_id": "2E3-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2GG-0",
+      "name": "MX/Detail Disclosure",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2GM-0",
+      "name": "MX/Verdict Hero · Mobile",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0",
+        "board_id": "2GM-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2HH-0",
+      "name": "MX/Count Ladder · Mobile",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0",
+        "board_id": "2HH-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2IY-0",
+      "name": "MX/Lifecycle Rail · Mobile",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0",
+        "board_id": "2IY-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2LB-0",
+      "name": "MX/Decision Row · Mobile",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0",
+        "board_id": "2LB-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2LX-0",
+      "name": "MX/Detail Disclosure · Mobile",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2M3-0",
+      "name": "MX/State Panel · Mobile",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "metrics",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "4E3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2NG-0",
+      "name": "MX/Callout · Mobile",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-dividend-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "72T-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-eps-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "70C-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "editorial-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "6JX-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "editorial-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "6NG-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-zh-evidence-return-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-full-row-evidence-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "74P-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2O6-0",
+      "name": "MX/Table Frame",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "editorial-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "6JX-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "editorial-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "6NG-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark-en-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light-zh-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2PH-0",
+      "name": "MX/Chart Frame",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "56L-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "company-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5HV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "grammar",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "4LC-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark-en-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "5VE-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "options-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "67V-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "2RE-0",
+      "name": "MX/Tier Gate",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "2S4-0",
+      "name": "Pattern · Material UI State Contract · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "2UE-0",
+      "name": "Pattern · Material UI State Contract · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "states-matrix",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "6Q3-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "2WO-0",
+      "name": "Pattern · Archetype Signature Devices · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "foundations",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-3-0",
+          "board_id": "48W-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "2YK-0",
+      "name": "Pattern · Archetype Signature Devices · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "foundations",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-3-0",
+          "board_id": "48W-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "30G-0",
+      "name": "Pattern · Mobile Decision Thread · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "company-eps-overlay-320",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "70C-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark-en-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "336-0",
+      "name": "Pattern · Mobile Decision Thread · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "macro-light-zh-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-zh-evidence-return-390",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "8N8-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "35W-0",
+      "name": "Pattern · Data, Chart & Access · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "grammar",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "4LC-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-dark",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4PO-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "39G-0",
+      "name": "Pattern · Data, Chart & Access · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "controls-variants",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "771-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "fault-compositions",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "905-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "grammar",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-5-0",
+          "board_id": "4LC-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "macro-light",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-6-0",
+          "board_id": "4YD-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "3D0-0",
+      "name": "Reference · Sector Breadth · Desktop · Dark",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-6-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-6-0",
+        "board_id": "3D0-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "3GU-0",
+      "name": "Reference · Sector Breadth · Desktop · Light",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-6-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-6-0",
+        "board_id": "3GU-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "3KO-0",
+      "name": "Reference · Sector Breadth · Mobile · Dark",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-6-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-6-0",
+        "board_id": "3KO-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "3NL-0",
+      "name": "Reference · Sector Breadth · Mobile · Light",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-6-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-6-0",
+        "board_id": "3NL-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "40D-1",
+      "name": "Reference · NOIR Profile Application",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-6-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-6-0",
+        "board_id": "40D-1"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-7-0",
+      "board_id": "3QI-0",
+      "name": "Utility · Material UI Migration Packet · Working Template",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-7-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-7-0",
+      "board_id": "3RX-0",
+      "name": "Utility · Archetype Starter Map · Dark",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-7-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "readme",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-9-0",
+          "board_id": "47Q-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-7-0",
+      "board_id": "3UP-0",
+      "name": "Utility · Archetype Starter Map · Light",
+      "disposition": "IMPROVE",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-7-0",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": null,
+      "candidate_companions": [
+        {
+          "board_key": "builder",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-7-0",
+          "board_id": "4NV-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        },
+        {
+          "board_key": "readme",
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-9-0",
+          "board_id": "47Q-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
+        }
+      ],
+      "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-8-1",
+      "board_id": "1-0",
+      "name": "SOURCE / Macro · 1440 · Dark EN · Sep 11 snapshot · import under review",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-8-1",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-8-1",
+        "board_id": "1-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    },
+    {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-8-1",
+      "board_id": "23O-0",
+      "name": "PENDING / public-browser PNG transfer · local witness preserved",
+      "disposition": "RETAIN",
+      "original_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-8-1",
+      "original_action": "RETAIN_IN_PLACE_NO_F02_MUTATION",
+      "retained_successor": {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-8-1",
+        "board_id": "23O-0"
+      },
+      "candidate_companions": [],
+      "scope": "Unchanged original reference; no new approval inferred",
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "f500b9a2a7046c09b46981fe195fb9ec006bde32f3853bd20b04eab55c7456e0",
+        "observed_at": "2026-11-05T00:06:34.121Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
+    }
+  ],
+  "boundary": "No deletion, relocation, replacement approval or domain requalification is claimed. IMPROVE is candidate intent; originals remain preserved."
+}

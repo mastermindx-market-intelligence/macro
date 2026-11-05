@@ -1,0 +1,1983 @@
+{
+  "schema": "f02.paper.clone-preparation.v1",
+  "status": "LOCAL_PREPARATION_NOT_APPLIED",
+  "fixture_version": "f02.fixture.v3",
+  "copy_spacing_revision": 1,
+  "responsive_alignment_revision": 2,
+  "source_input": "mobile-state-boards.json",
+  "source_input_sha256": "9dfeb781a0f7b579f3a7974def0a2fa8689fe3702a32462920c74a8fad93c4a9",
+  "supplement": "supplemental-boards.json",
+  "supplement_sha256": "c9a77c382cb7bf6e4c8a7656483087e4a16c89d5d8fd0b7ecbca1d4e3fd25729",
+  "historical_clone": "../../fixture-coherence-v1/effective-spaced/supplemental-wide-clone.json",
+  "historical_clone_sha256": "522dba06859cb98e349528d8cb197a8e63ba128e60e8ca070f3bd4d5448422d9",
+  "pair": {
+    "source_key": "macro-docked-1280",
+    "target_key": "width-1600-docked",
+    "source_board_name": "F02 · Macro with evidence dock · 1280 stress · Provisional shell",
+    "target_board_name": "F02 · 1600px width evaluation · 984px comparison + 320px dock",
+    "step_keys_equal": true,
+    "parents_equal": true,
+    "geometry_before": {
+      "viewport_width": 1280,
+      "rail": 224,
+      "header": 64,
+      "main_padding": 24,
+      "main_usable": 1008,
+      "dock": 320,
+      "gap": 24,
+      "primary": 664,
+      "primary_minimum": 640,
+      "shell_release": "PROVISIONAL; F01 joint freeze open"
+    },
+    "geometry_after": {
+      "viewport_width": 1600,
+      "rail": 224,
+      "header": 64,
+      "main_padding": 24,
+      "main_usable": 1328,
+      "dock": 320,
+      "gap": 24,
+      "primary": 984,
+      "primary_minimum": 640,
+      "shell_release": "PROVISIONAL; F01 joint freeze open",
+      "source_column_present": true,
+      "rows": 10
+    },
+    "board_style_changes": {},
+    "steps": [
+      {
+        "key": "artifact",
+        "parent": "board",
+        "structure_equal": true,
+        "source_html_sha256": "350f98131ef1bc1bfc2928dbb54a74cfece5b6155154f71b2d0981813db698af",
+        "target_html_sha256": "83a6ab0ab1733aa2ddec4a7ac3ea14695946a7aba3b5b6fd095492ce5a1999aa",
+        "source_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "target_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "element_changes": [
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "text": {
+              "before": "F02 / 1280 CSS px / PROVISIONAL F01 SHELL + F02 DOCK STRESS",
+              "after": "F02 / 1600 CSS px / PROVISIONAL F01 SHELL + F02 DOCK STRESS"
+            }
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "header",
+        "parent": "board",
+        "structure_equal": true,
+        "source_html_sha256": "03e8c123a6b00d34ae215e35a0741725067eb1d3ba01167c088c5e2ab5a86804",
+        "target_html_sha256": "e2ec2c64e8a39def26a083fe48bb9158dcbaa2646e3aa269f5482201eec40cec",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Global header",
+            "target_layer_name": "Global header",
+            "css_changes": {
+              "width": {
+                "before": "1280px",
+                "after": "1600px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "1600px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "workspace",
+        "parent": "board",
+        "structure_equal": true,
+        "source_html_sha256": "0ebab0cc758612bb467882394ff5e1b9b7a1d01efb49b2a78a4fd2b0f9be6001",
+        "target_html_sha256": "930f07a294da5ce5b7056cf04e748c63d9146b8226fc801307d917a8d0becfc2",
+        "source_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "target_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Shell and main area",
+            "target_layer_name": "Shell and main area",
+            "css_changes": {
+              "width": {
+                "before": "1280px",
+                "after": "1600px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "1600px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "rail",
+        "parent": "workspace",
+        "structure_equal": true,
+        "source_html_sha256": "a1e5a79aa95e52a395604d910eb01f1bedebcd129ea3fbd5bd3416d7d96bff39",
+        "target_html_sha256": "a1e5a79aa95e52a395604d910eb01f1bedebcd129ea3fbd5bd3416d7d96bff39",
+        "source_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "target_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "rail-label",
+        "parent": "rail",
+        "structure_equal": true,
+        "source_html_sha256": "b5c1ea7296cb75c090b891c1243431ca266469148d56728ec06a59abea87c92d",
+        "target_html_sha256": "b5c1ea7296cb75c090b891c1243431ca266469148d56728ec06a59abea87c92d",
+        "source_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "target_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "nav-0",
+        "parent": "rail",
+        "structure_equal": true,
+        "source_html_sha256": "9d88d68b9732f47bba5a5a87fc023aa2429aaac55aab4afc19aa0d8ada2e5f11",
+        "target_html_sha256": "9d88d68b9732f47bba5a5a87fc023aa2429aaac55aab4afc19aa0d8ada2e5f11",
+        "source_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "target_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "nav-1",
+        "parent": "rail",
+        "structure_equal": true,
+        "source_html_sha256": "1e836a4a38710837d49fba53f87bd987271f43c5d3850ed040f0336bedb2030d",
+        "target_html_sha256": "1e836a4a38710837d49fba53f87bd987271f43c5d3850ed040f0336bedb2030d",
+        "source_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "target_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "nav-2",
+        "parent": "rail",
+        "structure_equal": true,
+        "source_html_sha256": "bb6a5653ce22b27ee524a3f7976b08577b82ec23c8617afe04ca3b0fa433ace3",
+        "target_html_sha256": "bb6a5653ce22b27ee524a3f7976b08577b82ec23c8617afe04ca3b0fa433ace3",
+        "source_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "target_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "nav-3",
+        "parent": "rail",
+        "structure_equal": true,
+        "source_html_sha256": "bd3da65f6b70250329f656ec1d514882eb6308e9f51f811eb4ab6388de14027a",
+        "target_html_sha256": "bd3da65f6b70250329f656ec1d514882eb6308e9f51f811eb4ab6388de14027a",
+        "source_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "target_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "nav-4",
+        "parent": "rail",
+        "structure_equal": true,
+        "source_html_sha256": "47e4e42f2c58844f91399d198ae99d8c045cf60a95ab370fb3fe65a9131e50da",
+        "target_html_sha256": "47e4e42f2c58844f91399d198ae99d8c045cf60a95ab370fb3fe65a9131e50da",
+        "source_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "target_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "nav-5",
+        "parent": "rail",
+        "structure_equal": true,
+        "source_html_sha256": "40c0e9f29d976c1d1d2198e7b210944949aaee127b1ccced5cbed5fd6a0089ef",
+        "target_html_sha256": "40c0e9f29d976c1d1d2198e7b210944949aaee127b1ccced5cbed5fd6a0089ef",
+        "source_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "target_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "rail-note",
+        "parent": "rail",
+        "structure_equal": true,
+        "source_html_sha256": "753ceb260891b59dc0f6e256296e39f45784b0d7cbd53ccd5606546337c6205f",
+        "target_html_sha256": "753ceb260891b59dc0f6e256296e39f45784b0d7cbd53ccd5606546337c6205f",
+        "source_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "target_structure_sha256": "7fbd4523b0fe548844674366f8a3cc73ae009b05dd05af83e8b2cb0398e26291",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "main",
+        "parent": "workspace",
+        "structure_equal": true,
+        "source_html_sha256": "8e5bfa27469139ade3b08517061d355fa22517009b9bb64428197cb444e41fe6",
+        "target_html_sha256": "67ac573af137855d618ea5421f62aac82c654c23874f2e4ab1522db295a4534f",
+        "source_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "target_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "1008px usable content",
+            "target_layer_name": "1008px usable content",
+            "css_changes": {
+              "width": {
+                "before": "1056px",
+                "after": "1376px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "1376px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "title",
+        "parent": "main",
+        "structure_equal": true,
+        "source_html_sha256": "7ccdc37bfc04e2e49c8774f6cce8f82198425d1ca064969bcf06977e1909cbef",
+        "target_html_sha256": "3dada78725598057bed8057a2c8287ccdd15c157aed70aabccc4b7584ec368b0",
+        "source_structure_sha256": "bbeae6789d0b9549350cf7f1466424ac4144d3e15c679587e85efca30d83d76c",
+        "target_structure_sha256": "bbeae6789d0b9549350cf7f1466424ac4144d3e15c679587e85efca30d83d76c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Market breadth heading",
+            "target_layer_name": "Market breadth heading",
+            "css_changes": {
+              "width": {
+                "before": "1008px",
+                "after": "1328px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "1328px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "split",
+        "parent": "main",
+        "structure_equal": true,
+        "source_html_sha256": "1d3030a0129d9ab86618cc2dde5bbf1afdb14d6926fe3f47ee3d88bd1fc0ecac",
+        "target_html_sha256": "753e1d14f17fedd5b0442966a05f0d7f40d362d1ba72419a9c13a4d9db4c124b",
+        "source_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "target_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Primary comparison and dock",
+            "target_layer_name": "Primary comparison and dock",
+            "css_changes": {
+              "width": {
+                "before": "1008px",
+                "after": "1328px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "1328px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "primary",
+        "parent": "split",
+        "structure_equal": true,
+        "source_html_sha256": "686179a5fd7592d09a74e9bd5e9e21c0ff4fb3e427325aa6e2295fd0185e32f6",
+        "target_html_sha256": "beea9e71954749e413d7bcda71ac1a9fc04aefca415f288416935c135e83cd14",
+        "source_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "target_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "664px comparison area",
+            "target_layer_name": "664px comparison area",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock",
+        "parent": "split",
+        "structure_equal": true,
+        "source_html_sha256": "12fa07911068732f6f589d820af8cc4b5516b7b6c41c6441b8eb3bdfb6f0a69c",
+        "target_html_sha256": "12fa07911068732f6f589d820af8cc4b5516b7b6c41c6441b8eb3bdfb6f0a69c",
+        "source_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "target_structure_sha256": "d5b4e9fec254720fd996ce45c9a16c68a545df2277149f5a324f44252f591003",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "comparison-heading",
+        "parent": "primary",
+        "structure_equal": true,
+        "source_html_sha256": "c925a4a9838cf138393bcb76c955aebe5ea4e47cf6415496858a162e3ab29bbf",
+        "target_html_sha256": "7a6ee12e0474800ae2be5d1ed9f129e9b046f21b4e79c937a3bab1ad6deee974",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Comparison context",
+            "target_layer_name": "Comparison context",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "table",
+        "parent": "primary",
+        "structure_equal": true,
+        "source_html_sha256": "eb3e25284502de2c65014c02adcbf2c58c55df2dbd9b31650c1f44d9234e53dd",
+        "target_html_sha256": "34e9d51e46275c69c40031ece5e7fc610379fb90c46e759c3ec74d7b60bf0751",
+        "source_structure_sha256": "03fa0ee5741d4f0524617166fbb73a3dfc18e5285e526b2178b8e33babe2a075",
+        "target_structure_sha256": "03fa0ee5741d4f0524617166fbb73a3dfc18e5285e526b2178b8e33babe2a075",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Dense sector comparison",
+            "target_layer_name": "Dense sector comparison",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": "Column headings",
+            "target_layer_name": "Column headings",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-0",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "39e827a8acb8bc92f1843c24bd8a2c6a042bcdf2daf13000ef072823cf8f0f99",
+        "target_html_sha256": "06b83b6ab6e306693057c3d76a8a1f52c2aa32f28af62f659737c167d7e9813d",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Technology",
+            "target_layer_name": "Sector Technology",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-1",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "fc7bbf1390bd9f2c216efc293ae7139bc50050a3b11b80c4f442b1e003b2f56a",
+        "target_html_sha256": "9e2eefe1d66558d772c6f4b6005d241629d82463eba3dbd256c48ece1f121d75",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Industrials",
+            "target_layer_name": "Sector Industrials",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-2",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "335ae9d4a3af131c87dddd200ece504b253eafae436f449a74bc4869c50ee6c4",
+        "target_html_sha256": "775223beed01a1827247031d3b50ae1a18a5e49f12ed7d3324616ebaf1fbd498",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Financials",
+            "target_layer_name": "Sector Financials",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-3",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "cf27ba3709ebc789b9e0d3184880655bcb91fa2cc69e9dc03a35a809b9f50994",
+        "target_html_sha256": "43e908fb0e58c5cbc6ebb77a87b767343b5299aa745549439df02306d9808ca1",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Communication services",
+            "target_layer_name": "Sector Communication services",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-4",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "fc4546f4df6e3724e6281136a2eb7c08eba00c75b35a530454d938929a4f3bfa",
+        "target_html_sha256": "6e918e1a3b9d1a800aa1b138946369cd9d43eb89912e7c5d7946bf3bf9a0ccc0",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Consumer discretionary",
+            "target_layer_name": "Sector Consumer discretionary",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-5",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "7013acfa0a833eafa4c83e4f6464d602fbdbe42a91c830020ed89a3ba5a6c9a5",
+        "target_html_sha256": "e7cd7e1b372bc416dfd4288ddbbd186ded36abf249d0734118299d6f56e64217",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Health care",
+            "target_layer_name": "Sector Health care",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-6",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "df34c9144fc3fc38f80a9454db59696af19d54eff82376ff9aa51e6c632edad7",
+        "target_html_sha256": "cf36cedf903e9cb3d8308d3200bbdfbc72899b0736b6fb44b279348dc4529d8c",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Utilities",
+            "target_layer_name": "Sector Utilities",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-8",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "f57c97550202136b2f76bd816136fa11a3a62cd9fd60b664f3394aecd7510b32",
+        "target_html_sha256": "8b890f691391c3666859f5bc9d45713426ac9e231df094a6887a70007238d675",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Consumer staples",
+            "target_layer_name": "Sector Consumer staples",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-9",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "bc51fc16004fcbbb8dbe9fd0cf3f4348f0c4db64f55f8fcbce3c1fda5edbc7d7",
+        "target_html_sha256": "b787018ab6d5dbb857094a234111fecbda0fb5a8fea6a7e03d02436bcf52500c",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Materials",
+            "target_layer_name": "Sector Materials",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "sector-7",
+        "parent": "table",
+        "structure_equal": true,
+        "source_html_sha256": "9b46fc9b776ca008dc533b4bb65263389c95c9de59b5c72fec3f0a2878b46028",
+        "target_html_sha256": "cfded1ec6d2859ccdcf031f4de0868b377392b2b9e07a5e8f96ae29fde26f99b",
+        "source_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "target_structure_sha256": "041eafda67a3d6ba789a8c0c4f9886910b807b08f0a959c5bb853b470df3298c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Sector Energy",
+            "target_layer_name": "Sector Energy",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "228px",
+                "after": "428px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "428px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "104px",
+                "after": "144px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "144px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "92px",
+                "after": "116px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "116px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[3]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "width": {
+                "before": "128px",
+                "after": "184px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "184px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "history-heading",
+        "parent": "primary",
+        "structure_equal": true,
+        "source_html_sha256": "91836b7e54cae04430d0f07c6168bb0b4b0ec15fe41fa9bb4989174aad49c301",
+        "target_html_sha256": "b0527ca12c0b7894a476728e5816264b6ad4346dc6cfeeb61e928be0151032ff",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Supporting history",
+            "target_layer_name": "Supporting history",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "chart",
+        "parent": "primary",
+        "structure_equal": true,
+        "source_html_sha256": "218dff6a852402ddaa20e47b6291a9dc5b317e236c2cc9cc7bf64f6946042980",
+        "target_html_sha256": "faef4802300b448b37ba5f33b875796317638e76b7243d9888484b7588b88ead",
+        "source_structure_sha256": "577c522f4c1f1efb0d5af78bd78e605516da1f7fa814bfbc567d67c2f07b72b0",
+        "target_structure_sha256": "577c522f4c1f1efb0d5af78bd78e605516da1f7fa814bfbc567d67c2f07b72b0",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Eight sessions with an explicit gap",
+            "target_layer_name": "Eight sessions with an explicit gap",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/svg[0]",
+            "tag": "svg",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "viewbox": {
+                "before": "0 0 664 200",
+                "after": "0 0 984 200"
+              },
+              "width": {
+                "before": "664",
+                "after": "984"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/line[0]",
+            "tag": "line",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "x2": {
+                "before": "644",
+                "after": "964"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/line[1]",
+            "tag": "line",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "x2": {
+                "before": "644",
+                "after": "964"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/line[2]",
+            "tag": "line",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "x2": {
+                "before": "644",
+                "after": "964"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/line[4]",
+            "tag": "line",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "x2": {
+                "before": "129.714286",
+                "after": "175.428571"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/circle[5]",
+            "tag": "circle",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "cx": {
+                "before": "129.714286",
+                "after": "175.428571"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/circle[6]",
+            "tag": "circle",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "cx": {
+                "before": "301.142857",
+                "after": "438.285714"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/line[7]",
+            "tag": "line",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "x1": {
+                "before": "301.142857",
+                "after": "438.285714"
+              },
+              "x2": {
+                "before": "386.857143",
+                "after": "569.714286"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/circle[8]",
+            "tag": "circle",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "cx": {
+                "before": "386.857143",
+                "after": "569.714286"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/line[9]",
+            "tag": "line",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "x1": {
+                "before": "386.857143",
+                "after": "569.714286"
+              },
+              "x2": {
+                "before": "472.571429",
+                "after": "701.142857"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/circle[10]",
+            "tag": "circle",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "cx": {
+                "before": "472.571429",
+                "after": "701.142857"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/line[11]",
+            "tag": "line",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "x1": {
+                "before": "472.571429",
+                "after": "701.142857"
+              },
+              "x2": {
+                "before": "558.285714",
+                "after": "832.571429"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/circle[12]",
+            "tag": "circle",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "cx": {
+                "before": "558.285714",
+                "after": "832.571429"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/line[13]",
+            "tag": "line",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "x1": {
+                "before": "558.285714",
+                "after": "832.571429"
+              },
+              "x2": {
+                "before": "644.000000",
+                "after": "964.000000"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/svg[0]/circle[14]",
+            "tag": "circle",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "attribute_changes": {
+              "cx": {
+                "before": "644.000000",
+                "after": "964.000000"
+              }
+            },
+            "vector_note": "SVG presentation attributes are not assumed to be exposed native style properties. Resolve actual editable vector nodes before styling, or replace only the observed mapped SVG subtree with the exact target SVG."
+          },
+          {
+            "path": "div[0]/div[5]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "left": {
+                "before": "195.42857142857142px",
+                "after": "286.85714285714283px"
+              }
+            },
+            "candidate_update_styles": {
+              "left": "286.85714285714283px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[6]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "left": {
+                "before": "366.85714285714283px",
+                "after": "549.7142857142857px"
+              }
+            },
+            "candidate_update_styles": {
+              "left": "549.7142857142857px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[7]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "left": {
+                "before": "624.0px",
+                "after": "944.0px"
+              }
+            },
+            "candidate_update_styles": {
+              "left": "944.0px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[8]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "css_changes": {
+              "left": {
+                "before": "186.42857142857142px",
+                "after": "277.85714285714283px"
+              }
+            },
+            "candidate_update_styles": {
+              "left": "277.85714285714283px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": [
+          {
+            "path": "div[0]/svg[0]",
+            "source_svg_html": "<svg width=\"664\" height=\"200\" viewBox=\"0 0 664 200\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"44\" x2=\"644\" y1=\"20\" y2=\"20\" stroke=\"#343434\"/><line x1=\"44\" x2=\"644\" y1=\"90\" y2=\"90\" stroke=\"#343434\"/><line x1=\"44\" x2=\"644\" y1=\"160\" y2=\"160\" stroke=\"#343434\"/><circle cx=\"44.000000\" cy=\"83.678269\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"44.000000\" y1=\"83.678269\" x2=\"129.714286\" y2=\"81.702728\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"129.714286\" cy=\"81.702728\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><circle cx=\"301.142857\" cy=\"76.434619\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"301.142857\" y1=\"76.434619\" x2=\"386.857143\" y2=\"78.410160\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"386.857143\" cy=\"78.410160\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"386.857143\" y1=\"78.410160\" x2=\"472.571429\" y2=\"73.800564\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"472.571429\" cy=\"73.800564\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"472.571429\" y1=\"73.800564\" x2=\"558.285714\" y2=\"70.507996\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"558.285714\" cy=\"70.507996\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"558.285714\" y1=\"70.507996\" x2=\"644.000000\" y2=\"66.556914\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"644.000000\" cy=\"66.556914\" r=\"3.5\" fill=\"var(--noir-champagne)\"/></svg>",
+            "target_svg_html": "<svg width=\"984\" height=\"200\" viewBox=\"0 0 984 200\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"44\" x2=\"964\" y1=\"20\" y2=\"20\" stroke=\"#343434\"/><line x1=\"44\" x2=\"964\" y1=\"90\" y2=\"90\" stroke=\"#343434\"/><line x1=\"44\" x2=\"964\" y1=\"160\" y2=\"160\" stroke=\"#343434\"/><circle cx=\"44.000000\" cy=\"83.678269\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"44.000000\" y1=\"83.678269\" x2=\"175.428571\" y2=\"81.702728\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"175.428571\" cy=\"81.702728\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><circle cx=\"438.285714\" cy=\"76.434619\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"438.285714\" y1=\"76.434619\" x2=\"569.714286\" y2=\"78.410160\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"569.714286\" cy=\"78.410160\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"569.714286\" y1=\"78.410160\" x2=\"701.142857\" y2=\"73.800564\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"701.142857\" cy=\"73.800564\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"701.142857\" y1=\"73.800564\" x2=\"832.571429\" y2=\"70.507996\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"832.571429\" cy=\"70.507996\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"832.571429\" y1=\"70.507996\" x2=\"964.000000\" y2=\"66.556914\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"964.000000\" cy=\"66.556914\" r=\"3.5\" fill=\"var(--noir-champagne)\"/></svg>",
+            "source_svg_sha256": "bf550629a99fe0a1b9f7bc38b89f2d8e2b6379b993c5189ed584ba801dda2774",
+            "target_svg_sha256": "573f85179fa6624282e9cb482ae17e2e698fc2114f7aae230b15bf065a0b9e18",
+            "permitted_local_preparation_only": true,
+            "apply_requires": "Observed destination native SVG/vector node identity and existing root writer authority; never replace an inferred sibling or whole board."
+          }
+        ]
+      },
+      {
+        "key": "chart-footer",
+        "parent": "primary",
+        "structure_equal": true,
+        "source_html_sha256": "ca3d04e4fecd8e3877c1b210f121d252949a6206704c75cc988436f52dcd26f8",
+        "target_html_sha256": "e708b2875b31ee1c840c53883f1fb88c4a2adbc6211599164eb464e0feea9e28",
+        "source_structure_sha256": "a21f5d1c492ba906407a253d1366bf77ac5fd02a41c5cbc1f4924deaa6eb1cdf",
+        "target_structure_sha256": "a21f5d1c492ba906407a253d1366bf77ac5fd02a41c5cbc1f4924deaa6eb1cdf",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Exact-value action and history scope",
+            "target_layer_name": "Exact-value action and history scope",
+            "css_changes": {
+              "width": {
+                "before": "664px",
+                "after": "984px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "984px"
+            },
+            "requires_style_reset": []
+          }
+        ],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-heading",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "c571f70ea862b8b51c2f742d1c322b52dd1f000f8815fbb17eb97d885fec59ba",
+        "target_html_sha256": "c571f70ea862b8b51c2f742d1c322b52dd1f000f8815fbb17eb97d885fec59ba",
+        "source_structure_sha256": "b5aa4586fc55a7981b5fdf4d80a13f12ba71fe36efac50a636dc6a783b7601c2",
+        "target_structure_sha256": "b5aa4586fc55a7981b5fdf4d80a13f12ba71fe36efac50a636dc6a783b7601c2",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-entity",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "486bcea02977d0af5b02099563bfc5e9319a0814c358a7a20234b29b62211d53",
+        "target_html_sha256": "486bcea02977d0af5b02099563bfc5e9319a0814c358a7a20234b29b62211d53",
+        "source_structure_sha256": "bbeae6789d0b9549350cf7f1466424ac4144d3e15c679587e85efca30d83d76c",
+        "target_structure_sha256": "bbeae6789d0b9549350cf7f1466424ac4144d3e15c679587e85efca30d83d76c",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-value",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "4e112ef16176b2de0a2cf946bdb776c3095ce7187f2c009d29e4f0b1599c9515",
+        "target_html_sha256": "4e112ef16176b2de0a2cf946bdb776c3095ce7187f2c009d29e4f0b1599c9515",
+        "source_structure_sha256": "bbeae6789d0b9549350cf7f1466424ac4144d3e15c679587e85efca30d83d76c",
+        "target_structure_sha256": "bbeae6789d0b9549350cf7f1466424ac4144d3e15c679587e85efca30d83d76c",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-source-0",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "b23457397d7d37acc326955312aecc567c93e35463b6ac7cb6e4db014756df2f",
+        "target_html_sha256": "b23457397d7d37acc326955312aecc567c93e35463b6ac7cb6e4db014756df2f",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-source-1",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "bd4d3315aadad76681467497d2250032141dc0c52be24188a7a1128a0b9a2ba3",
+        "target_html_sha256": "bd4d3315aadad76681467497d2250032141dc0c52be24188a7a1128a0b9a2ba3",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-source-2",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "c4a5b9fc91da57a7dd47408cb6793a69e2ea2690719cffc5a3514be2535c193a",
+        "target_html_sha256": "c4a5b9fc91da57a7dd47408cb6793a69e2ea2690719cffc5a3514be2535c193a",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-source-3",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "bf9039f00d58731a133de0681812070aed3af8d44bd80012b10f276bd563d862",
+        "target_html_sha256": "bf9039f00d58731a133de0681812070aed3af8d44bd80012b10f276bd563d862",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-source-4",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "3dc36ce38397356843f45156126c5a076fdec35dd1a1141a573f17d3b9c6a909",
+        "target_html_sha256": "3dc36ce38397356843f45156126c5a076fdec35dd1a1141a573f17d3b9c6a909",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-footer",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "ffcede3665abd9094f9e8b186e70e32b1ab3acdccd0975f1f28c59e7229c92d0",
+        "target_html_sha256": "ffcede3665abd9094f9e8b186e70e32b1ab3acdccd0975f1f28c59e7229c92d0",
+        "source_structure_sha256": "b5aa4586fc55a7981b5fdf4d80a13f12ba71fe36efac50a636dc6a783b7601c2",
+        "target_structure_sha256": "b5aa4586fc55a7981b5fdf4d80a13f12ba71fe36efac50a636dc6a783b7601c2",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "dock-contract",
+        "parent": "dock",
+        "structure_equal": true,
+        "source_html_sha256": "87555dd3724743ced1cbe83777753857fd5beddfe02e8acc26907977fa7d9697",
+        "target_html_sha256": "87555dd3724743ced1cbe83777753857fd5beddfe02e8acc26907977fa7d9697",
+        "source_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "target_structure_sha256": "140a7522902261a149cf0e49ef354728ecc05383bd66ef8fe64d7d9ba6a20a77",
+        "element_changes": [],
+        "vector_subtrees": []
+      },
+      {
+        "key": "width-contract",
+        "parent": "main",
+        "structure_equal": true,
+        "source_html_sha256": "4322118df5f33027199eb53f262729b0a7ba24f5b052ef7bfdf47b9a2968011a",
+        "target_html_sha256": "e9535cdf47b88e45551e8d86c6bcff53697651f6aab36908373d345b9a6ac78a",
+        "source_structure_sha256": "bbeae6789d0b9549350cf7f1466424ac4144d3e15c679587e85efca30d83d76c",
+        "target_structure_sha256": "bbeae6789d0b9549350cf7f1466424ac4144d3e15c679587e85efca30d83d76c",
+        "element_changes": [
+          {
+            "path": "div[0]",
+            "tag": "div",
+            "source_layer_name": "Provisional width acceptance",
+            "target_layer_name": "Provisional width acceptance",
+            "css_changes": {
+              "width": {
+                "before": "1008px",
+                "after": "1328px"
+              }
+            },
+            "candidate_update_styles": {
+              "width": "1328px"
+            },
+            "requires_style_reset": []
+          },
+          {
+            "path": "div[0]/div[0]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "text": {
+              "before": "1280 − 224 rail − 48 padding = 1008px usable",
+              "after": "1600 − 224 rail − 48 padding = 1328px usable"
+            }
+          },
+          {
+            "path": "div[0]/div[1]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "text": {
+              "before": "1008 − 320 dock − 24 gap = 664px primary; exceeds the candidate 640px minimum.",
+              "after": "1328 − 320 dock − 24 gap = 984px primary; exceeds the candidate 640px minimum."
+            }
+          },
+          {
+            "path": "div[0]/div[2]",
+            "tag": "div",
+            "source_layer_name": null,
+            "target_layer_name": null,
+            "text": {
+              "before": "Below the minimum, use the single evidence overlay; do not automatically collapse F01’s navigation. F01 joint release and real browser/keyboard/400% proof remain open.",
+              "after": "Same data, five table fields and exact source access. F01 joint release and real browser/keyboard/400% proof remain open."
+            }
+          }
+        ],
+        "vector_subtrees": []
+      }
+    ],
+    "structural_exceptions": [],
+    "binding_rule": "HTML paths are descriptive anchors only. Resolve source native node IDs from observed JSX/tree; verify expected old text/styles; use the original duplicate_nodes descendantIdMap to select destination IDs. Never invent IDs or map solely by array position.",
+    "summary": {
+      "elements": 180,
+      "text_changes": 4,
+      "style_targets": 71,
+      "style_properties": 71,
+      "layer_renames": 0,
+      "svg_attribute_targets": 15,
+      "svg_attribute_changes": 20,
+      "vector_subtrees": 1,
+      "unchanged_steps": 20
+    },
+    "input_structure_equivalent": true,
+    "has_declared_geometry_style_changes": true,
+    "font_family_change_count": 0,
+    "board_dimension_changes": {
+      "width": {
+        "before": 1280,
+        "after": 1600
+      }
+    },
+    "layout_exceptions": [
+      "Only a freshly read native 1280 source matching the effective v3/alignment inputs can be a clone source. The local plan establishes no native mapping or edit permission.",
+      "Primary grows from 664px to 984px; the 320px dock and 24px gap stay fixed. Apply the declared 320px artboard-width increase and all 71 native width/style targets.",
+      "The chart has 20 SVG geometry-attribute changes across one subtree. Resolve actual editable vector nodes or replace only that observed mapped chart subtree with its exact target SVG.",
+      "Preserve numeric end alignment in both widths. A later native source repair requires a bounded new comparison, not reuse of stale source HTML hashes.",
+      "Actual descendantIdMap, source readback, final content fit and screenshot/JSX evidence remain required. F01 joint release and browser interaction proof remain separate.",
+      "Conditional-focus text at dock-contract is changed in both source and target. These exact new packet/step hashes supersede the old clone plan only for this composed source. Native source/descendant mapping and visual review remain required."
+    ]
+  },
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "native_id_binding": "UNOBSERVED_IN_THIS_PREPARATION",
+  "focus_ownership_revision": 1,
+  "pre_focus_clone": "../../responsive-effective-v2/effective/supplemental-wide-clone.json",
+  "pre_focus_clone_sha256": "1e2c04eaeec47360da8fefa292c72decb2a94ae6ee184ae4e87f7c6b191dfc2b"
+}

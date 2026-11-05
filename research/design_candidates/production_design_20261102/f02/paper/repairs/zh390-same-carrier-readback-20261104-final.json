@@ -1,0 +1,30 @@
+{
+  "schema": "f02.effect-reconciliation-observation.v1",
+  "observed_at": "2026-11-04T01:14:22.984Z",
+  "source_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "original_operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "board_id": "7IS-0",
+  "body_id": "7J4-0",
+  "tool_carrier": "Mastermind Paper direct",
+  "readback": {
+    "state": "OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"children\": [\n    {\n      \"id\": \"7J6-0\",\n      \"name\": \"Market breadth question and source\",\n      \"component\": \"Frame\",\n      \"childCount\": 3,\n      \"worldX\": 5306,\n      \"worldY\": -2189,\n      \"x\": 16,\n      \"y\": 0\n    },\n    {\n      \"id\": \"7JE-0\",\n      \"name\": \"Participation with coverage and comparator\",\n      \"component\": \"Frame\",\n      \"childCount\": 3,\n      \"worldX\": 5306,\n      \"worldY\": -2081,\n      \"x\": 16,\n      \"y\": 108\n    },\n    {\n      \"id\": \"7JL-0\",\n      \"name\": \"Sector comparison toolbar\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": 5306,\n      \"worldY\": -2009,\n      \"x\": 16,\n      \"y\": 180\n    },\n    {\n      \"id\": \"7JQ-0\",\n      \"name\": \"Pre-table local overflow cue\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": 5306,\n      \"worldY\": -1965,\n      \"x\": 16,\n      \"y\": 224\n    },\n    {\n      \"id\": \"7JT-0\",\n      \"name\": \"Named sector comparison scroll region\",\n      \"component\": \"Frame\",\n      \"childCount\": 11,\n      \"worldX\": 5306,\n      \"worldY\": -1946,\n      \"x\": 16,\n      \"y\": 243\n    },\n    {\n      \"id\": \"7NQ-0\",\n      \"name\": \"Table coverage reminder\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": 5306,\n      \"worldY\": -1350,\n      \"x\": 16,\n      \"y\": 839\n    },\n    {\n      \"id\": \"7NT-0\",\n      \"name\": \"Supporting history heading\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": 5306,\n      \"worldY\": -1310,\n      \"x\": 16,\n      \"y\": 879\n    },\n    {\n      \"id\": \"7NX-0\",\n      \"name\": \"Eight sessions with an explicit gap\",\n      \"component\": \"Frame\",\n      \"childCount\": 9,\n      \"worldX\": 5306,\n      \"worldY\": -1264,\n      \"x\": 16,\n      \"y\": 925\n    }\n  ],\n  \"count\": 8\n}"
+        }
+      ]
+    }
+  },
+  "conclusion": "EFFECT_UNKNOWN; body has eight children ending at 7NX-0. No footer observed; this does not prove terminal failure.",
+  "no_replay": true,
+  "no_replacement": true,
+  "no_reroute": true,
+  "next_gate": "Original carrier terminal response or canonical effect reconciliation for the original operation. Current receiver retains recovery ownership."
+}

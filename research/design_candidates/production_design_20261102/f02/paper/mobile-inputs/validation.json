@@ -1,0 +1,44 @@
+{
+  "status": "PASS_SOURCE_STRUCTURE_ONLY",
+  "boards": 6,
+  "steps": 171,
+  "checks": [
+    {
+      "board": "states-matrix",
+      "steps": 40,
+      "native_single_roots": true,
+      "parent_order_valid": true
+    },
+    {
+      "board": "macro-dark-en-390",
+      "steps": 23,
+      "native_single_roots": true,
+      "parent_order_valid": true
+    },
+    {
+      "board": "macro-light-zh-390",
+      "steps": 23,
+      "native_single_roots": true,
+      "parent_order_valid": true
+    },
+    {
+      "board": "company-eps-overlay-320",
+      "steps": 21,
+      "native_single_roots": true,
+      "parent_order_valid": true
+    },
+    {
+      "board": "company-dividend-overlay-320",
+      "steps": 21,
+      "native_single_roots": true,
+      "parent_order_valid": true
+    },
+    {
+      "board": "macro-docked-1280",
+      "steps": 43,
+      "native_single_roots": true,
+      "parent_order_valid": true
+    }
+  ],
+  "browser_or_paper_rendered": false
+}

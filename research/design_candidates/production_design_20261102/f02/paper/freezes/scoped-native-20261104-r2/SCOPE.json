@@ -1,0 +1,196 @@
+{
+  "schema": "f02.scoped-native-review.v1",
+  "observed_at": "2026-11-04T02:01:41.491946+00:00",
+  "paper_file": "01M312VSDSZFVT45674GDVJVZN",
+  "full_board_count": 31,
+  "full_boards": [
+    {
+      "key": "readme",
+      "id": "47Q-0",
+      "page": "p-9-0"
+    },
+    {
+      "key": "foundations",
+      "id": "48W-0",
+      "page": "p-3-0"
+    },
+    {
+      "key": "metrics",
+      "id": "4E3-0",
+      "page": "p-4-0"
+    },
+    {
+      "key": "metrics-light",
+      "id": "4H1-0",
+      "page": "p-4-0"
+    },
+    {
+      "key": "controls",
+      "id": "4JP-0",
+      "page": "p-4-0"
+    },
+    {
+      "key": "grammar",
+      "id": "4LC-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "builder",
+      "id": "4NV-0",
+      "page": "p-7-0"
+    },
+    {
+      "key": "macro-dark",
+      "id": "4PO-0",
+      "page": "p-6-0"
+    },
+    {
+      "key": "macro-light",
+      "id": "4YD-0",
+      "page": "p-6-0"
+    },
+    {
+      "key": "company-dark",
+      "id": "56L-0",
+      "page": "p-6-0"
+    },
+    {
+      "key": "company-light",
+      "id": "5HV-0",
+      "page": "p-6-0"
+    },
+    {
+      "key": "options-dark",
+      "id": "5VE-0",
+      "page": "p-6-0"
+    },
+    {
+      "key": "options-light",
+      "id": "67V-0",
+      "page": "p-6-0"
+    },
+    {
+      "key": "editorial-dark",
+      "id": "6JX-0",
+      "page": "p-6-0"
+    },
+    {
+      "key": "editorial-light",
+      "id": "6NG-0",
+      "page": "p-6-0"
+    },
+    {
+      "key": "states-matrix",
+      "id": "6Q3-0",
+      "page": "p-4-0"
+    },
+    {
+      "key": "company-eps-overlay-320",
+      "id": "70C-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "company-dividend-overlay-320",
+      "id": "72T-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "options-full-row-evidence-320",
+      "id": "74P-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "controls-variants",
+      "id": "771-0",
+      "page": "p-4-0"
+    },
+    {
+      "key": "macro-dark-en-390",
+      "id": "7CM-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "macro-docked-1280",
+      "id": "8G2-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "macro-zh-evidence-return-390",
+      "id": "8N8-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "company-fy2025-eps-evidence-390",
+      "id": "8PF-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "editorial-calculation-evidence-390",
+      "id": "8R5-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "editorial-reading-390",
+      "id": "8TF-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "density-40-52-comparison",
+      "id": "8W7-0",
+      "page": "p-4-0"
+    },
+    {
+      "key": "fault-compositions",
+      "id": "905-0",
+      "page": "p-4-0"
+    },
+    {
+      "key": "width-768-overlay",
+      "id": "98N-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "width-1024-overlay",
+      "id": "9EB-0",
+      "page": "p-5-0"
+    },
+    {
+      "key": "width-1600-docked",
+      "id": "9K6-0",
+      "page": "p-5-0"
+    }
+  ],
+  "supplementary_captures": [
+    "width-768-overlay--comparison",
+    "width-1024-overlay--comparison",
+    "fault-compositions--retained-context",
+    "fault-compositions--combined-saved",
+    "fault-compositions--unavailable-chart-context",
+    "fault-compositions--unavailable-inspector-context",
+    "states-matrix--source-unavailable",
+    "states-matrix--access-service"
+  ],
+  "excluded": [
+    {
+      "key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "reason": "Original Paper effect unresolved; no complete repaired reference/capture."
+    }
+  ],
+  "full_v1_qualified": false,
+  "browser_proof": "NOT_RUN",
+  "review_class": "Independent native C3 advisory; formal RIG remains separate",
+  "review_phase": "affected second pass after two independent frozen first passes",
+  "preceding_input_commit": "6b72172aec810aa7795e5a50d4be9ca2dde5cf5b",
+  "preceding_aggregate_sha256": "f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445",
+  "changed_board_keys": [
+    "company-dark",
+    "company-light",
+    "controls",
+    "readme"
+  ],
+  "unchanged_full_board_pairs": 27,
+  "operations_through": 644,
+  "confirmed_applied": 643,
+  "unresolved_operations": 1
+}

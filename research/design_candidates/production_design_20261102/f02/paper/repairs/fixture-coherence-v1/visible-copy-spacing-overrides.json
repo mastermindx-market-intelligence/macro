@@ -1,0 +1,298 @@
+{
+  "schema": "f02.fixture-visible-spacing-override.v1",
+  "status": "PREPARED_NOT_APPLIED",
+  "packets": [
+    {
+      "base_packet": "effective/consumer-boards.json",
+      "base_sha256": "4b696e9980544ba344643214a264754c226411c064024d82be06d4e803d37cb1",
+      "effective_spaced_packet": "effective-spaced/consumer-boards.json",
+      "effective_spaced_sha256": "45946c8f487284ae0226033a8af9ebf75b9570b51fb94d8000a53842cf75a480"
+    },
+    {
+      "base_packet": "effective/core-supplement-inputs.json",
+      "base_sha256": "1f6bdadf537cc0d602fcd1bab151c2795bc6bc820359e09ca137a5dc3906f5c1",
+      "effective_spaced_packet": "effective-spaced/core-supplement-inputs.json",
+      "effective_spaced_sha256": "319604bdcc34be7ba21dfdb7812b16f81266fc451adc9d2ec10c528c08b95c40"
+    },
+    {
+      "base_packet": "effective/fault-composition-inputs.json",
+      "base_sha256": "331e12532275c25eaeccbb9637f6c95faefbe6f1cc8cf0c1ab17ba40a6bf6b83",
+      "effective_spaced_packet": "effective-spaced/fault-composition-inputs.json",
+      "effective_spaced_sha256": "e84e18fba7027da31efb0f1981fd47977d51ad14a2313e9e21f4e5b10376e71a"
+    },
+    {
+      "base_packet": "effective/foundation-boards.json",
+      "base_sha256": "c7bc1968f19fbc0852353ecd01227e88181f81c28ae550f2fb4327bb636c3855",
+      "effective_spaced_packet": "effective-spaced/foundation-boards.json",
+      "effective_spaced_sha256": "0317a5e6191cde338ab5677342bec8d7eb80bae02358fef5c5cce41eb6efba71"
+    },
+    {
+      "base_packet": "effective/mobile-state-boards.json",
+      "base_sha256": "1fb53d63740c77150fd85618ded8f0c73130bf943f376f2477bc06af78bb6a09",
+      "effective_spaced_packet": "effective-spaced/mobile-state-boards.json",
+      "effective_spaced_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399"
+    },
+    {
+      "base_packet": "effective/supplemental-boards.json",
+      "base_sha256": "65fbd6c54fcf3b2f505e0e16e8ee3b683e01944ec91ca6873425c0188586328a",
+      "effective_spaced_packet": "effective-spaced/supplemental-boards.json",
+      "effective_spaced_sha256": "e65ecfcec783c752651634541d6f9917857e2da42e4686bdae0535cd089aaa2e"
+    }
+  ],
+  "overrides": [
+    {
+      "packet": "consumer-boards.json",
+      "board_key": "macro-dark",
+      "step_key": "metrics",
+      "base_html_sha256": "074a89b3f68cb25dc3618298a17488b5b32ccf64216c3d938209671584c76802",
+      "replacement_html_sha256": "594398ef42542546f85cde8ca0419a79b7b989791abfd28fc3117da0accc0d49",
+      "replacement_html": "<div layer-name=\"Unboxed summary\" style=\"flex-shrink:0;display:flex;width:824px;padding:10px 0;border-top:1px solid #343434;border-bottom:1px solid #343434;\"><div layer-name=\"Independent universe above50D\" style=\"display:flex;flex-direction:column;width:360px;flex-shrink:0;gap:4px;\"><div layer-name=\"Independent universe above50D\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">Independent universe above 50D</div><div layer-name=\"Independent universe above50D value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"66.7%\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:var(--noir-text-primary);line-height:34px;\">66.7%</div><div layer-name=\"+1.13 pp vs prior settled session\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;\">+1.13 pp vs prior settled session</div></div></div><div layer-name=\"Sector coverage\" style=\"display:flex;flex-direction:column;width:240px;flex-shrink:0;gap:4px;\"><div layer-name=\"Sector coverage\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">Sector coverage</div><div layer-name=\"Sector coverage value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"9 / 10\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:var(--noir-text-primary);line-height:34px;\">9 / 10</div><div layer-name=\"1 unavailable\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-tertiary);\">1 unavailable</div></div></div><div layer-name=\"Health care change\" style=\"display:flex;flex-direction:column;width:224px;flex-shrink:0;gap:4px;\"><div layer-name=\"Health care change\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">Health care change</div><div layer-name=\"Health care change value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"0.0 pp\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:var(--noir-text-primary);line-height:34px;\">0.0 pp</div><div layer-name=\"Reported zero\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">Reported zero</div></div></div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "consumer-boards.json",
+      "board_key": "macro-dark",
+      "step_key": "table-behavior",
+      "base_html_sha256": "03c3037f3bb9006a357ce85c53c78705f9b252baae3f6eeff8c75d2625dfad6d",
+      "replacement_html_sha256": "08052866b8e311c2bc11cd22d3058b5e5179d9360b44a8bb5548b8519ebca60d",
+      "replacement_html": "<div layer-name=\"10 / 10 sector fixtures · selected: Communication services. Above50D ↓; raw-rate descending; Energy unavailable last.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:var(--noir-text-secondary);padding:12px 0;white-space:normal;\">10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last.</div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "consumer-boards.json",
+      "board_key": "macro-dark",
+      "step_key": "history-chart",
+      "base_html_sha256": "14619b69b0f9a9b26c0b6584623bb37114fab78d1259f52cbd06fbac3fbdd540",
+      "replacement_html_sha256": "006df81e60a81a30ba5dc90f72faa3fb3f5140c62065d0fc21c69c939f2cf1cb",
+      "replacement_html": "<div layer-name=\"Eight categorical sessions / gap preserved\" style=\"flex-shrink:0;display:flex;flex-direction:column;width:824px;\"><svg width=\"824\" height=\"190\" viewBox=\"0 0 824 190\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"44\" y1=\"148.0\" x2=\"802\" y2=\"148.0\" stroke=\"#343434\"/><text x=\"31\" y=\"152.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"var(--noir-text-tertiary)\">40</text><line x1=\"44\" y1=\"82.0\" x2=\"802\" y2=\"82.0\" stroke=\"#343434\"/><text x=\"31\" y=\"86.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"var(--noir-text-tertiary)\">60</text><line x1=\"44\" y1=\"16.0\" x2=\"802\" y2=\"16.0\" stroke=\"#343434\"/><text x=\"31\" y=\"20.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"var(--noir-text-tertiary)\">80</text><text x=\"260.57142857142856\" y=\"106\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\">unavailable</text><text x=\"44.0\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">21 Oct</text><text x=\"152.28571428571428\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">22</text><text x=\"260.57142857142856\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">23</text><text x=\"368.85714285714283\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">26</text><text x=\"477.14285714285717\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">27</text><text x=\"585.4285714285714\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">28</text><text x=\"693.7142857142857\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">29</text><text x=\"802.0\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">30 Oct</text><circle cx=\"44.000000\" cy=\"76.039511\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"44.000000\" y1=\"76.039511\" x2=\"152.285714\" y2=\"74.176858\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"152.285714\" cy=\"74.176858\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><circle cx=\"368.857143\" cy=\"69.209784\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"368.857143\" y1=\"69.209784\" x2=\"477.142857\" y2=\"71.072437\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"477.142857\" cy=\"71.072437\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"477.142857\" y1=\"71.072437\" x2=\"585.428571\" y2=\"66.726246\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"585.428571\" cy=\"66.726246\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"585.428571\" y1=\"66.726246\" x2=\"693.714286\" y2=\"63.621825\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"693.714286\" cy=\"63.621825\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"693.714286\" y1=\"63.621825\" x2=\"802.000000\" y2=\"59.896519\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"802.000000\" cy=\"59.896519\" r=\"3.5\" fill=\"var(--noir-champagne)\"/></svg><div layer-name=\"Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70</div><div layer-name=\"Counts657,663,—,679,673,687,697,709 /1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:var(--noir-text-tertiary);\">Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "consumer-boards.json",
+      "board_key": "macro-dark",
+      "step_key": "evidence-caveat",
+      "base_html_sha256": "f08cc1cffbe002404d9ead1c198e905f96d9ae7c7c6edcc172ff9d15cdf41698",
+      "replacement_html_sha256": "68761995288783d0b3cee8013c3f9f0568a64a66f7de0173fe9641e9167fd944",
+      "replacement_html": "<div layer-name=\"A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);padding:12px 0;white-space:normal;\">Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.</div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "consumer-boards.json",
+      "board_key": "macro-light",
+      "step_key": "metrics",
+      "base_html_sha256": "dc2bbfb4e6486d342e73a39dd9fb6e0ad780a70e17de5f25cc8c720f61e0d1c1",
+      "replacement_html_sha256": "9f7b92cf180ff058279e6d2e6c9f78e3edce7f635b870f166f51bf81dba51d43",
+      "replacement_html": "<div layer-name=\"Unboxed summary\" style=\"flex-shrink:0;display:flex;width:824px;padding:10px 0;border-top:1px solid #cbccc7;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Independent universe above50D\" style=\"display:flex;flex-direction:column;width:360px;flex-shrink:0;gap:4px;\"><div layer-name=\"Independent universe above50D\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Independent universe above 50D</div><div layer-name=\"Independent universe above50D value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"66.7%\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:#1a1c20;line-height:34px;\">66.7%</div><div layer-name=\"+1.13 pp vs prior settled session\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#256341;\">+1.13 pp vs prior settled session</div></div></div><div layer-name=\"Sector coverage\" style=\"display:flex;flex-direction:column;width:240px;flex-shrink:0;gap:4px;\"><div layer-name=\"Sector coverage\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Sector coverage</div><div layer-name=\"Sector coverage value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"9 / 10\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:#1a1c20;line-height:34px;\">9 / 10</div><div layer-name=\"1 unavailable\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#5f6368;\">1 unavailable</div></div></div><div layer-name=\"Health care change\" style=\"display:flex;flex-direction:column;width:224px;flex-shrink:0;gap:4px;\"><div layer-name=\"Health care change\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Health care change</div><div layer-name=\"Health care change value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"0.0 pp\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:#1a1c20;line-height:34px;\">0.0 pp</div><div layer-name=\"Reported zero\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Reported zero</div></div></div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "consumer-boards.json",
+      "board_key": "macro-light",
+      "step_key": "table-behavior",
+      "base_html_sha256": "16fca5e3c693b0562a78d534fb4db5b714169f92e40a43f59cfb4033a57b3fa7",
+      "replacement_html_sha256": "abcfb2df55744a080e86f2fdc8a85c2f91427841d6a3782c69068339ec436a07",
+      "replacement_html": "<div layer-name=\"10 / 10 sector fixtures · selected: Communication services. Above50D ↓; raw-rate descending; Energy unavailable last.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#51555b;padding:12px 0;white-space:normal;\">10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last.</div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "consumer-boards.json",
+      "board_key": "macro-light",
+      "step_key": "history-chart",
+      "base_html_sha256": "f430c7f1cea4075a00fbaa89941c70cb3cff48723b513162535469745e59f9ca",
+      "replacement_html_sha256": "a2478d427d57f5f3d8d0e73e4d1442c408e99c746b19e3d52fe1020c4a1a2850",
+      "replacement_html": "<div layer-name=\"Eight categorical sessions / gap preserved\" style=\"flex-shrink:0;display:flex;flex-direction:column;width:824px;\"><svg width=\"824\" height=\"190\" viewBox=\"0 0 824 190\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"44\" y1=\"148.0\" x2=\"802\" y2=\"148.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"152.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">40</text><line x1=\"44\" y1=\"82.0\" x2=\"802\" y2=\"82.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"86.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">60</text><line x1=\"44\" y1=\"16.0\" x2=\"802\" y2=\"16.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"20.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">80</text><text x=\"260.57142857142856\" y=\"106\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5f6368\">unavailable</text><text x=\"44.0\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">21 Oct</text><text x=\"152.28571428571428\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">22</text><text x=\"260.57142857142856\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">23</text><text x=\"368.85714285714283\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">26</text><text x=\"477.14285714285717\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">27</text><text x=\"585.4285714285714\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">28</text><text x=\"693.7142857142857\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">29</text><text x=\"802.0\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">30 Oct</text><circle cx=\"44.000000\" cy=\"76.039511\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"44.000000\" y1=\"76.039511\" x2=\"152.285714\" y2=\"74.176858\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"152.285714\" cy=\"74.176858\" r=\"3.5\" fill=\"#66543b\"/><circle cx=\"368.857143\" cy=\"69.209784\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"368.857143\" y1=\"69.209784\" x2=\"477.142857\" y2=\"71.072437\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"477.142857\" cy=\"71.072437\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"477.142857\" y1=\"71.072437\" x2=\"585.428571\" y2=\"66.726246\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"585.428571\" cy=\"66.726246\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"585.428571\" y1=\"66.726246\" x2=\"693.714286\" y2=\"63.621825\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"693.714286\" cy=\"63.621825\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"693.714286\" y1=\"63.621825\" x2=\"802.000000\" y2=\"59.896519\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"802.000000\" cy=\"59.896519\" r=\"3.5\" fill=\"#66543b\"/></svg><div layer-name=\"Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70</div><div layer-name=\"Counts657,663,—,679,673,687,697,709 /1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "consumer-boards.json",
+      "board_key": "macro-light",
+      "step_key": "evidence-caveat",
+      "base_html_sha256": "11cdd1561ab040b22b44d6d262edbceede91df5e3f2c907147803af7e048cc1e",
+      "replacement_html_sha256": "1100dd343b90862a3f802235567b276fb2dea6860fd552ea0da1c5196bd58b3f",
+      "replacement_html": "<div layer-name=\"A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:12px 0;white-space:normal;\">Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.</div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "core-supplement-inputs.json",
+      "board_key": "controls-variants",
+      "step_key": "core-disclosure-heading",
+      "base_html_sha256": "682d0c3dff9ebd7d95443265f9464476f020714aef4a6ad01591eaeb897e29f2",
+      "replacement_html_sha256": "166ecbd6340849b9625c1a24566954fee141600fb7bdf934bedd668de28add78",
+      "replacement_html": "<div layer-name=\"Disclose the method without hiding the answer.\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;gap:8px;\"><div layer-name=\"Disclose the method without hiding the answer.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:30px;font-weight:600;color:var(--noir-text-primary);\">Disclose the method without hiding the answer.</div><div layer-name=\"Core IT sample: 742/1000 × 100 = 74.20%; prior721/1000 = 72.10%; +2.10 pp. Coverage1000/1006, six missing. Separate from Macro sector samples. The summary stays visible in all three states.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. The summary stays visible in all three states.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "core-supplement-inputs.json",
+      "board_key": "controls-variants",
+      "step_key": "core-disclosure-expanded-body",
+      "base_html_sha256": "fe3cfdd80e784bf67f7dde5bf384121ee59dca8072e145b5b0f3e0fd73dc6bc1",
+      "replacement_html_sha256": "7e51b76204686092f78b7972ed50f3b2986daa7c32c00e6958cf1a84aaffbe39",
+      "replacement_html": "<div layer-name=\"Core IT sample: 742/1000 × 100 = 74.20%; prior721/1000 = 72.10%; +2.10 pp. Coverage1000/1006, six missing. Separate from Macro sector samples. Count valid closes above valid50-day averages; missing securities are not below-average observations.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Count valid closes above valid 50-day averages; missing securities are not below-average observations.</div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "core-supplement-inputs.json",
+      "board_key": "controls-variants",
+      "step_key": "core-disclosure-mobile-label",
+      "base_html_sha256": "d73f27c536d0bc9d69f4c76eb7598d7371d4cd970761da68165a57f5f729a1cb",
+      "replacement_html_sha256": "fbe545c36403673de825326521372fc4f1a753f5f5c8c6524b7e4ac4418f1d3f",
+      "replacement_html": "<div layer-name=\"320px · Core IT74.20% · +2.10pp · coverage1000/1006\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#5f6368;width:288px;\">320px · Core IT 74.20% · +2.10 pp · coverage 1000/1006</div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "core-supplement-inputs.json",
+      "board_key": "controls-variants",
+      "step_key": "core-disclosure-mobile-expanded-body",
+      "base_html_sha256": "84966f72adf1dcb0785bf25c9fb9eeca2dc709ca489a480905ed7d14249a28bb",
+      "replacement_html_sha256": "6d4f61cf72682a8ea718e7dd294f87d5ed7add38a79f9611c114ef4df84d7e26",
+      "replacement_html": "<div layer-name=\"742/1000 ×100 =74.20%; prior721/1000 =72.10%; +2.10pp. Coverage1000/1006: six missing, never counted as below average. Component sample, separate from Macro.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:288px;\">742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006: six missing, never counted as below average. Component sample, separate from Macro.</div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "core-supplement-inputs.json",
+      "board_key": "metrics",
+      "step_key": "core-metric-unknown-age",
+      "base_html_sha256": "f519681a836d7fcb5bf4c3c4da0094e54f1b6c17ecb9b4a12c3423aba1e289ab",
+      "replacement_html_sha256": "4459d7774c354c5372bc25edba701dd0f8ae0e0f7cb2cfb409d88394e5448eb3",
+      "replacement_html": "<div layer-name=\"Unknown age in both themes\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:32px;\"><div layer-name=\"Dark unknown source age\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:10px;background-color:var(--noir-canvas);\"><div layer-name=\"MISSING-CLOCK STATE FIXTURE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-tertiary);\">MISSING-CLOCK STATE FIXTURE</div><div layer-name=\"Universe709/1063 · 66.70%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:24px;line-height:32px;font-weight:600;color:var(--noir-text-primary);\">Universe 709/1063 · 66.70%</div><div layer-name=\"Source age unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);\">Source age unavailable.</div><div layer-name=\"Source observation time was not supplied. Publication time was not supplied.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;\">Source observation time was not supplied. Publication time was not supplied.</div><div layer-name=\"Retrieved 30 Oct 2026 · 20:03 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-secondary);\">Retrieved 30 Oct 2026 · 20:03 UTC</div><div layer-name=\"A completed retrieval cannot establish freshness. Keep the unknown source clock visible beside the value.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;\">A completed retrieval cannot establish freshness. Keep the unknown source clock visible beside the value.</div></div><div layer-name=\"Light unknown source age\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:10px;background-color:#f6f6f3;\"><div layer-name=\"MISSING-CLOCK STATE FIXTURE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:#5f6368;\">MISSING-CLOCK STATE FIXTURE</div><div layer-name=\"Universe709/1063 · 66.70%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:24px;line-height:32px;font-weight:600;color:#1a1c20;\">Universe 709/1063 · 66.70%</div><div layer-name=\"Source age unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:#1a1c20;\">Source age unavailable.</div><div layer-name=\"Source observation time was not supplied. Publication time was not supplied.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;\">Source observation time was not supplied. Publication time was not supplied.</div><div layer-name=\"Retrieved 30 Oct 2026 · 20:03 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#51555b;\">Retrieved 30 Oct 2026 · 20:03 UTC</div><div layer-name=\"A completed retrieval cannot establish freshness. Keep the unknown source clock visible beside the value.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;\">A completed retrieval cannot establish freshness. Keep the unknown source clock visible beside the value.</div></div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "fault-composition-inputs.json",
+      "board_key": "fault-compositions",
+      "step_key": "unavailable-inspector-summary",
+      "base_html_sha256": "c57130d97b3a4273cb37f9ba8202933822617f71898fe6bd378f929dbbaaa038",
+      "replacement_html_sha256": "6f9c8340df1ca8ea1fc19d79699aa7122f8c18781864156aef9f8aa8512cb749",
+      "replacement_html": "<div layer-name=\"Retained matched source summary\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:608px;gap:10px;\"><div layer-name=\"Communication services\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">Communication services</div><div layer-name=\"Share above 50D · retained row summary\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:#51555b;width:608px;overflow-wrap:anywhere;\">Share above 50D · retained row summary</div><div layer-name=\"Two original values\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:24px;\"><div layer-name=\"Observation\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:292px;gap:5px;\"><div layer-name=\"Observation\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:292px;overflow-wrap:anywhere;\">Observation</div><div layer-name=\"66.67%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:#1a1c20;width:292px;overflow-wrap:anywhere;\">66.67%</div></div><div layer-name=\"Change vs prior session\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:292px;gap:5px;\"><div layer-name=\"Change vs prior session\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:292px;overflow-wrap:anywhere;\">Change vs prior session</div><div layer-name=\"+1.13 pp\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:#1a1c20;width:292px;overflow-wrap:anywhere;\">+1.13 pp</div></div></div><div layer-name=\"118/177 =66.67%; prior116/177 =65.54%; coverage177/177. Raw-count Δ+1.13pp.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">118/177 = 66.67%; prior 116/177 = 65.54%; coverage 177/177. Raw-count Δ +1.13 pp.</div><div layer-name=\"f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30</div><div layer-name=\"Observed 30 Oct 2026, 20:00 UTC · published 20:02 UTC · summary retrieved 20:03 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">Observed 30 Oct 2026, 20:00 UTC · published 20:02 UTC · summary retrieved 20:03 UTC</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "fault-composition-inputs.json",
+      "board_key": "fault-compositions",
+      "step_key": "combined-confirmed-saved",
+      "base_html_sha256": "68a538e1b728a2c41858a07d4abe19a6d1a4bb7e937a362124a7aaa883b1bd70",
+      "replacement_html_sha256": "f0421a62c176ac8a03b5082f8c2ba7ff84a0e46043e6dcbb231dd06148138fe0",
+      "replacement_html": "<div layer-name=\"Stale + partial + confirmed saved\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:24px;gap:16px;background-color:var(--noir-panel);\"><div layer-name=\"ILLUSTRATIVE OWNER-CONFIRMED RESULT · SAME READ SNAPSHOT\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:1296px;overflow-wrap:anywhere;\">ILLUSTRATIVE OWNER-CONFIRMED RESULT · SAME READ SNAPSHOT</div><div layer-name=\"Saved result preserves the read axes\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:flex-start;\"><div layer-name=\"Same saved read metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:300px;gap:6px;\"><div layer-name=\"Participation\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:500;color:var(--noir-text-secondary);width:300px;overflow-wrap:anywhere;\">Universe 709/1063</div><div layer-name=\"66.7%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:32px;line-height:40px;font-weight:600;color:var(--noir-text-primary);width:300px;overflow-wrap:anywhere;\">66.7%</div><div layer-name=\"+1.13 pp\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:#b0d4b9;width:300px;overflow-wrap:anywhere;\">+1.13 pp</div></div><div layer-name=\"Same stale and partial read caveats\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:472px;gap:8px;\"><div layer-name=\"Older source: 30 Oct, 20:00 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:600;color:var(--noir-text-primary);width:472px;overflow-wrap:anywhere;\">Older source: 30 Oct, 20:00 UTC</div><div layer-name=\"Partial coverage: 7 of 8\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:600;color:var(--noir-text-primary);width:472px;overflow-wrap:anywhere;\">Partial coverage: 7 of 8</div><div layer-name=\"The expected update has not arrived. One observation is still missing.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:472px;overflow-wrap:anywhere;\">The expected update has not arrived. One observation is still missing.</div></div><div layer-name=\"Owner-confirmed fixture result\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:476px;gap:10px;\"><div layer-name=\"Saved. Breadth comparison is confirmed.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:25px;font-weight:600;color:var(--noir-text-primary);width:476px;overflow-wrap:anywhere;\">Saved. Breadth comparison is confirmed.</div><div layer-name=\"Illustrative owner confirmation and readback · saved object: Breadth comparison · request: fixture-save-01\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:476px;overflow-wrap:anywhere;\">Illustrative owner confirmation and readback · saved object: Breadth comparison · request: fixture-save-01</div><div layer-name=\"Open saved view\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Open saved view\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Open saved view</div></div></div></div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "foundation-boards.json",
+      "board_key": "metrics",
+      "step_key": "source-receipt",
+      "base_html_sha256": "ba628649232c10aca1b466b04d6a53a8e51ba56a9a32ae1633e5e4fa5088cfbf",
+      "replacement_html_sha256": "dabbd8d9828c6134155bbbeb2d73702a37839c2e1eb42e430684742c9590532f",
+      "replacement_html": "<div style=\"display:flex;flex-direction:column;gap:18px;padding:24px;background-color:var(--noir-panel);width:1344px;\"><div style=\"font-family:Inter;font-size:12px;font-weight:600;line-height:18px;color:var(--noir-text-tertiary);\">EVIDENCE / INFORMATION TECHNOLOGY / PARTICIPATION</div><div style=\"font-family:Inter;font-size:24px;font-weight:600;line-height:36px;color:var(--noir-text-primary);\">74.20% above 50-day moving average</div><div style=\"display:flex;flex-direction:row;gap:24px;\"><div style=\"display:flex;flex-direction:column;gap:8px;width:416px;\"><div style=\"font-family:Inter;font-size:12px;font-weight:600;line-height:18px;color:var(--noir-text-tertiary);\">Observed</div><div style=\"font-family:Inter;font-size:15px;font-weight:400;line-height:22px;color:var(--noir-text-primary);\">30 Oct 2026 · 20:00 UTC</div></div><div style=\"display:flex;flex-direction:column;gap:8px;width:416px;\"><div style=\"font-family:Inter;font-size:12px;font-weight:600;line-height:18px;color:var(--noir-text-tertiary);\">Published</div><div style=\"font-family:Inter;font-size:15px;font-weight:400;line-height:22px;color:var(--noir-text-primary);\">30 Oct 2026 · 20:02 UTC</div></div><div style=\"display:flex;flex-direction:column;gap:8px;width:416px;\"><div style=\"font-family:Inter;font-size:12px;font-weight:600;line-height:18px;color:var(--noir-text-tertiary);\">Retrieved</div><div style=\"font-family:Inter;font-size:15px;font-weight:400;line-height:22px;color:var(--noir-text-primary);\">30 Oct 2026 · 20:03 UTC</div></div></div><div style=\"font-family:Inter;font-size:14px;font-weight:400;line-height:21px;color:var(--noir-text-secondary);\">Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "foundation-boards.json",
+      "board_key": "controls",
+      "step_key": "evidence-shell",
+      "base_html_sha256": "a5d564368647e44f678570cf01eb55e130710c10fe236b58e34e5749e5c22464",
+      "replacement_html_sha256": "9a255656758d3bd12d2c32b38f19f4b895cc2d1bed24df2e9d94c698b5f1bd08",
+      "replacement_html": "<div style=\"display:flex;flex-direction:row;gap:24px;\"><div style=\"display:flex;flex-direction:column;gap:20px;width:872px;padding:24px;background-color:var(--noir-panel);\"><div style=\"font-family:Inter;font-size:24px;font-weight:600;line-height:36px;color:var(--noir-text-primary);\">Primary table remains readable</div><div style=\"font-family:Inter;font-size:16px;font-weight:400;line-height:24px;color:var(--noir-text-secondary);width:840px;flex-shrink:0;\">At 1440px: content 1168px. Inspector 320px + gap 24px leaves 824px for the analytical region.</div><div style=\"font-family:Inter;font-size:14px;font-weight:400;line-height:21px;color:var(--noir-text-secondary);width:840px;flex-shrink:0;\">Dock only when at least 640px remains for the primary task. Otherwise use a modal overlay. F01 owns the final shell release.</div><div style=\"font-family:Inter;font-size:14px;font-weight:400;line-height:21px;color:var(--noir-text-secondary);width:840px;flex-shrink:0;\">The dock does not trap focus. Escape closes it and returns to the current row trigger. If that row disappeared, focus the named table fallback.</div></div><div style=\"display:flex;flex-direction:column;gap:14px;width:320px;padding:24px;background-color:var(--noir-raised);\"><div style=\"font-family:Inter;font-size:22px;font-weight:600;line-height:33px;color:var(--noir-text-primary);\">Evidence</div><div style=\"font-family:Inter;font-size:15px;font-weight:600;line-height:22px;color:var(--noir-text-primary);\">Information technology</div><div style=\"font-family:Inter;font-size:13px;font-weight:400;line-height:20px;color:var(--noir-text-secondary);\">Participation · 30 Oct 2026</div><div style=\"font-family:Inter;font-size:36px;font-weight:600;line-height:54px;color:var(--noir-text-primary);\">74.20%</div><div style=\"font-family:Inter;font-size:14px;font-weight:400;line-height:21px;color:var(--noir-text-primary);\">1000 / 1006 covered</div><div style=\"font-family:Inter;font-size:14px;font-weight:600;line-height:21px;color:#e9be6a;\">Partial coverage</div><div style=\"font-family:Inter;font-size:13px;font-weight:400;line-height:20px;color:var(--noir-text-secondary);width:272px;flex-shrink:0;\">Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples.</div><div layer-name=\"Close evidence\" style=\"display:flex;flex-direction:column;justify-content:center;align-items:center;height:44px;padding:0px 16px;border:1px solid #6f6f6f;border-radius:6px;\"><div style=\"font-family:Inter;font-size:13px;font-weight:600;line-height:20px;color:var(--noir-text-primary);\">Close evidence</div></div></div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "foundation-boards.json",
+      "board_key": "grammar",
+      "step_key": "chart-source",
+      "base_html_sha256": "260fe0720fe97563df3329897a1ec5b48e440299bcfb38bc93484d82db67c51e",
+      "replacement_html_sha256": "5f361208d88e7dd75c2dd1d6e59fb342d932dd24e49c7f5d532009801b4ad604",
+      "replacement_html": "<div layer-name=\"Source and exact-value access\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px 24px;background-color:var(--noir-panel);width:1344px;\"><div style=\"font-family:Inter;font-size:14px;font-weight:600;line-height:21px;color:var(--noir-text-primary);\">Source and exact-value access</div><div style=\"font-family:Inter;font-size:13px;font-weight:400;line-height:20px;color:var(--noir-text-secondary);width:1296px;flex-shrink:0;\">Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation. Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "mobile-state-boards.json",
+      "board_key": "states-matrix",
+      "step_key": "combined-dark-value",
+      "base_html_sha256": "a3834f522c04f38789bb9677b60947ad29bed046b3c923ab35443d73ab9633b5",
+      "replacement_html_sha256": "da8ee5b663946e348e8366be6bd052b4f8c77c0b0e25cbbedbb76e2086e61cad",
+      "replacement_html": "<div layer-name=\"Retained observation\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;gap: 20px;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Universe 709/1063</div><div style=\"font-family: Inter;font-size: 26px;line-height: 34px;font-weight: 500;color: var(--noir-text-primary);\">66.7%</div><div style=\"font-family: Inter;font-size: 14px;line-height: 20px;font-weight: 500;color: #b0d4b9;\">+1.13 pp</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "mobile-state-boards.json",
+      "board_key": "states-matrix",
+      "step_key": "combined-light-value",
+      "base_html_sha256": "11eb885643b4785eecc5804430d6cf0db283563e4b66e30f6c4872ace8ac4581",
+      "replacement_html_sha256": "7eb2bb72e783ba8c763c02effe2a54fa848a64e2c5edeb8eed5123c9fff0e4eb",
+      "replacement_html": "<div layer-name=\"Retained observation\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;gap: 20px;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 19px;font-weight: 400;color: #51555b;\">Universe 709/1063</div><div style=\"font-family: Inter;font-size: 26px;line-height: 34px;font-weight: 500;color: #1a1c20;\">66.7%</div><div style=\"font-family: Inter;font-size: 14px;line-height: 20px;font-weight: 500;color: #256341;\">+1.13 pp</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "mobile-state-boards.json",
+      "board_key": "macro-dark-en-390",
+      "step_key": "metric",
+      "base_html_sha256": "b4d73bcebdbcabcbb52b294d788d8922bf160564a5ba22f3fc878136d94aef17",
+      "replacement_html_sha256": "76c0666118d2605c042606bf81ce46e3de4ea4800d64ce779b69235867198f85",
+      "replacement_html": "<div layer-name=\"Participation with coverage and comparator\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 358px;height: 72px;padding-top: 4px;padding-bottom: 2px;gap: 0px;\"><div layer-name=\"Principal observation\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;gap: 16px;\"><div style=\"font-family: Inter;font-size: 26px;line-height: 30px;font-weight: 500;color: var(--noir-text-primary);\">66.7%</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);\">Universe 709/1063 · above 50D</div></div>\n<div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: #b0d4b9;\">+1.13 pp vs prior settled session</div>\n<div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);\">9/10 sectors · Health care 0.00 pp · — unavailable</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "mobile-state-boards.json",
+      "board_key": "macro-dark-en-390",
+      "step_key": "chart-footer",
+      "base_html_sha256": "5545bce437339be8f77bd121bc55737e4c3a04afed2ecc8dcce00d438cdbe72e",
+      "replacement_html_sha256": "b7802976578147eff33feb7c1d68cf93a5f4372d28b03b6870b3fe169f816d1d",
+      "replacement_html": "<div layer-name=\"Chart coverage and exact-value action\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 358px;\"><div layer-name=\"Gap and coverage\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 358px;height: 24px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);\">709/1063 = 66.70% · history 7/8</div></div><div layer-name=\"View exact values control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 170px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">View exact values</div></div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "mobile-state-boards.json",
+      "board_key": "macro-docked-1280",
+      "step_key": "chart-footer",
+      "base_html_sha256": "8dc9c1715ed35a0214c90a5615927b76e6e0b62707e3ae7f3b8ac89384b1eae8",
+      "replacement_html_sha256": "ca3d04e4fecd8e3877c1b210f121d252949a6206704c75cc988436f52dcd26f8",
+      "replacement_html": "<div layer-name=\"Exact-value action and history scope\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 664px;gap: 12px;\"><div layer-name=\"View exact values control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 170px;height: 36px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">View exact values</div></div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "mobile-state-boards.json",
+      "board_key": "macro-docked-1280",
+      "step_key": "dock-footer",
+      "base_html_sha256": "826ca4f2ab3b8e426bb3bf7c4068d2f744906dea4c23681a22f5fdadda4d2ff1",
+      "replacement_html_sha256": "ffcede3665abd9094f9e8b186e70e32b1ab3acdccd0975f1f28c59e7229c92d0",
+      "replacement_html": "<div layer-name=\"Evidence limitation and return action\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 278px;gap: 14px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.</div><div layer-name=\"Return to comparison control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 278px;height: 36px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Return to comparison</div></div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "supplemental-boards.json",
+      "board_key": "width-768-overlay",
+      "step_key": "overlay-limit",
+      "base_html_sha256": "7c4684f95c22bb2bf22921c2ad709995886a99b05404bf77e851e6030fcb28a4",
+      "replacement_html_sha256": "c5640d1bdd3abaf7db4d43671f52221e2f92608f713ef76c1eeba9488b622f26",
+      "replacement_html": "<div layer-name=\"Units and scope\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 399px;gap: 8px;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 500;color: var(--noir-text-primary);\">Units: percent; change in percentage points.</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);\">Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "supplemental-boards.json",
+      "board_key": "width-1024-overlay",
+      "step_key": "overlay-limit",
+      "base_html_sha256": "7c4684f95c22bb2bf22921c2ad709995886a99b05404bf77e851e6030fcb28a4",
+      "replacement_html_sha256": "c5640d1bdd3abaf7db4d43671f52221e2f92608f713ef76c1eeba9488b622f26",
+      "replacement_html": "<div layer-name=\"Units and scope\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 399px;gap: 8px;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 500;color: var(--noir-text-primary);\">Units: percent; change in percentage points.</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);\">Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "supplemental-boards.json",
+      "board_key": "width-1600-docked",
+      "step_key": "chart-footer",
+      "base_html_sha256": "59430b5e0e32b1bbd17dfad9bf82447492327d7c8b776e6f9282d638b7b570fb",
+      "replacement_html_sha256": "e708b2875b31ee1c840c53883f1fb88c4a2adbc6211599164eb464e0feea9e28",
+      "replacement_html": "<div layer-name=\"Exact-value action and history scope\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 984px;gap: 12px;\"><div layer-name=\"View exact values control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 170px;height: 36px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">View exact values</div></div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.</div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    },
+    {
+      "packet": "supplemental-boards.json",
+      "board_key": "width-1600-docked",
+      "step_key": "dock-footer",
+      "base_html_sha256": "826ca4f2ab3b8e426bb3bf7c4068d2f744906dea4c23681a22f5fdadda4d2ff1",
+      "replacement_html_sha256": "ffcede3665abd9094f9e8b186e70e32b1ab3acdccd0975f1f28c59e7229c92d0",
+      "replacement_html": "<div layer-name=\"Evidence limitation and return action\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 278px;gap: 14px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.</div><div layer-name=\"Return to comparison control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 278px;height: 36px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Return to comparison</div></div></div>",
+      "scope": "Visible whitespace only; no count, formula, identity, style or structure change."
+    }
+  ],
+  "math_and_nonwhitespace_bytes_unchanged": true,
+  "instruction": "Prefer complete effective-spaced inputs for remaining steps. Preserve adopted originals and reconcile the writer-owned already-applied disclosure spacing; no replay."
+}

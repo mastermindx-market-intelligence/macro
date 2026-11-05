@@ -1,0 +1,35 @@
+{
+  "schema": "f02.final-capture-selection-diagnostic.v1",
+  "recorded_at": "2026-11-04T02:32:06.591044+00:00",
+  "all_optional_diagnostic": "full-freeze-all-optional-diagnostic-650-20261104.json",
+  "explicit_optional_diagnostic": "full-freeze-explicit-optional-diagnostic-650-20261104.json",
+  "current_full_board_preflight": "full-freeze-preflight-650-20261104.json",
+  "current_scoped_review_input": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f",
+  "final_packager_optional_captures_selected": 0,
+  "scope": "Default complete32-board full-pair gate, with optional crops left out. This does not remove them from the existing scoped review input.",
+  "findings": [
+    "Selecting all historical COMPLETE-labeled sections produces STALE_SECTION_CONTENT for controls-variants--mobile-error at365operations. Raw section JSX differs from the current full export at least through isolated-root styles/serialization; this diagnostic alone does not establish a visual defect. This old crop is absent from R1/R2/R3 inputs.",
+    "Explicitly selecting the eight current scoped-review supplements produces INELIGIBLE_OPTIONAL_CAPTURE because their original records lack the strict optional scope/step metadata. Width closed-table row fragments are byte-comparable for all10rows and headers; six isolated group exports add root font-synthesis/smoothing/wrapping styles relative to their full-export fragments. Neither metadata nor crop bytes were rewritten to force eligibility.",
+    "All32full-board requirements, unknown-effect checks, role bindings, final retention and final verification remain strict. Supplements are optional and their existing images/exports and independent scoped judgments remain unchanged. If later admitted to a full freeze, their exact scope and export equivalence must be qualified; no blanket inclusion of historical crops."
+  ],
+  "strict_packager_changed": false,
+  "capture_metadata_changed": false,
+  "frozen_review_inputs_changed": false,
+  "full_native_freeze_created": false,
+  "remaining_error_codes": [
+    "ARTIFACT_RECEIPT_MISSING",
+    "EXPECTED_STEPS_MISSING",
+    "FINAL_CAPTURE_RECEIPT_MISSING",
+    "FINAL_RECEIPT_MISSING",
+    "RETENTION_SCOPE_CHECK",
+    "RETENTION_UNRESOLVED",
+    "ROLE_EXPORT_MISMATCH",
+    "ROLE_PROJECTION_STATUS",
+    "STALE_FINAL_RECEIPT",
+    "UNRESOLVED_OPERATION",
+    "UNRESOLVED_OPERATIONS",
+    "UNRESOLVED_PORTABLE_BINDING",
+    "UNRESOLVED_PORTABLE_BINDINGS"
+  ],
+  "retention_boundary": "640-operation live67-original/20-token receipt predates ten later operations and is not a final650-operation retention receipt. Final live retention/current full audit and native verification remain required after original effect and Chinese completion."
+}

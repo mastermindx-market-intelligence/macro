@@ -1,0 +1,12 @@
+{
+  "schema": "f02.freeze-validator-compatibility.v1",
+  "changes": [
+    "Accept an observed string source_input with explicit board_key in the mutation-to-capture audit; retain all-board fallback if no scope resolves.",
+    "Read actual scope-audit status/verdict fields separately from opaque operation IDs so the legitimate metric-unknown-age specimen ID does not falsely mark target custody unknown; preserve exact operation-set and custody predicates."
+  ],
+  "validation": "Strict full-set dry-run after current index/retention readback recognizes31 complete captures and refuses full acceptance with the original unknown operation, incomplete Chinese groups/capture/bindings and missing full final verification.",
+  "full_set_required": 32,
+  "unknown_effect_gate_unchanged": true,
+  "no_full_freeze_created": true,
+  "scoped_manifest_is_not_full_freeze": true
+}

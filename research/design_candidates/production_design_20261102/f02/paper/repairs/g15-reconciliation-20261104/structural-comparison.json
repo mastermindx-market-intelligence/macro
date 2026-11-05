@@ -1,0 +1,3463 @@
+{
+  "comparison_pass": true,
+  "method": "All expected IDs come from successful receipts, with the board root from create_artboard. Parent links are reconstructed from each actual original HTML payload aligned to its createdNodes list, including receipt-backed Frame/Text expansion of padded leaf divs and explicit alignment checks. Current parents come independently from the complete returned tree indentation.",
+  "expected_node_count": 190,
+  "observed_tree_node_count": 190,
+  "observed_tree_requested_depth": 10,
+  "observed_max_depth": 5,
+  "expected_body_children": [
+    "7J6-0",
+    "7JE-0",
+    "7JL-0",
+    "7JQ-0",
+    "7JT-0",
+    "7NQ-0",
+    "7NT-0",
+    "7NX-0"
+  ],
+  "observed_body_children": [
+    "7J6-0",
+    "7JE-0",
+    "7JL-0",
+    "7JQ-0",
+    "7JT-0",
+    "7NQ-0",
+    "7NT-0",
+    "7NX-0"
+  ],
+  "missing_expected_ids": [],
+  "unexplained_ids": [],
+  "parent_differences": [],
+  "name_or_type_differences": [],
+  "child_order_differences": [],
+  "jsx_id_count": 174,
+  "jsx_unknown_ids": [],
+  "jsx_missing_non_svg_ids": [],
+  "jsx_duplicate_ids": {},
+  "jsx_note": "The JSX exporter can inline SVG content without native SVG descendant IDs. Complete native ID/parent accounting uses the independent full tree response.",
+  "g15_sentinel_presence": {
+    "Chart coverage and exact-value action": {
+      "jsx": false,
+      "tree": false
+    },
+    "Gap and coverage": {
+      "jsx": false,
+      "tree": false
+    },
+    "709/1063 = 66.70% · 历史7/8": {
+      "jsx": false,
+      "tree": false
+    },
+    "查看准确数值 control": {
+      "jsx": false,
+      "tree": false
+    },
+    "查看准确数值": {
+      "jsx": false,
+      "tree": false
+    }
+  },
+  "operation_root_bindings": [
+    {
+      "operation_index": 413,
+      "operation_id": "f02-c2-macro-light-zh-390-artifact-20261103-01",
+      "parent_id": "7IS-0",
+      "root_id": "7IT-0",
+      "name": "F02 candidate provenance",
+      "created_nodes_count": 2
+    },
+    {
+      "operation_index": 414,
+      "operation_id": "f02-c2-macro-light-zh-390-app-header-20261103-01",
+      "parent_id": "7IS-0",
+      "root_id": "7IW-0",
+      "name": "Compact application header",
+      "created_nodes_count": 7
+    },
+    {
+      "operation_index": 415,
+      "operation_id": "f02-c2-macro-light-zh-390-body-20261103-01",
+      "parent_id": "7IS-0",
+      "root_id": "7J4-0",
+      "name": "390px analytical content",
+      "created_nodes_count": 1
+    },
+    {
+      "operation_index": 416,
+      "operation_id": "f02-c2-macro-light-zh-390-title-20261103-01",
+      "parent_id": "7J4-0",
+      "root_id": "7J6-0",
+      "name": "Market breadth question and source",
+      "created_nodes_count": 7
+    },
+    {
+      "operation_index": 417,
+      "operation_id": "f02-c2-macro-light-zh-390-metric-20261103-01",
+      "parent_id": "7J4-0",
+      "root_id": "7JE-0",
+      "name": "Participation with coverage and comparator",
+      "created_nodes_count": 6
+    },
+    {
+      "operation_index": 418,
+      "operation_id": "f02-c2-macro-light-zh-390-section-toolbar-20261103-01",
+      "parent_id": "7J4-0",
+      "root_id": "7JL-0",
+      "name": "Sector comparison toolbar",
+      "created_nodes_count": 4
+    },
+    {
+      "operation_index": 419,
+      "operation_id": "f02-c2-macro-light-zh-390-scroll-cue-20261103-01",
+      "parent_id": "7J4-0",
+      "root_id": "7JQ-0",
+      "name": "Pre-table local overflow cue",
+      "created_nodes_count": 2
+    },
+    {
+      "operation_index": 420,
+      "operation_id": "f02-c2-macro-light-zh-390-table-20261103-01",
+      "parent_id": "7J4-0",
+      "root_id": "7JT-0",
+      "name": "Named sector comparison scroll region",
+      "created_nodes_count": 10
+    },
+    {
+      "operation_index": 421,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-0-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7K4-0",
+      "name": "Sector Technology",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 422,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-1-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7KH-0",
+      "name": "Sector Industrials",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 423,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-2-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7KU-0",
+      "name": "Sector Financials",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 424,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-3-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7L7-0",
+      "name": "Sector Communication services",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 425,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-4-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7LK-0",
+      "name": "Sector Consumer discretionary",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 426,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-5-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7LX-0",
+      "name": "Sector Health care",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 427,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-6-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7MA-0",
+      "name": "Sector Utilities",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 428,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-8-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7MN-0",
+      "name": "Sector Consumer staples",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 429,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-9-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7N0-0",
+      "name": "Sector Materials",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 430,
+      "operation_id": "f02-c2-macro-light-zh-390-sector-7-20261103-01",
+      "parent_id": "7JT-0",
+      "root_id": "7ND-0",
+      "name": "Sector Energy",
+      "created_nodes_count": 12
+    },
+    {
+      "operation_index": 431,
+      "operation_id": "f02-c2-macro-light-zh-390-post-table-20261103-01",
+      "parent_id": "7J4-0",
+      "root_id": "7NQ-0",
+      "name": "Table coverage reminder",
+      "created_nodes_count": 2
+    },
+    {
+      "operation_index": 432,
+      "operation_id": "f02-c2-macro-light-zh-390-chart-heading-20261103-01",
+      "parent_id": "7J4-0",
+      "root_id": "7NT-0",
+      "name": "Supporting history heading",
+      "created_nodes_count": 3
+    },
+    {
+      "operation_index": 433,
+      "operation_id": "f02-c2-macro-light-zh-390-chart-20261103-01",
+      "parent_id": "7J4-0",
+      "root_id": "7NX-0",
+      "name": "Eight sessions with an explicit gap",
+      "created_nodes_count": 25
+    }
+  ],
+  "payload_receipt_alignment": [
+    {
+      "operation_index": 413,
+      "created_nodes_count": 2,
+      "html_elements_count": 2,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 2,
+      "html_sha256": "853792f11a712ae0ace6b7b2867f79a3b2e0e0931e881e729dd32f449916b37a",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 414,
+      "created_nodes_count": 7,
+      "html_elements_count": 7,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 7,
+      "html_sha256": "9df3f794e9e46557746bc37395a2f2bcb013d359c23f6f8ee2dad5cc975677db",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 415,
+      "created_nodes_count": 1,
+      "html_elements_count": 1,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 1,
+      "html_sha256": "944204a7edf4b35767ff121f9e1466a9604794bbc15a300dbfba6e5c3f38fa42",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 416,
+      "created_nodes_count": 7,
+      "html_elements_count": 7,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 7,
+      "html_sha256": "8e9e49b351347ea12a75bbbd8e71b5b2427db34b97b8de2a34032095ccda2a8c",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 417,
+      "created_nodes_count": 6,
+      "html_elements_count": 6,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 6,
+      "html_sha256": "823afb3b31de7b6706a5e82828a060736cb2c74b40795a1bd2f55a725078ed69",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 418,
+      "created_nodes_count": 4,
+      "html_elements_count": 4,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 4,
+      "html_sha256": "e69f2240ea8bfe2655cfb386e3f7b543c34baace46f55cc6d027f9361408f11e",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 419,
+      "created_nodes_count": 2,
+      "html_elements_count": 2,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 2,
+      "html_sha256": "cb79fb443540701371c0bdbd4efb8b173b0ebca20ef52af63d2ebedcef3f8688",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 420,
+      "created_nodes_count": 10,
+      "html_elements_count": 7,
+      "receipt_backed_padded_text_expansions": 3,
+      "expanded_native_anatomy_count": 10,
+      "html_sha256": "af330d0c816268fb1d28cbbf81cda42e390804cc146fbd32f2789e65b6dca987",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 421,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "bf58aa1bbe5c339c680467c13792f25401d8431b2da3f945fe6a480d66a895ae",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 422,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "a14dcf131e7ed3705c3a6cb4ed0912cf877b51623687ca712442f17150e1f635",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 423,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "1133d3ef0e61c5a2013d288cbaefc194b4d91382582d247e7deb1d02e92b24bc",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 424,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "660d23a91f04bf9ff94524acd4e49b2c5e86be82157deafe3d238ed0e53e1583",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 425,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "f55d26431efd2d2d37a493f9a9632887e32ee65b81b01433f99028d522096a5f",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 426,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "eb8e5f1844efea4d2e10d39056ca6a124ea4625e6cb5ea3945d90b9a797e4a46",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 427,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "e5b58d1bf6f18362000078acc83c994491708bb684f2f817a407de0a7120447d",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 428,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "a587c3737d46aa9bba1f31125e4f59d3da9b859a92b32da7496806d923b69bfe",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 429,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "536b829a753701e673f5e897030c279fbfa6e58cc2c12f4d532e43d14a78870f",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 430,
+      "created_nodes_count": 12,
+      "html_elements_count": 8,
+      "receipt_backed_padded_text_expansions": 4,
+      "expanded_native_anatomy_count": 12,
+      "html_sha256": "096e343a65f057c8f5eb60a4b65a38a0ada2dde5ad4e1c5911eec82f7653831a",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 431,
+      "created_nodes_count": 2,
+      "html_elements_count": 2,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 2,
+      "html_sha256": "ae249edae38c379085a83e22f88d5a7bb2f44f2f7d6d0c0b129279a849cc1acf",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 432,
+      "created_nodes_count": 3,
+      "html_elements_count": 3,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 3,
+      "html_sha256": "bfb6ce5d23b4d8e15cbc1cf31e489adf2d25d4889e0bb7bcc6a04a686801d835",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    },
+    {
+      "operation_index": 433,
+      "created_nodes_count": 25,
+      "html_elements_count": 25,
+      "receipt_backed_padded_text_expansions": 0,
+      "expanded_native_anatomy_count": 25,
+      "html_sha256": "be61d2dddd7a81f8c57af1e1944f010625fa35815bbe18135e558972847c577a",
+      "alignment_checks": "HTML count plus explicit padded Frame/Text receipt expansion, component type, explicit layer names and Text name/prefix all pass"
+    }
+  ],
+  "expected_nodes": [
+    {
+      "id": "7IS-0",
+      "parent_id": null,
+      "component": "Frame",
+      "name": "F02 · Macro comparison · 中文 · Light · 390",
+      "operation_index": 411
+    },
+    {
+      "id": "7IT-0",
+      "parent_id": "7IS-0",
+      "component": "Frame",
+      "name": "F02 candidate provenance",
+      "operation_index": 413,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7IU-0",
+      "parent_id": "7IT-0",
+      "component": "Text",
+      "name": "F02 / 390 CSS px / 中…",
+      "operation_index": 413,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7IW-0",
+      "parent_id": "7IS-0",
+      "component": "Frame",
+      "name": "Compact application header",
+      "operation_index": 414,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7IX-0",
+      "parent_id": "7IW-0",
+      "component": "Text",
+      "name": "MASTERMIND",
+      "operation_index": 414,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7IY-0",
+      "parent_id": "7IW-0",
+      "component": "Frame",
+      "name": "中文 control",
+      "operation_index": 414,
+      "created_nodes_index": 2,
+      "html_tag": "div"
+    },
+    {
+      "id": "7IZ-0",
+      "parent_id": "7IY-0",
+      "component": "Text",
+      "name": "中文",
+      "operation_index": 414,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7J0-0",
+      "parent_id": "7IW-0",
+      "component": "Frame",
+      "name": "Menu control",
+      "operation_index": 414,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7J1-0",
+      "parent_id": "7J0-0",
+      "component": "SVG",
+      "name": "SVG",
+      "operation_index": 414,
+      "created_nodes_index": 5,
+      "html_tag": "svg"
+    },
+    {
+      "id": "7J2-0",
+      "parent_id": "7J1-0",
+      "component": "SVGVisualElement",
+      "name": "Path",
+      "operation_index": 414,
+      "created_nodes_index": 6,
+      "html_tag": "path"
+    },
+    {
+      "id": "7J4-0",
+      "parent_id": "7IS-0",
+      "component": "Frame",
+      "name": "390px analytical content",
+      "operation_index": 415,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7J6-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Market breadth question and source",
+      "operation_index": 416,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7J7-0",
+      "parent_id": "7J6-0",
+      "component": "Text",
+      "name": "市场 / 参与度",
+      "operation_index": 416,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7J8-0",
+      "parent_id": "7J6-0",
+      "component": "Frame",
+      "name": "Page heading and source",
+      "operation_index": 416,
+      "created_nodes_index": 2,
+      "html_tag": "div"
+    },
+    {
+      "id": "7J9-0",
+      "parent_id": "7J8-0",
+      "component": "Text",
+      "name": "市场广度",
+      "operation_index": 416,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JA-0",
+      "parent_id": "7J8-0",
+      "component": "Frame",
+      "name": "来源 control",
+      "operation_index": 416,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JB-0",
+      "parent_id": "7JA-0",
+      "component": "Text",
+      "name": "来源",
+      "operation_index": 416,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JC-0",
+      "parent_id": "7J6-0",
+      "component": "Text",
+      "name": "示例总体 · 2026年10月30日20…",
+      "operation_index": 416,
+      "created_nodes_index": 6,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JE-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Participation with coverage and comparator",
+      "operation_index": 417,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JF-0",
+      "parent_id": "7JE-0",
+      "component": "Frame",
+      "name": "Principal observation",
+      "operation_index": 417,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JG-0",
+      "parent_id": "7JF-0",
+      "component": "Text",
+      "name": "66.7%",
+      "operation_index": 417,
+      "created_nodes_index": 2,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JH-0",
+      "parent_id": "7JF-0",
+      "component": "Text",
+      "name": "总体709/1063 · 高于50日",
+      "operation_index": 417,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JI-0",
+      "parent_id": "7JE-0",
+      "component": "Text",
+      "name": "+1.13 pp 较上一交易日",
+      "operation_index": 417,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JJ-0",
+      "parent_id": "7JE-0",
+      "component": "Text",
+      "name": "9/10行业 · 医疗保健0.00 pp…",
+      "operation_index": 417,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JL-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Sector comparison toolbar",
+      "operation_index": 418,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JM-0",
+      "parent_id": "7JL-0",
+      "component": "Text",
+      "name": "行业对比",
+      "operation_index": 418,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JN-0",
+      "parent_id": "7JL-0",
+      "component": "Frame",
+      "name": "查看图表 control",
+      "operation_index": 418,
+      "created_nodes_index": 2,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JO-0",
+      "parent_id": "7JN-0",
+      "component": "Text",
+      "name": "查看图表",
+      "operation_index": 418,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JQ-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Pre-table local overflow cue",
+      "operation_index": 419,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JR-0",
+      "parent_id": "7JQ-0",
+      "component": "Text",
+      "name": "横向滚动查看覆盖率和全部列 →",
+      "operation_index": 419,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JT-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Named sector comparison scroll region",
+      "operation_index": 420,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JU-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Column headings",
+      "operation_index": 420,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JV-0",
+      "parent_id": "7JU-0",
+      "component": "Text",
+      "name": "行业 / 证据",
+      "operation_index": 420,
+      "created_nodes_index": 2,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JW-0",
+      "parent_id": "7JU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 420,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JX-0",
+      "parent_id": "7JW-0",
+      "component": "Text",
+      "name": "高于50D ↓",
+      "operation_index": 420,
+      "created_nodes_index": 4,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7JY-0",
+      "parent_id": "7JU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 420,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7JZ-0",
+      "parent_id": "7JY-0",
+      "component": "Text",
+      "name": "变动 · pp",
+      "operation_index": 420,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7K0-0",
+      "parent_id": "7JU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 420,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7K1-0",
+      "parent_id": "7K0-0",
+      "component": "Text",
+      "name": "覆盖范围",
+      "operation_index": 420,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7K2-0",
+      "parent_id": "7JU-0",
+      "component": "Text",
+      "name": "定义",
+      "operation_index": 420,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7K4-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Technology",
+      "operation_index": 421,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7K5-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 421,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7K6-0",
+      "parent_id": "7K5-0",
+      "component": "Text",
+      "name": "科技",
+      "operation_index": 421,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7K7-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 421,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7K8-0",
+      "parent_id": "7K7-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 421,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7K9-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 421,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KA-0",
+      "parent_id": "7K9-0",
+      "component": "Text",
+      "name": "72.4%",
+      "operation_index": 421,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7KB-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 421,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KC-0",
+      "parent_id": "7KB-0",
+      "component": "Text",
+      "name": "+2.10",
+      "operation_index": 421,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7KD-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 421,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KE-0",
+      "parent_id": "7KD-0",
+      "component": "Text",
+      "name": "286 / 286",
+      "operation_index": 421,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7KF-0",
+      "parent_id": "7K4-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 421,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KH-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Industrials",
+      "operation_index": 422,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KI-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 422,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KJ-0",
+      "parent_id": "7KI-0",
+      "component": "Text",
+      "name": "工业",
+      "operation_index": 422,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7KK-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 422,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KL-0",
+      "parent_id": "7KK-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 422,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KM-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 422,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KN-0",
+      "parent_id": "7KM-0",
+      "component": "Text",
+      "name": "70.8%",
+      "operation_index": 422,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7KO-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 422,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KP-0",
+      "parent_id": "7KO-0",
+      "component": "Text",
+      "name": "+1.50",
+      "operation_index": 422,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7KQ-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 422,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KR-0",
+      "parent_id": "7KQ-0",
+      "component": "Text",
+      "name": "267 / 267",
+      "operation_index": 422,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7KS-0",
+      "parent_id": "7KH-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 422,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KU-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Financials",
+      "operation_index": 423,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KV-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 423,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KW-0",
+      "parent_id": "7KV-0",
+      "component": "Text",
+      "name": "金融",
+      "operation_index": 423,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7KX-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 423,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KY-0",
+      "parent_id": "7KX-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 423,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7KZ-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 423,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7L0-0",
+      "parent_id": "7KZ-0",
+      "component": "Text",
+      "name": "69.2%",
+      "operation_index": 423,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7L1-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 423,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7L2-0",
+      "parent_id": "7L1-0",
+      "component": "Text",
+      "name": "+0.60",
+      "operation_index": 423,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7L3-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 423,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7L4-0",
+      "parent_id": "7L3-0",
+      "component": "Text",
+      "name": "500 / 500",
+      "operation_index": 423,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7L5-0",
+      "parent_id": "7KU-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 423,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7L7-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Communication services",
+      "operation_index": 424,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7L8-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 424,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7L9-0",
+      "parent_id": "7L8-0",
+      "component": "Text",
+      "name": "通信服务",
+      "operation_index": 424,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7LA-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 424,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LB-0",
+      "parent_id": "7LA-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 424,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LC-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 424,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LD-0",
+      "parent_id": "7LC-0",
+      "component": "Text",
+      "name": "66.7%",
+      "operation_index": 424,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7LE-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 424,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LF-0",
+      "parent_id": "7LE-0",
+      "component": "Text",
+      "name": "+1.13",
+      "operation_index": 424,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7LG-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 424,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LH-0",
+      "parent_id": "7LG-0",
+      "component": "Text",
+      "name": "177 / 177",
+      "operation_index": 424,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7LI-0",
+      "parent_id": "7L7-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 424,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LK-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Consumer discretionary",
+      "operation_index": 425,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LL-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 425,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LM-0",
+      "parent_id": "7LL-0",
+      "component": "Text",
+      "name": "可选消费",
+      "operation_index": 425,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7LN-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 425,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LO-0",
+      "parent_id": "7LN-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 425,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LP-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 425,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LQ-0",
+      "parent_id": "7LP-0",
+      "component": "Text",
+      "name": "63.5%",
+      "operation_index": 425,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7LR-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 425,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LS-0",
+      "parent_id": "7LR-0",
+      "component": "Text",
+      "name": "-0.80",
+      "operation_index": 425,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7LT-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 425,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LU-0",
+      "parent_id": "7LT-0",
+      "component": "Text",
+      "name": "375 / 375",
+      "operation_index": 425,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7LV-0",
+      "parent_id": "7LK-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 425,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LX-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Health care",
+      "operation_index": 426,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LY-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 426,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7LZ-0",
+      "parent_id": "7LY-0",
+      "component": "Text",
+      "name": "医疗保健",
+      "operation_index": 426,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7M0-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 426,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7M1-0",
+      "parent_id": "7M0-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 426,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7M2-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 426,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7M3-0",
+      "parent_id": "7M2-0",
+      "component": "Text",
+      "name": "61.1%",
+      "operation_index": 426,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7M4-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 426,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7M5-0",
+      "parent_id": "7M4-0",
+      "component": "Text",
+      "name": "0.00",
+      "operation_index": 426,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7M6-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 426,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7M7-0",
+      "parent_id": "7M6-0",
+      "component": "Text",
+      "name": "54 / 54",
+      "operation_index": 426,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7M8-0",
+      "parent_id": "7LX-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 426,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MA-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Utilities",
+      "operation_index": 427,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MB-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 427,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MC-0",
+      "parent_id": "7MB-0",
+      "component": "Text",
+      "name": "公用事业",
+      "operation_index": 427,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7MD-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 427,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7ME-0",
+      "parent_id": "7MD-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 427,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MF-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 427,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MG-0",
+      "parent_id": "7MF-0",
+      "component": "Text",
+      "name": "58.3%",
+      "operation_index": 427,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7MH-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 427,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MI-0",
+      "parent_id": "7MH-0",
+      "component": "Text",
+      "name": "-1.20",
+      "operation_index": 427,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7MJ-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 427,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MK-0",
+      "parent_id": "7MJ-0",
+      "component": "Text",
+      "name": "333 / 333",
+      "operation_index": 427,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7ML-0",
+      "parent_id": "7MA-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 427,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MN-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Consumer staples",
+      "operation_index": 428,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MO-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 428,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MP-0",
+      "parent_id": "7MO-0",
+      "component": "Text",
+      "name": "日常消费",
+      "operation_index": 428,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7MQ-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 428,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MR-0",
+      "parent_id": "7MQ-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 428,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MS-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 428,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MT-0",
+      "parent_id": "7MS-0",
+      "component": "Text",
+      "name": "55.6%",
+      "operation_index": 428,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7MU-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 428,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MV-0",
+      "parent_id": "7MU-0",
+      "component": "Text",
+      "name": "+0.40",
+      "operation_index": 428,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7MW-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 428,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7MX-0",
+      "parent_id": "7MW-0",
+      "component": "Text",
+      "name": "250 / 250",
+      "operation_index": 428,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7MY-0",
+      "parent_id": "7MN-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 428,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7N0-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Materials",
+      "operation_index": 429,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7N1-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 429,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7N2-0",
+      "parent_id": "7N1-0",
+      "component": "Text",
+      "name": "原材料",
+      "operation_index": 429,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7N3-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 429,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7N4-0",
+      "parent_id": "7N3-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 429,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7N5-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 429,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7N6-0",
+      "parent_id": "7N5-0",
+      "component": "Text",
+      "name": "52.2%",
+      "operation_index": 429,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7N7-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 429,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7N8-0",
+      "parent_id": "7N7-0",
+      "component": "Text",
+      "name": "-0.60",
+      "operation_index": 429,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7N9-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 429,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NA-0",
+      "parent_id": "7N9-0",
+      "component": "Text",
+      "name": "500 / 500",
+      "operation_index": 429,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7NB-0",
+      "parent_id": "7N0-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 429,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7ND-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Energy",
+      "operation_index": 430,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NE-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 430,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NF-0",
+      "parent_id": "7NE-0",
+      "component": "Text",
+      "name": "能源",
+      "operation_index": 430,
+      "created_nodes_index": 2,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7NG-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "operation_index": 430,
+      "created_nodes_index": 3,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NH-0",
+      "parent_id": "7NG-0",
+      "component": "Text",
+      "name": "证据",
+      "operation_index": 430,
+      "created_nodes_index": 4,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NI-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 430,
+      "created_nodes_index": 5,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NJ-0",
+      "parent_id": "7NI-0",
+      "component": "Text",
+      "name": "—",
+      "operation_index": 430,
+      "created_nodes_index": 6,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7NK-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 430,
+      "created_nodes_index": 7,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NL-0",
+      "parent_id": "7NK-0",
+      "component": "Text",
+      "name": "—",
+      "operation_index": 430,
+      "created_nodes_index": 8,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7NM-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "Frame",
+      "operation_index": 430,
+      "created_nodes_index": 9,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NN-0",
+      "parent_id": "7NM-0",
+      "component": "Text",
+      "name": "0 / 82",
+      "operation_index": 430,
+      "created_nodes_index": 10,
+      "html_tag": "#text"
+    },
+    {
+      "id": "7NO-0",
+      "parent_id": "7ND-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "operation_index": 430,
+      "created_nodes_index": 11,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NQ-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Table coverage reminder",
+      "operation_index": 431,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NR-0",
+      "parent_id": "7NQ-0",
+      "component": "Text",
+      "name": "10行 · 横向滚动查看覆盖率和全部列 …",
+      "operation_index": 431,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NT-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Supporting history heading",
+      "operation_index": 432,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NU-0",
+      "parent_id": "7NT-0",
+      "component": "Text",
+      "name": "示例总体 · 八个交易日",
+      "operation_index": 432,
+      "created_nodes_index": 1,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NV-0",
+      "parent_id": "7NT-0",
+      "component": "Text",
+      "name": "高于50日均线的比例 · % · 刻度4…",
+      "operation_index": 432,
+      "created_nodes_index": 2,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NX-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Eight sessions with an explicit gap",
+      "operation_index": 433,
+      "created_nodes_index": 0,
+      "html_tag": "div"
+    },
+    {
+      "id": "7NY-0",
+      "parent_id": "7NX-0",
+      "component": "SVG",
+      "name": "SVG",
+      "operation_index": 433,
+      "created_nodes_index": 1,
+      "html_tag": "svg"
+    },
+    {
+      "id": "7NZ-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "operation_index": 433,
+      "created_nodes_index": 2,
+      "html_tag": "line"
+    },
+    {
+      "id": "7O0-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "operation_index": 433,
+      "created_nodes_index": 3,
+      "html_tag": "line"
+    },
+    {
+      "id": "7O1-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "operation_index": 433,
+      "created_nodes_index": 4,
+      "html_tag": "line"
+    },
+    {
+      "id": "7O2-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "operation_index": 433,
+      "created_nodes_index": 5,
+      "html_tag": "circle"
+    },
+    {
+      "id": "7O3-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "operation_index": 433,
+      "created_nodes_index": 6,
+      "html_tag": "line"
+    },
+    {
+      "id": "7O4-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "operation_index": 433,
+      "created_nodes_index": 7,
+      "html_tag": "circle"
+    },
+    {
+      "id": "7O5-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "operation_index": 433,
+      "created_nodes_index": 8,
+      "html_tag": "circle"
+    },
+    {
+      "id": "7O6-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "operation_index": 433,
+      "created_nodes_index": 9,
+      "html_tag": "line"
+    },
+    {
+      "id": "7O7-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "operation_index": 433,
+      "created_nodes_index": 10,
+      "html_tag": "circle"
+    },
+    {
+      "id": "7O8-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "operation_index": 433,
+      "created_nodes_index": 11,
+      "html_tag": "line"
+    },
+    {
+      "id": "7O9-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "operation_index": 433,
+      "created_nodes_index": 12,
+      "html_tag": "circle"
+    },
+    {
+      "id": "7OA-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "operation_index": 433,
+      "created_nodes_index": 13,
+      "html_tag": "line"
+    },
+    {
+      "id": "7OB-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "operation_index": 433,
+      "created_nodes_index": 14,
+      "html_tag": "circle"
+    },
+    {
+      "id": "7OC-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "operation_index": 433,
+      "created_nodes_index": 15,
+      "html_tag": "line"
+    },
+    {
+      "id": "7OD-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "operation_index": 433,
+      "created_nodes_index": 16,
+      "html_tag": "circle"
+    },
+    {
+      "id": "7OE-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "80",
+      "operation_index": 433,
+      "created_nodes_index": 17,
+      "html_tag": "div"
+    },
+    {
+      "id": "7OF-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "60",
+      "operation_index": 433,
+      "created_nodes_index": 18,
+      "html_tag": "div"
+    },
+    {
+      "id": "7OG-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "40",
+      "operation_index": 433,
+      "created_nodes_index": 19,
+      "html_tag": "div"
+    },
+    {
+      "id": "7OH-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "10/21",
+      "operation_index": 433,
+      "created_nodes_index": 20,
+      "html_tag": "div"
+    },
+    {
+      "id": "7OI-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "10/23",
+      "operation_index": 433,
+      "created_nodes_index": 21,
+      "html_tag": "div"
+    },
+    {
+      "id": "7OJ-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "10/27",
+      "operation_index": 433,
+      "created_nodes_index": 22,
+      "html_tag": "div"
+    },
+    {
+      "id": "7OK-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "10/30",
+      "operation_index": 433,
+      "created_nodes_index": 23,
+      "html_tag": "div"
+    },
+    {
+      "id": "7OL-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "缺失",
+      "operation_index": 433,
+      "created_nodes_index": 24,
+      "html_tag": "div"
+    }
+  ],
+  "observed_nodes": [
+    {
+      "id": "7IS-0",
+      "parent_id": null,
+      "component": "Frame",
+      "name": "F02 · Macro comparison · 中文 · Light · 390",
+      "depth": 0
+    },
+    {
+      "id": "7IT-0",
+      "parent_id": "7IS-0",
+      "component": "Frame",
+      "name": "F02 candidate provenance",
+      "depth": 1
+    },
+    {
+      "id": "7IU-0",
+      "parent_id": "7IT-0",
+      "component": "Text",
+      "name": "F02 / 390 CSS px / 中…",
+      "depth": 2
+    },
+    {
+      "id": "7IW-0",
+      "parent_id": "7IS-0",
+      "component": "Frame",
+      "name": "Compact application header",
+      "depth": 1
+    },
+    {
+      "id": "7IX-0",
+      "parent_id": "7IW-0",
+      "component": "Text",
+      "name": "MASTERMIND",
+      "depth": 2
+    },
+    {
+      "id": "7IY-0",
+      "parent_id": "7IW-0",
+      "component": "Frame",
+      "name": "中文 control",
+      "depth": 2
+    },
+    {
+      "id": "7IZ-0",
+      "parent_id": "7IY-0",
+      "component": "Text",
+      "name": "中文",
+      "depth": 3
+    },
+    {
+      "id": "7J0-0",
+      "parent_id": "7IW-0",
+      "component": "Frame",
+      "name": "Menu control",
+      "depth": 2
+    },
+    {
+      "id": "7J1-0",
+      "parent_id": "7J0-0",
+      "component": "SVG",
+      "name": "SVG",
+      "depth": 3
+    },
+    {
+      "id": "7J2-0",
+      "parent_id": "7J1-0",
+      "component": "SVGVisualElement",
+      "name": "Path",
+      "depth": 4
+    },
+    {
+      "id": "7J4-0",
+      "parent_id": "7IS-0",
+      "component": "Frame",
+      "name": "390px analytical content",
+      "depth": 1
+    },
+    {
+      "id": "7J6-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Market breadth question and source",
+      "depth": 2
+    },
+    {
+      "id": "7J7-0",
+      "parent_id": "7J6-0",
+      "component": "Text",
+      "name": "市场 / 参与度",
+      "depth": 3
+    },
+    {
+      "id": "7J8-0",
+      "parent_id": "7J6-0",
+      "component": "Frame",
+      "name": "Page heading and source",
+      "depth": 3
+    },
+    {
+      "id": "7J9-0",
+      "parent_id": "7J8-0",
+      "component": "Text",
+      "name": "市场广度",
+      "depth": 4
+    },
+    {
+      "id": "7JA-0",
+      "parent_id": "7J8-0",
+      "component": "Frame",
+      "name": "来源 control",
+      "depth": 4
+    },
+    {
+      "id": "7JB-0",
+      "parent_id": "7JA-0",
+      "component": "Text",
+      "name": "来源",
+      "depth": 5
+    },
+    {
+      "id": "7JC-0",
+      "parent_id": "7J6-0",
+      "component": "Text",
+      "name": "示例总体 · 2026年10月30日20…",
+      "depth": 3
+    },
+    {
+      "id": "7JE-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Participation with coverage and comparator",
+      "depth": 2
+    },
+    {
+      "id": "7JF-0",
+      "parent_id": "7JE-0",
+      "component": "Frame",
+      "name": "Principal observation",
+      "depth": 3
+    },
+    {
+      "id": "7JG-0",
+      "parent_id": "7JF-0",
+      "component": "Text",
+      "name": "66.7%",
+      "depth": 4
+    },
+    {
+      "id": "7JH-0",
+      "parent_id": "7JF-0",
+      "component": "Text",
+      "name": "总体709/1063 · 高于50日",
+      "depth": 4
+    },
+    {
+      "id": "7JI-0",
+      "parent_id": "7JE-0",
+      "component": "Text",
+      "name": "+1.13 pp 较上一交易日",
+      "depth": 3
+    },
+    {
+      "id": "7JJ-0",
+      "parent_id": "7JE-0",
+      "component": "Text",
+      "name": "9/10行业 · 医疗保健0.00 pp…",
+      "depth": 3
+    },
+    {
+      "id": "7JL-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Sector comparison toolbar",
+      "depth": 2
+    },
+    {
+      "id": "7JM-0",
+      "parent_id": "7JL-0",
+      "component": "Text",
+      "name": "行业对比",
+      "depth": 3
+    },
+    {
+      "id": "7JN-0",
+      "parent_id": "7JL-0",
+      "component": "Frame",
+      "name": "查看图表 control",
+      "depth": 3
+    },
+    {
+      "id": "7JO-0",
+      "parent_id": "7JN-0",
+      "component": "Text",
+      "name": "查看图表",
+      "depth": 4
+    },
+    {
+      "id": "7JQ-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Pre-table local overflow cue",
+      "depth": 2
+    },
+    {
+      "id": "7JR-0",
+      "parent_id": "7JQ-0",
+      "component": "Text",
+      "name": "横向滚动查看覆盖率和全部列 →",
+      "depth": 3
+    },
+    {
+      "id": "7JT-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Named sector comparison scroll region",
+      "depth": 2
+    },
+    {
+      "id": "7JU-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Column headings",
+      "depth": 3
+    },
+    {
+      "id": "7JV-0",
+      "parent_id": "7JU-0",
+      "component": "Text",
+      "name": "行业 / 证据",
+      "depth": 4
+    },
+    {
+      "id": "7JW-0",
+      "parent_id": "7JU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7JX-0",
+      "parent_id": "7JW-0",
+      "component": "Text",
+      "name": "高于50D ↓",
+      "depth": 5
+    },
+    {
+      "id": "7JY-0",
+      "parent_id": "7JU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7JZ-0",
+      "parent_id": "7JY-0",
+      "component": "Text",
+      "name": "变动 · pp",
+      "depth": 5
+    },
+    {
+      "id": "7K0-0",
+      "parent_id": "7JU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7K1-0",
+      "parent_id": "7K0-0",
+      "component": "Text",
+      "name": "覆盖范围",
+      "depth": 5
+    },
+    {
+      "id": "7K2-0",
+      "parent_id": "7JU-0",
+      "component": "Text",
+      "name": "定义",
+      "depth": 4
+    },
+    {
+      "id": "7K4-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Technology",
+      "depth": 3
+    },
+    {
+      "id": "7K5-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7K6-0",
+      "parent_id": "7K5-0",
+      "component": "Text",
+      "name": "科技",
+      "depth": 5
+    },
+    {
+      "id": "7K7-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7K8-0",
+      "parent_id": "7K7-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7K9-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7KA-0",
+      "parent_id": "7K9-0",
+      "component": "Text",
+      "name": "72.4%",
+      "depth": 5
+    },
+    {
+      "id": "7KB-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7KC-0",
+      "parent_id": "7KB-0",
+      "component": "Text",
+      "name": "+2.10",
+      "depth": 5
+    },
+    {
+      "id": "7KD-0",
+      "parent_id": "7K4-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7KE-0",
+      "parent_id": "7KD-0",
+      "component": "Text",
+      "name": "286 / 286",
+      "depth": 5
+    },
+    {
+      "id": "7KF-0",
+      "parent_id": "7K4-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7KH-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Industrials",
+      "depth": 3
+    },
+    {
+      "id": "7KI-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7KJ-0",
+      "parent_id": "7KI-0",
+      "component": "Text",
+      "name": "工业",
+      "depth": 5
+    },
+    {
+      "id": "7KK-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7KL-0",
+      "parent_id": "7KK-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7KM-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7KN-0",
+      "parent_id": "7KM-0",
+      "component": "Text",
+      "name": "70.8%",
+      "depth": 5
+    },
+    {
+      "id": "7KO-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7KP-0",
+      "parent_id": "7KO-0",
+      "component": "Text",
+      "name": "+1.50",
+      "depth": 5
+    },
+    {
+      "id": "7KQ-0",
+      "parent_id": "7KH-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7KR-0",
+      "parent_id": "7KQ-0",
+      "component": "Text",
+      "name": "267 / 267",
+      "depth": 5
+    },
+    {
+      "id": "7KS-0",
+      "parent_id": "7KH-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7KU-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Financials",
+      "depth": 3
+    },
+    {
+      "id": "7KV-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7KW-0",
+      "parent_id": "7KV-0",
+      "component": "Text",
+      "name": "金融",
+      "depth": 5
+    },
+    {
+      "id": "7KX-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7KY-0",
+      "parent_id": "7KX-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7KZ-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7L0-0",
+      "parent_id": "7KZ-0",
+      "component": "Text",
+      "name": "69.2%",
+      "depth": 5
+    },
+    {
+      "id": "7L1-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7L2-0",
+      "parent_id": "7L1-0",
+      "component": "Text",
+      "name": "+0.60",
+      "depth": 5
+    },
+    {
+      "id": "7L3-0",
+      "parent_id": "7KU-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7L4-0",
+      "parent_id": "7L3-0",
+      "component": "Text",
+      "name": "500 / 500",
+      "depth": 5
+    },
+    {
+      "id": "7L5-0",
+      "parent_id": "7KU-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7L7-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Communication services",
+      "depth": 3
+    },
+    {
+      "id": "7L8-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7L9-0",
+      "parent_id": "7L8-0",
+      "component": "Text",
+      "name": "通信服务",
+      "depth": 5
+    },
+    {
+      "id": "7LA-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7LB-0",
+      "parent_id": "7LA-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7LC-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7LD-0",
+      "parent_id": "7LC-0",
+      "component": "Text",
+      "name": "66.7%",
+      "depth": 5
+    },
+    {
+      "id": "7LE-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7LF-0",
+      "parent_id": "7LE-0",
+      "component": "Text",
+      "name": "+1.13",
+      "depth": 5
+    },
+    {
+      "id": "7LG-0",
+      "parent_id": "7L7-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7LH-0",
+      "parent_id": "7LG-0",
+      "component": "Text",
+      "name": "177 / 177",
+      "depth": 5
+    },
+    {
+      "id": "7LI-0",
+      "parent_id": "7L7-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7LK-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Consumer discretionary",
+      "depth": 3
+    },
+    {
+      "id": "7LL-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7LM-0",
+      "parent_id": "7LL-0",
+      "component": "Text",
+      "name": "可选消费",
+      "depth": 5
+    },
+    {
+      "id": "7LN-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7LO-0",
+      "parent_id": "7LN-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7LP-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7LQ-0",
+      "parent_id": "7LP-0",
+      "component": "Text",
+      "name": "63.5%",
+      "depth": 5
+    },
+    {
+      "id": "7LR-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7LS-0",
+      "parent_id": "7LR-0",
+      "component": "Text",
+      "name": "-0.80",
+      "depth": 5
+    },
+    {
+      "id": "7LT-0",
+      "parent_id": "7LK-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7LU-0",
+      "parent_id": "7LT-0",
+      "component": "Text",
+      "name": "375 / 375",
+      "depth": 5
+    },
+    {
+      "id": "7LV-0",
+      "parent_id": "7LK-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7LX-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Health care",
+      "depth": 3
+    },
+    {
+      "id": "7LY-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7LZ-0",
+      "parent_id": "7LY-0",
+      "component": "Text",
+      "name": "医疗保健",
+      "depth": 5
+    },
+    {
+      "id": "7M0-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7M1-0",
+      "parent_id": "7M0-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7M2-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7M3-0",
+      "parent_id": "7M2-0",
+      "component": "Text",
+      "name": "61.1%",
+      "depth": 5
+    },
+    {
+      "id": "7M4-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7M5-0",
+      "parent_id": "7M4-0",
+      "component": "Text",
+      "name": "0.00",
+      "depth": 5
+    },
+    {
+      "id": "7M6-0",
+      "parent_id": "7LX-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7M7-0",
+      "parent_id": "7M6-0",
+      "component": "Text",
+      "name": "54 / 54",
+      "depth": 5
+    },
+    {
+      "id": "7M8-0",
+      "parent_id": "7LX-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7MA-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Utilities",
+      "depth": 3
+    },
+    {
+      "id": "7MB-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7MC-0",
+      "parent_id": "7MB-0",
+      "component": "Text",
+      "name": "公用事业",
+      "depth": 5
+    },
+    {
+      "id": "7MD-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7ME-0",
+      "parent_id": "7MD-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7MF-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7MG-0",
+      "parent_id": "7MF-0",
+      "component": "Text",
+      "name": "58.3%",
+      "depth": 5
+    },
+    {
+      "id": "7MH-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7MI-0",
+      "parent_id": "7MH-0",
+      "component": "Text",
+      "name": "-1.20",
+      "depth": 5
+    },
+    {
+      "id": "7MJ-0",
+      "parent_id": "7MA-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7MK-0",
+      "parent_id": "7MJ-0",
+      "component": "Text",
+      "name": "333 / 333",
+      "depth": 5
+    },
+    {
+      "id": "7ML-0",
+      "parent_id": "7MA-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7MN-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Consumer staples",
+      "depth": 3
+    },
+    {
+      "id": "7MO-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7MP-0",
+      "parent_id": "7MO-0",
+      "component": "Text",
+      "name": "日常消费",
+      "depth": 5
+    },
+    {
+      "id": "7MQ-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7MR-0",
+      "parent_id": "7MQ-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7MS-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7MT-0",
+      "parent_id": "7MS-0",
+      "component": "Text",
+      "name": "55.6%",
+      "depth": 5
+    },
+    {
+      "id": "7MU-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7MV-0",
+      "parent_id": "7MU-0",
+      "component": "Text",
+      "name": "+0.40",
+      "depth": 5
+    },
+    {
+      "id": "7MW-0",
+      "parent_id": "7MN-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7MX-0",
+      "parent_id": "7MW-0",
+      "component": "Text",
+      "name": "250 / 250",
+      "depth": 5
+    },
+    {
+      "id": "7MY-0",
+      "parent_id": "7MN-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7N0-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Materials",
+      "depth": 3
+    },
+    {
+      "id": "7N1-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7N2-0",
+      "parent_id": "7N1-0",
+      "component": "Text",
+      "name": "原材料",
+      "depth": 5
+    },
+    {
+      "id": "7N3-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7N4-0",
+      "parent_id": "7N3-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7N5-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7N6-0",
+      "parent_id": "7N5-0",
+      "component": "Text",
+      "name": "52.2%",
+      "depth": 5
+    },
+    {
+      "id": "7N7-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7N8-0",
+      "parent_id": "7N7-0",
+      "component": "Text",
+      "name": "-0.60",
+      "depth": 5
+    },
+    {
+      "id": "7N9-0",
+      "parent_id": "7N0-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7NA-0",
+      "parent_id": "7N9-0",
+      "component": "Text",
+      "name": "500 / 500",
+      "depth": 5
+    },
+    {
+      "id": "7NB-0",
+      "parent_id": "7N0-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7ND-0",
+      "parent_id": "7JT-0",
+      "component": "Frame",
+      "name": "Sector Energy",
+      "depth": 3
+    },
+    {
+      "id": "7NE-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7NF-0",
+      "parent_id": "7NE-0",
+      "component": "Text",
+      "name": "能源",
+      "depth": 5
+    },
+    {
+      "id": "7NG-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "证据 control",
+      "depth": 4
+    },
+    {
+      "id": "7NH-0",
+      "parent_id": "7NG-0",
+      "component": "Text",
+      "name": "证据",
+      "depth": 5
+    },
+    {
+      "id": "7NI-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7NJ-0",
+      "parent_id": "7NI-0",
+      "component": "Text",
+      "name": "—",
+      "depth": 5
+    },
+    {
+      "id": "7NK-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7NL-0",
+      "parent_id": "7NK-0",
+      "component": "Text",
+      "name": "—",
+      "depth": 5
+    },
+    {
+      "id": "7NM-0",
+      "parent_id": "7ND-0",
+      "component": "Frame",
+      "name": "Frame",
+      "depth": 4
+    },
+    {
+      "id": "7NN-0",
+      "parent_id": "7NM-0",
+      "component": "Text",
+      "name": "0 / 82",
+      "depth": 5
+    },
+    {
+      "id": "7NO-0",
+      "parent_id": "7ND-0",
+      "component": "Text",
+      "name": "高于50日均线",
+      "depth": 4
+    },
+    {
+      "id": "7NQ-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Table coverage reminder",
+      "depth": 2
+    },
+    {
+      "id": "7NR-0",
+      "parent_id": "7NQ-0",
+      "component": "Text",
+      "name": "10行 · 横向滚动查看覆盖率和全部列 …",
+      "depth": 3
+    },
+    {
+      "id": "7NT-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Supporting history heading",
+      "depth": 2
+    },
+    {
+      "id": "7NU-0",
+      "parent_id": "7NT-0",
+      "component": "Text",
+      "name": "示例总体 · 八个交易日",
+      "depth": 3
+    },
+    {
+      "id": "7NV-0",
+      "parent_id": "7NT-0",
+      "component": "Text",
+      "name": "高于50日均线的比例 · % · 刻度4…",
+      "depth": 3
+    },
+    {
+      "id": "7NX-0",
+      "parent_id": "7J4-0",
+      "component": "Frame",
+      "name": "Eight sessions with an explicit gap",
+      "depth": 2
+    },
+    {
+      "id": "7NY-0",
+      "parent_id": "7NX-0",
+      "component": "SVG",
+      "name": "SVG",
+      "depth": 3
+    },
+    {
+      "id": "7NZ-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "depth": 4
+    },
+    {
+      "id": "7O0-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "depth": 4
+    },
+    {
+      "id": "7O1-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "depth": 4
+    },
+    {
+      "id": "7O2-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "depth": 4
+    },
+    {
+      "id": "7O3-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "depth": 4
+    },
+    {
+      "id": "7O4-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "depth": 4
+    },
+    {
+      "id": "7O5-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "depth": 4
+    },
+    {
+      "id": "7O6-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "depth": 4
+    },
+    {
+      "id": "7O7-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "depth": 4
+    },
+    {
+      "id": "7O8-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "depth": 4
+    },
+    {
+      "id": "7O9-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "depth": 4
+    },
+    {
+      "id": "7OA-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "depth": 4
+    },
+    {
+      "id": "7OB-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "depth": 4
+    },
+    {
+      "id": "7OC-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Line",
+      "depth": 4
+    },
+    {
+      "id": "7OD-0",
+      "parent_id": "7NY-0",
+      "component": "SVGVisualElement",
+      "name": "Circle",
+      "depth": 4
+    },
+    {
+      "id": "7OE-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "80",
+      "depth": 3
+    },
+    {
+      "id": "7OF-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "60",
+      "depth": 3
+    },
+    {
+      "id": "7OG-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "40",
+      "depth": 3
+    },
+    {
+      "id": "7OH-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "10/21",
+      "depth": 3
+    },
+    {
+      "id": "7OI-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "10/23",
+      "depth": 3
+    },
+    {
+      "id": "7OJ-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "10/27",
+      "depth": 3
+    },
+    {
+      "id": "7OK-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "10/30",
+      "depth": 3
+    },
+    {
+      "id": "7OL-0",
+      "parent_id": "7NX-0",
+      "component": "Text",
+      "name": "缺失",
+      "depth": 3
+    }
+  ]
+}

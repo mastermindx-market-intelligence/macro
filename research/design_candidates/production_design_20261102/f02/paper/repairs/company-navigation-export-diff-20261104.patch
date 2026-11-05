@@ -1,0 +1,30 @@
+--- r1/company-dark.jsx
++++ current/company-dark.jsx
+@@ -302,10 +302,10 @@
+           </div>
+           <div id="5CA-0" style={{ boxSizing: 'border-box', display: 'flex', flexShrink: '0', justifyContent: 'space-between', paddingBottom: '10px', paddingTop: '20px', width: '1168px' }}>
+             <div id="5CB-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+-              EXM · annual statements · USD bn unless labeled
++              EXM · annual statements · Showing FY 2022–2026 · USD bn unless labeled
+             </div>
+             <div id="5CC-0" style={{ boxSizing: 'border-box', color: '#A7C9F1', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+-              ← Earlier periods FY 2022–2026
++              ← Earlier periods
+             </div>
+           </div>
+           <div id="5CE-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-raised)', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', width: '1168px' }}>
+--- r1/company-light.jsx
++++ current/company-light.jsx
+@@ -302,10 +302,10 @@
+           </div>
+           <div id="5N3-0" style={{ boxSizing: 'border-box', display: 'flex', flexShrink: '0', justifyContent: 'space-between', paddingBottom: '10px', paddingTop: '20px', width: '1168px' }}>
+             <div id="5N5-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', width: 'max-content' }}>
+-              EXM · annual statements · USD bn unless labeled
++              EXM · annual statements · Showing FY 2022–2026 · USD bn unless labeled
+             </div>
+             <div id="5N4-0" style={{ boxSizing: 'border-box', color: '#235B8E', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', width: 'max-content' }}>
+-              ← Earlier periods FY 2022–2026
++              ← Earlier periods
+             </div>
+           </div>
+           <div id="5MM-0" style={{ alignItems: 'center', backgroundColor: '#F0F0ED', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '38px', width: '1168px' }}>

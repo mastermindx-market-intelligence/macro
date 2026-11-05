@@ -1,0 +1,102 @@
+{
+  "observed_at": "2026-11-03T02:47:09.878Z",
+  "scope": "Pure source-model, fixture, identity and generated-SVG-text checks. No browser, DOM, focus, scroll, pixel, font, input, service or Paper execution.",
+  "html_sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+  "result": "PASS_WITH_SCOPE_LIMITS",
+  "state_combinations": 480,
+  "read_invariance_transitions": 3360,
+  "combined_stale_partial_pending_saved_warnings": "unchanged",
+  "pending_then_access_expired": "uncertain",
+  "evidence_records_checked": 59,
+  "overview_entrypoints_checked": 4,
+  "observation_admission_cases": 96,
+  "identity_uniqueness": "pass for distinct observations; overview aliases are deliberate references to the same observation",
+  "language_invariant_identities": "pass",
+  "options_observed_window_and_expiry": "separate",
+  "company": {
+    "fiscal_periods": 17,
+    "series": 5,
+    "statement_columns": 5
+  },
+  "chart_source_geometry": [
+    {
+      "consumer": "macro",
+      "container_width": 288,
+      "svg_css_width": 288,
+      "kind": "responsive_geometry"
+    },
+    {
+      "consumer": "macro",
+      "container_width": 358,
+      "svg_css_width": 358,
+      "kind": "responsive_geometry"
+    },
+    {
+      "consumer": "macro",
+      "container_width": 740,
+      "svg_css_width": 740,
+      "kind": "responsive_geometry"
+    },
+    {
+      "consumer": "macro",
+      "container_width": 1024,
+      "svg_css_width": 1024,
+      "kind": "responsive_geometry"
+    },
+    {
+      "consumer": "options",
+      "container_width": 288,
+      "svg_css_width": 288,
+      "kind": "responsive_geometry"
+    },
+    {
+      "consumer": "options",
+      "container_width": 358,
+      "svg_css_width": 358,
+      "kind": "responsive_geometry"
+    },
+    {
+      "consumer": "options",
+      "container_width": 740,
+      "svg_css_width": 740,
+      "kind": "responsive_geometry"
+    },
+    {
+      "consumer": "options",
+      "container_width": 1024,
+      "svg_css_width": 1024,
+      "kind": "responsive_geometry"
+    },
+    {
+      "consumer": "company",
+      "container_width": 288,
+      "svg_css_width": 840,
+      "kind": "scoped_horizontal_scroll"
+    },
+    {
+      "consumer": "company",
+      "container_width": 358,
+      "svg_css_width": 840,
+      "kind": "scoped_horizontal_scroll"
+    },
+    {
+      "consumer": "company",
+      "container_width": 740,
+      "svg_css_width": 840,
+      "kind": "scoped_horizontal_scroll"
+    },
+    {
+      "consumer": "company",
+      "container_width": 1024,
+      "svg_css_width": 1024,
+      "kind": "responsive_geometry"
+    }
+  ],
+  "remaining_runtime_checks": [
+    "keyboard and touch evidence return",
+    "focus and scroll after sort/filter",
+    "actual chart label size and CJK glyphs",
+    "400 percent zoom and reduced/forced-color rendering",
+    "real source/access/save integration"
+  ]
+}

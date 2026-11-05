@@ -1,0 +1,148 @@
+{
+  "schema": "f02.scoped-native-affected-delta.v1",
+  "observed_at": "2026-11-04T02:01:41.491946+00:00",
+  "preceding_input_commit": "6b72172aec810aa7795e5a50d4be9ca2dde5cf5b",
+  "source_handoff_parent_commit": "c985c24e2558dbd4211d34e7bac2e62e50506ba3",
+  "preceding_manifest_sha256": "0eac20b511c6c35efa1f33d85f763357ac5055965c62217eb26fb85561f077ad",
+  "preceding_aggregate_sha256": "f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445",
+  "changed_artifacts": [
+    {
+      "path": "paper/screenshots/company-dark.jpg",
+      "before_sha256": "7b8c24a06d00bd169dccf8d8f0246912a99d1b7b9c4c512aba1c24c93a412898",
+      "after_sha256": "bff7d506be5a964450a71a76eb8bedcaeee16790ea8df83246fd28e5d26bbaa0",
+      "bytes": 232274
+    },
+    {
+      "path": "paper/exports/company-dark.jsx",
+      "before_sha256": "7722f029eb8d4382ee02cb2b2be782018d456bed682e6afa0d27f1f535c077fb",
+      "after_sha256": "47459d21a0c1e5fa2692020cf8a9b868a760c3a559651075e0f0d9161efd5c24",
+      "bytes": 114462
+    },
+    {
+      "path": "paper/screenshots/company-light.jpg",
+      "before_sha256": "837cd955e8121401f55993aa3fbec3ddedc7e5517d3fad93ba862c81e073f2fd",
+      "after_sha256": "1593519d6658b6e6d074a8a3911eb98aff0a00e305d2b4c9f7d4f660d9794d4d",
+      "bytes": 234566
+    },
+    {
+      "path": "paper/exports/company-light.jsx",
+      "before_sha256": "0187ceb77de01d4b7fa49791400e27d717a7930888023dce95ec6c10a68c62ba",
+      "after_sha256": "ca0613e8116c982aa3aa5e11f7c1c3aec4778f0d66c511803d8b7f01d9bb22c4",
+      "bytes": 112068
+    },
+    {
+      "path": "paper/screenshots/controls.jpg",
+      "before_sha256": "80ab5b3d90092d7f69ea87fb338918a05e9b8f4046928f174b26cb7301d26ff3",
+      "after_sha256": "82dc8a33eaffbf485a601348da49cdca597ddaaf380a9dbb9ed55d8d3fa6181b",
+      "bytes": 224071
+    },
+    {
+      "path": "paper/exports/controls.jsx",
+      "before_sha256": "7f3e82a322b57358d84c48d339b90d5f9ae9422dd20cb359e09705481f5d9772",
+      "after_sha256": "9c5b72b75ab9fc9564cfb1ea7b4e3b9c96d15875c527ad74388313200d699423",
+      "bytes": 20482
+    },
+    {
+      "path": "paper/screenshots/readme.jpg",
+      "before_sha256": "93c1f414f7c68b7dd8ed8237975f6834608846558095961ecff2b3e84a48399c",
+      "after_sha256": "e6181d0ff701d97a044e035ffbf7a2091352dbbe639022bd8821d2ed736b226a",
+      "bytes": 330306
+    },
+    {
+      "path": "paper/exports/readme.jsx",
+      "before_sha256": "2010f86873c70cb051113aa585406c46b5cdbe4516c2827b49585e85b323b334",
+      "after_sha256": "c5dea90ad66dd10c701b6f04506d43964453e8bb2c90dc0224beed0ceb9a7db2",
+      "bytes": 24381
+    }
+  ],
+  "operations": [
+    {
+      "id": "f02-r2-company-dark-history-navigation-20261104-01",
+      "board": "company-dark",
+      "tool": "set_text_content",
+      "targets": [
+        "5CB-0",
+        "5CC-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T01:51:01.061Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": {
+        "key": "company-dark",
+        "finding": "R2-P-001",
+        "scope": "Separate current table window from earlier-period navigation; preserve D07 ownership, table values and history."
+      }
+    },
+    {
+      "id": "f02-r2-company-light-history-navigation-20261104-01",
+      "board": "company-light",
+      "tool": "set_text_content",
+      "targets": [
+        "5N5-0",
+        "5N4-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T01:51:15.955Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": {
+        "key": "company-light",
+        "finding": "R2-P-001",
+        "scope": "Separate current table window from earlier-period navigation; preserve D07 ownership, table values and history."
+      }
+    },
+    {
+      "id": "f02-r2-controls-action-hierarchy-20261104-01",
+      "board": "controls",
+      "tool": "update_styles",
+      "targets": [
+        "4KA-0",
+        "4KB-0",
+        "4KC-0",
+        "4KE-0",
+        "4KF-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T01:59:52.377Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Native Taste R2-T-001; align general controls with unchanged accepted primary/secondary/quiet variants on 771-0; preserve node IDs, 44px targets, labels and domain/save ownership."
+    },
+    {
+      "id": "f02-r2-readme-excluded-index-20261104-01",
+      "board": "readme",
+      "tool": "set_text_content",
+      "targets": [
+        "9RW-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T01:59:56.997Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Native Taste R2-T-003; label original Chinese comparison exclusion inline and distinguish its separately accepted partial evidence-return companion; no mutation of held target."
+    }
+  ],
+  "first_pass_reports": [
+    {
+      "path": "paper/reviews/native-product-r2-first-pass.md",
+      "sha256": "76c3d6ae2b2dcd10dcdf595cf2623a45725df505ac7c2c2f71804f4cf0ef20e2"
+    },
+    {
+      "path": "paper/reviews/native-taste-r2-first-pass.md",
+      "sha256": "da8f0f2044446c592797d9a1b752a6559068548d1d8eb467aba485bf82bb6ae6"
+    }
+  ],
+  "scope": "Four affected full board pairs; preserve 27 unchanged full pairs, all eight supplements, all seven baselines and capability ledger. Original Chinese comparison remains excluded.",
+  "author_visual_observation": "Actual post-edit full captures inspected: Company range caption and earlier-period action separated in both themes; Controls primary/secondary/quiet hierarchy matches unchanged variants; Read me marks exclusion and partial companion inline. No clipping or overlap observed in these four captures. Independent affected review pending.",
+  "runtime_proof": "NOT_RUN",
+  "approval": false
+}

@@ -1,0 +1,66 @@
+{
+  "canonical_record": {
+    "path": "/workspace/scratch/55964f568673/f02/paper/native-current-verification.json",
+    "bytes": 111401,
+    "sha256": "74c7a561feeb0a5a4b3e78429a87e7a2797b37e157a07ee4e98d67b91a982d3b",
+    "repository": "mastermindx-market-intelligence/macro",
+    "head": "6db372b13e208ace22b6d3472a9dbcc9b61ff888",
+    "git_blob": "9dd9ef60ec64cd65804ea4d6e857aa140ab8f91d",
+    "field": "$.boards[key=macro-light-zh-390].latest_scoped_capture"
+  },
+  "original_recorded_capture": {
+    "key": "macro-light-zh-390--in-progress",
+    "boardKey": "macro-light-zh-390",
+    "boardId": "7IS-0",
+    "nodeId": "7IS-0",
+    "stepKey": null,
+    "capture_state": "IN_PROGRESS_21_OF23_CONFIRMED_FOOTER_UNRESOLVED",
+    "captured_at": "2026-11-03T06:40:32.467Z",
+    "operations_through": 435,
+    "source_input": {
+      "key": "macro-light-zh-390",
+      "path": "f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "pageId": "p-5-0"
+    },
+    "screenshot": "f02/paper/screenshots/macro-light-zh-390--in-progress.jpg",
+    "jsx": "f02/paper/exports/macro-light-zh-390--in-progress.jsx",
+    "mime_type": "image/jpeg",
+    "screenshot_sha256": "563f312cf109a91e992fcd317905ebd8b48d93fd8808c184d4375857e15427e9",
+    "jsx_sha256": "adf6f90dea30d3773916cb06ecae4ff8f2794855364cea7813bea14c97343a6c",
+    "screenshot_bytes": 69446,
+    "verdict": "PASS_PARTIAL_ONLY: ten Chinese comparison rows and seven-point gap chart fit cleanly; complete key/clock footer and implementation note are absent, with one transport outcome unresolved. No completion or browser behavior claim."
+  },
+  "pairs": [
+    {
+      "kind": "jsx",
+      "historical_file": {
+        "path": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--in-progress.jsx",
+        "bytes": 41342,
+        "sha256": "adf6f90dea30d3773916cb06ecae4ff8f2794855364cea7813bea14c97343a6c"
+      },
+      "fresh_file": {
+        "path": "/workspace/scratch/0638a6b73079/f02-g15-forensics/live-reconciliation/board-before.jsx",
+        "bytes": 41342,
+        "sha256": "adf6f90dea30d3773916cb06ecae4ff8f2794855364cea7813bea14c97343a6c"
+      },
+      "equal_bytes": true,
+      "matches_canonical_recorded_hash": true
+    },
+    {
+      "kind": "screenshot",
+      "historical_file": {
+        "path": "/workspace/scratch/55964f568673/f02/paper/screenshots/macro-light-zh-390--in-progress.jpg",
+        "bytes": 69446,
+        "sha256": "563f312cf109a91e992fcd317905ebd8b48d93fd8808c184d4375857e15427e9"
+      },
+      "fresh_file": {
+        "path": "/workspace/scratch/0638a6b73079/f02-g15-forensics/live-reconciliation/board-before.jpg",
+        "bytes": 69446,
+        "sha256": "563f312cf109a91e992fcd317905ebd8b48d93fd8808c184d4375857e15427e9"
+      },
+      "equal_bytes": true,
+      "matches_canonical_recorded_hash": true
+    }
+  ]
+}

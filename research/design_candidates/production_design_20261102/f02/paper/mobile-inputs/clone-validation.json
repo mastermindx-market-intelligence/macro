@@ -1,0 +1,21 @@
+{
+  "status": "PASS_INPUT_DIFF_COMPLETENESS_ONLY",
+  "clone_plan_sha256": "1885ae79561f03e6788da97f11a94a610b4e13ea816d0797962df9841f50da17",
+  "source_input_sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+  "pairs": [
+    {
+      "source": "macro-dark-en-390",
+      "target": "macro-light-zh-390",
+      "delta_replay_equals_target_semantics": true,
+      "steps_checked": 23,
+      "native_render_or_mapping_proven": false
+    },
+    {
+      "source": "company-eps-overlay-320",
+      "target": "company-dividend-overlay-320",
+      "delta_replay_equals_target_semantics": true,
+      "steps_checked": 21,
+      "native_render_or_mapping_proven": false
+    }
+  ]
+}

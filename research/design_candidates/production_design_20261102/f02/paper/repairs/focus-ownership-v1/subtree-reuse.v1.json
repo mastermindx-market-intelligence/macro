@@ -1,0 +1,35 @@
+{
+  "schema": "f02.paper.responsive-subtree-reuse.v2",
+  "status": "SOURCE_EQUALITY_ONLY_NOT_NATIVE_QUALIFICATION",
+  "source_packets": {
+    "effective/mobile-state-boards.json": "9dfeb781a0f7b579f3a7974def0a2fa8689fe3702a32462920c74a8fad93c4a9",
+    "effective/supplemental-boards.json": "c9a77c382cb7bf6e4c8a7656483087e4a16c89d5d8fd0b7ecbca1d4e3fd25729"
+  },
+  "candidates": [
+    {
+      "source_board_key": "macro-light-zh-390",
+      "source_step_key": "sector-3",
+      "target_board_key": "macro-zh-evidence-return-390",
+      "target_step_key": "returned-selected-row",
+      "source_html_sha256": "e86bfa9adb90804bebab0bc05cd430c549c16d196fff0e2deae0e85e13556022",
+      "target_html_sha256": "e86bfa9adb90804bebab0bc05cd430c549c16d196fff0e2deae0e85e13556022",
+      "byte_equal": true,
+      "dependency": "Source row alignment is prepared only. Direct construction from the new target HTML does not require native cloning. A clone requires same-carrier current source inspection and actual descendant mapping; preserve any unresolved source-target fence."
+    },
+    {
+      "source_board_key": "width-768-overlay",
+      "source_step_key": "overlay",
+      "target_board_key": "width-1024-overlay",
+      "target_step_key": "overlay",
+      "include_descendants": true,
+      "subtree_steps": 10,
+      "source_subtree_sha256": "b23e8d384117e69efe33ffffc6a010facbdca5dc29bf0c3bf35d9a6ac52eb804",
+      "target_subtree_sha256": "b23e8d384117e69efe33ffffc6a010facbdca5dc29bf0c3bf35d9a6ac52eb804",
+      "byte_equal": true,
+      "dependency": "Only the 440px sheet and descendants match. Viewport, backdrop, rail and primary widths differ. Native mapping and current target parents remain unobserved here. Conditional focus text is incorporated in these new subtree hashes; prior subtree hashes are historical."
+    }
+  ],
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "focus_ownership_revision": 1
+}

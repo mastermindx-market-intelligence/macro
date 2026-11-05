@@ -1,0 +1,59 @@
+{
+  "schema": "f02.paper.native-board-return.v1",
+  "date_utc": "2026-11-04",
+  "design_pr": 10630,
+  "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "paper_file_title": "Mastermind Product Design System — Canonical",
+  "page_id": "p-5-0",
+  "board_key": "macro-light-zh-390",
+  "board_node_id": "7IS-0",
+  "board_body_node_id": "7J4-0",
+  "capture_methods": [
+    "paper_read.get_screenshot(fileId,nodeId,scale=1)",
+    "paper_read.get_jsx(fileId,nodeId)"
+  ],
+  "no_intervening_paper_mutation_between_capture": true,
+  "current_added_children": [
+    {
+      "id": "9SE-0",
+      "purpose": "Chart coverage and exact-value action"
+    },
+    {
+      "id": "9SM-0",
+      "purpose": "Adjacent mobile build contract"
+    }
+  ],
+  "numeric_frames_count": 33,
+  "numeric_styles_verified": {
+    "display": "flex",
+    "flex_direction": "column",
+    "align_items": "end",
+    "justify_content": "center",
+    "text_align": "right",
+    "observed": 33,
+    "expected": 33
+  },
+  "capture": {
+    "screenshot": "paper/screenshots/macro-light-zh-390.jpg",
+    "screenshot_format": "image/jpeg",
+    "screenshot_git_blob_sha": "1787483ed86b368de4cd2712c24be177420f6fde",
+    "jsx": "paper/exports/macro-light-zh-390.jsx",
+    "jsx_git_blob_sha": "f0f1199e478588f78d03fc5401be562a360dd6e5",
+    "screenshot_sha256": "adfc12f315dd8a95c18f96095ed98fbae57ffece991e7a8349ccec554bfb3d35",
+    "screenshot_bytes": 98152,
+    "jsx_sha256": "ace4135ce71a5e2114fd5603cc746cb06d6527b3e5412b307ac76ffa4a577363",
+    "jsx_bytes": 47639,
+    "direct_read_start_utc": "2026-11-05T00:00:34.884Z",
+    "direct_screenshot_complete_utc": "2026-11-05T00:00:37.123Z",
+    "direct_jsx_complete_utc": "2026-11-05T00:00:39.042Z",
+    "exact_byte_equal_to_head": true
+  },
+  "observation": "Native Paper screenshot visually reviewed: full 390px Chinese board, right-aligned comparative values, chart, source action, footer and build note present. JSX root and added groups directly observed.",
+  "constraints": {
+    "final_native_32_board_freeze": "ARTIFACTS_COMPLETE_PENDING_HISTORICAL_G15_AND_FINAL_RECEIPT_ACCEPTANCE",
+    "portable_role_bindings": "REGENERATE_FROM_RECONCILED_WRITER",
+    "company_value_400pct_focus": "STATIC_CSS_FIX_PUBLISHED; ACTUAL_BROWSER_VISIBILITY_UNVERIFIED_DUE_BROWSER_POLICY_DENIAL",
+    "not_a_production_acceptance": true,
+    "historical_g15": "TRANSPORT_ERROR_EFFECT_UNRESOLVED; later same-carrier ABSENT_ON_RECONCILIATION does not constitute historical terminal response"
+  }
+}

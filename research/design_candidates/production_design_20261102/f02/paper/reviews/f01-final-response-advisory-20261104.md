@@ -1,0 +1,63 @@
+# F01 candidate.4 — final qualified-response advisory
+
+## Decision
+
+**The two previously identified F02 focus wording findings are resolved in the local bytes examined. Qualified source concurrence with F01 candidate.4 is supported.** No further semantic repair is required for the bounded Brain/focus/overlay/shared-component clauses examined here.
+
+This report drafts an F02 owner response; it does not submit that response, issue a GitHub review, grant implementation authority, or provide native Product/Taste judgment. No Paper/browser actions or repository mutations were performed. Only this advisory file was written. The compatible protected Mastermind pin `910803421beca53ca25145392725ab2d84c7a8e9` was retained.
+
+## Verified inputs and important binding change
+
+| Input | Read-only verification |
+| --- | --- |
+| [F01 PR #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645) | Current observed head `99df25eec943be94ffdfa46019dee7f510c93b3d`; open, Draft, unmerged. This is a point-in-time read, not a watcher. |
+| [Current F01 joint contract](https://github.com/mastermindx-market-intelligence/macro/blob/99df25eec943be94ffdfa46019dee7f510c93b3d/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) | Git blob **`ff096fbde114fa14f218f48b8e3dc54a6646ee04`**. It now explicitly records F02's candidate.4 policy concurrence at `e6c28413ee74e83950b8c5ff58a34b81e76c1781`. Its administrative/status text changed; the current file must not be identified as old blob `1160f14…`. |
+| [Earlier semantic freeze](https://github.com/mastermindx-market-intelligence/macro/blob/8926b16af4e0c3e5310cdb4cf057390ec04d18ff/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) | Git blob `1160f14b108bf0948384f59a249320385a1dfb6c`. Direct comparison of both retrieved texts confirmed that **§2 through the end is byte-identical**. This supports continued use of the unchanged operative clauses; it does not make the whole newer document or PR identical. |
+| [Review #5760649569](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569) | Actual submitted review, state **APPROVED**, reviewer `mastermindxryan`, submitted `2026-11-03T22:55:10Z`; PR author `mastermidx4` is distinct. The review's own stated binding is `3e334bd3eabf1d6ecc7980845fbd7a813dd023e1`, semantic freeze `8926b16…`, blob `1160f14…`. Its scope is bounded SOURCE-CONTRACT / HANDOFF only. Both the review list and numeric-ID discussion entry were read. The normalized result did not expose a separate API `commit_id`; the exact commit binding stated here is the review's explicit recorded scope. |
+| Local handshake | Located as `F01_HANDSHAKE_CANDIDATE.md`, not `F01_F02_HANDSHAKE.md`, under `/workspace/scratch/55964f568673/f02`. SHA-256 `ed4db7383dca1e232383d45686808a39060a125b1a6bc160f7a354c64363e540`. It explicitly separates retained candidate.2 geometry from candidate.4 ownership/change-table and §§4.1–4.3 source-policy concurrence and remaining proof. |
+| Local SOURCE_AND_DATA_CONTRACT.md | SHA-256 **`47eaca2bfab2b804e7cdae9a8f701d307c4c07ca4b534f0e397dd40d25322a6c`**. The restoration-visible-target clause now starts with legitimate restoration ownership, supplies a valid fallback, and preserves intentional focus elsewhere without forced restoration or scroll. Finding resolved in source. |
+| Local INTERACTION_STATES.md | SHA-256 **`f23aced9b5de482fc0c211b12d4ebf3d44ef9a9ec6f6eb4a3dc0129062480a65`**. The filtered-row test now distinguishes inspector-owned focus from deliberate focus outside it, with positive fallback and negative focus-stealing cases. Finding resolved in source. |
+
+F02 `e6c28413ee74e83950b8c5ff58a34b81e76c1781` is the accepted canonical baseline supplied by root. The two corrected local files are **newer local work awaiting the owner's immutable freeze**; this report does not attribute those bytes to `e6c28413`. The current F01 contract cites F02's handshake there with blob `4f627da25a8bfe318467eb13e0524adf2d7eef32`; that citation was read in F01, not independently fetched from the F02 commit during this bounded follow-up.
+
+## Exact proposed F02 response
+
+The following wording is drafted for the authorized F02 owner. It has not been posted or submitted as a review.
+
+---
+
+### F02 response — candidate.4 source-policy concurrence, with retained qualification gates
+
+F02 retains its bilateral concurrence with **F01-F02-SHELL/1.0.0-candidate.2 geometry** and explicitly concurs with the **candidate.4 ownership/change table and §§4.1–4.3 as source/specification policy**, subject to the boundaries below. This is the scoped response to the changed clauses; candidate.2 concurrence is not being expanded retroactively.
+
+The candidate.4 semantic input remains `macro@8926b16af4e0c3e5310cdb4cf057390ec04d18ff`, contract blob `1160f14b108bf0948384f59a249320385a1dfb6c`. At the newly inspected F01 PR #10645 head `99df25eec943be94ffdfa46019dee7f510c93b3d`, the contract is **blob `ff096fbde114fa14f218f48b8e3dc54a6646ee04`** because its status/bindings changed; §2 onward is byte-identical to that semantic input. The newer document correctly records F02's scoped concurrence at `e6c28413ee74e83950b8c5ff58a34b81e76c1781`.
+
+**1. Retained candidate.2 geometry.** The continuous 600/860/1200 viewport intervals, 16/20/24px content gutters, 0/196/224px default rails, explicit user-selected 72px compact rail, and 64/56px headers remain agreed. The shared evidence dock is 320px plus a 24px gap only when the measured usable content leaves at least 640px of primary workspace, or a larger qualified domain minimum. `C ≥ 984` applies after actual shell, gutters, and reserved local chrome. The represented 768/1024px modal is constrained to 440px; at ≤600px it uses the available viewport width with internal padding. These are source-bound rules and calculations, not browser qualification or permission to auto-change navigation preference.
+
+**2. Shared-component and lifecycle ownership.** F01 retains shell composition, slots, navigation and shared-layer policy. F02 retains tokens, shared anatomy, formatting, density and accessibility/motion primitives. Existing domain owners retain identities, data, entitlement, exports and mutations. D06 retains focused Terminal/reader requirements; Brain/D14 retains the singleton widget's lifecycle, requests and context; the incumbent host binds that interface. Component role names do not authorize new exports, a foundation package, a second coordinator, assistant, inspector, cursor store or navigation state owner. Source aliases must not be unified merely because token spellings match.
+
+**3. Brain, evidence and focus.** F02 concurs with preserving exact evidence identity and its return anchor while suspending shared evidence presentation through a qualified existing owner, coherently releasing its width/modal ownership, invoking the incumbent Brain, and providing truthful failed-open recovery. Evidence remains reachable but closed until explicit reopening. Automatic arbitration remains held until its lifecycle is qualified; no queued surprise opening, private-DOM polling, singleton unmount or implicit request cancellation is introduced.
+
+The actual widget's Close hides presentation while an answer can continue. Stop, continuation, dirty confirmation, and request/save outcomes stay with their existing owner. `MM_BRAIN_CFG.onClose` is conditional focus restoration when focus was inside Brain; it is not an unconditional closed event. Its true return means the host restored focus and suppresses the widget's launcher fallback. The typed host and served widget must qualify their actual callback/interface behavior. An `open()` call, a true opener return, `mounted`, or readiness does not acknowledge visibility.
+
+Restore focus only when the retiring surface legitimately owns it. Resolve the connected, focusable invoker by stable identity and leave it visible; if it no longer exists, use the named valid fallback and applicable announcement. Preserve intentional later focus outside that owner without forced focus or scroll. The two F02 source statements that previously lacked this condition have now been corrected locally: the visibility requirement and the filtered-row acceptance case. Their exact reviewed hashes are recorded in the accompanying advisory; publication of those corrected bytes remains the F02 source owner's final binding step.
+
+**4. Overlay and Escape.** One active top-level modal owns focus and scroll; a dock is nonmodal. Reopening and placement changes revalidate evidence identity, access and generation while retaining one inspector. The active owner handles Escape according to nested Brain/chart priorities. The source contract does not establish that propagation, background inertness, Tab containment, rapid transitions, delayed callbacks, visible target restoration, or zoom behavior already pass in a browser. Hiding, resizing or navigating is not cancellation, rollback, completion, deletion or Saved.
+
+**5. Focused reader, cursor and historical context.** The shared 320+24 geometry does not replace D06's 360px initial reader, requested 300–520px width, or incumbent `mm.railW` preference. Temporary effective fitting must not overwrite that preference. D06's provisional 640px minimum concerns the **actual price-data plot after axes, tools, gaps and scrollbar**, distinct from the shared primary container; D06/Terminal/Options retain fit and inline/focused fallback qualification.
+
+Crosshair and bar stepping share one visual inspection cursor. AI locked selection and Intelligence event selection retain their separate owners. Exact historical Ask requires validated instrument/listing/market, interval, selected time/time basis and context/data generation before dispatch. Prepared attachments revalidate; already dispatched requests retain their original object identity. Later cursor movement cannot retarget or cancel them, and current quote/calendar data cannot fill missing historical evidence. Actual attachment and served-request behavior remain unqualified.
+
+**6. Company/search and return boundaries.** Preserve validated canonical listing, trimmed `company_query`, the existing `mmxCompanySearch` marker, preview versus explicit commit, safe-origin gates, and the accepted return URL. Generic Terminal entry does not assert a current company; invalid explicit identity cannot silently select a stale shared company. D07/Search and Terminal retain their parsers and route identity. Exact URL return, bounded picker/history restoration, and full selection/scroll/focus restoration are separate promises. No new store, generic interval/bar parameter or broader trusted origin is created.
+
+**7. Review and release scope.** Actual source-only review #5760649569 remains correctly attributed to reviewer `mastermindxryan` and its recorded `3e334bd` / `8926b16` / `1160f14…` scope. Its historical statement that F02 had not yet concurred described the state at that review; the later owner concurrence updates that status without rewriting the review. Unchanged operative clauses support their continued scoped consumption; neither that review nor this response approves the whole newer PR, subsequent evidence, native pixels, or integration behavior.
+
+This response is cross-owner source concurrence, not an independent reviewer receipt. It does not close actual Brain/host and consumer integration, Paper effect reconciliation, final native-artifact identity, independent Product/Taste review, formal RIG/QA01, representative browser journeys, or final joint-foundation acceptance. Any required admitted reviewer evidence and actual non-author approval remain separate and correctly bound to their respective scope. It neither grants nor withdraws a separate implementation commission. For this F02 continuation, preserve Draft/HOLD and the existing owners; no merge, Ready/un-draft, enqueue, relabel, deployment or release action is authorized by this response.
+
+---
+
+## Owner's final binding step
+
+At the next F02 freeze, retain the historical semantic/review inputs and add the exact new F02 commit containing the two corrected files. If the handshake's current-observation table is updated, distinguish the older reviewed head `3e334bd…` / semantic blob `1160f14…` from the newly observed F01 head `99df25ee…` / current document blob `ff096fbd…`. The existing handshake does not need its prior evidence rewritten or a new geometry decision.
+
+This bounded follow-up is complete. No native Product/Taste judgment, runtime claim, formal review submission, ongoing monitoring or watcher is commissioned or provided.

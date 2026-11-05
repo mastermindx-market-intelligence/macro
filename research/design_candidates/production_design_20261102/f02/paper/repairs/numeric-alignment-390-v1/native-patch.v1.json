@@ -1,0 +1,6241 @@
+{
+  "schema": "f02.paper.numeric-alignment-390-native-patch.v1",
+  "status": "PREPARED_FROM_RETAINED_EXPORTS_NOT_APPLIED_NOT_LIVE_VALIDATED",
+  "target_file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "scope": "Only rate, delta and coverage numeric frames and their headers in the two owned 390px Macro boards.",
+  "observed_source_issue": "The retained actual JSX numeric frames have no explicit flex-column/end layout; coverage also lacks textAlign:right. This confirms missing frame-end layout, not a new rendered observation.",
+  "repair": "Add flex column / end cross-axis alignment / centered main axis / right text alignment to numeric Frames only. Keep Text nodes, dimensions, padding, labels, values and source controls unchanged.",
+  "counts": {
+    "boards": 2,
+    "frames": 66,
+    "header_frames": 6,
+    "body_frames": 60,
+    "source_steps": 22,
+    "preserved_non_numeric_cells": 64
+  },
+  "evidence_hashes": {
+    "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+    "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/supplemental-boards.json": "e65ecfcec783c752651634541d6f9917857e2da42e4686bdae0535cd089aaa2e",
+    "/workspace/scratch/55964f568673/f02/paper/writer-continuation-progress.json": "ffecbc138f3c18e0a78f432ccd2b75bf0668fb0401586e5513ebb82adac49427",
+    "/workspace/scratch/55964f568673/f02/paper/repairs/build_numeric_alignment_native_patch.py": "5f9e4fbd9462cdb87c7b8ceeeda81ad1b27389246688a3fb6c3634d657512e2b",
+    "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+    "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09"
+  },
+  "batches": [
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "tool": "update_styles",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeIds": [
+              "7DQ-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7DS-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7DU-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7E3-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7E5-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7E7-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7EG-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7EI-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7EK-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7ET-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7EV-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7EX-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7F6-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7F8-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7FA-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7FJ-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7FL-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7FN-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7FW-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7FY-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7G0-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7G9-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7GB-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7GD-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7GM-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7GO-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7GQ-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7GZ-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7H1-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7H3-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7HC-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7HE-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7HG-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          }
+        ]
+      },
+      "numeric_frames": 33,
+      "apply_guard": "Preparation only. Sole writer must resolve applicable effect uncertainty, fresh-read exact retained Frame/Text bindings and current styles, and supply a fresh direct-carrier snapshot. No replay or inferred replacement IDs.",
+      "post_apply_check": "Same-carrier JSX and screenshot readback must establish end alignment and unchanged text, controls, widths, padding, row identities and geometry. No tool acknowledgment alone is rendered proof."
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "tool": "update_styles",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeIds": [
+              "7JW-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7JY-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7K0-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7K9-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7KB-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7KD-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7KM-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7KO-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7KQ-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7KZ-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7L1-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7L3-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7LC-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7LE-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7LG-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7LP-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7LR-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7LT-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7M2-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7M4-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7M6-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7MF-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7MH-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7MJ-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7MS-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7MU-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7MW-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7N5-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7N7-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7N9-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7NI-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7NK-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          },
+          {
+            "nodeIds": [
+              "7NM-0"
+            ],
+            "styles": {
+              "display": "flex",
+              "flexDirection": "column",
+              "alignItems": "end",
+              "justifyContent": "center",
+              "textAlign": "right"
+            }
+          }
+        ]
+      },
+      "numeric_frames": 33,
+      "apply_guard": "Preparation only. Sole writer must resolve applicable effect uncertainty, fresh-read exact retained Frame/Text bindings and current styles, and supply a fresh direct-carrier snapshot. No replay or inferred replacement IDs.",
+      "post_apply_check": "Same-carrier JSX and screenshot readback must establish end alignment and unchanged text, controls, widths, padding, row identities and geometry. No tool acknowledgment alone is rendered proof."
+    }
+  ],
+  "bindings": [
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "table",
+      "step_root_node_id": "7DN-0",
+      "row_node_id": "7DO-0",
+      "row_role": "header",
+      "row_identity": "Sector / source",
+      "column_index_zero_based": 1,
+      "column_role": "rate",
+      "node_id": "7DQ-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7DR-0",
+      "exact_visible_text_unchanged": "Above 50D ↓",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Medium\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": 500,
+        "lineHeight": "18px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-table-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "table",
+      "step_root_node_id": "7DN-0",
+      "row_node_id": "7DO-0",
+      "row_role": "header",
+      "row_identity": "Sector / source",
+      "column_index_zero_based": 2,
+      "column_role": "delta_pp",
+      "node_id": "7DS-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7DT-0",
+      "exact_visible_text_unchanged": "Change · pp",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Medium\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": 500,
+        "lineHeight": "18px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-table-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "table",
+      "step_root_node_id": "7DN-0",
+      "row_node_id": "7DO-0",
+      "row_role": "header",
+      "row_identity": "Sector / source",
+      "column_index_zero_based": 3,
+      "column_role": "coverage",
+      "node_id": "7DU-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7DV-0",
+      "exact_visible_text_unchanged": "Coverage",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Medium\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": 500,
+        "lineHeight": "18px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-table-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-0",
+      "step_root_node_id": "7DY-0",
+      "row_node_id": "7DY-0",
+      "row_role": "body",
+      "row_identity": "Technology",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7E3-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7E4-0",
+      "exact_visible_text_unchanged": "72.4%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-0-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-0",
+      "step_root_node_id": "7DY-0",
+      "row_node_id": "7DY-0",
+      "row_role": "body",
+      "row_identity": "Technology",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7E5-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7E6-0",
+      "exact_visible_text_unchanged": "+2.10",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#B0D4B9",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-0-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-0",
+      "step_root_node_id": "7DY-0",
+      "row_node_id": "7DY-0",
+      "row_role": "body",
+      "row_identity": "Technology",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7E7-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7E8-0",
+      "exact_visible_text_unchanged": "286 / 286",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-0-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-1",
+      "step_root_node_id": "7EB-0",
+      "row_node_id": "7EB-0",
+      "row_role": "body",
+      "row_identity": "Industrials",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7EG-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7EH-0",
+      "exact_visible_text_unchanged": "70.8%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-1-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-1",
+      "step_root_node_id": "7EB-0",
+      "row_node_id": "7EB-0",
+      "row_role": "body",
+      "row_identity": "Industrials",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7EI-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7EJ-0",
+      "exact_visible_text_unchanged": "+1.50",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#B0D4B9",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-1-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-1",
+      "step_root_node_id": "7EB-0",
+      "row_node_id": "7EB-0",
+      "row_role": "body",
+      "row_identity": "Industrials",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7EK-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7EL-0",
+      "exact_visible_text_unchanged": "267 / 267",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-1-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-2",
+      "step_root_node_id": "7EO-0",
+      "row_node_id": "7EO-0",
+      "row_role": "body",
+      "row_identity": "Financials",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7ET-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7EU-0",
+      "exact_visible_text_unchanged": "69.2%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-2-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-2",
+      "step_root_node_id": "7EO-0",
+      "row_node_id": "7EO-0",
+      "row_role": "body",
+      "row_identity": "Financials",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7EV-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7EW-0",
+      "exact_visible_text_unchanged": "+0.60",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#B0D4B9",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-2-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-2",
+      "step_root_node_id": "7EO-0",
+      "row_node_id": "7EO-0",
+      "row_role": "body",
+      "row_identity": "Financials",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7EX-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7EY-0",
+      "exact_visible_text_unchanged": "500 / 500",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-2-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-3",
+      "step_root_node_id": "7F1-0",
+      "row_node_id": "7F1-0",
+      "row_role": "body",
+      "row_identity": "Communication services",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7F6-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7F7-0",
+      "exact_visible_text_unchanged": "66.7%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-3-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-3",
+      "step_root_node_id": "7F1-0",
+      "row_node_id": "7F1-0",
+      "row_role": "body",
+      "row_identity": "Communication services",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7F8-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7F9-0",
+      "exact_visible_text_unchanged": "+1.13",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#B0D4B9",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-3-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-3",
+      "step_root_node_id": "7F1-0",
+      "row_node_id": "7F1-0",
+      "row_role": "body",
+      "row_identity": "Communication services",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7FA-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7FB-0",
+      "exact_visible_text_unchanged": "177 / 177",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-3-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-4",
+      "step_root_node_id": "7FE-0",
+      "row_node_id": "7FE-0",
+      "row_role": "body",
+      "row_identity": "Consumer discretionary",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7FJ-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7FK-0",
+      "exact_visible_text_unchanged": "63.5%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-4-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-4",
+      "step_root_node_id": "7FE-0",
+      "row_node_id": "7FE-0",
+      "row_role": "body",
+      "row_identity": "Consumer discretionary",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7FL-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7FM-0",
+      "exact_visible_text_unchanged": "-0.80",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#EFA6AD",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-4-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-4",
+      "step_root_node_id": "7FE-0",
+      "row_node_id": "7FE-0",
+      "row_role": "body",
+      "row_identity": "Consumer discretionary",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7FN-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7FO-0",
+      "exact_visible_text_unchanged": "375 / 375",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-4-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-5",
+      "step_root_node_id": "7FR-0",
+      "row_node_id": "7FR-0",
+      "row_role": "body",
+      "row_identity": "Health care",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7FW-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7FX-0",
+      "exact_visible_text_unchanged": "61.1%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-5-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-5",
+      "step_root_node_id": "7FR-0",
+      "row_node_id": "7FR-0",
+      "row_role": "body",
+      "row_identity": "Health care",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7FY-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7FZ-0",
+      "exact_visible_text_unchanged": "0.00",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-5-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-5",
+      "step_root_node_id": "7FR-0",
+      "row_node_id": "7FR-0",
+      "row_role": "body",
+      "row_identity": "Health care",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7G0-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7G1-0",
+      "exact_visible_text_unchanged": "54 / 54",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-5-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-6",
+      "step_root_node_id": "7G4-0",
+      "row_node_id": "7G4-0",
+      "row_role": "body",
+      "row_identity": "Utilities",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7G9-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7GA-0",
+      "exact_visible_text_unchanged": "58.3%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-6-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-6",
+      "step_root_node_id": "7G4-0",
+      "row_node_id": "7G4-0",
+      "row_role": "body",
+      "row_identity": "Utilities",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7GB-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7GC-0",
+      "exact_visible_text_unchanged": "-1.20",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#EFA6AD",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-6-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-6",
+      "step_root_node_id": "7G4-0",
+      "row_node_id": "7G4-0",
+      "row_role": "body",
+      "row_identity": "Utilities",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7GD-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7GE-0",
+      "exact_visible_text_unchanged": "333 / 333",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-6-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-8",
+      "step_root_node_id": "7GH-0",
+      "row_node_id": "7GH-0",
+      "row_role": "body",
+      "row_identity": "Consumer staples",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7GM-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7GN-0",
+      "exact_visible_text_unchanged": "55.6%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-8-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-8",
+      "step_root_node_id": "7GH-0",
+      "row_node_id": "7GH-0",
+      "row_role": "body",
+      "row_identity": "Consumer staples",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7GO-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7GP-0",
+      "exact_visible_text_unchanged": "+0.40",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#B0D4B9",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-8-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-8",
+      "step_root_node_id": "7GH-0",
+      "row_node_id": "7GH-0",
+      "row_role": "body",
+      "row_identity": "Consumer staples",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7GQ-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7GR-0",
+      "exact_visible_text_unchanged": "250 / 250",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-8-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-9",
+      "step_root_node_id": "7GU-0",
+      "row_node_id": "7GU-0",
+      "row_role": "body",
+      "row_identity": "Materials",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7GZ-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7H0-0",
+      "exact_visible_text_unchanged": "52.2%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-9-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-9",
+      "step_root_node_id": "7GU-0",
+      "row_node_id": "7GU-0",
+      "row_role": "body",
+      "row_identity": "Materials",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7H1-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7H2-0",
+      "exact_visible_text_unchanged": "-0.60",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#EFA6AD",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-9-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-9",
+      "step_root_node_id": "7GU-0",
+      "row_node_id": "7GU-0",
+      "row_role": "body",
+      "row_identity": "Materials",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7H3-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7H4-0",
+      "exact_visible_text_unchanged": "500 / 500",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-9-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-7",
+      "step_root_node_id": "7H7-0",
+      "row_node_id": "7H7-0",
+      "row_role": "body",
+      "row_identity": "Energy",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7HC-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7HD-0",
+      "exact_visible_text_unchanged": "—",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-primary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-7-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-7",
+      "step_root_node_id": "7H7-0",
+      "row_node_id": "7H7-0",
+      "row_role": "body",
+      "row_identity": "Energy",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7HE-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7HF-0",
+      "exact_visible_text_unchanged": "—",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-tertiary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-7-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-7",
+      "step_root_node_id": "7H7-0",
+      "row_node_id": "7H7-0",
+      "row_role": "body",
+      "row_identity": "Energy",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7HG-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7HH-0",
+      "exact_visible_text_unchanged": "0 / 82",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "var(--noir-text-secondary)",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+        "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "operation_id": "f02-c2-macro-dark-en-390-sector-7-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "table",
+      "step_root_node_id": "7JT-0",
+      "row_node_id": "7JU-0",
+      "row_role": "header",
+      "row_identity": "行业 / 证据",
+      "column_index_zero_based": 1,
+      "column_role": "rate",
+      "node_id": "7JW-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7JX-0",
+      "exact_visible_text_unchanged": "高于50D ↓",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": 500,
+        "lineHeight": "18px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-table-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "table",
+      "step_root_node_id": "7JT-0",
+      "row_node_id": "7JU-0",
+      "row_role": "header",
+      "row_identity": "行业 / 证据",
+      "column_index_zero_based": 2,
+      "column_role": "delta_pp",
+      "node_id": "7JY-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7JZ-0",
+      "exact_visible_text_unchanged": "变动 · pp",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": 500,
+        "lineHeight": "18px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-table-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "table",
+      "step_root_node_id": "7JT-0",
+      "row_node_id": "7JU-0",
+      "row_role": "header",
+      "row_identity": "行业 / 证据",
+      "column_index_zero_based": 3,
+      "column_role": "coverage",
+      "node_id": "7K0-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7K1-0",
+      "exact_visible_text_unchanged": "覆盖范围",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": 500,
+        "lineHeight": "18px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-table-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-0",
+      "step_root_node_id": "7K4-0",
+      "row_node_id": "7K4-0",
+      "row_role": "body",
+      "row_identity": "科技",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7K9-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7KA-0",
+      "exact_visible_text_unchanged": "72.4%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-0-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-0",
+      "step_root_node_id": "7K4-0",
+      "row_node_id": "7K4-0",
+      "row_role": "body",
+      "row_identity": "科技",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7KB-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7KC-0",
+      "exact_visible_text_unchanged": "+2.10",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#256341",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-0-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-0",
+      "step_root_node_id": "7K4-0",
+      "row_node_id": "7K4-0",
+      "row_role": "body",
+      "row_identity": "科技",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7KD-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7KE-0",
+      "exact_visible_text_unchanged": "286 / 286",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-0-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-1",
+      "step_root_node_id": "7KH-0",
+      "row_node_id": "7KH-0",
+      "row_role": "body",
+      "row_identity": "工业",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7KM-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7KN-0",
+      "exact_visible_text_unchanged": "70.8%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-1-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-1",
+      "step_root_node_id": "7KH-0",
+      "row_node_id": "7KH-0",
+      "row_role": "body",
+      "row_identity": "工业",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7KO-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7KP-0",
+      "exact_visible_text_unchanged": "+1.50",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#256341",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-1-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-1",
+      "step_root_node_id": "7KH-0",
+      "row_node_id": "7KH-0",
+      "row_role": "body",
+      "row_identity": "工业",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7KQ-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7KR-0",
+      "exact_visible_text_unchanged": "267 / 267",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-1-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-2",
+      "step_root_node_id": "7KU-0",
+      "row_node_id": "7KU-0",
+      "row_role": "body",
+      "row_identity": "金融",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7KZ-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7L0-0",
+      "exact_visible_text_unchanged": "69.2%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-2-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-2",
+      "step_root_node_id": "7KU-0",
+      "row_node_id": "7KU-0",
+      "row_role": "body",
+      "row_identity": "金融",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7L1-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7L2-0",
+      "exact_visible_text_unchanged": "+0.60",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#256341",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-2-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-2",
+      "step_root_node_id": "7KU-0",
+      "row_node_id": "7KU-0",
+      "row_role": "body",
+      "row_identity": "金融",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7L3-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7L4-0",
+      "exact_visible_text_unchanged": "500 / 500",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-2-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-3",
+      "step_root_node_id": "7L7-0",
+      "row_node_id": "7L7-0",
+      "row_role": "body",
+      "row_identity": "通信服务",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7LC-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7LD-0",
+      "exact_visible_text_unchanged": "66.7%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-3-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-3",
+      "step_root_node_id": "7L7-0",
+      "row_node_id": "7L7-0",
+      "row_role": "body",
+      "row_identity": "通信服务",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7LE-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7LF-0",
+      "exact_visible_text_unchanged": "+1.13",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#256341",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-3-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-3",
+      "step_root_node_id": "7L7-0",
+      "row_node_id": "7L7-0",
+      "row_role": "body",
+      "row_identity": "通信服务",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7LG-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7LH-0",
+      "exact_visible_text_unchanged": "177 / 177",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-3-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-4",
+      "step_root_node_id": "7LK-0",
+      "row_node_id": "7LK-0",
+      "row_role": "body",
+      "row_identity": "可选消费",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7LP-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7LQ-0",
+      "exact_visible_text_unchanged": "63.5%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-4-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-4",
+      "step_root_node_id": "7LK-0",
+      "row_node_id": "7LK-0",
+      "row_role": "body",
+      "row_identity": "可选消费",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7LR-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7LS-0",
+      "exact_visible_text_unchanged": "-0.80",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#A62D43",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-4-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-4",
+      "step_root_node_id": "7LK-0",
+      "row_node_id": "7LK-0",
+      "row_role": "body",
+      "row_identity": "可选消费",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7LT-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7LU-0",
+      "exact_visible_text_unchanged": "375 / 375",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-4-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-5",
+      "step_root_node_id": "7LX-0",
+      "row_node_id": "7LX-0",
+      "row_role": "body",
+      "row_identity": "医疗保健",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7M2-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7M3-0",
+      "exact_visible_text_unchanged": "61.1%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-5-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-5",
+      "step_root_node_id": "7LX-0",
+      "row_node_id": "7LX-0",
+      "row_role": "body",
+      "row_identity": "医疗保健",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7M4-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7M5-0",
+      "exact_visible_text_unchanged": "0.00",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-5-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-5",
+      "step_root_node_id": "7LX-0",
+      "row_node_id": "7LX-0",
+      "row_role": "body",
+      "row_identity": "医疗保健",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7M6-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7M7-0",
+      "exact_visible_text_unchanged": "54 / 54",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-5-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-6",
+      "step_root_node_id": "7MA-0",
+      "row_node_id": "7MA-0",
+      "row_role": "body",
+      "row_identity": "公用事业",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7MF-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7MG-0",
+      "exact_visible_text_unchanged": "58.3%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-6-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-6",
+      "step_root_node_id": "7MA-0",
+      "row_node_id": "7MA-0",
+      "row_role": "body",
+      "row_identity": "公用事业",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7MH-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7MI-0",
+      "exact_visible_text_unchanged": "-1.20",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#A62D43",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-6-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-6",
+      "step_root_node_id": "7MA-0",
+      "row_node_id": "7MA-0",
+      "row_role": "body",
+      "row_identity": "公用事业",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7MJ-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7MK-0",
+      "exact_visible_text_unchanged": "333 / 333",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-6-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-8",
+      "step_root_node_id": "7MN-0",
+      "row_node_id": "7MN-0",
+      "row_role": "body",
+      "row_identity": "日常消费",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7MS-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7MT-0",
+      "exact_visible_text_unchanged": "55.6%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-8-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-8",
+      "step_root_node_id": "7MN-0",
+      "row_node_id": "7MN-0",
+      "row_role": "body",
+      "row_identity": "日常消费",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7MU-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7MV-0",
+      "exact_visible_text_unchanged": "+0.40",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#256341",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-8-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-8",
+      "step_root_node_id": "7MN-0",
+      "row_node_id": "7MN-0",
+      "row_role": "body",
+      "row_identity": "日常消费",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7MW-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7MX-0",
+      "exact_visible_text_unchanged": "250 / 250",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-8-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-9",
+      "step_root_node_id": "7N0-0",
+      "row_node_id": "7N0-0",
+      "row_role": "body",
+      "row_identity": "原材料",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7N5-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7N6-0",
+      "exact_visible_text_unchanged": "52.2%",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-9-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-9",
+      "step_root_node_id": "7N0-0",
+      "row_node_id": "7N0-0",
+      "row_role": "body",
+      "row_identity": "原材料",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7N7-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7N8-0",
+      "exact_visible_text_unchanged": "-0.60",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#A62D43",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-9-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-9",
+      "step_root_node_id": "7N0-0",
+      "row_node_id": "7N0-0",
+      "row_role": "body",
+      "row_identity": "原材料",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7N9-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7NA-0",
+      "exact_visible_text_unchanged": "500 / 500",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-9-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-7",
+      "step_root_node_id": "7ND-0",
+      "row_node_id": "7ND-0",
+      "row_role": "body",
+      "row_identity": "能源",
+      "column_index_zero_based": 2,
+      "column_role": "rate",
+      "node_id": "7NI-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7NJ-0",
+      "exact_visible_text_unchanged": "—",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "88px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#1A1C20",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-7-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-7",
+      "step_root_node_id": "7ND-0",
+      "row_node_id": "7ND-0",
+      "row_role": "body",
+      "row_identity": "能源",
+      "column_index_zero_based": 3,
+      "column_role": "delta_pp",
+      "node_id": "7NK-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7NL-0",
+      "exact_visible_text_unchanged": "—",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingRight": "12px",
+        "textAlign": "right",
+        "width": "96px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#5F6368",
+        "fontFamily": "\"Inter-Regular\", \"Inter\", system-ui, sans-serif",
+        "fontFeatureSettings": "\"tnum\"",
+        "fontSize": "13px",
+        "lineHeight": "20px",
+        "textAlign": "right"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-7-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "page_id": "p-5-0",
+      "step_key": "sector-7",
+      "step_root_node_id": "7ND-0",
+      "row_node_id": "7ND-0",
+      "row_role": "body",
+      "row_identity": "能源",
+      "column_index_zero_based": 4,
+      "column_role": "coverage",
+      "node_id": "7NM-0",
+      "native_component": "Frame",
+      "text_node_id_unchanged": "7NN-0",
+      "exact_visible_text_unchanged": "0 / 82",
+      "expected_current_frame_style": {
+        "boxSizing": "border-box",
+        "flexShrink": "0",
+        "paddingLeft": "12px",
+        "width": "130px"
+      },
+      "expected_current_text_style_unchanged": {
+        "boxSizing": "border-box",
+        "color": "#51555B",
+        "fontFamily": "\"Noto Sans SC\", system-ui, sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "20px"
+      },
+      "expected_absent_layout_properties": [
+        "display",
+        "flexDirection",
+        "alignItems",
+        "justifyContent"
+      ],
+      "desired_styles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "end",
+        "justifyContent": "center",
+        "textAlign": "right"
+      },
+      "changed_properties": {
+        "display": {
+          "from": null,
+          "to": "flex",
+          "from_absent": true
+        },
+        "flexDirection": {
+          "from": null,
+          "to": "column",
+          "from_absent": true
+        },
+        "alignItems": {
+          "from": null,
+          "to": "end",
+          "from_absent": true
+        },
+        "justifyContent": {
+          "from": null,
+          "to": "center",
+          "from_absent": true
+        },
+        "textAlign": {
+          "from": null,
+          "to": "right",
+          "from_absent": true
+        }
+      },
+      "binding_evidence": {
+        "kind": "retained_JSX_and_APPLIED_createdNodes",
+        "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+        "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+        "operation_id": "f02-c2-macro-light-zh-390-sector-7-20261103-01",
+        "frame_component": "Frame",
+        "text_component": "Text"
+      }
+    }
+  ],
+  "preserved_non_numeric_cells": [
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "table",
+      "node_id": "7DP-0",
+      "text": "Sector / source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "table",
+      "node_id": "7DW-0",
+      "text": "Definition"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-0",
+      "node_id": "7DZ-0",
+      "text": "Technology"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-0",
+      "node_id": "7E1-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-0",
+      "node_id": "7E9-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-1",
+      "node_id": "7EC-0",
+      "text": "Industrials"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-1",
+      "node_id": "7EE-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-1",
+      "node_id": "7EM-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-2",
+      "node_id": "7EP-0",
+      "text": "Financials"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-2",
+      "node_id": "7ER-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-2",
+      "node_id": "7EZ-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-3",
+      "node_id": "7F2-0",
+      "text": "Communication services"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-3",
+      "node_id": "7F4-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-3",
+      "node_id": "7FC-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-4",
+      "node_id": "7FF-0",
+      "text": "Consumer discretionary"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-4",
+      "node_id": "7FH-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-4",
+      "node_id": "7FP-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-5",
+      "node_id": "7FS-0",
+      "text": "Health care"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-5",
+      "node_id": "7FU-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-5",
+      "node_id": "7G2-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-6",
+      "node_id": "7G5-0",
+      "text": "Utilities"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-6",
+      "node_id": "7G7-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-6",
+      "node_id": "7GF-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-8",
+      "node_id": "7GI-0",
+      "text": "Consumer staples"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-8",
+      "node_id": "7GK-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-8",
+      "node_id": "7GS-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-9",
+      "node_id": "7GV-0",
+      "text": "Materials"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-9",
+      "node_id": "7GX-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-9",
+      "node_id": "7H5-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-7",
+      "node_id": "7H8-0",
+      "text": "Energy"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-7",
+      "node_id": "7HA-0",
+      "text": "Source"
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-7",
+      "node_id": "7HI-0",
+      "text": "Above 50-day average"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "table",
+      "node_id": "7JV-0",
+      "text": "行业 / 证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "table",
+      "node_id": "7K2-0",
+      "text": "定义"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-0",
+      "node_id": "7K5-0",
+      "text": "科技"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-0",
+      "node_id": "7K7-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-0",
+      "node_id": "7KF-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-1",
+      "node_id": "7KI-0",
+      "text": "工业"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-1",
+      "node_id": "7KK-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-1",
+      "node_id": "7KS-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-2",
+      "node_id": "7KV-0",
+      "text": "金融"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-2",
+      "node_id": "7KX-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-2",
+      "node_id": "7L5-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-3",
+      "node_id": "7L8-0",
+      "text": "通信服务"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-3",
+      "node_id": "7LA-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-3",
+      "node_id": "7LI-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-4",
+      "node_id": "7LL-0",
+      "text": "可选消费"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-4",
+      "node_id": "7LN-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-4",
+      "node_id": "7LV-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-5",
+      "node_id": "7LY-0",
+      "text": "医疗保健"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-5",
+      "node_id": "7M0-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-5",
+      "node_id": "7M8-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-6",
+      "node_id": "7MB-0",
+      "text": "公用事业"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-6",
+      "node_id": "7MD-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-6",
+      "node_id": "7ML-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-8",
+      "node_id": "7MO-0",
+      "text": "日常消费"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-8",
+      "node_id": "7MQ-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-8",
+      "node_id": "7MY-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-9",
+      "node_id": "7N1-0",
+      "text": "原材料"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-9",
+      "node_id": "7N3-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-9",
+      "node_id": "7NB-0",
+      "text": "高于50日均线"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-7",
+      "node_id": "7NE-0",
+      "text": "能源"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-7",
+      "node_id": "7NG-0",
+      "text": "证据"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-7",
+      "node_id": "7NO-0",
+      "text": "高于50日均线"
+    }
+  ],
+  "unresolved_operation": {
+    "operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+    "target": "7J4-0",
+    "status": "UNRESOLVED",
+    "effect_on_this_packet": "This preparation supplies no reconciliation or dispatch authority. Keep applicable target writes paused pending the existing owner gate."
+  },
+  "ambiguous_targets": [],
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "native_mutations_performed": false,
+  "rendered_fix_verified": false
+}

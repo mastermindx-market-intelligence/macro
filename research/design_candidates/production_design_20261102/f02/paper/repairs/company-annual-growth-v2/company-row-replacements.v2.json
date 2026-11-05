@@ -1,0 +1,1740 @@
+{
+  "schema": "f02.paper.company-annual-growth-row-repair.v2",
+  "version": "F02-company-annual-growth-repair/2.0.0",
+  "status": "PREPARED_NOT_APPLIED",
+  "supersedes": "company-annual-growth-v1; v1 remains preserved and was confirmed unapplied by the sole writer",
+  "target_file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "scope": "Eighteen existing Company row roots only; no chart/history/source fixture mutation. Preserve all five raw annual values and latest-change column.",
+  "boards": [
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "main_id": "57R-0",
+      "header_id": "5CE-0",
+      "history_chart_id": "596-0",
+      "preserve_history": true,
+      "row_count": 9,
+      "old_row_height": 46,
+      "new_row_height": 52,
+      "row_stack_height_increase": 54,
+      "fit_instruction": "Keep artboard/main flow at fit-content; inspect the full footer after the 54px increase. Do not scale the chart or shrink the new row text."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "main_id": "5HX-0",
+      "header_id": "5MM-0",
+      "history_chart_id": "5SA-0",
+      "preserve_history": true,
+      "row_count": 9,
+      "old_row_height": 46,
+      "new_row_height": 52,
+      "row_stack_height_increase": 54,
+      "fit_instruction": "Keep artboard/main flow at fit-content; inspect the full footer after the 54px increase. Do not scale the chart or shrink the new row text."
+    }
+  ],
+  "operations": [
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-1",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5CW-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Revenue USD bn 12.00 16.00 24.00 36.00 48.00 +33.3% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "9910ae7963a43c7cbe3bb1c6b5b1fa7159942d518cd734b9bd63155de4a0ed20",
+      "html": "<div layer-name=\"Statement / Revenue / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Revenue\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Revenue</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Revenue / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">12.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Revenue / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">16.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Revenue / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">24.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+50.0%</div></div><div layer-name=\"Revenue / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">36.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+50.0%</div></div><div layer-name=\"Revenue / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">48.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Evidence / Revenue\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "f85fd8bc78af153b8717caf2979e129eb81a9e8789159dcb6a880c0f7b2497ea",
+      "old_descendant_ids_invalid_after_success": [
+        "5CW-0",
+        "5CX-0",
+        "5CY-0",
+        "5CZ-0",
+        "5D0-0",
+        "5D1-0",
+        "5D2-0",
+        "5D3-0",
+        "5D4-0",
+        "5D5-0",
+        "5D6-0",
+        "5D7-0",
+        "5D8-0",
+        "5D9-0",
+        "5DA-0",
+        "5DB-0",
+        "5DC-0",
+        "5DD-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5D0-0",
+        "5D2-0",
+        "5D4-0",
+        "5D6-0",
+        "5D8-0",
+        "5DA-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Revenue",
+          "value": "12.00",
+          "change": "+33.3%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Revenue",
+          "value": "16.00",
+          "change": "+33.3%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Revenue",
+          "value": "24.00",
+          "change": "+50.0%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Revenue",
+          "value": "36.00",
+          "change": "+50.0%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Revenue",
+          "value": "48.00",
+          "change": "+33.3%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-2",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5DF-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Gross profit USD bn 6.00 8.00 12.00 19.80 28.80 +45.5% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "49f41286c5946e27e33e5f2ab87cf3feb57afd93abf86ada74ef73776b0b0c6e",
+      "html": "<div layer-name=\"Statement / Gross profit / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Gross profit\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Gross profit</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Gross profit / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">6.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+30.4%</div></div><div layer-name=\"Gross profit / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">8.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Gross profit / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">12.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+50.0%</div></div><div layer-name=\"Gross profit / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">19.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+65.0%</div></div><div layer-name=\"Gross profit / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">28.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+45.5%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+45.5%</div></div><div layer-name=\"Evidence / Gross profit\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "6dd4103f18b4fd59a08a43c61f3e858f4853dd546f504776cdc682f3f8183539",
+      "old_descendant_ids_invalid_after_success": [
+        "5DF-0",
+        "5DG-0",
+        "5DH-0",
+        "5DI-0",
+        "5DJ-0",
+        "5DK-0",
+        "5DL-0",
+        "5DM-0",
+        "5DN-0",
+        "5DO-0",
+        "5DP-0",
+        "5DQ-0",
+        "5DR-0",
+        "5DS-0",
+        "5DT-0",
+        "5DU-0",
+        "5DV-0",
+        "5DW-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5DJ-0",
+        "5DL-0",
+        "5DN-0",
+        "5DP-0",
+        "5DR-0",
+        "5DT-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Gross profit",
+          "value": "6.00",
+          "change": "+30.4%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Gross profit",
+          "value": "8.00",
+          "change": "+33.3%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Gross profit",
+          "value": "12.00",
+          "change": "+50.0%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Gross profit",
+          "value": "19.80",
+          "change": "+65.0%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Gross profit",
+          "value": "28.80",
+          "change": "+45.5%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-3",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5DY-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Operating income USD bn 2.00 2.80 4.80 8.39 11.76 +40.2% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "b9b0151edac43abb9b5d47cea3f2bcf2a5e8d632a644ea2fb0d12535ef301060",
+      "html": "<div layer-name=\"Statement / Operating income / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Operating income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Operating income</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Operating income / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+25.0%</div></div><div layer-name=\"Operating income / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+40.0%</div></div><div layer-name=\"Operating income / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">4.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+71.4%</div></div><div layer-name=\"Operating income / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">8.39</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+74.8%</div></div><div layer-name=\"Operating income / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">11.76</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+40.2%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+40.2%</div></div><div layer-name=\"Evidence / Operating income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "9631b0af2eedbad049df2fa4c98af696a2dc28d30426a595a2deacd6761d62c3",
+      "old_descendant_ids_invalid_after_success": [
+        "5DY-0",
+        "5DZ-0",
+        "5E0-0",
+        "5E1-0",
+        "5E2-0",
+        "5E3-0",
+        "5E4-0",
+        "5E5-0",
+        "5E6-0",
+        "5E7-0",
+        "5E8-0",
+        "5E9-0",
+        "5EA-0",
+        "5EB-0",
+        "5EC-0",
+        "5ED-0",
+        "5EE-0",
+        "5EF-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5E2-0",
+        "5E4-0",
+        "5E6-0",
+        "5E8-0",
+        "5EA-0",
+        "5EC-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Operating income",
+          "value": "2.00",
+          "change": "+25.0%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Operating income",
+          "value": "2.80",
+          "change": "+40.0%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Operating income",
+          "value": "4.80",
+          "change": "+71.4%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Operating income",
+          "value": "8.39",
+          "change": "+74.8%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Operating income",
+          "value": "11.76",
+          "change": "+40.2%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-4",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5EH-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Operating margin % 16.7% 17.5% 20.0% 23.3% 24.5% +1.2 pp Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "365a35b3e4bdc3345812c28de416d55d478c54ad91281cf9938e8d18ccdc9bbf",
+      "html": "<div layer-name=\"Statement / Operating margin / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Operating margin\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Operating margin</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">%</div></div><div layer-name=\"Operating margin / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">16.7%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#efa6ad;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">−1.1 pp</div></div><div layer-name=\"Operating margin / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">17.5%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+0.8 pp</div></div><div layer-name=\"Operating margin / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">20.0%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+2.5 pp</div></div><div layer-name=\"Operating margin / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">23.3%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+3.3 pp</div></div><div layer-name=\"Operating margin / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">24.5%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+1.2 pp</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+1.2 pp</div></div><div layer-name=\"Evidence / Operating margin\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "03ed3a8fee2f8fe501ad7f79970c268ea5113ca64e0cd4a8d4b9cbee2f49f9d1",
+      "old_descendant_ids_invalid_after_success": [
+        "5EH-0",
+        "5EI-0",
+        "5EJ-0",
+        "5EK-0",
+        "5EL-0",
+        "5EM-0",
+        "5EN-0",
+        "5EO-0",
+        "5EP-0",
+        "5EQ-0",
+        "5ER-0",
+        "5ES-0",
+        "5ET-0",
+        "5EU-0",
+        "5EV-0",
+        "5EW-0",
+        "5EX-0",
+        "5EY-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5EL-0",
+        "5EN-0",
+        "5EP-0",
+        "5ER-0",
+        "5ET-0",
+        "5EV-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Operating margin",
+          "value": "16.7%",
+          "change": "−1.1 pp"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Operating margin",
+          "value": "17.5%",
+          "change": "+0.8 pp"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Operating margin",
+          "value": "20.0%",
+          "change": "+2.5 pp"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Operating margin",
+          "value": "23.3%",
+          "change": "+3.3 pp"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Operating margin",
+          "value": "24.5%",
+          "change": "+1.2 pp"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-5",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5F0-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Pretax income USD bn 1.90 2.70 4.40 7.10 10.10 +42.3% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "73c225a3ebc051208fc3fe57d1e0a3c7efb81eede46413704cac269459a6d0c9",
+      "html": "<div layer-name=\"Statement / Pretax income / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Pretax income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Pretax income</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Pretax income / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">1.90</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+26.7%</div></div><div layer-name=\"Pretax income / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.70</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+42.1%</div></div><div layer-name=\"Pretax income / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">4.40</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+63.0%</div></div><div layer-name=\"Pretax income / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">7.10</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+61.4%</div></div><div layer-name=\"Pretax income / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">10.10</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+42.3%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+42.3%</div></div><div layer-name=\"Evidence / Pretax income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "4c6335ebcc0892000cff3dcf3dfce295e9e81e80d6e3278548b5f6ba1cc5a9e9",
+      "old_descendant_ids_invalid_after_success": [
+        "5F0-0",
+        "5F1-0",
+        "5F2-0",
+        "5F3-0",
+        "5F4-0",
+        "5F5-0",
+        "5F6-0",
+        "5F7-0",
+        "5F8-0",
+        "5F9-0",
+        "5FA-0",
+        "5FB-0",
+        "5FC-0",
+        "5FD-0",
+        "5FE-0",
+        "5FF-0",
+        "5FG-0",
+        "5FH-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5F4-0",
+        "5F6-0",
+        "5F8-0",
+        "5FA-0",
+        "5FC-0",
+        "5FE-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Pretax income",
+          "value": "1.90",
+          "change": "+26.7%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Pretax income",
+          "value": "2.70",
+          "change": "+42.1%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Pretax income",
+          "value": "4.40",
+          "change": "+63.0%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Pretax income",
+          "value": "7.10",
+          "change": "+61.4%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Pretax income",
+          "value": "10.10",
+          "change": "+42.3%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-6",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5FJ-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Net income USD bn 1.60 2.20 3.60 6.20 8.90 +43.5% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "94e89bd1915e73aa988e35bd4ec7490e6e88beff35be1b7b2392b98633c254fb",
+      "html": "<div layer-name=\"Statement / Net income / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Net income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Net income</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Net income / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">1.60</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Net income / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+37.5%</div></div><div layer-name=\"Net income / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">3.60</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+63.6%</div></div><div layer-name=\"Net income / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">6.20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+72.2%</div></div><div layer-name=\"Net income / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">8.90</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+43.5%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+43.5%</div></div><div layer-name=\"Evidence / Net income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "b455f150d65a53ce967538185ab45f1ae6542547ae1b5e5d3fc6475cf8e376ad",
+      "old_descendant_ids_invalid_after_success": [
+        "5FJ-0",
+        "5FK-0",
+        "5FL-0",
+        "5FM-0",
+        "5FN-0",
+        "5FO-0",
+        "5FP-0",
+        "5FQ-0",
+        "5FR-0",
+        "5FS-0",
+        "5FT-0",
+        "5FU-0",
+        "5FV-0",
+        "5FW-0",
+        "5FX-0",
+        "5FY-0",
+        "5FZ-0",
+        "5G0-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5FN-0",
+        "5FP-0",
+        "5FR-0",
+        "5FT-0",
+        "5FV-0",
+        "5FX-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Net income",
+          "value": "1.60",
+          "change": "+33.3%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Net income",
+          "value": "2.20",
+          "change": "+37.5%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Net income",
+          "value": "3.60",
+          "change": "+63.6%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Net income",
+          "value": "6.20",
+          "change": "+72.2%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Net income",
+          "value": "8.90",
+          "change": "+43.5%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-7",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5G2-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Diluted earnings per share USD/share 0.53 0.73 1.20 2.07 — — Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "6808918a16d69d2fd93dd106d709a16dae19a55260bad8c36a919fdd5c094d5e",
+      "html": "<div layer-name=\"Statement / Diluted EPS / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Diluted earnings per share\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Diluted earnings per share</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD/share</div></div><div layer-name=\"Diluted earnings per share / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.53</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Prior unavailable</div></div><div layer-name=\"Diluted earnings per share / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.73</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+37.7%</div></div><div layer-name=\"Diluted earnings per share / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">1.20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+64.4%</div></div><div layer-name=\"Diluted earnings per share / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.07</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+72.5%</div></div><div layer-name=\"Diluted earnings per share / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-tertiary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">—</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Unavailable</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-tertiary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Unavailable</div></div><div layer-name=\"Evidence / Diluted earnings per share\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "c6cef8585f3ec7c27dc4d652cb24c6d0cb56c47a928d7c54fef51089448faef0",
+      "old_descendant_ids_invalid_after_success": [
+        "5G2-0",
+        "5G3-0",
+        "5G4-0",
+        "5G5-0",
+        "5G6-0",
+        "5G7-0",
+        "5G8-0",
+        "5G9-0",
+        "5GA-0",
+        "5GB-0",
+        "5GC-0",
+        "5GD-0",
+        "5GE-0",
+        "5GF-0",
+        "5GG-0",
+        "5GH-0",
+        "5GI-0",
+        "5GJ-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5G6-0",
+        "5G8-0",
+        "5GA-0",
+        "5GC-0",
+        "5GE-0",
+        "5GG-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Diluted EPS",
+          "value": "0.53",
+          "change": "Prior unavailable"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Diluted EPS",
+          "value": "0.73",
+          "change": "+37.7%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Diluted EPS",
+          "value": "1.20",
+          "change": "+64.4%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Diluted EPS",
+          "value": "2.07",
+          "change": "+72.5%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Diluted EPS",
+          "value": null,
+          "change": "Unavailable"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-8",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5GL-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Dividend per share USD/share 0.00 0.00 0.00 0.00 0.00 0.00 USD/share Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "559d7bdd95640a7e2bb986d63a76794f0bbfa6d53f6b0cb92763f585174b41a0",
+      "html": "<div layer-name=\"Statement / Dividend per share / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Dividend per share\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Dividend per share</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD/share</div></div><div layer-name=\"Dividend per share / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Prior unavailable</div></div><div layer-name=\"Dividend per share / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Dividend per share / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Dividend per share / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Dividend per share / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Evidence / Dividend per share\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "9f642247e944f9b479e137ab703b93714e409b437a1f2b2cb89c549b29c79647",
+      "old_descendant_ids_invalid_after_success": [
+        "5GL-0",
+        "5GM-0",
+        "5GN-0",
+        "5GO-0",
+        "5GP-0",
+        "5GQ-0",
+        "5GR-0",
+        "5GS-0",
+        "5GT-0",
+        "5GU-0",
+        "5GV-0",
+        "5GW-0",
+        "5GX-0",
+        "5GY-0",
+        "5GZ-0",
+        "5H0-0",
+        "5H1-0",
+        "5H2-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5GP-0",
+        "5GR-0",
+        "5GT-0",
+        "5GV-0",
+        "5GX-0",
+        "5GZ-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "Prior unavailable"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "0.00 USD/share"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "0.00 USD/share"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "0.00 USD/share"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "0.00 USD/share"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-9",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5H4-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_row_text": "Free cash flow USD bn 1.80 2.60 4.10 7.60 10.20 +34.2% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "source_step_html_sha256": "fff12348bbdaa2a12ab89d9828fe9199d092978605cfba25c446a84b01f1dc93",
+      "html": "<div layer-name=\"Statement / Free cash flow / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div layer-name=\"Free cash flow\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Free cash flow</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Free cash flow / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">1.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Prior unavailable</div></div><div layer-name=\"Free cash flow / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.60</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+44.4%</div></div><div layer-name=\"Free cash flow / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">4.10</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+57.7%</div></div><div layer-name=\"Free cash flow / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">7.60</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+85.4%</div></div><div layer-name=\"Free cash flow / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">10.20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+34.2%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+34.2%</div></div><div layer-name=\"Evidence / Free cash flow\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "1b0b1eaf9215fa5dac39d444b33a6666349ad8ef2382dd0c16da8de913e17a15",
+      "old_descendant_ids_invalid_after_success": [
+        "5H4-0",
+        "5H5-0",
+        "5H6-0",
+        "5H7-0",
+        "5H8-0",
+        "5H9-0",
+        "5HA-0",
+        "5HB-0",
+        "5HC-0",
+        "5HD-0",
+        "5HE-0",
+        "5HF-0",
+        "5HG-0",
+        "5HH-0",
+        "5HI-0",
+        "5HJ-0",
+        "5HK-0",
+        "5HL-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5H8-0",
+        "5HA-0",
+        "5HC-0",
+        "5HE-0",
+        "5HG-0",
+        "5HI-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Free cash flow",
+          "value": "1.80",
+          "change": "Prior unavailable"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Free cash flow",
+          "value": "2.60",
+          "change": "+44.4%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Free cash flow",
+          "value": "4.10",
+          "change": "+57.7%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Free cash flow",
+          "value": "7.60",
+          "change": "+85.4%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Free cash flow",
+          "value": "10.20",
+          "change": "+34.2%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-1",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5M4-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Revenue USD bn 12.00 16.00 24.00 36.00 48.00 +33.3% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "9a1569f986b709394d2fb5dba333ee63bbdad334fc273b40760f8fc6e29b07d9",
+      "html": "<div layer-name=\"Statement / Revenue / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Revenue\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Revenue</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Revenue / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">12.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Revenue / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">16.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Revenue / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">24.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+50.0%</div></div><div layer-name=\"Revenue / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">36.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+50.0%</div></div><div layer-name=\"Revenue / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">48.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Evidence / Revenue\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "c2f7587ffb72861d76e2b7a724e3ac586a80eef0ed853ca702a0d107b28b0a4e",
+      "old_descendant_ids_invalid_after_success": [
+        "5M4-0",
+        "5MJ-0",
+        "5ML-0",
+        "5MK-0",
+        "5MH-0",
+        "5MI-0",
+        "5MF-0",
+        "5MG-0",
+        "5MD-0",
+        "5ME-0",
+        "5MB-0",
+        "5MC-0",
+        "5M9-0",
+        "5MA-0",
+        "5M7-0",
+        "5M8-0",
+        "5M5-0",
+        "5M6-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5MH-0",
+        "5MF-0",
+        "5MD-0",
+        "5MB-0",
+        "5M9-0",
+        "5M7-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Revenue",
+          "value": "12.00",
+          "change": "+33.3%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Revenue",
+          "value": "16.00",
+          "change": "+33.3%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Revenue",
+          "value": "24.00",
+          "change": "+50.0%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Revenue",
+          "value": "36.00",
+          "change": "+50.0%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Revenue",
+          "value": "48.00",
+          "change": "+33.3%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-2",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5LM-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Gross profit USD bn 6.00 8.00 12.00 19.80 28.80 +45.5% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "4d583832f9f9612608f9942527d7aa4ac3e51505f0bd706753694dcfe757fd20",
+      "html": "<div layer-name=\"Statement / Gross profit / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Gross profit\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Gross profit</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Gross profit / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">6.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+30.4%</div></div><div layer-name=\"Gross profit / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">8.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Gross profit / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">12.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+50.0%</div></div><div layer-name=\"Gross profit / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">19.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+65.0%</div></div><div layer-name=\"Gross profit / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">28.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+45.5%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+45.5%</div></div><div layer-name=\"Evidence / Gross profit\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "d17d148f2b6fa1ee44889359f5bcd0e6c3fe893e18555bec910a4b13c8ec8a92",
+      "old_descendant_ids_invalid_after_success": [
+        "5LM-0",
+        "5M1-0",
+        "5M3-0",
+        "5M2-0",
+        "5LZ-0",
+        "5M0-0",
+        "5LX-0",
+        "5LY-0",
+        "5LV-0",
+        "5LW-0",
+        "5LT-0",
+        "5LU-0",
+        "5LR-0",
+        "5LS-0",
+        "5LP-0",
+        "5LQ-0",
+        "5LN-0",
+        "5LO-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5LZ-0",
+        "5LX-0",
+        "5LV-0",
+        "5LT-0",
+        "5LR-0",
+        "5LP-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Gross profit",
+          "value": "6.00",
+          "change": "+30.4%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Gross profit",
+          "value": "8.00",
+          "change": "+33.3%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Gross profit",
+          "value": "12.00",
+          "change": "+50.0%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Gross profit",
+          "value": "19.80",
+          "change": "+65.0%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Gross profit",
+          "value": "28.80",
+          "change": "+45.5%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-3",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5L4-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Operating income USD bn 2.00 2.80 4.80 8.39 11.76 +40.2% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "0a37c6c0c7643e942c84f5971d20baac65aefa5e21dc18e7854926ff4df153d0",
+      "html": "<div layer-name=\"Statement / Operating income / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Operating income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Operating income</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Operating income / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+25.0%</div></div><div layer-name=\"Operating income / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+40.0%</div></div><div layer-name=\"Operating income / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">4.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+71.4%</div></div><div layer-name=\"Operating income / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">8.39</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+74.8%</div></div><div layer-name=\"Operating income / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">11.76</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+40.2%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+40.2%</div></div><div layer-name=\"Evidence / Operating income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "b0f82966f09be6a7496520bc6b403cf1a549eb5eaa38d9bead873dbdfa23198d",
+      "old_descendant_ids_invalid_after_success": [
+        "5L4-0",
+        "5LJ-0",
+        "5LL-0",
+        "5LK-0",
+        "5LH-0",
+        "5LI-0",
+        "5LF-0",
+        "5LG-0",
+        "5LD-0",
+        "5LE-0",
+        "5LB-0",
+        "5LC-0",
+        "5L9-0",
+        "5LA-0",
+        "5L7-0",
+        "5L8-0",
+        "5L5-0",
+        "5L6-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5LH-0",
+        "5LF-0",
+        "5LD-0",
+        "5LB-0",
+        "5L9-0",
+        "5L7-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Operating income",
+          "value": "2.00",
+          "change": "+25.0%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Operating income",
+          "value": "2.80",
+          "change": "+40.0%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Operating income",
+          "value": "4.80",
+          "change": "+71.4%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Operating income",
+          "value": "8.39",
+          "change": "+74.8%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Operating income",
+          "value": "11.76",
+          "change": "+40.2%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-4",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5KM-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Operating margin % 16.7% 17.5% 20.0% 23.3% 24.5% +1.2 pp Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "de11990f9f5b35c512e09338a88c3c0c03f8058fc395b2d6a4597732ae895cb5",
+      "html": "<div layer-name=\"Statement / Operating margin / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Operating margin\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Operating margin</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">%</div></div><div layer-name=\"Operating margin / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">16.7%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#a62d43;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">−1.1 pp</div></div><div layer-name=\"Operating margin / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">17.5%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+0.8 pp</div></div><div layer-name=\"Operating margin / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">20.0%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+2.5 pp</div></div><div layer-name=\"Operating margin / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">23.3%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+3.3 pp</div></div><div layer-name=\"Operating margin / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">24.5%</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+1.2 pp</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+1.2 pp</div></div><div layer-name=\"Evidence / Operating margin\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "5e87e01d150c63ab4e455ac65a22b0cc0f971ba7f40718f52ec8313f312e3b57",
+      "old_descendant_ids_invalid_after_success": [
+        "5KM-0",
+        "5L1-0",
+        "5L3-0",
+        "5L2-0",
+        "5KZ-0",
+        "5L0-0",
+        "5KX-0",
+        "5KY-0",
+        "5KV-0",
+        "5KW-0",
+        "5KT-0",
+        "5KU-0",
+        "5KR-0",
+        "5KS-0",
+        "5KP-0",
+        "5KQ-0",
+        "5KN-0",
+        "5KO-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5KZ-0",
+        "5KX-0",
+        "5KV-0",
+        "5KT-0",
+        "5KR-0",
+        "5KP-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Operating margin",
+          "value": "16.7%",
+          "change": "−1.1 pp"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Operating margin",
+          "value": "17.5%",
+          "change": "+0.8 pp"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Operating margin",
+          "value": "20.0%",
+          "change": "+2.5 pp"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Operating margin",
+          "value": "23.3%",
+          "change": "+3.3 pp"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Operating margin",
+          "value": "24.5%",
+          "change": "+1.2 pp"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-5",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5K4-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Pretax income USD bn 1.90 2.70 4.40 7.10 10.10 +42.3% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "44223eeed5c159179ec896e8188478cb98be0a40fd6d32f616e0e2029404eca5",
+      "html": "<div layer-name=\"Statement / Pretax income / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Pretax income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Pretax income</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Pretax income / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">1.90</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+26.7%</div></div><div layer-name=\"Pretax income / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.70</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+42.1%</div></div><div layer-name=\"Pretax income / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">4.40</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+63.0%</div></div><div layer-name=\"Pretax income / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">7.10</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+61.4%</div></div><div layer-name=\"Pretax income / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">10.10</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+42.3%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+42.3%</div></div><div layer-name=\"Evidence / Pretax income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "45584cb02745b3c597d0949b77b3f081c396ad637e288f32bd346b434584923d",
+      "old_descendant_ids_invalid_after_success": [
+        "5K4-0",
+        "5KJ-0",
+        "5KL-0",
+        "5KK-0",
+        "5KH-0",
+        "5KI-0",
+        "5KF-0",
+        "5KG-0",
+        "5KD-0",
+        "5KE-0",
+        "5KB-0",
+        "5KC-0",
+        "5K9-0",
+        "5KA-0",
+        "5K7-0",
+        "5K8-0",
+        "5K5-0",
+        "5K6-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5KH-0",
+        "5KF-0",
+        "5KD-0",
+        "5KB-0",
+        "5K9-0",
+        "5K7-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Pretax income",
+          "value": "1.90",
+          "change": "+26.7%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Pretax income",
+          "value": "2.70",
+          "change": "+42.1%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Pretax income",
+          "value": "4.40",
+          "change": "+63.0%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Pretax income",
+          "value": "7.10",
+          "change": "+61.4%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Pretax income",
+          "value": "10.10",
+          "change": "+42.3%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-6",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5JM-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Net income USD bn 1.60 2.20 3.60 6.20 8.90 +43.5% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "00ab9c7a267ffdacbb95aa2846913f256396bf137108bc1e36882743138d8190",
+      "html": "<div layer-name=\"Statement / Net income / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Net income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Net income</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Net income / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">1.60</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+33.3%</div></div><div layer-name=\"Net income / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+37.5%</div></div><div layer-name=\"Net income / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">3.60</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+63.6%</div></div><div layer-name=\"Net income / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">6.20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+72.2%</div></div><div layer-name=\"Net income / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">8.90</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+43.5%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+43.5%</div></div><div layer-name=\"Evidence / Net income\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "7281c367d514cbb796cc77c20c40efad507e55ea966c2d1891c82c9c7760b267",
+      "old_descendant_ids_invalid_after_success": [
+        "5JM-0",
+        "5K1-0",
+        "5K3-0",
+        "5K2-0",
+        "5JZ-0",
+        "5K0-0",
+        "5JX-0",
+        "5JY-0",
+        "5JV-0",
+        "5JW-0",
+        "5JT-0",
+        "5JU-0",
+        "5JR-0",
+        "5JS-0",
+        "5JP-0",
+        "5JQ-0",
+        "5JN-0",
+        "5JO-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5JZ-0",
+        "5JX-0",
+        "5JV-0",
+        "5JT-0",
+        "5JR-0",
+        "5JP-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Net income",
+          "value": "1.60",
+          "change": "+33.3%"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Net income",
+          "value": "2.20",
+          "change": "+37.5%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Net income",
+          "value": "3.60",
+          "change": "+63.6%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Net income",
+          "value": "6.20",
+          "change": "+72.2%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Net income",
+          "value": "8.90",
+          "change": "+43.5%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-7",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5J4-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Diluted earnings per share USD/share 0.53 0.73 1.20 2.07 — — Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "64f80f7da0bd1f9362f8b502ed950406edf3b2791ed97c5eab27000d993b9fde",
+      "html": "<div layer-name=\"Statement / Diluted EPS / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Diluted earnings per share\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Diluted earnings per share</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD/share</div></div><div layer-name=\"Diluted earnings per share / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.53</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Prior unavailable</div></div><div layer-name=\"Diluted earnings per share / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.73</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+37.7%</div></div><div layer-name=\"Diluted earnings per share / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">1.20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+64.4%</div></div><div layer-name=\"Diluted earnings per share / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.07</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+72.5%</div></div><div layer-name=\"Diluted earnings per share / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#5f6368;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">—</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Unavailable</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#5f6368;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Unavailable</div></div><div layer-name=\"Evidence / Diluted earnings per share\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "2a1093e409c73bdfcfde037635042bdd4dfd80dc75c925b6f705699562e832db",
+      "old_descendant_ids_invalid_after_success": [
+        "5J4-0",
+        "5JJ-0",
+        "5JL-0",
+        "5JK-0",
+        "5JH-0",
+        "5JI-0",
+        "5JF-0",
+        "5JG-0",
+        "5JD-0",
+        "5JE-0",
+        "5JB-0",
+        "5JC-0",
+        "5J9-0",
+        "5JA-0",
+        "5J7-0",
+        "5J8-0",
+        "5J5-0",
+        "5J6-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5JH-0",
+        "5JF-0",
+        "5JD-0",
+        "5JB-0",
+        "5J9-0",
+        "5J7-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Diluted EPS",
+          "value": "0.53",
+          "change": "Prior unavailable"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Diluted EPS",
+          "value": "0.73",
+          "change": "+37.7%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Diluted EPS",
+          "value": "1.20",
+          "change": "+64.4%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Diluted EPS",
+          "value": "2.07",
+          "change": "+72.5%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Diluted EPS",
+          "value": null,
+          "change": "Unavailable"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-8",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5IM-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Dividend per share USD/share 0.00 0.00 0.00 0.00 0.00 0.00 USD/share Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "6ca883035640a71038fa739d480bd490e691013e826ff59ce3dc5541c13df5a8",
+      "html": "<div layer-name=\"Statement / Dividend per share / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Dividend per share\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Dividend per share</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD/share</div></div><div layer-name=\"Dividend per share / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Prior unavailable</div></div><div layer-name=\"Dividend per share / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Dividend per share / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Dividend per share / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Dividend per share / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">0.00 USD/share</div></div><div layer-name=\"Evidence / Dividend per share\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "376bd3deb1d0c29f930ffc1b0769ce88871d71b4bd44268da955a7d5f94714cc",
+      "old_descendant_ids_invalid_after_success": [
+        "5IM-0",
+        "5J1-0",
+        "5J3-0",
+        "5J2-0",
+        "5IZ-0",
+        "5J0-0",
+        "5IX-0",
+        "5IY-0",
+        "5IV-0",
+        "5IW-0",
+        "5IT-0",
+        "5IU-0",
+        "5IR-0",
+        "5IS-0",
+        "5IP-0",
+        "5IQ-0",
+        "5IN-0",
+        "5IO-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5IZ-0",
+        "5IX-0",
+        "5IV-0",
+        "5IT-0",
+        "5IR-0",
+        "5IP-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "Prior unavailable"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "0.00 USD/share"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "0.00 USD/share"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "0.00 USD/share"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Dividend per share",
+          "value": "0.00",
+          "change": "0.00 USD/share"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-row-9",
+      "operation": "replace_owned_row_subtree",
+      "target_row_id": "5I4-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_row_text": "Free cash flow USD bn 1.80 2.60 4.10 7.60 10.20 +34.2% Evidence",
+      "expected_cell_widths": [
+        250,
+        125,
+        125,
+        125,
+        125,
+        125,
+        165,
+        128
+      ],
+      "source_export": "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "source_step_html_sha256": "bd33e599d4099f11f108df1b27921eabbddac1caf51cf4ec1b19e5b7506c1f2f",
+      "html": "<div layer-name=\"Statement / Free cash flow / annual changes\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:row;align-items:center;width:1168px;height:52px;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Free cash flow\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;width:250px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Free cash flow</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">USD bn</div></div><div layer-name=\"Free cash flow / FY 2022 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">1.80</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Prior unavailable</div></div><div layer-name=\"Free cash flow / FY 2023 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.60</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+44.4%</div></div><div layer-name=\"Free cash flow / FY 2024 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">4.10</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+57.7%</div></div><div layer-name=\"Free cash flow / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">7.60</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+85.4%</div></div><div layer-name=\"Free cash flow / FY 2026 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">10.20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+34.2%</div></div><div layer-name=\"Latest change / FY 2026 versus FY 2025\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;width:165px;padding:0 10px;text-align:right;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#256341;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+34.2%</div></div><div layer-name=\"Evidence / Free cash flow\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-start;justify-content:center;width:128px;height:44px;padding:0 10px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">Evidence</div></div></div>",
+      "html_sha256": "e0db71cccffa86deb5ee07b7bef89038718287c30a6ebf9b6c31dd5f853575f6",
+      "old_descendant_ids_invalid_after_success": [
+        "5I4-0",
+        "5IJ-0",
+        "5IL-0",
+        "5IK-0",
+        "5IH-0",
+        "5II-0",
+        "5IF-0",
+        "5IG-0",
+        "5ID-0",
+        "5IE-0",
+        "5IB-0",
+        "5IC-0",
+        "5I9-0",
+        "5IA-0",
+        "5I7-0",
+        "5I8-0",
+        "5I5-0",
+        "5I6-0"
+      ],
+      "old_numeric_frame_ids_invalid_after_success": [
+        "5IH-0",
+        "5IF-0",
+        "5ID-0",
+        "5IB-0",
+        "5I9-0",
+        "5I7-0"
+      ],
+      "new_root_id": null,
+      "new_cell_ids": null,
+      "cell_binding_intent": [
+        {
+          "column": 1,
+          "period": 2022,
+          "field": "Free cash flow",
+          "value": "1.80",
+          "change": "Prior unavailable"
+        },
+        {
+          "column": 2,
+          "period": 2023,
+          "field": "Free cash flow",
+          "value": "2.60",
+          "change": "+44.4%"
+        },
+        {
+          "column": 3,
+          "period": 2024,
+          "field": "Free cash flow",
+          "value": "4.10",
+          "change": "+57.7%"
+        },
+        {
+          "column": 4,
+          "period": 2025,
+          "field": "Free cash flow",
+          "value": "7.60",
+          "change": "+85.4%"
+        },
+        {
+          "column": 5,
+          "period": 2026,
+          "field": "Free cash flow",
+          "value": "10.20",
+          "change": "+34.2%"
+        }
+      ],
+      "guard": "Writer must re-read this actual owned row and match entity/metric/raw values, parent and widths. Existing style-only alignment may differ from frozen export and is already built into replacement. Stop if identity/data/row root changed."
+    }
+  ],
+  "arithmetic_policy": {
+    "normal": "(current/prior - 1) × 100; one decimal, ROUND_HALF_UP",
+    "operating_margin": "current and prior raw operating-income/revenue ratios ×100, then subtract; pp, one decimal",
+    "dividend": "current minus prior; absolute USD/share, two decimals; relative growth from zero remains undefined",
+    "fy2022": "Use supplied FY2021 matching series for Revenue/Gross profit/Operating income/Pretax income/Net income and raw income/revenue ratios for margin. Only EPS/dividend/FCF lack supplied FY2021 priors.",
+    "missing": "Unavailable when current or comparator is missing; raw missing remains an em dash"
+  },
+  "stale_patch_notice": "After any row replacement, that row’s old numeric frame IDs and descendant IDs are stale. Do not replay the original Company BODY alignment targets. The unchanged Company header may retain its separately verified alignment repair; Macro and Options patches are unaffected. Bind all replacement IDs from actual Paper returns.",
+  "writer_sequence": [
+    "Re-read the exact board and target row via the sole authorized writer. Match the local binding against current row identity/values/width/parent.",
+    "Replace one complete row visual group at a time in its existing position, preserving original row order. Never append duplicate rows.",
+    "Capture actual returned new root/descendant IDs and update step mappings immediately. If a mutation response is unknown, reconcile before any retry.",
+    "Verify numeric frame flex-column/end alignment, all five amounts and five changes, 12px units, 52px row, preserved source action.",
+    "Read back and capture both full Company boards. Confirm 17×5 history and raw amounts unchanged; inspect footer and header alignment."
+  ],
+  "frozen_inputs_unchanged_sha256": {
+    "/workspace/scratch/55964f568673/f02/paper/consumer-inputs/consumer-boards.json": "163c42de68b7e5f630ef5e4f36b16cec639cb969096cc8e4ac29f351de4c7d92",
+    "/workspace/scratch/55964f568673/f02/fixtures/company-history.json": "75a50198c9adfe8f2592aba2d87addd01b17b9c812ef7a4e78d17da567ec7df6",
+    "/workspace/scratch/55964f568673/f02/paper/reviews/product-native-first-pass.md": "a5d3bbfdb1a77eedb45a6c91a9c9a7fffedd4858babba53fe12d9eb2498f6b43",
+    "/workspace/scratch/55964f568673/f02/paper/reviews/taste-native-first-pass.md": "981f6774fba5af4218c50d6ec2eaa879a6c1119feea9729aaaad7f7e0e5e0d92",
+    "/workspace/scratch/55964f568673/f02/paper/consumer-inputs/company-dark.json": "bc6995fc12d1433bf9a17f312997c90013696f28c00e5216cc7d2875833c38d5",
+    "/workspace/scratch/55964f568673/f02/paper/consumer-inputs/company-light.json": "6f4e114e226f36444c6d2419b50a9017eb8243b14067a2d0c35ed972bd71352a",
+    "/workspace/scratch/55964f568673/f02/paper/exports/company-dark.jsx": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+    "/workspace/scratch/55964f568673/f02/paper/exports/company-light.jsx": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20"
+  },
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "rendered_verified": false
+}

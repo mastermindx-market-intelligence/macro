@@ -1,0 +1,130 @@
+{
+  "schema": "f02.paper-writer-pause-handoff.v1",
+  "status": "PARTIAL_WRITES_PAUSED_UNRESOLVED_DISPATCH",
+  "recorded_at": "2026-11-03T06:47:29.954Z",
+  "actor": "/root/native_state_mobile",
+  "assignment_owner": "/root",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "tool_carrier": "Mastermind Paper direct",
+  "counts": {
+    "planned_boards": 32,
+    "existing_boards": 22,
+    "root_boards": 16,
+    "new_boards": 6,
+    "new_boards_fully_constructed": 5,
+    "new_boards_partially_constructed": 1,
+    "dispatch_records": 435,
+    "applied_response_observed": 434,
+    "uncertain": 1,
+    "new_dispatch_records": 142,
+    "new_applied_response_observed": 141
+  },
+  "unresolved_operation": {
+    "id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+    "target": "7J4-0",
+    "tool": "write_html",
+    "meaning": "Chinese chart footer",
+    "error_code": "UNAVAILABLE",
+    "error_message": "Connection timed out.",
+    "effect_currently_observed": "Absent in two same-carrier reads and in-progress capture",
+    "terminal_dispatch_state": "UNRESOLVED",
+    "retry_performed": false,
+    "alternate_carrier_used": false,
+    "receipt": "f02/paper/repairs/zh390-chart-footer-reconciliation.json"
+  },
+  "constructed_new_boards": [
+    {
+      "key": "company-eps-overlay-320",
+      "id": "70C-0",
+      "pageId": "p-5-0",
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED",
+      "verification_capture": "company-eps-overlay-320",
+      "pending_native_repairs": []
+    },
+    {
+      "key": "company-dividend-overlay-320",
+      "id": "72T-0",
+      "pageId": "p-5-0",
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED",
+      "verification_capture": "company-dividend-overlay-320",
+      "pending_native_repairs": []
+    },
+    {
+      "key": "options-full-row-evidence-320",
+      "id": "74P-0",
+      "pageId": "p-5-0",
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED",
+      "verification_capture": "options-full-row-evidence-320",
+      "pending_native_repairs": []
+    },
+    {
+      "key": "controls-variants",
+      "id": "771-0",
+      "pageId": "p-4-0",
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED",
+      "verification_capture": "controls-variants",
+      "pending_native_repairs": []
+    },
+    {
+      "key": "macro-dark-en-390",
+      "id": "7CM-0",
+      "pageId": "p-5-0",
+      "writer_status": "CONSTRUCTION_COMPLETE_NUMERIC_ALIGNMENT_REPAIR_PENDING",
+      "verification_capture": "macro-dark-en-390",
+      "pending_native_repairs": [
+        {
+          "kind": "numeric_column_end_alignment",
+          "frames": 33,
+          "status": "SOURCE_ONLY_PREPARATION_NOT_APPLIED",
+          "owner": "/root/continuation_dependencies",
+          "evidence": "Actual exported numeric frames lack explicit flex/end layout; coverage lane also lacks end alignment."
+        }
+      ]
+    }
+  ],
+  "partial_board": {
+    "key": "macro-light-zh-390",
+    "id": "7IS-0",
+    "pageId": "p-5-0",
+    "confirmed_steps": 21,
+    "expected_steps": 23,
+    "missing_steps": [
+      "chart-footer",
+      "build-note"
+    ],
+    "verification_capture": "macro-light-zh-390--in-progress"
+  },
+  "remaining_absent_boards": [
+    "macro-docked-1280",
+    "macro-zh-evidence-return-390",
+    "width-768-overlay",
+    "width-1024-overlay",
+    "width-1600-docked",
+    "fault-compositions",
+    "company-fy2025-eps-evidence-390",
+    "editorial-calculation-evidence-390",
+    "editorial-reading-390",
+    "density-40-52-comparison"
+  ],
+  "existing_board_repairs": "Final cumulative v3 text/chart/reorders,182 numeric-frame styles, Company18 annual-growth v2 row replacements and2 caveats are prepared but unapplied; all48 text groups/54 leaves,3 charts and2 row orders matched7 live preflight exports.",
+  "current390_numeric_repair": "66 actual numeric frames require explicit flex/end alignment; source agent preparing guarded patches. Neither390 board is acceptance-qualified.",
+  "read_only_retention": {
+    "report": "f02/paper/native-final-retention.json",
+    "receipts": "f02/paper/native-final-retention-read-receipts.json",
+    "status": "READBACK_COMPLETE_WRITES_PAUSED",
+    "originals_present": 67,
+    "originals_correct_locations": 67,
+    "original_tokens": 20,
+    "token_content_hash": "356191c3",
+    "original_targets": 0,
+    "scope_violations": 0,
+    "uncertain_operations": 1
+  },
+  "continuation_rules": [
+    "No further Paper calls without a supported same-carrier reconciliation method relayed by root.",
+    "No edit retry, new ID retry, alternate carrier or unknown-effect relabeling from absence alone.",
+    "No additional runtime/progress rewrites after final handoff unless documented reconciliation changes actual state.",
+    "Final32-board freeze and final Read-me refresh have not run.",
+    "Root retains persistence/assignment ownership; this child remains last sole native tool operator, now paused."
+  ]
+}

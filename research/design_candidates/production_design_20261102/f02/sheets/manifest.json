@@ -1,0 +1,289 @@
+{
+  "artifact_kind": "original_static_design_sheets",
+  "generator": "draw_sheets.py",
+  "input_pattern_lab_sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+  "fonts": {
+    "raster": "Noto Sans Regular / Bold",
+    "svg_english": "Noto Sans, Arial, sans-serif",
+    "svg_chinese": "Noto Sans SC, PingFang SC, sans-serif; CJK visual proof pending"
+  },
+  "company_fixture_sha256": "75a50198c9adfe8f2592aba2d87addd01b17b9c812ef7a4e78d17da567ec7df6",
+  "candidate_revision": 2,
+  "browser_renderer_used": false,
+  "paper_mutations": 0,
+  "frames": [
+    {
+      "id": "macro-dark-1440",
+      "title": "Macro comparison-first pattern · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "height": 1180,
+      "intended_css_width": 1440,
+      "svg": "macro-dark-1440.svg",
+      "png": "macro-dark-1440.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Candidate 2 revision of VTC-001/005: first row text y=440; ten rows shown before the secondary chart.",
+        "320px inspector leaves an 824px primary region.",
+        "The headline/chart describe the universe sample; the inspector describes one explicitly selected sector."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "company-dark-1440",
+      "title": "Company multi-series history and five-period statements · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "height": 1060,
+      "intended_css_width": 1440,
+      "svg": "company-dark-1440.svg",
+      "png": "company-dark-1440.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Candidate 2 revision of VTC-003: five full 2010–2026 series and five FY22–26 raw periods.",
+        "Nine statement rows include explicit units, unavailable EPS and absolute-zero dividend change.",
+        "First statement data text y=578; chart stays directly above the table."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "options-dark-1440",
+      "title": "Options tape-first pattern · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "height": 1140,
+      "intended_css_width": 1440,
+      "svg": "options-dark-1440.svg",
+      "png": "options-dark-1440.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Candidate 2 revision of VTC-001/004 and PRC-009: first row text y=394; the expiry summary follows all twelve rows.",
+        "Body text is 12–13px; header 11px. Neutral row rules and contract/execution grouping preserve row tracking.",
+        "Expiry groups are explicitly separate from the observed print window."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "editorial-dark-1440",
+      "title": "Public editorial reading pattern · F02 static specimen",
+      "kind": "static_vector_composition",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "height": 1340,
+      "intended_css_width": 1440,
+      "svg": "editorial-dark-1440.svg",
+      "png": "editorial-dark-1440.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Comfortable English body is a 720px column with 210px TOC and 48px gap.",
+        "This is an illustrative excerpt, not a rewrite of the authored production article.",
+        "Public chrome may translate; authored body language and canonical URL stay with the existing source owner."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "macro-light-1440",
+      "title": "Macro comparison-first pattern · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "height": 1180,
+      "intended_css_width": 1440,
+      "svg": "macro-light-1440.svg",
+      "png": "macro-light-1440.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Candidate 2 revision of VTC-001/005: first row text y=440; ten rows shown before the secondary chart.",
+        "320px inspector leaves an 824px primary region.",
+        "The headline/chart describe the universe sample; the inspector describes one explicitly selected sector."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "company-light-1440",
+      "title": "Company multi-series history and five-period statements · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "height": 1060,
+      "intended_css_width": 1440,
+      "svg": "company-light-1440.svg",
+      "png": "company-light-1440.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Candidate 2 revision of VTC-003: five full 2010–2026 series and five FY22–26 raw periods.",
+        "Nine statement rows include explicit units, unavailable EPS and absolute-zero dividend change.",
+        "First statement data text y=578; chart stays directly above the table."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "options-light-1440",
+      "title": "Options tape-first pattern · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "height": 1140,
+      "intended_css_width": 1440,
+      "svg": "options-light-1440.svg",
+      "png": "options-light-1440.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Candidate 2 revision of VTC-001/004 and PRC-009: first row text y=394; the expiry summary follows all twelve rows.",
+        "Body text is 12–13px; header 11px. Neutral row rules and contract/execution grouping preserve row tracking.",
+        "Expiry groups are explicitly separate from the observed print window."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "editorial-light-1440",
+      "title": "Public editorial reading pattern · F02 static specimen",
+      "kind": "static_vector_composition",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "height": 1340,
+      "intended_css_width": 1440,
+      "svg": "editorial-light-1440.svg",
+      "png": "editorial-light-1440.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Comfortable English body is a 720px column with 210px TOC and 48px gap.",
+        "This is an illustrative excerpt, not a rewrite of the authored production article.",
+        "Public chrome may translate; authored body language and canonical URL stay with the existing source owner."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "macro-dark-390",
+      "title": "390px comparison-first Macro · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "height": 1420,
+      "intended_css_width": 390,
+      "svg": "macro-dark-390.svg",
+      "png": "macro-dark-390.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Candidate 2:390px viewport,358px content,first sector text y=398; all ten rows precede the chart. Each source control is44×44px within a56px row.",
+        "VTC-007: pre-table overflow/coverage hint at x=16,y=320; existing post-table hint remains at y=951."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "company-evidence-light-320",
+      "title": "320px exact Company row evidence · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "light",
+      "language": "en",
+      "width": 320,
+      "height": 1420,
+      "intended_css_width": 320,
+      "svg": "company-evidence-light-320.svg",
+      "png": null,
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "320px overlay width;280px body measure;44px close target;five fiscal periods plus change;legitimate focus outline.",
+        "Exact fiscal observation basis replaces a misleading single market-clock label."
+      ],
+      "off_canvas_text": [],
+      "raster_in_plate": "mobile-comparison.png"
+    },
+    {
+      "id": "mobile-comparison",
+      "title": "Mobile comparison plate · 390px and 320px static compositions",
+      "kind": "static_vector_composition",
+      "theme": "dark",
+      "language": "en",
+      "width": 782,
+      "height": 1516,
+      "intended_css_width": 782,
+      "svg": "mobile-comparison.svg",
+      "png": "mobile-comparison.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Original logical frames: macro-dark-390.svg and company-evidence-light-320.svg. The Macro frame also has its own PNG for native-scale inspection.",
+        "PNG plate is a static composite from two independently drawn vector frames.",
+        "VTC-007: Macro pre-table hint appears at plate x=40,y=392; first sector text remains at plate y=470."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "macro-light-zh-390",
+      "title": "390px comparison-first Macro · F02 candidate 2",
+      "kind": "static_vector_composition",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "height": 1420,
+      "intended_css_width": 390,
+      "svg": "macro-light-zh-390.svg",
+      "png": null,
+      "raster_font": "unrendered: no CJK font present",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Editable SVG text and geometry only; NOT rasterized.",
+        "No CJK font is installed in the narrowly inspected local font locations.",
+        "Requires qualified native-font visual review and browser/Paper proof.",
+        "VTC-007: pre-table overflow/coverage hint at x=16,y=320; CJK remains unrendered."
+      ],
+      "off_canvas_text": []
+    },
+    {
+      "id": "states-and-semantics",
+      "title": "Shared state and semantic distinctions · static specimen matrix",
+      "kind": "static_vector_composition",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "height": 1480,
+      "intended_css_width": 1440,
+      "svg": "states-and-semantics.svg",
+      "png": "states-and-semantics.png",
+      "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
+      "browser_verified": false,
+      "paper_applied": false,
+      "notes": [
+        "Sixteen distinct state treatments,plus two combined stale+partial+save scenarios. Session expiry after a pending save retains unknown outcome.",
+        "Colors and neutral borders use the local pattern-lab token candidates.",
+        "Corrected and success are diagrammed contract extensions; they are not new backend status enums."
+      ],
+      "off_canvas_text": []
+    }
+  ]
+}

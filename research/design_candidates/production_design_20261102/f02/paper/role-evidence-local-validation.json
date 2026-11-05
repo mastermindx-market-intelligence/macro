@@ -1,0 +1,36 @@
+{
+  "schema": "f02.paper.local-supplement-validation.v1",
+  "status": "LOCAL_SOURCE_AND_HTML_CHECKED",
+  "groups": [
+    {
+      "group": "foundations",
+      "steps": 6,
+      "one_root_each": true,
+      "sequential_parents": true
+    },
+    {
+      "group": "metrics",
+      "steps": 3,
+      "one_root_each": true,
+      "sequential_parents": true
+    },
+    {
+      "group": "controls-variants",
+      "steps": 39,
+      "one_root_each": true,
+      "sequential_parents": true
+    },
+    {
+      "group": "options-full-row-evidence-320",
+      "steps": 12,
+      "one_root_each": true,
+      "sequential_parents": true
+    }
+  ],
+  "role_count": 21,
+  "retained_unqualified": 4,
+  "options_tape_fields_checked": 12,
+  "native_reviewed": false,
+  "browser_reviewed": false,
+  "limitations": "No layout render, real source integration, interaction or native Paper effect is established by these checks."
+}

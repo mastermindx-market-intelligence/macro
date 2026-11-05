@@ -1,0 +1,239 @@
+{
+  "started_at": "2026-11-03 02:02:00 UTC",
+  "finished_at": "2026-11-03 02:02:04 UTC",
+  "reason": "final candidate handoff: revalidate exact target and writer gate before declaring remaining work",
+  "mutations_dispatched": 0,
+  "inspection": {
+    "state": "CONNECTED",
+    "server": {
+      "name": "paper-desktop",
+      "version": "0.5.18"
+    },
+    "note": "Foreground file is outside the F02 exact-file target; no focus or edit was performed."
+  },
+  "target_read": {
+    "state": "OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"fileName\": \"Mastermind Product Design System — Canonical\",\n  \"pageName\": \"03 · Components\",\n  \"pageId\": \"p-4-0\",\n  \"url\": \"https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0\",\n  \"rootNodeId\": \"root_node_p-4-0\",\n  \"nodeCount\": 850,\n  \"artboardCount\": 25,\n  \"artboards\": [\n    {\n      \"id\": \"25V-0\",\n      \"name\": \"MX/Section Header\",\n      \"childCount\": 3,\n      \"width\": 560,\n      \"height\": null,\n      \"worldX\": 0,\n      \"worldY\": 0\n    },\n    {\n      \"id\": \"25Z-0\",\n      \"name\": \"MX/Metric Tile\",\n      \"childCount\": 5,\n      \"width\": 708,\n      \"height\": 228,\n      \"worldX\": 2416,\n      \"worldY\": 0\n    },\n    {\n      \"id\": \"26C-0\",\n      \"name\": \"MX/Tab\",\n      \"childCount\": 2,\n      \"width\": 116,\n      \"height\": null,\n      \"worldX\": 680,\n      \"worldY\": 0\n    },\n    {\n      \"id\": \"26J-0\",\n      \"name\": \"MX/Data Row\",\n      \"childCount\": 4,\n      \"width\": 1120,\n      \"height\": null,\n      \"worldX\": 0,\n      \"worldY\": 400\n    },\n    {\n      \"id\": \"272-0\",\n      \"name\": \"MX/Freshness\",\n      \"childCount\": 3,\n      \"width\": 220,\n      \"height\": null,\n      \"worldX\": 1508,\n      \"worldY\": 0\n    },\n    {\n      \"id\": \"27I-0\",\n      \"name\": \"MX/Data Row · Mobile\",\n      \"childCount\": 4,\n      \"width\": 342,\n      \"height\": null,\n      \"worldX\": 1240,\n      \"worldY\": 400\n    },\n    {\n      \"id\": \"28D-0\",\n      \"name\": \"MX/Button\",\n      \"childCount\": 6,\n      \"width\": 448,\n      \"height\": null,\n      \"worldX\": 1848,\n      \"worldY\": 0\n    },\n    {\n      \"id\": \"28Y-0\",\n      \"name\": \"MX/Decision Row\",\n      \"childCount\": 3,\n      \"width\": 640,\n      \"height\": null,\n      \"worldX\": 0,\n      \"worldY\": 1850\n    },\n    {\n      \"id\": \"29H-0\",\n      \"name\": \"MX/Callout\",\n      \"childCount\": 5,\n      \"width\": 440,\n      \"height\": null,\n      \"worldX\": 1160,\n      \"worldY\": 2500\n    },\n    {\n      \"id\": \"2A7-0\",\n      \"name\": \"MX/State Panel\",\n      \"childCount\": 8,\n      \"width\": 440,\n      \"height\": null,\n      \"worldX\": 0,\n      \"worldY\": 2500\n    },\n    {\n      \"id\": \"2BK-0\",\n      \"name\": \"MX/LENS Evidence\",\n      \"childCount\": 2,\n      \"width\": 340,\n      \"height\": null,\n      \"worldX\": 0,\n      \"worldY\": 2200\n    },\n    {\n      \"id\": \"2BR-0\",\n      \"name\": \"MX/Verdict Hero\",\n      \"childCount\": 5,\n      \"width\": 720,\n      \"height\": null,\n      \"worldX\": 2760,\n      \"worldY\": 1450\n    },\n    {\n      \"id\": \"2CM-0\",\n      \"name\": \"MX/Count Ladder\",\n      \"childCount\": 4,\n      \"width\": 560,\n      \"height\": null,\n      \"worldX\": 0,\n      \"worldY\": 800\n    },\n    {\n      \"id\": \"2E3-0\",\n      \"name\": \"MX/Lifecycle Rail\",\n      \"childCount\": 4,\n      \"width\": 640,\n      \"height\": 416,\n      \"worldX\": 1530,\n      \"worldY\": 1850\n    },\n    {\n      \"id\": \"2GG-0\",\n      \"name\": \"MX/Detail Disclosure\",\n      \"childCount\": 2,\n      \"width\": 520,\n      \"height\": null,\n      \"worldX\": 460,\n      \"worldY\": 2200\n    },\n    {\n      \"id\": \"2GM-0\",\n      \"name\": \"MX/Verdict Hero · Mobile\",\n      \"childCount\": 5,\n      \"width\": 350,\n      \"height\": null,\n      \"worldX\": 3600,\n      \"worldY\": 1450\n    },\n    {\n      \"id\": \"2HH-0\",\n      \"name\": \"MX/Count Ladder · Mobile\",\n      \"childCount\": 4,\n      \"width\": 350,\n      \"height\": null,\n      \"worldX\": 680,\n      \"worldY\": 800\n    },\n    {\n      \"id\": \"2IY-0\",\n      \"name\": \"MX/Lifecycle Rail · Mobile\",\n      \"childCount\": 4,\n      \"width\": 350,\n      \"height\": 376,\n      \"worldX\": 2290,\n      \"worldY\": 1850\n    },\n    {\n      \"id\": \"2LB-0\",\n      \"name\": \"MX/Decision Row · Mobile\",\n      \"childCount\": 3,\n      \"width\": 350,\n      \"height\": null,\n      \"worldX\": 840,\n      \"worldY\": 1790\n    },\n    {\n      \"id\": \"2LX-0\",\n      \"name\": \"MX/Detail Disclosure · Mobile\",\n      \"childCount\": 2,\n      \"width\": 350,\n      \"height\": null,\n      \"worldX\": 1100,\n      \"worldY\": 2200\n    },\n    {\n      \"id\": \"2M3-0\",\n      \"name\": \"MX/State Panel · Mobile\",\n      \"childCount\": 8,\n      \"width\": 350,\n      \"height\": null,\n      \"worldX\": 560,\n      \"worldY\": 2500\n    },\n    {\n      \"id\": \"2NG-0\",\n      \"name\": \"MX/Callout · Mobile\",\n      \"childCount\": 5,\n      \"width\": 350,\n      \"height\": null,\n      \"worldX\": 1720,\n      \"worldY\": 2500\n    },\n    {\n      \"id\": \"2O6-0\",\n      \"name\": \"MX/Table Frame\",\n      \"childCount\": 2,\n      \"width\": 720,\n      \"height\": null,\n      \"worldX\": 0,\n      \"worldY\": 3750\n    },\n    {\n      \"id\": \"2PH-0\",\n      \"name\": \"MX/Chart Frame\",\n      \"childCount\": 4,\n      \"width\": 720,\n      \"height\": null,\n      \"worldX\": 840,\n      \"worldY\": 3750\n    },\n    {\n      \"id\": \"2RE-0\",\n      \"name\": \"MX/Tier Gate\",\n      \"childCount\": 2,\n      \"width\": 720,\n      \"height\": null,\n      \"worldX\": 1680,\n      \"worldY\": 800\n    }\n  ],\n  \"pages\": [\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1-0\",\n      \"name\": \"00 · Cover\",\n      \"icon\": null,\n      \"isActive\": true\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-8-1\",\n      \"name\": \"07 · Source Imports + Assets · Pending Review\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-2-0\",\n      \"name\": \"01 · Getting Started\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-3-0\",\n      \"name\": \"02 · Foundations\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-4-0\",\n      \"name\": \"03 · Components\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-5-0\",\n      \"name\": \"04 · Patterns\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-6-0\",\n      \"name\": \"05 · Reference Screens\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-7-0\",\n      \"name\": \"06 · Utilities\",\n      \"icon\": null,\n      \"isActive\": false\n    }\n  ],\n  \"fontFamilies\": [\n    \"Inter\",\n    \"System Sans-Serif\"\n  ],\n  \"tokens\": {\n    \"items\": [\n      {\n        \"name\": \"--noir-canvas\",\n        \"value\": \"#080808\"\n      },\n      {\n        \"name\": \"--noir-sidebar\",\n        \"value\": \"#0C0C0C\"\n      },\n      {\n        \"name\": \"--noir-panel\",\n        \"value\": \"#121212\"\n      },\n      {\n        \"name\": \"--noir-raised\",\n        \"value\": \"#191919\"\n      },\n      {\n        \"name\": \"--noir-hover\",\n        \"value\": \"#222222\"\n      },\n      {\n        \"name\": \"--noir-selected\",\n        \"value\": \"#292929\"\n      },\n      {\n        \"name\": \"--noir-text-primary\",\n        \"value\": \"#F3F3F3\"\n      },\n      {\n        \"name\": \"--noir-text-secondary\",\n        \"value\": \"#B8B8B8\"\n      },\n      {\n        \"name\": \"--noir-text-tertiary\",\n        \"value\": \"#949494\"\n      },\n      {\n        \"name\": \"--noir-champagne\",\n        \"value\": \"#C9B99B\"\n      },\n      {\n        \"name\": \"--noir-sage\",\n        \"value\": \"#A8C2AD\"\n      },\n      {\n        \"name\": \"--noir-rose\",\n        \"value\": \"#DEA4A5\"\n      },\n      {\n        \"name\": \"--noir-steel\",\n        \"value\": \"#A7B4C2\"\n      },\n      {\n        \"name\": \"--noir-lilac\",\n        \"value\": \"#BDB2CE\"\n      },\n      {\n        \"name\": \"--market-canvas\",\n        \"value\": \"#0A0B0D\"\n      },\n      {\n        \"name\": \"--market-panel\",\n        \"value\": \"#111318\"\n      },\n      {\n        \"name\": \"--market-raised\",\n        \"value\": \"#181B20\"\n      },\n      {\n        \"name\": \"--market-line\",\n        \"value\": \"#2B3038\"\n      },\n      {\n        \"name\": \"--intelligence-panel\",\n        \"value\": \"#10131A\"\n      },\n      {\n        \"name\": \"--intelligence-active\",\n        \"value\": \"#151B29\"\n      }\n    ]\n  }\n}"
+        }
+      ]
+    },
+    "document": {
+      "basic_info": {
+        "fileName": "Mastermind Product Design System — Canonical",
+        "pageName": "00 · Cover",
+        "pageId": "p-1-0",
+        "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-1-0",
+        "rootNodeId": "root_node_p-1-0",
+        "nodeCount": 99,
+        "artboardCount": 2,
+        "artboards": [
+          {
+            "id": "423-1",
+            "name": "00 · Start Here · NOIR + Library Directory",
+            "childCount": 4,
+            "width": 1440,
+            "height": 900,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "42T-0",
+            "name": "01 · Working Files · Workspace Navigator",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1678,
+            "worldX": 1520,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "type": "page",
+            "id": "p-1-0",
+            "name": "00 · Cover",
+            "icon": null,
+            "isActive": true
+          },
+          {
+            "type": "page",
+            "id": "p-8-1",
+            "name": "07 · Source Imports + Assets · Pending Review",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-2-0",
+            "name": "01 · Getting Started",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-3-0",
+            "name": "02 · Foundations",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-4-0",
+            "name": "03 · Components",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-5-0",
+            "name": "04 · Patterns",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-6-0",
+            "name": "05 · Reference Screens",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-7-0",
+            "name": "06 · Utilities",
+            "icon": null,
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--noir-canvas",
+              "value": "#080808"
+            },
+            {
+              "name": "--noir-sidebar",
+              "value": "#0C0C0C"
+            },
+            {
+              "name": "--noir-panel",
+              "value": "#121212"
+            },
+            {
+              "name": "--noir-raised",
+              "value": "#191919"
+            },
+            {
+              "name": "--noir-hover",
+              "value": "#222222"
+            },
+            {
+              "name": "--noir-selected",
+              "value": "#292929"
+            },
+            {
+              "name": "--noir-text-primary",
+              "value": "#F3F3F3"
+            },
+            {
+              "name": "--noir-text-secondary",
+              "value": "#B8B8B8"
+            },
+            {
+              "name": "--noir-text-tertiary",
+              "value": "#949494"
+            },
+            {
+              "name": "--noir-champagne",
+              "value": "#C9B99B"
+            },
+            {
+              "name": "--noir-sage",
+              "value": "#A8C2AD"
+            },
+            {
+              "name": "--noir-rose",
+              "value": "#DEA4A5"
+            },
+            {
+              "name": "--noir-steel",
+              "value": "#A7B4C2"
+            },
+            {
+              "name": "--noir-lilac",
+              "value": "#BDB2CE"
+            },
+            {
+              "name": "--market-canvas",
+              "value": "#0A0B0D"
+            },
+            {
+              "name": "--market-panel",
+              "value": "#111318"
+            },
+            {
+              "name": "--market-raised",
+              "value": "#181B20"
+            },
+            {
+              "name": "--market-line",
+              "value": "#2B3038"
+            },
+            {
+              "name": "--intelligence-panel",
+              "value": "#10131A"
+            },
+            {
+              "name": "--intelligence-active",
+              "value": "#151B29"
+            }
+          ]
+        },
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "contentHash": {
+          "tokens": "356191c3"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "snapshot_sha256": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "write_schema": {
+      "server_name": "paper-desktop",
+      "server_version": "0.5.18",
+      "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+      "accepted_for_write": false,
+      "expected_server": [
+        "paper-desktop",
+        null
+      ],
+      "server_name_compatible": true,
+      "server_version_compatible": true,
+      "server_version_policy": "OBSERVED_NOT_PINNED",
+      "catalog_compatible": false,
+      "expected_catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db"
+    }
+  },
+  "exact_target_recheck": {
+    "file_id": "01M312VSDSZFVT45674GDVJVZN",
+    "page_id": "p-4-0",
+    "artboard_count": 25,
+    "node_count": 850,
+    "identity_dimensions_unchanged": true
+  }
+}

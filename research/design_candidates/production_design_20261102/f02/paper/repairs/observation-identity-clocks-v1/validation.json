@@ -1,0 +1,54 @@
+{
+  "schema": "f02.observation-identity-clocks-validation.v1",
+  "status": "SOURCE_CHECKS_PASS_NATIVE_APPLICATION_NOT_CLAIMED",
+  "source_identity": {
+    "full": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+    "macro_dark_text_id": "4XH-0",
+    "macro_light_text_id": "4Z5-0",
+    "matches_existing_width_mobile_fault_identity": true
+  },
+  "company_clock_basis": {
+    "observation": "Fiscal years; no calendar observation timestamp supplied",
+    "comparison_periods": [
+      2025,
+      2026
+    ],
+    "publication": "2026-10-30T20:02:00Z",
+    "retrieval": "2026-10-30T20:03:00Z",
+    "authoritative_fixture_sha256": "75a50198c9adfe8f2592aba2d87addd01b17b9c812ef7a4e78d17da567ec7df6"
+  },
+  "changed_steps": 6,
+  "unchanged_steps": 311,
+  "protected_steps_identical": [
+    "unavailable-table-context",
+    "unavailable-table-state",
+    "tabs-loading-panel",
+    "unavailable-inspector-summary",
+    "not-yet-published-state",
+    "unquantified-coverage-state",
+    "combined-confirmed-saved"
+  ],
+  "macro_2000_clocks_unchanged": true,
+  "all_existing_input_and_native_candidate_hashes_preserved": {
+    "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/consumer-boards.json": "45946c8f487284ae0226033a8af9ebf75b9570b51fb94d8000a53842cf75a480",
+    "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/fault-composition-inputs.json": "e84e18fba7027da31efb0f1981fd47977d51ad14a2313e9e21f4e5b10376e71a",
+    "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/native-patch-candidates.spaced.json": "4398e1cb05cd71c622b1b8d07d8628b574cb11047524b1d1dd4bd9d09c66f593"
+  },
+  "numeric_values_and_raw_company_rows_unchanged": true,
+  "board_step_parent_keys_and_html_tag_topology_unchanged": true,
+  "minimal_native_patch_sha256": "e2b95fafe4b14d48c6e6f1220ea405c93f84a00e38738e3805de3b335748a0a9",
+  "cumulative_native_patch_sha256": "dc3fd2f6b09d8867848f8e6e4b48f347f39837abd79003585e9b9f8b71bcd2c8",
+  "source_overrides_sha256": "b94b7db39f4735b2eb749475e4aba1f513792b1c6fe6365b0c15954f994b8512",
+  "cumulative_packets": {
+    "consumer-boards.json": {
+      "path": "effective/consumer-boards.json",
+      "sha256": "50238ddb0555f819820d3ee5eeb8e4d78dd33040a02883f4d93c3eb83119510c"
+    },
+    "fault-composition-inputs.json": {
+      "path": "effective/fault-composition-inputs.json",
+      "sha256": "52f50a29da27bba24292109fbeee02ef6d7fb7ee8572a618b32b58210a1b9421"
+    }
+  },
+  "paper_calls": 0,
+  "browser_calls": 0
+}

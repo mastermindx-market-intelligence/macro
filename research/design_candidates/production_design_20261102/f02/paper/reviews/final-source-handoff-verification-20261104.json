@@ -1,0 +1,50 @@
+{
+  "schema": "f02.final-source-handoff-verification.v1",
+  "recorded_at": "2026-11-04T02:33:27.411368+00:00",
+  "freeze_integrity": [
+    {
+      "version": "r1",
+      "members": 88,
+      "aggregate": "f15a3cdba79ab0851d4cb0e01fbdfcc79e909d6aea48b8d3519b5908ec549445",
+      "unchanged": true
+    },
+    {
+      "version": "r2",
+      "members": 89,
+      "aggregate": "9182ad14a8b0feadebdb9a39900a3f949c81577c20913582a3c7a35ac3ab4e9f",
+      "unchanged": true
+    },
+    {
+      "version": "r3",
+      "members": 89,
+      "aggregate": "280483a1f8e2f9c005381ddf051265d59d3fa2df904b42ccb75eab094fdbf6a4",
+      "unchanged": true
+    }
+  ],
+  "preserved_source_blobs": [
+    "SYSTEM_CONTRACT.md",
+    "INTERACTION_STATES.md",
+    "token-map.json",
+    "CAPABILITY_LEDGER.md",
+    "capability-ledger.json",
+    "PAPER_RETENTION_LEDGER.md",
+    "paper-retention-ledger.json",
+    "paper/prepare_final_native_freeze.py"
+  ],
+  "source_history_correction_matches_receipt": true,
+  "parent_base": "da8df94d647f06b34e5a7a743f147980e627e854",
+  "all_non_f02_parent_lines_preserved": true,
+  "operation_states": {
+    "APPLIED_RESPONSE_OBSERVED": 649,
+    "TRANSPORT_ERROR_EFFECT_UNRESOLVED": 1
+  },
+  "unknown_operations": [
+    "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
+  ],
+  "english_status_reconciled": true,
+  "unresolved_bindings": 5,
+  "complete_full_pairs": 31,
+  "strict_full_freeze_ready": false,
+  "new_native_mutations": 0,
+  "qualification": "Mechanical evidence consistency only; no native/runtime/formal approval."
+}

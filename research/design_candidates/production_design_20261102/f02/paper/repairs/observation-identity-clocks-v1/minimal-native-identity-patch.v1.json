@@ -1,0 +1,53 @@
+{
+  "schema": "f02.native-observation-identity-patch.v1",
+  "status": "PREPARED_NOT_APPLIED",
+  "updates": [
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "step_key": "evidence-field-0",
+      "step_node_id": "4XF-0",
+      "text_node_id": "4XH-0",
+      "accepted_observed_before_texts": [
+        "macro / communication-services",
+        "f02.fixture.v3/macro/sector/communication_services"
+      ],
+      "after_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "already_satisfied_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4XH-0",
+            "html": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30"
+          }
+        ]
+      },
+      "guard": "Fresh-read this exact Text node. Apply only if its observed text exactly matches one listed before-state. If full identity is already present, record satisfied and do not replay; any other value needs reconciliation."
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "step_key": "evidence-field-0",
+      "step_node_id": "4Z4-0",
+      "text_node_id": "4Z5-0",
+      "accepted_observed_before_texts": [
+        "macro / communication-services",
+        "f02.fixture.v3/macro/sector/communication_services"
+      ],
+      "after_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "already_satisfied_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4Z5-0",
+            "html": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30"
+          }
+        ]
+      },
+      "guard": "Fresh-read this exact Text node. Apply only if its observed text exactly matches one listed before-state. If full identity is already present, record satisfied and do not replay; any other value needs reconciliation."
+    }
+  ],
+  "paper_calls": 0
+}

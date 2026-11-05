@@ -1,0 +1,10 @@
+{
+  "observed_at": "2026-11-03T04:36:20Z",
+  "browser": "original Chrome extension",
+  "tab_id": "1132278983",
+  "url": "http://terminal.local:4173/",
+  "result": "ERR_DNS_FAIL",
+  "message": "Unable to determine IP address from host name terminal.local. Name Error: The domain name does not exist.",
+  "application_rendered": false,
+  "raw_error_page_not_retained": true
+}

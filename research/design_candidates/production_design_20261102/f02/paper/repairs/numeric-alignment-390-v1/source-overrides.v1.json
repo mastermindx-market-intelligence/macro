@@ -1,0 +1,1884 @@
+{
+  "schema": "f02.paper.numeric-alignment-390-source-overrides.v1",
+  "status": "PREPARED_SOURCE_DELTA_ONLY_NOT_APPLIED",
+  "instruction": "Compose only against the exact before HTML hash. Change style attributes on the listed numeric source cells only. Preserve original packets and applied receipts. Never replay an applied construction step to obtain this style repair.",
+  "style_delta": {
+    "display": "flex",
+    "flex-direction": "column",
+    "align-items": "end",
+    "justify-content": "center",
+    "text-align": "right"
+  },
+  "precedence": "Apply after fixture-coherence-v1/effective-spaced input. No Company, Options, chart, footer, evidence identity or clock overlay is superseded.",
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "native_patch_sha256": "7dd1c727557f5a6150bfc2b7034b2d579fa03284d1a45a3d31bae69e9ab633d7",
+  "overrides": [
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "table",
+      "source_step_html_sha256": "fe204ae59dbae3ec89318463e10bfd912d679543156461ef500e3ddb81af5534",
+      "accepted_before_overlay_html_sha256": [
+        "fe204ae59dbae3ec89318463e10bfd912d679543156461ef500e3ddb81af5534"
+      ],
+      "replacement_html_sha256": "9bd637a0b44f6291f9e936d95380c8bb19c6b1f26366492d8790d7e9ca8c6013",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.0.1",
+          "column_role": "rate",
+          "expected_visible_text": "Above 50D ↓",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "12px",
+            "line-height": "18px",
+            "font-weight": "500",
+            "color": "var(--noir-text-secondary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7DQ-0"
+        },
+        {
+          "input_element_path": "0.0.2",
+          "column_role": "delta_pp",
+          "expected_visible_text": "Change · pp",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "12px",
+            "line-height": "18px",
+            "font-weight": "500",
+            "color": "var(--noir-text-secondary)",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7DS-0"
+        },
+        {
+          "input_element_path": "0.0.3",
+          "column_role": "coverage",
+          "expected_visible_text": "Coverage",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "12px",
+            "line-height": "18px",
+            "font-weight": "500",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7DU-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Named sector comparison scroll region\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 358px;height: 596px;overflow: hidden;\"><div layer-name=\"Column headings\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 36px;padding-left: 12px;background-color: var(--noir-raised);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-secondary);width: 164px;flex-shrink: 0;\">Sector / source</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-secondary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;\">Above 50D ↓</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-secondary);width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;\">Change · pp</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">Coverage</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Definition</div></div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-0",
+      "source_step_html_sha256": "380d2d3a52415c5ca1ee101cc5cf3f790e40bfeaf75fc11ac8c2ed45ddb66321",
+      "accepted_before_overlay_html_sha256": [
+        "380d2d3a52415c5ca1ee101cc5cf3f790e40bfeaf75fc11ac8c2ed45ddb66321"
+      ],
+      "replacement_html_sha256": "914ae2810c6c323b63fec2062a2ba46091b98f63861cd69aa1d876e3a1ae1b2c",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "72.4%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7E3-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+2.10",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#b0d4b9",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7E5-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "286 / 286",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7E7-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Technology\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Technology</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">72.4%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #b0d4b9;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+2.10</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">286 / 286</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-1",
+      "source_step_html_sha256": "ea1b1a9be31055b9306376698087a9696248549209edf757108a22b5e592928d",
+      "accepted_before_overlay_html_sha256": [
+        "ea1b1a9be31055b9306376698087a9696248549209edf757108a22b5e592928d"
+      ],
+      "replacement_html_sha256": "e262cd3b7dcaca08b3b8287518242a5de648425ed7442af315b8ea0c2157432f",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "70.8%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7EG-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+1.50",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#b0d4b9",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7EI-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "267 / 267",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7EK-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Industrials\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Industrials</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">70.8%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #b0d4b9;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+1.50</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">267 / 267</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-2",
+      "source_step_html_sha256": "b84c8518940ccc32a03f37b4f5e029ccfde3bc81f75ff2630f8c9d311d3a43b0",
+      "accepted_before_overlay_html_sha256": [
+        "b84c8518940ccc32a03f37b4f5e029ccfde3bc81f75ff2630f8c9d311d3a43b0"
+      ],
+      "replacement_html_sha256": "ccd712f3f8d102e5697f96b98b66e239babac1775c83521fcc78677a8137b035",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "69.2%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7ET-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+0.60",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#b0d4b9",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7EV-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "500 / 500",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7EX-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Financials\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Financials</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">69.2%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #b0d4b9;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+0.60</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">500 / 500</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-3",
+      "source_step_html_sha256": "9608d245bb1f44f51830c50336e60ecb5f5674b8d3162e51c10a00d2f69c1c3b",
+      "accepted_before_overlay_html_sha256": [
+        "9608d245bb1f44f51830c50336e60ecb5f5674b8d3162e51c10a00d2f69c1c3b"
+      ],
+      "replacement_html_sha256": "63a1ca1744a1d0735336f582c34df6a656f454f80b98a88a67a351615fb58982",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "66.7%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7F6-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+1.13",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#b0d4b9",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7F8-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "177 / 177",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7FA-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Communication services\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-selected);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 600;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Communication services</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);outline: 2px solid #c4d9f4;outline-offset: 2px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">66.7%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #b0d4b9;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+1.13</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">177 / 177</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-4",
+      "source_step_html_sha256": "3ddd0d89dd0150c72bc986c605c202ed93702e1a21c82bad6472b93b61bd5887",
+      "accepted_before_overlay_html_sha256": [
+        "3ddd0d89dd0150c72bc986c605c202ed93702e1a21c82bad6472b93b61bd5887"
+      ],
+      "replacement_html_sha256": "e82157a8ef6750dc2735fdc14d4f76212619d3e8a1b87d49cf7f242beff77fd9",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "63.5%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7FJ-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "-0.80",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#efa6ad",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7FL-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "375 / 375",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7FN-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Consumer discretionary\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Consumer discretionary</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">63.5%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #efa6ad;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">-0.80</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">375 / 375</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-5",
+      "source_step_html_sha256": "bb5a29bf84c9df92f089262520d1d2a693b306be8e3f8e5689f46d493e17fe1a",
+      "accepted_before_overlay_html_sha256": [
+        "bb5a29bf84c9df92f089262520d1d2a693b306be8e3f8e5689f46d493e17fe1a"
+      ],
+      "replacement_html_sha256": "35c77c40ac3dc9eecf448349be8eb0cd053e0d61d77cd31d5c0b84e06ab9ea99",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "61.1%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7FW-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "0.00",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7FY-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "54 / 54",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7G0-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Health care\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Health care</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">61.1%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">0.00</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">54 / 54</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-6",
+      "source_step_html_sha256": "8338cba39adf774347af764da5ff8827244b463a53cd4750a3da384b2e72549e",
+      "accepted_before_overlay_html_sha256": [
+        "8338cba39adf774347af764da5ff8827244b463a53cd4750a3da384b2e72549e"
+      ],
+      "replacement_html_sha256": "4a5dc0634ac5944cb17842432a04cd5ec2364567e913dfdea36bae3de787d84d",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "58.3%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7G9-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "-1.20",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#efa6ad",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7GB-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "333 / 333",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7GD-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Utilities\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Utilities</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">58.3%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #efa6ad;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">-1.20</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">333 / 333</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-8",
+      "source_step_html_sha256": "7c75cfc08070515b5e5ad2dfeedb5da56474cef4eafef92be61b5b0834acf21f",
+      "accepted_before_overlay_html_sha256": [
+        "7c75cfc08070515b5e5ad2dfeedb5da56474cef4eafef92be61b5b0834acf21f"
+      ],
+      "replacement_html_sha256": "5c0098a623582f497dd759743319089848380a9c9a0cd73ea2c2a41904cb8ff0",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "55.6%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7GM-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+0.40",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#b0d4b9",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7GO-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "250 / 250",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7GQ-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Consumer staples\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Consumer staples</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">55.6%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #b0d4b9;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+0.40</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">250 / 250</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-9",
+      "source_step_html_sha256": "648af8cf0736b3f3ec256ff846302a4514aab936766afd6facbe98244ac59fab",
+      "accepted_before_overlay_html_sha256": [
+        "648af8cf0736b3f3ec256ff846302a4514aab936766afd6facbe98244ac59fab"
+      ],
+      "replacement_html_sha256": "d7c61ecf63085cd124942a5771d6770d88632f1e5f039b0e228bfdb72dd725d8",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "52.2%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7GZ-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "-0.60",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#efa6ad",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7H1-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "500 / 500",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7H3-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Materials\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Materials</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">52.2%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #efa6ad;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">-0.60</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">500 / 500</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-dark-en-390",
+      "step_key": "sector-7",
+      "source_step_html_sha256": "9857b0261f24f7845bbeb4f772137eb0a23c74feeccb029c1bf5fd35e76f313f",
+      "accepted_before_overlay_html_sha256": [
+        "9857b0261f24f7845bbeb4f772137eb0a23c74feeccb029c1bf5fd35e76f313f"
+      ],
+      "replacement_html_sha256": "b49bcada633d37dfc97992c8819e6ab370b42a1e9d662092b11d1831ff93da6f",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "—",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-primary)",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7HC-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "—",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-tertiary)",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7HE-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "0 / 82",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "var(--noir-text-secondary)",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7HG-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Energy\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: var(--noir-panel);border-bottom: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 18px;font-weight: 400;color: var(--noir-text-primary);width: 120px;flex-shrink: 0;padding-right: 8px;\">Energy</div><div layer-name=\"Source control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #6f6f6f;border-radius: 6px;background-color: var(--noir-panel);\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 500;color: var(--noir-text-primary);\">Source</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-primary);width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">—</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-tertiary);width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">—</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: var(--noir-text-secondary);width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">0 / 82</div><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 400;color: var(--noir-text-secondary);width: 160px;flex-shrink: 0;\">Above 50-day average</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "table",
+      "source_step_html_sha256": "af330d0c816268fb1d28cbbf81cda42e390804cc146fbd32f2789e65b6dca987",
+      "accepted_before_overlay_html_sha256": [
+        "af330d0c816268fb1d28cbbf81cda42e390804cc146fbd32f2789e65b6dca987"
+      ],
+      "replacement_html_sha256": "c7b7b53096a78114fdce7597866cc0f7c15864c7b28ff1a10932e6f279742145",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.0.1",
+          "column_role": "rate",
+          "expected_visible_text": "高于50D ↓",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "12px",
+            "line-height": "18px",
+            "font-weight": "500",
+            "color": "#51555b",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7JW-0"
+        },
+        {
+          "input_element_path": "0.0.2",
+          "column_role": "delta_pp",
+          "expected_visible_text": "变动 · pp",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "12px",
+            "line-height": "18px",
+            "font-weight": "500",
+            "color": "#51555b",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7JY-0"
+        },
+        {
+          "input_element_path": "0.0.3",
+          "column_role": "coverage",
+          "expected_visible_text": "覆盖范围",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "12px",
+            "line-height": "18px",
+            "font-weight": "500",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7K0-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Named sector comparison scroll region\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 358px;height: 596px;overflow: hidden;\"><div layer-name=\"Column headings\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 36px;padding-left: 12px;background-color: #f0f0ed;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #51555b;width: 164px;flex-shrink: 0;\">行业 / 证据</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #51555b;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;\">高于50D ↓</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #51555b;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;\">变动 · pp</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">覆盖范围</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #51555b;width: 160px;flex-shrink: 0;\">定义</div></div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-0",
+      "source_step_html_sha256": "bf58aa1bbe5c339c680467c13792f25401d8431b2da3f945fe6a480d66a895ae",
+      "accepted_before_overlay_html_sha256": [
+        "bf58aa1bbe5c339c680467c13792f25401d8431b2da3f945fe6a480d66a895ae"
+      ],
+      "replacement_html_sha256": "a8a8297007d7a0a735caf675ab9e6ab26b409fc79a8e8ff80f734215da097850",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "72.4%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7K9-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+2.10",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#256341",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7KB-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "286 / 286",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7KD-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Technology\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">科技</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">72.4%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #256341;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+2.10</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">286 / 286</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-1",
+      "source_step_html_sha256": "a14dcf131e7ed3705c3a6cb4ed0912cf877b51623687ca712442f17150e1f635",
+      "accepted_before_overlay_html_sha256": [
+        "a14dcf131e7ed3705c3a6cb4ed0912cf877b51623687ca712442f17150e1f635"
+      ],
+      "replacement_html_sha256": "f9354de35d1e48e378eb691c1b16dd17a6c4a20018ad277e0c250fb64039ab80",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "70.8%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7KM-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+1.50",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#256341",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7KO-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "267 / 267",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7KQ-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Industrials\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">工业</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">70.8%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #256341;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+1.50</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">267 / 267</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-2",
+      "source_step_html_sha256": "1133d3ef0e61c5a2013d288cbaefc194b4d91382582d247e7deb1d02e92b24bc",
+      "accepted_before_overlay_html_sha256": [
+        "1133d3ef0e61c5a2013d288cbaefc194b4d91382582d247e7deb1d02e92b24bc"
+      ],
+      "replacement_html_sha256": "c18948fc2de6445ee5d03045043ed723d3251e39a95020615436f994b298a267",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "69.2%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7KZ-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+0.60",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#256341",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7L1-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "500 / 500",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7L3-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Financials\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">金融</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">69.2%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #256341;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+0.60</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">500 / 500</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-3",
+      "source_step_html_sha256": "660d23a91f04bf9ff94524acd4e49b2c5e86be82157deafe3d238ed0e53e1583",
+      "accepted_before_overlay_html_sha256": [
+        "660d23a91f04bf9ff94524acd4e49b2c5e86be82157deafe3d238ed0e53e1583"
+      ],
+      "replacement_html_sha256": "e86bfa9adb90804bebab0bc05cd430c549c16d196fff0e2deae0e85e13556022",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "66.7%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7LC-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+1.13",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#256341",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7LE-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "177 / 177",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7LG-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Communication services\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #e2e2dc;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 600;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">通信服务</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;outline: 2px solid #245c91;outline-offset: 2px;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">66.7%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #256341;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+1.13</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">177 / 177</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-4",
+      "source_step_html_sha256": "f55d26431efd2d2d37a493f9a9632887e32ee65b81b01433f99028d522096a5f",
+      "accepted_before_overlay_html_sha256": [
+        "f55d26431efd2d2d37a493f9a9632887e32ee65b81b01433f99028d522096a5f"
+      ],
+      "replacement_html_sha256": "27fdb11f65ef7c997068929b8814d642b2dc97344ea251c89fdb5f6efbdf59e6",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "63.5%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7LP-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "-0.80",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#a62d43",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7LR-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "375 / 375",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7LT-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Consumer discretionary\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">可选消费</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">63.5%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #a62d43;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">-0.80</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">375 / 375</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-5",
+      "source_step_html_sha256": "eb8e5f1844efea4d2e10d39056ca6a124ea4625e6cb5ea3945d90b9a797e4a46",
+      "accepted_before_overlay_html_sha256": [
+        "eb8e5f1844efea4d2e10d39056ca6a124ea4625e6cb5ea3945d90b9a797e4a46"
+      ],
+      "replacement_html_sha256": "0b8f9eebf994193b26226e8db2277c4675a0d85363c509608fb8e42cd3a0c494",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "61.1%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7M2-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "0.00",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7M4-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "54 / 54",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7M6-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Health care\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">医疗保健</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">61.1%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">0.00</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">54 / 54</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-6",
+      "source_step_html_sha256": "e5b58d1bf6f18362000078acc83c994491708bb684f2f817a407de0a7120447d",
+      "accepted_before_overlay_html_sha256": [
+        "e5b58d1bf6f18362000078acc83c994491708bb684f2f817a407de0a7120447d"
+      ],
+      "replacement_html_sha256": "0397d780d91be84b1a47ee5ada865b8fee8309928fe94d0ea4aaae6e8c62286c",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "58.3%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7MF-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "-1.20",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#a62d43",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7MH-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "333 / 333",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7MJ-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Utilities\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">公用事业</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">58.3%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #a62d43;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">-1.20</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">333 / 333</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-8",
+      "source_step_html_sha256": "a587c3737d46aa9bba1f31125e4f59d3da9b859a92b32da7496806d923b69bfe",
+      "accepted_before_overlay_html_sha256": [
+        "a587c3737d46aa9bba1f31125e4f59d3da9b859a92b32da7496806d923b69bfe"
+      ],
+      "replacement_html_sha256": "1c7792a738ff07fb4a6aa3e5101b47051e3e47368d1b711da92e80998cae567b",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "55.6%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7MS-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "+0.40",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#256341",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7MU-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "250 / 250",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7MW-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Consumer staples\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">日常消费</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">55.6%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #256341;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+0.40</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">250 / 250</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-9",
+      "source_step_html_sha256": "536b829a753701e673f5e897030c279fbfa6e58cc2c12f4d532e43d14a78870f",
+      "accepted_before_overlay_html_sha256": [
+        "536b829a753701e673f5e897030c279fbfa6e58cc2c12f4d532e43d14a78870f"
+      ],
+      "replacement_html_sha256": "8cbc63bafeb6a6138fb942e53ab6dac6216da4f238ca34d257af730544e5ae17",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "52.2%",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7N5-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "-0.60",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#a62d43",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7N7-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "500 / 500",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7N9-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Materials\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">原材料</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">52.2%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #a62d43;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">-0.60</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">500 / 500</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    },
+    {
+      "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+      "source_packet_sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+      "board_key": "macro-light-zh-390",
+      "step_key": "sector-7",
+      "source_step_html_sha256": "096e343a65f057c8f5eb60a4b65a38a0ada2dde5ad4e1c5911eec82f7653831a",
+      "accepted_before_overlay_html_sha256": [
+        "096e343a65f057c8f5eb60a4b65a38a0ada2dde5ad4e1c5911eec82f7653831a"
+      ],
+      "replacement_html_sha256": "0385d487729f7b323250f7b17ef38d7087550adcf39f6516b2aac484de34ef80",
+      "cell_overrides": [
+        {
+          "input_element_path": "0.2",
+          "column_role": "rate",
+          "expected_visible_text": "—",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#1a1c20",
+            "width": "88px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7NI-0"
+        },
+        {
+          "input_element_path": "0.3",
+          "column_role": "delta_pp",
+          "expected_visible_text": "—",
+          "expected_current_style": {
+            "font-family": "Inter",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#5f6368",
+            "width": "96px",
+            "flex-shrink": "0",
+            "text-align": "right",
+            "padding-right": "12px",
+            "font-variant-numeric": "tabular-nums"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center"
+          },
+          "native_frame_id": "7NK-0"
+        },
+        {
+          "input_element_path": "0.4",
+          "column_role": "coverage",
+          "expected_visible_text": "0 / 82",
+          "expected_current_style": {
+            "font-family": "Noto Sans SC",
+            "font-size": "13px",
+            "line-height": "20px",
+            "font-weight": "400",
+            "color": "#51555b",
+            "width": "130px",
+            "flex-shrink": "0",
+            "padding-left": "12px"
+          },
+          "style_delta": {
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "end",
+            "justify-content": "center",
+            "text-align": "right"
+          },
+          "native_frame_id": "7NM-0"
+        }
+      ],
+      "replacement_html": "<div layer-name=\"Sector Energy\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #fff;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 400;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">能源</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">—</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #5f6368;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">—</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">0 / 82</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>"
+    }
+  ]
+}

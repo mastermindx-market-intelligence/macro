@@ -1,0 +1,1874 @@
+{
+  "schema": "f02.native-fixture-repair-candidates.v1",
+  "status": "PREPARED_NOT_APPLIED",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "runtime_source": {
+    "path": "f02_native_runtime.json",
+    "sha256": "850dc8405d329570525ff0f8c757437d450d604726ff9bf0f4965f470138d5ef",
+    "operation_count": 293
+  },
+  "export_sources": [
+    {
+      "path": "exports/builder.jsx",
+      "sha256": "b710df3e82b362985e417c1d7e440f41b0a97a3f79e38822c7b0050a29a89a0b"
+    },
+    {
+      "path": "exports/company-dark.jsx",
+      "sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5"
+    },
+    {
+      "path": "exports/company-dividend-overlay-320.jsx",
+      "sha256": "c506c622093fbbce09028743c495cdf6fa1a39ad451e38deccbc334259eb78dd"
+    },
+    {
+      "path": "exports/company-eps-overlay-320--history.jsx",
+      "sha256": "9782d5f35086918e8e2deda2acaa2ee6022c6d309e27f9ebdf3268f77f5c5b96"
+    },
+    {
+      "path": "exports/company-eps-overlay-320--history3.jsx",
+      "sha256": "d25af711bb7f0a027bace3659825fa515dd0d74bce2d0aa28c202ecdbe887cc8"
+    },
+    {
+      "path": "exports/company-eps-overlay-320--source.jsx",
+      "sha256": "cde2f6595915307ac92fc20230f5ca17bed9ff8bf93daacaa912ca4adf0f9e2d"
+    },
+    {
+      "path": "exports/company-eps-overlay-320--source3.jsx",
+      "sha256": "20eec8ac330007c7a06e8098e52045ceab435dcf8f6eb1601d2cd0a4b068ff90"
+    },
+    {
+      "path": "exports/company-eps-overlay-320--top.jsx",
+      "sha256": "e98d4faca98bf671e312d2614aa4e46132178ce09cbb7369449c4eefbbbb59ae"
+    },
+    {
+      "path": "exports/company-eps-overlay-320.jsx",
+      "sha256": "461273d0dc59c94ba39f2fb3d62d0abc93ced3f5e4c3ce7582030b14eb491ebd"
+    },
+    {
+      "path": "exports/company-light.jsx",
+      "sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20"
+    },
+    {
+      "path": "exports/controls-variants--actions-dark.jsx",
+      "sha256": "bcca109d5593d781e6be6bc78dd51a57992b8bed01fd7b2f98b51a0eb6366cc0"
+    },
+    {
+      "path": "exports/controls-variants--actions.jsx",
+      "sha256": "40236f2cb6147a750e1c38a5d4f83e30c89c31ee442f788119da8ee853ae29b7"
+    },
+    {
+      "path": "exports/controls-variants--disclosure-collapsed.jsx",
+      "sha256": "6f1a62402986d3a84e48d6832d96846e2fbd4f66d10a6c605e3245645d1dc8ff"
+    },
+    {
+      "path": "exports/controls.jsx",
+      "sha256": "4a6c3555dbf4c45540a993ac1b99f0d5c14e5c03366dda3852e55a00397417bb"
+    },
+    {
+      "path": "exports/editorial-dark.jsx",
+      "sha256": "83f99b054efe81ee5d4e0f36c879e9e8168bd951d981896a52b2d3e4b2eeb916"
+    },
+    {
+      "path": "exports/editorial-light.jsx",
+      "sha256": "e3f809b3996bd5943426ecc719830f9d4749b201b3c2268605adfabd2eac1ba3"
+    },
+    {
+      "path": "exports/foundations.jsx",
+      "sha256": "b3d35049d3987b165982fb2df1a426acbec73dc55d01612df7c7cc25ad444cba"
+    },
+    {
+      "path": "exports/grammar.jsx",
+      "sha256": "efc816a8c2fa9b60c111fda175a65fc0a3a7860da5756975970e99a2c0c40102"
+    },
+    {
+      "path": "exports/macro-dark.jsx",
+      "sha256": "8c2d2be4ba878f988d781608916971db6733620be9e534d88c5e5bd4321e4fd0"
+    },
+    {
+      "path": "exports/macro-light.jsx",
+      "sha256": "091fea8dbbd076ad175e79e1cc047aa890f3c762e243cd88319ec6eaac7876de"
+    },
+    {
+      "path": "exports/metrics-light.jsx",
+      "sha256": "33416deaefe7da8ca2f3a390a8e29e96ed00a439213fa5d861548e424fc94fbb"
+    },
+    {
+      "path": "exports/metrics.jsx",
+      "sha256": "1594f31d77b2369c5a0a4e8698ef30f71b4902a8cea638ed6c2a5c3592ee9a0f"
+    },
+    {
+      "path": "exports/options-dark.jsx",
+      "sha256": "4cb1347341d355496493b2f5e9a7090508f66ca12adbc04d1de6aef5b1ca2d3f"
+    },
+    {
+      "path": "exports/options-full-row-evidence-320--all-fields.jsx",
+      "sha256": "cf4b97b4c98288bfdd272ff060924f4a53920c7116ab85caca345ff49f0b2f7b"
+    },
+    {
+      "path": "exports/options-full-row-evidence-320--contract-fields.jsx",
+      "sha256": "38c5b09d3097c807c639c2c61a8de2328d7c8e59ef81791c05d2c975bb1eb6d7"
+    },
+    {
+      "path": "exports/options-full-row-evidence-320--identity-aligned.jsx",
+      "sha256": "581ce6bf89eb912c06c29c820890d0a27f79ebbb5714e343c1b68462b4f92a25"
+    },
+    {
+      "path": "exports/options-full-row-evidence-320--identity.jsx",
+      "sha256": "579427a4bdc911a9698605d1bf7f4d4bf1c1987069b6786fa8589f47137f939f"
+    },
+    {
+      "path": "exports/options-full-row-evidence-320--print-fields.jsx",
+      "sha256": "0ac9c08116f92c9c57229b15592f4574f1403a6b21f8d205798c95e0d6c22e42"
+    },
+    {
+      "path": "exports/options-full-row-evidence-320--receipt.jsx",
+      "sha256": "9556c4c7592e4c3ba7b3a6452a467a690eba8d00188c9578a48fa4cfb10acf91"
+    },
+    {
+      "path": "exports/options-full-row-evidence-320.jsx",
+      "sha256": "2e33b6d482e19cbd28a49c12b21ac9800698d0dbd9ea231417d81819c44c4672"
+    },
+    {
+      "path": "exports/options-light.jsx",
+      "sha256": "e8f72c63296dae227798fccc85c45d5f4da272dabddf37ac6d7d083db0bb13b3"
+    },
+    {
+      "path": "exports/readme.jsx",
+      "sha256": "85043df763af391ee304daf457ba923bfca8818645ec160bc8f36e960fd72549"
+    },
+    {
+      "path": "exports/states-matrix--combined-dark.jsx",
+      "sha256": "ffb9ae393a9151f7b5126faf225f231bd45e667b4ea9cab3bbb28127cbe28aa8"
+    },
+    {
+      "path": "exports/states-matrix--combined.jsx",
+      "sha256": "882bbbb3a39b66dc428ece143c430cca0d7974c604b41755a627ee6e01931ecf"
+    }
+  ],
+  "text_groups": [
+    {
+      "board_key": "states-matrix",
+      "board_id": "6Q3-0",
+      "page_id": "p-4-0",
+      "step_key": "combined-dark-value",
+      "target_node_id": "6YG-0",
+      "original_html_sha256": "895fb60a5d8dfa2192247be4a6d335c21e52d9bf80b01a40bc2104add2c071ad",
+      "effective_html_sha256": "da8ee5b663946e348e8366be6bd052b4f8c77c0b0e25cbbedbb76e2086e61cad",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "6YH-0",
+          "html": "Universe 709/1063",
+          "expected_before_text": "Participation",
+          "after_text": "Universe 709/1063"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "6YH-0",
+            "html": "Universe 709/1063"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "a3834f522c04f38789bb9677b60947ad29bed046b3c923ab35443d73ab9633b5"
+    },
+    {
+      "board_key": "states-matrix",
+      "board_id": "6Q3-0",
+      "page_id": "p-4-0",
+      "step_key": "combined-light-value",
+      "target_node_id": "6Z0-0",
+      "original_html_sha256": "85e695c1bd7b04eb16c84614e98b5981bfa2ca5d6165a84ca50f5855be179195",
+      "effective_html_sha256": "7eb2bb72e783ba8c763c02effe2a54fa848a64e2c5edeb8eed5123c9fff0e4eb",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "6Z1-0",
+          "html": "Universe 709/1063",
+          "expected_before_text": "Participation",
+          "after_text": "Universe 709/1063"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "6Z1-0",
+            "html": "Universe 709/1063"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "11eb885643b4785eecc5804430d6cf0db283563e4b66e30f6c4872ace8ac4581"
+    },
+    {
+      "board_key": "metrics",
+      "board_id": "4E3-0",
+      "page_id": "p-4-0",
+      "step_key": "metric-units",
+      "target_node_id": "4EQ-0",
+      "original_html_sha256": "adfb72ac1e4ff062360dbf3822b7892bd0b6707646426a7ce7e9c13337b01df4",
+      "effective_html_sha256": "1610f4a597c116aa713933516f45fbbd9f0ec7f71b07c5d4f68a85afe53aabfd",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4ES-0",
+          "html": "Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.",
+          "expected_before_text": "65.57% → 66.70% is +1.13 percentage points. Relative change would be +1.72%, with a different label. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.",
+          "after_text": "Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4ES-0",
+            "html": "Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "1610f4a597c116aa713933516f45fbbd9f0ec7f71b07c5d4f68a85afe53aabfd"
+    },
+    {
+      "board_key": "metrics-light",
+      "board_id": "4H1-0",
+      "page_id": "p-4-0",
+      "step_key": "metric-units",
+      "target_node_id": "4J2-0",
+      "original_html_sha256": "adfb72ac1e4ff062360dbf3822b7892bd0b6707646426a7ce7e9c13337b01df4",
+      "effective_html_sha256": "1610f4a597c116aa713933516f45fbbd9f0ec7f71b07c5d4f68a85afe53aabfd",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4J3-0",
+          "html": "Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.",
+          "expected_before_text": "65.57% → 66.70% is +1.13 percentage points. Relative change would be +1.72%, with a different label. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.",
+          "after_text": "Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4J3-0",
+            "html": "Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "1610f4a597c116aa713933516f45fbbd9f0ec7f71b07c5d4f68a85afe53aabfd"
+    },
+    {
+      "board_key": "metrics",
+      "board_id": "4E3-0",
+      "page_id": "p-4-0",
+      "step_key": "table-caption",
+      "target_node_id": "4EU-0",
+      "original_html_sha256": "92c744a754bc083b344bacd06093197c57ec07bf06ec3a73e9ef9bdaab07c7a5",
+      "effective_html_sha256": "9082c11739217de81618bba196a7ce21420ed57974abf7dcecd1c5f93d33839e",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4EV-0",
+          "html": "Component-sector samples · independent of Macro",
+          "expected_before_text": "Sector participation · illustrative settled observation",
+          "after_text": "Component-sector samples · independent of Macro"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4EV-0",
+            "html": "Component-sector samples · independent of Macro"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "9082c11739217de81618bba196a7ce21420ed57974abf7dcecd1c5f93d33839e"
+    },
+    {
+      "board_key": "metrics-light",
+      "board_id": "4H1-0",
+      "page_id": "p-4-0",
+      "step_key": "table-caption",
+      "target_node_id": "4IZ-0",
+      "original_html_sha256": "92c744a754bc083b344bacd06093197c57ec07bf06ec3a73e9ef9bdaab07c7a5",
+      "effective_html_sha256": "9082c11739217de81618bba196a7ce21420ed57974abf7dcecd1c5f93d33839e",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4J1-0",
+          "html": "Component-sector samples · independent of Macro",
+          "expected_before_text": "Sector participation · illustrative settled observation",
+          "after_text": "Component-sector samples · independent of Macro"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4J1-0",
+            "html": "Component-sector samples · independent of Macro"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "9082c11739217de81618bba196a7ce21420ed57974abf7dcecd1c5f93d33839e"
+    },
+    {
+      "board_key": "metrics",
+      "board_id": "4E3-0",
+      "page_id": "p-4-0",
+      "step_key": "data-0",
+      "target_node_id": "4FC-0",
+      "original_html_sha256": "1e722ec3258e8e1c7f64b53b0e5942e452f97a0a11d211d6f44a6ec876c263ce",
+      "effective_html_sha256": "d7f57aa686164c3af06304b2064abd51b34cf44d9e4928040214b8bbb9ffb571",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4FK-0",
+          "html": "1000 / 1006",
+          "expected_before_text": "178 / 184",
+          "after_text": "1000 / 1006"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4FK-0",
+            "html": "1000 / 1006"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "d7f57aa686164c3af06304b2064abd51b34cf44d9e4928040214b8bbb9ffb571"
+    },
+    {
+      "board_key": "metrics-light",
+      "board_id": "4H1-0",
+      "page_id": "p-4-0",
+      "step_key": "data-0",
+      "target_node_id": "4I9-0",
+      "original_html_sha256": "1e722ec3258e8e1c7f64b53b0e5942e452f97a0a11d211d6f44a6ec876c263ce",
+      "effective_html_sha256": "d7f57aa686164c3af06304b2064abd51b34cf44d9e4928040214b8bbb9ffb571",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4IF-0",
+          "html": "1000 / 1006",
+          "expected_before_text": "178 / 184",
+          "after_text": "1000 / 1006"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4IF-0",
+            "html": "1000 / 1006"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "d7f57aa686164c3af06304b2064abd51b34cf44d9e4928040214b8bbb9ffb571"
+    },
+    {
+      "board_key": "metrics",
+      "board_id": "4E3-0",
+      "page_id": "p-4-0",
+      "step_key": "data-1",
+      "target_node_id": "4FQ-0",
+      "original_html_sha256": "d199e2aee0ee946ec503615cb2861385bcedc42307f63ae936dfe9ff617cffae",
+      "effective_html_sha256": "17da1b92c05044084c10409a8c5500f72216842d2270d48ac1b4e57e9b0a0772",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4FY-0",
+          "html": "250 / 250",
+          "expected_before_text": "63 / 63",
+          "after_text": "250 / 250"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4FY-0",
+            "html": "250 / 250"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "17da1b92c05044084c10409a8c5500f72216842d2270d48ac1b4e57e9b0a0772"
+    },
+    {
+      "board_key": "metrics-light",
+      "board_id": "4H1-0",
+      "page_id": "p-4-0",
+      "step_key": "data-1",
+      "target_node_id": "4HW-0",
+      "original_html_sha256": "d199e2aee0ee946ec503615cb2861385bcedc42307f63ae936dfe9ff617cffae",
+      "effective_html_sha256": "17da1b92c05044084c10409a8c5500f72216842d2270d48ac1b4e57e9b0a0772",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4I2-0",
+          "html": "250 / 250",
+          "expected_before_text": "63 / 63",
+          "after_text": "250 / 250"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4I2-0",
+            "html": "250 / 250"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "17da1b92c05044084c10409a8c5500f72216842d2270d48ac1b4e57e9b0a0772"
+    },
+    {
+      "board_key": "metrics",
+      "board_id": "4E3-0",
+      "page_id": "p-4-0",
+      "step_key": "source-receipt",
+      "target_node_id": "4GI-0",
+      "original_html_sha256": "8a4af1906c1a0f0613a9036ab24f995ea2a92cde8ff5af847e27d7a0d57da8fe",
+      "effective_html_sha256": "dabbd8d9828c6134155bbbeb2d73702a37839c2e1eb42e430684742c9590532f",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4GV-0",
+          "html": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250.",
+          "expected_before_text": "178 / 184 securities · partial coverage · illustrative fixture · connected transport is independent of source freshness.",
+          "after_text": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4GV-0",
+            "html": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "ba628649232c10aca1b466b04d6a53a8e51ba56a9a32ae1633e5e4fa5088cfbf"
+    },
+    {
+      "board_key": "metrics-light",
+      "board_id": "4H1-0",
+      "page_id": "p-4-0",
+      "step_key": "source-receipt",
+      "target_node_id": "4H5-0",
+      "original_html_sha256": "8a4af1906c1a0f0613a9036ab24f995ea2a92cde8ff5af847e27d7a0d57da8fe",
+      "effective_html_sha256": "dabbd8d9828c6134155bbbeb2d73702a37839c2e1eb42e430684742c9590532f",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4H6-0",
+          "html": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250.",
+          "expected_before_text": "178 / 184 securities · partial coverage · illustrative fixture · connected transport is independent of source freshness.",
+          "after_text": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4H6-0",
+            "html": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "ba628649232c10aca1b466b04d6a53a8e51ba56a9a32ae1633e5e4fa5088cfbf"
+    },
+    {
+      "board_key": "controls",
+      "board_id": "4JP-0",
+      "page_id": "p-4-0",
+      "step_key": "evidence-shell",
+      "target_node_id": "4KH-0",
+      "original_html_sha256": "296c211bd9cd63cd878972bfed90b9a3d43502291115ce48c33d19259b8f1f2e",
+      "effective_html_sha256": "9a255656758d3bd12d2c32b38f19f4b895cc2d1bed24df2e9d94c698b5f1bd08",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4KS-0",
+          "html": "1000 / 1006 covered",
+          "expected_before_text": "178 / 184 covered",
+          "after_text": "1000 / 1006 covered"
+        },
+        {
+          "nodeId": "4KU-0",
+          "html": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples.",
+          "expected_before_text": "Missing securities are not counted as below-average observations.",
+          "after_text": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4KS-0",
+            "html": "1000 / 1006 covered"
+          },
+          {
+            "nodeId": "4KU-0",
+            "html": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "a5d564368647e44f678570cf01eb55e130710c10fe236b58e34e5749e5c22464"
+    },
+    {
+      "board_key": "grammar",
+      "board_id": "4LC-0",
+      "page_id": "p-5-0",
+      "step_key": "chart-title",
+      "target_node_id": "4LI-0",
+      "original_html_sha256": "0ee5a1e4422fb2e01bad7641288860426b73126abf7495e54948a118c83773bb",
+      "effective_html_sha256": "5b6ea68208418c47bb499a87378b85420b87e607c6dd39c27b1eb9a6210dbd2e",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4LJ-0",
+          "html": "Independent universe · eight settled sessions",
+          "expected_before_text": "Participation across eight settled sessions",
+          "after_text": "Independent universe · eight settled sessions"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4LJ-0",
+            "html": "Independent universe · eight settled sessions"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "5b6ea68208418c47bb499a87378b85420b87e607c6dd39c27b1eb9a6210dbd2e"
+    },
+    {
+      "board_key": "grammar",
+      "board_id": "4LC-0",
+      "page_id": "p-5-0",
+      "step_key": "exact-values",
+      "target_node_id": "4MN-0",
+      "original_html_sha256": "18037275964ae7485ac49ef0bc09828da2a30d75b11e92d38c66728a48f0066c",
+      "effective_html_sha256": "bfb42fb051802c4afd02ae9841b7ac5523fad2558c45eb646846b97fc3114118",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4MQ-0",
+          "html": "61.81%",
+          "expected_before_text": "61.20%",
+          "after_text": "61.81%"
+        },
+        {
+          "nodeId": "4MT-0",
+          "html": "62.37%",
+          "expected_before_text": "63.40%",
+          "after_text": "62.37%"
+        },
+        {
+          "nodeId": "4MW-0",
+          "html": "—",
+          "expected_before_text": "62.10%",
+          "after_text": "—"
+        },
+        {
+          "nodeId": "4MZ-0",
+          "html": "63.88%",
+          "expected_before_text": "—",
+          "after_text": "63.88%"
+        },
+        {
+          "nodeId": "4N2-0",
+          "html": "63.31%",
+          "expected_before_text": "65.57%",
+          "after_text": "63.31%",
+          "semantic_anchor": {
+            "kind": "dated cell",
+            "parent_id": "4N0-0",
+            "date_node_id": "4N1-0",
+            "date_text": "27 Oct"
+          }
+        },
+        {
+          "nodeId": "4N5-0",
+          "html": "64.63%",
+          "expected_before_text": "64.90%",
+          "after_text": "64.63%"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4MQ-0",
+            "html": "61.81%"
+          },
+          {
+            "nodeId": "4MT-0",
+            "html": "62.37%"
+          },
+          {
+            "nodeId": "4MW-0",
+            "html": "—"
+          },
+          {
+            "nodeId": "4MZ-0",
+            "html": "63.88%"
+          },
+          {
+            "nodeId": "4N2-0",
+            "html": "63.31%"
+          },
+          {
+            "nodeId": "4N5-0",
+            "html": "64.63%"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "bfb42fb051802c4afd02ae9841b7ac5523fad2558c45eb646846b97fc3114118"
+    },
+    {
+      "board_key": "grammar",
+      "board_id": "4LC-0",
+      "page_id": "p-5-0",
+      "step_key": "chart-source",
+      "target_node_id": "4ND-0",
+      "original_html_sha256": "69bf042f0daaebff0034649022898cecbb844d1abead0e5c121756d85455cad6",
+      "effective_html_sha256": "5f361208d88e7dd75c2dd1d6e59fb342d932dd24e49c7f5d532009801b4ad604",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4NF-0",
+          "html": "Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation. Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof.",
+          "expected_before_text": "Illustrative fixture, settled sessions, percent. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof.",
+          "after_text": "Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation. Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4NF-0",
+            "html": "Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation. Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "260fe0720fe97563df3329897a1ec5b48e440299bcfb38bc93484d82db67c51e"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "metrics",
+      "target_node_id": "4RA-0",
+      "original_html_sha256": "4aad63d5cc358d9f39445811dfa1ef7631048ff005f04a13a1c0daa765920d6f",
+      "effective_html_sha256": "594398ef42542546f85cde8ca0419a79b7b989791abfd28fc3117da0accc0d49",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4RC-0",
+          "html": "Independent universe above 50D",
+          "expected_before_text": "Universe share above 50D",
+          "after_text": "Independent universe above 50D"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4RC-0",
+            "html": "Independent universe above 50D"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "074a89b3f68cb25dc3618298a17488b5b32ccf64216c3d938209671584c76802"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "table-header",
+      "target_node_id": "4S0-0",
+      "original_html_sha256": "e38426a548a183af34bb9418837c8b08fd3a714d2478bb95e62d449e97a19f73",
+      "effective_html_sha256": "b9dd8a01aef0c3d07bc6b495be61ce1fd628c42f876a43711d133faf0b7cf8b4",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4S4-0",
+          "html": "Above 50D ↓",
+          "expected_before_text": "Above 50D",
+          "after_text": "Above 50D ↓"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4S4-0",
+            "html": "Above 50D ↓"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "b9dd8a01aef0c3d07bc6b495be61ce1fd628c42f876a43711d133faf0b7cf8b4"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-1",
+      "target_node_id": "4SC-0",
+      "original_html_sha256": "9263d1ec6fbd0ef2759e59ef0b51ab0bf49eda4dc146905ca68d8bd9e793bac3",
+      "effective_html_sha256": "27dadb7635fb09ed981e7404b5f72dbaa3e0fcce4469dd22aec6e691eac50962",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4SK-0",
+          "html": "286 / 286",
+          "expected_before_text": "42 / 42",
+          "after_text": "286 / 286"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4SK-0",
+            "html": "286 / 286"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "27dadb7635fb09ed981e7404b5f72dbaa3e0fcce4469dd22aec6e691eac50962"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-2",
+      "target_node_id": "4SO-0",
+      "original_html_sha256": "e54ab1c8392dd2e769c5d7a186b118de604b5af2a9d945ee6f69b6de113bfd37",
+      "effective_html_sha256": "dd6cdb798b1435f7221822cf9f0cc9ea934c60079e239e8798555a760e34f442",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4SW-0",
+          "html": "267 / 267",
+          "expected_before_text": "65 / 65",
+          "after_text": "267 / 267"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4SW-0",
+            "html": "267 / 267"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "dd6cdb798b1435f7221822cf9f0cc9ea934c60079e239e8798555a760e34f442"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-3",
+      "target_node_id": "4T0-0",
+      "original_html_sha256": "65bd9bb52d61cdf6d85e8c12ec631d859e7c35ed4b82d102d7d043f047575475",
+      "effective_html_sha256": "5dc644308355bf67434ae872ad1bf72c4e0af909f5cd28aebe2c281d44c6eab1",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4T8-0",
+          "html": "500 / 500",
+          "expected_before_text": "52 / 52",
+          "after_text": "500 / 500"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4T8-0",
+            "html": "500 / 500"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "5dc644308355bf67434ae872ad1bf72c4e0af909f5cd28aebe2c281d44c6eab1"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-4",
+      "target_node_id": "4TC-0",
+      "original_html_sha256": "6451411ed15190a9c7eccbc120f7640d0e83ac79543c5cd4ab6afd6c6f0eb430",
+      "effective_html_sha256": "8d1f2ee913c748894951221d7ff136c1c2afa99bcfc16633f8bfedb5865f3bae",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4TK-0",
+          "html": "177 / 177",
+          "expected_before_text": "21 / 21",
+          "after_text": "177 / 177"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4TK-0",
+            "html": "177 / 177"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "8d1f2ee913c748894951221d7ff136c1c2afa99bcfc16633f8bfedb5865f3bae"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-5",
+      "target_node_id": "4TO-0",
+      "original_html_sha256": "023f91aa440422eef5f14586a9627c3b0178633ad35b25523db65b34815fe096",
+      "effective_html_sha256": "b7b1a38df7527e97df2be03c4876566d251ac57c5dbf241373e013add0ab9b84",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4TW-0",
+          "html": "375 / 375",
+          "expected_before_text": "47 / 47",
+          "after_text": "375 / 375"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4TW-0",
+            "html": "375 / 375"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "b7b1a38df7527e97df2be03c4876566d251ac57c5dbf241373e013add0ab9b84"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-7",
+      "target_node_id": "4UC-0",
+      "original_html_sha256": "3dbd96ff2de48782349d40b1612414740025201a276ab1fafa17732a92ee9bf4",
+      "effective_html_sha256": "2b62812ac525aead4d15c62c348964d725eb00e8717bb00dcef3eaa81bce3ba3",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4UK-0",
+          "html": "333 / 333",
+          "expected_before_text": "28 / 28",
+          "after_text": "333 / 333"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4UK-0",
+            "html": "333 / 333"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "2b62812ac525aead4d15c62c348964d725eb00e8717bb00dcef3eaa81bce3ba3"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-9",
+      "target_node_id": "4V0-0",
+      "original_html_sha256": "caea916dde5a8eeaebe3db074cc4b21d0c3d395f7034cb1a6ade5cbd4795278a",
+      "effective_html_sha256": "5ae1995b946df9aa42d97ad0c7bba6a4b864610388b6e0eb61209618d9c98492",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4V8-0",
+          "html": "250 / 250",
+          "expected_before_text": "36 / 36",
+          "after_text": "250 / 250"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4V8-0",
+            "html": "250 / 250"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "5ae1995b946df9aa42d97ad0c7bba6a4b864610388b6e0eb61209618d9c98492"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-10",
+      "target_node_id": "4VC-0",
+      "original_html_sha256": "89c23f7e12f7e7ae9702a2c092a7a7299def3c9c6d2413421071de03c64cbc43",
+      "effective_html_sha256": "2fe75b26665834538c8af8926f37cba02ee7e428d3d093120fe7a56e0d70ae29",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4VK-0",
+          "html": "500 / 500",
+          "expected_before_text": "23 / 23",
+          "after_text": "500 / 500"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4VK-0",
+            "html": "500 / 500"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "2fe75b26665834538c8af8926f37cba02ee7e428d3d093120fe7a56e0d70ae29"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-8",
+      "target_node_id": "4UO-0",
+      "original_html_sha256": "2a466505790cb097942aa111ecfd909d1ab223893c236dbe5916e528b51d9e6d",
+      "effective_html_sha256": "1f8526341eeb7a5cd923d0eebfae3c0d50997be60936f94dfc79ad0735744111",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4UW-0",
+          "html": "0 / 82",
+          "expected_before_text": "—",
+          "after_text": "0 / 82",
+          "semantic_anchor": {
+            "kind": "coverage column",
+            "cell_parent_id": "4UV-0",
+            "header_text_node_id": "4S8-0",
+            "header_text": "Covered / eligible",
+            "observed_cell_width_px": 164
+          }
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4UW-0",
+            "html": "0 / 82"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "1f8526341eeb7a5cd923d0eebfae3c0d50997be60936f94dfc79ad0735744111"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "table-behavior",
+      "target_node_id": "4VO-0",
+      "original_html_sha256": "8ac67d1815a37c1f2cb3cf2cc0ac3ea8dd35f5032cb885c541ea41c5db5d4e05",
+      "effective_html_sha256": "08052866b8e311c2bc11cd22d3058b5e5179d9360b44a8bb5548b8519ebca60d",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4VP-0",
+          "html": "10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last.",
+          "expected_before_text": "10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last.",
+          "after_text": "10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4VP-0",
+            "html": "10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "03c3037f3bb9006a357ce85c53c78705f9b252baae3f6eeff8c75d2625dfad6d"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "evidence-value-0",
+      "target_node_id": "4X3-0",
+      "original_html_sha256": "7d7d3fb79ddf8bb9a822fc80ccc3d3fc95b99ea6faca3e5be9d60a0e0125ef05",
+      "effective_html_sha256": "4e5063a9e1bc4ca3d3059b0adb5c2478d73262d4164b32e9c545e7a7444d9fae",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4X5-0",
+          "html": "66.67%",
+          "expected_before_text": "66.7%",
+          "after_text": "66.67%"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4X5-0",
+            "html": "66.67%"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "4e5063a9e1bc4ca3d3059b0adb5c2478d73262d4164b32e9c545e7a7444d9fae"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "evidence-value-2",
+      "target_node_id": "4XB-0",
+      "original_html_sha256": "5f2a87af6630b56bfe154cd3f0ecca72594d722a88378b82fa846ddffe7ab031",
+      "effective_html_sha256": "4aa1349dc01f90a23498c94beed0ce46568b0fd9753b5cab0201a41db72a95f0",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4XD-0",
+          "html": "177 / 177",
+          "expected_before_text": "21 / 21",
+          "after_text": "177 / 177"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4XD-0",
+            "html": "177 / 177"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "4aa1349dc01f90a23498c94beed0ce46568b0fd9753b5cab0201a41db72a95f0"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "evidence-field-0",
+      "target_node_id": "4XF-0",
+      "original_html_sha256": "483a8c07ab209ccd41dd566fb64da025cf897ded8cfcdd99fc44931b48e553eb",
+      "effective_html_sha256": "a4a34b6826c4871bfa43f6788c679f3c6cd72aa6ae6be4880d54e349f2301e8d",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4XH-0",
+          "html": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+          "expected_before_text": "macro / communication-services",
+          "after_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+          "accepted_observed_before_texts": [
+            "macro / communication-services",
+            "f02.fixture.v3/macro/sector/communication_services"
+          ],
+          "already_satisfied_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4XH-0",
+            "html": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "e8a4fd3bf2c2ea5edbe89ce3681d227a636ee422b2c9be181ca506a6370c6b48",
+      "previous_effective_html_sha256": "e8a4fd3bf2c2ea5edbe89ce3681d227a636ee422b2c9be181ca506a6370c6b48",
+      "observation_identity_override": "Full metric/date identity supersedes incomplete v3 prefix only; no numeric or entity-key change."
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "evidence-caveat",
+      "target_node_id": "4XZ-0",
+      "original_html_sha256": "91b1673be0a7969b864527b4931bb4d874253e046285021414295d1465f55d7e",
+      "effective_html_sha256": "68761995288783d0b3cee8013c3f9f0568a64a66f7de0173fe9641e9167fd944",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4Y0-0",
+          "html": "Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.",
+          "expected_before_text": "A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.",
+          "after_text": "Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4Y0-0",
+            "html": "Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "f08cc1cffbe002404d9ead1c198e905f96d9ae7c7c6edcc172ff9d15cdf41698"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "metrics",
+      "target_node_id": "54A-0",
+      "original_html_sha256": "af7c5b62ba2ebc8d42bc66d719a47387ece9393427d3870375fd23572bede428",
+      "effective_html_sha256": "9f7b92cf180ff058279e6d2e6c9f78e3edce7f635b870f166f51bf81dba51d43",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "54P-0",
+          "html": "Independent universe above 50D",
+          "expected_before_text": "Universe share above 50D",
+          "after_text": "Independent universe above 50D"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "54P-0",
+            "html": "Independent universe above 50D"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "dc2bbfb4e6486d342e73a39dd9fb6e0ad780a70e17de5f25cc8c720f61e0d1c1"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "table-header",
+      "target_node_id": "53S-0",
+      "original_html_sha256": "b8e4c1dfcd4172f5f82247c038d919d47afddf99f2524b9cb91e8d348fb839f1",
+      "effective_html_sha256": "de5912392a1f4e11833734e04a7602d01a45971f5952493c0be04a2ca16004fd",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "540-0",
+          "html": "Above 50D ↓",
+          "expected_before_text": "Above 50D",
+          "after_text": "Above 50D ↓"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "540-0",
+            "html": "Above 50D ↓"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "de5912392a1f4e11833734e04a7602d01a45971f5952493c0be04a2ca16004fd"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-1",
+      "target_node_id": "53H-0",
+      "original_html_sha256": "0a3d256f7a789f0248fda9684d287e5025995c737b56e342c7f83ec2675b7e72",
+      "effective_html_sha256": "3ed496e0eb91365c9ff2540067ad9169ea6a263e6abe1e4cbea8cce3c40c8705",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "53L-0",
+          "html": "286 / 286",
+          "expected_before_text": "42 / 42",
+          "after_text": "286 / 286"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "53L-0",
+            "html": "286 / 286"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "3ed496e0eb91365c9ff2540067ad9169ea6a263e6abe1e4cbea8cce3c40c8705"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-2",
+      "target_node_id": "536-0",
+      "original_html_sha256": "177db5c4322015b78fb147c1284a77968067852305351f63af7fe70688b9de1c",
+      "effective_html_sha256": "56a331dc367878a1e66607afcca4055ca7d305369071c54f44fb35e4822b158b",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "53A-0",
+          "html": "267 / 267",
+          "expected_before_text": "65 / 65",
+          "after_text": "267 / 267"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "53A-0",
+            "html": "267 / 267"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "56a331dc367878a1e66607afcca4055ca7d305369071c54f44fb35e4822b158b"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-3",
+      "target_node_id": "52V-0",
+      "original_html_sha256": "5fe6661ebd166299c42a19d86ebc6f1a095d27aedc8efde51b8e2aa56eca5037",
+      "effective_html_sha256": "99d5f1346aab67f23d11366db128eb142b791d2fa13180c174419b0ac0eea6b3",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "52Z-0",
+          "html": "500 / 500",
+          "expected_before_text": "52 / 52",
+          "after_text": "500 / 500"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "52Z-0",
+            "html": "500 / 500"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "99d5f1346aab67f23d11366db128eb142b791d2fa13180c174419b0ac0eea6b3"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-4",
+      "target_node_id": "52K-0",
+      "original_html_sha256": "4a149ca458c01b72223f1fd175e80b31cfb4fe493a819dcc03c3999f403f9b28",
+      "effective_html_sha256": "925dec2848e334f479ba524586e2ff861105fb57d2f0defff01b784836a513b4",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "52O-0",
+          "html": "177 / 177",
+          "expected_before_text": "21 / 21",
+          "after_text": "177 / 177"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "52O-0",
+            "html": "177 / 177"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "925dec2848e334f479ba524586e2ff861105fb57d2f0defff01b784836a513b4"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-5",
+      "target_node_id": "529-0",
+      "original_html_sha256": "ec0b950a20b0e7d74734fb67927b8eec8f42e9d21afd1fcf5e250b098f193951",
+      "effective_html_sha256": "d1d0e6efd0737893552f8844ccbccc4d13cb203302cfcf30bf816c410f61debd",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "52D-0",
+          "html": "375 / 375",
+          "expected_before_text": "47 / 47",
+          "after_text": "375 / 375"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "52D-0",
+            "html": "375 / 375"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "d1d0e6efd0737893552f8844ccbccc4d13cb203302cfcf30bf816c410f61debd"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-7",
+      "target_node_id": "51N-0",
+      "original_html_sha256": "6fe22b1914a068bb9ded08efc1bd92f9550b443323640e2b8261b1feb6528652",
+      "effective_html_sha256": "f819cd0dbd161f36d5a4ec10706c1371c6e45f465a108b6a2cfb9d5753af4885",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "51R-0",
+          "html": "333 / 333",
+          "expected_before_text": "28 / 28",
+          "after_text": "333 / 333"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "51R-0",
+            "html": "333 / 333"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "f819cd0dbd161f36d5a4ec10706c1371c6e45f465a108b6a2cfb9d5753af4885"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-9",
+      "target_node_id": "511-0",
+      "original_html_sha256": "0e2e639de9664994ea327ae812a1d780b0ea7ac588abd530e2eaedf95895f0b0",
+      "effective_html_sha256": "2037ba6f43e5fdcc9e7e7a3775673d236ce1f0558ab401204f03621fe6ad923d",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "515-0",
+          "html": "250 / 250",
+          "expected_before_text": "36 / 36",
+          "after_text": "250 / 250"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "515-0",
+            "html": "250 / 250"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "2037ba6f43e5fdcc9e7e7a3775673d236ce1f0558ab401204f03621fe6ad923d"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-10",
+      "target_node_id": "50Q-0",
+      "original_html_sha256": "9d1b01bac395863ca412479d8b89fb80f88b88c2bcffb059b53d69f98d2fbcd6",
+      "effective_html_sha256": "e444f6f53994150451629da8e7f458daf4cd80c15650f42f0a0f407bd171cfba",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "50U-0",
+          "html": "500 / 500",
+          "expected_before_text": "23 / 23",
+          "after_text": "500 / 500"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "50U-0",
+            "html": "500 / 500"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "e444f6f53994150451629da8e7f458daf4cd80c15650f42f0a0f407bd171cfba"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-8",
+      "target_node_id": "51C-0",
+      "original_html_sha256": "e1f2d9d2dc668129f0324f82aa3f0a43282b4350be216f41e42357345b30a80c",
+      "effective_html_sha256": "71bcd49a17ad53a37004742d6401d04f2ff0cbd947f91c8b78b99751a2a87e91",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "51G-0",
+          "html": "0 / 82",
+          "expected_before_text": "—",
+          "after_text": "0 / 82",
+          "semantic_anchor": {
+            "kind": "coverage column",
+            "cell_parent_id": "51F-0",
+            "header_text_node_id": "53W-0",
+            "header_text": "Covered / eligible",
+            "observed_cell_width_px": 164
+          }
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "51G-0",
+            "html": "0 / 82"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "71bcd49a17ad53a37004742d6401d04f2ff0cbd947f91c8b78b99751a2a87e91"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "table-behavior",
+      "target_node_id": "50O-0",
+      "original_html_sha256": "b036b6f0318eef2451aaa9cb8f92cac8f6c6e2a49b5c85e3a4cc5ecb29d8d3d0",
+      "effective_html_sha256": "abcfb2df55744a080e86f2fdc8a85c2f91427841d6a3782c69068339ec436a07",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "50P-0",
+          "html": "10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last.",
+          "expected_before_text": "10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last.",
+          "after_text": "10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "50P-0",
+            "html": "10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "16fca5e3c693b0562a78d534fb4db5b714169f92e40a43f59cfb4033a57b3fa7"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "evidence-value-0",
+      "target_node_id": "4ZD-0",
+      "original_html_sha256": "7da65dc2309d3b100534b2950b1e8b3307268ceead55173a9d23f48cc4a75d95",
+      "effective_html_sha256": "375cc2e30c172c3e4ad413bad2b7a54df5e91b548826906cf48436ed5bf89806",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4ZE-0",
+          "html": "66.67%",
+          "expected_before_text": "66.7%",
+          "after_text": "66.67%"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4ZE-0",
+            "html": "66.67%"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "375cc2e30c172c3e4ad413bad2b7a54df5e91b548826906cf48436ed5bf89806"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "evidence-value-2",
+      "target_node_id": "4Z7-0",
+      "original_html_sha256": "f32323705929d949c3c7b88dc9d5239dcb8e13e2989aa3bd727ea293961b0c2e",
+      "effective_html_sha256": "222747ada40ab9aae15f3bde0f196a446ac742785497fa3b046b797f10ba8905",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4Z8-0",
+          "html": "177 / 177",
+          "expected_before_text": "21 / 21",
+          "after_text": "177 / 177"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4Z8-0",
+            "html": "177 / 177"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "222747ada40ab9aae15f3bde0f196a446ac742785497fa3b046b797f10ba8905"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "evidence-field-0",
+      "target_node_id": "4Z4-0",
+      "original_html_sha256": "1c8cd9c27e41ca8ea7650bb1936e47924f15d3670c56e29da657a5ba061925f8",
+      "effective_html_sha256": "57b2071ca7d12e17690e0ba164d203ac4fee1eae79a131f89e9c36ff74e9aea5",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4Z5-0",
+          "html": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+          "expected_before_text": "macro / communication-services",
+          "after_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+          "accepted_observed_before_texts": [
+            "macro / communication-services",
+            "f02.fixture.v3/macro/sector/communication_services"
+          ],
+          "already_satisfied_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30"
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4Z5-0",
+            "html": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30"
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "b303ac88578fc54ae6d7a6dcdb9d3305b6a486d735750fedd4f465da96d5e7c7",
+      "previous_effective_html_sha256": "b303ac88578fc54ae6d7a6dcdb9d3305b6a486d735750fedd4f465da96d5e7c7",
+      "observation_identity_override": "Full metric/date identity supersedes incomplete v3 prefix only; no numeric or entity-key change."
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "evidence-caveat",
+      "target_node_id": "4YQ-0",
+      "original_html_sha256": "2af4222b4211282f25b8b74602dd7220f63c4ee8f362c2a584033412b039e3fb",
+      "effective_html_sha256": "1100dd343b90862a3f802235567b276fb2dea6860fd552ea0da1c5196bd58b3f",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "set_text_content",
+      "updates": [
+        {
+          "nodeId": "4YR-0",
+          "html": "Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.",
+          "expected_before_text": "A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.",
+          "after_text": "Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8."
+        }
+      ],
+      "argument_shape": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "updates": [
+          {
+            "nodeId": "4YR-0",
+            "html": "Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8."
+          }
+        ]
+      },
+      "readback": "Inspect text and wrapping at normal size; preserve numeric frame end-alignment and resize only owned board if new copy exceeds it.",
+      "mathematical_base_effective_html_sha256": "11cdd1561ab040b22b44d6d262edbceede91df5e3f2c907147803af7e048cc1e"
+    }
+  ],
+  "chart_step_replacements": [
+    {
+      "board_key": "grammar",
+      "board_id": "4LC-0",
+      "page_id": "p-5-0",
+      "step_key": "chart",
+      "target_node_id": "4LM-0",
+      "original_html_sha256": "74b4d5ccab2746f45671c29b13963284b09145a1c39fb401928a7a3e206a1582",
+      "effective_html_sha256": "3350ebf317b4bac5dcd331c825dd4876f2cea45ae7f203bb20ca3c9e195e3eef",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "targetNodeId": "4LM-0",
+        "mode": "replace",
+        "html": "<div style=\"display:flex;flex-direction:column;position:relative;gap:12px;padding:24px;background-color:var(--noir-panel);\"><svg width=\"1296\" height=\"230\" viewBox=\"0 0 1296 230\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"80\" y1=\"204\" x2=\"1256\" y2=\"204\" stroke=\"#343434\" /><line x1=\"80\" y1=\"154\" x2=\"1256\" y2=\"154\" stroke=\"#343434\" /><line x1=\"80\" y1=\"104\" x2=\"1256\" y2=\"104\" stroke=\"#343434\" /><line x1=\"80\" y1=\"54\" x2=\"1256\" y2=\"54\" stroke=\"#343434\" /><circle cx=\"80.000000\" cy=\"144.968956\" r=\"5\" fill=\"#c9b99b\"/><line x1=\"80.000000\" y1=\"144.968956\" x2=\"248.000000\" y2=\"142.146754\" stroke=\"#c9b99b\" stroke-width=\"3\"/><circle cx=\"248.000000\" cy=\"142.146754\" r=\"5\" fill=\"#c9b99b\"/><circle cx=\"584.000000\" cy=\"134.620884\" r=\"5\" fill=\"#c9b99b\"/><line x1=\"584.000000\" y1=\"134.620884\" x2=\"752.000000\" y2=\"137.443086\" stroke=\"#c9b99b\" stroke-width=\"3\"/><circle cx=\"752.000000\" cy=\"137.443086\" r=\"5\" fill=\"#c9b99b\"/><line x1=\"752.000000\" y1=\"137.443086\" x2=\"920.000000\" y2=\"130.857949\" stroke=\"#c9b99b\" stroke-width=\"3\"/><circle cx=\"920.000000\" cy=\"130.857949\" r=\"5\" fill=\"#c9b99b\"/><line x1=\"920.000000\" y1=\"130.857949\" x2=\"1088.000000\" y2=\"126.154280\" stroke=\"#c9b99b\" stroke-width=\"3\"/><circle cx=\"1088.000000\" cy=\"126.154280\" r=\"5\" fill=\"#c9b99b\"/><line x1=\"1088.000000\" y1=\"126.154280\" x2=\"1256.000000\" y2=\"120.509878\" stroke=\"#c9b99b\" stroke-width=\"3\"/><circle cx=\"1256.000000\" cy=\"120.509878\" r=\"5\" fill=\"#c9b99b\"/></svg><div layer-name=\"Y axis / 50%\" style=\"display:flex;position:absolute;left:24px;top:219px;width:64px;height:18px;justify-content:flex-end;align-items:center;\"><div style=\"font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);\">50%</div></div><div layer-name=\"Y axis / 60%\" style=\"display:flex;position:absolute;left:24px;top:169px;width:64px;height:18px;justify-content:flex-end;align-items:center;\"><div style=\"font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);\">60%</div></div><div layer-name=\"Y axis / 70%\" style=\"display:flex;position:absolute;left:24px;top:119px;width:64px;height:18px;justify-content:flex-end;align-items:center;\"><div style=\"font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);\">70%</div></div><div layer-name=\"Y axis / 80%\" style=\"display:flex;position:absolute;left:24px;top:69px;width:64px;height:18px;justify-content:flex-end;align-items:center;\"><div style=\"font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);\">80%</div></div><div style=\"display:flex;flex-direction:row;position:relative;width:1296px;height:18px;padding-left:0px;\"><div style=\"position:absolute;left:30px;top:0px;text-align:center;font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);width:100px;flex-shrink:0;\">21 Oct</div><div style=\"position:absolute;left:198px;top:0px;text-align:center;font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);width:100px;flex-shrink:0;\">22 Oct</div><div style=\"position:absolute;left:366px;top:0px;text-align:center;font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);width:100px;flex-shrink:0;\">23 Oct · —</div><div style=\"position:absolute;left:534px;top:0px;text-align:center;font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);width:100px;flex-shrink:0;\">26 Oct</div><div style=\"position:absolute;left:702px;top:0px;text-align:center;font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);width:100px;flex-shrink:0;\">27 Oct</div><div style=\"position:absolute;left:870px;top:0px;text-align:center;font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);width:100px;flex-shrink:0;\">28 Oct</div><div style=\"position:absolute;left:1038px;top:0px;text-align:center;font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);width:100px;flex-shrink:0;\">29 Oct</div><div style=\"position:absolute;left:1206px;top:0px;text-align:center;font-family:Inter;font-size:12px;font-weight:400;line-height:18px;color:var(--noir-text-secondary);width:100px;flex-shrink:0;\">30 Oct</div></div><div style=\"font-family:Inter;font-size:14px;font-weight:400;line-height:21px;color:var(--noir-text-secondary);\">The line breaks at 23 Oct. No interpolation, zero substitution or implied observation.</div></div>"
+      },
+      "identity_effect": "Target subtree replacement changes IDs. Record actual created IDs and update step/evidence mapping before later operations.",
+      "scope": "Only this owned chart step; axes/grid/viewport retained and raw-count marks changed. Read back native text/vector structure, geometry and screenshot.",
+      "mathematical_base_effective_html_sha256": "3350ebf317b4bac5dcd331c825dd4876f2cea45ae7f203bb20ca3c9e195e3eef"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "history-chart",
+      "target_node_id": "4VY-0",
+      "original_html_sha256": "d0241671d9964d97480a86f6cb454fd393a6d6c0aa769950d22c331384d959f2",
+      "effective_html_sha256": "006df81e60a81a30ba5dc90f72faa3fb3f5140c62065d0fc21c69c939f2cf1cb",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "targetNodeId": "4VY-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Eight categorical sessions / gap preserved\" style=\"flex-shrink:0;display:flex;flex-direction:column;width:824px;\"><svg width=\"824\" height=\"190\" viewBox=\"0 0 824 190\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"44\" y1=\"148.0\" x2=\"802\" y2=\"148.0\" stroke=\"#343434\"/><text x=\"31\" y=\"152.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"var(--noir-text-tertiary)\">40</text><line x1=\"44\" y1=\"82.0\" x2=\"802\" y2=\"82.0\" stroke=\"#343434\"/><text x=\"31\" y=\"86.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"var(--noir-text-tertiary)\">60</text><line x1=\"44\" y1=\"16.0\" x2=\"802\" y2=\"16.0\" stroke=\"#343434\"/><text x=\"31\" y=\"20.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"var(--noir-text-tertiary)\">80</text><text x=\"260.57142857142856\" y=\"106\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\">unavailable</text><text x=\"44.0\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">21 Oct</text><text x=\"152.28571428571428\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">22</text><text x=\"260.57142857142856\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">23</text><text x=\"368.85714285714283\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">26</text><text x=\"477.14285714285717\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">27</text><text x=\"585.4285714285714\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">28</text><text x=\"693.7142857142857\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">29</text><text x=\"802.0\" y=\"175\" text-anchor=\"middle\" fill=\"var(--noir-text-tertiary)\" font-family=\"Inter\" font-size=\"12\">30 Oct</text><circle cx=\"44.000000\" cy=\"76.039511\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"44.000000\" y1=\"76.039511\" x2=\"152.285714\" y2=\"74.176858\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"152.285714\" cy=\"74.176858\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><circle cx=\"368.857143\" cy=\"69.209784\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"368.857143\" y1=\"69.209784\" x2=\"477.142857\" y2=\"71.072437\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"477.142857\" cy=\"71.072437\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"477.142857\" y1=\"71.072437\" x2=\"585.428571\" y2=\"66.726246\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"585.428571\" cy=\"66.726246\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"585.428571\" y1=\"66.726246\" x2=\"693.714286\" y2=\"63.621825\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"693.714286\" cy=\"63.621825\" r=\"3.5\" fill=\"var(--noir-champagne)\"/><line x1=\"693.714286\" y1=\"63.621825\" x2=\"802.000000\" y2=\"59.896519\" stroke=\"var(--noir-champagne)\" stroke-width=\"2.5\"/><circle cx=\"802.000000\" cy=\"59.896519\" r=\"3.5\" fill=\"var(--noir-champagne)\"/></svg><div layer-name=\"Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70</div><div layer-name=\"Counts657,663,—,679,673,687,697,709 /1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:var(--noir-text-tertiary);\">Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.</div></div>"
+      },
+      "identity_effect": "Target subtree replacement changes IDs. Record actual created IDs and update step/evidence mapping before later operations.",
+      "scope": "Only this owned chart step; axes/grid/viewport retained and raw-count marks changed. Read back native text/vector structure, geometry and screenshot.",
+      "mathematical_base_effective_html_sha256": "14619b69b0f9a9b26c0b6584623bb37114fab78d1259f52cbd06fbac3fbdd540"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "history-chart",
+      "target_node_id": "55P-0",
+      "original_html_sha256": "e610a7da662dae22cf979cf6b5995de2d592ec608847e470bb13cca80f58fd67",
+      "effective_html_sha256": "a2478d427d57f5f3d8d0e73e4d1442c408e99c746b19e3d52fe1020c4a1a2850",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "targetNodeId": "55P-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Eight categorical sessions / gap preserved\" style=\"flex-shrink:0;display:flex;flex-direction:column;width:824px;\"><svg width=\"824\" height=\"190\" viewBox=\"0 0 824 190\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"44\" y1=\"148.0\" x2=\"802\" y2=\"148.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"152.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">40</text><line x1=\"44\" y1=\"82.0\" x2=\"802\" y2=\"82.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"86.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">60</text><line x1=\"44\" y1=\"16.0\" x2=\"802\" y2=\"16.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"20.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">80</text><text x=\"260.57142857142856\" y=\"106\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5f6368\">unavailable</text><text x=\"44.0\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">21 Oct</text><text x=\"152.28571428571428\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">22</text><text x=\"260.57142857142856\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">23</text><text x=\"368.85714285714283\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">26</text><text x=\"477.14285714285717\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">27</text><text x=\"585.4285714285714\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">28</text><text x=\"693.7142857142857\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">29</text><text x=\"802.0\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">30 Oct</text><circle cx=\"44.000000\" cy=\"76.039511\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"44.000000\" y1=\"76.039511\" x2=\"152.285714\" y2=\"74.176858\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"152.285714\" cy=\"74.176858\" r=\"3.5\" fill=\"#66543b\"/><circle cx=\"368.857143\" cy=\"69.209784\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"368.857143\" y1=\"69.209784\" x2=\"477.142857\" y2=\"71.072437\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"477.142857\" cy=\"71.072437\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"477.142857\" y1=\"71.072437\" x2=\"585.428571\" y2=\"66.726246\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"585.428571\" cy=\"66.726246\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"585.428571\" y1=\"66.726246\" x2=\"693.714286\" y2=\"63.621825\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"693.714286\" cy=\"63.621825\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"693.714286\" y1=\"63.621825\" x2=\"802.000000\" y2=\"59.896519\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"802.000000\" cy=\"59.896519\" r=\"3.5\" fill=\"#66543b\"/></svg><div layer-name=\"Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70</div><div layer-name=\"Counts657,663,—,679,673,687,697,709 /1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.</div></div>"
+      },
+      "identity_effect": "Target subtree replacement changes IDs. Record actual created IDs and update step/evidence mapping before later operations.",
+      "scope": "Only this owned chart step; axes/grid/viewport retained and raw-count marks changed. Read back native text/vector structure, geometry and screenshot.",
+      "mathematical_base_effective_html_sha256": "f430c7f1cea4075a00fbaa89941c70cb3cff48723b513162535469745e59f9ca"
+    }
+  ],
+  "row_reorders": [
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "parent_id": "4R6-0",
+      "expected_original_row_ids": [
+        "4SC-0",
+        "4SO-0",
+        "4T0-0",
+        "4TC-0",
+        "4TO-0",
+        "4U0-0",
+        "4UC-0",
+        "4UO-0",
+        "4V0-0",
+        "4VC-0"
+      ],
+      "expected_sorted_row_ids": [
+        "4SC-0",
+        "4SO-0",
+        "4T0-0",
+        "4TC-0",
+        "4TO-0",
+        "4U0-0",
+        "4UC-0",
+        "4V0-0",
+        "4VC-0",
+        "4UO-0"
+      ],
+      "tool": "move_nodes",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "moves": [
+          {
+            "nodeId": "4UO-0",
+            "after": "4VC-0"
+          }
+        ]
+      },
+      "reason": "Above50D descending with nulls last; move the existing Energy row after Materials. IDs and row evidence triggers stay stable.",
+      "requires_fresh_read": "Verify both siblings still belong to the same comparison flow parent. AffectedParents readback must preserve all ten rows and place Energy last; never recreate rows for sorting."
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "parent_id": "4ZN-0",
+      "expected_original_row_ids": [
+        "53H-0",
+        "536-0",
+        "52V-0",
+        "52K-0",
+        "529-0",
+        "51Y-0",
+        "51N-0",
+        "51C-0",
+        "511-0",
+        "50Q-0"
+      ],
+      "expected_sorted_row_ids": [
+        "53H-0",
+        "536-0",
+        "52V-0",
+        "52K-0",
+        "529-0",
+        "51Y-0",
+        "51N-0",
+        "511-0",
+        "50Q-0",
+        "51C-0"
+      ],
+      "tool": "move_nodes",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "moves": [
+          {
+            "nodeId": "51C-0",
+            "after": "50Q-0"
+          }
+        ]
+      },
+      "reason": "Above50D descending with nulls last; move the existing Energy row after Materials. IDs and row evidence triggers stay stable.",
+      "requires_fresh_read": "Verify both siblings still belong to the same comparison flow parent. AffectedParents readback must preserve all ten rows and place Energy last; never recreate rows for sorting."
+    }
+  ],
+  "numeric_alignment_carry": [
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-6",
+      "target_node_id": "4U0-0",
+      "original_html_sha256": "cb58abf70acda3a4c3a25eac9f1c9be9b1a39506a3d61a1576a7a5ae0430ea64",
+      "effective_html_sha256": "35638b290f8886a0b2b43b25c0276639bc06921e87ac3bdfeb3d9b97c6f4cb57",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "reason": "Text unchanged; effective Macro source composes numeric-alignment override. Apply/reconcile existing numeric-alignment-native-patch.json, not a new row replacement."
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "page_id": "p-6-0",
+      "step_key": "sector-6",
+      "target_node_id": "51Y-0",
+      "original_html_sha256": "9607f0de582cb7a28a83588d4c7298a7d7eab04854c92ec0d5c3c588cd3ae97b",
+      "effective_html_sha256": "713b2697c0beb5c01b2b01e6ea51690ac57bbd2c510ae7b0a34e4b3f2951f5ce",
+      "requires_fresh_read": "Observe exact target in canonical file; verify expected text/structure and current ownership. Retained JSX is a candidate binding, not a current snapshot guard.",
+      "reason": "Text unchanged; effective Macro source composes numeric-alignment override. Apply/reconcile existing numeric-alignment-native-patch.json, not a new row replacement."
+    }
+  ],
+  "unbound_items": [],
+  "sequencing": [
+    "Sole writer fresh-reads exact owned targets and reconciles no unresolved effect.",
+    "Apply small same-board text groups with set_text_content; preserve all node IDs and existing numeric frame repair.",
+    "Replace only the three chart steps when source/new chart identity is confirmed; capture actual new step/descendant IDs.",
+    "Move each existing Macro Energy row after Materials; verify returned affectedParents, selected Communication row and all evidence actions.",
+    "Read back all changed text/calculation/cohort/coverage labels; inspect wrap, chart axes/gap and numeric alignment; update final native mappings and capture/export freeze."
+  ],
+  "paper_calls": 0,
+  "no_original_or_export_writes": true,
+  "copy_spacing_override": {
+    "base_native_patch_sha256": "11e11716d7e2f847c1321341dc245adf396dac3609173f2c8b9d49ce7453ef41",
+    "scope": "Whitespace-only final visible copy; actual original text/identity guards preserved. Effective whole-step hashes are inherited mathematical-base identities; final HTML below is authoritative for this spacing layer."
+  },
+  "observation_identity_clock_override": {
+    "version": "f02.observation-identity-clocks.v1",
+    "base_native_patch_sha256": "4398e1cb05cd71c622b1b8d07d8628b574cb11047524b1d1dd4bd9d09c66f593",
+    "scope": "Only the two Macro evidence-field-0 text targets change. Company fault steps use the separately guarded source overlay; no unavailable native IDs are fabricated.",
+    "precedence": "Use these two corrected groups in place of the older candidate groups, OR use minimal-native-identity-patch.v1.json. Never apply both. Other cumulative groups are historical candidates; reconcile actual writer progress before any action."
+  }
+}

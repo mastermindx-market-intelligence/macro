@@ -1,0 +1,323 @@
+{
+  "schema": "f02.paper.clone-theme-plan.v1",
+  "source_packet_sha256": "163c42de68b7e5f630ef5e4f36b16cec639cb969096cc8e4ac29f351de4c7d92",
+  "comparison": {
+    "board_pairs": 4,
+    "dark_steps_total": 146,
+    "html_structure_and_noncolor_styles_equal": true,
+    "text_changes": 6,
+    "layer_name_changes": 6,
+    "svg_groups_requiring_replacement_for_conservative_strategy": 3,
+    "color_roles": 16
+  },
+  "mapping": [
+    {
+      "authored_dark": "var(--noir-canvas)",
+      "resolved_dark": "#080808",
+      "light": "#f6f6f3",
+      "occurrences": 16
+    },
+    {
+      "authored_dark": "var(--noir-text-primary)",
+      "resolved_dark": "#f3f3f3",
+      "light": "#1a1c20",
+      "occurrences": 281
+    },
+    {
+      "authored_dark": "var(--noir-raised)",
+      "resolved_dark": "#191919",
+      "light": "#f0f0ed",
+      "occurrences": 10
+    },
+    {
+      "authored_dark": "var(--noir-text-secondary)",
+      "resolved_dark": "#b8b8b8",
+      "light": "#51555b",
+      "occurrences": 98
+    },
+    {
+      "authored_dark": "var(--noir-text-tertiary)",
+      "resolved_dark": "#949494",
+      "light": "#5f6368",
+      "occurrences": 72
+    },
+    {
+      "authored_dark": "var(--noir-sidebar)",
+      "resolved_dark": "#0c0c0c",
+      "light": "#efefec",
+      "occurrences": 7
+    },
+    {
+      "authored_dark": "#343434",
+      "resolved_dark": "#343434",
+      "light": "#cbccc7",
+      "occurrences": 84
+    },
+    {
+      "authored_dark": "var(--noir-selected)",
+      "resolved_dark": "#292929",
+      "light": "#e2e2dc",
+      "occurrences": 7
+    },
+    {
+      "authored_dark": "var(--noir-champagne)",
+      "resolved_dark": "#c9b99b",
+      "light": "#66543b",
+      "occurrences": 41
+    },
+    {
+      "authored_dark": "#6f6f6f",
+      "resolved_dark": "#6f6f6f",
+      "light": "#85877f",
+      "occurrences": 13
+    },
+    {
+      "authored_dark": "var(--noir-panel)",
+      "resolved_dark": "#121212",
+      "light": "#fff",
+      "occurrences": 47
+    },
+    {
+      "authored_dark": "#b0d4b9",
+      "resolved_dark": "#b0d4b9",
+      "light": "#256341",
+      "occurrences": 33
+    },
+    {
+      "authored_dark": "#a7c9f1",
+      "resolved_dark": "#a7c9f1",
+      "light": "#235b8e",
+      "occurrences": 57
+    },
+    {
+      "authored_dark": "#efa6ad",
+      "resolved_dark": "#efa6ad",
+      "light": "#a62d43",
+      "occurrences": 22
+    },
+    {
+      "authored_dark": "#d9a6ef",
+      "resolved_dark": "#d9a6ef",
+      "light": "#7c3d9b",
+      "occurrences": 23
+    },
+    {
+      "authored_dark": "#70cbdc",
+      "resolved_dark": "#70cbdc",
+      "light": "#18687c",
+      "occurrences": 5
+    }
+  ],
+  "boards": [
+    {
+      "consumer": "macro",
+      "step_count": 49,
+      "structure_equal": true,
+      "geometry_equal": true,
+      "text_changes": [
+        {
+          "step": "artifact",
+          "input_dom_path": "0.0",
+          "tag": "div",
+          "layer_name": "F02 / MACRO / DARK",
+          "from": "F02 / MACRO / DARK",
+          "to": "F02 / MACRO / LIGHT"
+        }
+      ],
+      "layer_name_changes": [
+        {
+          "step": "artifact",
+          "input_dom_path": "0.0",
+          "tag": "div",
+          "layer_name": "F02 / MACRO / DARK",
+          "from": "F02 / MACRO / DARK",
+          "to": "F02 / MACRO / LIGHT"
+        }
+      ],
+      "svg_replace_steps": [
+        "history-chart"
+      ],
+      "root_style_changes": [
+        {
+          "property": "backgroundColor",
+          "from": "var(--noir-canvas)",
+          "to": "#f6f6f3"
+        },
+        {
+          "property": "color",
+          "from": "var(--noir-text-primary)",
+          "to": "#1a1c20"
+        }
+      ],
+      "non_svg_style_change_count": 159,
+      "vector_color_change_count": 27
+    },
+    {
+      "consumer": "company",
+      "step_count": 31,
+      "structure_equal": true,
+      "geometry_equal": true,
+      "text_changes": [
+        {
+          "step": "artifact",
+          "input_dom_path": "0.0",
+          "tag": "div",
+          "layer_name": "F02 / COMPANY / DARK",
+          "from": "F02 / COMPANY / DARK",
+          "to": "F02 / COMPANY / LIGHT"
+        }
+      ],
+      "layer_name_changes": [
+        {
+          "step": "artifact",
+          "input_dom_path": "0.0",
+          "tag": "div",
+          "layer_name": "F02 / COMPANY / DARK",
+          "from": "F02 / COMPANY / DARK",
+          "to": "F02 / COMPANY / LIGHT"
+        }
+      ],
+      "svg_replace_steps": [
+        "history-chart"
+      ],
+      "root_style_changes": [
+        {
+          "property": "backgroundColor",
+          "from": "var(--noir-canvas)",
+          "to": "#f6f6f3"
+        },
+        {
+          "property": "color",
+          "from": "var(--noir-text-primary)",
+          "to": "#1a1c20"
+        }
+      ],
+      "non_svg_style_change_count": 171,
+      "vector_color_change_count": 108
+    },
+    {
+      "consumer": "options",
+      "step_count": 34,
+      "structure_equal": true,
+      "geometry_equal": true,
+      "text_changes": [
+        {
+          "step": "artifact",
+          "input_dom_path": "0.0",
+          "tag": "div",
+          "layer_name": "F02 / OPTIONS / DARK",
+          "from": "F02 / OPTIONS / DARK",
+          "to": "F02 / OPTIONS / LIGHT"
+        }
+      ],
+      "layer_name_changes": [
+        {
+          "step": "artifact",
+          "input_dom_path": "0.0",
+          "tag": "div",
+          "layer_name": "F02 / OPTIONS / DARK",
+          "from": "F02 / OPTIONS / DARK",
+          "to": "F02 / OPTIONS / LIGHT"
+        }
+      ],
+      "svg_replace_steps": [
+        "expiry-summary"
+      ],
+      "root_style_changes": [
+        {
+          "property": "backgroundColor",
+          "from": "var(--noir-canvas)",
+          "to": "#f6f6f3"
+        },
+        {
+          "property": "color",
+          "from": "var(--noir-text-primary)",
+          "to": "#1a1c20"
+        }
+      ],
+      "non_svg_style_change_count": 272,
+      "vector_color_change_count": 9
+    },
+    {
+      "consumer": "editorial",
+      "step_count": 32,
+      "structure_equal": true,
+      "geometry_equal": true,
+      "text_changes": [
+        {
+          "step": "artifact",
+          "input_dom_path": "0.0",
+          "tag": "div",
+          "layer_name": "F02 / EDITORIAL / DARK",
+          "from": "F02 / EDITORIAL / DARK",
+          "to": "F02 / EDITORIAL / LIGHT"
+        },
+        {
+          "step": "header",
+          "input_dom_path": "0.1.0",
+          "tag": "div",
+          "layer_name": "Research · Tools · Learn",
+          "from": "Research · Tools · Learn",
+          "to": "研究 · 工具 · 学习"
+        },
+        {
+          "step": "breadcrumb",
+          "input_dom_path": "0",
+          "tag": "div",
+          "layer_name": "Home / Blog / Compound Growth for Traders",
+          "from": "Home / Blog / Compound Growth for Traders",
+          "to": "首页 / 研究札记 / Compound Growth for Traders"
+        }
+      ],
+      "layer_name_changes": [
+        {
+          "step": "artifact",
+          "input_dom_path": "0.0",
+          "tag": "div",
+          "layer_name": "F02 / EDITORIAL / DARK",
+          "from": "F02 / EDITORIAL / DARK",
+          "to": "F02 / EDITORIAL / LIGHT"
+        },
+        {
+          "step": "header",
+          "input_dom_path": "0.1.0",
+          "tag": "div",
+          "layer_name": "Research · Tools · Learn",
+          "from": "Research · Tools · Learn",
+          "to": "研究 · 工具 · 学习"
+        },
+        {
+          "step": "breadcrumb",
+          "input_dom_path": "0",
+          "tag": "div",
+          "layer_name": "Home / Blog / Compound Growth for Traders",
+          "from": "Home / Blog / Compound Growth for Traders",
+          "to": "首页 / 研究札记 / Compound Growth for Traders"
+        }
+      ],
+      "svg_replace_steps": [],
+      "root_style_changes": [
+        {
+          "property": "backgroundColor",
+          "from": "var(--noir-canvas)",
+          "to": "#f6f6f3"
+        },
+        {
+          "property": "color",
+          "from": "var(--noir-text-primary)",
+          "to": "#1a1c20"
+        }
+      ],
+      "non_svg_style_change_count": 62,
+      "vector_color_change_count": 0
+    }
+  ],
+  "held_until_native_readback": [
+    "Input DOM paths are not native node IDs.",
+    "Keep all patches scoped to the newly returned clone tree.",
+    "Preserve actual border widths/styles and map color only; do not add edges.",
+    "Replace SVG-containing roots only once their clone IDs are observed.",
+    "All data and geometry stay unchanged.",
+    "No global token values are modified."
+  ]
+}

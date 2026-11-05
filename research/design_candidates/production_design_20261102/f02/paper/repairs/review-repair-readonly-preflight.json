@@ -1,0 +1,785 @@
+{
+  "schema": "f02.native-review-repair-readonly-preflight.v1",
+  "status": "BINDINGS_OBSERVED_EDITS_PAUSED_NOT_APPLIED",
+  "prepared_at": "2026-11-03T06:45:03.848836+00:00",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "source_patch_sha256": "dc3fd2f6b09d8867848f8e6e4b48f347f39837abd79003585e9b9f8b71bcd2c8",
+  "evidence": [
+    {
+      "board_key": "controls",
+      "board_id": "4JP-0",
+      "path": "exports/controls--preflight-review-repair.jsx",
+      "sha256": "4a6c3555dbf4c45540a993ac1b99f0d5c14e5c03366dda3852e55a00397417bb"
+    },
+    {
+      "board_key": "grammar",
+      "board_id": "4LC-0",
+      "path": "exports/grammar--preflight-review-repair.jsx",
+      "sha256": "efc816a8c2fa9b60c111fda175a65fc0a3a7860da5756975970e99a2c0c40102"
+    },
+    {
+      "board_key": "macro-dark",
+      "board_id": "4PO-0",
+      "path": "exports/macro-dark--preflight-review-repair.jsx",
+      "sha256": "291afd67ed9993e3d087ee9ae873f6706557b0d11b11c23fd34cae705c8098e6"
+    },
+    {
+      "board_key": "macro-light",
+      "board_id": "4YD-0",
+      "path": "exports/macro-light--preflight-review-repair.jsx",
+      "sha256": "e1f678dffe046ed32446c58444c13d1ca6c85fecec19d69df773b5ecec655d3c"
+    },
+    {
+      "board_key": "metrics",
+      "board_id": "4E3-0",
+      "path": "exports/metrics--preflight-review-repair.jsx",
+      "sha256": "1594f31d77b2369c5a0a4e8698ef30f71b4902a8cea638ed6c2a5c3592ee9a0f"
+    },
+    {
+      "board_key": "metrics-light",
+      "board_id": "4H1-0",
+      "path": "exports/metrics-light--preflight-review-repair.jsx",
+      "sha256": "33416deaefe7da8ca2f3a390a8e29e96ed00a439213fa5d861548e424fc94fbb"
+    },
+    {
+      "board_key": "states-matrix",
+      "board_id": "6Q3-0",
+      "path": "exports/states-matrix--preflight-review-repair.jsx",
+      "sha256": "dd4429e6d67cf4492c692d055b755986e718477856d0a2f7cd451480800cf98c"
+    }
+  ],
+  "text_checks": [
+    {
+      "board_key": "states-matrix",
+      "step_key": "combined-dark-value",
+      "node_id": "6YH-0",
+      "current_text": "Participation",
+      "expected_before_texts": [
+        "Participation"
+      ],
+      "after_text": "Universe 709/1063",
+      "guard_matches": true
+    },
+    {
+      "board_key": "states-matrix",
+      "step_key": "combined-light-value",
+      "node_id": "6Z1-0",
+      "current_text": "Participation",
+      "expected_before_texts": [
+        "Participation"
+      ],
+      "after_text": "Universe 709/1063",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics",
+      "step_key": "metric-units",
+      "node_id": "4ES-0",
+      "current_text": "65.57% → 66.70% is +1.13 percentage points. Relative change would be +1.72%, with a different label. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.",
+      "expected_before_texts": [
+        "65.57% → 66.70% is +1.13 percentage points. Relative change would be +1.72%, with a different label. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable."
+      ],
+      "after_text": "Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics-light",
+      "step_key": "metric-units",
+      "node_id": "4J3-0",
+      "current_text": "65.57% → 66.70% is +1.13 percentage points. Relative change would be +1.72%, with a different label. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.",
+      "expected_before_texts": [
+        "65.57% → 66.70% is +1.13 percentage points. Relative change would be +1.72%, with a different label. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable."
+      ],
+      "after_text": "Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. Zero → zero dividend has an absolute change of 0.00 USD/share; percent change from zero is undefined. If the baseline is unknown, the delta is unavailable.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics",
+      "step_key": "table-caption",
+      "node_id": "4EV-0",
+      "current_text": "Sector participation · illustrative settled observation",
+      "expected_before_texts": [
+        "Sector participation · illustrative settled observation"
+      ],
+      "after_text": "Component-sector samples · independent of Macro",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics-light",
+      "step_key": "table-caption",
+      "node_id": "4J1-0",
+      "current_text": "Sector participation · illustrative settled observation",
+      "expected_before_texts": [
+        "Sector participation · illustrative settled observation"
+      ],
+      "after_text": "Component-sector samples · independent of Macro",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics",
+      "step_key": "data-0",
+      "node_id": "4FK-0",
+      "current_text": "178 / 184",
+      "expected_before_texts": [
+        "178 / 184"
+      ],
+      "after_text": "1000 / 1006",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics-light",
+      "step_key": "data-0",
+      "node_id": "4IF-0",
+      "current_text": "178 / 184",
+      "expected_before_texts": [
+        "178 / 184"
+      ],
+      "after_text": "1000 / 1006",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics",
+      "step_key": "data-1",
+      "node_id": "4FY-0",
+      "current_text": "63 / 63",
+      "expected_before_texts": [
+        "63 / 63"
+      ],
+      "after_text": "250 / 250",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics-light",
+      "step_key": "data-1",
+      "node_id": "4I2-0",
+      "current_text": "63 / 63",
+      "expected_before_texts": [
+        "63 / 63"
+      ],
+      "after_text": "250 / 250",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics",
+      "step_key": "source-receipt",
+      "node_id": "4GV-0",
+      "current_text": "178 / 184 securities · partial coverage · illustrative fixture · connected transport is independent of source freshness.",
+      "expected_before_texts": [
+        "178 / 184 securities · partial coverage · illustrative fixture · connected transport is independent of source freshness."
+      ],
+      "after_text": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "metrics-light",
+      "step_key": "source-receipt",
+      "node_id": "4H6-0",
+      "current_text": "178 / 184 securities · partial coverage · illustrative fixture · connected transport is independent of source freshness.",
+      "expected_before_texts": [
+        "178 / 184 securities · partial coverage · illustrative fixture · connected transport is independent of source freshness."
+      ],
+      "after_text": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Utilities: 132/250 = 52.80%; prior 133/250 = 53.20%; −0.40 pp; coverage 250/250.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "controls",
+      "step_key": "evidence-shell",
+      "node_id": "4KS-0",
+      "current_text": "178 / 184 covered",
+      "expected_before_texts": [
+        "178 / 184 covered"
+      ],
+      "after_text": "1000 / 1006 covered",
+      "guard_matches": true
+    },
+    {
+      "board_key": "controls",
+      "step_key": "evidence-shell",
+      "node_id": "4KU-0",
+      "current_text": "Missing securities are not counted as below-average observations.",
+      "expected_before_texts": [
+        "Missing securities are not counted as below-average observations."
+      ],
+      "after_text": "Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "grammar",
+      "step_key": "chart-title",
+      "node_id": "4LJ-0",
+      "current_text": "Participation across eight settled sessions",
+      "expected_before_texts": [
+        "Participation across eight settled sessions"
+      ],
+      "after_text": "Independent universe · eight settled sessions",
+      "guard_matches": true
+    },
+    {
+      "board_key": "grammar",
+      "step_key": "exact-values",
+      "node_id": "4MQ-0",
+      "current_text": "61.20%",
+      "expected_before_texts": [
+        "61.20%"
+      ],
+      "after_text": "61.81%",
+      "guard_matches": true
+    },
+    {
+      "board_key": "grammar",
+      "step_key": "exact-values",
+      "node_id": "4MT-0",
+      "current_text": "63.40%",
+      "expected_before_texts": [
+        "63.40%"
+      ],
+      "after_text": "62.37%",
+      "guard_matches": true
+    },
+    {
+      "board_key": "grammar",
+      "step_key": "exact-values",
+      "node_id": "4MW-0",
+      "current_text": "62.10%",
+      "expected_before_texts": [
+        "62.10%"
+      ],
+      "after_text": "—",
+      "guard_matches": true
+    },
+    {
+      "board_key": "grammar",
+      "step_key": "exact-values",
+      "node_id": "4MZ-0",
+      "current_text": "—",
+      "expected_before_texts": [
+        "—"
+      ],
+      "after_text": "63.88%",
+      "guard_matches": true
+    },
+    {
+      "board_key": "grammar",
+      "step_key": "exact-values",
+      "node_id": "4N2-0",
+      "current_text": "65.57%",
+      "expected_before_texts": [
+        "65.57%"
+      ],
+      "after_text": "63.31%",
+      "guard_matches": true
+    },
+    {
+      "board_key": "grammar",
+      "step_key": "exact-values",
+      "node_id": "4N5-0",
+      "current_text": "64.90%",
+      "expected_before_texts": [
+        "64.90%"
+      ],
+      "after_text": "64.63%",
+      "guard_matches": true
+    },
+    {
+      "board_key": "grammar",
+      "step_key": "chart-source",
+      "node_id": "4NF-0",
+      "current_text": "Illustrative fixture, settled sessions, percent. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof.",
+      "expected_before_texts": [
+        "Illustrative fixture, settled sessions, percent. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof."
+      ],
+      "after_text": "Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation. Synthetic universe: 709/1063 × 100 = 66.70%; prior 697/1063 = 65.57%. Raw-count change +1.13 pp; relative +1.72%. Independent of sector examples; round only after calculation. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "metrics",
+      "node_id": "4RC-0",
+      "current_text": "Universe share above 50D",
+      "expected_before_texts": [
+        "Universe share above 50D"
+      ],
+      "after_text": "Independent universe above 50D",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "table-header",
+      "node_id": "4S4-0",
+      "current_text": "Above 50D",
+      "expected_before_texts": [
+        "Above 50D"
+      ],
+      "after_text": "Above 50D ↓",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-1",
+      "node_id": "4SK-0",
+      "current_text": "42 / 42",
+      "expected_before_texts": [
+        "42 / 42"
+      ],
+      "after_text": "286 / 286",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-2",
+      "node_id": "4SW-0",
+      "current_text": "65 / 65",
+      "expected_before_texts": [
+        "65 / 65"
+      ],
+      "after_text": "267 / 267",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-3",
+      "node_id": "4T8-0",
+      "current_text": "52 / 52",
+      "expected_before_texts": [
+        "52 / 52"
+      ],
+      "after_text": "500 / 500",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-4",
+      "node_id": "4TK-0",
+      "current_text": "21 / 21",
+      "expected_before_texts": [
+        "21 / 21"
+      ],
+      "after_text": "177 / 177",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-5",
+      "node_id": "4TW-0",
+      "current_text": "47 / 47",
+      "expected_before_texts": [
+        "47 / 47"
+      ],
+      "after_text": "375 / 375",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-7",
+      "node_id": "4UK-0",
+      "current_text": "28 / 28",
+      "expected_before_texts": [
+        "28 / 28"
+      ],
+      "after_text": "333 / 333",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-9",
+      "node_id": "4V8-0",
+      "current_text": "36 / 36",
+      "expected_before_texts": [
+        "36 / 36"
+      ],
+      "after_text": "250 / 250",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-10",
+      "node_id": "4VK-0",
+      "current_text": "23 / 23",
+      "expected_before_texts": [
+        "23 / 23"
+      ],
+      "after_text": "500 / 500",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "sector-8",
+      "node_id": "4UW-0",
+      "current_text": "—",
+      "expected_before_texts": [
+        "—"
+      ],
+      "after_text": "0 / 82",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "table-behavior",
+      "node_id": "4VP-0",
+      "current_text": "10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last.",
+      "expected_before_texts": [
+        "10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last."
+      ],
+      "after_text": "10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "evidence-value-0",
+      "node_id": "4X5-0",
+      "current_text": "66.7%",
+      "expected_before_texts": [
+        "66.7%"
+      ],
+      "after_text": "66.67%",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "evidence-value-2",
+      "node_id": "4XD-0",
+      "current_text": "21 / 21",
+      "expected_before_texts": [
+        "21 / 21"
+      ],
+      "after_text": "177 / 177",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "evidence-field-0",
+      "node_id": "4XH-0",
+      "current_text": "macro / communication-services",
+      "expected_before_texts": [
+        "macro / communication-services",
+        "f02.fixture.v3/macro/sector/communication_services"
+      ],
+      "after_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "evidence-caveat",
+      "node_id": "4Y0-0",
+      "current_text": "A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.",
+      "expected_before_texts": [
+        "A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks."
+      ],
+      "after_text": "Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "metrics",
+      "node_id": "54P-0",
+      "current_text": "Universe share above 50D",
+      "expected_before_texts": [
+        "Universe share above 50D"
+      ],
+      "after_text": "Independent universe above 50D",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "table-header",
+      "node_id": "540-0",
+      "current_text": "Above 50D",
+      "expected_before_texts": [
+        "Above 50D"
+      ],
+      "after_text": "Above 50D ↓",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-1",
+      "node_id": "53L-0",
+      "current_text": "42 / 42",
+      "expected_before_texts": [
+        "42 / 42"
+      ],
+      "after_text": "286 / 286",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-2",
+      "node_id": "53A-0",
+      "current_text": "65 / 65",
+      "expected_before_texts": [
+        "65 / 65"
+      ],
+      "after_text": "267 / 267",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-3",
+      "node_id": "52Z-0",
+      "current_text": "52 / 52",
+      "expected_before_texts": [
+        "52 / 52"
+      ],
+      "after_text": "500 / 500",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-4",
+      "node_id": "52O-0",
+      "current_text": "21 / 21",
+      "expected_before_texts": [
+        "21 / 21"
+      ],
+      "after_text": "177 / 177",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-5",
+      "node_id": "52D-0",
+      "current_text": "47 / 47",
+      "expected_before_texts": [
+        "47 / 47"
+      ],
+      "after_text": "375 / 375",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-7",
+      "node_id": "51R-0",
+      "current_text": "28 / 28",
+      "expected_before_texts": [
+        "28 / 28"
+      ],
+      "after_text": "333 / 333",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-9",
+      "node_id": "515-0",
+      "current_text": "36 / 36",
+      "expected_before_texts": [
+        "36 / 36"
+      ],
+      "after_text": "250 / 250",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-10",
+      "node_id": "50U-0",
+      "current_text": "23 / 23",
+      "expected_before_texts": [
+        "23 / 23"
+      ],
+      "after_text": "500 / 500",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "sector-8",
+      "node_id": "51G-0",
+      "current_text": "—",
+      "expected_before_texts": [
+        "—"
+      ],
+      "after_text": "0 / 82",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "table-behavior",
+      "node_id": "50P-0",
+      "current_text": "10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last.",
+      "expected_before_texts": [
+        "10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last."
+      ],
+      "after_text": "10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last.",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "evidence-value-0",
+      "node_id": "4ZE-0",
+      "current_text": "66.7%",
+      "expected_before_texts": [
+        "66.7%"
+      ],
+      "after_text": "66.67%",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "evidence-value-2",
+      "node_id": "4Z8-0",
+      "current_text": "21 / 21",
+      "expected_before_texts": [
+        "21 / 21"
+      ],
+      "after_text": "177 / 177",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "evidence-field-0",
+      "node_id": "4Z5-0",
+      "current_text": "macro / communication-services",
+      "expected_before_texts": [
+        "macro / communication-services",
+        "f02.fixture.v3/macro/sector/communication_services"
+      ],
+      "after_text": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "guard_matches": true
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "evidence-caveat",
+      "node_id": "4YR-0",
+      "current_text": "A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.",
+      "expected_before_texts": [
+        "A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks."
+      ],
+      "after_text": "Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.",
+      "guard_matches": true
+    }
+  ],
+  "chart_checks": [
+    {
+      "board_key": "grammar",
+      "step_key": "chart",
+      "target_node_id": "4LM-0",
+      "same_frozen_subtree": true,
+      "native_descendant_ids": [
+        "4LM-0",
+        "4LN-0",
+        "4MC-0",
+        "4MD-0",
+        "4ME-0",
+        "4MF-0",
+        "4MG-0",
+        "4MH-0",
+        "4MI-0",
+        "4MJ-0",
+        "4MK-0",
+        "4ML-0",
+        "4M4-0",
+        "4M5-0",
+        "4M6-0",
+        "4M7-0",
+        "4M8-0",
+        "4M9-0",
+        "4MA-0",
+        "4MB-0"
+      ],
+      "comparison_method": "Exact native IDs, tags, attributes, styles and normalized literal text. Ignore parser-only style lookup indices; normalize JSX literal-string wrapper only, without executing code.",
+      "serialization_only_text_wrappers": 0
+    },
+    {
+      "board_key": "macro-dark",
+      "step_key": "history-chart",
+      "target_node_id": "4VY-0",
+      "same_frozen_subtree": true,
+      "native_descendant_ids": [
+        "4VY-0",
+        "4VZ-0",
+        "4WR-0",
+        "4WS-0"
+      ],
+      "comparison_method": "Exact native IDs, tags, attributes, styles and normalized literal text. Ignore parser-only style lookup indices; normalize JSX literal-string wrapper only, without executing code.",
+      "serialization_only_text_wrappers": 12
+    },
+    {
+      "board_key": "macro-light",
+      "step_key": "history-chart",
+      "target_node_id": "55P-0",
+      "same_frozen_subtree": true,
+      "native_descendant_ids": [
+        "55P-0",
+        "55Q-0",
+        "56I-0",
+        "56J-0"
+      ],
+      "comparison_method": "Exact native IDs, tags, attributes, styles and normalized literal text. Ignore parser-only style lookup indices; normalize JSX literal-string wrapper only, without executing code.",
+      "serialization_only_text_wrappers": 12
+    }
+  ],
+  "row_checks": [
+    {
+      "board_key": "macro-dark",
+      "parent_id": "4R6-0",
+      "observed_row_ids": [
+        "4SC-0",
+        "4SO-0",
+        "4T0-0",
+        "4TC-0",
+        "4TO-0",
+        "4U0-0",
+        "4UC-0",
+        "4UO-0",
+        "4V0-0",
+        "4VC-0"
+      ],
+      "original_order_matches": true,
+      "planned_sorted_row_ids": [
+        "4SC-0",
+        "4SO-0",
+        "4T0-0",
+        "4TC-0",
+        "4TO-0",
+        "4U0-0",
+        "4UC-0",
+        "4V0-0",
+        "4VC-0",
+        "4UO-0"
+      ]
+    },
+    {
+      "board_key": "macro-light",
+      "parent_id": "4ZN-0",
+      "observed_row_ids": [
+        "53H-0",
+        "536-0",
+        "52V-0",
+        "52K-0",
+        "529-0",
+        "51Y-0",
+        "51N-0",
+        "51C-0",
+        "511-0",
+        "50Q-0"
+      ],
+      "original_order_matches": true,
+      "planned_sorted_row_ids": [
+        "53H-0",
+        "536-0",
+        "52V-0",
+        "52K-0",
+        "529-0",
+        "51Y-0",
+        "51N-0",
+        "511-0",
+        "50Q-0",
+        "51C-0"
+      ]
+    }
+  ],
+  "counts": {
+    "boards": 7,
+    "text_groups": 48,
+    "text_leaf_checks": 54,
+    "text_passed": 54,
+    "charts": 3,
+    "chart_subtrees_match": 3,
+    "row_reorders": 2,
+    "row_orders_match": 2
+  },
+  "limitations": [
+    "Read-only preflight on exact native exports; no Paper edits or applied repair claim.",
+    "One unrelated current Chinese-footer dispatch remains unresolved; writes are paused.",
+    "Any resumed mutation requires a fresh exact-file guard and revalidation of affected IDs.",
+    "Company replacements and six-board numeric frames were not included in this preflight."
+  ]
+}

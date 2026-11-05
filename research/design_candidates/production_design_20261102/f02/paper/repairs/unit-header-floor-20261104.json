@@ -1,0 +1,186 @@
+{
+  "schema": "f02.scoped-native-unit-header-delta.v1",
+  "observed_at": "2026-11-04T02:12:16.520470+00:00",
+  "preceding_input_commit": "caf707a7f3e57c1e3fa7b8b4e087641ab893334c",
+  "preceding_manifest_sha256": "bde11c6cf055b05d80743d8ebf29a154caf6adf31d9ce8249ff8cd511a5366e9",
+  "preceding_aggregate_sha256": "9182ad14a8b0feadebdb9a39900a3f949c81577c20913582a3c7a35ac3ab4e9f",
+  "finding": "NVTC-004 residual meaningful unit/time-zone header floor",
+  "changed_artifacts": [
+    {
+      "path": "paper/screenshots/macro-dark.jpg",
+      "before_sha256": "41857dda143926e35a5a56aec8ef05200186b42ace24be67815f9025ddcd927f",
+      "after_sha256": "ec8e2cb509babde49d4cef1800171d0b4f3d234a1250c13b6e91d3211735e411",
+      "bytes": 218554
+    },
+    {
+      "path": "paper/exports/macro-dark.jsx",
+      "before_sha256": "32fed393d6fdec32ec8e40a60e3c18596f6352500ff459530151a8eff4f2c146",
+      "after_sha256": "8ec8e6bf6d68f7139ba9c7ace89bc8670cbeea557b93c7f963b6257e2d6460c0",
+      "bytes": 65690
+    },
+    {
+      "path": "paper/screenshots/macro-light.jpg",
+      "before_sha256": "0ee5991c3e616bddb3795669de1460032c2b9acda71c2eaa8eb3f396a360dec5",
+      "after_sha256": "54c005bc81e293aaed0df9acce17a30b0ddaa90f4e5390cbd90a5765000337e1",
+      "bytes": 220959
+    },
+    {
+      "path": "paper/exports/macro-light.jsx",
+      "before_sha256": "01dd7b6f1e8fc7ddc31eedaa72410447c9ade192ad70f309c309828df5de429b",
+      "after_sha256": "fd43721d93ed3a47f62660c235342b7423181ef6748bc0fd28bb97649d77eabd",
+      "bytes": 63929
+    },
+    {
+      "path": "paper/screenshots/options-dark.jpg",
+      "before_sha256": "fe9a0ff5ce810854fd79d4bbb6ae0f0a88e0cfce9f46098723ce6d8c02473635",
+      "after_sha256": "c77573eb730fc7e3e44298adfe434bfe13067c54e719debbcfdc7e722aed9ef4",
+      "bytes": 217393
+    },
+    {
+      "path": "paper/exports/options-dark.jsx",
+      "before_sha256": "41af9ec141a871e464062a9727424f1e64043f32166f3e886b113aa89163d823",
+      "after_sha256": "3bc81291f4f4a3d55e0f855a9733d775b89d540c18585a102e93e10a0617b1de",
+      "bytes": 103537
+    },
+    {
+      "path": "paper/screenshots/options-light.jpg",
+      "before_sha256": "8b52cc993386a99171b940975974f1c96dc03eefcc8066343e65527ec006fc68",
+      "after_sha256": "c2b855832b7e7d3ac40130fd301311c1662e0ee6b3df92097fd9c0401b41395a",
+      "bytes": 220446
+    },
+    {
+      "path": "paper/exports/options-light.jsx",
+      "before_sha256": "6c738add8193aa9e23ca81c199912f8a080403ca6894ed362efee1db6b96badf",
+      "after_sha256": "0d7d737e9e9463d521b5af35e31b912971203670d6aafe47e854d3ba5b795741",
+      "bytes": 100404
+    }
+  ],
+  "exact_nodes": {
+    "macro-dark": [
+      "4S6-0"
+    ],
+    "macro-light": [
+      "53Y-0"
+    ],
+    "options-dark": [
+      "5XW-0",
+      "5Y0-0",
+      "5XQ-0"
+    ],
+    "options-light": [
+      "6HH-0",
+      "6HD-0",
+      "6HN-0"
+    ]
+  },
+  "operations": [
+    {
+      "id": "f02-r3-options-dark-unit-header-floor-20261104-01",
+      "board": "options-dark",
+      "tool": "update_styles",
+      "targets": [
+        "5XW-0",
+        "5Y0-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:08:47.798Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 retained in R2 affected Taste review: meaningful unit-bearing column headers must meet12px source/unit floor; preserve actual text, raw rows, numeric end edges, 40px row density and all source identities."
+    },
+    {
+      "id": "f02-r3-options-light-unit-header-floor-20261104-01",
+      "board": "options-light",
+      "tool": "update_styles",
+      "targets": [
+        "6HH-0",
+        "6HD-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:09:02.674Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 retained in R2 affected Taste review: meaningful unit-bearing column headers must meet12px source/unit floor; preserve actual text, raw rows, numeric end edges, 40px row density and all source identities."
+    },
+    {
+      "id": "f02-r3-macro-dark-unit-header-floor-20261104-01",
+      "board": "macro-dark",
+      "tool": "update_styles",
+      "targets": [
+        "4S6-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:09:29.664Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 same-scope unit audit: meaningful Change · pp header must meet12px source/unit floor; preserve raw percentages/change counts, stable sorting, 40px rows, chart and all evidence identities."
+    },
+    {
+      "id": "f02-r3-macro-light-unit-header-floor-20261104-01",
+      "board": "macro-light",
+      "tool": "update_styles",
+      "targets": [
+        "53Y-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:09:43.116Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 same-scope unit audit: meaningful Change · pp header must meet12px source/unit floor; preserve raw percentages/change counts, stable sorting, 40px rows, chart and all evidence identities."
+    },
+    {
+      "id": "f02-r3-options-dark-time-zone-header-floor-20261104-01",
+      "board": "options-dark",
+      "tool": "update_styles",
+      "targets": [
+        "5XQ-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:10:39.868Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 exact R2 affected report includes Time · ET: preserve essential time-zone meaning at12px/18px source/unit floor; only the existing header text node changes; row values, IDs, density and numeric edges remain unchanged."
+    },
+    {
+      "id": "f02-r3-options-light-time-zone-header-floor-20261104-01",
+      "board": "options-light",
+      "tool": "update_styles",
+      "targets": [
+        "6HN-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "body_read_guard_snapshot": "1597b467b5eebed4dfe6bbfdb74caab770e8b78e8b8794fccbb9c034fa82c873",
+      "completed_at": "2026-11-04T02:10:54.956Z",
+      "token_hashes": [
+        "356191c3"
+      ],
+      "source_input": "Historical NVTC-004 exact R2 affected report includes Time · ET: preserve essential time-zone meaning at12px/18px source/unit floor; only the existing header text node changes; row values, IDs, density and numeric edges remain unchanged."
+    }
+  ],
+  "preserved_affected_reports": [
+    {
+      "path": "paper/reviews/native-product-r2-affected-pass.md",
+      "sha256": "5326c4f1dd86cd2c97c5b2a18ed893f76fd03f523f5f073dc962803da5388e76"
+    },
+    {
+      "path": "paper/reviews/native-taste-r2-affected-pass.md",
+      "sha256": "2432399d20757421175676dc4a7690c5605f39f7ce5ccf16b9ea896777cfed58"
+    }
+  ],
+  "export_diff_validation": "All four exports equal prior bytes with only eight targeted fontSize11→12 and lineHeight16→18 substitutions. Text, raw values, node IDs, row geometry, sort, evidence and owners unchanged.",
+  "author_visual_observation": "Actual post-edit four full captures inspected; headers fit with unchanged table density and aligned numeric lanes. Independent affected followup pending.",
+  "unchanged_full_board_pairs": 27,
+  "original_chinese_comparison": "EXCLUDED_EFFECT_UNKNOWN",
+  "runtime_proof": "NOT_RUN",
+  "approval": false
+}

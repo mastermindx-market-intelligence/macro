@@ -1,0 +1,86 @@
+{
+  "schema": "f02.final-owner-coordination.v1",
+  "observed_at": "2026-11-04T02:41:02.790Z",
+  "source_commit": "013fdd72e6a387c6121df84082ce1e6c2201d336",
+  "native_review_commit": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f",
+  "source_publication_readback": [
+    {
+      "canonical_ref": "013fdd72e6a387c6121df84082ce1e6c2201d336",
+      "verified_in_prior_read": true
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/SESSION_RETURNS.md",
+      "sha": "b1786dce398f8e8260f0ac96e9dd0282d3340f40",
+      "verified": true
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/SOURCE_AND_DATA_CONTRACT.md",
+      "sha": "ad72c81f2422621a8cf4bf7405ca768719459814",
+      "verified": true
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/F01_RESIZE_FOCUS_RESPONSE.md",
+      "sha": "76ffd9adee60a87d74c2a2a78b72c9fcaf604eff",
+      "verified": true
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/paper/reviews/SCOPED_REVIEW_ADJUDICATION_20261104.md",
+      "sha": "496acf4060ab5ae1613cb79e39afd4c2361b5da7",
+      "verified": true
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/artifact-index.json",
+      "sha": "ca6fb4c7aee6fff7c7a8061aff110e0bad4da35d",
+      "verified": true
+    }
+  ],
+  "f01_resize_response": {
+    "id": 6621051326,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6621051326",
+    "author": "mastermindx-2",
+    "created_at": "2026-11-04T02:39:11Z",
+    "body": "### F02 owner response — F01-RESIZE-FOCUS/0.1\n\nF02 **concurs with the two focus-dependent branches as a proposal for the next joint candidate**. The existing [candidate.4 source-policy concurrence6620137809](https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6620137809) and candidate.2 geometry remain preserved. **Candidate.4 stays operative** until F01 publishes the new version and obtains affected-owner responses; this comment is not a joint release or independent acceptance.\n\nExact input: F01 `abfecf1efc452383fe720cb3ea2016ad8d7088e0`, proposal blob `c5fcb502746843d10ce422ce3c1e35fcc1112a7f`. [Concrete F02 response](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/F01_RESIZE_FOCUS_RESPONSE.md), [handshake](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md), and [latest readback](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/paper/reviews/f01-latest-source-readback-20261104.json) are published at **`013fdd72e6a387c6121df84082ce1e6c2201d336`**. Current whole contract blob is `653d93bbce70a2515d677ecdb76bb21edfab750c`; **§§2–5** match8926, while §6/status changed. Actual review5760649569 remains bound to its reviewed source and does not approve this later proposal, conformance or implementation.\n\n| Established focus before passive dock-eligibility loss | F02 component response |\n| --- | --- |\n| Inspector legitimately owns focus | Adapt the **same inspector** to modal. Retain valid identity, disclosure, scroll and logical control; use the named in-inspector fallback if that control disappeared. One trap/inert/active-Escape owner. |\n| User deliberately focused the primary task | Suspend **presentation**, release reserved width and preserve that valid outside focus plus selection/return anchor. Provide a visible, accessible explicit Reopen evidence action through the existing trigger. No hidden modal. |\n\nCapture ownership **before** hide/detach/inertness; BODY afterward does not establish deliberate departure. Growing or oscillating width while suspended must not reopen evidence or change navigation preference. Explicit reopen revalidates identity/access/source generation through existing domain owners. Modal→dock retains valid in-inspector focus/context while releasing trap/inertness/scroll lock; placement adaptation does not return focus to the outside trigger merely because placement changed. Dismissal has its separate conditional return contract.\n\nAnother modal or unknown ownership remains existing shared-layer arbitration, with the ambiguous automatic transition held. No second modal, stale callback, hidden focus, surprise opening or indefinitely invalid-width dock is accepted by this response; the unresolved owner branch still needs qualification. Brain Close/Stop, conditional onClose, visible lifecycle, pending request/save outcomes, exact historical Ask and the D06 reader/plot exception remain unchanged. No second inspector, store, event bus, lifecycle or cancellation semantics are introduced.\n\nThe response supplies **four exact successor source clarifications** (SYSTEM §6 overlay fallback; EvidenceInspector closure versus adaptation; INTERACTION_STATES recoverable suspension; handshake responsive row) and discriminating facets for **existing N07/N10/N11/G07**. No cases are marked passed. F01 owns composition/reopen/arbitration; F02 anatomy/a11y; D07/D08 and adopting domains identity/trigger/context; D06 its focused reader; Brain/D14 and host their lifecycle/request contracts. Please bind the new candidate's exact delta and affected responses before adoption.\n\nF02's R3 native subset is separately reviewed: input32ea8d5,89members,31full pairs; both final C3 Product/Taste followups PASS the eight-header correction, overall PASS_WITH_CONDITIONS. [Adjudication](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/paper/reviews/SCOPED_REVIEW_ADJUDICATION_20261104.md). This supplies no full32/native/runtime/formal/joint acceptance. Original F02 Chinese effect and F01 state-8/Readme holds remain on their original carriers. **All held PR lifecycle/release constraints remain.**",
+    "readback_exact": true,
+    "preceding_candidate4_response": 6620137809,
+    "proposal_at_response": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
+    "proposal_blob": "c5fcb502746843d10ce422ce3c1e35fcc1112a7f",
+    "candidate4_stays_operative": true
+  },
+  "affected_source_review": {
+    "existing_request_comment": 6620018694,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6620018694",
+    "updated_at": "2026-11-04T02:39:19Z",
+    "body": "### F02 — affected source/handoff recheck on the existing review\n\n@mastermindxryan Your actual [COMMENT review5762038797](https://github.com/mastermindx-market-intelligence/macro/pull/10630#pullrequestreview-5762038797) is received: the source-policy check passes, while PR-wide approval remains withheld. This updates the original request6620018694 after concrete repairs; it is not a duplicate commission.\n\n**Affected source input: `013fdd72e6a387c6121df84082ce1e6c2201d336`.** Please recheck the two integration findings and the final scoped handoff:\n\n1. **Parent-owned return ledger:** reconciled against programme #10617 exact head `da8df94d647f06b34e5a7a743f147980e627e854`, parent blob `cb204845be2870986904b9cc03148b3fe935809c`. All **10 verified returns** (including the later D05 return) and every non-F02 line are preserved byte for byte; only F02's row differs from that exact parent. Reconciled blob `b1786dce398f8e8260f0ac96e9dd0282d3340f40`. [Existing shared path](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/SESSION_RETURNS.md) · [exact-parent one-row diff](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/paper/reviews/shared-ledger-exact-parent-diff-20261104.patch) · [receipt](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/paper/reviews/shared-ledger-reconciliation-20261104.json). The parent branch was not modified; preserve subsequent parent changes before eventual integration.\n2. **Historical source status:** [SOURCE_AND_DATA_CONTRACT](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/SOURCE_AND_DATA_CONTRACT.md) now leads with the actual **650 dispatches /649 observed applies /one original unknown**,32 boards/31 full pairs. The435-dispatch pause is explicitly dated superseded history. Section2 onward is unchanged by this navigation correction; [receipt](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/paper/reviews/source-status-history-correction-20261104.json).\n3. **Final evidence and F01 response:** [adjudication](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/paper/reviews/SCOPED_REVIEW_ADJUDICATION_20261104.md), [current return/gates](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/RETURN_F02.md), [handshake](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md), and [prospective resize/focus response](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/F01_RESIZE_FOCUS_RESPONSE.md). Candidate.2 geometry and the existing candidate.4 concurrence remain intact. At F01abfecf1 only §§2–5 equality is carried; review5760649569 is not extended to the later proposal/conformance/code. F02 supports the two focus-dependent branches for a versioned successor; candidate.4 remains operative pending adoption and affected responses.\n\n**Native review completed in its stated scope.** R3 input is **`32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f`**,89members, aggregate **`280483a1f8e2f9c005381ddf051265d59d3fa2df904b42ccb75eab094fdbf6a4`**. Both independent C3 Product/Taste final followups **PASS** the eight unit/time-zone headers; the31-board reference remains **PASS_WITH_CONDITIONS**. All six reports, original BLOCK/rationale history and frozen inputs are preserved. These are not admitted Opus/RIG or design-authority receipts. No new native mutation was performed for this source correction.\n\n**Existing-owner facts still needed for formal review:** [actionability assessment](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/paper/reviews/formal-route-actionability-20261104.md) and [concrete handoff](https://github.com/mastermindx-market-intelligence/macro/blob/013fdd72e6a387c6121df84082ce1e6c2201d336/research/design_candidates/production_design_20261102/f02/paper/FORMAL_REVIEW_INPUT_HANDOFF.md) identify the missing real F02-owning WS/department and trusted admission binding (or already-admitted original Fabric lineage), real reference/surface and applicable predecessor, two distinct qualified reviewer seats and designated design authority. Please supply or route these facts through the existing owner. Session-driven RIG remains permitted; no new umbrella workstream, dummy surface, fabricated root/grant or duplicate reviewer was created.\n\n**Original Paper custody remains an independent critical gate.** Current F02 receiver retains recovery for `f02-c2-macro-light-zh-390-chart-footer-20261103-01`, original Mastermind Paper direct carrier, file `01M312VSDSZFVT45674GDVJVZN`, board `7IS-0`, body `7J4-0`. The existing integration owner must supply the original terminal receipt or documented canonical reconciliation. Same-carrier node absence is not failure proof. No retry, reroute, equivalent replacement or automatic resume was performed. After reconciliation F02 can finish only actually missing Chinese work and obtain full-set review.\n\nPlease return the bounded affected review against this exact source input with remaining conditions explicit. **Draft/HOLD stays; no merge, Ready/un-draft, enqueue, relabel, deployment or full joint-v1 acceptance.**",
+    "readback_exact": true,
+    "prior_actual_review": 5762038797,
+    "requested_reviewers": [
+      "mastermindxryan"
+    ],
+    "new_commission": false,
+    "approval": false,
+    "status": "AFFECTED_REREVIEW_REQUEST_DELIVERED_AND_REQUESTED"
+  },
+  "pr_body": {
+    "only_mutated_field": "body",
+    "readback_exact": true,
+    "head": "013fdd72e6a387c6121df84082ce1e6c2201d336",
+    "draft": true,
+    "state": "open",
+    "labels": [],
+    "auto_merge": null
+  },
+  "parent_ledger_base": "da8df94d647f06b34e5a7a743f147980e627e854",
+  "paper_effects": {
+    "new_mutations": 0,
+    "held_original_operation": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+    "retry": false,
+    "reroute": false,
+    "replacement": false
+  },
+  "formal_review": {
+    "status": "MISSING_ESTABLISHED_ADMISSION_IDENTITY_AND_AUTHORITY",
+    "worker_dispatched": false,
+    "missing_inputs_requested_in_existing_owner_coordination": true
+  },
+  "boundary": "Publication and message/request delivery are observed. No new reviewer result, formal admission/START, full native/runtime acceptance or release is inferred."
+}

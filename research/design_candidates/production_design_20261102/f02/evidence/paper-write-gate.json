@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-11-03T01:24:00Z",
+  "carrier": "Studio Direct C2 Personal",
+  "fileId": "01M312VSDSZFVT45674GDVJVZN",
+  "write_schema": {
+    "server_name": "paper-desktop",
+    "server_version": "0.5.18",
+    "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+    "accepted_for_write": false,
+    "expected_server": [
+      "paper-desktop",
+      null
+    ],
+    "server_name_compatible": true,
+    "server_version_compatible": true,
+    "server_version_policy": "OBSERVED_NOT_PINNED",
+    "catalog_compatible": false,
+    "expected_catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db"
+  },
+  "mutations_dispatched": 0,
+  "observation_time_precision": "approximate minute from session chronology; not a Paper revision"
+}

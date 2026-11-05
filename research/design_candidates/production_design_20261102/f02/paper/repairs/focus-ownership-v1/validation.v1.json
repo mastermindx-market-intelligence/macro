@@ -1,0 +1,100 @@
+{
+  "schema": "f02.paper.focus-ownership-source-validation.v1",
+  "status": "PASS_SOURCE_ONLY_NATIVE_UNAPPLIED",
+  "rules": 13,
+  "native_targets": 8,
+  "source_variant_overrides": 23,
+  "unique_board_steps": 17,
+  "existing_steps": 8,
+  "unbuilt_steps": 9,
+  "all_expected_native_texts_match_current_exports": true,
+  "native_node_ids_guessed": 0,
+  "tags_styles_names_other_attributes_preserved": true,
+  "all_unlisted_text_preserved": true,
+  "numeric_alignment_and_values_preserved": true,
+  "input_files_unchanged": true,
+  "source_paths_and_hashes": {
+    "repairs/fixture-coherence-v1/effective-spaced/foundation-boards.json": "0317a5e6191cde338ab5677342bec8d7eb80bae02358fef5c5cce41eb6efba71",
+    "repairs/observation-identity-clocks-v1/effective/consumer-boards.json": "50238ddb0555f819820d3ee5eeb8e4d78dd33040a02883f4d93c3eb83119510c",
+    "repairs/fixture-coherence-v1/effective-spaced/core-supplement-inputs.json": "319604bdcc34be7ba21dfdb7812b16f81266fc451adc9d2ec10c528c08b95c40",
+    "repairs/responsive-effective-v2/effective/mobile-state-boards.json": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a",
+    "repairs/responsive-effective-v2/effective/supplemental-boards.json": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f",
+    "repairs/responsive-effective-v2/pending-responsive-boards.v2.json": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8",
+    "repairs/consumer-companions-v1/consumer-companion-inputs.v1.json": "0e14cb644787ab055f9cb089e40d6f57d4d74735abc6c77a71ed778ee46c294b"
+  },
+  "clone_step_pairs": 43,
+  "clone_summary_unchanged": {
+    "elements": 180,
+    "text_changes": 4,
+    "style_targets": 71,
+    "style_properties": 71,
+    "layer_renames": 0,
+    "svg_attribute_targets": 15,
+    "svg_attribute_changes": 20,
+    "vector_subtrees": 1,
+    "unchanged_steps": 20
+  },
+  "modal_subtree_steps": 10,
+  "modal_subtree_equal_after_focus": true,
+  "chinese_return_row_unchanged_and_equal": true,
+  "modified_wide_step_keys": [
+    "dock-contract"
+  ],
+  "modified_modal_subtree_step_keys": [
+    "overlay-contract"
+  ],
+  "unbuilt_board_steps": [
+    {
+      "board_key": "company-fy2025-eps-evidence-390",
+      "step_key": "build-contract"
+    },
+    {
+      "board_key": "editorial-calculation-evidence-390",
+      "step_key": "build-contract"
+    },
+    {
+      "board_key": "macro-docked-1280",
+      "step_key": "dock-contract"
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "step_key": "build-note"
+    },
+    {
+      "board_key": "macro-zh-evidence-return-390",
+      "step_key": "modal-contract"
+    },
+    {
+      "board_key": "macro-zh-evidence-return-390",
+      "step_key": "return-state"
+    },
+    {
+      "board_key": "width-1024-overlay",
+      "step_key": "overlay-contract"
+    },
+    {
+      "board_key": "width-1600-docked",
+      "step_key": "dock-contract"
+    },
+    {
+      "board_key": "width-768-overlay",
+      "step_key": "overlay-contract"
+    }
+  ],
+  "outputs": {
+    "source-overrides.v1.json": "402d79b590aa7dc914f8668ba18879ee91891fd779cd720f64bc95f232013b0d",
+    "native-text-patch.v1.json": "d4930215a3f25218de561389cf8574ef1c15c97377aefdde932cb05c6b98bf2c",
+    "effective/mobile-state-boards.json": "9dfeb781a0f7b579f3a7974def0a2fa8689fe3702a32462920c74a8fad93c4a9",
+    "effective/supplemental-boards.json": "c9a77c382cb7bf6e4c8a7656483087e4a16c89d5d8fd0b7ecbca1d4e3fd25729",
+    "effective/supplemental-wide-clone.json": "a790e1fe770240e937010c900545176684ff126c24bfa75abe6bde1152d74d2f",
+    "subtree-reuse.v1.json": "c1231f35a519f18a3c31914f4a77600471fa56710e4341c5ed3aa91c0a5ad43f",
+    "pending-responsive-boards.v1.json": "57cb780739b3b659bb28392aecf20f109ecfdf4c9248aa218827321008ac5a19"
+  },
+  "limits": [
+    "No Paper edit/read, screenshot or browser call performed by this preparer.",
+    "Root owns fresh guarded application and actual visual review.",
+    "Original Chinese390 unknown effect remains held.",
+    "These checks do not assert runtime focus ownership, Brain lifecycle, historical Ask attachment, RIG or release."
+  ],
+  "provenance_relative_reference_rebased": "The inherited responsive_alignment_composition.composition_record now resolves to ../../responsive-effective-v2/composition.v2.json from the new effective folder. No source HTML changed."
+}

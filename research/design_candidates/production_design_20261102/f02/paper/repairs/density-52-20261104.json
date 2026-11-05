@@ -1,0 +1,12 @@
+{
+  "schema": "f02.native-density-amendment.v1",
+  "board": "foundations",
+  "board_id": "48W-0",
+  "text_node": "4DK-0",
+  "before": "Dense 40px · Comfortable 48px · Mobile ≥52px",
+  "after": "Dense 40px · Comfortable 52px · Phone rows ≥48px",
+  "operation_id": "f02-c2-foundations-density-20261104-01",
+  "native_status": "APPLIED_RESPONSE_OBSERVED",
+  "source_authority": "SYSTEM_CONTRACT.md spacing; consumer-companions-v1 density 40/52",
+  "preserved": "Original preparation packets retain their historical bytes. Apply this narrow later amendment when composing the current candidate; never replay its operation ID."
+}

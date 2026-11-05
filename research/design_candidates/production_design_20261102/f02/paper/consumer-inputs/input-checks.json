@@ -1,0 +1,73 @@
+{
+  "schema": "f02.paper.native-input-check.v1",
+  "checks": [
+    {
+      "board": "macro-dark",
+      "steps": 49,
+      "native_html_groups": 49,
+      "svg_groups": 1,
+      "max_step_chars": 3924
+    },
+    {
+      "board": "macro-light",
+      "steps": 49,
+      "native_html_groups": 49,
+      "svg_groups": 1,
+      "max_step_chars": 3503
+    },
+    {
+      "board": "company-dark",
+      "steps": 31,
+      "native_html_groups": 31,
+      "svg_groups": 1,
+      "max_step_chars": 9585
+    },
+    {
+      "board": "company-light",
+      "steps": 31,
+      "native_html_groups": 31,
+      "svg_groups": 1,
+      "max_step_chars": 8968
+    },
+    {
+      "board": "options-dark",
+      "steps": 34,
+      "native_html_groups": 34,
+      "svg_groups": 1,
+      "max_step_chars": 3534
+    },
+    {
+      "board": "options-light",
+      "steps": 34,
+      "native_html_groups": 34,
+      "svg_groups": 1,
+      "max_step_chars": 3332
+    },
+    {
+      "board": "editorial-dark",
+      "steps": 32,
+      "native_html_groups": 32,
+      "svg_groups": 0,
+      "max_step_chars": 1571
+    },
+    {
+      "board": "editorial-light",
+      "steps": 32,
+      "native_html_groups": 32,
+      "svg_groups": 0,
+      "max_step_chars": 1520
+    }
+  ],
+  "data_counts": {
+    "macro_sectors": 10,
+    "company_periods": 17,
+    "company_series": 5,
+    "company_values": 85,
+    "company_recent_periods": 5,
+    "company_rows": 9,
+    "option_prints": 12,
+    "option_premium_total": 4544000
+  },
+  "paper_verified": false,
+  "browser_verified": false
+}

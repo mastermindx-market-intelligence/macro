@@ -1,0 +1,32 @@
+{
+  "schema": "f02.company-value-focus-static-v1",
+  "status": "PASS_STATIC_ONLY",
+  "date_utc": "2026-11-04",
+  "design_pr": 10630,
+  "source": "f02/pattern-lab.html",
+  "regression_test": "f02/tests/focus-400pct-static.cjs",
+  "command": "node f02/tests/focus-400pct-static.cjs",
+  "result": "PASS",
+  "scenario": {
+    "physical_viewport_px": 1280,
+    "zoom_percent": 400,
+    "css_layout_viewport_px": 320,
+    "prior_sticky_metric_column_min_width_px": 200
+  },
+  "observed_source_invariants": [
+    "At CSS viewport <= 600px, comparison metric identity column position is static (not sticky).",
+    "Comparison scroll container has 12px leading scroll padding at <=600px; 188px on wider displays.",
+    "Evidence triggers carry 4px inline scroll margin.",
+    "Dismissal focus restoration uses focus({preventScroll:true}) followed by scrollIntoView({block:'nearest',inline:'nearest'}).",
+    "Inline specimen JavaScript passes syntax parse."
+  ],
+  "tested_css_viewports_px": [
+    320,
+    360,
+    480,
+    600
+  ],
+  "visibility_claim": "Structural CSS source proof only; actual 400% browser rendering, focus outline and geometry not measured.",
+  "browser_proof": "NOT_VERIFIED_BROWSER_OPEN_DENIED_BY_POLICY",
+  "release_status": "DRAFT_HOLD; not a production/visual acceptance"
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "f02.parent-owned-ledger-reconciliation.v1",
+  "observed_at": "2026-11-04T02:21:32.875233+00:00",
+  "review_id": 5762038797,
+  "parent_pr": 10617,
+  "parent_branch": "design/paper-production-audit-20261102-ryan",
+  "exact_parent_commit": "da8df94d647f06b34e5a7a743f147980e627e854",
+  "path": "research/design_candidates/production_design_20261102/SESSION_RETURNS.md",
+  "parent_blob": "cb204845be2870986904b9cc03148b3fe935809c",
+  "parent_sha256": "ebb81a362f16efdff56fc60b775aba19e92c74863fe662fd51b00c6fa614eac5",
+  "previous_f02_branch_blob": "d0b7a982e169101a57252e3427f3aef5243c23f4",
+  "reconciled_blob": "b1786dce398f8e8260f0ac96e9dd0282d3340f40",
+  "reconciled_sha256": "59492ec1e3896d206229b58c38cb0dd7d90959cefcf5b7dda7e8be706f7964a8",
+  "verified_parent_returns_preserved": [
+    "P00",
+    "F01",
+    "F02",
+    "F03",
+    "D02",
+    "D03",
+    "D05",
+    "D06",
+    "D07",
+    "D08"
+  ],
+  "non_f02_verified_rows_preserved": 9,
+  "all_non_f02_lines_byte_identical_to_parent": true,
+  "only_intentional_delta_from_exact_parent": "F02 row; actual current scoped evidence and remaining gates",
+  "integration_patch": "paper/reviews/shared-ledger-exact-parent-diff-20261104.patch",
+  "parent_branch_mutated": false,
+  "release_action": false,
+  "required_next": "Affected non-author verification of this exact-parent delta; preserve any later parent changes before actual integration."
+}
