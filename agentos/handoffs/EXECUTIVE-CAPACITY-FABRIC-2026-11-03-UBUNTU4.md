@@ -49,11 +49,19 @@ verified:
   command: Read native-code-releases/CURRENT.json; installed ext/host_pick.py --mode grok --json without refresh
   result: Sequence 30, generation 9691fff17648c82b09152ba285d620abf0fd12d10a9530a7abae0cd1ab96238b; ineligible due
     explicit-canary-only, ssh_unreachable and missing physical metrics. All seven modes held.
-- claim: The current paid audit is running on its original Ubuntu3 carrier, not on Ubuntu4.
-  command: fabric_controller_output PID 72153; bounded original-run process observation through mmx-ubuntu3
-  result: Run u4-source-integration-audit-20261105-c3-a; root ubuntu4-fabric-hardening-20261023; parent ubuntu4-fabric-integration-20261103-c3;
-    glm-5.3-flash; remote executor PID 391097 and provider PID 391157 observed with owned descendants. Result/settlement/acceptance
-    pending; original stdout empty and rc absent at observation.
+- claim: The one original Ubuntu3 paid source audit is terminal and accepted as useful source evidence.
+  command: fabric_status; complete paged fabric_result; byte comparison against published 61562fa1; fabric_accept(by=reviewer,
+    verification_summary=manual_result_review)
+  result: Run u4-source-integration-audit-20261105-c3-a, root ubuntu4-fabric-hardening-20261023, parent ubuntu4-fabric-integration-20261103-c3
+    returned rc0 and 9344 response bytes. Accepted complete digest e9aa6aa99c00bebb6969496f68f66964284c0d1191faf12e91bb6615634223f8.
+    Audited 3aa5f98a plus f374289e; current runtime matches after only CLI help-text normalization. Its historical-fixture
+    findings are repaired in 61562fa1. This is not formal GitHub approval, exact-head hosted CI or Ubuntu4 acceptance.
+- claim: The records publication uncertainty was reconciled on the same original carrier.
+  command: GitHub GET macro/git/ref/heads/sol/web-ubuntu4-fabric-integration-20261103-c3; studio_git_publish_status(repository=macro,
+    operation_id=ubuntu4-fabric-integration-20261103-c3)
+  result: Push initially returned EFFECT_UNKNOWN; without retry, GitHub and the original publisher both read back
+    local/remote 184fe932203cee530264fe059cd634c90a684147, clean, publication_state APPLIED. The containing follow-up
+    records the subsequently accepted audit.
 unverified:
 - claim: Ubuntu4 has accepted hardware integrity, reachability and provider enrollment.
   what_would_verify: Local-console recovery, then stable trusted-byte/Git/process-health checks, fresh placement
@@ -72,19 +80,12 @@ unresolved:
   Preserve it and forensic artifacts; revalidate after hardware recovery instead of recloning.
 - Hosted CI 41992252219 is queued at this checkpoint; local controller/security failures remain unqualified, not
   excused. Three Linux-only cases are not proven by the Mac run.
-- The one original paid audit is running; consume its full retained response and reconcile its audited snapshot
-  before acceptance. It initially audited 3aa5f98a versus f374289e, not the later integration by implication.
-- The records publisher status returned TYPED_GIT_PRECHECK_REFUSED / NOT_APPLIED again. The old local 4930edd7 descendant
-  was preserved; use only the same original publication owner for the new records revision. Never infer a push from
-  a local commit.
 next_actions:
 - 'Primary host action: a person at Ubuntu4 observes the existing console and any diagnostic state, then restores
   the approved remote connection without replaying unknown tests. The current assigned session owns subsequent safe
   integrity validation.'
 - 'Independent source action: consume exact-head Mastermind CI 41992252219; fix actual candidate defects in PR #2008
   while preserving Draft and existing review/release controls.'
-- Consume the existing audit run through fabric_result(root_id=ubuntu4-fabric-hardening-20261023, run_id=u4-source-integration-audit-20261105-c3-a);
-  verify complete bytes before fabric_accept. Do not launch a replacement.
 - After hardware recovery, complete legitimate enrollment and accepted native installation, then one distinct first-worker
   qualification, narrow provider promotion, normal placement and real repository/session acceptance.
 do_not_redo:
@@ -96,8 +97,8 @@ do_not_redo:
 - Do not reclone/delete the existing Ubuntu4 Macro donor or forensic artifacts.
 - Do not change deadlines, strict stderr guards, historical expected hashes, provider holds, leases or native release
   selection to manufacture readiness.
-- Do not redo the verified 102-member closure and passing fixture repairs unless relevant source changes. Preserve
-  existing test evidence and original running audit custody.
+- Do not redo the verified 102-member closure or passing fixture repairs unless relevant source changes. The current
+  audit u4-source-integration-audit-20261105-c3-a is terminal and accepted; do not relaunch or reuse it.
 danger_areas:
 - Earlier physical-readiness and missing-donor claims are superseded by later incident and installation evidence;
   they are not current readiness.
@@ -128,7 +129,7 @@ This proposed record stays on existing Macro PR #10661 and does not advance Exec
 ## §1 What is left — in order
 
 1. At Ubuntu4's local console, observe its boot/login/error state and reconcile any running or prior diagnostics. Restore the existing approved remote connection. Then the assigned session must validate integrity and fresh physical eligibility.
-2. In parallel, consume [exact-head CI](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41992252219) and the original paid audit. Repair real source failures on the existing branch; keep current Draft/release controls.
+2. In parallel, consume [exact-head CI](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41992252219). The original paid audit is terminal and accepted. Repair real source failures on the existing branch; keep current Draft/release controls.
 3. Complete legitimate host-local enrollment and accepted native installation. Prove a distinct supported first worker, useful result, settled lease and same-parent acceptance before lifting only that provider hold.
 4. Prove ordinary automatic placement and a real exact-commit repository/session task using the preserved host-local donor.
 
@@ -144,13 +145,15 @@ Mastermind workspace:
 Records workspace:
 `/Volumes/Mastermind/agent-workspaces/macro/web/ubuntu4-fabric-integration-20261103-c3`.
 Both use the same existing branch and operation. Preserve ignored/untracked evidence.
-A records publisher precheck timeout is not a successful push; require same-owner publication/readback.
+A publisher timeout is not evidence of absence: this push returned uncertainty, then the same owner and GitHub both proved APPLIED without a retry.
 
 Paid audit: `u4-source-integration-audit-20261105-c3-a`, root
 `ubuntu4-fabric-hardening-20261023`, parent `ubuntu4-fabric-integration-20261103-c3`,
-controller PID 72153, Ubuntu3/GLM. The original worker was observed running; its result is still owed.
-No new audit or provider task should replace it. Accepted old reviews remain history and do not approve
-the current integration by implication.
+controller PID 72153, Ubuntu3/GLM. The worker returned rc0; the complete 9344-byte response was
+reviewed and accepted with digest `e9aa6aa99c00bebb6969496f68f66964284c0d1191faf12e91bb6615634223f8`.
+The three runtime members match the audited integration after only help-text normalization; its fixture
+findings are repaired in the published source. Do not relaunch this terminal audit or treat its prototype
+tests as current-head hosted CI, formal approval or live Ubuntu4 acceptance.
 
 ## §3 What was decided and found
 
