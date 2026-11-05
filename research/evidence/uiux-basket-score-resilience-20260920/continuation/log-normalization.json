@@ -1,0 +1,20 @@
+[
+  {
+    "path": "basket-final-tests.log",
+    "raw_sha256": "c14e398d058f1e7ff0cb8fa7b22694efe450378b2738f4274c3103c8de23b75e",
+    "committed_sha256": "c14e398d058f1e7ff0cb8fa7b22694efe450378b2738f4274c3103c8de23b75e",
+    "normalization": "trailing whitespace only; assertions and outcomes unchanged"
+  },
+  {
+    "path": "basket-new-red.log",
+    "raw_sha256": "f1bdd4d35655e46b7baccc1a64f0e2a1199dfe61b8c83accaa5db3021dd49e8e",
+    "committed_sha256": "e3979b7a06ff90c088dc30453b2b71a695f23338ca5a30bc29536f4f3dd22b40",
+    "normalization": "trailing whitespace only; assertions and outcomes unchanged"
+  },
+  {
+    "path": "basket-flow-red.log",
+    "raw_sha256": "d33b628970ab532937a6a0a8c93077d5c80a104f7572722b79a9403dfcd0e6c3",
+    "committed_sha256": "d33b628970ab532937a6a0a8c93077d5c80a104f7572722b79a9403dfcd0e6c3",
+    "normalization": "trailing whitespace only; assertions and outcomes unchanged"
+  }
+]

@@ -1,5 +1,123 @@
 ---
 workstream: WS:CHINA-ALPHA-INTELLIGENCE
+session: macro-backlog-oldest-first-20261105-c3
+model: sol
+ended_because: ci_handoff
+mission: 2026-11-05 records-only qualification of the existing September handoff, preserving its full evidence
+  and original journey without displacing current continuation, relabeling historical tests or restarting uncertain
+  effects.
+state_before: Original PR6990 headbb39cf729451fb5916f74a05377c360a70faaf48 retained this September handoff blob9791926cbc218d75f4c7ab057ae9a10f0b20a74d;
+  the target path was absent at frozen current main. Its active fields mixed historical implementation/test status
+  with continuation instructions, while later workstream and handoff records already existed.
+changed:
+- path: agentos/discoveries/DSC-CN-PROPHET-V4-ORDER-DISABLED-BY-INCOMPLETE-INTELLIGENCE-COVERAGE.md
+  what: Add dated active qualification and preserve the complete original PR6990 blob once as an inert historical
+    archive; no implementation or operational state changes.
+- path: agentos/handoffs/CHINA-ALPHA-INTELLIGENCE-2026-09-08-rotation-member-weekly.md
+  what: Add dated active qualification and preserve the complete original PR6990 blob once as an inert historical
+    archive; no implementation or operational state changes.
+- path: agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-09-b2-return-adjudication.md
+  what: Add dated active qualification and preserve the complete original PR6990 blob once as an inert historical
+    archive; no implementation or operational state changes.
+- path: research/prophet_v4/ROTATION_INTEGRATION_FORENSIC_ASSESSMENT_2026-09-08.md
+  what: Add dated active qualification and preserve the complete original PR6990 blob once as an inert historical
+    archive; no implementation or operational state changes.
+verified:
+- claim: The original handoff is preserved exactly and its workstream identity is retained.
+  command: Retrieve Git blob9791926cbc218d75f4c7ab057ae9a10f0b20a74d from PR6990, compute Git-object SHA1/UTF8
+    byte count, extract the exact marked archive and compare bytes; parse active frontmatter with canonical scripts/agentos.py.
+  result: The 19537-byte original occurs exactly once in the archive. Active workstream remains WS:CHINA-ALPHA-INTELLIGENCE.
+    Current changed entries name only the four actual records, not the old implementation paths.
+- claim: This older suffixed filename cannot displace an existing same-workstream handoff.
+  command: Read existing agentos/handoffs/CHINA-ALPHA-INTELLIGENCE-2026-09-22.md blob58b5d79fe4b884bc153d4ef9edd5b503868642c6;
+    parse its workstream; execute canonical2b1032c0 handoff_rank on both filename stems.
+  result: The original filename ends in a descriptive suffix, so its date rank is empty. The existing bare-dated
+    witness has a nonempty date rank and the same workstream, and therefore ranks higher. This proves non-displacement
+    without identifying the complete store winner.
+- claim: Current workstream routing remains unchanged by this records repair.
+  command: Retrieve agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md blob422c259636ff03791701410a0fb7928479dfb044
+    at reference main457c1cad; compare457c1cad...2fc2987def and construct the candidate from that main tree with
+    exactly four owned additions.
+  result: The intervening commit changes only the marketing outbox status ledger; the existing workstream and
+    reference handoffs are untouched. Their source content is routing evidence, not a fresh runtime or effect-completion
+    observation.
+unverified:
+- claim: Current PR6990 hosted full-store validation, required CI and merge are complete.
+  what_would_verify: Read exact published head and terminal natural required checks, explicit source release and
+    actual merge receipt on original PR6990. Local record checks use a bounded snapshot.
+- claim: Historical implementation, data freshness, test/run status, source custody or product acceptance is current
+    in November.
+  what_would_verify: Fresh authorized evidence from the current owner and original carrier, preserving real live
+    writers, denials and unknown effects. This four-record qualification does not perform those operations.
+unresolved:
+- The September8 first new-regression exit remains unknown; later received tests are separate evidence.
+- Historical Source Continuity refusal and browser/served-product gaps remain dated evidence to reconcile only
+  when the current original-carrier task needs them.
+- 'Current China CIE/dashboard and #6871 work retain their separate owners and do not automatically close the
+  weekly-member journey.'
+next_actions:
+- The assigned receiver starts from current agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md and its existing
+  later owner routes, not from archived September commands. Reconcile any necessary source/effect state on its
+  original carrier before advancing a separately authorized product slice.
+- Complete the original PR6990 records publication, natural required CI and explicit records release. Retain exact
+  original filenames and all nonowned main-tree content.
+- Keep historical unknown/denied operations and later received evidence separate. Do not infer execution absence,
+  replay permission, product completion or trade authority from this archive.
+do_not_redo:
+- Do not rerun the historical market diagnosis, old tests, terminal diagnostic reviewers or already protected
+  source operations merely to refresh this record.
+- Do not take over, reset, clean or move old source workspaces, reroute denied operations or replay an unresolved
+  effect through another account, host or carrier.
+- Do not rewrite current workstreams, promote this filename to November, repair the selector or create another
+  lifecycle, identity, data, evidence or publication plane.
+danger_areas:
+- Source publication, hosted planning, test execution, source protection, natural output, browser proof and product
+  acceptance are separate facts.
+- The current workstream can explicitly route to a later suffixed handoff without that filename being the compiler
+  automatic winner. Only bounded non-displacement is proven here.
+- Archived imperative wording, historical protected-law pins and old original-writer instructions are evidence,
+  not current authority or an orphaned-owner waiting requirement.
+prs:
+- 6990
+---
+
+# China weekly-member history — November records qualification
+
+This is the November 5 records qualification authorized in [the original-carrier recovery brief](https://github.com/mastermindx-market-intelligence/Macro/pull/6990#issuecomment-6664714301). It changes only four historical records. No market dataset, code, test, workstream, generated context or operational state is changed. Original source and effect owners remain on their existing carriers; denied or uncertain operations are not retried or relabeled complete. Current release/CI/merge truth belongs to PR6990, not to an archived September status.
+
+## Dated weekly-member evidence
+
+The September8 source snapshot had 3,522 member occurrences with upstream `ret_5d`; occurrences
+are not unique stocks. The original first regression process returned no PID or exit and stays
+unknown. Later received source/test evidence does not settle that earlier effect.
+
+The archive separately records #7023 publication at `fb6ac722ccce1e96b87b71c983b3fff8132dc19c`,
+55 original event tests plus 28 new owning cases in distinct processes, and a real frozen-cache
+pipeline ending September4: 233 groups, 1,856 displayed occurrences, 1,757 supported weekly
+values and 99 honestly unavailable old observations. The builder generated 233 HTML files;
+the full DOM audit was refused, so generation is not accepted browser/production proof.
+Those September receipts are preserved without a November test rerun or a current-state claim.
+
+The original #7023 journey still owns weekly/date/sample display through its existing producer,
+adapter and shared detail component. This record changes none of those seven historical source
+paths, their monthly top-eight ordering, default-region behavior or trade authority.
+
+
+## Current continuation and selection boundary
+
+Current workstream: `agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md` (blob `422c259636ff03791701410a0fb7928479dfb044`).
+Its October3 CIE frontier and separate #6871 custody boundary remain intact. The September22 dashboard/selective-synthesis continuation is a different journey; it does not absorb #7023 weekly-member acceptance or settle its historical effects.
+
+Existing same-workstream witness `agentos/handoffs/CHINA-ALPHA-INTELLIGENCE-2026-09-22.md` has a nonempty date rank. The actual canonical selector matches only a date at the end of the stem; this original suffixed filename has an empty date rank and cannot supersede that witness. No full-store winner claim, filename change or selector repair is made.
+
+## Historical source archive — exact original bytes
+
+The following 19,537 bytes are original blob `9791926cbc218d75f4c7ab057ae9a10f0b20a74d` from PR6990 head `bb39cf729451fb5916f74a05377c360a70faaf48`. Its September observations, historical procedure pins, current/next-action wording and prior permission/transport failures remain dated evidence. They are not November execution instructions or new authority.
+
+<!-- BEGIN ORIGINAL PR6990 china_hnd 9791926cbc218d75f4c7ab057ae9a10f0b20a74d -->
+````markdown
+---
+workstream: WS:CHINA-ALPHA-INTELLIGENCE
 session: claude/china-rotation-member-weekly-20260908-sol-001
 model: sol
 ended_because: blocked
@@ -307,3 +425,5 @@ code-gate-hosted-plan-proof-20260909.json; real-cache-pipeline-proof-20260909.js
 diagnostic-review-20260909.md and its terminal exit. All are under the original
 operation evidence directory. The three existing source documents/records are
 retained rather than replaced by a parallel status store.
+````
+<!-- END ORIGINAL PR6990 china_hnd -->

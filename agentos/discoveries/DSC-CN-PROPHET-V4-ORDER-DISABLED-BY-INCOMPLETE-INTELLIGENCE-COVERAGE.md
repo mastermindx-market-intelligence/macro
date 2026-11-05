@@ -1,5 +1,75 @@
 ---
 key: CN-PROPHET-V4-ORDER-DISABLED-BY-INCOMPLETE-INTELLIGENCE-COVERAGE
+claim: 'Historical, immutable September evidence only: at Macro19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6, the September7
+  cn_prophet_v4 ledger identifies 600038.SS,600606.SS,000069.SZ,603899.SS as raw-ineligible/no_edge_evidence;
+  the inspected builder breadth-cache universe differs from the intelligence search/deep reader inputs. A separate
+  September9 board at Macro34b1a66b0dc01155ca2812c31ce0a2e09114b2fe records1618 measured of1622 ranked rows, 4no_edge_evidence,
+  intel_order_active=false and effective cn_prophet_v3_score. The latter four identities were not separately reverified.
+  These are not current November market, natural-generation, serving or investment-performance observations.'
+falsifier: 'Historical reproduction only, not a new run instruction: git show 19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6:site/factordata/china_standouts.json
+  and the same-pin data/china_prophet_rank/candidates.parquet, filtered to stamp_date2026-09-07 and board_definition
+  cn_prophet_v4, would falsify the first claim if the missing identities, eligibility or input-source availability
+  differ. Inspecting the exact34b1a66b0dc01155ca2812c31ce0a2e09114b2fe board can falsify only the later count/order
+  observation. A later natural generation and authenticated served evidence would be needed to establish present
+  recovery; this qualification does not perform either or promote the September7 names to the later generation.'
+so_what: Use the current WS:CHINA-ALPHA-INTELLIGENCE and WS:PROPHET-US-V4-RECOVERY owner routes. Preserve the
+  historical6992/6866 input-and-safety boundaries and all real writer/effect fences; do not diagnose the original
+  four names again, create another ranker/store, fabricate missing values, drop uncovered rows or infer serving
+  activation from source. This record adopts no source repair or trading authority. Current-state reconciliation
+  belongs to the assigned receiver on the original source carriers, not an old author approval seat.
+kind: data
+verified_at: '2026-09-10'
+verified_by: 'Dated September10 verification retained from original PR#6990 blob a2814ec7c1bcc45262ac7fa4acb7fe8aff3f646b:
+  Read-only git show at Macro19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6; pandas filter of data/china_prophet_rank/candidates.parquet
+  (blob32485ef806c8de4c7af1ece2a4cf0e34287fd482) returned the four rows, each raw_eligible=false, lane=not_raw_eligible,
+  intel_basis=fallback_v3 and intel_unavailable_reason=no_edge_evidence. PyArrow schema and member-index reads
+  found no search columns/rows; git ls-tree found no per-name deep files. Source comparison of builder universe(),
+  CII _trajectories and hub price readers proves the source-universe mismatch. Current source/artifact paths were
+  byte-identical at 3d0703aa0bb473f8a198e8ed579aebf3b08bafa9. Later continuation read the exact September9 China
+  board JSON at34b1a66b0dc01155ca2812c31ce0a2e09114b2fe; SHA256 90093a0dade67f24cca9ca639061580d4f37f7e9fdd220565c09d412d19bebcc.
+  Verified ranking.ordering and ranking.input_coverage.intel_interest, not served order or current candidate identity
+  records. The preceding observations and the word Current in that original evidence describe the September source
+  cut only. November qualification checks retrieved source identities and preserves the original bytes; it does
+  not rerun the historical market observation.'
+scope:
+- macro
+- WS:CHINA-ALPHA-INTELLIGENCE
+- WS:PROPHET-US-V4-RECOVERY
+- engine/china_intel_interest.py
+- scripts/build_china_library.py
+- data/china_prophet_rank/candidates.parquet
+- site/factordata/china_standouts.json
+confidence: verified
+---
+
+# Historical China ordering discovery — November records qualification
+
+This is the November 5 records qualification authorized in [the original-carrier recovery brief](https://github.com/mastermindx-market-intelligence/Macro/pull/6990#issuecomment-6664714301). It changes only four historical records. No market dataset, code, test, workstream, generated context or operational state is changed. Original source and effect owners remain on their existing carriers; denied or uncertain operations are not retried or relabeled complete. Current release/CI/merge truth belongs to PR6990, not to an archived September status.
+
+The September7 four-name diagnosis and September9 four-missing count are distinct observations.
+The newer board did not separately reidentify the four names. Neither observation says the whole
+China feed was stale, nor proves today's ordering or global input coverage.
+
+The original record's September statement that the separate screening-copy operation had no
+product patch/source PR was true of its recorded denied attempt. A November5 GitHub read confirms
+[PR7059](https://github.com/mastermindx-market-intelligence/Macro/pull/7059) now exists, OPEN/DRAFT,
+at `ce330cc68b4c61af12bef7702d0fc27a6fa1d1ee`, on its own three-path carrier. That existence does
+not prove integration, merge or product acceptance, and this records carrier does not adopt it.
+The old permission refusal, queued-run observation and blocked status read remain historical.
+
+Current continuation starts from `agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md` and
+`agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md`. Their present source records and later
+continuations remain unchanged; a historical source fix, review or test count does not close
+the connected rotation/company/entry/management journeys or authorize a trade.
+
+## Historical source archive — exact original bytes
+
+The following 15,988 bytes are original blob `a2814ec7c1bcc45262ac7fa4acb7fe8aff3f646b` from PR6990 head `bb39cf729451fb5916f74a05377c360a70faaf48`. Its September observations, historical procedure pins, current/next-action wording and prior permission/transport failures remain dated evidence. They are not November execution instructions or new authority.
+
+<!-- BEGIN ORIGINAL PR6990 dsc a2814ec7c1bcc45262ac7fa4acb7fe8aff3f646b -->
+````markdown
+---
+key: CN-PROPHET-V4-ORDER-DISABLED-BY-INCOMPLETE-INTELLIGENCE-COVERAGE
 claim: 'The 2026-09-07 cn_prophet_v4 output uses v3_coverage_fallback because four raw-ineligible
   stocks have no_edge_evidence: 600038.SS, 600606.SS, 000069.SZ and 603899.SS. The builder raw universe
   includes a breadth-cache source that the Intelligence search/deep trajectory readers do not consume;
@@ -228,3 +298,5 @@ claim; unverified sandbox review links; and the later statement that no new work
 had occurred. Canonical source/evidence is the existing PR family and this
 record, not those summaries. Native evidence files remain on the authorized Mac
 under exec-prestage-receipts; they are not sandbox download paths.
+````
+<!-- END ORIGINAL PR6990 dsc -->

@@ -1,0 +1,287 @@
+{
+ "R_ci95_block_bootstrap": [
+  0.2580996640383078,
+  0.4043186007926656
+ ],
+ "R_relative_mse_reduction": 0.33524662074890377,
+ "amendment": {
+  "file": "PREREG_AMENDMENT.md",
+  "post_hoc": true,
+  "sha256": "aa6b35a162db04089c77ea014ab5d0d6899af0a2bd521fbff5d8324ea02dd46a"
+ },
+ "as_of_note": "store-first-seen upper bound from git; not a FINRA release time",
+ "as_of_store_upper_bound": "2026-10-06T04:40:36Z",
+ "baseline_reproduction": {
+  "file": "baseline_incumbent_venue_table.json",
+  "n_venues": 20,
+  "note": "incumbent logic reproduced verbatim over all tiers",
+  "week_start": "2026-08-31"
+ },
+ "block_len": 2,
+ "bootstrap_caveat": "7 holdout weeks, block 2: ~4 effective blocks; the percentile CI is coarse and its coverage is not reliable",
+ "brief": "Q09",
+ "cohort_size": 4812,
+ "descriptive": {
+  "ats_decomposition_vs_prior": {
+   "delta": -5.469228912365065e-05,
+   "entry": 0,
+   "exit": 0,
+   "n_common": 33,
+   "n_entry": 0,
+   "n_exit": 0,
+   "within_common": -5.469228912364918e-05
+  },
+  "ats_effective_venues": {
+   "exp_entropy": 17.859484925649724,
+   "inverse_hhi": 13.699040090797421
+  },
+  "ats_excluded_otce_fraction_latest": 0.03909526939617025,
+  "ats_latest": {
+   "category_note": "ATS/non-ATS is a venue/reporting category only; it says nothing about who traded or why",
+   "hhi_lower": 0.0729978154215176,
+   "hhi_upper": 0.0729978154215176,
+   "measure": "venue share concentration (HHI) of reported weekly volume",
+   "n_known_venues": 33,
+   "scope": "descriptive; research only; not a signal",
+   "subject": "ATS venues (mpid), tiers T1+T2, week file 20260831"
+  },
+  "coverage": {
+   "ats_latest": "complete",
+   "ats_prior": "complete",
+   "nonats_latest": "complete",
+   "nonats_prior": "complete",
+   "query_at_store_upper_bound": "2026-10-06T04:40:36Z"
+  },
+  "incumbent_ats_empty_mpid_dropped_fraction_latest_all_tiers": 0.0,
+  "incumbent_mpid_filter_on_nonats_dropped_fraction_all_tiers": 1.0,
+  "nonats_decomposition_vs_prior_known_only": {
+   "delta": -0.009358544502244659,
+   "entry": 4.099546053790818e-11,
+   "exit": 9.792606351007299e-15,
+   "n_common": 42,
+   "n_entry": 1,
+   "n_exit": 1,
+   "within_common": -0.00935854454323034
+  },
+  "nonats_excluded_otce_fraction_latest": 0.28490072199463423,
+  "nonats_latest_separate_bound": {
+   "category_note": "ATS/non-ATS is a venue/reporting category only; it says nothing about who traded or why",
+   "hhi_lower": 0.12205805219592196,
+   "hhi_upper": 0.1876849244417163,
+   "measure": "venue share concentration (HHI) of reported weekly volume",
+   "n_known_venues": 43,
+   "scope": "descriptive; research only; not a signal",
+   "subject": "non-ATS firms (venue_name), tiers T1+T2, week file 20260831"
+  },
+  "nonats_overlap_upper": 0.3305165102914989,
+  "nonats_unknown_share_de_minimis": 0.25617742337254146,
+  "universe": "tiers T1+T2 only (PREREG section 3); OTCE excluded as a different market"
+ },
+ "holdout": {
+  "mse_baseline_latest_snapshot": [
+   0.0009118993606458075,
+   0.0012160954126627197,
+   0.0012303178549453665,
+   0.0015569127110057685,
+   0.0014669208834850046,
+   0.001400547204256225,
+   0.0013692877086337084
+  ],
+  "mse_candidate_shrunk": [
+   0.000858988484403075,
+   0.0008705597557193943,
+   0.0007958938522512574,
+   0.0010530405958476745,
+   0.0008515085894216185,
+   0.000791840500096037,
+   0.0008619786090163293
+  ],
+  "mse_pooled_descriptive": [
+   0.002514535080068124,
+   0.002610128853371959,
+   0.002233136915178192,
+   0.0023458629923845,
+   0.001902067915036041,
+   0.0019144751433865111,
+   0.0018009855971115659
+  ],
+  "n_eval_symbols": [
+   4516,
+   4531,
+   4520,
+   4483,
+   4510,
+   4434,
+   4459
+  ],
+  "weeks": [
+   "20260720",
+   "20260727",
+   "20260803",
+   "20260810",
+   "20260817",
+   "20260824",
+   "20260831"
+  ]
+ },
+ "honest_n_weeks": 7,
+ "lambda_chosen": 1.0,
+ "lambda_inner_mse": {
+  "0.0": 0.00255547346206912,
+  "0.25": 0.0018577077814658255,
+  "0.5": 0.0013613475849562472,
+  "0.75": 0.0010663928725403856,
+  "1.0": 0.0009728436442182407
+ },
+ "missing_input": "FINRA weekly-summary initial-publication/update metadata per (week, tier) and retained multi-vintage snapshots",
+ "n_blocks_effective": 4,
+ "n_boot": 10000,
+ "overall_verdict": "INSUFFICIENT_DATA",
+ "pooled_train_hhi": 0.11334071046721114,
+ "release_identity": {
+  "n_weeks": 21,
+  "n_with_multiple_vintages": 0,
+  "n_with_publisher_release_identity": 0,
+  "n_with_store_first_seen_upper_bound": 7,
+  "revision_claims_supported": false,
+  "vintage_claims_supported": false
+ },
+ "research_only": true,
+ "split": {
+  "forecast_origin_store_clock": "2026-08-23T22:55:42Z",
+  "holdout_weeks": [
+   "20260720",
+   "20260727",
+   "20260803",
+   "20260810",
+   "20260817",
+   "20260824",
+   "20260831"
+  ],
+  "split_respects_store_clock": true,
+  "train_weeks": [
+   "20260413",
+   "20260420",
+   "20260427",
+   "20260504",
+   "20260511",
+   "20260518",
+   "20260525",
+   "20260601",
+   "20260608",
+   "20260615",
+   "20260622",
+   "20260629",
+   "20260706",
+   "20260713"
+  ]
+ },
+ "subresult_descriptive_stability": "KEEP",
+ "support": {
+  "20260413": {
+   "n_eligible": 5018,
+   "n_tickers_rows": 11477,
+   "n_tier_ambiguous_dropped": 1
+  },
+  "20260420": {
+   "n_eligible": 4972,
+   "n_tickers_rows": 11466,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260427": {
+   "n_eligible": 5014,
+   "n_tickers_rows": 11432,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260504": {
+   "n_eligible": 5045,
+   "n_tickers_rows": 11480,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260511": {
+   "n_eligible": 5048,
+   "n_tickers_rows": 11572,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260518": {
+   "n_eligible": 5033,
+   "n_tickers_rows": 11608,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260525": {
+   "n_eligible": 4884,
+   "n_tickers_rows": 11644,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260601": {
+   "n_eligible": 5216,
+   "n_tickers_rows": 11772,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260608": {
+   "n_eligible": 5208,
+   "n_tickers_rows": 11748,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260615": {
+   "n_eligible": 4907,
+   "n_tickers_rows": 11649,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260622": {
+   "n_eligible": 5231,
+   "n_tickers_rows": 11803,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260629": {
+   "n_eligible": 4998,
+   "n_tickers_rows": 11440,
+   "n_tier_ambiguous_dropped": 413
+  },
+  "20260706": {
+   "n_eligible": 5055,
+   "n_tickers_rows": 11923,
+   "n_tier_ambiguous_dropped": 1
+  },
+  "20260713": {
+   "n_eligible": 5021,
+   "n_tickers_rows": 11863,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260720": {
+   "n_eligible": 4966,
+   "n_tickers_rows": 11897,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260727": {
+   "n_eligible": 5032,
+   "n_tickers_rows": 11981,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260803": {
+   "n_eligible": 5059,
+   "n_tickers_rows": 11863,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260810": {
+   "n_eligible": 5038,
+   "n_tickers_rows": 11942,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260817": {
+   "n_eligible": 5106,
+   "n_tickers_rows": 12010,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260824": {
+   "n_eligible": 4981,
+   "n_tickers_rows": 12008,
+   "n_tier_ambiguous_dropped": 0
+  },
+  "20260831": {
+   "n_eligible": 5006,
+   "n_tickers_rows": 12044,
+   "n_tier_ambiguous_dropped": 0
+  }
+ }
+}

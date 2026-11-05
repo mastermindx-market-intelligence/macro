@@ -1,3 +1,54 @@
+# Prophet rotation assessment — dated source qualification
+
+This is the November 5 records qualification authorized in [the original-carrier recovery brief](https://github.com/mastermindx-market-intelligence/Macro/pull/6990#issuecomment-6664714301). It changes only four historical records. No market dataset, code, test, workstream, generated context or operational state is changed. Original source and effect owners remain on their existing carriers; denied or uncertain operations are not retried or relabeled complete. Current release/CI/merge truth belongs to PR6990, not to an archived September status.
+
+## What this assessment establishes
+
+The complete original September8 assessment and September10 continuation are preserved below.
+Their immutable source pins and market-native distinctions remain useful evidence. This is
+a dated diagnostic/recovery assessment, not a new November market census, forecast, trade
+instruction, accepted source implementation or completed four-market product.
+
+| Historical observation | Required interpretation |
+| --- | --- |
+| China September7 four missing identities | `600038.SS`, `600606.SS`, `000069.SZ`, `603899.SS` at `19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6`; raw-ineligible/no-edge evidence, not current identities. |
+| China September9 board | At `34b1a66b0dc01155ca2812c31ce0a2e09114b2fe`, 1,618 measured of 1,622 ranked rows and four missing; those four were not separately reidentified. |
+| US September8 board and September9 individual inputs | Modal underlying price date September4; the 3,038-name price panel is not the 1,592-name ranked board. |
+| US plan chain | 62 buy-array rows → 35 initially admitted → 7 after skips → 7 clock/provenance validation failures → 0 new plans. Initial screening does not mean every later check passed. |
+| HK and Canada | Preserve their dated coverage/missingness and screen authority; legacy buy-array membership is not permission to enter a trade. |
+| Tests, publication and serving | Old baselines, proposals, hosted plans and separate later test receipts retain their actual source/date and limits; none establishes current authenticated production. |
+
+## Current source existence and continuity
+
+The archived denied September screening-copy attempt had no product patch/source PR at its
+recorded stopping point. The November5 read of [PR7059](https://github.com/mastermindx-market-intelligence/Macro/pull/7059)
+confirms an existing OPEN/DRAFT three-path source carrier at
+`ce330cc68b4c61af12bef7702d0fc27a6fa1d1ee`. Its current integration, dependencies, release and
+served proof remain its own obligations; this records repair neither adopts it nor declares it
+complete. The old write/status/browser refusals are retained and are not replayed.
+
+The existing `agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md` and
+`agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md` now contain later routing. They remain
+unchanged. China CIE/dashboard work, #7023 weekly-member data, #6992 input parity, #6996 waiting
+copy, #6840 B2 proposals and later Daily Brief/Return work remain distinct consumers and
+evidence owners. No original journey is declared complete because this report becomes durable.
+
+## Current continuation
+
+The assigned receiver should use those current source owners and reconcile a necessary
+original-carrier effect before new work. The archived recommended sequence is not a launch
+grant, old author approval requirement or instruction to repeat accepted work. Preserve actual
+live writers, denied operations and unknown effects. Protect input truth, market-native clocks,
+missingness and existing strategy/entry/sizing authority; research and sentiment do not originate
+or size trades. Current PR6990 source/CI/release and actual merge receipts qualify this four-record
+delivery only, with no production, performance or broader programme acceptance claim.
+
+## Historical source archive — exact original bytes
+
+The following 42,804 bytes are original blob `f76acd5d29395c553de6f8fb9b1e2705f1d90d46` from PR6990 head `bb39cf729451fb5916f74a05377c360a70faaf48`. Its September observations, historical procedure pins, current/next-action wording and prior permission/transport failures remain dated evidence. They are not November execution instructions or new authority.
+
+<!-- BEGIN ORIGINAL PR6990 report f76acd5d29395c553de6f8fb9b1e2705f1d90d46 -->
+````markdown
 # Prophet rotation integration — forensic assessment and recovery delta
 
 Date of assessment: 2026-09-08. Author: Sol. Operation: `prophet-rotation-assessment-20260908-sol-001`.
@@ -405,3 +456,5 @@ All nine files below were read from `34b1a66b0dc01155ca2812c31ce0a2e09114b2fe`.
 Machine receipt and source-preparation/STOP facts remain in
 `exec-prestage-receipts/prophet-intake-validation-copy-20260910-sol-001/`.
 These are not sandbox links or served-user proof.
+````
+<!-- END ORIGINAL PR6990 report -->

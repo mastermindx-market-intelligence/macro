@@ -1,0 +1,18 @@
+{
+  "operation_key": "cn-us-context-review-77df9ed9-20260923",
+  "reviewed_head": "77df9ed9160494ceec0d735dc61005b66aa7dc96",
+  "native_session_id": "5c629357-1300-45d5-b7a4-e129f8581fbf",
+  "route": "repository reviewer, included first-party Claude Code/Max; read-only tools",
+  "review_status": "PARTIAL",
+  "closure": "SOL_CLOSED_STOP_ACKNOWLEDGED",
+  "review_is_release_approval": false,
+  "watcher_started": false,
+  "source_writes_by_reviewer": false,
+  "source_sha256": {
+    "review-request.md": "6ceb343374a76845fe2e56eb307f7d8b6065cc5d0498d90e83c55a8f14608864",
+    "independent-review.md": "c8e5e52e23e45321970ce824ee94351ea296883de4c1a04767da60ed74b71e06",
+    "review-closure.md": "c30245dfa82960b85b81964404a1a4b789b3082cf8ef70aaabd9e357dbcbda94"
+  },
+  "raw_return_sha256": "304a5cca28d8632eb2bea1a4af5200b65824e549b2b28210603aa6fbf0407394",
+  "raw_stop_sha256": "55220fa773fa5b69f4d1cd1082a983502d3465c00bdd75ce59691df35d4c89cd"
+}
