@@ -2979,3 +2979,102 @@ def test_workspace_reads_the_gex_stubs_search_param_contract(page):
         f"boot with ?t=NVDA#ticker did not fetch NVDA — the stub contract's consumer half is gone (fetched: {res['fetched']})"
     assert not any("gex/SPY.json" in u for u in res["fetched"]), \
         "boot fetched the DEFAULT ticker alongside/instead of the ?t= symbol"
+
+
+# ── Mobile audit Batch E (MM-11/MM-12): truthful scanner recovery + controls ──
+def _oew_css_rule(page: str, selector: str) -> str:
+    matches = re.findall(re.escape(selector) + r"\{([^}]*)\}", page, re.S)
+    assert matches, f"missing CSS rule for {selector}"
+    return "\n".join(matches)
+
+
+def test_mobile_scanner_standalone_controls_meet_40px_floor(page):
+    """The tabs were already ~43px in the audit; the scanner's actual action
+    targets were not. Pin only the standalone controls Batch E owns."""
+    for selector in (
+        ".oew-help",
+        ".oew-source-receipt summary",
+        ".oew-aib-degraded-rcp>summary",
+        ".oew-tkchip",
+        ".oew-preset",
+        ".oew-seg button",
+        ".oew-sc-tk",
+        ".oew-sc-more summary",
+        ".oew-sc-more input,.oew-sc-more select",
+        ".oew-sc-clear",
+        ".oew-sc-csv",
+    ):
+        rule = _oew_css_rule(page, selector)
+        m = re.search(r"min-height:\s*(\d+)px", rule)
+        assert m and int(m.group(1)) >= 40, (selector, rule)
+
+
+def test_scanner_lazy_failure_distinguishes_access_missing_and_retryable_states(page):
+    """Anonymous/default-deny is an access state, not a network outage. A 404 is
+    a publication/availability state. Network/5xx gets an in-place retry."""
+    assert "function modeFailure(mode, err)" in page
+    assert "status === 401" in page
+    assert "status === 403" in page
+    assert "status === 404" in page
+    assert "data-oew-auth=\"signin\"" in page
+    assert "data-oew-auth=\"plans\"" in page
+    assert "data-oew-retry" in page
+    assert "Try again" in page and "重试" in page
+    # The old one-size-fits-all reload instruction must not survive as the only
+    # scanner failure state.
+    assert "That data did not load. Reload the page to try again" not in page
+
+
+def test_scanner_retry_is_user_bounded_and_does_not_loosen_asset_access(page):
+    src = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
+    access = (REPO / "config" / "site_access.yml").read_text(encoding="utf-8")
+    assert "data-oew-retry" in src
+    assert "loadMode(retry.getAttribute('data-oew-retry'))" in src
+    retry_block = src[src.index("data-oew-retry"):]
+    assert "setTimeout(function(){ loadMode" not in retry_block
+    assert "/screenerdata/rows.json" not in access, "Batch E must not publicize the protected scanner payload"
+
+
+def test_getjson_preserves_http_status_for_typed_recovery(page):
+    src = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
+    block = src[src.index("function getJSON(url)"):src.index("/* ═", src.index("function getJSON(url)"))]
+    assert ".status = r.status" in block
+    assert "invalid_json" in block
+
+
+@_needs_node
+def test_scanner_failure_copy_is_typed_in_the_executed_workspace_script(page):
+    out = _node(page, r'''
+    var states = {
+      denied401: modeFailure('scanner', {status:401}),
+      denied403: modeFailure('scanner', {status:403}),
+      missing404: modeFailure('scanner', {status:404}),
+      transient: modeFailure('scanner', {kind:'network'})
+    };
+    process.stdout.write(JSON.stringify(states));
+    ''')
+    states = _json.loads(out.strip().splitlines()[-1])
+    assert 'data-oew-auth="signin"' in states['denied401']
+    assert 'Sign in to open the Scanner' in states['denied401']
+    assert 'data-oew-auth="plans"' in states['denied403']
+    assert 'current access does not include' in states['denied403']
+    assert 'not published for this close yet' in states['missing404']
+    assert 'data-oew-retry="scanner"' in states['missing404']
+    assert 'could not load right now' in states['transient']
+    assert 'data-oew-retry="scanner"' in states['transient']
+
+
+@_needs_node
+def test_getjson_exposes_http_status_to_the_recovery_renderer(page):
+    out = _node(page, r'''
+    fetch = function(){
+      return Promise.resolve({ok:false,status:403,json:function(){return Promise.resolve({});}});
+    };
+    getJSON('screenerdata/rows.json').then(function(){
+      process.stdout.write(JSON.stringify({unexpected:true}));
+    }).catch(function(err){
+      process.stdout.write(JSON.stringify({status:err.status,kind:err.kind,url:err.url}));
+    });
+    ''')
+    result = _json.loads(out.strip().splitlines()[-1])
+    assert result == {'status': 403, 'kind': 'http', 'url': 'screenerdata/rows.json'}

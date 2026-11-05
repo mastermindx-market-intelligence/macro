@@ -129,7 +129,7 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-stamp-row .v{margin-left:auto;color:var(--ink-2);font-weight:600}
 .oew-stamp-row .v.brass{color:var(--oew-stamp)}
 .oew-source-receipt{margin-top:7px;border-top:1px solid var(--hair);padding-top:6px}
-.oew-source-receipt summary{cursor:pointer;color:var(--muted);font-size:10px;letter-spacing:.04em}
+.oew-source-receipt summary{display:flex;align-items:center;min-height:40px;cursor:pointer;color:var(--muted);font-size:10px;letter-spacing:.04em}
 .oew-source-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:4px;font-size:10px;color:var(--muted)}
 .oew-source-row .stale{color:var(--orange);font-weight:650}.oew-source-row .current{color:var(--up)}
 
@@ -235,9 +235,12 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
   margin:var(--s2) 0 0;line-height:1.45}
 .oew-asof{margin-left:auto;font-size:10px;color:var(--oew-stamp);opacity:.9;letter-spacing:.02em}
 /* the ? help affordance — the Tier-2 home for mechanics (LENS popover) */
-.oew-help{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
-  border:1px solid var(--hair);color:var(--muted);font-size:9.5px;font-weight:800;cursor:help;flex:none;background:var(--tile)}
-.oew-help:hover,.oew-help:focus-visible{color:var(--text);border-color:var(--oew-accent);outline:none}
+.oew-help{display:inline-grid;place-items:center;width:40px;height:40px;min-height:40px;position:relative;
+  border:0;color:var(--muted);font-size:0;font-weight:800;cursor:help;flex:none;background:transparent}
+.oew-help::before{content:'?';display:grid;place-items:center;width:18px;height:18px;border-radius:var(--r-pill);
+  border:1px solid var(--hair);background:var(--tile);font-size:9.5px;color:inherit}
+.oew-help:hover,.oew-help:focus-visible{color:var(--text);outline:none}
+.oew-help:hover::before,.oew-help:focus-visible::before{border-color:var(--oew-accent)}
 .oew [data-tip-en]{cursor:help}
 
 /* ═══ MODE SURFACES ═══ */
@@ -252,6 +255,12 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
   background:color-mix(in srgb,var(--warn) 8%,var(--tile));color:var(--ink-2)}
 .oew-banner .ico{color:var(--ink-warn, var(--warn));font-weight:900;flex:none}
 .oew-empty{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.oew-state-actions{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s3)}
+.oew-state-btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;
+  padding:7px 12px;border:1px solid var(--hair);border-radius:var(--r-ctl);background:var(--tile);
+  color:var(--text);font:650 12px/1.2 var(--font-ui);cursor:pointer;text-decoration:none}
+.oew-state-btn:hover{border-color:var(--oew-accent);color:var(--oew-accent)}
+.oew-state-btn:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
 
 /* ── BRIEF: AD-1 · OPTIONS INTELLIGENCE BRIEF ─────────────────────────────
    contracts/options/OPTIONS_INTEL_BRIEF_V1.md.  scripts/build_options_command.py
@@ -397,7 +406,7 @@ html[data-theme="light"] .oew-lab-be{outline:none}
 .oew-aib-degraded-lead{margin:0 0 4px;font-weight:620;color:var(--text)}
 .oew-aib-degraded-why{margin:0 0 8px;font-size:12px;color:var(--ink-2);line-height:1.5}
 .oew-aib-degraded-rcp{font-size:11.5px}
-.oew-aib-degraded-rcp>summary{cursor:pointer;color:var(--muted)}
+.oew-aib-degraded-rcp>summary{display:flex;align-items:center;min-height:40px;cursor:pointer;color:var(--muted)}
 
 /* LIGHT — white material: delete the inner highlight, add a hairline (top +
    right; bottom + left are already set above) and one shallow shadow — the
@@ -545,7 +554,7 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
 .oew-rg-h{font-size:12px;font-weight:700;margin-bottom:3px}
 .oew-rg-s{font-size:11px;color:var(--muted);margin-bottom:9px;line-height:1.4}
 .oew-tkchips{display:flex;gap:5px;flex-wrap:wrap}
-.oew-tkchip{font-family:var(--font-mono);font-size:11.5px;font-weight:650;letter-spacing:-.01em;padding:3px 9px;
+.oew-tkchip{display:inline-flex;align-items:center;justify-content:center;min-height:40px;font-family:var(--font-mono);font-size:11.5px;font-weight:650;letter-spacing:-.01em;padding:3px 9px;
   border-radius:5px;border:1px solid var(--hair);background:var(--panel);color:var(--text);cursor:pointer}
 .oew-tkchip:hover{border-color:var(--oew-accent);color:var(--oew-accent)}
 .oew-tkchip:focus-visible{outline:2px solid var(--oew-accent);outline-offset:1px}
@@ -568,7 +577,7 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
 .oew-sc-bar{display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap;margin-bottom:var(--s3)}
 /* font:inherit FIRST — a <button> does NOT inherit the page face, and without
    this the chip renders in the UA default (Arial), breaking the type role law. */
-.oew-preset{appearance:none;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;
+.oew-preset{appearance:none;box-sizing:border-box;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;min-height:40px;
   border-radius:var(--r-pill);border:1px solid var(--hair);
   background:var(--tile);color:var(--ink-2);cursor:pointer;white-space:nowrap}
 .oew-preset:hover{border-color:var(--oew-accent);color:var(--text)}
@@ -576,8 +585,8 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
   background:color-mix(in srgb,var(--oew-accent) 13%,var(--tile))}
 .oew-preset:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
 .oew-seg{display:inline-flex;border:1px solid var(--hair);border-radius:var(--r-ctl);overflow:hidden}
-.oew-seg button{appearance:none;border:none;background:var(--tile);color:var(--muted);font:inherit;font-size:11.5px;
-  font-weight:650;padding:6px 13px;cursor:pointer;border-left:1px solid var(--hair)}
+.oew-seg button{appearance:none;box-sizing:border-box;border:none;background:var(--tile);color:var(--muted);font:inherit;font-size:11.5px;
+  font-weight:650;padding:6px 13px;min-height:40px;cursor:pointer;border-left:1px solid var(--hair)}
 .oew-seg button:first-child{border-left:none}
 .oew-seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--oew-accent) 17%,var(--panel));color:var(--text)}
 .oew-seg button:focus-visible{outline:2px solid var(--oew-accent);outline-offset:-2px}
@@ -599,7 +608,7 @@ table.oew-tbl tbody tr:hover td:first-child{background:var(--tile)}
 /* The ticker cell is a <button> (it activates Ticker mode, it is not a link to a
    document), so it needs a full UA reset or it ships grey chrome and an outset
    border inside the table. */
-.oew-sc-tk{appearance:none;background:none;border:none;padding:0;font:inherit;cursor:pointer;
+.oew-sc-tk{appearance:none;background:none;border:none;padding:0;font:inherit;cursor:pointer;min-height:40px;
   display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--text);
   font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 .oew-sc-tk .go{color:var(--oew-accent);opacity:0;font-size:11px}
@@ -946,8 +955,8 @@ html[data-lang="zh"] .oew-raw-greeks .g .k{letter-spacing:.02em;text-transform:n
 
 /* ═══ SCANNER · more filters, per-column sort, CSV ═══ */
 .oew-sc-more{border-top:1px solid var(--hair)}
-.oew-sc-more summary{cursor:pointer;font-size:11.5px;font-weight:650;color:var(--muted);
-  padding:9px var(--s4);list-style:none}
+.oew-sc-more summary{box-sizing:border-box;cursor:pointer;font-size:11.5px;font-weight:650;color:var(--muted);min-height:40px;
+  padding:9px var(--s4);list-style:none;display:flex;align-items:center}
 .oew-sc-more summary::-webkit-details-marker{display:none}
 .oew-sc-more summary::before{content:'▸ ';color:var(--oew-accent)}
 .oew-sc-more[open] summary::before{content:'▾ '}
@@ -962,18 +971,18 @@ html[data-lang="zh"] .oew-sc-f{letter-spacing:.02em;text-transform:none}
 @media (max-width:560px){.oew-sc-f.wide{grid-column:span 1}}
 .oew-sc-pair{display:flex;align-items:center;gap:6px}
 .oew-sc-pair .sep{color:var(--muted)}
-.oew-sc-more input,.oew-sc-more select{width:100%;min-width:0;padding:6px 9px;border:1px solid var(--hair);
+.oew-sc-more input,.oew-sc-more select{box-sizing:border-box;width:100%;min-width:0;min-height:40px;padding:6px 9px;border:1px solid var(--hair);
   border-radius:var(--r-ctl);background:var(--tile);color:var(--text);font:inherit;font-size:12px;
   font-family:var(--font-ui);font-weight:400;text-transform:none;letter-spacing:0}
 .oew-sc-more input:focus-visible,.oew-sc-more select:focus-visible{outline:2px solid var(--oew-accent);
   outline-offset:1px;border-color:var(--oew-accent)}
 .oew-sc-more input::placeholder{color:var(--muted)}
 .oew-sc-fbar{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:0 var(--s4) var(--s4)}
-.oew-sc-clear{appearance:none;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;
+.oew-sc-clear{appearance:none;box-sizing:border-box;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;min-height:40px;
   border-radius:var(--r-pill);border:1px solid var(--hair);background:var(--tile);color:var(--ink-2);cursor:pointer}
 .oew-sc-clear:hover{border-color:var(--oew-accent);color:var(--text)}
 .oew-sc-clear:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
-.oew-sc-csv{appearance:none;font:inherit;font-size:11px;font-weight:650;padding:4px 11px;
+.oew-sc-csv{appearance:none;box-sizing:border-box;font:inherit;font-size:11px;font-weight:650;padding:4px 11px;min-height:40px;
   border-radius:var(--r-pill);border:1px solid var(--hair);background:var(--tile);color:var(--ink-2);
   cursor:pointer;white-space:nowrap}
 .oew-sc-csv:hover{border-color:var(--oew-accent);color:var(--text)}
@@ -1793,6 +1802,35 @@ function skeleton(en, zh){
 function emptyPanel(en, zh){
   return '<div class="oew-panel"><div class="oew-pbody"><p class="oew-empty">' + bi(en, zh) + '</p></div></div>';
 }
+function statePanel(en, zh, action){
+  return '<div class="oew-panel"><div class="oew-pbody"><p class="oew-empty">' + bi(en, zh) + '</p>'
+    + (action ? '<div class="oew-state-actions">' + action + '</div>' : '') + '</div></div>';
+}
+function stateButton(attr, en, zh){
+  return '<button type="button" class="oew-state-btn" ' + attr + '>' + bi(en, zh) + '</button>';
+}
+function modeFailure(mode, err){
+  var status = err && err.status;
+  var scanner = mode === 'scanner';
+  if(status === 401){
+    return statePanel(scanner ? 'Sign in to open the Scanner. The settled Brief above remains available.' : 'Sign in to open this workspace data.',
+      scanner ? '登录后可打开筛选台。上方的收盘简报仍可使用。' : '登录后可打开此工作区数据。',
+      stateButton('data-oew-auth="signin"', 'Sign in', '登录'));
+  }
+  if(status === 403){
+    return statePanel(scanner ? 'Your current access does not include the Scanner data. Nothing else on this page is affected.' : 'Your current access does not include this workspace data.',
+      scanner ? '您当前的访问权限不包含筛选台数据。本页其他内容不受影响。' : '您当前的访问权限不包含此工作区数据。',
+      stateButton('data-oew-auth="plans"', 'View plans', '查看方案'));
+  }
+  if(status === 404){
+    return statePanel(scanner ? 'The Scanner snapshot is not published for this close yet. The rest of the workspace remains available.' : 'This workspace snapshot is not published yet.',
+      scanner ? '本次收盘的筛选快照尚未发布。工作区其余内容仍可使用。' : '此工作区快照尚未发布。',
+      stateButton('data-oew-retry="' + esc(mode) + '"', 'Try again', '重试'));
+  }
+  return statePanel(scanner ? 'The Scanner could not load right now. Try again here without reloading the page.' : 'This workspace data could not load right now.',
+    scanner ? '筛选台目前无法加载。无需刷新整页，可在此重试。' : '此工作区数据目前无法加载。',
+    stateButton('data-oew-retry="' + esc(mode) + '"', 'Try again', '重试'));
+}
 var SKEL = {
   flow:    ['Loading the flow desk for this close…', '正在加载本次收盘的资金流台…'],
   scanner: ['Loading the screener table for this close…', '正在加载本次收盘的筛选表…'],
@@ -1823,8 +1861,16 @@ function terminalUrl(sym){
 function getJSON(url){
   if(cache[url]) return Promise.resolve(cache[url]);
   return fetch(url, { credentials:'same-origin' }).then(function(r){
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
+    if(!r.ok){
+      var httpErr = new Error('HTTP ' + r.status);
+      httpErr.status = r.status; httpErr.kind = 'http'; httpErr.url = url;
+      throw httpErr;
+    }
+    return r.json().catch(function(){
+      var parseErr = new Error('invalid_json');
+      parseErr.status = r.status; parseErr.kind = 'invalid_json'; parseErr.url = url;
+      throw parseErr;
+    });
   }).then(function(j){ cache[url] = j; return j; });
 }
 
@@ -3645,10 +3691,7 @@ function loadMode(mode){
   // ticker change.
   var tgt = (mode === 'ticker') ? (document.getElementById('oew-tk-body') || host) : host;
   tgt.innerHTML = skeleton(SKEL[mode][0], SKEL[mode][1]);
-  var fail = function(){
-    tgt.innerHTML = emptyPanel('That data did not load. Reload the page to try again — nothing above depends on it.',
-      '该数据未能加载。请重新加载页面重试 — 上方内容不依赖于它。');
-  };
+  var fail = function(err){ tgt.innerHTML = modeFailure(mode, err); };
   if(mode === 'flow'){
     /* Both stores are lazy and BOTH are optional: cohorts.json missing costs the
        theme-group panel and nothing else (renderFlow falls back to flow_desk's
@@ -3699,6 +3742,26 @@ function activate(mode, opts){
 }
 tabs.forEach(function(t){
   t.addEventListener('click', function(){ activate(t.getAttribute('data-mode')); });
+});
+/* Recovery is user-bounded: one explicit click issues one fresh request. */
+document.addEventListener('click', function(e){
+  var retry = e.target.closest && e.target.closest('[data-oew-retry]');
+  if(retry){
+    e.preventDefault();
+    if(retry.disabled) return;
+    retry.disabled = true;
+    loadMode(retry.getAttribute('data-oew-retry'));
+    return;
+  }
+  var auth = e.target.closest && e.target.closest('[data-oew-auth]');
+  if(auth){
+    e.preventDefault();
+    var action = auth.getAttribute('data-oew-auth');
+    if(action === 'signin'){
+      try{ if(window.MDXAuth && window.MDXAuth.open){ window.MDXAuth.open('signin'); return; } }catch(_e){}
+    }
+    window.location.href = 'plans.html';
+  }
 });
 /* ticker deep-links from the Brief rail and the Scanner table */
 document.addEventListener('click', function(e){
