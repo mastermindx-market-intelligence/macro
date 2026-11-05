@@ -19,6 +19,10 @@ changed:
 - path: agentos/workstreams/WS-RESEARCH-FACTORY-CODEGEN.md
   what: Replace stale completed-next-action with joined P01 prerequisite and true remaining scientific/runtime
     obligations.
+- path: engine/research_codegen/bridge.py
+  what: P2.T1.S1 connects private role declaration/assessment through SyntheticRun and unchanged output/review
+    consumers; pure declaration helper does not fabricate pre-stage accounting. All observations remain
+    UNKNOWN/unattested and authority false.
 verified:
 - claim: P2.T6.S1 P01 source prerequisite — join accounting, prefix outputs and review into one staged
     cycle — reviewed
@@ -33,10 +37,13 @@ verified:
     readers, Massive manifest and SPY producer; no provider effects'
   result: Commercial rights approved; historical original availability/revision evidence unqualified.
     Current Massive coverage2021-07-06..2026-11-03 and SPY prospective producer do not qualify nineETF2010-2023.
+- claim: Connected S01 carrier rejects stale/invalid later identities before transport
+  command: python3 -m pytest -q tests/test_research_codegen_contracts.py tests/test_research_codegen_bridge.py
+    tests/test_research_codegen_connected_p01.py
+  result: 108 passed in26.93s; independent native reviewer01a1ab3f-9598 SOURCE_PASS on exact diff3c85caabb79c1d713b874f2a28a395d36b0be07a1b3b09a5524b9bcef5651c6c.
+    Formal GitHub review and release separate.
 unverified:
 - Hosted source CI/merge and postmerge source consumer for this new adapter increment
-- 'S01 private assessment repair: original Fabric request rf-s01-connected-repair-01a1333c-v1/controller82867
-  placement pending; no worker START or result claimed'
 - Actual P01, containment, authenticated candidate workflow and scientific acceptance
 unresolved:
 - Original V4 rf-fixed-smoke-runsc-01a1333c-v4/controller62193 EFFECT_UNKNOWN after77 and1200-second budget
@@ -46,9 +53,9 @@ unresolved:
 - Historical PIT/2010-2013 annual notices, authentic freeze/clocks, naturally matured labels and inference
   procedure remain unqualified.
 next_actions:
-- Finish normal protected source release of the complete adapter; no all-workers-finished barrier. Consume
-  same S01 request through assigning child01a1ab3f-9598, integrate only verified returned code into existing
-  connected path.
+- Finish normal protected release of the connected adapter and private S01 carrier; consume exact-head
+  CI and actual formal review, verify merged bytes and existing native consumer. No runtime activation
+  from source release.
 - Keep generic Docker engine dormant. Future RF16 executor integration needs an actual scoped issuer plus
   per-plan/CID-constrained engine using canonical transport types; do not treat an unrelated native-worker
   grant as candidate authority.
@@ -77,7 +84,7 @@ prs:
 - 10264
 ---
 
-The root owns integration and outcome acceptance. Two verified Sol6.1/high coordinators own substantial disjoint source/contract judgments and original Fabric returns. Native workers are not substituted for a refused paid worker. Adapter Fabric delivery terminated78 with no result; root performed permitted local source work instead, preserving the original remote evidence. S01 remains on its original pending request.
+The root owns integration and outcome acceptance. Two verified Sol6.1/high coordinators own substantial disjoint source/contract judgments and original Fabric returns. Native workers are not substituted for a refused paid worker. Adapter Fabric delivery terminated78 with no result; root performed permitted local source work instead, preserving the original remote evidence. S01 also terminated78 with no result; root performed its permitted local repair. Both original remote operations/evidence remain intact; no retry or late artifact adoption.
 
 The actual next customer milestone is one real known-answer primitive and deliberately invalid temporal control through durable accounting, isolated causal execution, fixed numerical evaluation, challenge/adjudication and authenticated Experiments evidence. The current synthetic source join does not complete that milestone. Historical and naturally matured prospective acceptance remain separate.
 

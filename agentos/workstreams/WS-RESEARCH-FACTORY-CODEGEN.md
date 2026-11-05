@@ -24,8 +24,8 @@ waves:
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
   Release the implemented source-owned staged-cycle adapter through normal checks;
-  consume the existing S01 repair and connect its private role assessment through
-  the same driver/review path without a duplicate worker or standalone metadata claim.
+  qualify the integrated private S01 carrier through the same driver/review path.
+  Both new Fabric leaves failed terminally; root completed permitted local source work.
   Preserve original V4 and worktree unknown effects. Source readiness is not
   P01 runtime or scientific acceptance. After qualification, complete the actual
   good/bad staged cycle and unchanged historical/prospective obligations.
@@ -76,8 +76,10 @@ The default public path refuses before any effect. Initial affected checks passe
 93 tests plus24 subtests, and12 targeted cycle checks passed after replay and
 composition-retention repairs. Independent native Sol review accepted this source
 scope. Source publication, S01 repair, real runtime and P01 acceptance remain separate.
-The existing S01 Fabric request retains custody; it does not freeze this completed
-adapter's source release. No standalone metadata release is counted as P01 progress.
+The S01 carrier is now integrated with108 affected checks and independent source
+review. Both new Fabric source deliveries terminated78 with no result; their original
+evidence is preserved. Root completed source in the existing workspace. No standalone
+metadata release is counted as P01 progress.
 
 Original physical V4 remains EFFECT_UNKNOWN after controller77 and the recorded
 1200-second commission overrun. No provider final, install/smoke/cleanup or absence
