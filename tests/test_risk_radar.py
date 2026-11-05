@@ -572,24 +572,32 @@ def test_replay_comparability_invalid_observation_index_is_refused():
 
 def test_gate_latency_pre_gate_state_matches_production_when_gate_open():
     from unittest.mock import patch
-    from engine import risk_radar as rr
     from engine import risk_radar_backtest as bt
     from scripts.research import risk_radar_gate_latency as gl
 
     idx = pd.bdate_range("2026-01-01", periods=5)
-    subs = pd.DataFrame({
-        "credit": [20., 60., 70., 80., 90.],
-        "rates": [20., 20., 70., 20., 20.],
-        "vol": [20., 20., 20., 70., 20.],
+    sigs = pd.DataFrame({
+        "credit_oas_roc": [0.20, 0.60, 0.95, 0.95, 0.20],
+        "rates_move": [0.20, 0.20, 0.60, 0.70, 0.20],
+        "vol_term": [0.20, 0.20, 0.20, 0.80, 0.20],
     }, index=idx)
     calib = {
         "bands": {"watch": 55., "caution": 68., "elevated": 78., "risk_off": 88.},
-        "scares": {"credit": {"tier": "A"}, "rates": {"tier": "A"}, "vol": {"tier": "B"}},
+        "legs": {
+            "credit_oas_roc": {"lift_2020": 1.5, "thr_pct": 0.90},
+            "rates_move": {"lift_2020": 0.0, "thr_pct": 0.90},
+            "vol_term": {"lift_2020": 0.0, "thr_pct": 0.90},
+        },
+        "scares": {
+            "credit": {"tier": "A", "legs": [("credit_oas_roc", 1.0)]},
+            "rates": {"tier": "A", "legs": [("rates_move", 1.0)]},
+            "vol": {"tier": "B", "legs": [("vol_term", 1.0)]},
+        },
     }
+    subs = rr.subscore_series(sigs, calib)
     with patch.object(rr, "context_gate_series", return_value=pd.Series(True, index=idx)):
-        production = bt.state_series(subs, calib)
-    assert gl.pre_gate_state_series(subs, calib).equals(production)
-
+        production = bt.state_series(subs, calib, sigs=sigs)
+    assert gl.pre_gate_state_series(subs, calib, sigs=sigs).equals(production)
 
 
 def test_gate_latency_gate_components_preserve_unknown_breadth():
@@ -749,3 +757,185 @@ def test_episode_warning_path_forward_outcomes_use_canonical_grader():
     assert out["fwd_dd"]["h5"] == -.06
     assert out["hit"]["h5"]["dd5"] is True
     assert "graded_at" not in out
+
+
+
+def _replay_parity_calib(*, credit_weights=(1.0,), credit_validated=False,
+                         include_rates=True, include_vol=False):
+    legs = {
+        "credit_oas_roc": {"lift_2020": 1.5 if credit_validated else 0.0, "thr_pct": 0.90},
+    }
+    credit_legs = [("credit_oas_roc", credit_weights[0])]
+    if len(credit_weights) > 1:
+        legs["credit_hyg_tlt"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        credit_legs.append(("credit_hyg_tlt", credit_weights[1]))
+    scares = {"credit": {"tier": "A", "legs": credit_legs}}
+    if include_rates:
+        legs["rates_move"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        scares["rates"] = {"tier": "A", "legs": [("rates_move", 1.0)]}
+    if include_vol:
+        legs["vol_term"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        scares["vol"] = {"tier": "B", "legs": [("vol_term", 1.0)]}
+    return {"bands": dict(rr._DEFAULT_BANDS), "legs": legs, "scares": scares,
+            "alert_from": "elevated"}
+
+
+
+def test_replay_matches_live_when_two_hot_scares_have_no_validated_arm():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib()
+    sigs = _sigs(credit_oas_roc=0.70, rates_move=0.70)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "caution" and live["conjunction"] is False
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
+
+
+def test_replay_matches_live_armed_confirm_when_second_scare_is_only_watch():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib(credit_weights=(0.2, 0.8), credit_validated=True)
+    sigs = _sigs(credit_oas_roc=0.95, credit_hyg_tlt=0.62, rates_move=0.60)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "elevated" and live["conjunction"] is True
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
+
+
+def test_replay_matches_live_when_tierb_only_has_measured_zero_leg():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib(include_rates=False, include_vol=True)
+    sigs = _sigs(credit_oas_roc=0.60, vol_term=0.80)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "watch"
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
+
+
+
+def test_probability_evidence_projection_matches_accepted_audit():
+    import hashlib
+    from pathlib import Path
+    from scripts import build_risk_radar_probability_evidence as pe
+
+    payload = pe.build_payload()
+    source = Path(pe.SOURCE)
+    assert payload["schema"] == "risk_radar_probability_evidence.v1"
+    assert payload["precision_grade"] is False
+    assert payload["source"]["sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
+    h21 = payload["horizons"]["h21"]
+    assert h21["cells"]["0.16"]["n"] == 746
+    assert h21["cells"]["0.16"]["thin"] is False
+    assert h21["cells"]["0.16"]["observed_rate"] == 0.12198391420911528
+    assert h21["cells"]["0.25"]["n"] == 34
+    assert h21["cells"]["0.25"]["thin"] is True
+
+
+def test_drawdown_probability_evidence_is_additive_only(tmp_path):
+    import json
+    from engine import risk_radar as rr
+
+    plain = rr._drawdown_prob("caution", 1)
+    evidence = {
+        "schema": "risk_radar_probability_evidence.v1",
+        "evidence_class": "reconstructed_historical",
+        "precision_grade": False,
+        "window": "y2020",
+        "target": {"depth": 0.05, "horizons": [5, 10, 21]},
+        "source": {"path": "accepted.json", "sha256": "abc"},
+        "limitations": ["overlapping windows"],
+        "model_surface": {
+            "state_probability_surface": {
+                horizon: {state: float(prob)
+                          for state, prob in rr._PROB_CAL[horizon].items()}
+                for horizon in ("h5", "h10", "h21")
+            },
+            "conjunction_bump": {
+                horizon: float(rr._CONJ_BUMP[horizon])
+                for horizon in ("h5", "h10", "h21")
+            },
+        },
+        "horizons": {
+            "h5": {"from": "2020-01-02", "through": "2026-09-11",
+                   "population_sha256": "h5", "cells": {
+                       "0.03": {"n": 752, "events": 8, "observed_rate": 0.010638297872340425,
+                                "observed_rate_ci90": [0.003796, 0.019024], "thin": False}}},
+            "h10": {"from": "2020-01-02", "through": "2026-09-03",
+                    "population_sha256": "h10", "cells": {
+                        "0.08": {"n": 747, "events": 28, "observed_rate": 0.03748326639892905,
+                                 "observed_rate_ci90": [0.021476, 0.055013], "thin": False}}},
+            "h21": {"from": "2020-01-02", "through": "2026-08-19",
+                    "population_sha256": "h21", "cells": {
+                        "0.16": {"n": 746, "events": 91, "observed_rate": 0.12198391420911528,
+                                 "observed_rate_ci90": [0.074072, 0.174791], "thin": False}}},
+        },
+    }
+    out_dir = tmp_path / "data" / "risk_radar"
+    out_dir.mkdir(parents=True)
+    (out_dir / "probability_evidence.json").write_text(json.dumps(evidence))
+
+    enriched = rr._drawdown_prob(
+        "caution", 1, include_evidence=True, evidence_root=tmp_path
+    )
+    for key in ("h5", "h10", "h21", "base_h5", "base_h10", "base_h21",
+                "lift_h21", "conjunction_n", "measure", "state_lift_h21"):
+        assert enriched[key] == plain[key]
+    assert "calibration_evidence" not in plain
+    assert enriched["calibration_evidence"]["precision_grade"] is False
+    assert enriched["calibration_evidence"]["horizons"]["h21"] == {
+        "matched": True,
+        "displayed_probability": 0.16,
+        "n": 746,
+        "events": 91,
+        "observed_rate": 0.12198391420911528,
+        "observed_rate_ci90": [0.074072, 0.174791],
+        "thin": False,
+        "from": "2020-01-02",
+        "through": "2026-08-19",
+        "population_sha256": "h21",
+    }
+
+
+def test_drawdown_probability_evidence_fails_soft_without_model_effect(tmp_path):
+    from engine import risk_radar as rr
+
+    plain = rr._drawdown_prob("risk-off", 3)
+    out_dir = tmp_path / "data" / "risk_radar"
+    out_dir.mkdir(parents=True)
+    (out_dir / "probability_evidence.json").write_text('{"schema":"wrong.v0"}')
+    enriched = rr._drawdown_prob(
+        "risk-off", 3, include_evidence=True, evidence_root=tmp_path
+    )
+    assert enriched["calibration_evidence"] is None
+    for key in ("h5", "h10", "h21", "lift_h21", "conjunction_n"):
+        assert enriched[key] == plain[key]
+
+
+
+def test_committed_probability_evidence_matches_its_producer(tmp_path):
+    import json
+    from pathlib import Path
+    from scripts import build_risk_radar_probability_evidence as pe
+
+    output = tmp_path / "probability_evidence.json"
+    produced = pe.write_payload(output=output)
+    committed = json.loads(
+        (Path(__file__).resolve().parents[1] / "data" / "risk_radar" /
+         "probability_evidence.json").read_text(encoding="utf-8")
+    )
+    assert produced == committed
+    assert json.loads(output.read_text(encoding="utf-8")) == committed

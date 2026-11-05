@@ -1,0 +1,29 @@
+{
+  "scope": "Offline arithmetic, input validation and document-completeness checks only. No model benchmark, market backtest, GitHub suite, deployment or production test.",
+  "date": "2026-10-06",
+  "checks_passed": 21,
+  "checks": [
+    {"name": "base monthly cost", "passed": true},
+    {"name": "100 percent overhead cost", "passed": true},
+    {"name": "all raw frontier comparison", "passed": true},
+    {"name": "workload and price stress", "passed": true},
+    {"name": "zero day cost", "passed": true},
+    {"name": "daily monthly consistency", "passed": true},
+    {"name": "negative counts refused", "passed": true},
+    {"name": "boolean counts refused", "passed": true},
+    {"name": "fractional counts refused", "passed": true},
+    {"name": "negative price refused", "passed": true},
+    {"name": "nonfinite price refused", "passed": true},
+    {"name": "nonfinite day refused", "passed": true},
+    {"name": "buyback EPS denominator illustration", "passed": true},
+    {"name": "fair value buyback illustration", "passed": true},
+    {"name": "all 15 masterplan sections present", "passed": true},
+    {"name": "proposal status disclosed", "passed": true},
+    {"name": "no worker dispatch disclosed", "passed": true},
+    {"name": "security boundary present", "passed": true},
+    {"name": "budget is not observed traffic", "passed": true},
+    {"name": "no predictive proof claim", "passed": true},
+    {"name": "persisted budget matches calculation", "passed": true}
+  ],
+  "masterplan_words": 5645
+}

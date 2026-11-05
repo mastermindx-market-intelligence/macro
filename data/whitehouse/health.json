@@ -1,17 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-21T14:10:54.720928+00:00",
-  "posts_seen": 17,
-  "seen_total": 215,
+  "as_of": "2026-11-05T21:59:15.395166+00:00",
+  "posts_seen": 13,
+  "seen_total": 322,
   "evaluated": 1,
-  "activated": 0,
+  "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-21-first-lady-melania-trump-releases-details-ahead-of-his-excellency-xi-jinping-pre",
-      "importance": 10,
-      "activated": false,
-      "degraded_reason": "served_by:codex"
+      "id": "wh-2026-11-05-first-lady-melania-trump-unites-russia-and-ukraine-at-the-white-house-following-",
+      "importance": 72,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
     }
   ]
 }

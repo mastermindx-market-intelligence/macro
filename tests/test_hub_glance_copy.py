@@ -84,8 +84,9 @@ def test_hub_hero_describes_a_snapshot_not_the_viewers_clock(monkeypatch) -> Non
 
     html = build_vector._hub_html(_vm(), {}, [])
 
-    assert "Latest market snapshot" in html
-    assert "最新市场快照" in html
+    assert "Page built" in html
+    assert "页面生成于" in html
+    assert "Latest market snapshot" not in html
     assert "Live ·" not in html
     assert "实时 ·" not in html
     assert "hub-snapshot-meta" in html
@@ -120,7 +121,7 @@ _SPARSE_START = pytest.mark.skipif(
 def test_committed_start_artifact_matches_the_glance_contract() -> None:
     html = _START_HTML.read_text(encoding="utf-8")
     for required in (
-        "Latest market snapshot", "最新市场快照", "Explore",
+        "Explore",
         "Bond health",
         "Read the latest research", "Market state, flows & allocation",
     ):
@@ -160,3 +161,177 @@ def test_feature_cta_artifact_matches_the_source(href: str, lang: str) -> None:
     produced = build_vector._g_vectors(_vm(), {}, {}, {}, {}, {}, {}, {})
     artifact = _START_HTML.read_text()
     assert _feature_cta(artifact, href, lang) == _feature_cta(produced, href, lang)
+
+
+def test_market_card_status_prints_turn_date_and_check() -> None:
+    fn = build_vector._market_card_status
+    row = {
+        "rphase": "turning", "rtoward_en": "Stagflation", "rtoward_zh": "滞胀",
+        "rdir": "deteriorating", "macro_asof": "1999-01-01", "rdir_asof": "1999-01-01",
+        "flip_axis": "growth", "flip_component": "copper_gold",
+        "rflip": "LEAK-RFLIP", "margin": "LEAK-MARGIN",
+        "threshold": "LEAK-THRESHOLD", "z": "LEAK-Z", "note": "LEAK-NOTE",
+    }
+    html = fn(row)
+    en = (
+        "Turning toward Stagflation · as of 1999-01-01"
+        " · closest growth check: copper versus gold"
+    )
+    zh = "正转向滞胀 · 截至 1999-01-01 · 最接近的增长检验：铜对黄金"
+    assert html.startswith('<p class="card-status">')
+    assert 'class="l-en"' in html and 'class="l-zh"' in html
+    assert en in html and zh in html and "2026-10-30" not in html
+    for leak in ("LEAK-RFLIP", "LEAK-MARGIN", "LEAK-THRESHOLD", "LEAK-Z", "LEAK-NOTE"):
+        assert leak not in html
+    quiet = fn(dict(row, flip_component="not_copper"))
+    assert "1999-01-01" in quiet and "copper versus gold" not in quiet
+    assert "铜对黄金" not in quiet and fn({}) == ""
+    other_axis = fn(dict(row, flip_axis="inflation"))
+    assert "copper versus gold" not in other_axis and "铜对黄金" not in other_axis
+    head = fn({"rphase": "aging", "rtoward_en": "Reflation", "rtoward_zh": "再通胀"})
+    assert "Heading toward Reflation" in head and "正朝再通胀移动" in head
+    soft, firm = fn({"rdir": "deteriorating"}), fn({"rdir": "improving"})
+    hold = fn({"rdir": "stable"})
+    assert "Worsening" in soft and "正在转差" in soft
+    assert "Improving" in firm and "正在改善" in firm
+    assert "Holding" in hold and "维持" in hold
+
+
+def test_market_card_status_sits_under_the_card_header() -> None:
+    import inspect
+
+    source = inspect.getsource(build_vector._g_markets)
+    assert "_market_card_status(m)" in source
+    before = source.split("_market_card_status(m)", 1)[0]
+    assert "card-top" in before and "</span></div>" in before
+
+
+def test_regime_dynamics_carries_the_flip_axis_and_component(monkeypatch, tmp_path) -> None:
+    import json
+
+    timeline = {"g": [0.5] * 40, "i": [0.5] * 40, "trans": ["STABLE"]}
+    (tmp_path / "regime_timeline.json").write_text(json.dumps(timeline), encoding="utf-8")
+    monkeypatch.setattr(build_vector.config, "site_dir", lambda: tmp_path)
+    flip = {"axis": "growth", "component": "copper_gold", "margin": 0.1}
+    out = build_vector._regime_dynamics("US", {"quad": "Q2", "flip_condition": flip})
+    assert out["flip_axis"] == "growth"
+    assert out["flip_component"] == "copper_gold"
+
+
+def test_card_holds_the_direction_date_apart_from_the_regime_date() -> None:
+    fn = build_vector._market_card_status
+    row = {
+        "rphase": "turning", "rtoward_en": "Stagflation", "rtoward_zh": "滞胀",
+        "rdir": "deteriorating", "macro_asof": "2026-10-30", "rdir_asof": "2026-10-20",
+        "flip_axis": "growth", "flip_component": "copper_gold",
+    }
+    apart = fn(row)
+    assert (
+        "Turning toward Stagflation as of 2026-10-20 · regime as of 2026-10-30"
+        " · closest growth check: copper versus gold"
+    ) in apart
+    assert (
+        "正转向滞胀（截至 2026-10-20） · 周期截至 2026-10-30 · 最接近的增长检验：铜对黄金"
+    ) in apart
+    assert "Stagflation · as of 2026-10-30" not in apart and "滞胀 · 截至 2026-10-30" not in apart
+
+    same = fn(dict(row, rdir_asof="2026-10-30"))
+    assert "Turning toward Stagflation · as of 2026-10-30 · closest" in same
+    assert "正转向滞胀 · 截至 2026-10-30 · 最接近" in same
+    assert "regime as of" not in same and "周期截至" not in same
+
+    undated = fn(dict(row, rdir_asof=None))
+    assert "Turning toward Stagflation · regime as of 2026-10-30" in undated
+    assert "正转向滞胀 · 周期截至 2026-10-30" in undated
+
+    no_record = fn(dict(row, macro_asof=""))
+    assert "Turning toward Stagflation as of 2026-10-20 · closest" in no_record
+    assert "regime as of" not in no_record and "周期截至" not in no_record
+
+    no_direction = fn({"macro_asof": "2026-10-30"})
+    assert "as of 2026-10-30" in no_direction and "截至 2026-10-30" in no_direction
+    assert "regime as of" not in no_direction and "周期截至" not in no_direction
+
+
+def test_regime_dynamics_dates_the_direction_from_its_own_file(monkeypatch, tmp_path) -> None:
+    import json
+
+    monkeypatch.setattr(build_vector.config, "site_dir", lambda: tmp_path)
+    dates = ["2026-01-01"] * 39 + ["2026-10-20"]
+    timeline = {"dates": dates, "g": [0.5] * 40, "i": [0.5] * 40, "trans": ["STABLE"]}
+    file = tmp_path / "regime_timeline.json"
+    file.write_text(json.dumps(timeline), encoding="utf-8")
+    out = build_vector._regime_dynamics("US", {"quad": "Q2"})
+    assert out["rdir_asof"] == "2026-10-20"
+    card = build_vector._market_card_status(dict(out, macro_asof="2026-10-30"))
+    assert "Holding as of 2026-10-20 · regime as of 2026-10-30" in card
+
+    file.write_text(json.dumps(dict(timeline, dates=dates[:-1])), encoding="utf-8")
+    assert build_vector._regime_dynamics("US", {"quad": "Q2"})["rdir_asof"] is None
+
+    no_dates = {k: v for k, v in timeline.items() if k != "dates"}
+    file.write_text(json.dumps(no_dates), encoding="utf-8")
+    assert build_vector._regime_dynamics("US", {"quad": "Q2"})["rdir_asof"] is None
+
+    gap = dict(timeline, i=[0.5] * 39 + [None])
+    file.write_text(json.dumps(gap), encoding="utf-8")
+    none = build_vector._regime_dynamics("US", {"quad": "Q2"})
+    assert none["rdir"] is None and none["rdir_asof"] is None
+
+
+def test_page_built_never_prints_a_data_date(monkeypatch) -> None:
+    monkeypatch.setattr(build_vector, "_globe_markets", lambda: [{"cc": "US"}])
+    monkeypatch.setattr(build_vector, "_g_legend", lambda _blob: "")
+    monkeypatch.setattr(build_vector, "_standout_labels", lambda _key: [])
+    monkeypatch.setattr(build_vector, "_latest_report_data", lambda: None)
+    monkeypatch.setattr(build_vector, "_g_markets", lambda *_a, **_k: "")
+    monkeypatch.setattr(build_vector, "_g_vectors", lambda *_a, **_k: "")
+    monkeypatch.setattr(build_vector, "_g_alerts", lambda *_a, **_k: "")
+    monkeypatch.setattr(build_vector, "_hub_product_nav_html", lambda: "")
+    monkeypatch.setattr(build_vector, "_hub_footer_html", lambda: "")
+    macro = {"date": "1999-03-04"}
+
+    built = build_vector._hub_html(dict(_vm(), built="2026-06-14 01:02 UTC"), macro, [])
+    assert "Jun 14, 2026" in built and "2026年6月14日" in built
+    assert 'data-asof="2026-06-14"' in built and "Mar 4, 1999" not in built
+
+    vm = dict(_vm())
+    vm.pop("built", None)
+    unbuilt = build_vector._hub_html(vm, macro, [])
+    assert "Mar 4, 1999" not in unbuilt and "1999年3月4日" not in unbuilt
+    assert 'data-asof="1999-03-04"' not in unbuilt
+
+
+def _bi_prefixes(src: str) -> list:
+    import ast
+
+    def lead(node):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+            return lead(node.left)
+        return None
+
+    found = []
+    for node in ast.walk(ast.parse(src)):
+        if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)):
+            continue
+        if node.func.id != "_bi" or len(node.args) < 2:
+            continue
+        en, zh = lead(node.args[0]), lead(node.args[1])
+        if en is not None and zh is not None:
+            found.append((en, zh))
+    return found
+
+
+def test_hub_clock_label_is_page_built() -> None:
+    pairs = _bi_prefixes(Path(build_vector.__file__).read_text(encoding="utf-8"))
+    assert ("Page built", "页面生成于") in pairs
+    clock = [
+        p for p in pairs
+        if p[0].startswith("Page built · ") and p[1].startswith("页面生成于 · ")
+    ]
+    assert len(clock) == 1 and 'class="hub-clock"' in clock[0][0]
+    assert 'data-loc="zh-CN"' in clock[0][1]
+    for en, zh in pairs:
+        assert "Latest market snapshot" not in en and "最新市场快照" not in zh

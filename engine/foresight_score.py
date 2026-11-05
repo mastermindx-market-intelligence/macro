@@ -28,6 +28,7 @@ The 0.4/0.5 placeholder pattern is eliminated.
 from __future__ import annotations
 
 import logging
+import math
 
 from lib import config
 
@@ -56,6 +57,11 @@ def _magnitude(r: dict) -> float | None:
     capex-only or divergence-only when one is absent."""
     capex = r.get("capex_yoy")
     div_share = r.get("divergence_share")  # None when < 3 covered members (W2b)
+
+    # W17-B: a non-finite capex_yoy is a broken feed, not a max-demand signal.
+    # Refuse the axis before _clamp — min/max swallow NaN and inf reads as 1.0.
+    if capex is not None and not math.isfinite(capex):
+        return None
 
     if capex is None and div_share is None:
         return None
@@ -355,7 +361,8 @@ def score_row(r: dict, *, theme_members: list[str] | None = None) -> dict:
     # bottleneck axis: when None (AWAITING / text-only), it triggers TEXT_ONLY_CAP but
     # contributes nothing to the base score (no 0.4 placeholder).
     # Renormalize weighted sum over live axes only.
-    live_axes = {k: v for k, v in raw_axes.items() if v is not None}
+    live_axes = {k: v for k, v in raw_axes.items()
+                 if v is not None and math.isfinite(v)}
     n_axes_live = len(live_axes)
     if n_axes_live == 0:
         base = 0.0
