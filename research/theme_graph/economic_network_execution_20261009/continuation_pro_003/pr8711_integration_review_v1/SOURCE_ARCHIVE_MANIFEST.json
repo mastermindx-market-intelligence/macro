@@ -1,0 +1,61 @@
+{
+  "all_members_reopened_and_verified": true,
+  "archive": {
+    "byte_length": 357485,
+    "path": "SOURCE_ARCHIVE.tar.gz",
+    "sha256": "00dd594d1439e3647c8c03006a2a2253fcbc4d72a91b2662bca0f8ca3cf341dd"
+  },
+  "files": [
+    {
+      "byte_length": 1692,
+      "path": "COMPOSITION_RECEIPT.json",
+      "sha256": "0f5a93095ca8297b0e8dff97f32d727d8981c0f3134ecf22b9d1e6d3bbc13ef1"
+    },
+    {
+      "byte_length": 9654,
+      "path": "OBSERVED_CODE_MANIFEST.json",
+      "sha256": "e955ec0f462369f42b0d3689360682d1a30dcbcea63bf090d935db73b2c9d293"
+    },
+    {
+      "byte_length": 959,
+      "path": "Q07_MANIFEST_DELTA.diff",
+      "sha256": "91de60fa0dc6582ba8057e321522993261039744fdab6b172113e6d504e3587d"
+    },
+    {
+      "byte_length": 73645,
+      "path": "READ_EVIDENCE.json",
+      "sha256": "46380a71d6fd2a55feb037d88b7b56f53b3c08c1200ee2cab417083572332752"
+    },
+    {
+      "byte_length": 14636,
+      "path": "REVIEW.md",
+      "sha256": "6ff43c22f641ba83e9c3ae06a84bc7aab182c9199e205907e0e9944bd00c1e86"
+    },
+    {
+      "byte_length": 4322,
+      "path": "REVIEW_RECEIPT.json",
+      "sha256": "e6b50303d155f29b7e504cbefa8718df8f35247a3e7054924b8920d0cb56f1f3"
+    },
+    {
+      "byte_length": 3916,
+      "path": "sources/base_owner.yml",
+      "sha256": "17c7e30078f302fb2e2101682bb653833599f9065a10e0a046d872a4b14259db"
+    },
+    {
+      "byte_length": 4080,
+      "path": "sources/candidate_owner.yml",
+      "sha256": "7afc2103e27ac7d255336cb840de8b36ca92c6fd3538be880f0b35ea4d120b0d"
+    },
+    {
+      "byte_length": 1248517,
+      "path": "sources/main_legacy_jobs.yml",
+      "sha256": "749e585ad375c00a80eed545cf74c6dcc5d7f5a608338a5548301f3166eb5777"
+    }
+  ],
+  "member_bytes": 1361421,
+  "member_count": 9,
+  "original_directory": "lanes/pr8711_integration_review_v1",
+  "readable_report_is_exact_original": true,
+  "schema": "economic_network.complete_review_archive/v1",
+  "scope": "Complete frozen PR8711 integration/source-composition review; not concluded CI or release proof."
+}

@@ -46,19 +46,53 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import urllib.parse
 import urllib.request
+import zoneinfo
 from typing import Any
 
 log = logging.getLogger("macro.user_prefs")
 
-#: Every stored preference and its CLOSED value set.
+#: Every stored preference and its CLOSED value set (scalar-enum sub-table only —
+#: pinned by tests/test_account_prefs.py::test_the_enum_table_is_the_libs).
 PREF_VALUES: dict[str, tuple[str, ...]] = {
     "lang": ("en", "zh"),
     "theme": ("light", "dark"),
     "brain_depth": ("concise", "standard", "deep"),
 }
-PREF_KEYS: tuple[str, ...] = tuple(PREF_VALUES)
+
+#: The closed set of alert categories a user may opt into (B-F08-1a).
+#: "fif_saved_issuer" — FIF saved-research issuer-watch notifications (X2-n):
+#: enqueue-only producer rows the alert drain filters on by payload category.
+#: "sector_rotation_relative" — defensive-rotation OBSERVATIONS (DR3): end-of-day
+#: notification_only notes about relative leadership between two sectors, carrying no
+#: trade advice. Opt-in only: adding it here grants no one the category (the account
+#: page writes a subset the reader already ticked), it only makes the value LEGAL for
+#: a user who has ticked it.
+#: "cs_saved_scenario" — saved-scenario monitor notifications (SPEC_U2 U2-3), same enqueue-only chain.
+ALERT_CATEGORIES: tuple[str, ...] = (
+    "holdings_material_change",
+    "thesis_window",
+    "fif_saved_issuer",
+    # Explicit delivery preference only; not source/action or enrollment authority.
+    "options_exposure_node",
+    "sector_rotation_relative",
+    "cs_saved_scenario",
+)
+
+#: Every stored preference and its KIND. PREF_VALUES stays the enum sub-table.
+PREF_KINDS: dict[str, str] = {
+    "lang": "enum", "theme": "enum", "brain_depth": "enum",
+    "alert_email_optin": "bool",
+    "alert_categories": "set",
+    "tz": "tz",
+    "quiet_hours": "quiet_hours",
+}
+PREF_KEYS: tuple[str, ...] = tuple(PREF_KINDS)
+
+_QH_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
+_TZ_CACHE: set[str] | None = None
 
 _TIMEOUT = 6
 
@@ -89,6 +123,88 @@ def default_tz_for_lang(lang: Any) -> str:
     return "Asia/Shanghai" if lang == "zh" else "UTC"
 
 
+def quiet_hours_shape_ok(value: Any) -> bool:
+    """True iff ``value`` is a well-formed quiet-hours pair (exactly start/end, HH:MM each).
+    Does NOT judge start==end — that is a legal value (normalizes to a clear), not a shape
+    error. Lets a caller tell "malformed" (400) apart from "well-formed but equal" (legal
+    clear) before calling :func:`normalize_value`, which collapses both to ``None``.
+    """
+    if not isinstance(value, dict):
+        return False
+    if set(value.keys()) != {"start", "end"}:
+        return False
+    start, end = value.get("start"), value.get("end")
+    if not isinstance(start, str) or not isinstance(end, str):
+        return False
+    return bool(_QH_RE.match(start) and _QH_RE.match(end))
+
+
+def _available_timezones() -> set[str]:
+    global _TZ_CACHE
+    if _TZ_CACHE is None:
+        _TZ_CACHE = set(zoneinfo.available_timezones())
+    return _TZ_CACHE
+
+
+def normalize_value(key: str, value: Any) -> Any | None:
+    """The canonical stored value for ``key``, or None when it is not legal.
+
+    Dispatches on :data:`PREF_KINDS`. Kind ``enum`` delegates to :func:`normalize_pref`
+    unchanged (signature and behaviour pinned). The other kinds are B-F08-1a's alert
+    preferences: ``bool``, ``set`` (a closed category subset, stored sorted+deduped),
+    ``tz`` (an IANA zone id, case-sensitive), and ``quiet_hours`` (a whole start/end pair,
+    or None to clear — a partial pair is rejected, never merged).
+    """
+    kind = PREF_KINDS.get(str(key))
+    if kind is None:
+        return None
+    if kind == "enum":
+        return normalize_pref(key, value)
+    if kind == "bool":
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            low = value.strip().lower()
+            if low in ("true", "on", "1"):
+                return True
+            if low in ("false", "off", "0"):
+                return False
+        return None
+    if kind == "set":
+        if not isinstance(value, list):
+            return None
+        out: set[str] = set()
+        for item in value:
+            if not isinstance(item, str):
+                return None
+            v = item.strip().lower()
+            if v not in ALERT_CATEGORIES:
+                return None
+            out.add(v)
+        return sorted(out)
+    if kind == "tz":
+        if not isinstance(value, str):
+            return None
+        v = value.strip()
+        return v if v in _available_timezones() else None
+    if kind == "quiet_hours":
+        if value is None:
+            return None
+        if not isinstance(value, dict):
+            return None
+        if set(value.keys()) != {"start", "end"}:
+            return None
+        start, end = value.get("start"), value.get("end")
+        if not isinstance(start, str) or not isinstance(end, str):
+            return None
+        if not (_QH_RE.match(start) and _QH_RE.match(end)):
+            return None
+        if start == end:
+            return None
+        return {"start": start, "end": end}
+    return None
+
+
 def apply_tz_default(patch: dict, fresh_meta: dict | None) -> None:
     """Freeze §8 tz default, decided from a FRESH metadata read. Mutates ``patch``.
 
@@ -114,15 +230,20 @@ def validate_prefs(patch: dict | None) -> tuple[dict, list[str]]:
     """Split ``patch`` into (legal prefs, rejected keys). Never raises.
 
     ``None`` values are skipped rather than rejected — an absent field in a partial body is
-    "don't change this", not junk. Rejected keys are returned by NAME so the caller can tell
-    the user which value was wrong instead of a blanket failure.
+    "don't change this", not junk — EXCEPT ``quiet_hours``, whose wire sentinel for "clear"
+    is the literal string ``"off"`` (never ``None``/``{}``; see app/account_prefs.py).
+    Rejected keys are returned by NAME so the caller can tell the user which value was wrong
+    instead of a blanket failure.
     """
-    clean: dict[str, str] = {}
+    clean: dict[str, Any] = {}
     rejected: list[str] = []
     for key, raw in (patch or {}).items():
         if raw is None:
             continue
-        val = normalize_pref(key, raw)
+        if key == "quiet_hours" and raw == "off":
+            clean[key] = None
+            continue
+        val = normalize_value(key, raw)
         if val is None:
             rejected.append(str(key))
         else:
@@ -130,7 +251,7 @@ def validate_prefs(patch: dict | None) -> tuple[dict, list[str]]:
     return clean, rejected
 
 
-def read_user_prefs(user: dict | None) -> dict:
+def read_user_prefs(user: dict | None) -> dict[str, Any]:
     """This user's stored preferences, straight off a record already in hand.
 
     ZERO network: ``require_user`` has already returned the Supabase record, so the prefs
@@ -142,9 +263,12 @@ def read_user_prefs(user: dict | None) -> dict:
     meta = (user or {}).get("user_metadata") if isinstance(user, dict) else None
     if not isinstance(meta, dict):
         return {}
-    out: dict[str, str] = {}
+    out: dict[str, Any] = {}
     for key in PREF_KEYS:
-        val = normalize_pref(key, meta.get(key))
+        raw = meta.get(key)
+        if key == "quiet_hours" and raw is None:
+            continue
+        val = normalize_value(key, raw)
         if val is not None:
             out[key] = val
     return out
@@ -239,6 +363,14 @@ def write_user_prefs(user_id: str, patch: dict, *, base: dict | None = None,
     if not isinstance(fresh, dict):
         # Same refusal as a failed read: we do not know what is stored, so a PUT could
         # replace an object we never saw.
+        return False
+    if ("alert_categories" in clean and "alert_categories" in fresh
+            and normalize_value("alert_categories", fresh["alert_categories"]) is None):
+        # The read helper omits invalid/future category sets. That omission must
+        # never turn a later full-set save into permission to erase stored consent.
+        # Keep the closed validation contract; unrelated preference writes may
+        # still preserve this opaque value in the fresh merge base.
+        log.warning("user_prefs: refusing category replacement of an uninterpretable stored set")
         return False
     merged = dict(fresh)
     merged.update(clean)
